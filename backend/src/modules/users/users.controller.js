@@ -75,11 +75,94 @@ const updateMyProfile = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+const updateUserById = async (req, res) => {
+  try {
+    const user = await usersService.updateUserById(req.params.id, req.body);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: user
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+const deleteUserById = async (req, res) => {
+  try {
+    const user = await usersService.deleteUserById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+      data: user
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+const uploadProfileImage = async (
+  req,
+  res
+) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No image uploaded"
+      });
+    }
+
+    const imageUrl =
+      "/uploads/" + req.file.filename;
+
+    const user =
+      await usersService.updateProfileImage(
+        req.user.id,
+        imageUrl
+      );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Profile image uploaded successfully",
+      data: user
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
 
 module.exports = {
-  getAllUsers,
+    getAllUsers,
   getUserById,
   updateUserStatus,
   getMyProfile,
-  updateMyProfile
+  updateMyProfile,
+  updateUserById,
+  deleteUserById,
+  uploadProfileImage
 };
