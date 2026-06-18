@@ -2,9 +2,6 @@
 
 Graduation Project
 
-Team Members:
-- Suha
-- Partner Name
 
 Technology Stack:
 - Flutter
