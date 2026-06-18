@@ -67,9 +67,58 @@ const updateMyProfile = async (userId, data) => {
   return result.rows[0];
 };
 
+const updateUserById = async (id, data) => {
+  const { full_name, phone, role, is_active } = data;
+
+  const result = await pool.query(
+    `UPDATE users
+     SET
+       full_name = COALESCE($1, full_name),
+       phone = COALESCE($2, phone),
+       role = COALESCE($3, role),
+       is_active = COALESCE($4, is_active)
+     WHERE id = $5
+     RETURNING id, full_name, email, phone, role, is_active, updated_at`,
+    [full_name, phone, role, is_active, id]
+  );
+
+  return result.rows[0];
+};
+const deleteUserById = async (id) => {
+  const result = await pool.query(
+    `DELETE FROM users
+     WHERE id = $1
+     RETURNING id, full_name, email`,
+    [id]
+  );
+
+  return result.rows[0];
+};
+const updateProfileImage = async (
+  userId,
+  imageUrl
+) => {
+  const result = await pool.query(
+    `UPDATE users
+     SET profile_image_url = $1
+     WHERE id = $2
+     RETURNING id,
+               full_name,
+               email,
+               profile_image_url`,
+    [imageUrl, userId]
+  );
+
+  return result.rows[0];
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
   updateUserStatus,
-  updateMyProfile
+  updateMyProfile,
+  updateUserById,
+  deleteUserById,
+  updateProfileImage
 };
+
