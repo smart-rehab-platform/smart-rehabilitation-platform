@@ -9,6 +9,7 @@ const treatmentPlansRoutes = require("./modules/treatmentPlans/treatmentPlans.ro
 const goalsRoutes = require("./modules/goals/goals.routes");
 const exercisesRoutes = require("./modules/exercises/exercises.routes");
 const assignedExercisesRoutes = require("./modules/assignedExercises/assignedExercises.routes");
+const exerciseSubmissionsRoutes = require("./modules/exerciseSubmissions/exerciseSubmissions.routes");
 
 const app = express();
 
@@ -29,4 +30,5 @@ app.use("/api/v1/treatment-plans", treatmentPlansRoutes);
 app.use("/api/v1", goalsRoutes);
 app.use("/api/v1", exercisesRoutes);
 app.use("/api/v1", assignedExercisesRoutes);
+app.use("/api/v1", exerciseSubmissionsRoutes);
 module.exports = app;
