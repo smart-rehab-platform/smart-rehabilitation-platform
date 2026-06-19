@@ -7,12 +7,6 @@ const authorizeRoles = require("../../middleware/role.middleware");
 const upload =
   require("../../middleware/upload.middleware");
 const router = express.Router();
-console.log("getAllUsers:", typeof usersController.getAllUsers);
-console.log("getMyProfile:", typeof usersController.getMyProfile);
-console.log("updateMyProfile:", typeof usersController.updateMyProfile);
-console.log("updateUserStatus:", typeof usersController.updateUserStatus);
-console.log("getUserById:", typeof usersController.getUserById);
-
 
 router.get(
   "/",
