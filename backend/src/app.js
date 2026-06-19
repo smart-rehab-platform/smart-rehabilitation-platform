@@ -7,6 +7,7 @@ const patientsRoutes = require("./modules/patients/patients.routes");
 const assessmentsRoutes = require("./modules/assessments/assessments.routes");
 const treatmentPlansRoutes = require("./modules/treatmentPlans/treatmentPlans.routes");
 const goalsRoutes = require("./modules/goals/goals.routes");
+const progressRoutes = require('./modules/progress/progress.routes');
 const app = express();
 
 app.use(cors());
@@ -24,4 +25,5 @@ app.use("/api/v1/patients", patientsRoutes);
 app.use("/api/v1/assessments", assessmentsRoutes);
 app.use("/api/v1/treatment-plans", treatmentPlansRoutes);
 app.use("/api/v1", goalsRoutes);
+app.use('/api/v1', progressRoutes);
 module.exports = app;
