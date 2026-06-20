@@ -13,6 +13,7 @@ const exerciseSubmissionsRoutes = require("./modules/exerciseSubmissions/exercis
 const exerciseReviewsRoutes = require("./modules/exerciseReviews/exerciseReviews.routes");
 const sessionsRoutes = require("./modules/sessions/sessions.routes");
 const communicationRoutes = require("./modules/communication/communication.routes");
+const reportsRoutes = require("./modules/reports/reports.routes");
 const app = express();
 
 
@@ -38,4 +39,5 @@ app.use("/api/v1", exerciseSubmissionsRoutes);
 app.use("/api/v1", exerciseReviewsRoutes);
 app.use("/api/v1", sessionsRoutes);
 app.use("/api/v1", communicationRoutes);
+app.use("/api/v1", reportsRoutes);
 module.exports = app;
