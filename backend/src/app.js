@@ -17,6 +17,7 @@ const communicationRoutes = require("./modules/communication/communication.route
 const reportsRoutes = require("./modules/reports/reports.routes");
 const resourcesRoutes = require("./modules/resources/resources.routes");
 const auditLogsRoutes = require("./modules/auditLogs/auditLogs.routes");
+const specialistsRoutes = require("./modules/specialists/specialists.routes");
 
 const app = express();
 
@@ -47,4 +48,5 @@ app.use("/api/v1", communicationRoutes);
 app.use("/api/v1", reportsRoutes);
 app.use("/api/v1", resourcesRoutes);
 app.use("/api/v1", auditLogsRoutes);
+app.use("/api/v1", specialistsRoutes);
 module.exports = app;
