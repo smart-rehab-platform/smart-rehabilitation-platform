@@ -13,7 +13,7 @@ const progressRoutes = require('./modules/progress/progress.routes');
 const exercisesRoutes = require("./modules/exercises/exercises.routes");
 const assignedExercisesRoutes = require("./modules/assignedExercises/assignedExercises.routes");
 const exerciseSubmissionsRoutes = require("./modules/exerciseSubmissions/exerciseSubmissions.routes");
-
+const exerciseReviewsRoutes = require("./modules/exerciseReviews/exerciseReviews.routes");
 
 const app = express();
 
@@ -38,5 +38,5 @@ app.use('/api/v1', progressRoutes);
 app.use("/api/v1", exercisesRoutes);
 app.use("/api/v1", assignedExercisesRoutes);
 app.use("/api/v1", exerciseSubmissionsRoutes);
-
+app.use("/api/v1", exerciseReviewsRoutes);
 module.exports = app;
