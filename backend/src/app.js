@@ -15,6 +15,7 @@ const assignedExercisesRoutes = require("./modules/assignedExercises/assignedExe
 const exerciseSubmissionsRoutes = require("./modules/exerciseSubmissions/exerciseSubmissions.routes");
 const exerciseReviewsRoutes = require("./modules/exerciseReviews/exerciseReviews.routes");
 const sessionsRoutes = require("./modules/sessions/sessions.routes");
+const notificationsRoutes = require("./modules/notifications/notifications.routes");
 const app = express();
 
 
@@ -41,4 +42,5 @@ app.use("/api/v1", assignedExercisesRoutes);
 app.use("/api/v1", exerciseSubmissionsRoutes);
 app.use("/api/v1", exerciseReviewsRoutes);
 app.use("/api/v1", sessionsRoutes);
+app.use("/api/v1", notificationsRoutes);
 module.exports = app;
