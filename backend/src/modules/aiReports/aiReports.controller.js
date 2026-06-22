@@ -1,0 +1,106 @@
+const aiReportsService = require("./aiReports.service");
+
+const generateWeeklyReport = async (req, res) => {
+  try {
+    const report = await aiReportsService.generateReport({
+      ...req.body,
+      type: "weekly"
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Weekly AI report generated successfully",
+      data: report
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+const generateMonthlyReport = async (req, res) => {
+  try {
+    const report = await aiReportsService.generateReport({
+      ...req.body,
+      type: "monthly"
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Monthly AI report generated successfully",
+      data: report
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+const getAllReports = async (req, res) => {
+  try {
+    const reports = await aiReportsService.getAllReports();
+
+    res.status(200).json({
+      success: true,
+      count: reports.length,
+      data: reports
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+const getReportById = async (req, res) => {
+  try {
+    const report = await aiReportsService.getReportById(req.params.id);
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: "AI report not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: report
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+const getReportsByPatient = async (req, res) => {
+  try {
+    const reports = await aiReportsService.getReportsByPatient(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      count: reports.length,
+      data: reports
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+module.exports = {
+  generateWeeklyReport,
+  generateMonthlyReport,
+  getAllReports,
+  getReportById,
+  getReportsByPatient
+};
