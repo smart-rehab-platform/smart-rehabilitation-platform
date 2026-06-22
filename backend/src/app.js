@@ -19,8 +19,15 @@ const resourcesRoutes = require("./modules/resources/resources.routes");
 const auditLogsRoutes = require("./modules/auditLogs/auditLogs.routes");
 const specialistsRoutes = require("./modules/specialists/specialists.routes");
 const parentsRoutes = require("./modules/parents/parents.routes");
+
 const aiRecommendationsRoutes = require("./modules/aiRecommendations/aiRecommendations.routes");
 const speechAnalysesRoutes = require("./modules/speechAnalyses/speechAnalyses.routes");
+
+
+const dashboardRoutes = require("./modules/dashboard/dashboard.routes");
+const uploadsRoutes = require("./modules/uploads/uploads.routes");
+const aiReportsRoutes = require("./modules/aiReports/aiReports.routes");
+
 const app = express();
 
 
@@ -52,5 +59,14 @@ app.use("/api/v1", resourcesRoutes);
 app.use("/api/v1", auditLogsRoutes);
 app.use("/api/v1", specialistsRoutes);
 app.use("/api/v1", parentsRoutes);
+
 app.use("/api/v1/ai/recommendations", aiRecommendationsRoutes);
 app.use("/api/v1/speech-analyses", speechAnalysesRoutes);module.exports = app;
+
+
+app.use("/api/v1", dashboardRoutes);
+app.use("/api/v1/uploads", uploadsRoutes);
+app.use("/uploads", express.static("uploads"));
+app.use("/api/v1", aiReportsRoutes);
+module.exports = app;
+
