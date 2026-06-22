@@ -16,9 +16,13 @@ const notificationsRoutes = require("./modules/notifications/notifications.route
 const communicationRoutes = require("./modules/communication/communication.routes");
 const reportsRoutes = require("./modules/reports/reports.routes");
 const resourcesRoutes = require("./modules/resources/resources.routes");
+
 const auditLogsRoutes = require("./modules/auditLogs/auditLogs.routes");
 const specialistsRoutes = require("./modules/specialists/specialists.routes");
 const parentsRoutes = require("./modules/parents/parents.routes");
+
+const dashboardRoutes = require("./modules/dashboard/dashboard.routes");
+const uploadsRoutes = require("./modules/uploads/uploads.routes");
 
 const app = express();
 
@@ -48,7 +52,13 @@ app.use("/api/v1", notificationsRoutes);
 app.use("/api/v1", communicationRoutes);
 app.use("/api/v1", reportsRoutes);
 app.use("/api/v1", resourcesRoutes);
+
 app.use("/api/v1", auditLogsRoutes);
 app.use("/api/v1", specialistsRoutes);
 app.use("/api/v1", parentsRoutes);
+
+app.use("/api/v1", dashboardRoutes);
+app.use("/api/v1/uploads", uploadsRoutes);
+app.use("/uploads", express.static("uploads"));
+
 module.exports = app;
