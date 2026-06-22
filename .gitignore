@@ -16,6 +16,6 @@ coverage/
 
 *.log
 
-uploads/
+backend/uploads/
 
 .DS_Store
