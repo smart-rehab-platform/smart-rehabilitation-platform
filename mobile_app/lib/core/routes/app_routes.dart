@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
+import '../../features/dashboard/home_page.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -10,6 +11,7 @@ class AppRoutes {
   static const String splash = '/';
   static const String login = '/login';
   static const String signup = '/signup';
+  static const String dashboard = '/dashboard';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -28,6 +30,11 @@ class AppRoutes {
         path: signup,
         name: 'signup',
         builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: dashboard,
+        name: 'dashboard',
+        builder: (context, state) => const HomePage(),
       ),
     ],
   );
