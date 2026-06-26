@@ -1,96 +1,89 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../shared/widgets/auth_ui.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  Timer? _navigationTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    _navigationTimer = Timer(const Duration(seconds: 2), () {
-      if (mounted) {
-        context.go(AppRoutes.login);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _navigationTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
-      backgroundColor: AppColors.primaryNavy,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+      body: AuthBackground(
+        overlayOpacity: 0.65,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+            child: Column(
+              children: [
+                const Spacer(flex: 2),
+                const AuthLogoMark(size: 86),
+                const SizedBox(height: 26),
+                Text(
+                  'Smart',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.syne(
+                    fontSize: 31,
+                    fontWeight: FontWeight.w800,
+                    height: 1.05,
+                    color: AppColors.white,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                const AuthGradientHeadline(
+                  text: 'Rehabilitation',
+                  fontSize: 31,
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'Empowering rehabilitation through smart daily follow-up',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    height: 1.6,
+                    color: AppColors.lightBlue.withValues(alpha: 0.8),
+                  ),
+                ),
+                const SizedBox(height: 28),
+                const Column(
                   children: [
-                    Container(
-                      width: 88,
-                      height: 88,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.darkBlue,
-                        border: Border.all(
-                          color: AppColors.mediumBlue,
-                          width: 2,
-                        ),
-                      ),
+                    AuthFeaturePill(
+                      icon: Icons.psychology_alt_outlined,
+                      text: 'AI Progress Tracking',
                     ),
-                    const SizedBox(height: 28),
-                    Text(
-                      'Smart Rehabilitation',
-                      style: textTheme.headlineSmall?.copyWith(
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
+                    SizedBox(height: 10),
+                    AuthFeaturePill(
+                      icon: Icons.monitor_heart_outlined,
+                      text: 'Smart Exercise Guidance',
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Where Recovery Never Stops',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: AppColors.lightBlue,
-                      ),
-                      textAlign: TextAlign.center,
+                    SizedBox(height: 10),
+                    AuthFeaturePill(
+                      icon: Icons.mic_none_rounded,
+                      text: 'Speech & Motion Analysis',
                     ),
                   ],
                 ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 48),
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppColors.mediumBlue,
+                const Spacer(flex: 3),
+                AuthGradientButton(
+                  label: 'Get Started',
+                  trailingIcon: Icons.chevron_right_rounded,
+                  onPressed: () => context.go(AppRoutes.login),
                 ),
-              ),
+                const SizedBox(height: 14),
+                Text(
+                  '© Smart Rehabilitation Platform',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: AppColors.lightBlue.withValues(alpha: 0.55),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
