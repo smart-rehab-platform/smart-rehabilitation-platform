@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const pool = require("../../database/db");
 
 const registerUser = async (data) => {
-  const { full_name, email, password, phone, role } = data;
+  const { full_name, email, password, phone, role, profile_image_url } = data;
 
   const existingUser = await pool.query(
     "SELECT id FROM users WHERE email = $1",
@@ -17,10 +17,10 @@ const registerUser = async (data) => {
   const passwordHash = await bcrypt.hash(password, 10);
 
   const result = await pool.query(
-    `INSERT INTO users (full_name, email, password_hash, phone, role)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, full_name, email, phone, role, created_at`,
-    [full_name, email, passwordHash, phone, role]
+    `INSERT INTO users (full_name, email, password_hash, phone, role, profile_image_url)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING id, full_name, email, phone, role, profile_image_url, created_at`,
+    [full_name, email, passwordHash, phone, role, profile_image_url || null]
   );
 
   return result.rows[0];
