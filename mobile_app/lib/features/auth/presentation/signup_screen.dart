@@ -33,6 +33,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _showConfirmPassword = false;
   Uint8List? _profilePhotoBytes;
 
+  bool get _isFullNameValid => _fullNameController.text.trim().length >= 2;
+
+  bool get _isPhoneValid {
+    final digitsOnly = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+    return digitsOnly.length >= 7;
+  }
+
   AuthFieldState get _emailState {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
@@ -120,9 +127,23 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       return;
     }
 
+    if (!_isFullNameValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid full name')),
+      );
+      return;
+    }
+
     if (_emailState == AuthFieldState.error) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid email address')),
+      );
+      return;
+    }
+
+    if (!_isPhoneValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid phone number')),
       );
       return;
     }
@@ -161,10 +182,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     }
 
     if (success) {
+      await ref.read(authProvider.notifier).logout();
+      if (!mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created successfully')),
+        const SnackBar(
+          content: Text('Account created successfully. Please sign in.'),
+        ),
       );
-      context.go(AppRoutes.dashboard);
+      context.go(AppRoutes.login);
       return;
     }
 

@@ -32,13 +32,13 @@ class AuthRepository {
     String? profileImageUrl,
   }) async {
     final payload = <String, dynamic>{
-      'fullName': fullName,
+      'full_name': fullName,
       'email': email,
       'password': password,
       'phone': phone,
       'role': role,
       if (profileImageUrl != null && profileImageUrl.trim().isNotEmpty)
-        'profileImageUrl': profileImageUrl.trim(),
+        'profile_image_url': profileImageUrl.trim(),
     };
 
     final response = await _dio.post('/auth/register', data: payload);

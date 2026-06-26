@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/services/api_client.dart';
 import '../data/auth_repository.dart';
+import '../data/token_storage.dart';
 import '../models/auth_response.dart';
 import '../models/auth_user.dart';
 
@@ -11,9 +12,14 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(dio);
 });
 
+final tokenStorageProvider = Provider<TokenStorage>((ref) {
+  return const TokenStorage();
+});
+
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
-  return AuthNotifier(repository);
+  final tokenStorage = ref.watch(tokenStorageProvider);
+  return AuthNotifier(repository, tokenStorage);
 });
 
 class AuthState {
@@ -49,9 +55,10 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier(this._repository) : super(const AuthState());
+  AuthNotifier(this._repository, this._tokenStorage) : super(const AuthState());
 
   final AuthRepository _repository;
+  final TokenStorage _tokenStorage;
 
   Future<bool> login({
     required String email,
@@ -65,7 +72,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
       );
 
-      return _handleAuthSuccess(response);
+      return await _handleAuthSuccess(
+        response,
+        persistToken: true,
+      );
     } on DioException catch (error) {
       state = state.copyWith(
         isLoading: false,
@@ -101,7 +111,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         profileImageUrl: profileImageUrl,
       );
 
-      return _handleAuthSuccess(response);
+      return await _handleAuthSuccess(
+        response,
+        persistToken: false,
+      );
     } on DioException catch (error) {
       state = state.copyWith(
         isLoading: false,
@@ -144,16 +157,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
+    await _tokenStorage.clearToken();
     await _repository.logout();
     state = const AuthState();
-    // TODO: Remove persisted token from SharedPreferences when local session storage is added.
   }
 
   void clearError() {
     state = state.copyWith(errorMessage: null);
   }
 
-  Future<bool> _handleAuthSuccess(AuthResponse response) async {
+  Future<bool> _handleAuthSuccess(
+    AuthResponse response, {
+    required bool persistToken,
+  }) async {
     final token = response.token;
     if (token == null || token.isEmpty) {
       state = state.copyWith(
@@ -164,6 +180,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
 
     _repository.setAuthToken(token);
+    if (persistToken) {
+      await _tokenStorage.saveToken(token);
+    }
 
     var user = response.user;
     user ??= await _repository.getMe();
@@ -175,7 +194,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       errorMessage: null,
     );
 
-    // TODO: Persist token with SharedPreferences once session restoration is implemented.
     return state.isAuthenticated;
   }
 
