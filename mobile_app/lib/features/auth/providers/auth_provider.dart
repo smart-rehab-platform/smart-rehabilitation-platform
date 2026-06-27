@@ -19,7 +19,9 @@ final tokenStorageProvider = Provider<TokenStorage>((ref) {
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   final tokenStorage = ref.watch(tokenStorageProvider);
-  return AuthNotifier(repository, tokenStorage);
+  final notifier = AuthNotifier(repository, tokenStorage);
+  notifier.restoreSession();
+  return notifier;
 });
 
 class AuthState {
@@ -27,12 +29,14 @@ class AuthState {
     this.user,
     this.token,
     this.isLoading = false,
+    this.isInitializing = true,
     this.errorMessage,
   });
 
   final AuthUser? user;
   final String? token;
   final bool isLoading;
+  final bool isInitializing;
   final String? errorMessage;
 
   bool get isAuthenticated => token != null && token!.isNotEmpty;
@@ -41,12 +45,14 @@ class AuthState {
     Object? user = _sentinel,
     Object? token = _sentinel,
     bool? isLoading,
+    bool? isInitializing,
     Object? errorMessage = _sentinel,
   }) {
     return AuthState(
       user: identical(user, _sentinel) ? this.user : user as AuthUser?,
       token: identical(token, _sentinel) ? this.token : token as String?,
       isLoading: isLoading ?? this.isLoading,
+      isInitializing: isInitializing ?? this.isInitializing,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
@@ -55,10 +61,40 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier(this._repository, this._tokenStorage) : super(const AuthState());
+  AuthNotifier(this._repository, this._tokenStorage)
+      : super(const AuthState(isInitializing: true));
 
   final AuthRepository _repository;
   final TokenStorage _tokenStorage;
+
+  Future<void> restoreSession() async {
+    try {
+      final token = await _tokenStorage.getToken();
+      if (token == null || token.isEmpty) {
+        state = state.copyWith(isInitializing: false);
+        return;
+      }
+
+      _repository.setAuthToken(token);
+      final user = await _repository.getMe();
+      if (user == null) {
+        await _tokenStorage.clearToken();
+        await _repository.logout();
+        state = const AuthState(isInitializing: false);
+        return;
+      }
+
+      state = AuthState(
+        token: token,
+        user: user,
+        isInitializing: false,
+      );
+    } catch (_) {
+      await _tokenStorage.clearToken();
+      await _repository.logout();
+      state = const AuthState(isInitializing: false);
+    }
+  }
 
   Future<bool> login({required String email, required String password}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -222,6 +258,36 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<bool> uploadProfileImage(List<int> bytes, String filename) async {
+    try {
+      await _repository.uploadProfileImage(bytes, filename);
+      final fetched = await _repository.getMe();
+      final user = _mergeUser(state.user, fetched);
+      if (user == null) {
+        state = state.copyWith(
+          errorMessage: 'Photo uploaded but profile could not be refreshed.',
+        );
+        return false;
+      }
+
+      state = state.copyWith(
+        user: user,
+        errorMessage: null,
+      );
+      return true;
+    } on DioException catch (error) {
+      state = state.copyWith(
+        errorMessage: _readDioErrorMessage(error),
+      );
+      return false;
+    } catch (error) {
+      state = state.copyWith(
+        errorMessage: 'Failed to upload profile image: $error',
+      );
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     await _tokenStorage.clearToken();
     await _repository.logout();
@@ -232,12 +298,41 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(errorMessage: null);
   }
 
+  AuthUser? _mergeUser(AuthUser? current, AuthUser? fetched) {
+    if (fetched == null) {
+      return current;
+    }
+    if (current == null) {
+      return fetched;
+    }
+
+    return AuthUser(
+      id: fetched.id ?? current.id,
+      fullName: fetched.fullName.isNotEmpty ? fetched.fullName : current.fullName,
+      email: fetched.email.isNotEmpty ? fetched.email : current.email,
+      phone: fetched.phone ?? current.phone,
+      role: fetched.role ?? current.role,
+      profileImageUrl: fetched.profileImageUrl ?? current.profileImageUrl,
+      rawData: fetched.rawData.isNotEmpty ? fetched.rawData : current.rawData,
+    );
+  }
+
   Future<bool> _handleAuthSuccess(
     AuthResponse response, {
     required bool persistToken,
+    bool allowMissingToken = false,
   }) async {
     final token = response.token;
     if (token == null || token.isEmpty) {
+      if (allowMissingToken) {
+        state = state.copyWith(
+          isLoading: false,
+          isInitializing: false,
+          errorMessage: null,
+        );
+        return true;
+      }
+
       state = state.copyWith(
         isLoading: false,
         errorMessage:
@@ -258,6 +353,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       token: token,
       user: user,
       isLoading: false,
+      isInitializing: false,
       errorMessage: null,
     );
 

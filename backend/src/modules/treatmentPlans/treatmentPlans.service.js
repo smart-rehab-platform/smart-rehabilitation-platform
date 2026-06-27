@@ -1,4 +1,5 @@
 const pool = require("../../database/db");
+const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
 
 const createTreatmentPlan = async (data, userId) => {
   const {
@@ -31,7 +32,21 @@ const createTreatmentPlan = async (data, userId) => {
     ]
   );
 
-  return result.rows[0];
+  const plan = result.rows[0];
+
+  const patientResult = await pool.query(
+    "SELECT full_name FROM patients WHERE id = $1",
+    [patient_id]
+  );
+
+  await notifyAllAdmins({
+    title: "Treatment plan created",
+    body: `Treatment plan "${title}" was created for patient ${patientResult.rows[0]?.full_name ?? "patient"}.`,
+    related_entity_type: "treatment_plan",
+    related_entity_id: plan.id,
+  });
+
+  return plan;
 };
 
 const getAllTreatmentPlans = async () => {

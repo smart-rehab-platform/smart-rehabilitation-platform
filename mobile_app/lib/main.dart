@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/routes/app_routes.dart';
+import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
 
 void main() {
@@ -12,16 +12,18 @@ void main() {
   );
 }
 
-class SmartRehabilitationApp extends StatelessWidget {
+class SmartRehabilitationApp extends ConsumerWidget {
   const SmartRehabilitationApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(goRouterProvider);
+
     return MaterialApp.router(
       title: 'Smart Rehabilitation Platform',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      routerConfig: AppRoutes.router,
+      routerConfig: router,
     );
   }
 }

@@ -7,6 +7,7 @@ const {
   verifyEmailSchema
 } = require("./auth.validation");
 const authService = require("./auth.service");
+const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
 
 const validateRequest = (schema, payload, res) => {
   const { error, value } = schema.validate(payload, {
@@ -33,6 +34,13 @@ const register = async (req, res) => {
     }
 
     const user = await authService.registerUser(validatedBody);
+
+    await notifyAllAdmins({
+      title: "New user registered",
+      body: `${user.full_name} registered as ${user.role}.`,
+      related_entity_type: "user",
+      related_entity_id: user.id,
+    });
 
     return res.status(201).json({
       success: true,

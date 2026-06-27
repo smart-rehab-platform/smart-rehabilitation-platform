@@ -115,6 +115,14 @@ const deleteUserById = async (req, res) => {
       data: user
     });
   } catch (err) {
+    if (err.code === "23503") {
+      return res.status(409).json({
+        success: false,
+        message:
+          "This user cannot be deleted because they are linked to existing records. You can deactivate the account instead.",
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: err.message

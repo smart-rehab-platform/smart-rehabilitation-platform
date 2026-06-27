@@ -17,12 +17,18 @@ const createParentProfile = async (userId, data) => {
 const getAllParents = async () => {
   const result = await pool.query(`
     SELECT
-      pp.*,
+      pp.id,
+      u.id AS user_id,
       u.full_name,
       u.email,
-      u.phone
-    FROM parent_profiles pp
-    JOIN users u ON pp.user_id = u.id
+      u.phone,
+      pp.relationship_notes,
+      pp.address,
+      pp.created_at,
+      pp.updated_at
+    FROM users u
+    LEFT JOIN parent_profiles pp ON pp.user_id = u.id
+    WHERE u.role = 'parent'
     ORDER BY u.full_name
   `);
 

@@ -115,6 +115,39 @@ class AuthRepository {
     _dio.options.headers['Authorization'] = 'Bearer ${token.trim()}';
   }
 
+  Future<AuthUser> uploadProfileImage(List<int> bytes, String filename) async {
+    final formData = FormData.fromMap({
+      'image': MultipartFile.fromBytes(
+        bytes,
+        filename: filename,
+      ),
+    });
+
+    final response = await _dio.post(
+      '/users/profile/image',
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+
+    final map = _normalizeMap(response.data);
+    if (map == null) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        message: 'Invalid upload response.',
+      );
+    }
+
+    final userMap = AuthUser.normalizeMap(map['data']) ?? map;
+    if (AuthUser.looksLikeUserMap(userMap)) {
+      return AuthUser.fromMap(userMap);
+    }
+
+    throw DioException(
+      requestOptions: response.requestOptions,
+      message: 'Profile image was uploaded but user data was not returned.',
+    );
+  }
+
   Future<void> logout() async {
     setAuthToken(null);
   }

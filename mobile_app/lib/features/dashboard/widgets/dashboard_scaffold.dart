@@ -1,0 +1,80 @@
+import 'package:flutter/material.dart';
+
+import '../../../core/constants/dashboard_colors.dart';
+import '../../../core/theme/dashboard_theme.dart';
+import 'dashboard_app_bar.dart';
+import 'dashboard_bottom_nav.dart';
+import 'dashboard_layout.dart';
+import 'specialist_navigation.dart';
+
+/// Shared shell for all role dashboards: theme, app bar, scroll body, bottom nav.
+class DashboardScaffold extends StatelessWidget {
+  const DashboardScaffold({
+    super.key,
+    required this.body,
+    this.avatarInitials = 'SR',
+    this.avatarImageUrl,
+    this.notificationCount = 0,
+    this.currentNav = DashboardNavItem.home,
+    this.onNavTap,
+    this.drawer,
+    this.showMenuButton = true,
+    this.userDisplayName,
+    this.onMenuTap,
+    this.onNotificationsTap,
+    this.onAvatarTap,
+    this.scrollBody = true,
+    this.showBottomNav = true,
+  });
+
+  final Widget body;
+  final String avatarInitials;
+  final String? avatarImageUrl;
+  final int notificationCount;
+  final DashboardNavItem currentNav;
+  final ValueChanged<DashboardNavItem>? onNavTap;
+  final Widget? drawer;
+  final bool showMenuButton;
+  final String? userDisplayName;
+  final VoidCallback? onMenuTap;
+  final VoidCallback? onNotificationsTap;
+  final VoidCallback? onAvatarTap;
+  final bool scrollBody;
+  final bool showBottomNav;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: DashboardTheme.light,
+      child: Scaffold(
+        backgroundColor: DashboardColors.background,
+        drawer: drawer,
+        appBar: DashboardAppBar(
+          avatarInitials: avatarInitials,
+          avatarImageUrl: avatarImageUrl,
+          userDisplayName: userDisplayName,
+          showMenuButton: showMenuButton,
+          notificationCount: notificationCount,
+          onMenuTap: onMenuTap ??
+              (drawer != null ? () => SpecialistNavigation.openDrawer(context) : null),
+          onNotificationsTap: onNotificationsTap,
+          onAvatarTap: onAvatarTap,
+        ),
+        body: SafeArea(
+          child: scrollBody
+              ? SingleChildScrollView(
+                  padding: context.dashPadding,
+                  child: body,
+                )
+              : body,
+        ),
+        bottomNavigationBar: showBottomNav
+            ? DashboardBottomNav(
+                currentIndex: currentNav,
+                onTap: onNavTap,
+              )
+            : null,
+      ),
+    );
+  }
+}
