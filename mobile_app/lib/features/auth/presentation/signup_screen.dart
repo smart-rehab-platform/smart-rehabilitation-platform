@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
+import '../utils/password_strength.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../shared/widgets/auth_ui.dart';
@@ -57,7 +58,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       return AuthFieldState.idle;
     }
 
-    return password.length >= 8 ? AuthFieldState.success : AuthFieldState.error;
+    return evaluateAuthPasswordStrength(password).isStrong
+        ? AuthFieldState.success
+        : AuthFieldState.error;
   }
 
   AuthFieldState get _confirmPasswordState {
@@ -103,8 +106,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to pick image: $error')),
+      showAuthSnackBar(
+        context,
+        'Unable to select your profile photo right now.',
+        type: AuthSnackBarType.error,
       );
     }
   }
@@ -121,86 +126,96 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         phone.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please complete all required fields')),
+      showAuthSnackBar(
+        context,
+        'Please complete all required fields',
+        type: AuthSnackBarType.error,
       );
       return;
     }
 
     if (!_isFullNameValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid full name')),
+      showAuthSnackBar(
+        context,
+        'Please enter a valid full name',
+        type: AuthSnackBarType.error,
       );
       return;
     }
 
     if (_emailState == AuthFieldState.error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid email address')),
+      showAuthSnackBar(
+        context,
+        'Please enter a valid email address',
+        type: AuthSnackBarType.error,
       );
       return;
     }
 
     if (!_isPhoneValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid phone number')),
+      showAuthSnackBar(
+        context,
+        'Please enter a valid phone number',
+        type: AuthSnackBarType.error,
       );
       return;
     }
 
     if (_passwordState == AuthFieldState.error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 8 characters')),
+      showAuthSnackBar(
+        context,
+        authStrongPasswordMessage,
+        type: AuthSnackBarType.error,
       );
       return;
     }
 
     if (_confirmPasswordState == AuthFieldState.error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
+      showAuthSnackBar(
+        context,
+        'Passwords do not match.',
+        type: AuthSnackBarType.error,
       );
       return;
     }
 
     if (_selectedRole == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select your role')),
+      showAuthSnackBar(
+        context,
+        'Please select your role',
+        type: AuthSnackBarType.error,
       );
       return;
     }
 
-    final success = await ref.read(authProvider.notifier).register(
-      fullName: fullName,
-      email: email,
-      password: password,
-      phone: phone,
-      role: _selectedRole == SignupRole.parent ? 'parent' : 'specialist',
-    );
+    final success = await ref
+        .read(authProvider.notifier)
+        .register(
+          fullName: fullName,
+          email: email,
+          password: password,
+          phone: phone,
+          role: _selectedRole == SignupRole.parent ? 'parent' : 'specialist',
+        );
 
     if (!mounted) {
       return;
     }
 
     if (success) {
-      await ref.read(authProvider.notifier).logout();
-      if (!mounted) {
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully. Please sign in.'),
-        ),
+      showAuthSnackBar(
+        context,
+        'Account created successfully. Please verify your email before signing in.',
+        type: AuthSnackBarType.success,
       );
       context.go(AppRoutes.login);
       return;
     }
 
-    final errorMessage = ref.read(authProvider).errorMessage ??
+    final errorMessage =
+        ref.read(authProvider).errorMessage ??
         'Registration failed. Please try again.';
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(errorMessage)),
-    );
+    showAuthSnackBar(context, errorMessage, type: AuthSnackBarType.error);
   }
 
   @override
@@ -296,7 +311,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             icon: Icons.phone_outlined,
                             keyboardType: TextInputType.phone,
                             textInputAction: TextInputAction.next,
-                            autofillHints: const [AutofillHints.telephoneNumber],
+                            autofillHints: const [
+                              AutofillHints.telephoneNumber,
+                            ],
                             onChanged: (_) => setState(() {}),
                           ),
                           const SizedBox(height: 12),
@@ -311,7 +328,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             onChanged: (_) => setState(() {}),
                             state: _passwordState,
                             message: _passwordState == AuthFieldState.error
-                                ? 'Min. 8 characters required'
+                                ? authStrongPasswordMessage
                                 : null,
                             suffix: IconButton(
                               onPressed: () {
@@ -322,9 +339,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                     ? Icons.visibility_off_outlined
                                     : Icons.visibility_outlined,
                                 size: 17,
-                                color: AppColors.lightBlue.withValues(alpha: 0.58),
+                                color: AppColors.lightBlue.withValues(
+                                  alpha: 0.58,
+                                ),
                               ),
                             ),
+                          ),
+                          AuthPasswordStrengthIndicator(
+                            password: _passwordController.text,
                           ),
                           const SizedBox(height: 12),
                           AuthInputField(
@@ -336,13 +358,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             obscureText: !_showConfirmPassword,
                             onChanged: (_) => setState(() {}),
                             state: _confirmPasswordState,
-                            message: _confirmPasswordState == AuthFieldState.error
-                                ? 'Passwords do not match'
+                            message:
+                                _confirmPasswordState == AuthFieldState.error
+                                ? 'Passwords do not match.'
                                 : null,
                             suffix: IconButton(
                               onPressed: () {
                                 setState(
-                                  () => _showConfirmPassword = !_showConfirmPassword,
+                                  () => _showConfirmPassword =
+                                      !_showConfirmPassword,
                                 );
                               },
                               icon: Icon(
@@ -350,7 +374,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                     ? Icons.visibility_off_outlined
                                     : Icons.visibility_outlined,
                                 size: 17,
-                                color: AppColors.lightBlue.withValues(alpha: 0.58),
+                                color: AppColors.lightBlue.withValues(
+                                  alpha: 0.58,
+                                ),
                               ),
                             ),
                           ),
@@ -377,7 +403,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                 ],
                                 isSelected: _selectedRole == SignupRole.parent,
                                 onTap: () {
-                                  setState(() => _selectedRole = SignupRole.parent);
+                                  setState(
+                                    () => _selectedRole = SignupRole.parent,
+                                  );
                                 },
                               ),
                               const SizedBox(width: 10),
@@ -450,10 +478,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 }
 
 class _ProfilePhotoPlaceholder extends StatelessWidget {
-  const _ProfilePhotoPlaceholder({
-    required this.onTap,
-    this.imageBytes,
-  });
+  const _ProfilePhotoPlaceholder({required this.onTap, this.imageBytes});
 
   final VoidCallback onTap;
   final Uint8List? imageBytes;
@@ -473,21 +498,13 @@ class _ProfilePhotoPlaceholder extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.cyan.withValues(alpha: 0.05),
-              border: Border.all(
-                color: AppColors.cyan,
-                width: 2,
-              ),
+              border: Border.all(color: AppColors.cyan, width: 2),
             ),
             child: Stack(
               fit: StackFit.expand,
               children: [
                 if (hasImage)
-                  ClipOval(
-                    child: Image.memory(
-                      imageBytes!,
-                      fit: BoxFit.cover,
-                    ),
-                  )
+                  ClipOval(child: Image.memory(imageBytes!, fit: BoxFit.cover))
                 else
                   const Icon(
                     Icons.camera_alt_outlined,
@@ -502,10 +519,7 @@ class _ProfilePhotoPlaceholder extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.darkBlue,
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.cyan,
-                        width: 1.2,
-                      ),
+                      border: Border.all(color: AppColors.cyan, width: 1.2),
                     ),
                     child: Icon(
                       hasImage ? Icons.edit_rounded : Icons.add_rounded,

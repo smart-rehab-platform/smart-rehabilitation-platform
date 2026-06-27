@@ -14,10 +14,7 @@ class AuthRepository {
   }) async {
     final response = await _dio.post(
       '/auth/login',
-      data: {
-        'email': email,
-        'password': password,
-      },
+      data: {'email': email, 'password': password},
     );
 
     return _parseAuthResponse(response.data);
@@ -43,6 +40,46 @@ class AuthRepository {
 
     final response = await _dio.post('/auth/register', data: payload);
     return _parseAuthResponse(response.data);
+  }
+
+  Future<String> forgotPassword({required String email}) async {
+    final response = await _dio.post(
+      '/auth/forgot-password',
+      data: {'email': email},
+    );
+
+    return _parseMessage(
+      response.data,
+      fallbackMessage:
+          'If an account with that email exists, a password reset link has been sent.',
+    );
+  }
+
+  Future<String> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    final response = await _dio.post(
+      '/auth/reset-password',
+      data: {'token': token, 'newPassword': newPassword},
+    );
+
+    return _parseMessage(
+      response.data,
+      fallbackMessage: 'Password reset successfully.',
+    );
+  }
+
+  Future<String> verifyEmail({required String token}) async {
+    final response = await _dio.get(
+      '/auth/verify-email',
+      queryParameters: {'token': token},
+    );
+
+    return _parseMessage(
+      response.data,
+      fallbackMessage: 'Your email has been verified successfully.',
+    );
   }
 
   Future<AuthUser?> getMe() async {
@@ -93,5 +130,19 @@ class AuthRepository {
 
   Map<String, dynamic>? _normalizeMap(dynamic data) {
     return AuthUser.normalizeMap(data);
+  }
+
+  String _parseMessage(dynamic data, {required String fallbackMessage}) {
+    final map = _normalizeMap(data);
+    if (map == null) {
+      return fallbackMessage;
+    }
+
+    final message = AuthResponse.fromMap(map).message;
+    if (message == null || message.isEmpty) {
+      return fallbackMessage;
+    }
+
+    return message;
   }
 }

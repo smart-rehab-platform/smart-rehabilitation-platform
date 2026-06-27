@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const usersRoutes = require("./modules/users/users.routes");
 const authRoutes = require("./modules/auth/auth.routes");
 const patientsRoutes = require("./modules/patients/patients.routes");
@@ -30,7 +31,7 @@ const aiReportsRoutes = require("./modules/aiReports/aiReports.routes");
 
 const app = express();
 
-
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
@@ -61,12 +62,10 @@ app.use("/api/v1", specialistsRoutes);
 app.use("/api/v1", parentsRoutes);
 
 app.use("/api/v1/ai/recommendations", aiRecommendationsRoutes);
-app.use("/api/v1/speech-analyses", speechAnalysesRoutes);module.exports = app;
-
-
+app.use("/api/v1/speech-analyses", speechAnalysesRoutes);
 app.use("/api/v1", dashboardRoutes);
 app.use("/api/v1/uploads", uploadsRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/v1", aiReportsRoutes);
-module.exports = app;
 
+module.exports = app;

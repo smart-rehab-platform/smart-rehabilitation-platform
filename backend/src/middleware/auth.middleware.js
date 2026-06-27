@@ -27,7 +27,16 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    req.user = result.rows[0];
+    const user = result.rows[0];
+
+    if (!user.is_active) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been disabled."
+      });
+    }
+
+    req.user = user;
     next();
   } catch (err) {
     return res.status(401).json({
