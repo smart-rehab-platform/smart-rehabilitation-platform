@@ -15,8 +15,14 @@ import {
 import { AuthInput } from "../../components/auth/AuthInput";
 import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { RoleCard } from "../../components/auth/RoleCard";
+import { PasswordStrength } from "../../components/auth/PasswordStrength";
 import { Toast } from "../../components/auth/Toast";
 import { C } from "../../components/auth/tokens";
+import {
+  getPasswordStrength,
+  readAuthApiMessage,
+  strongPasswordMessage,
+} from "../../components/auth/authHelpers";
 import api from "../../services/api";
 
 export default function Signup() {
@@ -38,7 +44,8 @@ export default function Signup() {
   const [toastVariant, setToastVariant] = useState("success");
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const pwValid = password.length >= 8;
+  const passwordStrength = getPasswordStrength(password);
+  const pwValid = passwordStrength.isStrong;
   const cfValid = confirm === password && confirm.length > 0;
 
   const emailState = email ? (emailValid ? "success" : "error") : "idle";
@@ -86,7 +93,35 @@ export default function Signup() {
   };
 
   const handleSubmit = async () => {
-    if (!emailValid || !pwValid || !cfValid || !role) return;
+    if (!name.trim()) {
+      showToast("Please enter your full name", "error");
+      return;
+    }
+
+    if (!emailValid) {
+      showToast("Invalid email address", "error");
+      return;
+    }
+
+    if (!phone.trim()) {
+      showToast("Please enter your phone number", "error");
+      return;
+    }
+
+    if (!pwValid) {
+      showToast(strongPasswordMessage, "error");
+      return;
+    }
+
+    if (!cfValid) {
+      showToast("Passwords do not match.", "error");
+      return;
+    }
+
+    if (!role) {
+      showToast("Please select your role", "error");
+      return;
+    }
 
     setLoading(true);
 
@@ -113,10 +148,13 @@ export default function Signup() {
         profile_image_url: profileImageUrl,
       });
 
-      showToast("Account created successfully", "success");
+      showToast(
+        "Account created successfully. Please verify your email before signing in.",
+        "success"
+      );
       setTimeout(() => navigate("/login"), 1500);
     } catch (error) {
-      const message = error.response?.data?.message || "Registration failed";
+      const message = readAuthApiMessage(error, "Registration failed");
       showToast(message, "error");
     } finally {
       setLoading(false);
@@ -199,7 +237,7 @@ export default function Signup() {
           value={password}
           onChange={setPassword}
           state={pwState}
-          message={pwState === "error" ? "Password must be at least 8 characters" : ""}
+          message={pwState === "error" ? strongPasswordMessage : ""}
           rightSlot={
             <button
               type="button"
@@ -211,6 +249,7 @@ export default function Signup() {
             </button>
           }
         />
+        <PasswordStrength password={password} />
         <AuthInput
           label="Confirm Password"
           icon={<Lock size={16} />}
@@ -219,7 +258,7 @@ export default function Signup() {
           value={confirm}
           onChange={setConfirm}
           state={cfState}
-          message={cfState === "error" ? "Passwords do not match" : ""}
+          message={cfState === "error" ? "Passwords do not match." : ""}
           rightSlot={
             <button
               type="button"

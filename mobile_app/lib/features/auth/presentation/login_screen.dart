@@ -43,24 +43,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
+      showAuthSnackBar(
+        context,
+        'Please enter email and password',
+        type: AuthSnackBarType.error,
       );
       return;
     }
 
-    final success = await ref.read(authProvider.notifier).login(
-      email: email,
-      password: password,
-    );
+    final success = await ref
+        .read(authProvider.notifier)
+        .login(email: email, password: password);
 
     if (!mounted) {
       return;
     }
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login successful')),
+      showAuthSnackBar(
+        context,
+        'Login successful',
+        type: AuthSnackBarType.success,
       );
 
       final role = ref.read(authProvider).user?.role;
@@ -79,11 +82,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     final errorMessage =
-        ref.read(authProvider).errorMessage ?? 'Login failed. Please try again.';
+        ref.read(authProvider).errorMessage ??
+        'Login failed. Please try again.';
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(errorMessage)),
-    );
+    showAuthSnackBar(context, errorMessage, type: AuthSnackBarType.error);
   }
 
   @override
@@ -100,7 +102,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               return SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight - 34),
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight - 34,
+                  ),
                   child: Column(
                     children: [
                       Row(
@@ -142,7 +146,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 style: GoogleFonts.inter(
                                   fontSize: 12.5,
                                   height: 1.5,
-                                  color: AppColors.lightBlue.withValues(alpha: 0.7),
+                                  color: AppColors.lightBlue.withValues(
+                                    alpha: 0.7,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 18),
@@ -160,7 +166,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     : (_isEmailValid
                                           ? AuthFieldState.success
                                           : AuthFieldState.error),
-                                message: _emailController.text.isEmpty || _isEmailValid
+                                message:
+                                    _emailController.text.isEmpty ||
+                                        _isEmailValid
                                     ? null
                                     : 'Invalid email address',
                               ),
@@ -175,14 +183,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 obscureText: !_showPassword,
                                 suffix: IconButton(
                                   onPressed: () {
-                                    setState(() => _showPassword = !_showPassword);
+                                    setState(
+                                      () => _showPassword = !_showPassword,
+                                    );
                                   },
                                   icon: Icon(
                                     _showPassword
                                         ? Icons.visibility_off_outlined
                                         : Icons.visibility_outlined,
                                     size: 17,
-                                    color: AppColors.lightBlue.withValues(alpha: 0.58),
+                                    color: AppColors.lightBlue.withValues(
+                                      alpha: 0.58,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -192,20 +204,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   InkWell(
                                     borderRadius: BorderRadius.circular(8),
                                     onTap: () {
-                                      setState(() => _rememberMe = !_rememberMe);
+                                      setState(
+                                        () => _rememberMe = !_rememberMe,
+                                      );
                                     },
                                     child: Row(
                                       children: [
                                         AnimatedContainer(
-                                          duration: const Duration(milliseconds: 160),
+                                          duration: const Duration(
+                                            milliseconds: 160,
+                                          ),
                                           width: 16,
                                           height: 16,
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(5),
+                                            borderRadius: BorderRadius.circular(
+                                              5,
+                                            ),
                                             border: Border.all(
                                               color: _rememberMe
                                                   ? AppColors.cyan
-                                                  : AppColors.lightBlue.withValues(alpha: 0.35),
+                                                  : AppColors.lightBlue
+                                                        .withValues(
+                                                          alpha: 0.35,
+                                                        ),
                                             ),
                                             color: _rememberMe
                                                 ? AppColors.cyan
@@ -232,12 +253,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   ),
                                   const Spacer(),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () =>
+                                        context.go(AppRoutes.forgotPassword),
                                     style: TextButton.styleFrom(
                                       foregroundColor: AppColors.cyan,
                                       padding: EdgeInsets.zero,
                                       minimumSize: Size.zero,
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     child: Text(
                                       'Forgot Password?',
@@ -251,7 +274,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               const SizedBox(height: 18),
                               AuthGradientButton(
-                                label: authState.isLoading ? 'Signing In...' : 'Sign In',
+                                label: authState.isLoading
+                                    ? 'Signing In...'
+                                    : 'Sign In',
                                 trailingIcon: Icons.chevron_right_rounded,
                                 isLoading: authState.isLoading,
                                 onPressed: authState.isLoading ? null : _login,
@@ -268,7 +293,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     WidgetSpan(
                                       alignment: PlaceholderAlignment.middle,
                                       child: GestureDetector(
-                                        onTap: () => context.go(AppRoutes.signup),
+                                        onTap: () =>
+                                            context.go(AppRoutes.signup),
                                         child: Text(
                                           'Create Account',
                                           style: GoogleFonts.inter(

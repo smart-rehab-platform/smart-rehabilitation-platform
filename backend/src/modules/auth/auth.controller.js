@@ -1,19 +1,39 @@
-const { registerSchema, loginSchema } = require("./auth.validation");
+const {
+  registerSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  sendVerificationSchema,
+  verifyEmailSchema
+} = require("./auth.validation");
 const authService = require("./auth.service");
 const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
 
+const validateRequest = (schema, payload, res) => {
+  const { error, value } = schema.validate(payload, {
+    abortEarly: true,
+    stripUnknown: true
+  });
+
+  if (error) {
+    res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+    return null;
+  }
+
+  return value;
+};
+
 const register = async (req, res) => {
   try {
-    const { error } = registerSchema.validate(req.body);
-
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message
-      });
+    const validatedBody = validateRequest(registerSchema, req.body, res);
+    if (!validatedBody) {
+      return;
     }
 
-    const user = await authService.registerUser(req.body);
+    const user = await authService.registerUser(validatedBody);
 
     await notifyAllAdmins({
       title: "New user registered",
@@ -37,18 +57,14 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { error } = loginSchema.validate(req.body);
-
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message
-      });
+    const validatedBody = validateRequest(loginSchema, req.body, res);
+    if (!validatedBody) {
+      return;
     }
 
     const result = await authService.loginUser(
-      req.body.email,
-      req.body.password
+      validatedBody.email,
+      validatedBody.password
     );
 
     return res.status(200).json({
@@ -57,7 +73,94 @@ const login = async (req, res) => {
       data: result
     });
   } catch (err) {
-    return res.status(401).json({
+    return res.status(err.statusCode || 401).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+const forgotPassword = async (req, res) => {
+  try {
+    const validatedBody = validateRequest(forgotPasswordSchema, req.body, res);
+    if (!validatedBody) {
+      return;
+    }
+
+    const message = await authService.forgotPassword(validatedBody.email);
+
+    return res.status(200).json({
+      success: true,
+      message
+    });
+  } catch (err) {
+    return res.status(err.statusCode || 400).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const validatedBody = validateRequest(resetPasswordSchema, req.body, res);
+    if (!validatedBody) {
+      return;
+    }
+
+    const message = await authService.resetPassword(
+      validatedBody.token,
+      validatedBody.newPassword
+    );
+
+    return res.status(200).json({
+      success: true,
+      message
+    });
+  } catch (err) {
+    return res.status(err.statusCode || 400).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+const sendVerification = async (req, res) => {
+  try {
+    const validatedBody = validateRequest(sendVerificationSchema, req.body, res);
+    if (!validatedBody) {
+      return;
+    }
+
+    const message = await authService.sendVerification(validatedBody.email);
+
+    return res.status(200).json({
+      success: true,
+      message
+    });
+  } catch (err) {
+    return res.status(err.statusCode || 400).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+const verifyEmail = async (req, res) => {
+  try {
+    const validatedQuery = validateRequest(verifyEmailSchema, req.query, res);
+    if (!validatedQuery) {
+      return;
+    }
+
+    const message = await authService.verifyEmail(validatedQuery.token);
+
+    return res.status(200).json({
+      success: true,
+      message
+    });
+  } catch (err) {
+    return res.status(err.statusCode || 400).json({
       success: false,
       message: err.message
     });
@@ -82,6 +185,10 @@ const adminOnly = async (req, res) => {
 module.exports = {
   register,
   login,
+  forgotPassword,
+  resetPassword,
+  sendVerification,
+  verifyEmail,
   me,
   adminOnly
 };

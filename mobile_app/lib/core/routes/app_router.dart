@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
+import '../../features/auth/presentation/verify_email_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/dashboard/presentation/admin/admin_screens.dart';
 import '../../features/dashboard/presentation/admin/admin_users_screen.dart';
@@ -41,7 +44,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      final isAuthRoute = path == AppRoutes.login || path == AppRoutes.signup;
+      final isAuthRoute = path == AppRoutes.login ||
+          path == AppRoutes.signup ||
+          path == AppRoutes.forgotPassword ||
+          path == AppRoutes.resetPassword ||
+          path == AppRoutes.verifyEmail;
 
       if (!auth.isAuthenticated) {
         if (RoleRouting.isProtectedDashboardRoute(path)) {
@@ -91,6 +98,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.signup,
         name: 'signup',
         builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        name: 'forgotPassword',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.resetPassword,
+        name: 'resetPassword',
+        builder: (context, state) => ResetPasswordScreen(
+          initialToken: state.uri.queryParameters['token'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.verifyEmail,
+        name: 'verifyEmail',
+        builder: (context, state) => VerifyEmailScreen(
+          initialToken: state.uri.queryParameters['token'],
+        ),
       ),
       GoRoute(
         path: AppRoutes.dashboard,

@@ -39,7 +39,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final authUser = ref.watch(authProvider).user;
     final profileImageUrl = authUser?.profileImageUrl;
     final theme = Theme.of(context);
-    final adminDisplayName = authUser?.fullName?.trim();
+    final adminDisplayName = authUser?.fullName.trim();
     final userDisplayName = (adminDisplayName != null && adminDisplayName.isNotEmpty)
         ? adminDisplayName
         : state.userName?.trim();

@@ -14,6 +14,7 @@ import { AuthInput } from "../../components/auth/AuthInput";
 import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { Toast } from "../../components/auth/Toast";
 import { C, G } from "../../components/auth/tokens";
+import { readAuthApiMessage } from "../../components/auth/authHelpers";
 import api from "../../services/api";
 
 export default function Login() {
@@ -66,7 +67,7 @@ export default function Login() {
       showToast("Signed in successfully! Redirecting...", "success");
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (error) {
-      const message = error.response?.data?.message || "Invalid email or password";
+      const message = readAuthApiMessage(error, "Invalid email or password");
       showToast(message, "error");
     } finally {
       setLoading(false);
@@ -137,7 +138,11 @@ export default function Login() {
               Remember Me
             </span>
           </label>
-          <button className="text-xs font-medium transition-colors hover:text-white" style={{ color: C.primary }}>
+          <button
+            onClick={() => navigate("/forgot-password")}
+            className="text-xs font-medium transition-colors hover:text-white"
+            style={{ color: C.primary }}
+          >
             Forgot Password?
           </button>
         </div>
