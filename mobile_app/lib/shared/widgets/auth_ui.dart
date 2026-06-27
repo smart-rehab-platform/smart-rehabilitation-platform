@@ -4,8 +4,75 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../features/auth/utils/password_strength.dart';
 
 enum AuthFieldState { idle, success, error }
+
+enum AuthSnackBarType { info, success, error }
+
+void showAuthSnackBar(
+  BuildContext context,
+  String message, {
+  AuthSnackBarType type = AuthSnackBarType.info,
+}) {
+  final backgroundColor = switch (type) {
+    AuthSnackBarType.success => AppColors.success,
+    AuthSnackBarType.error => AppColors.danger,
+    AuthSnackBarType.info => AppColors.darkBlue,
+  };
+  final icon = switch (type) {
+    AuthSnackBarType.success => Icons.check_circle_rounded,
+    AuthSnackBarType.error => Icons.error_rounded,
+    AuthSnackBarType.info => Icons.info_rounded,
+  };
+  final foregroundColor = type == AuthSnackBarType.info
+      ? AppColors.lightBlue
+      : AppColors.white;
+
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+        content: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: backgroundColor.withValues(alpha: 0.95),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.lightBlue.withValues(alpha: 0.16),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.28),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 18, color: foregroundColor),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  message,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: foregroundColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+}
 
 class AuthBackground extends StatelessWidget {
   const AuthBackground({
@@ -156,19 +223,13 @@ class AuthGlassCard extends StatelessWidget {
 }
 
 class AuthLogoMark extends StatelessWidget {
-  const AuthLogoMark({
-    super.key,
-    this.size = 72,
-  });
+  const AuthLogoMark({super.key, this.size = 72});
 
   final double size;
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size.square(size),
-      painter: _AuthLogoPainter(),
-    );
+    return CustomPaint(size: Size.square(size), painter: _AuthLogoPainter());
   }
 }
 
@@ -209,11 +270,7 @@ class AuthGradientHeadline extends StatelessWidget {
 }
 
 class AuthFeaturePill extends StatelessWidget {
-  const AuthFeaturePill({
-    super.key,
-    required this.icon,
-    required this.text,
-  });
+  const AuthFeaturePill({super.key, required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -225,9 +282,7 @@ class AuthFeaturePill extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.darkBlue.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: AppColors.cyan.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppColors.cyan.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -249,10 +304,7 @@ class AuthFeaturePill extends StatelessWidget {
 }
 
 class AuthBackButton extends StatelessWidget {
-  const AuthBackButton({
-    super.key,
-    required this.onPressed,
-  });
+  const AuthBackButton({super.key, required this.onPressed});
 
   final VoidCallback onPressed;
 
@@ -400,15 +452,15 @@ class AuthInputField extends StatelessWidget {
 
     final statusIcon = switch (state) {
       AuthFieldState.success => const Icon(
-          Icons.check_circle_rounded,
-          size: 16,
-          color: AppColors.success,
-        ),
+        Icons.check_circle_rounded,
+        size: 16,
+        color: AppColors.success,
+      ),
       AuthFieldState.error => const Icon(
-          Icons.error_rounded,
-          size: 16,
-          color: AppColors.danger,
-        ),
+        Icons.error_rounded,
+        size: 16,
+        color: AppColors.danger,
+      ),
       AuthFieldState.idle => null,
     };
 
@@ -572,17 +624,228 @@ class AuthGradientButton extends StatelessWidget {
                 ),
                 if (!isLoading && trailingIcon != null) ...[
                   const SizedBox(width: 6),
-                  Icon(
-                    trailingIcon,
-                    size: 16,
-                    color: AppColors.primaryNavy,
-                  ),
+                  Icon(trailingIcon, size: 16, color: AppColors.primaryNavy),
                 ],
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class AuthPasswordStrengthIndicator extends StatelessWidget {
+  const AuthPasswordStrengthIndicator({super.key, required this.password});
+
+  final String password;
+
+  @override
+  Widget build(BuildContext context) {
+    if (password.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final result = evaluateAuthPasswordStrength(password);
+    final strengthColor = switch (result.level) {
+      AuthPasswordStrengthLevel.weak => AppColors.danger,
+      AuthPasswordStrengthLevel.medium => Colors.orangeAccent,
+      AuthPasswordStrengthLevel.strong => AppColors.success,
+    };
+    final strengthLabel = switch (result.level) {
+      AuthPasswordStrengthLevel.weak => 'Weak',
+      AuthPasswordStrengthLevel.medium => 'Medium',
+      AuthPasswordStrengthLevel.strong => 'Strong',
+    };
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.authInputBackground.withValues(alpha: 0.82),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: strengthColor.withValues(alpha: 0.28)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Password strength',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.lightBlue,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                strengthLabel,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: strengthColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: List.generate(3, (index) {
+              final isActive =
+                  index <
+                  switch (result.level) {
+                    AuthPasswordStrengthLevel.weak => 1,
+                    AuthPasswordStrengthLevel.medium => 2,
+                    AuthPasswordStrengthLevel.strong => 3,
+                  };
+              return Expanded(
+                child: Container(
+                  height: 6,
+                  margin: EdgeInsets.only(right: index == 2 ? 0 : 6),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? strengthColor
+                        : AppColors.lightBlue.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 12),
+          for (final rule in result.rules) ...[
+            Row(
+              children: [
+                Icon(
+                  rule.isSatisfied
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_unchecked_rounded,
+                  size: 14,
+                  color: rule.isSatisfied
+                      ? AppColors.success
+                      : AppColors.lightBlue.withValues(alpha: 0.48),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    rule.label,
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: rule.isSatisfied
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: rule.isSatisfied
+                          ? AppColors.success
+                          : AppColors.lightBlue.withValues(alpha: 0.8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (rule != result.rules.last) const SizedBox(height: 7),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class AuthStatusCard extends StatelessWidget {
+  const AuthStatusCard({
+    super.key,
+    required this.title,
+    required this.message,
+    this.buttonLabel,
+    this.onPressed,
+    this.icon,
+    this.isLoading = false,
+    this.isError = false,
+  });
+
+  final String title;
+  final String message;
+  final String? buttonLabel;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+  final bool isLoading;
+  final bool isError;
+
+  @override
+  Widget build(BuildContext context) {
+    final accentColor = isError ? AppColors.danger : AppColors.success;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: accentColor.withValues(alpha: 0.12),
+              border: Border.all(
+                color: accentColor.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: accentColor.withValues(alpha: 0.16),
+                  blurRadius: 24,
+                ),
+              ],
+            ),
+            child: Center(
+              child: isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.4,
+                        color: AppColors.cyan,
+                      ),
+                    )
+                  : Icon(
+                      icon ??
+                          (isError
+                              ? Icons.error_outline_rounded
+                              : Icons.check_circle_rounded),
+                      size: 30,
+                      color: accentColor,
+                    ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 18),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.syne(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: AppColors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            height: 1.6,
+            color: AppColors.lightBlue.withValues(alpha: 0.78),
+          ),
+        ),
+        if (buttonLabel != null && onPressed != null) ...[
+          const SizedBox(height: 22),
+          AuthGradientButton(
+            label: buttonLabel!,
+            trailingIcon: Icons.chevron_right_rounded,
+            onPressed: onPressed,
+          ),
+        ],
+      ],
     );
   }
 }
@@ -702,7 +965,9 @@ class AuthRoleCard extends StatelessWidget {
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 height: 1.35,
-                                color: AppColors.lightBlue.withValues(alpha: 0.78),
+                                color: AppColors.lightBlue.withValues(
+                                  alpha: 0.78,
+                                ),
                               ),
                             ),
                           ),
@@ -722,10 +987,7 @@ class AuthRoleCard extends StatelessWidget {
 }
 
 class _RoundGlassButton extends StatelessWidget {
-  const _RoundGlassButton({
-    required this.child,
-    required this.onPressed,
-  });
+  const _RoundGlassButton({required this.child, required this.onPressed});
 
   final Widget child;
   final VoidCallback? onPressed;
@@ -738,9 +1000,7 @@ class _RoundGlassButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.darkBlue.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.lightBlue.withValues(alpha: 0.15),
-        ),
+        border: Border.all(color: AppColors.lightBlue.withValues(alpha: 0.15)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -875,7 +1135,10 @@ class _AuthLogoPainter extends CustomPainter {
       )
       ..close();
 
-    canvas.drawPath(heartPath, heartPaint..color = AppColors.cyan.withValues(alpha: 0.2));
+    canvas.drawPath(
+      heartPath,
+      heartPaint..color = AppColors.cyan.withValues(alpha: 0.2),
+    );
 
     final pulsePath = Path()
       ..moveTo(size.width * 0.24, size.height * 0.45)
@@ -886,7 +1149,12 @@ class _AuthLogoPainter extends CustomPainter {
       ..lineTo(size.width * 0.63, size.height * 0.45)
       ..lineTo(size.width * 0.76, size.height * 0.45);
 
-    canvas.drawPath(pulsePath, glowPaint..style = PaintingStyle.stroke..strokeWidth = size.width * 0.06);
+    canvas.drawPath(
+      pulsePath,
+      glowPaint
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.width * 0.06,
+    );
     canvas.drawPath(pulsePath, pulsePaint);
     canvas.drawCircle(
       Offset(size.width * 0.5, size.height * 0.79),

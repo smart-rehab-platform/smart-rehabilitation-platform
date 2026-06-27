@@ -20,7 +20,9 @@ class AuthUser {
   factory AuthUser.fromMap(Map<String, dynamic> map) {
     return AuthUser(
       id: _readString(map, const ['id', '_id', 'userId']),
-      fullName: _readString(map, const ['fullName', 'name', 'username']) ?? '',
+      fullName:
+          _readString(map, const ['fullName', 'full_name', 'name', 'username']) ??
+          '',
       email: _readString(map, const ['email', 'mail']) ?? '',
       phone: _readString(map, const ['phone', 'phoneNumber', 'mobile']),
       role: _readString(map, const ['role', 'userRole']),
@@ -28,6 +30,7 @@ class AuthUser {
         map,
         const [
           'profileImageUrl',
+          'profile_image_url',
           'profileImage',
           'profile_image',
           'avatar',
@@ -67,6 +70,7 @@ class AuthUser {
       '_id',
       'userId',
       'fullName',
+      'full_name',
       'name',
       'username',
       'email',
@@ -77,6 +81,7 @@ class AuthUser {
       'role',
       'userRole',
       'profileImageUrl',
+      'profile_image_url',
       'profileImage',
       'profile_image',
       'avatar',

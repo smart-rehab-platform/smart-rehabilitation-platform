@@ -60,10 +60,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
   final TokenStorage _tokenStorage;
 
-  Future<bool> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool> login({required String email, required String password}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
@@ -72,10 +69,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
       );
 
-      return await _handleAuthSuccess(
-        response,
-        persistToken: true,
-      );
+      return await _handleAuthSuccess(response, persistToken: true);
     } on DioException catch (error) {
       state = state.copyWith(
         isLoading: false,
@@ -85,7 +79,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (error) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Login failed: $error',
+        errorMessage: 'Unable to sign in right now. Please try again.',
       );
       return false;
     }
@@ -111,10 +105,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         profileImageUrl: profileImageUrl,
       );
 
-      return await _handleAuthSuccess(
-        response,
-        persistToken: false,
-      );
+      state = state.copyWith(isLoading: false, errorMessage: null);
+
+      return response.rawData.isNotEmpty || response.message != null;
     } on DioException catch (error) {
       state = state.copyWith(
         isLoading: false,
@@ -124,9 +117,85 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (error) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Registration failed: $error',
+        errorMessage:
+            'Unable to create your account right now. Please try again.',
       );
       return false;
+    }
+  }
+
+  Future<String?> forgotPassword({required String email}) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final message = await _repository.forgotPassword(email: email);
+      state = state.copyWith(isLoading: false, errorMessage: null);
+      return message;
+    } on DioException catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _readDioErrorMessage(error),
+      );
+      return null;
+    } catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage:
+            'Unable to send the reset link right now. Please try again.',
+      );
+      return null;
+    }
+  }
+
+  Future<String?> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final message = await _repository.resetPassword(
+        token: token,
+        newPassword: newPassword,
+      );
+      state = state.copyWith(isLoading: false, errorMessage: null);
+      return message;
+    } on DioException catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _readDioErrorMessage(error),
+      );
+      return null;
+    } catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage:
+            'Unable to reset your password right now. Please try again.',
+      );
+      return null;
+    }
+  }
+
+  Future<String?> verifyEmail({required String token}) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final message = await _repository.verifyEmail(token: token);
+      state = state.copyWith(isLoading: false, errorMessage: null);
+      return message;
+    } on DioException catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _readDioErrorMessage(error),
+      );
+      return null;
+    } catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage:
+            'Unable to verify your email right now. Please try again later.',
+      );
+      return null;
     }
   }
 
@@ -139,10 +208,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     try {
       final user = await _repository.getMe();
-      state = state.copyWith(
-        user: user,
-        isLoading: false,
-      );
+      state = state.copyWith(user: user, isLoading: false);
     } on DioException catch (error) {
       state = state.copyWith(
         isLoading: false,
@@ -151,7 +217,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (error) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Failed to load current user: $error',
+        errorMessage: 'Unable to load your account details right now.',
       );
     }
   }
@@ -174,7 +240,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (token == null || token.isEmpty) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: response.message ?? 'Authentication token was not returned.',
+        errorMessage:
+            response.message ?? 'Authentication token was not returned.',
       );
       return false;
     }
@@ -238,7 +305,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         }
       } else if (value is Map) {
         final normalized = value.map(
-          (nestedKey, nestedValue) => MapEntry(nestedKey.toString(), nestedValue),
+          (nestedKey, nestedValue) =>
+              MapEntry(nestedKey.toString(), nestedValue),
         );
         final nested = _readMapMessage(normalized, depth + 1);
         if (nested != null) {
