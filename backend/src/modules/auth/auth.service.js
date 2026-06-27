@@ -60,7 +60,8 @@ const loginUser = async (email, password) => {
       id: user.id,
       full_name: user.full_name,
       email: user.email,
-      role: user.role
+      role: user.role,
+      profile_image_url: user.profile_image_url
     }
   };
 };

@@ -1,5 +1,6 @@
 const { registerSchema, loginSchema } = require("./auth.validation");
 const authService = require("./auth.service");
+const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
 
 const register = async (req, res) => {
   try {
@@ -13,6 +14,13 @@ const register = async (req, res) => {
     }
 
     const user = await authService.registerUser(req.body);
+
+    await notifyAllAdmins({
+      title: "New user registered",
+      body: `${user.full_name} registered as ${user.role}.`,
+      related_entity_type: "user",
+      related_entity_id: user.id,
+    });
 
     return res.status(201).json({
       success: true,

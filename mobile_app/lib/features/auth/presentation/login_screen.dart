@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../core/routes/role_routing.dart';
 import '../../../shared/widgets/auth_ui.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -62,7 +63,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const SnackBar(content: Text('Login successful')),
       );
 
-      context.go(AppRoutes.dashboard);
+      final role = ref.read(authProvider).user?.role;
+      final destination = RoleRouting.dashboardForRole(role);
+      if (destination != null) {
+        context.go(destination);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unable to determine your account role. Please contact support.'),
+          ),
+        );
+        context.go(AppRoutes.login);
+      }
       return;
     }
 

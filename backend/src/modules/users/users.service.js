@@ -1,4 +1,5 @@
 const pool = require("../../database/db");
+const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
 
 const getAllUsers = async () => {
   const result = await pool.query(`
@@ -47,7 +48,19 @@ const updateUserStatus = async (id, isActive) => {
     [isActive, id]
   );
 
-  return result.rows[0];
+  if (!result.rows[0]) {
+    return null;
+  }
+
+  const user = result.rows[0];
+  await notifyAllAdmins({
+    title: isActive ? "User activated" : "User deactivated",
+    body: `${user.full_name} was ${isActive ? "activated" : "deactivated"}.`,
+    related_entity_type: "user",
+    related_entity_id: user.id,
+  });
+
+  return user;
 };
 
 const updateMyProfile = async (userId, data) => {
@@ -85,12 +98,26 @@ const updateUserById = async (id, data) => {
   return result.rows[0];
 };
 const deleteUserById = async (id) => {
+  const existing = await getUserById(id);
+  if (!existing) {
+    return null;
+  }
+
   const result = await pool.query(
     `DELETE FROM users
      WHERE id = $1
      RETURNING id, full_name, email`,
     [id]
   );
+
+  if (result.rows[0]) {
+    await notifyAllAdmins({
+      title: "User deleted",
+      body: `${existing.full_name} was deleted from the system.`,
+      related_entity_type: "user",
+      related_entity_id: existing.id,
+    });
+  }
 
   return result.rows[0];
 };
@@ -105,6 +132,7 @@ const updateProfileImage = async (
      RETURNING id,
                full_name,
                email,
+               role,
                profile_image_url`,
     [imageUrl, userId]
   );

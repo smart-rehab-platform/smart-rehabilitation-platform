@@ -1,4 +1,5 @@
 const pool = require("../../database/db");
+const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
 
 const createReport = async (data) => {
   const { patient_id, generated_by, report_type, title, summary, pdf_url } = data;
@@ -11,7 +12,21 @@ const createReport = async (data) => {
     [patient_id, generated_by, report_type, title, summary, pdf_url]
   );
 
-  return result.rows[0];
+  const report = result.rows[0];
+
+  const patientResult = await pool.query(
+    "SELECT full_name FROM patients WHERE id = $1",
+    [patient_id]
+  );
+
+  await notifyAllAdmins({
+    title: "Report generated",
+    body: `Report "${title}" was generated for patient ${patientResult.rows[0]?.full_name ?? "patient"}.`,
+    related_entity_type: "report",
+    related_entity_id: report.id,
+  });
+
+  return report;
 };
 
 const getAllReports = async () => {

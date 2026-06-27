@@ -1,4 +1,5 @@
 const pool = require("../../database/db");
+const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
 
 const createHistory = async (patientId, userId, eventType, description) => {
   await pool.query(
@@ -19,6 +20,13 @@ const createPatient = async (data, userId) => {
   );
 
   await createHistory(result.rows[0].id, userId, "patient_created", "Patient file created");
+
+  await notifyAllAdmins({
+    title: "Patient created",
+    body: `${result.rows[0].full_name} was added to the system.`,
+    related_entity_type: "patient",
+    related_entity_id: result.rows[0].id,
+  });
 
   return result.rows[0];
 };
@@ -217,6 +225,22 @@ const addGuardian = async (patientId, data, userId) => {
 
   await createHistory(patientId, userId, "guardian_added", "Guardian linked to patient");
 
+  const patientResult = await pool.query(
+    "SELECT full_name FROM patients WHERE id = $1",
+    [patientId]
+  );
+  const parentResult = await pool.query(
+    "SELECT full_name FROM users WHERE id = $1",
+    [parent_id]
+  );
+
+  await notifyAllAdmins({
+    title: "Parent linked",
+    body: `${parentResult.rows[0]?.full_name ?? "Parent"} was linked to patient ${patientResult.rows[0]?.full_name ?? "patient"}.`,
+    related_entity_type: "patient",
+    related_entity_id: patientId,
+  });
+
   return result.rows[0];
 };
 
@@ -260,6 +284,22 @@ const addSpecialist = async (patientId, data, userId) => {
   );
 
   await createHistory(patientId, userId, "specialist_added", "Specialist linked to patient");
+
+  const patientResult = await pool.query(
+    "SELECT full_name FROM patients WHERE id = $1",
+    [patientId]
+  );
+  const specialistResult = await pool.query(
+    "SELECT full_name FROM users WHERE id = $1",
+    [specialist_id]
+  );
+
+  await notifyAllAdmins({
+    title: "Specialist assigned",
+    body: `${specialistResult.rows[0]?.full_name ?? "Specialist"} was assigned to patient ${patientResult.rows[0]?.full_name ?? "patient"}.`,
+    related_entity_type: "patient",
+    related_entity_id: patientId,
+  });
 
   return result.rows[0];
 };
