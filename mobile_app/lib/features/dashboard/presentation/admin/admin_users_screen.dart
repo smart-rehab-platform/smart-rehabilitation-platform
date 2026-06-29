@@ -8,6 +8,7 @@ import '../../data/admin_users_repository.dart';
 import '../../providers/admin_dashboard_provider.dart';
 import '../../providers/admin_users_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
+import '../../../presence/widgets/online_status_dot.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
@@ -345,16 +346,26 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            CircleAvatar(
-                                              backgroundColor: adminRoleColor(user.role)
-                                                  .withValues(alpha: 0.15),
-                                              child: Text(
-                                                dashboardAvatarLetter(user.name),
-                                                style: TextStyle(
-                                                  color: adminRoleColor(user.role),
-                                                  fontWeight: FontWeight.w700,
+                                            Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                CircleAvatar(
+                                                  backgroundColor: adminRoleColor(user.role)
+                                                      .withValues(alpha: 0.15),
+                                                  child: Text(
+                                                    dashboardAvatarLetter(user.name),
+                                                    style: TextStyle(
+                                                      color: adminRoleColor(user.role),
+                                                      fontWeight: FontWeight.w700,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                                Positioned(
+                                                  right: -2,
+                                                  bottom: -2,
+                                                  child: OnlineStatusDot(userId: user.id),
+                                                ),
+                                              ],
                                             ),
                                             SizedBox(width: context.dashSpacing * 0.65),
                                             Expanded(
@@ -381,6 +392,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                                           : DashboardColors.textMuted,
                                                     ),
                                                   ),
+                                                  PresenceStatusLabel(userId: user.id),
                                                 ],
                                               ),
                                             ),

@@ -19,7 +19,8 @@ const getResetPasswordBaseUrl = () =>
   process.env.RESET_PASSWORD_URL || `${getFrontendBaseUrl()}/reset-password`;
 
 const getVerifyEmailBaseUrl = () =>
-  process.env.VERIFY_EMAIL_URL || `${getFrontendBaseUrl()}/verify-email`;
+  process.env.VERIFY_EMAIL_URL ||
+  `${getApiBaseUrl()}/auth/verify-email`;
 
 const buildPasswordResetLink = (token) =>
   `${getResetPasswordBaseUrl()}?token=${encodeURIComponent(token)}`;

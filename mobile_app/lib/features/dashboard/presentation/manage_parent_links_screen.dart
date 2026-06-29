@@ -9,6 +9,8 @@ import '../providers/parent_links_provider.dart';
 import '../widgets/dashboard_layout.dart';
 import '../widgets/dashboard_surface_card.dart';
 import '../widgets/parent_dashboard_cards.dart';
+import '../../presence/providers/presence_provider.dart';
+import '../../presence/widgets/online_status_dot.dart';
 
 class ManageParentLinksScreen extends ConsumerStatefulWidget {
   const ManageParentLinksScreen({super.key});
@@ -24,6 +26,7 @@ class _ManageParentLinksScreenState extends ConsumerState<ManageParentLinksScree
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(parentLinksProvider.notifier).initialize();
+      ref.read(presenceProvider.notifier).refreshFromApi();
     });
   }
 
@@ -120,6 +123,7 @@ class _ManageParentLinksScreenState extends ConsumerState<ManageParentLinksScree
                                   item.email != null && item.email!.isNotEmpty
                                       ? '${item.name} (${item.email})'
                                       : item.name,
+                              presenceUserId: (item) => item.userId,
                               onChanged: (item) => ref
                                   .read(parentLinksProvider.notifier)
                                   .selectParent(item?.userId),
@@ -209,19 +213,32 @@ class _ManageParentLinksScreenState extends ConsumerState<ManageParentLinksScree
                             child: DashboardSurfaceCard(
                               child: Row(
                                 children: [
-                                  CircleAvatar(
-                                    backgroundColor:
-                                        DashboardColors.purpleSoft,
-                                    child: Text(
-                                      dashboardAvatarLetter(
-                                        guardian.parentName,
-                                        fallback: 'P',
+                                  Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor:
+                                            DashboardColors.purpleSoft,
+                                        child: Text(
+                                          dashboardAvatarLetter(
+                                            guardian.parentName,
+                                            fallback: 'P',
+                                          ),
+                                          style: TextStyle(
+                                            color: DashboardColors.primary,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
                                       ),
-                                      style: TextStyle(
-                                        color: DashboardColors.primary,
-                                        fontWeight: FontWeight.w700,
+                                      Positioned(
+                                        right: -1,
+                                        bottom: -1,
+                                        child: OnlineStatusDot(
+                                          userId: guardian.parentId,
+                                          size: 9,
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                   SizedBox(width: context.dashSpacing * 0.65),
                                   Expanded(
@@ -229,12 +246,21 @@ class _ManageParentLinksScreenState extends ConsumerState<ManageParentLinksScree
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          guardian.parentName,
-                                          style: theme.textTheme.bodyMedium
-                                              ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                guardian.parentName,
+                                                style: theme.textTheme.bodyMedium
+                                                    ?.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                            PresenceStatusLabel(
+                                              userId: guardian.parentId,
+                                            ),
+                                          ],
                                         ),
                                         Text(
                                           '${_formatRelationship(guardian.relationship)}'
@@ -276,7 +302,7 @@ String _formatRelationship(String relationship) {
   return '${relationship[0].toUpperCase()}${relationship.substring(1)}';
 }
 
-class _DropdownField<T> extends StatelessWidget {
+class _DropdownField<T> extends ConsumerWidget {
   const _DropdownField({
     required this.label,
     required this.value,
@@ -284,6 +310,7 @@ class _DropdownField<T> extends StatelessWidget {
     required this.itemLabel,
     required this.onChanged,
     required this.emptyHint,
+    this.presenceUserId,
   });
 
   final String label;
@@ -292,9 +319,10 @@ class _DropdownField<T> extends StatelessWidget {
   final String Function(T item) itemLabel;
   final ValueChanged<T?> onChanged;
   final String emptyHint;
+  final String Function(T item)? presenceUserId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     if (items.isEmpty) {
@@ -334,7 +362,15 @@ class _DropdownField<T> extends StatelessWidget {
           .map(
             (item) => DropdownMenuItem<T>(
               value: item,
-              child: Text(itemLabel(item)),
+              child: presenceUserId == null
+                  ? Text(itemLabel(item))
+                  : Row(
+                      children: [
+                        OnlineStatusDot(userId: presenceUserId!(item)),
+                        SizedBox(width: context.dashSpacing * 0.35),
+                        Expanded(child: Text(itemLabel(item))),
+                      ],
+                    ),
             ),
           )
           .toList(),

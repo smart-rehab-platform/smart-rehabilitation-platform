@@ -14,6 +14,7 @@ import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import '../../../presence/widgets/online_status_dot.dart';
 
 class AdminProfileScreen extends ConsumerStatefulWidget {
   const AdminProfileScreen({super.key});
@@ -113,6 +114,16 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
               _ProfileRow(label: 'Full Name', value: user?.fullName ?? '—'),
               _ProfileRow(label: 'Email', value: user?.email ?? '—'),
               _ProfileRow(label: 'Role', value: user?.role ?? 'admin'),
+              if (user?.id != null) ...[
+                SizedBox(height: context.dashSpacing * 0.35),
+                Row(
+                  children: [
+                    OnlineStatusDot(userId: user!.id!),
+                    SizedBox(width: context.dashSpacing * 0.35),
+                    PresenceStatusLabel(userId: user.id!),
+                  ],
+                ),
+              ],
               SizedBox(height: context.dashSpacing),
               ElevatedButton(
                 onPressed: () => AdminNavigation.logout(context, ref),

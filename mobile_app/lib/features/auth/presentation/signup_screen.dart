@@ -203,12 +203,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     }
 
     if (success) {
-      showAuthSnackBar(
-        context,
-        'Account created successfully. Please verify your email before signing in.',
-        type: AuthSnackBarType.success,
+      context.go(
+        '${AppRoutes.verifyEmail}?email=${Uri.encodeComponent(email)}',
       );
-      context.go(AppRoutes.login);
       return;
     }
 
@@ -224,6 +221,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
     return Scaffold(
       body: AuthBackground(
+        showBackgroundVideo: true,
+        bottomFade: false,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),

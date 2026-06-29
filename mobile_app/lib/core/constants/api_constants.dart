@@ -1,8 +1,8 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'http://localhost:5000/api/v1';
-  static const String serverOrigin = 'http://localhost:5000';
+static const String serverOrigin = 'http://127.0.0.1:5000';
+static const String baseUrl = 'http://127.0.0.1:5000/api/v1';
 
   static String? resolveMediaUrl(String? path) {
     if (path == null || path.trim().isEmpty) {

@@ -37,7 +37,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     refreshListenable: refreshNotifier,
     redirect: (context, state) {
       final auth = ref.read(authProvider);
+      final uri = state.uri;
       final path = state.matchedLocation;
+
+      if (uri.scheme == 'smartrehab' && uri.host == 'verify-email') {
+        final token = uri.queryParameters['token'];
+        if (token != null && token.trim().isNotEmpty) {
+          return '${AppRoutes.verifyEmail}?token=${Uri.encodeComponent(token.trim())}';
+        }
+
+        final email = uri.queryParameters['email'];
+        if (email != null && email.trim().isNotEmpty) {
+          return '${AppRoutes.verifyEmail}?email=${Uri.encodeComponent(email.trim())}';
+        }
+
+        return AppRoutes.verifyEmail;
+      }
+
       final role = auth.user?.role;
 
       if (auth.isInitializing) {
@@ -116,6 +132,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'verifyEmail',
         builder: (context, state) => VerifyEmailScreen(
           initialToken: state.uri.queryParameters['token'],
+          email: state.uri.queryParameters['email'],
         ),
       ),
       GoRoute(

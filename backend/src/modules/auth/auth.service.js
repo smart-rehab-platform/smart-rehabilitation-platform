@@ -114,7 +114,12 @@ const registerUser = async (data) => {
   );
 
   const user = result.rows[0];
-  await sendVerificationEmailForUser(user);
+  sendVerificationEmailForUser(user).catch((error) => {
+    console.error(
+      "[auth.email] Background verification email failed:",
+      error.message
+    );
+  });
 
   return user;
 };

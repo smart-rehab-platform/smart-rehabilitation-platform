@@ -69,8 +69,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> restoreSession() async {
     try {
+      final rememberMe = await _tokenStorage.getRememberMe();
       final token = await _tokenStorage.getToken();
-      if (token == null || token.isEmpty) {
+
+      if (!rememberMe || token == null || token.isEmpty) {
+        if (!rememberMe) {
+          await _tokenStorage.clearToken();
+        }
         state = state.copyWith(isInitializing: false);
         return;
       }
@@ -96,7 +101,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> login({required String email, required String password}) async {
+  Future<bool> login({
+    required String email,
+    required String password,
+    bool rememberMe = false,
+  }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
@@ -105,7 +114,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
       );
 
-      return await _handleAuthSuccess(response, persistToken: true);
+      final success = await _handleAuthSuccess(
+        response,
+        persistToken: rememberMe,
+      );
+
+      if (success) {
+        await _tokenStorage.saveRememberMe(rememberMe);
+        if (rememberMe) {
+          await _tokenStorage.saveEmail(email.trim());
+        } else {
+          await _tokenStorage.clearToken();
+          await _tokenStorage.clearSavedEmail();
+        }
+      }
+
+      return success;
     } on DioException catch (error) {
       state = state.copyWith(
         isLoading: false,
@@ -235,6 +259,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<String?> sendVerification({required String email}) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final message = await _repository.sendVerification(email: email);
+      state = state.copyWith(isLoading: false, errorMessage: null);
+      return message;
+    } on DioException catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _readDioErrorMessage(error),
+      );
+      return null;
+    } catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage:
+            'Unable to send the verification email right now. Please try again.',
+      );
+      return null;
+    }
+  }
+
   Future<void> fetchCurrentUser() async {
     if (state.token == null || state.token!.isEmpty) {
       return;
@@ -288,10 +335,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> logout() async {
-    await _tokenStorage.clearToken();
-    await _repository.logout();
+  Future<void> logout({bool clearRememberedLogin = false}) async {
     state = const AuthState();
+    await _tokenStorage.clearToken();
+    if (clearRememberedLogin) {
+      await _tokenStorage.clearSession();
+    }
+    await _repository.logout();
+  }
+
+  Future<({bool rememberMe, String? email})> loadRememberedLogin() async {
+    final rememberMe = await _tokenStorage.getRememberMe();
+    final email = rememberMe ? await _tokenStorage.getSavedEmail() : null;
+    return (rememberMe: rememberMe, email: email);
   }
 
   void clearError() {

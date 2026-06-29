@@ -16,6 +16,7 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/specialist_navigation.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import '../../../presence/widgets/online_status_dot.dart';
 
 class SpecialistPatientsScreen extends ConsumerStatefulWidget {
   const SpecialistPatientsScreen({super.key});
@@ -599,6 +600,16 @@ class SpecialistProfileScreen extends ConsumerWidget {
               _ProfileField(label: 'Role', value: user?.role ?? 'specialist'),
               if (user?.phone != null)
                 _ProfileField(label: 'Phone', value: user!.phone!),
+              if (user?.id != null) ...[
+                SizedBox(height: context.dashSpacing * 0.35),
+                Row(
+                  children: [
+                    OnlineStatusDot(userId: user!.id!),
+                    SizedBox(width: context.dashSpacing * 0.35),
+                    PresenceStatusLabel(userId: user.id!),
+                  ],
+                ),
+              ],
               SizedBox(height: context.dashSpacing),
               ElevatedButton(
                 onPressed: () => SpecialistNavigation.logout(context, ref),
