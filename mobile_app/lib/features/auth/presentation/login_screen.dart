@@ -21,6 +21,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
   bool _showPassword = false;
+  bool _isLoadingRememberedLogin = true;
+  bool _showVerifyEmailPrompt = false;
 
   bool get _isEmailValid {
     final email = _emailController.text.trim();
@@ -29,6 +31,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadRememberedLogin());
+  }
+
+  Future<void> _loadRememberedLogin() async {
+    final remembered =
+        await ref.read(authProvider.notifier).loadRememberedLogin();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _rememberMe = remembered.rememberMe;
+      if (remembered.email != null && remembered.email!.isNotEmpty) {
+        _emailController.text = remembered.email!;
+      }
+      _isLoadingRememberedLogin = false;
+    });
   }
 
   @override
@@ -51,15 +76,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    final success = await ref
-        .read(authProvider.notifier)
-        .login(email: email, password: password);
+    final success = await ref.read(authProvider.notifier).login(
+          email: email,
+          password: password,
+          rememberMe: _rememberMe,
+        );
 
     if (!mounted) {
       return;
     }
 
     if (success) {
+      setState(() => _showVerifyEmailPrompt = false);
       showAuthSnackBar(
         context,
         'Login successful',
@@ -85,6 +113,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ref.read(authProvider).errorMessage ??
         'Login failed. Please try again.';
 
+    setState(() {
+      _showVerifyEmailPrompt =
+          errorMessage.toLowerCase().contains('verify');
+    });
+
     showAuthSnackBar(context, errorMessage, type: AuthSnackBarType.error);
   }
 
@@ -94,6 +127,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       body: AuthBackground(
+        showBackgroundVideo: true,
+        bottomFade: false,
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -223,10 +258,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                             border: Border.all(
                                               color: _rememberMe
                                                   ? AppColors.cyan
-                                                  : AppColors.lightBlue
-                                                        .withValues(
-                                                          alpha: 0.35,
-                                                        ),
+                                                  : AppColors.authBorder,
                                             ),
                                             color: _rememberMe
                                                 ? AppColors.cyan
@@ -236,7 +268,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                               ? const Icon(
                                                   Icons.check,
                                                   size: 11,
-                                                  color: AppColors.primaryNavy,
+                                                  color: AppColors.white,
                                                 )
                                               : null,
                                         ),
@@ -273,13 +305,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ],
                               ),
                               const SizedBox(height: 18),
+                              if (_showVerifyEmailPrompt) ...[
+                                AuthGradientButton(
+                                  label: 'Go to Email Verification',
+                                  trailingIcon: Icons.mark_email_read_outlined,
+                                  onPressed: () {
+                                    final email = _emailController.text.trim();
+                                    if (email.isEmpty) {
+                                      context.go(AppRoutes.verifyEmail);
+                                      return;
+                                    }
+
+                                    context.go(
+                                      '${AppRoutes.verifyEmail}?email=${Uri.encodeComponent(email)}',
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                              ],
                               AuthGradientButton(
                                 label: authState.isLoading
                                     ? 'Signing In...'
                                     : 'Sign In',
                                 trailingIcon: Icons.chevron_right_rounded,
-                                isLoading: authState.isLoading,
-                                onPressed: authState.isLoading ? null : _login,
+                                isLoading:
+                                    authState.isLoading || _isLoadingRememberedLogin,
+                                onPressed: authState.isLoading ||
+                                        _isLoadingRememberedLogin
+                                    ? null
+                                    : _login,
                               ),
                               const SizedBox(height: 18),
                               Text.rich(

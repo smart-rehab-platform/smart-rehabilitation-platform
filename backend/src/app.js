@@ -28,16 +28,35 @@ const speechAnalysesRoutes = require("./modules/speechAnalyses/speechAnalyses.ro
 const dashboardRoutes = require("./modules/dashboard/dashboard.routes");
 const uploadsRoutes = require("./modules/uploads/uploads.routes");
 const aiReportsRoutes = require("./modules/aiReports/aiReports.routes");
+const presenceRoutes = require("./modules/presence/presence.routes");
+const { devRequestLogger } = require("./middleware/devRequestLogger");
 
 const app = express();
 
+app.set("trust proxy", true);
+
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Authorization", "Content-Type"]
+};
+
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(devRequestLogger);
 
 app.get("/", (req, res) => {
   res.json({
     message: "Smart Rehab Backend API Running"
+  });
+});
+
+app.get("/api/v1/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Backend is running"
   });
 });
 
@@ -67,5 +86,6 @@ app.use("/api/v1", dashboardRoutes);
 app.use("/api/v1/uploads", uploadsRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/v1", aiReportsRoutes);
+app.use("/api/v1/presence", presenceRoutes);
 
 module.exports = app;

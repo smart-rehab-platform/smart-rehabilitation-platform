@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/presence/providers/presence_lifecycle_provider.dart';
 
 void main() {
   runApp(
@@ -17,6 +18,7 @@ class SmartRehabilitationApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(presenceLifecycleProvider);
     final router = ref.watch(goRouterProvider);
 
     return MaterialApp.router(

@@ -82,6 +82,19 @@ class AuthRepository {
     );
   }
 
+  Future<String> sendVerification({required String email}) async {
+    final response = await _dio.post(
+      '/auth/send-verification',
+      data: {'email': email},
+    );
+
+    return _parseMessage(
+      response.data,
+      fallbackMessage:
+          'If an account with that email exists, a verification email has been sent.',
+    );
+  }
+
   Future<AuthUser?> getMe() async {
     final response = await _dio.get('/auth/me');
     final map = _normalizeMap(response.data);

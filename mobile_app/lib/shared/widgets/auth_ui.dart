@@ -2,9 +2,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../features/auth/utils/password_strength.dart';
+
+const _authBackgroundVideoAsset = 'assets/videos/auth-bg.mp4';
+const _authBackgroundVideoStartSeconds = 4;
 
 enum AuthFieldState { idle, success, error }
 
@@ -43,7 +47,7 @@ void showAuthSnackBar(
             color: backgroundColor.withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppColors.lightBlue.withValues(alpha: 0.16),
+              color: AppColors.authBorder.withValues(alpha: 0.45),
             ),
             boxShadow: [
               BoxShadow(
@@ -74,61 +78,187 @@ void showAuthSnackBar(
     );
 }
 
-class AuthBackground extends StatelessWidget {
+class AuthBackground extends StatefulWidget {
   const AuthBackground({
     super.key,
     required this.child,
-    this.overlayOpacity = 0.75,
+    this.overlayOpacity = 0.80,
     this.bottomFade = true,
+    this.showBackgroundVideo = false,
   });
 
   final Widget child;
   final double overlayOpacity;
   final bool bottomFade;
+  final bool showBackgroundVideo;
+
+  @override
+  State<AuthBackground> createState() => _AuthBackgroundState();
+}
+
+class _AuthBackgroundState extends State<AuthBackground> {
+  VideoPlayerController? _videoController;
+  bool _isVideoReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.showBackgroundVideo) {
+      _initializeBackgroundVideo();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AuthBackground oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.showBackgroundVideo && !oldWidget.showBackgroundVideo) {
+      _initializeBackgroundVideo();
+      return;
+    }
+
+    if (!widget.showBackgroundVideo && oldWidget.showBackgroundVideo) {
+      _disposeBackgroundVideo();
+    }
+  }
+
+  Future<void> _initializeBackgroundVideo() async {
+    final controller = VideoPlayerController.asset(_authBackgroundVideoAsset);
+    _videoController = controller;
+
+    try {
+      await controller.initialize();
+      if (!mounted || _videoController != controller) {
+        await controller.dispose();
+        return;
+      }
+
+      await controller.setVolume(0);
+      await controller.setLooping(false);
+
+      final startPosition = Duration(seconds: _authBackgroundVideoStartSeconds);
+      if (controller.value.duration > startPosition) {
+        await controller.seekTo(startPosition);
+      }
+
+      controller.addListener(_handleVideoProgress);
+      await controller.play();
+
+      if (!mounted || _videoController != controller) {
+        return;
+      }
+
+      setState(() => _isVideoReady = true);
+    } catch (_) {
+      if (_videoController == controller) {
+        await controller.dispose();
+        _videoController = null;
+      }
+    }
+  }
+
+  void _handleVideoProgress() {
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+
+    final duration = controller.value.duration;
+    final position = controller.value.position;
+    if (duration.inMilliseconds <= 0) {
+      return;
+    }
+
+    if (position >= duration - const Duration(milliseconds: 250)) {
+      final startPosition = Duration(seconds: _authBackgroundVideoStartSeconds);
+      if (duration > startPosition) {
+        controller.seekTo(startPosition);
+      } else {
+        controller.seekTo(Duration.zero);
+      }
+      controller.play();
+    }
+  }
+
+  Future<void> _disposeBackgroundVideo() async {
+    final controller = _videoController;
+    _videoController = null;
+    _isVideoReady = false;
+
+    if (controller != null) {
+      controller.removeListener(_handleVideoProgress);
+      await controller.dispose();
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    final controller = _videoController;
+    if (controller != null) {
+      controller.removeListener(_handleVideoProgress);
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final showVideo =
+        widget.showBackgroundVideo && _isVideoReady && _videoController != null;
+
     return DecoratedBox(
       decoration: const BoxDecoration(color: AppColors.primaryNavy),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          const _GlowOrb(
-            size: 260,
-            top: -70,
-            left: -90,
-            color: AppColors.mediumBlue,
-            opacity: 0.16,
-          ),
-          const _GlowOrb(
-            size: 320,
-            top: 80,
-            right: -130,
-            color: AppColors.cyan,
-            opacity: 0.13,
-          ),
-          const _GlowOrb(
-            size: 300,
-            bottom: -110,
-            left: -70,
-            color: AppColors.mediumBlue,
-            opacity: 0.12,
-          ),
-          const _GlowOrb(
-            size: 240,
-            bottom: 10,
-            right: -80,
-            color: AppColors.cyan,
-            opacity: 0.1,
-          ),
+          if (showVideo)
+            RepaintBoundary(
+              child: _AuthBackgroundVideoLayer(controller: _videoController!),
+            )
+          else if (!widget.showBackgroundVideo) ...[
+            const _GlowOrb(
+              size: 260,
+              top: -70,
+              left: -90,
+              color: AppColors.mediumBlue,
+              opacity: 0.08,
+            ),
+            const _GlowOrb(
+              size: 320,
+              top: 80,
+              right: -130,
+              color: AppColors.buttonHighlight,
+              opacity: 0.05,
+            ),
+            const _GlowOrb(
+              size: 300,
+              bottom: -110,
+              left: -70,
+              color: AppColors.mediumBlue,
+              opacity: 0.06,
+            ),
+            const _GlowOrb(
+              size: 240,
+              bottom: 10,
+              right: -80,
+              color: AppColors.buttonHighlight,
+              opacity: 0.04,
+            ),
+          ],
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: AppColors.primaryNavy.withValues(alpha: overlayOpacity),
+                color: AppColors.primaryNavy.withValues(
+                  alpha: widget.overlayOpacity,
+                ),
               ),
             ),
           ),
-          if (bottomFade)
+          if (widget.bottomFade && !widget.showBackgroundVideo)
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -144,8 +274,44 @@ class AuthBackground extends StatelessWidget {
                 ),
               ),
             ),
-          child,
+          widget.child,
         ],
+      ),
+    );
+  }
+}
+
+class _AuthBackgroundVideoLayer extends StatelessWidget {
+  const _AuthBackgroundVideoLayer({required this.controller});
+
+  final VideoPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppColors.primaryNavy,
+      child: SizedBox.expand(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+          child: SizedBox(
+            width: controller.value.size.width,
+            height: controller.value.size.height,
+            child: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()..scaleByDouble(-1.0, 1.0, 1.0, 1.0),
+              child: ColorFiltered(
+                colorFilter: const ColorFilter.matrix(<double>[
+                  0.86, 0, 0, 0, 0,
+                  0, 0.88, 0, 0, 0,
+                  0, 0, 1.04, 0, 0,
+                  0, 0, 0, 1, 0,
+                ]),
+                child: VideoPlayer(controller),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -172,25 +338,16 @@ class AuthGlassCard extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: AppColors.authCardBackground,
+            color: AppColors.authCardBackground.withValues(alpha: 0.96),
             borderRadius: borderRadius,
             border: Border.all(
-              color: AppColors.lightBlue.withValues(alpha: 0.13),
+              color: AppColors.authBorder.withValues(alpha: 0.55),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.4),
-                blurRadius: 40,
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 32,
                 offset: const Offset(0, -4),
-              ),
-              BoxShadow(
-                color: AppColors.cyan.withValues(alpha: 0.06),
-                blurRadius: 60,
-              ),
-              BoxShadow(
-                color: Colors.white.withValues(alpha: 0.05),
-                blurRadius: 0,
-                spreadRadius: 0,
               ),
             ],
           ),
@@ -206,7 +363,7 @@ class AuthGlassCard extends StatelessWidget {
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        AppColors.cyan.withValues(alpha: 0.45),
+                        AppColors.authBorder.withValues(alpha: 0.45),
                         Colors.transparent,
                       ],
                     ),
@@ -253,7 +410,7 @@ class AuthGradientHeadline extends StatelessWidget {
       shaderCallback: (bounds) => const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.mediumBlue, AppColors.cyan],
+        colors: [AppColors.mediumBlue, AppColors.buttonHighlight],
       ).createShader(bounds),
       child: Text(
         text,
@@ -280,13 +437,13 @@ class AuthFeaturePill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.darkBlue.withValues(alpha: 0.45),
+        color: AppColors.darkBlue.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.cyan.withValues(alpha: 0.2)),
+        border: Border.all(color: AppColors.authBorder.withValues(alpha: 0.65)),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: AppColors.cyan),
+          Icon(icon, size: 14, color: AppColors.mediumBlue),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -352,6 +509,7 @@ class AuthTabSwitcher extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.authInputBackground,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.authBorder.withValues(alpha: 0.45)),
       ),
       child: Row(
         children: List.generate(labels.length, (index) {
@@ -365,20 +523,11 @@ class AuthTabSwitcher extends StatelessWidget {
                       ? const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [AppColors.mediumBlue, AppColors.cyan],
+                          colors: [AppColors.mediumBlue, AppColors.buttonHighlight],
                         )
                       : null,
-                  color: isActive ? null : Colors.transparent,
+                  color: isActive ? null : AppColors.darkBlue,
                   borderRadius: BorderRadius.circular(13),
-                  boxShadow: isActive
-                      ? [
-                          BoxShadow(
-                            color: AppColors.cyan.withValues(alpha: 0.3),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -394,8 +543,8 @@ class AuthTabSwitcher extends StatelessWidget {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: isActive
-                              ? AppColors.primaryNavy
-                              : AppColors.lightBlue.withValues(alpha: 0.56),
+                              ? AppColors.white
+                              : AppColors.lightBlue.withValues(alpha: 0.72),
                         ),
                       ),
                     ),
@@ -447,7 +596,7 @@ class AuthInputField extends StatelessWidget {
     final borderColor = switch (state) {
       AuthFieldState.success => AppColors.success,
       AuthFieldState.error => AppColors.danger,
-      AuthFieldState.idle => AppColors.lightBlue.withValues(alpha: 0.2),
+      AuthFieldState.idle => AppColors.authBorder.withValues(alpha: 0.85),
     };
 
     final statusIcon = switch (state) {
@@ -494,14 +643,14 @@ class AuthInputField extends StatelessWidget {
             hintText: hintText,
             hintStyle: GoogleFonts.inter(
               fontSize: 13,
-              color: AppColors.lightBlue.withValues(alpha: 0.34),
+              color: AppColors.authPlaceholder,
             ),
             filled: true,
             fillColor: AppColors.authInputBackground,
             prefixIcon: Icon(
               icon,
               size: 17,
-              color: AppColors.lightBlue.withValues(alpha: 0.58),
+              color: AppColors.lightBlue.withValues(alpha: 0.72),
             ),
             suffixIcon: suffix ?? statusIcon,
             contentPadding: const EdgeInsets.symmetric(
@@ -516,7 +665,7 @@ class AuthInputField extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
                 color: state == AuthFieldState.idle
-                    ? AppColors.cyan
+                    ? AppColors.mediumBlue
                     : borderColor,
                 width: 1.5,
               ),
@@ -574,24 +723,22 @@ class AuthGradientButton extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isEnabled
-              ? const [AppColors.mediumBlue, AppColors.cyan]
+              ? const [AppColors.mediumBlue, AppColors.buttonHighlight]
               : [
-                  AppColors.mediumBlue.withValues(alpha: 0.5),
-                  AppColors.cyan.withValues(alpha: 0.45),
+                  AppColors.mediumBlue.withValues(alpha: 0.45),
+                  AppColors.buttonHighlight.withValues(alpha: 0.4),
                 ],
         ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.cyan.withValues(alpha: 0.3),
-            blurRadius: 20,
-          ),
-          BoxShadow(
-            color: AppColors.mediumBlue.withValues(alpha: 0.35),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: isEnabled
+            ? [
+                BoxShadow(
+                  color: AppColors.mediumBlue.withValues(alpha: 0.22),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,
@@ -609,7 +756,7 @@ class AuthGradientButton extends StatelessWidget {
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: AppColors.primaryNavy,
+                      color: AppColors.white,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -619,12 +766,12 @@ class AuthGradientButton extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.primaryNavy,
+                    color: AppColors.white,
                   ),
                 ),
                 if (!isLoading && trailingIcon != null) ...[
                   const SizedBox(width: 6),
-                  Icon(trailingIcon, size: 16, color: AppColors.primaryNavy),
+                  Icon(trailingIcon, size: 16, color: AppColors.white),
                 ],
               ],
             ),
@@ -803,7 +950,7 @@ class AuthStatusCard extends StatelessWidget {
                       height: 24,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.4,
-                        color: AppColors.cyan,
+                        color: AppColors.mediumBlue,
                       ),
                     )
                   : Icon(
@@ -879,20 +1026,20 @@ class AuthRoleCard extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppColors.cyan.withValues(alpha: 0.07)
-                  : AppColors.authInputBackground.withValues(alpha: 0.9),
+                  ? AppColors.mediumBlue.withValues(alpha: 0.12)
+                  : AppColors.authInputBackground.withValues(alpha: 0.96),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
-                    ? AppColors.cyan
-                    : AppColors.lightBlue.withValues(alpha: 0.16),
+                    ? AppColors.mediumBlue
+                    : AppColors.authBorder.withValues(alpha: 0.75),
                 width: 1.5,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: AppColors.cyan.withValues(alpha: 0.14),
-                        blurRadius: 18,
+                        color: AppColors.mediumBlue.withValues(alpha: 0.12),
+                        blurRadius: 12,
                       ),
                     ]
                   : null,
@@ -908,12 +1055,12 @@ class AuthRoleCard extends StatelessWidget {
                       height: 18,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.cyan,
+                        color: AppColors.mediumBlue,
                       ),
                       child: const Icon(
                         Icons.check_rounded,
                         size: 12,
-                        color: AppColors.primaryNavy,
+                        color: AppColors.white,
                       ),
                     ),
                   ),
@@ -926,7 +1073,7 @@ class AuthRoleCard extends StatelessWidget {
                           icon,
                           size: 16,
                           color: isSelected
-                              ? AppColors.cyan
+                              ? AppColors.mediumBlue
                               : AppColors.lightBlue,
                         ),
                         const SizedBox(width: 6),
@@ -954,7 +1101,7 @@ class AuthRoleCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: isSelected
-                                  ? AppColors.cyan
+                                  ? AppColors.mediumBlue
                                   : AppColors.lightBlue.withValues(alpha: 0.7),
                             ),
                           ),
@@ -998,9 +1145,9 @@ class _RoundGlassButton extends StatelessWidget {
       width: 34,
       height: 34,
       decoration: BoxDecoration(
-        color: AppColors.darkBlue.withValues(alpha: 0.5),
+        color: AppColors.darkBlue.withValues(alpha: 0.88),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.lightBlue.withValues(alpha: 0.15)),
+        border: Border.all(color: AppColors.authBorder.withValues(alpha: 0.55)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -1072,17 +1219,17 @@ class _AuthLogoPainter extends CustomPainter {
       ..shader = const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.mediumBlue, AppColors.cyan],
+        colors: [AppColors.mediumBlue, AppColors.buttonHighlight],
       ).createShader(rect)
       ..style = PaintingStyle.stroke
       ..strokeWidth = size.width * 0.04;
 
     final glowPaint = Paint()
-      ..color = AppColors.cyan.withValues(alpha: 0.25)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+      ..color = AppColors.mediumBlue.withValues(alpha: 0.18)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
 
     final pulsePaint = Paint()
-      ..color = AppColors.cyan
+      ..color = AppColors.buttonHighlight
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
@@ -1092,7 +1239,7 @@ class _AuthLogoPainter extends CustomPainter {
       ..shader = const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.mediumBlue, AppColors.cyan],
+        colors: [AppColors.mediumBlue, AppColors.buttonHighlight],
       ).createShader(rect)
       ..style = PaintingStyle.fill;
 
@@ -1137,7 +1284,7 @@ class _AuthLogoPainter extends CustomPainter {
 
     canvas.drawPath(
       heartPath,
-      heartPaint..color = AppColors.cyan.withValues(alpha: 0.2),
+      heartPaint..color = AppColors.mediumBlue.withValues(alpha: 0.18),
     );
 
     final pulsePath = Path()
@@ -1159,7 +1306,7 @@ class _AuthLogoPainter extends CustomPainter {
     canvas.drawCircle(
       Offset(size.width * 0.5, size.height * 0.79),
       size.width * 0.016,
-      Paint()..color = AppColors.cyan.withValues(alpha: 0.85),
+      Paint()..color = AppColors.buttonHighlight.withValues(alpha: 0.85),
     );
   }
 
