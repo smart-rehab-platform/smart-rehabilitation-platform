@@ -24,9 +24,11 @@ import {
   strongPasswordMessage,
 } from "../../components/auth/authHelpers";
 import api from "../../services/api";
+import { useAuth } from "../../context/useAuth";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const auth = useAuth();
   const fileInputRef = useRef(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -139,7 +141,7 @@ export default function Signup() {
         profileImageUrl = uploadResponse.data.data.url;
       }
 
-      await api.post("/auth/register", {
+      await auth.register({
         full_name: name.trim(),
         email,
         password,
@@ -152,7 +154,7 @@ export default function Signup() {
         "Account created successfully. Please verify your email before signing in.",
         "success"
       );
-      setTimeout(() => navigate("/login"), 1500);
+      setTimeout(() => navigate(`/verify-email?email=${encodeURIComponent(email)}`), 1500);
     } catch (error) {
       const message = readAuthApiMessage(error, "Registration failed");
       showToast(message, "error");

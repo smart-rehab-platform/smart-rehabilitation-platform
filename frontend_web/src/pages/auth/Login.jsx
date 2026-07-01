@@ -15,20 +15,24 @@ import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { Toast } from "../../components/auth/Toast";
 import { C, G } from "../../components/auth/tokens";
 import { readAuthApiMessage } from "../../components/auth/authHelpers";
-import api from "../../services/api";
+import { useAuth } from "../../context/useAuth";
+import { dashboardForRole } from "../../routes/roleRouting";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const auth = useAuth();
+  const rememberedLogin = auth.loadRememberedLogin();
+  const [email, setEmail] = useState(rememberedLogin.email || "");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
-  const [remember, setRemember] = useState(false);
+  const [remember, setRemember] = useState(rememberedLogin.rememberMe);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastVariant, setToastVariant] = useState("success");
-  const [emailState, setEmailState] = useState("idle");
+  const [emailState, setEmailState] = useState(rememberedLogin.email ? "success" : "idle");
   const [emailMsg, setEmailMsg] = useState("");
+  const [showVerifyEmailPrompt, setShowVerifyEmailPrompt] = useState(false);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -59,15 +63,22 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const { data } = await api.post("/auth/login", { email, password });
+      const user = await auth.login({ email, password, rememberMe: remember });
+      const destination = dashboardForRole(user?.role);
 
-      localStorage.setItem("accessToken", data.data.token);
-      localStorage.setItem("user", JSON.stringify(data.data.user));
-
+      setShowVerifyEmailPrompt(false);
       showToast("Signed in successfully! Redirecting...", "success");
-      setTimeout(() => navigate("/dashboard"), 1200);
+
+      if (!destination) {
+        auth.logout();
+        showToast("Unable to determine your account role. Please contact support.", "error");
+        return;
+      }
+
+      setTimeout(() => navigate(destination), 1200);
     } catch (error) {
       const message = readAuthApiMessage(error, "Invalid email or password");
+      setShowVerifyEmailPrompt(message.toLowerCase().includes("verify"));
       showToast(message, "error");
     } finally {
       setLoading(false);
@@ -146,6 +157,20 @@ export default function Login() {
             Forgot Password?
           </button>
         </div>
+        {showVerifyEmailPrompt && (
+          <PrimaryButton
+            onClick={() => {
+              if (!email.trim()) {
+                navigate("/verify-email");
+                return;
+              }
+
+              navigate(`/verify-email?email=${encodeURIComponent(email.trim())}`);
+            }}
+          >
+            Go to Email Verification
+          </PrimaryButton>
+        )}
         <PrimaryButton loading={loading} onClick={handleSubmit}>
           {loading ? (
             "Signing In..."
