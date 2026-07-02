@@ -18,4 +18,5 @@ coverage/
 
 backend/uploads/
 
-.DS_Store
+.DS_Store__pycache__/
+*.pyc

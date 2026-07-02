@@ -13,7 +13,7 @@ const generateWeeklyReport = async (req, res) => {
       data: report
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message
     });
@@ -33,7 +33,7 @@ const generateMonthlyReport = async (req, res) => {
       data: report
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message
     });

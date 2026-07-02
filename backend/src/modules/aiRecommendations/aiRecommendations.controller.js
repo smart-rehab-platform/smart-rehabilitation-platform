@@ -11,7 +11,7 @@ const generateRecommendation = async (req, res) => {
       data: recommendation,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
@@ -29,7 +29,7 @@ const getAllRecommendations = async (req, res) => {
       data: recommendations,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
@@ -53,7 +53,7 @@ const getRecommendationById = async (req, res) => {
       data: recommendation,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
@@ -73,7 +73,7 @@ const getRecommendationsByPatient = async (req, res) => {
       data: recommendations,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
@@ -95,7 +95,7 @@ const acceptRecommendation = async (req, res) => {
       data: recommendation,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
@@ -117,7 +117,7 @@ const rejectRecommendation = async (req, res) => {
       data: recommendation,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
