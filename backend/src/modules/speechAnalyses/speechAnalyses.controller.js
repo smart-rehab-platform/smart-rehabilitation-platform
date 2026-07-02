@@ -6,11 +6,11 @@ const analyzeSpeech = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Speech analysis completed successfully",
+      message: "Speech analysis completed successfully.",
       data: analysis,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
