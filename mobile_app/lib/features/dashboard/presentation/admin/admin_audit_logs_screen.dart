@@ -1,0 +1,376 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../data/admin_features_repository.dart';
+import '../../data/admin_users_repository.dart';
+import '../../providers/admin_features_provider.dart';
+import '../../providers/admin_users_provider.dart';
+import '../../widgets/admin_page_scaffold.dart';
+import '../../widgets/dashboard_layout.dart';
+import '../../widgets/admin_ui_components.dart';
+
+class AdminAuditLogsScreen extends ConsumerStatefulWidget {
+  const AdminAuditLogsScreen({super.key});
+
+  @override
+  ConsumerState<AdminAuditLogsScreen> createState() => _AdminAuditLogsScreenState();
+}
+
+class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
+  bool _isLoading = true;
+  String? _error;
+  List<AdminAuditLogRecord> _logs = const [];
+  List<AdminUserRecord> _users = const [];
+
+  String? _selectedUserId;
+  String? _selectedAction;
+  String? _selectedEntity;
+  DateTime? _dateFrom;
+  DateTime? _dateTo;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initialize());
+  }
+
+  Future<void> _initialize() async {
+    try {
+      final usersRepo = ref.read(adminUsersRepositoryProvider);
+      final users = await usersRepo.fetchUsers();
+      if (mounted) {
+        setState(() => _users = users);
+      }
+    } catch (_) {}
+
+    await _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final repo = ref.read(adminFeaturesRepositoryProvider);
+      final rows = await repo.fetchAuditLogs(
+        userId: _selectedUserId,
+        action: _selectedAction,
+        entityName: _selectedEntity,
+        dateFrom: _dateFrom?.toIso8601String(),
+        dateTo: _dateTo?.toIso8601String(),
+      );
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _logs = rows;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Failed to load audit logs: $error';
+        });
+      }
+    }
+  }
+
+  List<String> get _actions {
+    return _logs.map((log) => log.action).toSet().toList()..sort();
+  }
+
+  List<String> get _entities {
+    return _logs
+        .map((log) => log.entityName?.trim())
+        .whereType<String>()
+        .where((value) => value.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort();
+  }
+
+  Future<void> _pickDate({required bool isFrom}) async {
+    final initial = isFrom ? _dateFrom : _dateTo;
+    final picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      initialDate: initial ?? DateTime.now(),
+    );
+
+    if (picked == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      if (isFrom) {
+        _dateFrom = picked;
+      } else {
+        _dateTo = picked;
+      }
+    });
+    await _load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return AdminPageScaffold(
+      title: 'Audit Logs',
+      showBackButton: true,
+      showBottomNav: false,
+      body: _isLoading
+          ? const AdminLoadingCard()
+          : SingleChildScrollView(
+              padding: context.dashPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (_error != null)
+                    AdminErrorCard(message: _error!, onRetry: _load),
+                  AdminSurfaceCard(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _AuditFilterDropdown<String?>(
+                          label: 'Filter by user',
+                          value: _selectedUserId,
+                          items: [
+                            const _AuditFilterOption<String?>(
+                              value: null,
+                              label: 'All users',
+                            ),
+                            ..._users.map(
+                              (user) => _AuditFilterOption<String?>(
+                                value: user.id,
+                                label: '${user.name} (${user.email})',
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) async {
+                            setState(() => _selectedUserId = value);
+                            await _load();
+                          },
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.5),
+                        _AuditFilterDropdown<String?>(
+                          label: 'Filter by action',
+                          value: _selectedAction,
+                          items: [
+                            const _AuditFilterOption<String?>(
+                              value: null,
+                              label: 'All actions',
+                            ),
+                            ..._actions.map(
+                              (action) => _AuditFilterOption<String?>(
+                                value: action,
+                                label: action,
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) async {
+                            setState(() => _selectedAction = value);
+                            await _load();
+                          },
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.5),
+                        _AuditFilterDropdown<String?>(
+                          label: 'Filter by entity',
+                          value: _selectedEntity,
+                          items: [
+                            const _AuditFilterOption<String?>(
+                              value: null,
+                              label: 'All entities',
+                            ),
+                            ..._entities.map(
+                              (entity) => _AuditFilterOption<String?>(
+                                value: entity,
+                                label: entity,
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) async {
+                            setState(() => _selectedEntity = value);
+                            await _load();
+                          },
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.5),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => _pickDate(isFrom: true),
+                                child: Text(
+                                  _dateFrom == null
+                                      ? 'From date'
+                                      : 'From ${_dateFrom!.day}/${_dateFrom!.month}/${_dateFrom!.year}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: context.dashSpacing * 0.5),
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => _pickDate(isFrom: false),
+                                child: Text(
+                                  _dateTo == null
+                                      ? 'To date'
+                                      : 'To ${_dateTo!.day}/${_dateTo!.month}/${_dateTo!.year}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing),
+                  if (_logs.isEmpty)
+                    const AdminEmptyCard(message: 'No audit logs found.')
+                  else
+                    AdminTableContainer(
+                      rows: _logs
+                          .map(
+                            (log) => Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  log.action,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: AdminDashboardColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  log.userName ?? log.userEmail ?? 'System',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                                if (log.userEmail != null && log.userName != null)
+                                  Text(
+                                    log.userEmail!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: AdminDashboardColors.textSecondary,
+                                    ),
+                                  ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  log.entityName ?? 'entity',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                                if (log.entityId != null && log.entityId!.isNotEmpty)
+                                  Text(
+                                    log.entityId!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: AdminDashboardColors.textMuted,
+                                    ),
+                                  ),
+                                Text(
+                                  _formatDateTime(log.createdAt),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: AdminDashboardColors.textMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                          .toList(),
+                    ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  String _formatDateTime(DateTime? date) {
+    if (date == null) {
+      return 'Unknown time';
+    }
+    final local = date.toLocal();
+    return '${local.day}/${local.month}/${local.year} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+class _AuditFilterOption<T> {
+  const _AuditFilterOption({
+    required this.value,
+    required this.label,
+  });
+
+  final T value;
+  final String label;
+}
+
+class _AuditFilterDropdown<T> extends StatelessWidget {
+  const _AuditFilterDropdown({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+  });
+
+  final String label;
+  final T value;
+  final List<_AuditFilterOption<T>> items;
+  final ValueChanged<T?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<T>(
+      key: ValueKey('$label-$value'),
+      isExpanded: true,
+      initialValue: value,
+      decoration: InputDecoration(
+        labelText: label,
+        isDense: true,
+      ),
+      items: items
+          .map(
+            (item) => DropdownMenuItem<T>(
+              value: item.value,
+              child: Text(
+                item.label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+          .toList(),
+      selectedItemBuilder: (context) => items
+          .map(
+            (item) => Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                item.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+          .toList(),
+      onChanged: onChanged,
+    );
+  }
+}

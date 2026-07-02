@@ -1,8 +1,16 @@
 const patientsService = require("./patients.service");
+const { createAuditLog } = require("../auditLogs/auditLogs.helper");
 
 const createPatient = async (req, res) => {
   try {
     const patient = await patientsService.createPatient(req.body, req.user.id);
+
+    createAuditLog({
+      userId: req.user.id,
+      action: "patient_create",
+      entityName: "patient",
+      entityId: patient.id,
+    }).catch(() => {});
 
     return res.status(201).json({
       success: true,
@@ -63,6 +71,13 @@ const updatePatient = async (req, res) => {
       });
     }
 
+    createAuditLog({
+      userId: req.user.id,
+      action: "patient_update",
+      entityName: "patient",
+      entityId: patient.id,
+    }).catch(() => {});
+
     return res.status(200).json({
       success: true,
       message: "Patient updated successfully",
@@ -86,6 +101,13 @@ const deletePatient = async (req, res) => {
         message: "Patient not found"
       });
     }
+
+    createAuditLog({
+      userId: req.user.id,
+      action: "patient_delete",
+      entityName: "patient",
+      entityId: patient.id,
+    }).catch(() => {});
 
     return res.status(200).json({
       success: true,

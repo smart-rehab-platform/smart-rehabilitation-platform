@@ -22,7 +22,11 @@ class AppRoutes {
   static const String specialistProfile = '/dashboard/specialist/profile';
   static const String specialistMore = '/dashboard/specialist/more';
   static const String adminDashboard = '/dashboard/admin';
+  static const String adminPatients = '/dashboard/admin/patients';
   static const String adminPatientAssignments = '/dashboard/admin/patient-assignments';
+  static const String adminSessions = '/dashboard/admin/sessions';
+  static const String adminAiCenter = '/dashboard/admin/ai-center';
+  static const String adminAuditLogs = '/dashboard/admin/audit-logs';
   static const String adminUsers = '/dashboard/admin/users';
   static const String adminExercises = '/dashboard/admin/exercises';
   static const String adminReports = '/dashboard/admin/reports';

@@ -1,8 +1,24 @@
 const sessionsService = require("./sessions.service");
+const { createAuditLog } = require("../auditLogs/auditLogs.helper");
+
+const logSessionAction = (req, action, session) => {
+  if (!session) {
+    return;
+  }
+
+  createAuditLog({
+    userId: req.user?.id,
+    action,
+    entityName: "session",
+    entityId: session.id,
+  }).catch(() => {});
+};
 
 const createSession = async (req, res) => {
   try {
     const session = await sessionsService.createSession(req.body);
+
+    logSessionAction(req, "session_create", session);
 
     return res.status(201).json({
       success: true,
@@ -59,6 +75,8 @@ const updateSession = async (req, res) => {
       });
     }
 
+    logSessionAction(req, "session_update", session);
+
     return res.status(200).json({
       success: true,
       message: "Session updated successfully",
@@ -79,6 +97,8 @@ const deleteSession = async (req, res) => {
         message: "Session not found"
       });
     }
+
+    logSessionAction(req, "session_delete", session);
 
     return res.status(200).json({
       success: true,
@@ -104,6 +124,8 @@ const completeSession = async (req, res) => {
       });
     }
 
+    logSessionAction(req, "session_complete", session);
+
     return res.status(200).json({
       success: true,
       message: "Session completed successfully",
@@ -128,6 +150,8 @@ const cancelSession = async (req, res) => {
       });
     }
 
+    logSessionAction(req, "session_cancel", session);
+
     return res.status(200).json({
       success: true,
       message: "Session cancelled successfully",
@@ -151,6 +175,8 @@ const markNoShow = async (req, res) => {
         message: "Session not found"
       });
     }
+
+    logSessionAction(req, "session_no_show", session);
 
     return res.status(200).json({
       success: true,

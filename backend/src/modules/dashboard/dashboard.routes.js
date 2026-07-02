@@ -29,6 +29,20 @@ router.get(
   dashboardController.getSystemAnalytics
 );
 
+router.get(
+  "/dashboard/admin/patients",
+  authenticate,
+  authorizeRoles("admin"),
+  dashboardController.getAdminPatients
+);
+
+router.get(
+  "/dashboard/admin/ai-center",
+  authenticate,
+  authorizeRoles("admin"),
+  dashboardController.getAdminAiCenter
+);
+
 // Specialist Dashboard
 router.get(
   "/dashboard/specialist/overview",

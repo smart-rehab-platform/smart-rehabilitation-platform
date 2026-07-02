@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/dashboard_colors.dart';
+import '../../../core/constants/admin_dashboard_colors.dart';
 import '../../../core/services/api_client.dart';
 import '../../auth/data/auth_repository.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -112,13 +112,13 @@ class AdminDashboardNotifier extends StateNotifier<AdminDashboardState> {
 Color adminRoleColor(String role) {
   switch (role.toLowerCase()) {
     case 'parent':
-      return DashboardColors.primary;
+      return AdminDashboardColors.primary;
     case 'specialist':
-      return DashboardColors.accent;
+      return AdminDashboardColors.emerald;
     case 'admin':
-      return DashboardColors.warning;
+      return AdminDashboardColors.orange;
     default:
-      return const Color(0xFF3B82F6);
+      return AdminDashboardColors.accent;
   }
 }
 
