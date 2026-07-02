@@ -8,6 +8,7 @@ const {
 } = require("./auth.validation");
 const authService = require("./auth.service");
 const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
+const { createAuditLog } = require("../auditLogs/auditLogs.helper");
 
 const wantsHtmlResponse = (req) => {
   const accept = req.get("accept") || "";
@@ -113,6 +114,13 @@ const login = async (req, res) => {
       validatedBody.email,
       validatedBody.password
     );
+
+    createAuditLog({
+      userId: result.user.id,
+      action: "login",
+      entityName: "user",
+      entityId: result.user.id,
+    }).catch(() => {});
 
     return res.status(200).json({
       success: true,

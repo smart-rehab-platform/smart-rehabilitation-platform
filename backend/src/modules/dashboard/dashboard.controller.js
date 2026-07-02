@@ -40,6 +40,33 @@ exports.getSystemAnalytics = async (req, res, next) => {
   }
 };
 
+exports.getAdminPatients = async (req, res, next) => {
+  try {
+    const data = await dashboardService.getAdminPatients();
+
+    res.status(200).json({
+      success: true,
+      count: data.length,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAdminAiCenter = async (req, res, next) => {
+  try {
+    const data = await dashboardService.getAdminAiCenter();
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Specialist Dashboard
 exports.getSpecialistOverview = async (req, res, next) => {
   try {

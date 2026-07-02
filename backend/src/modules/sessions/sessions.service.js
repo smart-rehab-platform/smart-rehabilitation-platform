@@ -54,7 +54,8 @@ const updateSession = async (id, data) => {
     scheduled_at,
     duration_minutes,
     location_or_link,
-    cancellation_reason
+    cancellation_reason,
+    status
   } = data;
 
   const result = await pool.query(
@@ -62,10 +63,12 @@ const updateSession = async (id, data) => {
      SET scheduled_at = COALESCE($1, scheduled_at),
          duration_minutes = COALESCE($2, duration_minutes),
          location_or_link = COALESCE($3, location_or_link),
-         cancellation_reason = COALESCE($4, cancellation_reason)
-     WHERE id = $5
+         cancellation_reason = COALESCE($4, cancellation_reason),
+         status = COALESCE($5::session_status, status),
+         updated_at = now()
+     WHERE id = $6
      RETURNING *`,
-    [scheduled_at, duration_minutes, location_or_link, cancellation_reason, id]
+    [scheduled_at, duration_minutes, location_or_link, cancellation_reason, status, id]
   );
 
   return result.rows[0];

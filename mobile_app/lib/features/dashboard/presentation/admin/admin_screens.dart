@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/constants/admin_dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../providers/specialist_features_provider.dart';
@@ -12,7 +12,7 @@ import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
-import '../../widgets/dashboard_surface_card.dart';
+import '../../widgets/admin_ui_components.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import '../../../presence/widgets/online_status_dot.dart';
 
@@ -98,7 +98,7 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
       showBottomNav: false,
       body: SingleChildScrollView(
         padding: context.dashPadding,
-        child: DashboardSurfaceCard(
+        child: AdminSurfaceCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -125,14 +125,8 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
                 ),
               ],
               SizedBox(height: context.dashSpacing),
-              ElevatedButton(
+              FilledButton(
                 onPressed: () => AdminNavigation.logout(context, ref),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.75),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
                 child: const Text('Logout'),
               ),
             ],
@@ -162,9 +156,29 @@ class AdminMoreScreen extends ConsumerWidget {
             onTap: () => context.go(AppRoutes.adminUsers),
           ),
           _MoreTile(
+            icon: Icons.people_outline_rounded,
+            label: 'Patients',
+            onTap: () => context.go(AppRoutes.adminPatients),
+          ),
+          _MoreTile(
             icon: Icons.assignment_ind_outlined,
             label: 'Patient Assignments',
             onTap: () => context.go(AppRoutes.adminPatientAssignments),
+          ),
+          _MoreTile(
+            icon: Icons.event_note_outlined,
+            label: 'Sessions',
+            onTap: () => context.go(AppRoutes.adminSessions),
+          ),
+          _MoreTile(
+            icon: Icons.psychology_outlined,
+            label: 'AI Center',
+            onTap: () => context.go(AppRoutes.adminAiCenter),
+          ),
+          _MoreTile(
+            icon: Icons.history_rounded,
+            label: 'Audit Logs',
+            onTap: () => context.go(AppRoutes.adminAuditLogs),
           ),
           _MoreTile(
             icon: Icons.notifications_none_rounded,
@@ -222,7 +236,7 @@ class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
               .map(
                 (exercise) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
+                  child: AdminSurfaceCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -236,7 +250,7 @@ class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
                           Text(
                             exercise.instructions!,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: DashboardColors.textSecondary,
+                              color: AdminDashboardColors.textSecondary,
                             ),
                           ),
                       ],
@@ -286,7 +300,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
               .map(
                 (report) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
+                  child: AdminSurfaceCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -303,7 +317,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
                               if (report.reportType != null) report.reportType,
                             ].whereType<String>().join(' • '),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: DashboardColors.textSecondary,
+                              color: AdminDashboardColors.textSecondary,
                             ),
                           ),
                       ],
@@ -363,7 +377,7 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
               .map(
                 (item) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
+                  child: AdminSurfaceCard(
                     onTap: () => ref
                         .read(specialistNotificationsProvider.notifier)
                         .markAsRead(item.id),
@@ -375,8 +389,8 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                               ? Icons.notifications_none_rounded
                               : Icons.notifications_active_rounded,
                           color: item.isRead
-                              ? DashboardColors.textMuted
-                              : DashboardColors.primary,
+                              ? AdminDashboardColors.textMuted
+                              : AdminDashboardColors.primary,
                         ),
                         SizedBox(width: context.dashSpacing * 0.65),
                         Expanded(
@@ -394,13 +408,13 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                                 Text(
                                   item.body!,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: DashboardColors.textSecondary,
+                                    color: AdminDashboardColors.textSecondary,
                                   ),
                                 ),
                               Text(
                                 '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: DashboardColors.textMuted,
+                                  color: AdminDashboardColors.textMuted,
                                 ),
                               ),
                             ],
@@ -464,14 +478,29 @@ class _MoreTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-      child: DashboardSurfaceCard(
+      child: AdminSurfaceCard(
         onTap: onTap,
         child: Row(
           children: [
-            Icon(icon, color: DashboardColors.primary),
+            AdminIconCircle(
+              icon: icon,
+              color: AdminDashboardColors.primary,
+              background: AdminDashboardColors.blueSoft,
+              size: 44,
+            ),
             SizedBox(width: context.dashSpacing * 0.65),
-            Expanded(child: Text(label)),
-            Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AdminDashboardColors.textPrimary,
+                    ),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: AdminDashboardColors.textMuted),
           ],
         ),
       ),

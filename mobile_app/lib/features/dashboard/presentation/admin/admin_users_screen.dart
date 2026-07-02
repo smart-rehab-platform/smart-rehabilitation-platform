@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/constants/admin_dashboard_colors.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../data/admin_users_repository.dart';
 import '../../providers/admin_dashboard_provider.dart';
@@ -10,8 +10,7 @@ import '../../providers/admin_users_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../../presence/widgets/online_status_dot.dart';
 import '../../widgets/dashboard_layout.dart';
-import '../../widgets/dashboard_surface_card.dart';
-import '../../widgets/parent_dashboard_cards.dart';
+import '../../widgets/admin_ui_components.dart';
 
 class AdminUsersScreen extends ConsumerStatefulWidget {
   const AdminUsersScreen({super.key});
@@ -76,7 +75,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? DashboardColors.highPriority : null,
+        backgroundColor: isError ? AdminDashboardColors.danger : null,
       ),
     );
   }
@@ -231,7 +230,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: DashboardColors.highPriority),
+            style: FilledButton.styleFrom(backgroundColor: AdminDashboardColors.danger),
             child: const Text('Delete'),
           ),
         ],
@@ -262,11 +261,11 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       showBackButton: true,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openUserForm(),
-        backgroundColor: DashboardColors.primary,
+        backgroundColor: AdminDashboardColors.primary,
         child: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white),
       ),
       body: _isLoading
-          ? const Center(child: DashboardLoadingCard())
+          ? const Center(child: AdminLoadingCard())
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -277,10 +276,10 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                       hintText: 'Search by name, email, or role',
                       prefixIcon: const Icon(Icons.search_rounded),
                       filled: true,
-                      fillColor: DashboardColors.surface,
+                      fillColor: AdminDashboardColors.surface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: DashboardColors.border),
+                        borderSide: BorderSide(color: AdminDashboardColors.border),
                       ),
                     ),
                     onChanged: (value) => setState(() => _searchQuery = value),
@@ -323,14 +322,14 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                       ? Center(
                           child: Padding(
                             padding: context.dashPadding,
-                            child: DashboardErrorCard(message: _error!, onRetry: _load),
+                            child: AdminErrorCard(message: _error!, onRetry: _load),
                           ),
                         )
                       : filtered.isEmpty
                           ? Center(
                               child: Padding(
                                 padding: context.dashPadding,
-                                child: const DashboardEmptyCard(message: 'No users found.'),
+                                child: const AdminEmptyCard(message: 'No users found.'),
                               ),
                             )
                           : ListView.builder(
@@ -340,11 +339,12 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                 final user = filtered[index];
                                 return Padding(
                                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                                  child: DashboardSurfaceCard(
+                                  child: AdminSurfaceCard(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Stack(
                                               clipBehavior: Clip.none,
@@ -374,22 +374,26 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                                 children: [
                                                   Text(
                                                     user.name,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
                                                     style: theme.textTheme.bodyMedium?.copyWith(
                                                       fontWeight: FontWeight.w700,
                                                     ),
                                                   ),
                                                   Text(
                                                     user.email,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
                                                     style: theme.textTheme.bodySmall?.copyWith(
-                                                      color: DashboardColors.textSecondary,
+                                                      color: AdminDashboardColors.textSecondary,
                                                     ),
                                                   ),
                                                   Text(
                                                     '${_formatRoleLabel(user.role)} • ${user.isActive ? 'Active' : 'Inactive'}',
                                                     style: theme.textTheme.labelSmall?.copyWith(
                                                       color: user.isActive
-                                                          ? DashboardColors.primary
-                                                          : DashboardColors.textMuted,
+                                                          ? AdminDashboardColors.primary
+                                                          : AdminDashboardColors.textMuted,
                                                     ),
                                                   ),
                                                   PresenceStatusLabel(userId: user.id),
@@ -464,8 +468,8 @@ class _RoleChip extends StatelessWidget {
         label: Text(label),
         selected: selected,
         onSelected: (_) => onTap(),
-        selectedColor: DashboardColors.purpleSoft,
-        checkmarkColor: DashboardColors.primary,
+        selectedColor: AdminDashboardColors.blueSoft,
+        checkmarkColor: AdminDashboardColors.primary,
       ),
     );
   }

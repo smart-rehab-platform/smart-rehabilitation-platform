@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/dashboard_colors.dart';
+import '../../../core/constants/admin_dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../widgets/dashboard_bottom_nav.dart';
@@ -29,7 +29,8 @@ class AdminNavigation {
     if (location == AppRoutes.adminDashboard) {
       return DashboardNavItem.home;
     }
-    if (location.startsWith(AppRoutes.adminPatientAssignments)) {
+    if (location.startsWith(AppRoutes.adminPatients) ||
+        location.startsWith(AppRoutes.adminPatientAssignments)) {
       return DashboardNavItem.patients;
     }
     if (location.startsWith(AppRoutes.adminExercises)) {
@@ -49,7 +50,7 @@ class AdminNavigation {
       case DashboardNavItem.home:
         context.go(AppRoutes.adminDashboard);
       case DashboardNavItem.patients:
-        context.go(AppRoutes.adminPatientAssignments);
+        context.go(AppRoutes.adminPatients);
       case DashboardNavItem.exercises:
         context.go(AppRoutes.adminExercises);
       case DashboardNavItem.reports:
@@ -77,40 +78,49 @@ class AdminDrawer extends ConsumerWidget {
     final name = user?.fullName ?? 'Admin';
 
     return Drawer(
-      backgroundColor: DashboardColors.surface,
+      backgroundColor: AdminDashboardColors.surface,
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
+            Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: AdminDashboardColors.appBar,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: DashboardColors.purpleSoft,
+                    backgroundColor: Colors.white.withValues(alpha: 0.15),
                     child: Text(
                       name.isNotEmpty ? name[0].toUpperCase() : 'A',
                       style: theme.textTheme.titleLarge?.copyWith(
-                        color: DashboardColors.primary,
+                        color: Colors.white,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    name,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
                   if (user?.email != null)
                     Text(
                       user!.email,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: DashboardColors.textSecondary,
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
                 ],
               ),
             ),
-            const Divider(height: 1),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -126,9 +136,29 @@ class AdminDrawer extends ConsumerWidget {
                     onTap: () => _go(context, AppRoutes.adminUsers),
                   ),
                   _AdminDrawerTile(
+                    icon: Icons.people_outline_rounded,
+                    label: 'Patients',
+                    onTap: () => _go(context, AppRoutes.adminPatients),
+                  ),
+                  _AdminDrawerTile(
                     icon: Icons.assignment_ind_outlined,
                     label: 'Patient Assignments',
                     onTap: () => _go(context, AppRoutes.adminPatientAssignments),
+                  ),
+                  _AdminDrawerTile(
+                    icon: Icons.event_note_outlined,
+                    label: 'Sessions',
+                    onTap: () => _go(context, AppRoutes.adminSessions),
+                  ),
+                  _AdminDrawerTile(
+                    icon: Icons.psychology_outlined,
+                    label: 'AI Center',
+                    onTap: () => _go(context, AppRoutes.adminAiCenter),
+                  ),
+                  _AdminDrawerTile(
+                    icon: Icons.history_rounded,
+                    label: 'Audit Logs',
+                    onTap: () => _go(context, AppRoutes.adminAuditLogs),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.fitness_center_outlined,
@@ -153,7 +183,7 @@ class AdminDrawer extends ConsumerWidget {
                 ],
               ),
             ),
-            const Divider(height: 1),
+            const Divider(height: 1, color: AdminDashboardColors.border),
             _AdminDrawerTile(
               icon: Icons.logout_rounded,
               label: 'Logout',
@@ -189,11 +219,18 @@ class _AdminDrawerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: DashboardColors.primary),
-      title: Text(label),
+      leading: Icon(icon, color: AdminDashboardColors.primary),
+      title: Text(
+        label,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AdminDashboardColors.textPrimary,
+            ),
+      ),
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      hoverColor: AdminDashboardColors.blueSoft,
     );
   }
 }

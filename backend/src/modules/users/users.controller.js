@@ -1,4 +1,5 @@
 const usersService = require("./users.service");
+const { createAuditLog } = require("../auditLogs/auditLogs.helper");
 
 const getAllUsers = async (req, res) => {
   try {
@@ -45,6 +46,13 @@ const updateUserStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
+    createAuditLog({
+      userId: req.user?.id,
+      action: is_active ? "user_activate" : "user_deactivate",
+      entityName: "user",
+      entityId: user.id,
+    }).catch(() => {});
+
     return res.status(200).json({
       success: true,
       message: "User status updated successfully",
@@ -86,6 +94,13 @@ const updateUserById = async (req, res) => {
       });
     }
 
+    createAuditLog({
+      userId: req.user?.id,
+      action: "user_update",
+      entityName: "user",
+      entityId: user.id,
+    }).catch(() => {});
+
     return res.status(200).json({
       success: true,
       message: "User updated successfully",
@@ -108,6 +123,13 @@ const deleteUserById = async (req, res) => {
         message: "User not found"
       });
     }
+
+    createAuditLog({
+      userId: req.user?.id,
+      action: "user_delete",
+      entityName: "user",
+      entityId: user.id,
+    }).catch(() => {});
 
     return res.status(200).json({
       success: true,

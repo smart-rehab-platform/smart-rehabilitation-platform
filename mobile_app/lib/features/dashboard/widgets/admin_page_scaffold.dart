@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/dashboard_colors.dart';
+import '../../../core/constants/admin_dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
-import '../../../core/theme/dashboard_theme.dart';
+import '../../../core/theme/admin_dashboard_theme.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/specialist_features_provider.dart';
 import 'admin_navigation.dart';
+import 'admin_ui_components.dart';
 import 'dashboard_bottom_nav.dart';
 import 'dashboard_layout.dart';
 import 'dashboard_profile_avatar.dart';
@@ -22,6 +23,7 @@ class AdminPageScaffold extends ConsumerWidget {
     this.showBottomNav = true,
     this.actions,
     this.floatingActionButton,
+    this.wrapBodyInScrollView = false,
   });
 
   final String title;
@@ -31,6 +33,7 @@ class AdminPageScaffold extends ConsumerWidget {
   final bool showBottomNav;
   final List<Widget>? actions;
   final Widget? floatingActionButton;
+  final bool wrapBodyInScrollView;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,27 +42,26 @@ class AdminPageScaffold extends ConsumerWidget {
     final unread = ref.watch(specialistNotificationsProvider).unreadCount;
 
     return Theme(
-      data: DashboardTheme.light,
+      data: AdminDashboardTheme.light,
       child: Scaffold(
-        backgroundColor: DashboardColors.background,
+        backgroundColor: AdminDashboardColors.background,
         drawer: const AdminDrawer(),
         appBar: AppBar(
-          backgroundColor: DashboardColors.background,
+          backgroundColor: AdminDashboardColors.appBar,
           surfaceTintColor: Colors.transparent,
+          elevation: 0,
           leading: showBackButton
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded),
+                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
                   onPressed: () => AdminNavigation.popOrGoAdmin(context),
                 )
               : IconButton(
-                  icon: const Icon(Icons.menu_rounded),
+                  icon: const Icon(Icons.menu_rounded, color: Colors.white),
                   onPressed: () => AdminNavigation.openDrawer(context),
                 ),
           title: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            style: Theme.of(context).appBarTheme.titleTextStyle,
           ),
           actions: [
             ...?actions,
@@ -72,13 +74,20 @@ class AdminPageScaffold extends ConsumerWidget {
               imageUrl: auth.user?.profileImageUrl,
               onTap: () => context.push(AppRoutes.adminProfile),
             ),
-            SizedBox(width: context.dashSpacing * 0.35),
+            const SizedBox(width: 8),
           ],
         ),
-        body: SafeArea(child: body),
+        body: SafeArea(
+          child: wrapBodyInScrollView
+              ? SingleChildScrollView(
+                  padding: context.dashPadding,
+                  child: body,
+                )
+              : body,
+        ),
         floatingActionButton: floatingActionButton,
         bottomNavigationBar: showBottomNav
-            ? DashboardBottomNav(
+            ? AdminBottomNav(
                 currentIndex: currentNav,
                 onTap: (item) => AdminNavigation.onNavTap(context, item),
               )
@@ -103,8 +112,7 @@ class _NotificationAction extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onTap,
-          icon: const Icon(Icons.notifications_none_rounded),
-          color: DashboardColors.textPrimary,
+          icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
         ),
         if (count > 0)
           Positioned(
@@ -113,7 +121,7 @@ class _NotificationAction extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: const BoxDecoration(
-                color: DashboardColors.highPriority,
+                color: AdminDashboardColors.danger,
                 shape: BoxShape.circle,
               ),
               constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
@@ -151,10 +159,16 @@ class _AvatarAction extends StatelessWidget {
       borderRadius: BorderRadius.circular(24),
       child: Padding(
         padding: EdgeInsets.only(right: context.dashSpacing * 0.35),
-        child: DashboardProfileAvatar(
-          initials: initials,
-          imageUrl: imageUrl,
-          radius: context.dashSpacing * 0.55,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 2),
+          ),
+          child: DashboardProfileAvatar(
+            initials: initials,
+            imageUrl: imageUrl,
+            radius: context.dashSpacing * 0.55,
+          ),
         ),
       ),
     );

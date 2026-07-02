@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/constants/admin_dashboard_colors.dart';
 import '../../models/admin_assignments_models.dart';
 import '../../models/parent_links_models.dart';
 import '../../providers/admin_patient_assignments_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
+import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
-import '../../widgets/dashboard_surface_card.dart';
-import '../../widgets/parent_dashboard_cards.dart';
 
 class PatientAssignmentsScreen extends ConsumerStatefulWidget {
   const PatientAssignmentsScreen({super.key});
@@ -45,19 +44,19 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (state.errorMessage != null)
-                        DashboardErrorCard(
+                        AdminErrorCard(
                           message: state.errorMessage!,
                           onRetry: () =>
                               ref.read(adminPatientAssignmentsProvider.notifier).refresh(),
                         ),
                       if (state.successMessage != null) ...[
-                        DashboardSurfaceCard(
-                          tint: DashboardColors.success,
+                        AdminSurfaceCard(
+                          tint: AdminDashboardColors.success,
                           child: Row(
                             children: [
                               Icon(
                                 Icons.check_circle_outline_rounded,
-                                color: DashboardColors.success,
+                                color: AdminDashboardColors.success,
                                 size: context.dashSpacing * 0.65,
                               ),
                               SizedBox(width: context.dashSpacing * 0.6),
@@ -88,7 +87,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                         emptyHint: 'No patients available',
                       ),
                       SizedBox(height: context.dashSpacing),
-                      DashboardSurfaceCard(
+                      AdminSurfaceCard(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -120,12 +119,17 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                             SizedBox(height: context.dashSpacing * 0.5),
                             CheckboxListTile(
                               contentPadding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
                               value: state.isPrimarySpecialist,
                               onChanged: (value) => ref
                                   .read(adminPatientAssignmentsProvider.notifier)
                                   .setPrimarySpecialist(value ?? true),
-                              title: const Text('Primary specialist'),
-                              activeColor: DashboardColors.primary,
+                              title: const Text(
+                                'Primary specialist',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              activeColor: AdminDashboardColors.primary,
                               controlAffinity: ListTileControlAffinity.leading,
                             ),
                             SizedBox(height: context.dashSpacing * 0.35),
@@ -138,7 +142,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                         .read(adminPatientAssignmentsProvider.notifier)
                                         .assignSpecialist(),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: DashboardColors.primary,
+                                  backgroundColor: AdminDashboardColors.primary,
                                   foregroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
                                     vertical: context.dashSpacing * 0.75,
@@ -156,14 +160,19 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                           color: Colors.white,
                                         ),
                                       )
-                                    : const Text('Assign Specialist to Patient'),
+                                    : const Text(
+                                        'Assign Specialist to Patient',
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                               ),
                             ),
                           ],
                         ),
                       ),
                       SizedBox(height: context.dashSpacing),
-                      DashboardSurfaceCard(
+                      AdminSurfaceCard(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -207,12 +216,17 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                             SizedBox(height: context.dashSpacing * 0.5),
                             CheckboxListTile(
                               contentPadding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
                               value: state.isPrimaryContact,
                               onChanged: (value) => ref
                                   .read(adminPatientAssignmentsProvider.notifier)
                                   .setPrimaryContact(value ?? true),
-                              title: const Text('Primary contact'),
-                              activeColor: DashboardColors.primary,
+                              title: const Text(
+                                'Primary contact',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              activeColor: AdminDashboardColors.primary,
                               controlAffinity: ListTileControlAffinity.leading,
                             ),
                             SizedBox(height: context.dashSpacing * 0.35),
@@ -225,7 +239,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                         .read(adminPatientAssignmentsProvider.notifier)
                                         .linkParent(),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: DashboardColors.accent,
+                                  backgroundColor: AdminDashboardColors.primary,
                                   foregroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
                                     vertical: context.dashSpacing * 0.75,
@@ -243,7 +257,12 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                           color: Colors.white,
                                         ),
                                       )
-                                    : const Text('Link Parent to Patient'),
+                                    : const Text(
+                                        'Link Parent to Patient',
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                               ),
                             ),
                           ],
@@ -258,28 +277,29 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                       ),
                       SizedBox(height: context.dashSpacing * 0.5),
                       if (state.isLoadingRelationships)
-                        const DashboardLoadingCard(message: 'Loading relationships...')
+                        const AdminLoadingCard(message: 'Loading relationships...')
                       else if (state.selectedPatientId == null)
-                        const DashboardEmptyCard(
+                        const AdminEmptyCard(
                           message: 'Select a patient to view assignments.',
                         )
                       else if (state.assignedSpecialists.isEmpty)
-                        const DashboardEmptyCard(
+                        const AdminEmptyCard(
                           message: 'No specialists assigned to this patient yet.',
                         )
                       else
                         ...state.assignedSpecialists.map(
                           (link) => Padding(
                             padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                            child: DashboardSurfaceCard(
+                            child: AdminSurfaceCard(
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CircleAvatar(
-                                    backgroundColor: DashboardColors.tealSoft,
+                                    backgroundColor: AdminDashboardColors.emeraldSoft,
                                     child: Text(
                                       dashboardAvatarLetter(link.specialistName),
                                       style: TextStyle(
-                                        color: DashboardColors.accent,
+                                        color: AdminDashboardColors.emerald,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
@@ -291,6 +311,8 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                       children: [
                                         Text(
                                           link.specialistName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                           style: theme.textTheme.bodyMedium?.copyWith(
                                             fontWeight: FontWeight.w700,
                                           ),
@@ -298,8 +320,10 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                         Text(
                                           '${link.isPrimary ? 'Primary specialist' : 'Specialist'}'
                                           '${link.email != null ? ' • ${link.email}' : ''}',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                           style: theme.textTheme.bodySmall?.copyWith(
-                                            color: DashboardColors.textSecondary,
+                                            color: AdminDashboardColors.textSecondary,
                                           ),
                                         ),
                                       ],
@@ -321,26 +345,27 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                       if (state.isLoadingRelationships)
                         const SizedBox.shrink()
                       else if (state.selectedPatientId == null)
-                        const DashboardEmptyCard(
+                        const AdminEmptyCard(
                           message: 'Select a patient to view linked parents.',
                         )
                       else if (state.linkedParents.isEmpty)
-                        const DashboardEmptyCard(
+                        const AdminEmptyCard(
                           message: 'No parents linked to this patient yet.',
                         )
                       else
                         ...state.linkedParents.map(
                           (guardian) => Padding(
                             padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                            child: DashboardSurfaceCard(
+                            child: AdminSurfaceCard(
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CircleAvatar(
-                                    backgroundColor: DashboardColors.purpleSoft,
+                                    backgroundColor: AdminDashboardColors.blueSoft,
                                     child: Text(
                                       dashboardAvatarLetter(guardian.parentName),
                                       style: TextStyle(
-                                        color: DashboardColors.primary,
+                                        color: AdminDashboardColors.primary,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
@@ -352,6 +377,8 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                       children: [
                                         Text(
                                           guardian.parentName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                           style: theme.textTheme.bodyMedium?.copyWith(
                                             fontWeight: FontWeight.w700,
                                           ),
@@ -359,8 +386,10 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                         Text(
                                           '${_formatRelationship(guardian.relationship)}'
                                           '${guardian.isPrimaryContact ? ' • Primary contact' : ''}',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                           style: theme.textTheme.bodySmall?.copyWith(
-                                            color: DashboardColors.textSecondary,
+                                            color: AdminDashboardColors.textSecondary,
                                           ),
                                         ),
                                       ],
@@ -412,18 +441,42 @@ class _DropdownField<T> extends StatelessWidget {
 
     return DropdownButtonFormField<T>(
       key: ValueKey('$label-${items.contains(value) ? value : 'none'}'),
+      isExpanded: true,
       initialValue: items.contains(value) ? value : null,
       decoration: InputDecoration(
         labelText: label,
         filled: true,
-        fillColor: DashboardColors.surface,
+        fillColor: AdminDashboardColors.surface,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: DashboardColors.border),
+          borderSide: BorderSide(color: AdminDashboardColors.border),
         ),
       ),
       items: items
-          .map((item) => DropdownMenuItem<T>(value: item, child: Text(itemLabel(item))))
+          .map(
+            (item) => DropdownMenuItem<T>(
+              value: item,
+              child: Text(
+                itemLabel(item),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+          .toList(),
+      selectedItemBuilder: (context) => items
+          .map(
+            (item) => Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                itemLabel(item),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
           .toList(),
       onChanged: onChanged,
     );

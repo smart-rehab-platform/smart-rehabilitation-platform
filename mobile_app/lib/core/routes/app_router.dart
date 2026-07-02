@@ -10,6 +10,10 @@ import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/verify_email_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/dashboard/presentation/admin/admin_screens.dart';
+import '../../features/dashboard/presentation/admin/admin_ai_center_screen.dart';
+import '../../features/dashboard/presentation/admin/admin_audit_logs_screen.dart';
+import '../../features/dashboard/presentation/admin/admin_patients_screen.dart';
+import '../../features/dashboard/presentation/admin/admin_sessions_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_users_screen.dart';
 import '../../features/dashboard/presentation/admin/patient_assignments_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
@@ -211,9 +215,29 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AdminDashboardScreen(),
       ),
       GoRoute(
+        path: AppRoutes.adminPatients,
+        name: 'adminPatients',
+        builder: (context, state) => const AdminPatientsScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.adminPatientAssignments,
         name: 'adminPatientAssignments',
         builder: (context, state) => const PatientAssignmentsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminSessions,
+        name: 'adminSessions',
+        builder: (context, state) => const AdminSessionsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminAiCenter,
+        name: 'adminAiCenter',
+        builder: (context, state) => const AdminAiCenterScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminAuditLogs,
+        name: 'adminAuditLogs',
+        builder: (context, state) => const AdminAuditLogsScreen(),
       ),
       GoRoute(
         path: AppRoutes.adminUsers,
