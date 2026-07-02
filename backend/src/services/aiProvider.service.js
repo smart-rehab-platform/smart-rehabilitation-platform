@@ -320,6 +320,32 @@ const normalizeReportResponse = (
   };
 };
 
+const buildChatbotFallbackResponse = (fallbackText) => ({
+  reply:
+    typeof fallbackText === "string" && fallbackText.trim()
+      ? fallbackText.trim()
+      : "I can help explain exercises, progress, and general rehabilitation support. For diagnosis, medication, emergencies, or treatment decisions, please contact your specialist.",
+  provider: "rule_based",
+  used_fallback: true
+});
+
+const normalizeChatbotReply = (
+  replyText,
+  fallbackText,
+  provider = "gemini"
+) => {
+  const normalizedReply =
+    typeof replyText === "string" && replyText.trim()
+      ? replyText.trim()
+      : buildChatbotFallbackResponse(fallbackText).reply;
+
+  return {
+    reply: normalizedReply,
+    provider,
+    used_fallback: provider !== "gemini"
+  };
+};
+
 const createJsonInstructionPrompt = (prompt) => [
   "Return a JSON object with exactly these fields:",
   "{",
@@ -476,10 +502,29 @@ const generateReportJson = async (prompt, fallbackData = {}) => {
   return buildReportFallbackResponse(fallbackData);
 };
 
+const generateChatbotReply = async (prompt, fallbackText = "") => {
+  const provider = getConfiguredProvider();
+
+  if (provider === "gemini" && geminiService.isConfigured()) {
+    try {
+      const replyText = await geminiService.generateText(prompt);
+      return normalizeChatbotReply(replyText, fallbackText, "gemini");
+    } catch (error) {
+      return buildChatbotFallbackResponse(
+        fallbackText ||
+          `I am using a safe fallback reply right now because the AI assistant is temporarily unavailable. ${error.message}`
+      );
+    }
+  }
+
+  return buildChatbotFallbackResponse(fallbackText);
+};
+
 module.exports = {
   isAiConfigured,
   generateClinicalProgressJson,
   generateClinicalSummaryJson,
   generateRecommendationJson,
-  generateReportJson
+  generateReportJson,
+  generateChatbotReply
 };
