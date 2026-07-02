@@ -22,6 +22,7 @@ const specialistsRoutes = require("./modules/specialists/specialists.routes");
 const parentsRoutes = require("./modules/parents/parents.routes");
 
 const aiRecommendationsRoutes = require("./modules/aiRecommendations/aiRecommendations.routes");
+const aiClinicalProgressRoutes = require("./modules/aiClinicalProgress/aiClinicalProgress.routes");
 const speechAnalysesRoutes = require("./modules/speechAnalyses/speechAnalyses.routes");
 
 
@@ -81,6 +82,7 @@ app.use("/api/v1", specialistsRoutes);
 app.use("/api/v1", parentsRoutes);
 
 app.use("/api/v1/ai/recommendations", aiRecommendationsRoutes);
+app.use("/api/v1", aiClinicalProgressRoutes);
 app.use("/api/v1/speech-analyses", speechAnalysesRoutes);
 app.use("/api/v1", dashboardRoutes);
 app.use("/api/v1/uploads", uploadsRoutes);
