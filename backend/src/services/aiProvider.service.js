@@ -222,6 +222,104 @@ const normalizeRecommendationResponse = (
   };
 };
 
+const buildReportFallbackResponse = (fallbackData = {}) => ({
+  executive_summary:
+    fallbackData.executive_summary ||
+    "Rule-based fallback executive summary was generated because the configured AI provider was unavailable.",
+  patient_progress_summary:
+    fallbackData.patient_progress_summary ||
+    "Fallback patient progress summary was generated from the available structured rehabilitation data.",
+  speech_analysis_summary:
+    fallbackData.speech_analysis_summary ||
+    "Speech analysis context was limited, so a fallback summary was used.",
+  exercise_adherence_summary:
+    fallbackData.exercise_adherence_summary ||
+    "Exercise adherence context was limited, so a fallback summary was used.",
+  goal_progress_summary:
+    fallbackData.goal_progress_summary ||
+    "Goal progress context was limited, so a fallback summary was used.",
+  clinical_insights: sanitizeStringArray(fallbackData.clinical_insights),
+  risks_or_regressions: sanitizeStringArray(fallbackData.risks_or_regressions),
+  recommendations: sanitizeStringArray(fallbackData.recommendations),
+  next_steps: sanitizeStringArray(fallbackData.next_steps),
+  priority_level: normalizePriorityLevel(
+    fallbackData.priority_level,
+    "medium"
+  ),
+  estimated_confidence:
+    typeof fallbackData.estimated_confidence === "number"
+      ? fallbackData.estimated_confidence
+      : 0.5,
+  provider: "rule_based",
+  used_fallback: true
+});
+
+const normalizeReportResponse = (
+  payload,
+  fallbackData = {},
+  provider = "gemini"
+) => {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    throw new Error("AI provider returned an invalid report response.");
+  }
+
+  const fallback = buildReportFallbackResponse(fallbackData);
+
+  return {
+    executive_summary:
+      typeof payload.executive_summary === "string" &&
+      payload.executive_summary.trim()
+        ? payload.executive_summary.trim()
+        : fallback.executive_summary,
+    patient_progress_summary:
+      typeof payload.patient_progress_summary === "string" &&
+      payload.patient_progress_summary.trim()
+        ? payload.patient_progress_summary.trim()
+        : fallback.patient_progress_summary,
+    speech_analysis_summary:
+      typeof payload.speech_analysis_summary === "string" &&
+      payload.speech_analysis_summary.trim()
+        ? payload.speech_analysis_summary.trim()
+        : fallback.speech_analysis_summary,
+    exercise_adherence_summary:
+      typeof payload.exercise_adherence_summary === "string" &&
+      payload.exercise_adherence_summary.trim()
+        ? payload.exercise_adherence_summary.trim()
+        : fallback.exercise_adherence_summary,
+    goal_progress_summary:
+      typeof payload.goal_progress_summary === "string" &&
+      payload.goal_progress_summary.trim()
+        ? payload.goal_progress_summary.trim()
+        : fallback.goal_progress_summary,
+    clinical_insights:
+      sanitizeStringArray(payload.clinical_insights).length > 0
+        ? sanitizeStringArray(payload.clinical_insights)
+        : fallback.clinical_insights,
+    risks_or_regressions:
+      sanitizeStringArray(payload.risks_or_regressions).length > 0
+        ? sanitizeStringArray(payload.risks_or_regressions)
+        : fallback.risks_or_regressions,
+    recommendations:
+      sanitizeStringArray(payload.recommendations).length > 0
+        ? sanitizeStringArray(payload.recommendations)
+        : fallback.recommendations,
+    next_steps:
+      sanitizeStringArray(payload.next_steps).length > 0
+        ? sanitizeStringArray(payload.next_steps)
+        : fallback.next_steps,
+    priority_level: normalizePriorityLevel(
+      payload.priority_level,
+      fallback.priority_level
+    ),
+    estimated_confidence:
+      typeof payload.estimated_confidence === "number"
+        ? payload.estimated_confidence
+        : fallback.estimated_confidence,
+    provider,
+    used_fallback: provider !== "gemini"
+  };
+};
+
 const createJsonInstructionPrompt = (prompt) => [
   "Return a JSON object with exactly these fields:",
   "{",
@@ -257,6 +355,25 @@ const createRecommendationInstructionPrompt = (prompt) => [
   "  ],",
   '  "treatment_plan_adjustments": ["string"],',
   '  "clinical_reasoning": "string",',
+  '  "priority_level": "low | medium | high",',
+  '  "estimated_confidence": 0.5',
+  "}",
+  "Do not add any extra fields.",
+  prompt
+].join("\n");
+
+const createReportInstructionPrompt = (prompt) => [
+  "Return a JSON object with exactly these fields:",
+  "{",
+  '  "executive_summary": "string",',
+  '  "patient_progress_summary": "string",',
+  '  "speech_analysis_summary": "string",',
+  '  "exercise_adherence_summary": "string",',
+  '  "goal_progress_summary": "string",',
+  '  "clinical_insights": ["string"],',
+  '  "risks_or_regressions": ["string"],',
+  '  "recommendations": ["string"],',
+  '  "next_steps": ["string"],',
   '  "priority_level": "low | medium | high",',
   '  "estimated_confidence": 0.5',
   "}",
@@ -336,9 +453,33 @@ const generateRecommendationJson = async (prompt, fallbackData = {}) => {
   return buildRecommendationFallbackResponse(fallbackData);
 };
 
+const generateReportJson = async (prompt, fallbackData = {}) => {
+  const provider = getConfiguredProvider();
+
+  if (provider === "gemini" && geminiService.isConfigured()) {
+    try {
+      const geminiPayload = await geminiService.generateJson(
+        createReportInstructionPrompt(prompt)
+      );
+
+      return normalizeReportResponse(geminiPayload, fallbackData, "gemini");
+    } catch (error) {
+      return buildReportFallbackResponse({
+        ...fallbackData,
+        executive_summary:
+          fallbackData.executive_summary ||
+          `Gemini fallback used after provider failure: ${error.message}`
+      });
+    }
+  }
+
+  return buildReportFallbackResponse(fallbackData);
+};
+
 module.exports = {
   isAiConfigured,
   generateClinicalProgressJson,
   generateClinicalSummaryJson,
-  generateRecommendationJson
+  generateRecommendationJson,
+  generateReportJson
 };
