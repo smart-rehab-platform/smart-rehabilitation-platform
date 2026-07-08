@@ -1,6 +1,8 @@
 const express = require("express");
 const aiReportsController = require("./aiReports.controller");
 const aiReportsValidation = require("./aiReports.validation");
+const authenticate = require("../../middleware/auth.middleware");
+const authorizeRoles = require("../../middleware/role.middleware");
 
 const router = express.Router();
 
@@ -17,6 +19,13 @@ router.post(
 );
 
 router.get("/ai/reports", aiReportsController.getAllReports);
+
+router.post(
+  "/ai/reports/:id/export-pdf",
+  authenticate,
+  authorizeRoles("admin", "specialist"),
+  aiReportsController.exportReportPdf
+);
 
 router.get("/ai/reports/:id", aiReportsController.getReportById);
 

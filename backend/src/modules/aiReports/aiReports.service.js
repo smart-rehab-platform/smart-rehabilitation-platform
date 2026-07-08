@@ -1,5 +1,6 @@
 const db = require("../../database/db");
 const aiProviderService = require("../../services/aiProvider.service");
+const { generateAiReportPdfFile } = require("./aiReportPdf.generator");
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -686,9 +687,72 @@ const getReportsByPatient = async (patientId) => {
   return result.rows;
 };
 
+const fetchAiReportPdfContext = async (report) => {
+  const periodStart = report.period_start;
+  const periodEnd = report.period_end;
+  const reportType = report.type;
+
+  const context = await collectReportContext(
+    report.patient_id,
+    reportType,
+    periodStart,
+    periodEnd
+  );
+
+  const treatmentPlan = context.treatmentPlans[0] ?? null;
+  const goals = context.goals.map((goal) => {
+    const latestProgress = context.goalProgress.find(
+      (entry) => entry.goal_id === goal.id
+    );
+
+    return {
+      title: goal.title,
+      term: goal.term,
+      is_achieved: goal.is_achieved,
+      completion_percentage: latestProgress?.completion_percentage ?? null,
+    };
+  });
+
+  return {
+    report,
+    diagnoses: context.diagnoses,
+    treatmentPlan,
+    goals,
+    progressSnapshots: context.progressSnapshots,
+  };
+};
+
+const exportReportPdf = async (id) => {
+  const report = await getReportById(id);
+
+  if (!report) {
+    return null;
+  }
+
+  const context = await fetchAiReportPdfContext(report);
+  const { publicUrl } = await generateAiReportPdfFile(context);
+
+  await db.query(
+    `
+    UPDATE ai_reports
+    SET pdf_url = $1
+    WHERE id = $2
+    `,
+    [publicUrl, id]
+  );
+
+  const updatedReport = await getReportById(id);
+
+  return {
+    report: updatedReport,
+    pdf_url: publicUrl,
+  };
+};
+
 module.exports = {
   generateReport,
   getAllReports,
   getReportById,
-  getReportsByPatient
+  getReportsByPatient,
+  exportReportPdf,
 };

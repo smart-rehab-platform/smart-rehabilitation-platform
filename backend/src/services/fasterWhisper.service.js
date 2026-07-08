@@ -2,7 +2,15 @@ const fs = require("fs/promises");
 const path = require("path");
 
 const FASTER_WHISPER_ENGINE = "faster-whisper";
-const DEFAULT_TIMEOUT_MS = 30000;
+const DEFAULT_TIMEOUT_MS = 120000;
+
+const getTimeoutMs = () => {
+  const parsed = Number(process.env.FASTER_WHISPER_TIMEOUT_MS);
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return parsed;
+  }
+  return DEFAULT_TIMEOUT_MS;
+};
 
 const backendRoot = path.resolve(__dirname, "..", "..");
 const workspaceRoot = path.resolve(backendRoot, "..");
@@ -140,7 +148,7 @@ const transcribeAudio = async (audioFilePath) => {
   const abortController = new AbortController();
   const timeoutHandle = setTimeout(() => {
     abortController.abort();
-  }, DEFAULT_TIMEOUT_MS);
+  }, getTimeoutMs());
 
   let response;
 

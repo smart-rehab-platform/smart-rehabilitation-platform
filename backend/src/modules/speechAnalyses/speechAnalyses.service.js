@@ -22,6 +22,95 @@ const toNumber = (value) => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
+const clampScore = (value) => Math.min(100, Math.max(0, value));
+
+const tokenizeTranscript = (transcript) => {
+  if (typeof transcript !== "string" || !transcript.trim()) {
+    return [];
+  }
+
+  return transcript
+    .trim()
+    .split(/\s+/)
+    .map((token) => token.replace(/^[^\w]+|[^\w]+$/g, "").toLowerCase())
+    .filter(Boolean);
+};
+
+// Share of tokens that are duplicates (e.g. "AP AP AP AP AP" => 80%).
+const getTokenRepetitionRatio = (tokens) => {
+  if (tokens.length === 0) {
+    return 0;
+  }
+
+  const uniqueCount = new Set(tokens).size;
+  return (tokens.length - uniqueCount) / tokens.length;
+};
+
+const hasMostlyRepeatedTokens = (tokens) =>
+  getTokenRepetitionRatio(tokens) > 0.6;
+
+const calculatePronunciationScore = ({ transcript, duration }) => {
+  const tokens = tokenizeTranscript(transcript);
+  const wordCount = tokens.length;
+  let score = 60;
+
+  if (wordCount === 0) {
+    score -= 5;
+  } else {
+    if (wordCount > 5) {
+      score += 15;
+    }
+    if (wordCount > 10) {
+      score += 10;
+    }
+    if (hasMostlyRepeatedTokens(tokens)) {
+      score -= 10;
+    }
+  }
+
+  const safeDuration =
+    typeof duration === "number" && !Number.isNaN(duration) ? duration : 0;
+  if (safeDuration < 3) {
+    score -= 5;
+  }
+
+  return clampScore(score);
+};
+
+const calculateFluencyScore = ({ transcript, duration }) => {
+  const tokens = tokenizeTranscript(transcript);
+  const wordCount = tokens.length;
+  let score = 65;
+
+  const safeDuration =
+    typeof duration === "number" && !Number.isNaN(duration) ? duration : 0;
+  if (safeDuration >= 5) {
+    score += 10;
+  }
+
+  // Sufficient transcript length for fluency assessment.
+  if (wordCount > 5) {
+    score += 10;
+  }
+
+  if (wordCount > 0 && hasMostlyRepeatedTokens(tokens)) {
+    score -= 10;
+  }
+
+  return clampScore(score);
+};
+
+const calculateSpeechScores = ({ transcript, language, duration }) => {
+  const scoringInput = { transcript, language, duration };
+  const pronunciationScore = calculatePronunciationScore(scoringInput);
+  const fluencyScore = calculateFluencyScore(scoringInput);
+  const overallScore = Number(
+    ((pronunciationScore + fluencyScore) / 2).toFixed(2)
+  );
+
+  return { pronunciationScore, fluencyScore, overallScore };
+};
+
 const formatAiProgressNote = (row) => ({
   id: row.id,
   patient_id: row.patient_id,
@@ -612,11 +701,12 @@ const analyzeSpeech = async ({ submission_id }) => {
   );
   const transcription = await fasterWhisperService.transcribeAudio(audioFilePath);
 
-  const pronunciationScore = Math.floor(Math.random() * 21) + 70;
-  const fluencyScore = Math.floor(Math.random() * 21) + 70;
-  const overallScore = Number(
-    ((pronunciationScore + fluencyScore) / 2).toFixed(2)
-  );
+  const { pronunciationScore, fluencyScore, overallScore } =
+    calculateSpeechScores({
+      transcript: transcription.transcript,
+      language: transcription.language,
+      duration: transcription.duration,
+    });
 
   const rawAiOutput = {
     analysis_type: "faster_whisper_transcription",

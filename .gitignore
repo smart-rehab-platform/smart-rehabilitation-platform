@@ -18,5 +18,8 @@ coverage/
 
 backend/uploads/
 
+# Local-only test seed (never commit)
+database/seeds/local_test_data.sql
+
 .DS_Store__pycache__/
 *.pyc

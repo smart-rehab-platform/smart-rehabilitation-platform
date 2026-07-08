@@ -173,6 +173,8 @@ class SpecialistNotificationItem {
 
 class SpecialistSessionDetail extends SpecialistScheduleItem {
   const SpecialistSessionDetail({
+    required this.id,
+    required this.patientId,
     required super.timeLabel,
     required super.patientName,
     required super.sessionType,
@@ -181,6 +183,8 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
     this.status,
   });
 
+  final String id;
+  final String patientId;
   final DateTime? scheduledAt;
   final String? location;
   final String? status;
@@ -191,6 +195,12 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
     );
 
     return SpecialistSessionDetail(
+      id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
+      patientId: ApiResponseParser.readString(map, const [
+            'patient_id',
+            'patientId',
+          ]) ??
+          '',
       timeLabel: SpecialistScheduleItem.fromMap(map).timeLabel,
       patientName: ApiResponseParser.readString(map, const [
             'patient_name',
@@ -225,6 +235,48 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
         scheduledAt!.day == now.day;
   }
 
+  bool get isUpcoming {
+    if (scheduledAt == null) {
+      return false;
+    }
+    final normalized = status?.toLowerCase();
+    if (normalized == 'completed' ||
+        normalized == 'cancelled' ||
+        normalized == 'no_show') {
+      return false;
+    }
+    return scheduledAt!.isAfter(DateTime.now()) && !isToday;
+  }
+
+  bool get isCompleted => status?.toLowerCase() == 'completed';
+
+  bool get isCancelled {
+    final normalized = status?.toLowerCase();
+    return normalized == 'cancelled' || normalized == 'no_show';
+  }
+
+  SessionDisplayStatus get displayStatus {
+    if (isCancelled) {
+      return SessionDisplayStatus.cancelled;
+    }
+    if (isCompleted) {
+      return SessionDisplayStatus.completed;
+    }
+    if (isToday) {
+      return SessionDisplayStatus.today;
+    }
+    return SessionDisplayStatus.upcoming;
+  }
+
+  bool matchesFilter(SessionListFilter filter) {
+    return switch (filter) {
+      SessionListFilter.all => true,
+      SessionListFilter.today => isToday,
+      SessionListFilter.upcoming => isUpcoming,
+      SessionListFilter.completed => isCompleted,
+    };
+  }
+
   /// Subtitle for dashboard cards: session type + status + location when available.
   String get displaySubtitle {
     final parts = <String>[
@@ -234,6 +286,34 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
     ];
     return parts.isEmpty ? 'Therapy Session' : parts.join(' • ');
   }
+}
+
+enum SessionListFilter {
+  all,
+  today,
+  upcoming,
+  completed;
+
+  String get label => switch (this) {
+        SessionListFilter.all => 'All',
+        SessionListFilter.today => 'Today',
+        SessionListFilter.upcoming => 'Upcoming',
+        SessionListFilter.completed => 'Completed',
+      };
+}
+
+enum SessionDisplayStatus {
+  today,
+  upcoming,
+  completed,
+  cancelled;
+
+  String get label => switch (this) {
+        SessionDisplayStatus.today => 'Today',
+        SessionDisplayStatus.upcoming => 'Upcoming',
+        SessionDisplayStatus.completed => 'Completed',
+        SessionDisplayStatus.cancelled => 'Cancelled',
+      };
 }
 
 String formatDashboardDate(DateTime? date) {

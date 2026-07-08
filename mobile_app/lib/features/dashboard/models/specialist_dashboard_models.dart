@@ -45,19 +45,30 @@ class SpecialistOverviewData {
 
 class SpecialistPendingReview {
   const SpecialistPendingReview({
+    required this.id,
+    this.patientId,
     required this.patientName,
     required this.exerciseTitle,
     this.submittedAt,
     this.priority = 'Medium',
+    this.status = 'pending',
   });
 
+  final String id;
+  final String? patientId;
   final String patientName;
   final String exerciseTitle;
   final DateTime? submittedAt;
   final String priority;
+  final String status;
 
   factory SpecialistPendingReview.fromMap(Map<String, dynamic> map) {
     return SpecialistPendingReview(
+      id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
+      patientId: ApiResponseParser.readString(map, const [
+        'patient_id',
+        'patientId',
+      ]),
       patientName: ApiResponseParser.readString(map, const [
             'patient_name',
             'patientName',
@@ -74,6 +85,7 @@ class SpecialistPendingReview {
         map['submitted_at'] ?? map['submittedAt'],
       ),
       priority: _derivePriority(map),
+      status: ApiResponseParser.readString(map, const ['status']) ?? 'pending',
     );
   }
 
