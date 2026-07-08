@@ -106,27 +106,6 @@ class SpecialistPendingReviewsListNotifier
   Future<void> refresh() => initialize();
 }
 
-final specialistSessionsProvider = StateNotifierProvider<
-    SpecialistSessionsNotifier,
-    SpecialistListState<SpecialistSessionDetail>>(
-  (ref) => SpecialistSessionsNotifier(
-    ref,
-    ref.watch(specialistFeaturesRepositoryProvider),
-  ),
-);
-
-class SpecialistSessionsNotifier extends SpecialistListNotifier<SpecialistSessionDetail> {
-  SpecialistSessionsNotifier(super.ref, super.repository);
-
-  Future<void> initialize() async {
-    await load(_repository.fetchSessions);
-    final today = state.items.where((session) => session.isToday).toList();
-    state = state.copyWith(items: today);
-  }
-
-  Future<void> refresh() => initialize();
-}
-
 final specialistTreatmentPlansProvider = StateNotifierProvider<
     SpecialistTreatmentPlansNotifier,
     SpecialistListState<SpecialistTreatmentPlanItem>>(
@@ -205,35 +184,6 @@ class SpecialistExercisesNotifier extends SpecialistListNotifier<SpecialistExerc
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Failed to load exercises: $error',
-      );
-    }
-  }
-
-  Future<void> refresh() => initialize();
-}
-
-final specialistReportsProvider = StateNotifierProvider<
-    SpecialistReportsNotifier,
-    SpecialistListState<SpecialistReportItem>>(
-  (ref) => SpecialistReportsNotifier(
-    ref,
-    ref.watch(specialistFeaturesRepositoryProvider),
-  ),
-);
-
-class SpecialistReportsNotifier extends SpecialistListNotifier<SpecialistReportItem> {
-  SpecialistReportsNotifier(super.ref, super.repository);
-
-  Future<void> initialize() async {
-    _ensureAuthToken();
-    state = state.copyWith(isLoading: true, errorMessage: null);
-    try {
-      final items = await _repository.fetchReports();
-      state = state.copyWith(isLoading: false, items: items);
-    } catch (error) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Failed to load reports: $error',
       );
     }
   }

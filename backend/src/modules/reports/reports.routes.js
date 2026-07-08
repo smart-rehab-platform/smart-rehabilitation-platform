@@ -44,7 +44,6 @@ router.post(
   "/reports/:id/export-pdf",
   authenticate,
   authorizeRoles("admin", "specialist"),
-  reportsValidation.validateExportPdf,
   reportsController.exportReportPdf
 );
 

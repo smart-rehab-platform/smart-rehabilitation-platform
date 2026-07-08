@@ -7,6 +7,7 @@ import '../../../../core/constants/admin_dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../providers/specialist_features_provider.dart';
+import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
@@ -293,10 +294,10 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
         isLoading: state.isLoading,
         errorMessage: state.errorMessage,
         onRetry: () => ref.read(specialistReportsProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
+        isEmpty: state.reports.isEmpty,
         emptyMessage: 'No reports found.',
         child: Column(
-          children: state.items
+          children: state.reports
               .map(
                 (report) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),

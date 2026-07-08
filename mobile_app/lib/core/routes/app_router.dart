@@ -19,6 +19,17 @@ import '../../features/dashboard/presentation/admin/patient_assignments_screen.d
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
 import '../../features/dashboard/presentation/manage_parent_links_screen.dart';
 import '../../features/dashboard/presentation/parent_dashboard_screen.dart';
+import '../../features/dashboard/presentation/specialist/edit_treatment_plan_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_ai_recommendations_screen.dart';
+import '../../features/dashboard/presentation/specialist/manage_goals_screen.dart';
+import '../../features/dashboard/presentation/specialist/patient_details_screen.dart';
+import '../../features/dashboard/presentation/specialist/review_exercise_screen.dart';
+import '../../features/dashboard/presentation/specialist/edit_specialist_profile_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_profile_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_report_details_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_reports_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_sessions_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_speech_analysis_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_screens.dart';
 import '../../features/dashboard/presentation/specialist_dashboard_screen.dart';
 import '../../features/dashboard/home_page.dart';
@@ -165,6 +176,49 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SpecialistPatientsScreen(),
       ),
       GoRoute(
+        path: AppRoutes.specialistPatientDetailsPath,
+        name: 'specialistPatientDetails',
+        builder: (context, state) => SpecialistPatientDetailsScreen(
+          patientId: state.pathParameters['patientId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistManageGoalsPath,
+        name: 'specialistManageGoals',
+        builder: (context, state) => SpecialistManageGoalsScreen(
+          patientId: state.pathParameters['patientId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistAiRecommendationsPath,
+        name: 'specialistAiRecommendations',
+        builder: (context, state) => SpecialistAiRecommendationsScreen(
+          patientId: state.pathParameters['patientId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistPatientSpeechAnalysisPath,
+        name: 'specialistPatientSpeechAnalysis',
+        builder: (context, state) => SpecialistSpeechAnalysisScreen(
+          patientId: state.pathParameters['patientId']!,
+          submissionId: state.uri.queryParameters['submissionId'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistReviewExercisePath,
+        name: 'specialistReviewExercise',
+        builder: (context, state) => SpecialistReviewExerciseScreen(
+          submissionId: state.pathParameters['submissionId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistEditTreatmentPlanPath,
+        name: 'specialistEditTreatmentPlan',
+        builder: (context, state) => SpecialistEditTreatmentPlanScreen(
+          planId: state.pathParameters['planId']!,
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.specialistPendingReviews,
         name: 'specialistPendingReviews',
         builder: (context, state) => const SpecialistPendingReviewsScreen(),
@@ -195,6 +249,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SpecialistReportsScreen(),
       ),
       GoRoute(
+        path: AppRoutes.specialistReportDetailsPath,
+        name: 'specialistReportDetails',
+        builder: (context, state) => SpecialistReportDetailsScreen(
+          reportId: state.pathParameters['reportId']!,
+          isAiReport: state.uri.queryParameters['ai'] == '1',
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.specialistNotifications,
         name: 'specialistNotifications',
         builder: (context, state) => const SpecialistNotificationsScreen(),
@@ -203,6 +265,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.specialistProfile,
         name: 'specialistProfile',
         builder: (context, state) => const SpecialistProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistEditProfile,
+        name: 'specialistEditProfile',
+        builder: (context, state) => const EditSpecialistProfileScreen(),
       ),
       GoRoute(
         path: AppRoutes.specialistMore,

@@ -97,10 +97,35 @@ const getReportsByPatient = async (req, res) => {
   }
 };
 
+const exportReportPdf = async (req, res) => {
+  try {
+    const result = await aiReportsService.exportReportPdf(req.params.id);
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "AI report not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "AI report PDF generated successfully",
+      data: result
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   generateWeeklyReport,
   generateMonthlyReport,
   getAllReports,
   getReportById,
-  getReportsByPatient
+  getReportsByPatient,
+  exportReportPdf,
 };

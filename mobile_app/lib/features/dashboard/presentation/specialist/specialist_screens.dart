@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
-import '../../../auth/providers/auth_provider.dart';
 import '../../models/specialist_dashboard_models.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_dashboard_provider.dart';
@@ -15,8 +14,9 @@ import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/specialist_navigation.dart';
+import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
-import '../../../presence/widgets/online_status_dot.dart';
+import 'specialist_exercises_widgets.dart';
 
 class SpecialistPatientsScreen extends ConsumerStatefulWidget {
   const SpecialistPatientsScreen({super.key});
@@ -55,6 +55,9 @@ class _SpecialistPatientsScreenState extends ConsumerState<SpecialistPatientsScr
                 (patient) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
                   child: DashboardSurfaceCard(
+                    onTap: () => context.push(
+                      AppRoutes.specialistPatientDetails(patient.id),
+                    ),
                     child: Row(
                       children: [
                         CircleAvatar(
@@ -87,6 +90,10 @@ class _SpecialistPatientsScreenState extends ConsumerState<SpecialistPatientsScr
                                 ),
                             ],
                           ),
+                        ),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: DashboardColors.textMuted,
                         ),
                       ],
                     ),
@@ -136,47 +143,6 @@ class _SpecialistPendingReviewsScreenState
         child: Column(
           children: state.items
               .map((review) => _buildReviewCard(context, theme, review))
-              .toList(),
-        ),
-      ),
-    );
-  }
-}
-
-class SpecialistSessionsScreen extends ConsumerStatefulWidget {
-  const SpecialistSessionsScreen({super.key});
-
-  @override
-  ConsumerState<SpecialistSessionsScreen> createState() =>
-      _SpecialistSessionsScreenState();
-}
-
-class _SpecialistSessionsScreenState extends ConsumerState<SpecialistSessionsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(specialistSessionsProvider.notifier).initialize();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(specialistSessionsProvider);
-    final theme = Theme.of(context);
-
-    return SpecialistPageScaffold(
-      title: "Today's Sessions",
-      showBackButton: true,
-      body: SpecialistAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () => ref.read(specialistSessionsProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
-        emptyMessage: 'No sessions scheduled for today.',
-        child: Column(
-          children: state.items
-              .map((session) => _buildSessionCard(context, theme, session))
               .toList(),
         ),
       ),
@@ -322,143 +288,109 @@ class SpecialistExercisesScreen extends ConsumerStatefulWidget {
 }
 
 class _SpecialistExercisesScreenState extends ConsumerState<SpecialistExercisesScreen> {
+  late final TextEditingController _searchController;
+  String _selectedCategory = specialistExerciseAllCategoryLabel;
+
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistExercisesProvider.notifier).initialize();
     });
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistExercisesProvider);
+    final notifier = ref.read(specialistExercisesProvider.notifier);
     final theme = Theme.of(context);
+    final categories = buildExerciseCategoryFilters(state.items);
+    final visible = filterExercises(
+      state.items,
+      searchQuery: _searchController.text,
+      selectedCategory: _selectedCategory,
+    );
+
+    Widget body;
+    if (state.isLoading) {
+      body = const Center(child: DashboardLoadingCard());
+    } else if (state.errorMessage != null && state.items.isEmpty) {
+      body = Padding(
+        padding: context.dashPadding,
+        child: DashboardErrorCard(
+          message: state.errorMessage!,
+          onRetry: notifier.refresh,
+        ),
+      );
+    } else {
+      body = ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: context.dashPadding,
+        children: [
+          Text(
+            'Exercise Library',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.25),
+          Text(
+            'Browse therapy exercises by category and search.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: DashboardColors.textSecondary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.75),
+          buildExerciseSearchField(
+            controller: _searchController,
+            onChanged: (_) => setState(() {}),
+          ),
+          if (state.items.isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.75),
+            SpecialistExerciseCategoryChips(
+              categories: categories,
+              selected: _selectedCategory,
+              onChanged: (value) => setState(() => _selectedCategory = value),
+            ),
+          ],
+          if (state.errorMessage != null) ...[
+            SizedBox(height: context.dashSpacing * 0.75),
+            DashboardErrorCard(
+              message: state.errorMessage!,
+              onRetry: notifier.refresh,
+            ),
+          ],
+          SizedBox(height: context.dashSpacing * 0.75),
+          if (state.items.isEmpty)
+            const DashboardEmptyCard(
+              message:
+                  'No exercises available yet. New exercises will appear here once added.',
+            )
+          else if (visible.isEmpty)
+            const DashboardEmptyCard(
+              message: 'No exercises match your filters.',
+            )
+          else
+            ...visible.map(
+              (exercise) => SpecialistExerciseCard(exercise: exercise),
+            ),
+          SizedBox(height: context.dashSpacing),
+        ],
+      );
+    }
 
     return SpecialistPageScaffold(
       title: 'Exercises',
       currentNav: DashboardNavItem.exercises,
-      body: SpecialistAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () => ref.read(specialistExercisesProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
-        emptyMessage: 'No exercises available yet.',
-        child: Column(
-          children: state.items
-              .map(
-                (exercise) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          exercise.title,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        if (exercise.category != null) ...[
-                          SizedBox(height: context.dashSpacing * 0.15),
-                          Text(
-                            exercise.category!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: DashboardColors.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                        if (exercise.instructions != null) ...[
-                          SizedBox(height: context.dashSpacing * 0.15),
-                          Text(
-                            exercise.instructions!,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: DashboardColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
-    );
-  }
-}
-
-class SpecialistReportsScreen extends ConsumerStatefulWidget {
-  const SpecialistReportsScreen({super.key});
-
-  @override
-  ConsumerState<SpecialistReportsScreen> createState() =>
-      _SpecialistReportsScreenState();
-}
-
-class _SpecialistReportsScreenState extends ConsumerState<SpecialistReportsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(specialistReportsProvider.notifier).initialize();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(specialistReportsProvider);
-    final theme = Theme.of(context);
-
-    return SpecialistPageScaffold(
-      title: 'Reports',
-      currentNav: DashboardNavItem.reports,
-      body: SpecialistAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () => ref.read(specialistReportsProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
-        emptyMessage: 'No reports found.',
-        child: Column(
-          children: state.items
-              .map(
-                (report) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          report.title,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        if (report.patientName != null)
-                          Text(
-                            report.patientName!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: DashboardColors.textSecondary,
-                            ),
-                          ),
-                        Text(
-                          '${report.reportType ?? 'Report'} • ${_formatDate(report.createdAt)}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: DashboardColors.textMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
+      body: body,
     );
   }
 }
@@ -564,73 +496,6 @@ class _SpecialistNotificationsScreenState
   }
 }
 
-class SpecialistProfileScreen extends ConsumerWidget {
-  const SpecialistProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider).user;
-    final theme = Theme.of(context);
-
-    return SpecialistPageScaffold(
-      title: 'Profile',
-      showBackButton: true,
-      body: SingleChildScrollView(
-        padding: context.dashPadding,
-        child: DashboardSurfaceCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: DashboardColors.purpleSoft,
-                  child: Text(
-                    dashboardInitials(user?.fullName, fallback: 'SP'),
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: DashboardColors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: context.dashSpacing),
-              _ProfileField(label: 'Full Name', value: user?.fullName ?? '—'),
-              _ProfileField(label: 'Email', value: user?.email ?? '—'),
-              _ProfileField(label: 'Role', value: user?.role ?? 'specialist'),
-              if (user?.phone != null)
-                _ProfileField(label: 'Phone', value: user!.phone!),
-              if (user?.id != null) ...[
-                SizedBox(height: context.dashSpacing * 0.35),
-                Row(
-                  children: [
-                    OnlineStatusDot(userId: user!.id!),
-                    SizedBox(width: context.dashSpacing * 0.35),
-                    PresenceStatusLabel(userId: user.id!),
-                  ],
-                ),
-              ],
-              SizedBox(height: context.dashSpacing),
-              ElevatedButton(
-                onPressed: () => SpecialistNavigation.logout(context, ref),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.75),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: const Text('Logout'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class SpecialistMoreScreen extends ConsumerWidget {
   const SpecialistMoreScreen({super.key});
 
@@ -691,6 +556,9 @@ Widget _buildReviewCard(
   return Padding(
     padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
     child: DashboardSurfaceCard(
+      onTap: review.id.isEmpty
+          ? null
+          : () => context.push(AppRoutes.specialistReviewExercise(review.id)),
       child: Row(
         children: [
           CircleAvatar(
@@ -724,57 +592,10 @@ Widget _buildReviewCard(
             ),
           ),
           DashboardPriorityBadge(label: review.priority),
-        ],
-      ),
-    ),
-  );
-}
-
-Widget _buildSessionCard(
-  BuildContext context,
-  ThemeData theme,
-  SpecialistSessionDetail session,
-) {
-  return Padding(
-    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-    child: DashboardSurfaceCard(
-      child: Row(
-        children: [
-          Container(
-            width: context.dashSpacing * 2.2,
-            padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.45),
-            decoration: BoxDecoration(
-              color: DashboardColors.purpleSoft,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              session.timeLabel,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: DashboardColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          SizedBox(width: context.dashSpacing * 0.65),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  session.patientName,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                                Text(
-                                  session.displaySubtitle,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: DashboardColors.textSecondary,
-                                  ),
-                                ),
-              ],
-            ),
+          SizedBox(width: context.dashSpacing * 0.25),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: DashboardColors.textMuted,
           ),
         ],
       ),
@@ -797,37 +618,6 @@ String _formatDate(DateTime? date) {
     return '—';
   }
   return DateFormat('MMM d, yyyy').format(date);
-}
-
-class _ProfileField extends StatelessWidget {
-  const _ProfileField({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: DashboardColors.textMuted,
-                ),
-          ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _MoreTile extends StatelessWidget {

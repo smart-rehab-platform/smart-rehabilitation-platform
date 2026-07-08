@@ -11,20 +11,6 @@ const validateCreateReport = (req, res, next) => {
   next();
 };
 
-const validateExportPdf = (req, res, next) => {
-  const { pdf_url } = req.body;
-
-  if (!pdf_url) {
-    return res.status(400).json({
-      success: false,
-      message: "pdf_url is required"
-    });
-  }
-
-  next();
-};
-
 module.exports = {
-  validateCreateReport,
-  validateExportPdf
+  validateCreateReport
 };

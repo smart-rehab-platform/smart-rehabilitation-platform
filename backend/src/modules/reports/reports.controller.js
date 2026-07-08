@@ -113,12 +113,9 @@ const getPatientMonthlyReports = async (req, res) => {
 
 const exportReportPdf = async (req, res) => {
   try {
-    const report = await reportsService.exportReportPdf(
-      req.params.id,
-      req.body.pdf_url
-    );
+    const result = await reportsService.exportReportPdf(req.params.id);
 
-    if (!report) {
+    if (!result) {
       return res.status(404).json({
         success: false,
         message: "Report not found"
@@ -127,8 +124,8 @@ const exportReportPdf = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Report PDF exported successfully",
-      data: report
+      message: "PDF generated successfully",
+      data: result
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
