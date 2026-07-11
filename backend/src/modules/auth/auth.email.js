@@ -16,7 +16,8 @@ const getFrontendBaseUrl = () =>
   process.env.FRONTEND_URL || "http://localhost:3000";
 
 const getResetPasswordBaseUrl = () =>
-  process.env.RESET_PASSWORD_URL || `${getFrontendBaseUrl()}/reset-password`;
+  process.env.RESET_PASSWORD_URL ||
+  `${getApiBaseUrl()}/auth/reset-password`;
 
 const getVerifyEmailBaseUrl = () =>
   process.env.VERIFY_EMAIL_URL ||

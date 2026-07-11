@@ -8,17 +8,19 @@ import '../../auth/providers/auth_provider.dart';
 import '../data/parent_dashboard_repository.dart';
 import '../models/parent_dashboard_models.dart';
 
-final parentDashboardRepositoryProvider = Provider<ParentDashboardRepository>((ref) {
+final parentDashboardRepositoryProvider = Provider<ParentDashboardRepository>((
+  ref,
+) {
   final dio = ref.watch(dioProvider);
   return ParentDashboardRepository(dio);
 });
 
 final parentDashboardProvider =
     StateNotifierProvider<ParentDashboardNotifier, ParentDashboardState>((ref) {
-  final repository = ref.watch(parentDashboardRepositoryProvider);
-  final authRepository = ref.watch(authRepositoryProvider);
-  return ParentDashboardNotifier(ref, repository, authRepository);
-});
+      final repository = ref.watch(parentDashboardRepositoryProvider);
+      final authRepository = ref.watch(authRepositoryProvider);
+      return ParentDashboardNotifier(ref, repository, authRepository);
+    });
 
 class ParentDashboardState {
   const ParentDashboardState({
@@ -119,8 +121,9 @@ class ParentDashboardState {
       submissions: submissions ?? this.submissions,
       childrenProgress: childrenProgress ?? this.childrenProgress,
       reports: reports ?? this.reports,
-      aiInsight:
-          identical(aiInsight, _sentinel) ? this.aiInsight : aiInsight as ParentAiInsight?,
+      aiInsight: identical(aiInsight, _sentinel)
+          ? this.aiInsight
+          : aiInsight as ParentAiInsight?,
       latestFeedback: identical(latestFeedback, _sentinel)
           ? this.latestFeedback
           : latestFeedback as ParentSpecialistFeedback?,
@@ -138,7 +141,7 @@ class ParentDashboardState {
 
 class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
   ParentDashboardNotifier(this._ref, this._repository, this._authRepository)
-      : super(const ParentDashboardState());
+    : super(const ParentDashboardState());
 
   final Ref _ref;
   final ParentDashboardRepository _repository;
@@ -161,11 +164,7 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
       return;
     }
 
-    state = state.copyWith(
-      isLoading: true,
-      errorMessage: null,
-      user: user,
-    );
+    state = state.copyWith(isLoading: true, errorMessage: null, user: user);
 
     try {
       final results = await Future.wait([
@@ -174,6 +173,7 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
         _repository.fetchChildrenProgress(),
         _repository.fetchUnreadNotificationCount(user.id!),
         _repository.fetchParentReports(),
+        _repository.fetchParentSessions(user.id!),
       ]);
 
       final overview = results[0] as ParentOverviewData;
@@ -181,30 +181,38 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
       final progressChildren = results[2] as List<ParentChild>;
       final unread = results[3] as int;
       final parentReports = results[4] as List<ParentReportItem>;
+      final sessions = results[5] as List<ParentSessionItem>;
 
       if (children.isEmpty && progressChildren.isNotEmpty) {
         children = progressChildren;
       }
 
       final mergedChildren = _mergeChildren(children, progressChildren);
-      final selectedId = mergedChildren.isNotEmpty ? mergedChildren.first.id : null;
+      final selectedId = mergedChildren.isNotEmpty
+          ? mergedChildren.first.id
+          : null;
+      final upcomingSessionsCount = sessions
+          .where((session) => session.isUpcoming)
+          .length;
 
       final latestReportLabel = parentReports.isNotEmpty
           ? parentReports.first.title
-          : overview.latestReportLabel;
+          : (overview.latestReportLabel == 'No report yet'
+                ? 'No report yet'
+                : overview.latestReportLabel);
 
       state = state.copyWith(
         isLoading: false,
         overview: ParentOverviewData(
-          childrenCount: mergedChildren.isNotEmpty
-              ? mergedChildren.length
-              : overview.childrenCount,
+          childrenCount: mergedChildren.length,
           todaysTasksCount: overview.todaysTasksCount,
-          upcomingSessionsCount: overview.upcomingSessionsCount,
+          upcomingSessionsCount: upcomingSessionsCount,
           latestReportLabel: latestReportLabel,
         ),
         children: mergedChildren,
-        childrenProgress: progressChildren.isNotEmpty ? progressChildren : mergedChildren,
+        childrenProgress: progressChildren.isNotEmpty
+            ? progressChildren
+            : mergedChildren,
         selectedChildId: selectedId,
         unreadNotifications: unread,
         reports: parentReports,
@@ -212,6 +220,21 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
 
       if (selectedId != null) {
         await loadSelectedChildData(selectedId, showLoader: false);
+      } else {
+        state = state.copyWith(
+          dailyTasks: const [],
+          submissions: const [],
+          reports: parentReports,
+          aiInsight: null,
+          latestFeedback: null,
+          speechSummary: null,
+          attentionAlert: null,
+          streakInfo: const ParentStreakInfo(
+            completedToday: 0,
+            totalToday: 0,
+            streakDays: 0,
+          ),
+        );
       }
     } catch (error) {
       state = state.copyWith(
@@ -223,6 +246,26 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
 
   Future<void> refresh() => initialize();
 
+  void syncUserFromAuth() {
+    final user = _ref.read(authProvider).user;
+    if (user == null) {
+      return;
+    }
+    state = state.copyWith(user: user);
+  }
+
+  Future<void> refreshUnreadCount() async {
+    final userId = state.user?.id ?? _ref.read(authProvider).user?.id;
+    if (userId == null || userId.isEmpty) {
+      return;
+    }
+
+    try {
+      final count = await _repository.fetchUnreadNotificationCount(userId);
+      state = state.copyWith(unreadNotifications: count);
+    } catch (_) {}
+  }
+
   Future<void> selectChild(String childId) async {
     if (childId == state.selectedChildId) {
       return;
@@ -231,7 +274,10 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
     await loadSelectedChildData(childId);
   }
 
-  Future<void> loadSelectedChildData(String childId, {bool showLoader = true}) async {
+  Future<void> loadSelectedChildData(
+    String childId, {
+    bool showLoader = true,
+  }) async {
     final child = state.children.firstWhere(
       (item) => item.id == childId,
       orElse: () => ParentChild(id: childId, name: 'Child'),
@@ -257,7 +303,10 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
           Future<List<ParentNotificationItem>>.value(const []),
       ]);
 
-      final dailyTasks = results[0] as List<ParentDailyTask>;
+      final dailyTasks = _applySubmissionStatus(
+        results[0] as List<ParentDailyTask>,
+        results[1] as List<ParentSubmissionItem>,
+      );
       final submissions = results[1] as List<ParentSubmissionItem>;
       final reports = results[2] as List<ParentReportItem>;
       final aiInsight = results[3] as ParentAiInsight?;
@@ -284,25 +333,22 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
       );
 
       final resolvedReports = reports.isNotEmpty ? reports : state.reports;
-      final resolvedAiInsight = aiInsight ??
-          ParentAiInsight(
-            message:
-                '${child.name} is improving in pronunciation clarity. Recommended today: 10-min speech drill.',
-          );
 
       state = state.copyWith(
         isLoadingChild: false,
         dailyTasks: dailyTasks,
         submissions: submissions,
         reports: resolvedReports,
-        aiInsight: resolvedAiInsight,
+        aiInsight: aiInsight,
         latestFeedback: feedback,
         speechSummary: speech,
         attentionAlert: attentionAlert,
         nextAction: nextAction,
         streakInfo: streakInfo,
         overview: state.overview.copyWithCounts(
-          todaysTasksCount: dailyTasks.isNotEmpty ? dailyTasks.length : state.overview.todaysTasksCount,
+          todaysTasksCount: dailyTasks.isNotEmpty
+              ? dailyTasks.length
+              : state.overview.todaysTasksCount,
           latestReportLabel: resolvedReports.isNotEmpty
               ? resolvedReports.first.title
               : state.overview.latestReportLabel,
@@ -336,9 +382,37 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
         id: child.id,
         name: child.name.isNotEmpty ? child.name : (existing?.name ?? 'Child'),
         progressPercent: child.progressPercent ?? existing?.progressPercent,
+        dateOfBirth: existing?.dateOfBirth ?? child.dateOfBirth,
+        gender: existing?.gender ?? child.gender,
       );
     }
     return map.values.toList();
+  }
+
+  List<ParentDailyTask> _applySubmissionStatus(
+    List<ParentDailyTask> tasks,
+    List<ParentSubmissionItem> submissions,
+  ) {
+    final submittedIds = submissions
+        .map((item) => item.assignedExerciseId)
+        .toSet();
+    return tasks
+        .map(
+          (task) => ParentDailyTask(
+            id: task.id,
+            title: task.title,
+            dueTime: task.dueTime,
+            status: task.isCompleted || submittedIds.contains(task.id)
+                ? 'completed'
+                : task.status,
+            isCompleted: task.isCompleted || submittedIds.contains(task.id),
+            instructions: task.instructions,
+            frequency: task.frequency,
+            dueDate: task.dueDate,
+            exerciseId: task.exerciseId,
+          ),
+        )
+        .toList();
   }
 
   ParentStreakInfo _computeStreak(
@@ -439,17 +513,14 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
       }
     }
 
-    final warningNotification = notifications.firstWhere(
-      (item) {
-        final type = item.type?.toLowerCase() ?? '';
-        final text = '${item.title} ${item.message}'.toLowerCase();
-        return type.contains('warning') ||
-            type.contains('alert') ||
-            text.contains('missed') ||
-            text.contains('attention');
-      },
-      orElse: () => const ParentNotificationItem(id: '', title: ''),
-    );
+    final warningNotification = notifications.firstWhere((item) {
+      final type = item.type?.toLowerCase() ?? '';
+      final text = '${item.title} ${item.message}'.toLowerCase();
+      return type.contains('warning') ||
+          type.contains('alert') ||
+          text.contains('missed') ||
+          text.contains('attention');
+    }, orElse: () => const ParentNotificationItem(id: '', title: ''));
 
     if (warningNotification.id.isNotEmpty) {
       return ParentAttentionAlert(
@@ -515,7 +586,8 @@ extension on ParentOverviewData {
     return ParentOverviewData(
       childrenCount: childrenCount ?? this.childrenCount,
       todaysTasksCount: todaysTasksCount ?? this.todaysTasksCount,
-      upcomingSessionsCount: upcomingSessionsCount ?? this.upcomingSessionsCount,
+      upcomingSessionsCount:
+          upcomingSessionsCount ?? this.upcomingSessionsCount,
       latestReportLabel: latestReportLabel ?? this.latestReportLabel,
     );
   }

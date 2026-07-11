@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/providers/auth_provider.dart';
 import '../data/specialist_profile_repository.dart';
 import '../models/specialist_profile_models.dart';
+import '../widgets/profile_image_picker.dart';
 import 'specialist_profile_provider.dart';
+import 'specialist_dashboard_provider.dart';
 
 class SpecialistEditProfileState {
   const SpecialistEditProfileState({
@@ -12,6 +16,9 @@ class SpecialistEditProfileState {
     this.errorMessage,
     this.validationMessage,
     this.profileId,
+    this.profileImageUrl,
+    this.pendingImageBytes,
+    this.pendingImageFilename,
     this.fullName = '',
     this.phone = '',
     this.specialization = '',
@@ -25,6 +32,9 @@ class SpecialistEditProfileState {
   final String? errorMessage;
   final String? validationMessage;
   final String? profileId;
+  final String? profileImageUrl;
+  final Uint8List? pendingImageBytes;
+  final String? pendingImageFilename;
   final String fullName;
   final String phone;
   final String specialization;
@@ -38,6 +48,10 @@ class SpecialistEditProfileState {
     Object? errorMessage = _sentinel,
     Object? validationMessage = _sentinel,
     String? profileId,
+    String? profileImageUrl,
+    Uint8List? pendingImageBytes,
+    String? pendingImageFilename,
+    bool clearPendingImage = false,
     String? fullName,
     String? phone,
     String? specialization,
@@ -55,6 +69,13 @@ class SpecialistEditProfileState {
           ? this.validationMessage
           : validationMessage as String?,
       profileId: profileId ?? this.profileId,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      pendingImageBytes: clearPendingImage
+          ? null
+          : (pendingImageBytes ?? this.pendingImageBytes),
+      pendingImageFilename: clearPendingImage
+          ? null
+          : (pendingImageFilename ?? this.pendingImageFilename),
       fullName: fullName ?? this.fullName,
       phone: phone ?? this.phone,
       specialization: specialization ?? this.specialization,
@@ -66,17 +87,20 @@ class SpecialistEditProfileState {
 }
 
 final specialistEditProfileProvider =
-    StateNotifierProvider<SpecialistEditProfileNotifier, SpecialistEditProfileState>(
-  (ref) => SpecialistEditProfileNotifier(
-    ref,
-    ref.watch(specialistProfileRepositoryProvider),
-  ),
-);
+    StateNotifierProvider<
+      SpecialistEditProfileNotifier,
+      SpecialistEditProfileState
+    >(
+      (ref) => SpecialistEditProfileNotifier(
+        ref,
+        ref.watch(specialistProfileRepositoryProvider),
+      ),
+    );
 
 class SpecialistEditProfileNotifier
     extends StateNotifier<SpecialistEditProfileState> {
   SpecialistEditProfileNotifier(this._ref, this._repository)
-      : super(const SpecialistEditProfileState());
+    : super(const SpecialistEditProfileState());
 
   final Ref _ref;
   final SpecialistProfileRepository _repository;
@@ -91,10 +115,7 @@ class SpecialistEditProfileNotifier
   Future<void> initialize() async {
     final userId = _ref.read(authProvider).user?.id;
     if (userId == null || userId.isEmpty) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Not signed in',
-      );
+      state = state.copyWith(isLoading: false, errorMessage: 'Not signed in');
       return;
     }
 
@@ -109,12 +130,14 @@ class SpecialistEditProfileNotifier
       state = state.copyWith(
         isLoading: false,
         profileId: professional?.profileId,
+        profileImageUrl: bundle.profileImageUrl,
         fullName: bundle.fullName,
         phone: bundle.phone ?? '',
         specialization: professional?.specialization ?? '',
         licenseNumber: professional?.licenseNumber ?? '',
         yearsOfExperience: professional?.yearsOfExperience?.toString() ?? '',
         bio: professional?.bio ?? '',
+        clearPendingImage: true,
       );
     } catch (error) {
       state = state.copyWith(
@@ -133,6 +156,15 @@ class SpecialistEditProfileNotifier
   void setYearsOfExperience(String value) =>
       state = state.copyWith(yearsOfExperience: value);
   void setBio(String value) => state = state.copyWith(bio: value);
+
+  void setPendingProfileImage(ProfileImagePickerResult result) {
+    state = state.copyWith(
+      pendingImageBytes: result.bytes,
+      pendingImageFilename: result.filename,
+      errorMessage: null,
+      validationMessage: null,
+    );
+  }
 
   String? _validate() {
     if (state.fullName.trim().isEmpty) {
@@ -168,6 +200,10 @@ class SpecialistEditProfileNotifier
   }
 
   Future<bool> save() async {
+    if (state.isSaving) {
+      return false;
+    }
+
     final validation = _validate();
     if (validation != null) {
       state = state.copyWith(validationMessage: validation);
@@ -195,20 +231,49 @@ class SpecialistEditProfileNotifier
       if (profileId != null && profileId.isNotEmpty) {
         await _repository.updateSpecialistProfile(profileId, professionalInput);
       } else {
-        final created =
-            await _repository.createSpecialistProfile(professionalInput);
+        final created = await _repository.createSpecialistProfile(
+          professionalInput,
+        );
         state = state.copyWith(profileId: created.profileId);
       }
-
-      await _ref.read(authProvider.notifier).fetchCurrentUser();
-      await _ref.read(specialistProfileProvider.notifier).refresh();
-
-      state = state.copyWith(isSaving: false);
-      return true;
     } catch (error) {
       state = state.copyWith(
         isSaving: false,
         errorMessage: 'Failed to save profile: $error',
+      );
+      return false;
+    }
+
+    try {
+      await uploadPendingProfileImage(
+        ref: _ref,
+        pendingImageBytes: state.pendingImageBytes,
+        pendingImageFilename: state.pendingImageFilename,
+      );
+    } catch (error) {
+      state = state.copyWith(
+        isSaving: false,
+        errorMessage:
+            'Profile details were saved, but the image upload failed: $error',
+      );
+      return false;
+    }
+
+    try {
+      await _ref.read(authProvider.notifier).fetchCurrentUser();
+      await _ref.read(specialistProfileProvider.notifier).refresh();
+      _ref.read(specialistDashboardProvider.notifier).syncUserFromAuth();
+
+      state = state.copyWith(
+        isSaving: false,
+        clearPendingImage: true,
+        profileImageUrl: _ref.read(authProvider).user?.profileImageUrl,
+      );
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        isSaving: false,
+        errorMessage: 'Profile saved, but refresh failed: $error',
       );
       return false;
     }

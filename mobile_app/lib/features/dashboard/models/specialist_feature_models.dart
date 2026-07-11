@@ -1,4 +1,5 @@
 import '../../../core/utils/api_response_parser.dart';
+import '../utils/session_classification.dart';
 import 'specialist_dashboard_models.dart';
 
 class SpecialistPatientItem {
@@ -17,7 +18,8 @@ class SpecialistPatientItem {
   factory SpecialistPatientItem.fromMap(Map<String, dynamic> map) {
     return SpecialistPatientItem(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
-      name: ApiResponseParser.readString(map, const [
+      name:
+          ApiResponseParser.readString(map, const [
             'full_name',
             'fullName',
             'name',
@@ -56,14 +58,19 @@ class SpecialistTreatmentPlanItem {
   factory SpecialistTreatmentPlanItem.fromMap(Map<String, dynamic> map) {
     return SpecialistTreatmentPlanItem(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
-      title: ApiResponseParser.readString(map, const ['title']) ?? 'Treatment Plan',
-      patientName: ApiResponseParser.readString(map, const [
+      title:
+          ApiResponseParser.readString(map, const ['title']) ??
+          'Treatment Plan',
+      patientName:
+          ApiResponseParser.readString(map, const [
             'patient_name',
             'patientName',
           ]) ??
           'Patient',
       status: ApiResponseParser.readString(map, const ['status']),
-      startDate: ApiResponseParser.readDate(map['start_date'] ?? map['startDate']),
+      startDate: ApiResponseParser.readDate(
+        map['start_date'] ?? map['startDate'],
+      ),
       endDate: ApiResponseParser.readDate(map['end_date'] ?? map['endDate']),
       specialistId: ApiResponseParser.readString(map, const [
         'specialist_id',
@@ -89,7 +96,8 @@ class SpecialistExerciseItem {
   factory SpecialistExerciseItem.fromMap(Map<String, dynamic> map) {
     return SpecialistExerciseItem(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
-      title: ApiResponseParser.readString(map, const ['title', 'name']) ??
+      title:
+          ApiResponseParser.readString(map, const ['title', 'name']) ??
           'Exercise',
       category: ApiResponseParser.readString(map, const [
         'category_name',
@@ -146,6 +154,8 @@ class SpecialistNotificationItem {
     this.body,
     this.type,
     this.createdAt,
+    this.relatedEntityType,
+    this.relatedEntityId,
     this.isRead = false,
   });
 
@@ -154,18 +164,29 @@ class SpecialistNotificationItem {
   final String? body;
   final String? type;
   final DateTime? createdAt;
+  final String? relatedEntityType;
+  final String? relatedEntityId;
   final bool isRead;
 
   factory SpecialistNotificationItem.fromMap(Map<String, dynamic> map) {
     return SpecialistNotificationItem(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
-      title: ApiResponseParser.readString(map, const ['title', 'subject']) ??
+      title:
+          ApiResponseParser.readString(map, const ['title', 'subject']) ??
           'Notification',
       body: ApiResponseParser.readString(map, const ['body', 'message']),
       type: ApiResponseParser.readString(map, const ['type', 'category']),
       createdAt: ApiResponseParser.readDate(
         map['created_at'] ?? map['createdAt'],
       ),
+      relatedEntityType: ApiResponseParser.readString(map, const [
+        'related_entity_type',
+        'relatedEntityType',
+      ]),
+      relatedEntityId: ApiResponseParser.readString(map, const [
+        'related_entity_id',
+        'relatedEntityId',
+      ]),
       isRead: map['is_read'] == true || map['isRead'] == true,
     );
   }
@@ -196,19 +217,22 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
 
     return SpecialistSessionDetail(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
-      patientId: ApiResponseParser.readString(map, const [
+      patientId:
+          ApiResponseParser.readString(map, const [
             'patient_id',
             'patientId',
           ]) ??
           '',
       timeLabel: SpecialistScheduleItem.fromMap(map).timeLabel,
-      patientName: ApiResponseParser.readString(map, const [
+      patientName:
+          ApiResponseParser.readString(map, const [
             'patient_name',
             'patientName',
             'full_name',
           ]) ??
           'Patient',
-      sessionType: ApiResponseParser.readString(map, const [
+      sessionType:
+          ApiResponseParser.readString(map, const [
             'session_type',
             'sessionType',
             'type',
@@ -225,28 +249,12 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
     );
   }
 
-  bool get isToday {
-    if (scheduledAt == null) {
-      return false;
-    }
-    final now = DateTime.now();
-    return scheduledAt!.year == now.year &&
-        scheduledAt!.month == now.month &&
-        scheduledAt!.day == now.day;
-  }
+  bool get isToday => sessionIsToday(scheduledAt: scheduledAt);
 
-  bool get isUpcoming {
-    if (scheduledAt == null) {
-      return false;
-    }
-    final normalized = status?.toLowerCase();
-    if (normalized == 'completed' ||
-        normalized == 'cancelled' ||
-        normalized == 'no_show') {
-      return false;
-    }
-    return scheduledAt!.isAfter(DateTime.now()) && !isToday;
-  }
+  bool get isUpcoming =>
+      sessionIsUpcoming(status: status, scheduledAt: scheduledAt);
+
+  bool get isPast => sessionIsPast(status: status, scheduledAt: scheduledAt);
 
   bool get isCompleted => status?.toLowerCase() == 'completed';
 
@@ -256,16 +264,17 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
   }
 
   SessionDisplayStatus get displayStatus {
-    if (isCancelled) {
-      return SessionDisplayStatus.cancelled;
+    switch (status?.toLowerCase().trim()) {
+      case 'completed':
+        return SessionDisplayStatus.completed;
+      case 'cancelled':
+        return SessionDisplayStatus.cancelled;
+      case 'no_show':
+        return SessionDisplayStatus.noShow;
+      case 'scheduled':
+      default:
+        return SessionDisplayStatus.scheduled;
     }
-    if (isCompleted) {
-      return SessionDisplayStatus.completed;
-    }
-    if (isToday) {
-      return SessionDisplayStatus.today;
-    }
-    return SessionDisplayStatus.upcoming;
   }
 
   bool matchesFilter(SessionListFilter filter) {
@@ -273,7 +282,7 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
       SessionListFilter.all => true,
       SessionListFilter.today => isToday,
       SessionListFilter.upcoming => isUpcoming,
-      SessionListFilter.completed => isCompleted,
+      SessionListFilter.past => isPast,
     };
   }
 
@@ -292,28 +301,28 @@ enum SessionListFilter {
   all,
   today,
   upcoming,
-  completed;
+  past;
 
   String get label => switch (this) {
-        SessionListFilter.all => 'All',
-        SessionListFilter.today => 'Today',
-        SessionListFilter.upcoming => 'Upcoming',
-        SessionListFilter.completed => 'Completed',
-      };
+    SessionListFilter.all => 'All',
+    SessionListFilter.today => 'Today',
+    SessionListFilter.upcoming => 'Upcoming',
+    SessionListFilter.past => 'Past',
+  };
 }
 
 enum SessionDisplayStatus {
-  today,
-  upcoming,
+  scheduled,
   completed,
-  cancelled;
+  cancelled,
+  noShow;
 
   String get label => switch (this) {
-        SessionDisplayStatus.today => 'Today',
-        SessionDisplayStatus.upcoming => 'Upcoming',
-        SessionDisplayStatus.completed => 'Completed',
-        SessionDisplayStatus.cancelled => 'Cancelled',
-      };
+    SessionDisplayStatus.scheduled => 'Scheduled',
+    SessionDisplayStatus.completed => 'Completed',
+    SessionDisplayStatus.cancelled => 'Cancelled',
+    SessionDisplayStatus.noShow => 'No Show',
+  };
 }
 
 String formatDashboardDate(DateTime? date) {

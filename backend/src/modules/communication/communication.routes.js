@@ -39,6 +39,13 @@ router.post(
   communicationController.createMessage
 );
 
+router.post(
+  "/conversations/:id/attachments",
+  authenticate,
+  authorizeRoles("admin", "specialist", "parent"),
+  communicationController.createConversationAttachment
+);
+
 router.get(
   "/conversations/:id/messages",
   authenticate,

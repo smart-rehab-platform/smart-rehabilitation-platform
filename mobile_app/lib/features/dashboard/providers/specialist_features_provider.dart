@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/api_client.dart';
@@ -5,11 +6,12 @@ import '../../auth/providers/auth_provider.dart';
 import '../data/specialist_features_repository.dart';
 import '../models/specialist_dashboard_models.dart';
 import '../models/specialist_feature_models.dart';
+import '../utils/notification_message_utils.dart';
 
 final specialistFeaturesRepositoryProvider =
     Provider<SpecialistFeaturesRepository>((ref) {
-  return SpecialistFeaturesRepository(ref.watch(dioProvider));
-});
+      return SpecialistFeaturesRepository(ref.watch(dioProvider));
+    });
 
 class SpecialistListState<T> {
   SpecialistListState({
@@ -37,9 +39,10 @@ class SpecialistListState<T> {
   }
 }
 
-abstract class SpecialistListNotifier<T> extends StateNotifier<SpecialistListState<T>> {
+abstract class SpecialistListNotifier<T>
+    extends StateNotifier<SpecialistListState<T>> {
   SpecialistListNotifier(this._ref, this._repository)
-      : super(SpecialistListState<T>());
+    : super(SpecialistListState<T>());
 
   final Ref _ref;
   final SpecialistFeaturesRepository _repository;
@@ -78,25 +81,34 @@ abstract class SpecialistListNotifier<T> extends StateNotifier<SpecialistListSta
 }
 
 final specialistPatientsProvider =
-    StateNotifierProvider<SpecialistPatientsNotifier, SpecialistListState<SpecialistPatientItem>>(
-  (ref) => SpecialistPatientsNotifier(ref, ref.watch(specialistFeaturesRepositoryProvider)),
-);
+    StateNotifierProvider<
+      SpecialistPatientsNotifier,
+      SpecialistListState<SpecialistPatientItem>
+    >(
+      (ref) => SpecialistPatientsNotifier(
+        ref,
+        ref.watch(specialistFeaturesRepositoryProvider),
+      ),
+    );
 
-class SpecialistPatientsNotifier extends SpecialistListNotifier<SpecialistPatientItem> {
+class SpecialistPatientsNotifier
+    extends SpecialistListNotifier<SpecialistPatientItem> {
   SpecialistPatientsNotifier(super.ref, super.repository);
 
   Future<void> initialize() => load(_repository.fetchPatients);
   Future<void> refresh() => initialize();
 }
 
-final specialistPendingReviewsListProvider = StateNotifierProvider<
-    SpecialistPendingReviewsListNotifier,
-    SpecialistListState<SpecialistPendingReview>>(
-  (ref) => SpecialistPendingReviewsListNotifier(
-    ref,
-    ref.watch(specialistFeaturesRepositoryProvider),
-  ),
-);
+final specialistPendingReviewsListProvider =
+    StateNotifierProvider<
+      SpecialistPendingReviewsListNotifier,
+      SpecialistListState<SpecialistPendingReview>
+    >(
+      (ref) => SpecialistPendingReviewsListNotifier(
+        ref,
+        ref.watch(specialistFeaturesRepositoryProvider),
+      ),
+    );
 
 class SpecialistPendingReviewsListNotifier
     extends SpecialistListNotifier<SpecialistPendingReview> {
@@ -106,14 +118,16 @@ class SpecialistPendingReviewsListNotifier
   Future<void> refresh() => initialize();
 }
 
-final specialistTreatmentPlansProvider = StateNotifierProvider<
-    SpecialistTreatmentPlansNotifier,
-    SpecialistListState<SpecialistTreatmentPlanItem>>(
-  (ref) => SpecialistTreatmentPlansNotifier(
-    ref,
-    ref.watch(specialistFeaturesRepositoryProvider),
-  ),
-);
+final specialistTreatmentPlansProvider =
+    StateNotifierProvider<
+      SpecialistTreatmentPlansNotifier,
+      SpecialistListState<SpecialistTreatmentPlanItem>
+    >(
+      (ref) => SpecialistTreatmentPlansNotifier(
+        ref,
+        ref.watch(specialistFeaturesRepositoryProvider),
+      ),
+    );
 
 class SpecialistTreatmentPlansNotifier
     extends SpecialistListNotifier<SpecialistTreatmentPlanItem> {
@@ -123,14 +137,16 @@ class SpecialistTreatmentPlansNotifier
   Future<void> refresh() => initialize();
 }
 
-final specialistProgressListProvider = StateNotifierProvider<
-    SpecialistProgressListNotifier,
-    SpecialistListState<SpecialistPatientProgress>>(
-  (ref) => SpecialistProgressListNotifier(
-    ref,
-    ref.watch(specialistFeaturesRepositoryProvider),
-  ),
-);
+final specialistProgressListProvider =
+    StateNotifierProvider<
+      SpecialistProgressListNotifier,
+      SpecialistListState<SpecialistPatientProgress>
+    >(
+      (ref) => SpecialistProgressListNotifier(
+        ref,
+        ref.watch(specialistFeaturesRepositoryProvider),
+      ),
+    );
 
 class SpecialistProgressListNotifier
     extends SpecialistListNotifier<SpecialistPatientProgress> {
@@ -162,16 +178,19 @@ class SpecialistProgressListNotifier
   Future<void> refresh() => initialize();
 }
 
-final specialistExercisesProvider = StateNotifierProvider<
-    SpecialistExercisesNotifier,
-    SpecialistListState<SpecialistExerciseItem>>(
-  (ref) => SpecialistExercisesNotifier(
-    ref,
-    ref.watch(specialistFeaturesRepositoryProvider),
-  ),
-);
+final specialistExercisesProvider =
+    StateNotifierProvider<
+      SpecialistExercisesNotifier,
+      SpecialistListState<SpecialistExerciseItem>
+    >(
+      (ref) => SpecialistExercisesNotifier(
+        ref,
+        ref.watch(specialistFeaturesRepositoryProvider),
+      ),
+    );
 
-class SpecialistExercisesNotifier extends SpecialistListNotifier<SpecialistExerciseItem> {
+class SpecialistExercisesNotifier
+    extends SpecialistListNotifier<SpecialistExerciseItem> {
   SpecialistExercisesNotifier(super.ref, super.repository);
 
   Future<void> initialize() async {
@@ -225,18 +244,21 @@ class SpecialistNotificationsState {
   }
 }
 
-final specialistNotificationsProvider = StateNotifierProvider<
-    SpecialistNotificationsNotifier,
-    SpecialistNotificationsState>(
-  (ref) => SpecialistNotificationsNotifier(
-    ref,
-    ref.watch(specialistFeaturesRepositoryProvider),
-  ),
-);
+final specialistNotificationsProvider =
+    StateNotifierProvider<
+      SpecialistNotificationsNotifier,
+      SpecialistNotificationsState
+    >(
+      (ref) => SpecialistNotificationsNotifier(
+        ref,
+        ref.watch(specialistFeaturesRepositoryProvider),
+      ),
+    );
 
-class SpecialistNotificationsNotifier extends StateNotifier<SpecialistNotificationsState> {
+class SpecialistNotificationsNotifier
+    extends StateNotifier<SpecialistNotificationsState> {
   SpecialistNotificationsNotifier(this._ref, this._repository)
-      : super(const SpecialistNotificationsState());
+    : super(const SpecialistNotificationsState());
 
   final Ref _ref;
   final SpecialistFeaturesRepository _repository;
@@ -298,6 +320,8 @@ class SpecialistNotificationsNotifier extends StateNotifier<SpecialistNotificati
                   body: item.body,
                   type: item.type,
                   createdAt: item.createdAt,
+                  relatedEntityType: item.relatedEntityType,
+                  relatedEntityId: item.relatedEntityId,
                   isRead: true,
                 )
               : item,
@@ -325,16 +349,88 @@ class SpecialistNotificationsNotifier extends StateNotifier<SpecialistNotificati
             body: item.body,
             type: item.type,
             createdAt: item.createdAt,
+            relatedEntityType: item.relatedEntityType,
+            relatedEntityId: item.relatedEntityId,
             isRead: true,
           ),
         )
         .toList();
-    state = state.copyWith(
-      isUpdating: false,
-      items: updated,
-      unreadCount: 0,
-    );
+    state = state.copyWith(isUpdating: false, items: updated, unreadCount: 0);
   }
+
+  Future<Set<String>> markUnreadConversationMessageNotificationsRead(
+    String conversationId, {
+    Set<String> skipIds = const {},
+  }) async {
+    final toMark = state.items.where((item) {
+      return matchesUnreadConversationMessageNotification(
+            conversationId: conversationId,
+            type: item.type,
+            relatedEntityType: item.relatedEntityType,
+            relatedEntityId: item.relatedEntityId,
+            isRead: item.isRead,
+          ) &&
+          !skipIds.contains(item.id);
+    }).toList();
+
+    if (toMark.isEmpty) {
+      return skipIds;
+    }
+
+    final processed = Set<String>.from(skipIds);
+    final successfullyMarked = <String>{};
+
+    for (final item in toMark) {
+      try {
+        final error = await _repository.markNotificationRead(item.id);
+        if (error == null) {
+          successfullyMarked.add(item.id);
+          processed.add(item.id);
+        } else {
+          debugPrint(
+            '[SpecialistNotifications] mark read failed for ${item.id}: $error',
+          );
+        }
+      } catch (error) {
+        debugPrint(
+          '[SpecialistNotifications] mark read failed for ${item.id}: $error',
+        );
+      }
+    }
+
+    if (successfullyMarked.isEmpty) {
+      return processed;
+    }
+
+    final updated = state.items
+        .map(
+          (item) => successfullyMarked.contains(item.id)
+              ? SpecialistNotificationItem(
+                  id: item.id,
+                  title: item.title,
+                  body: item.body,
+                  type: item.type,
+                  createdAt: item.createdAt,
+                  relatedEntityType: item.relatedEntityType,
+                  relatedEntityId: item.relatedEntityId,
+                  isRead: true,
+                )
+              : item,
+        )
+        .toList();
+
+    state = state.copyWith(
+      items: updated,
+      unreadCount: updated.where((item) => !item.isRead).length,
+    );
+
+    return processed;
+  }
+}
+
+extension SpecialistNotificationsStateX on SpecialistNotificationsState {
+  int get unreadMessageCount =>
+      countUnreadSpecialistMessageNotifications(items);
 }
 
 const _sentinel = Object();

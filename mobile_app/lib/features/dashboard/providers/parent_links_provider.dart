@@ -12,58 +12,84 @@ final parentLinksRepositoryProvider = Provider<ParentLinksRepository>((ref) {
 
 final parentLinksProvider =
     StateNotifierProvider<ParentLinksNotifier, ParentLinksState>((ref) {
-  final repository = ref.watch(parentLinksRepositoryProvider);
-  final authRepository = ref.watch(authRepositoryProvider);
-  return ParentLinksNotifier(ref, repository, authRepository);
-});
+      final repository = ref.watch(parentLinksRepositoryProvider);
+      final authRepository = ref.watch(authRepositoryProvider);
+      return ParentLinksNotifier(ref, repository, authRepository);
+    });
 
 class ParentLinksState {
   const ParentLinksState({
     this.isLoading = false,
-    this.isSubmitting = false,
-    this.isLoadingGuardians = false,
+    this.isRefreshing = false,
+    this.patientSearchQuery = '',
     this.errorMessage,
     this.successMessage,
     this.patients = const [],
     this.parents = const [],
-    this.guardians = const [],
-    this.selectedPatientId,
-    this.selectedParentUserId,
-    this.selectedRelationship = 'mother',
-    this.isPrimaryContact = true,
+    this.guardiansByPatientId = const {},
+    this.loadingGuardianPatientIds = const {},
+    this.linkingPatientId,
+    this.unlinkingPatientId,
   });
 
   final bool isLoading;
-  final bool isSubmitting;
-  final bool isLoadingGuardians;
+  final bool isRefreshing;
+  final String patientSearchQuery;
   final String? errorMessage;
   final String? successMessage;
   final List<PatientOption> patients;
   final List<ParentUserOption> parents;
-  final List<PatientGuardianLink> guardians;
-  final String? selectedPatientId;
-  final String? selectedParentUserId;
-  final String selectedRelationship;
-  final bool isPrimaryContact;
+  final Map<String, List<PatientGuardianLink>> guardiansByPatientId;
+  final Set<String> loadingGuardianPatientIds;
+  final String? linkingPatientId;
+  final String? unlinkingPatientId;
+
+  List<PatientOption> get filteredPatients {
+    final query = patientSearchQuery.trim().toLowerCase();
+    if (query.isEmpty) {
+      return patients;
+    }
+    return patients
+        .where((patient) => patient.name.toLowerCase().contains(query))
+        .toList();
+  }
+
+  List<PatientGuardianLink> guardiansFor(String patientId) {
+    return guardiansByPatientId[patientId] ?? const [];
+  }
+
+  PatientGuardianLink? primaryGuardianFor(String patientId) {
+    final guardians = guardiansFor(patientId);
+    if (guardians.isEmpty) {
+      return null;
+    }
+    return guardians.firstWhere(
+      (guardian) => guardian.isPrimaryContact,
+      orElse: () => guardians.first,
+    );
+  }
+
+  bool isLoadingGuardiansFor(String patientId) {
+    return loadingGuardianPatientIds.contains(patientId);
+  }
 
   ParentLinksState copyWith({
     bool? isLoading,
-    bool? isSubmitting,
-    bool? isLoadingGuardians,
+    bool? isRefreshing,
+    String? patientSearchQuery,
     Object? errorMessage = _sentinel,
     Object? successMessage = _sentinel,
     List<PatientOption>? patients,
     List<ParentUserOption>? parents,
-    List<PatientGuardianLink>? guardians,
-    Object? selectedPatientId = _sentinel,
-    Object? selectedParentUserId = _sentinel,
-    String? selectedRelationship,
-    bool? isPrimaryContact,
+    Map<String, List<PatientGuardianLink>>? guardiansByPatientId,
+    Set<String>? loadingGuardianPatientIds,
+    Object? linkingPatientId = _sentinel,
+    Object? unlinkingPatientId = _sentinel,
   }) {
     return ParentLinksState(
       isLoading: isLoading ?? this.isLoading,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      isLoadingGuardians: isLoadingGuardians ?? this.isLoadingGuardians,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
+      patientSearchQuery: patientSearchQuery ?? this.patientSearchQuery,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
@@ -72,26 +98,28 @@ class ParentLinksState {
           : successMessage as String?,
       patients: patients ?? this.patients,
       parents: parents ?? this.parents,
-      guardians: guardians ?? this.guardians,
-      selectedPatientId: identical(selectedPatientId, _sentinel)
-          ? this.selectedPatientId
-          : selectedPatientId as String?,
-      selectedParentUserId: identical(selectedParentUserId, _sentinel)
-          ? this.selectedParentUserId
-          : selectedParentUserId as String?,
-      selectedRelationship: selectedRelationship ?? this.selectedRelationship,
-      isPrimaryContact: isPrimaryContact ?? this.isPrimaryContact,
+      guardiansByPatientId: guardiansByPatientId ?? this.guardiansByPatientId,
+      loadingGuardianPatientIds:
+          loadingGuardianPatientIds ?? this.loadingGuardianPatientIds,
+      linkingPatientId: identical(linkingPatientId, _sentinel)
+          ? this.linkingPatientId
+          : linkingPatientId as String?,
+      unlinkingPatientId: identical(unlinkingPatientId, _sentinel)
+          ? this.unlinkingPatientId
+          : unlinkingPatientId as String?,
     );
   }
 }
 
 class ParentLinksNotifier extends StateNotifier<ParentLinksState> {
   ParentLinksNotifier(this._ref, this._repository, this._authRepository)
-      : super(const ParentLinksState());
+    : super(const ParentLinksState());
 
   final Ref _ref;
   final ParentLinksRepository _repository;
   final AuthRepository _authRepository;
+
+  String? get _specialistUserId => _ref.read(authProvider).user?.id;
 
   Future<void> initialize() async {
     final auth = _ref.read(authProvider);
@@ -99,94 +127,139 @@ class ParentLinksNotifier extends StateNotifier<ParentLinksState> {
       _authRepository.setAuthToken(auth.token);
     }
 
-    state = state.copyWith(isLoading: true, errorMessage: null, successMessage: null);
+    final specialistUserId = _specialistUserId;
+    if (specialistUserId == null || specialistUserId.isEmpty) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Unable to determine your specialist account.',
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      successMessage: null,
+    );
 
     try {
-      final isAdmin = auth.user?.role?.toLowerCase() == 'admin';
-      final results = await Future.wait([
-        _repository.fetchPatients(),
-        _repository.fetchParentUsers(tryUsersEndpoint: isAdmin),
-      ]);
-
-      final patients = results[0] as List<PatientOption>;
-      final parents = results[1] as List<ParentUserOption>;
-      final selectedPatientId = patients.isNotEmpty ? patients.first.id : null;
+      final patients = await _repository.fetchAssignedPatients(
+        specialistUserId,
+      );
+      final parents = await _repository.fetchParentUsers();
 
       state = state.copyWith(
         isLoading: false,
         patients: patients,
         parents: parents,
-        selectedPatientId: selectedPatientId,
-        selectedParentUserId: parents.isNotEmpty ? parents.first.userId : null,
-        errorMessage: parents.isEmpty
-            ? 'No parent accounts found. Make sure parent users exist with role "parent".'
-            : null,
       );
 
-      if (selectedPatientId != null) {
-        await loadGuardians(selectedPatientId);
-      }
+      await _loadGuardiansForPatients(patients.map((patient) => patient.id));
     } catch (error) {
+      final message = error.toString().replaceFirst('Exception: ', '');
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Failed to load parent link data: $error',
+        errorMessage: message.isNotEmpty
+            ? message
+            : 'Failed to load assigned patients.',
       );
     }
   }
 
-  Future<void> refresh() => initialize();
+  Future<void> refresh() async {
+    final specialistUserId = _specialistUserId;
+    if (specialistUserId == null || specialistUserId.isEmpty) {
+      return;
+    }
 
-  void selectPatient(String? patientId) {
+    final previousGuardians = state.guardiansByPatientId;
+
     state = state.copyWith(
-      selectedPatientId: patientId,
-      guardians: const [],
-      successMessage: null,
+      isRefreshing: true,
       errorMessage: null,
+      successMessage: null,
     );
-    if (patientId != null && patientId.isNotEmpty) {
-      loadGuardians(patientId);
+
+    try {
+      final results = await Future.wait([
+        _repository.fetchAssignedPatients(specialistUserId),
+        _repository.fetchParentUsers(),
+      ]);
+
+      final patients = results[0] as List<PatientOption>;
+      final parents = results[1] as List<ParentUserOption>;
+
+      state = state.copyWith(
+        isRefreshing: false,
+        patients: patients,
+        parents: parents,
+        guardiansByPatientId: previousGuardians,
+      );
+
+      await _loadGuardiansForPatients(patients.map((patient) => patient.id));
+    } catch (error) {
+      state = state.copyWith(
+        isRefreshing: false,
+        errorMessage: 'Failed to refresh assigned patients.',
+        guardiansByPatientId: previousGuardians,
+      );
     }
   }
 
-  void selectParent(String? parentUserId) {
-    state = state.copyWith(selectedParentUserId: parentUserId);
+  void setPatientSearchQuery(String query) {
+    state = state.copyWith(patientSearchQuery: query);
   }
 
-  void selectRelationship(String? relationship) {
-    if (relationship == null || relationship.isEmpty) {
+  void clearMessages() {
+    state = state.copyWith(errorMessage: null, successMessage: null);
+  }
+
+  Future<void> _loadGuardiansForPatients(Iterable<String> patientIds) async {
+    final ids = patientIds.where((id) => id.isNotEmpty).toList();
+    if (ids.isEmpty) {
       return;
     }
-    state = state.copyWith(selectedRelationship: relationship);
-  }
 
-  void setPrimaryContact(bool value) {
-    state = state.copyWith(isPrimaryContact: value);
-  }
-
-  Future<void> loadGuardians(String patientId) async {
-    state = state.copyWith(isLoadingGuardians: true);
-    final guardians = await _repository.fetchGuardians(patientId);
     state = state.copyWith(
-      isLoadingGuardians: false,
-      guardians: guardians,
+      loadingGuardianPatientIds: {...state.loadingGuardianPatientIds, ...ids},
+    );
+
+    final updated = Map<String, List<PatientGuardianLink>>.from(
+      state.guardiansByPatientId,
+    );
+    final stillLoading = Set<String>.from(state.loadingGuardianPatientIds);
+
+    await Future.wait(
+      ids.map((patientId) async {
+        try {
+          final guardians = await _repository.fetchGuardians(patientId);
+          updated[patientId] = guardians;
+        } catch (_) {
+          // Preserve existing guardian data on failure.
+        } finally {
+          stillLoading.remove(patientId);
+        }
+      }),
+    );
+
+    state = state.copyWith(
+      guardiansByPatientId: updated,
+      loadingGuardianPatientIds: stillLoading,
     );
   }
 
-  Future<void> submitLink() async {
-    final patientId = state.selectedPatientId;
-    final parentUserId = state.selectedParentUserId;
-
-    if (patientId == null || patientId.isEmpty) {
-      state = state.copyWith(errorMessage: 'Please select a patient.');
-      return;
-    }
-    if (parentUserId == null || parentUserId.isEmpty) {
-      state = state.copyWith(errorMessage: 'Please select a parent.');
-      return;
+  Future<String?> linkParent({
+    required String patientId,
+    required String parentUserId,
+    required String relationship,
+    required bool isPrimaryContact,
+  }) async {
+    if (state.linkingPatientId != null || state.unlinkingPatientId != null) {
+      return 'Please wait for the current action to finish.';
     }
 
     state = state.copyWith(
-      isSubmitting: true,
+      linkingPatientId: patientId,
       errorMessage: null,
       successMessage: null,
     );
@@ -194,20 +267,53 @@ class ParentLinksNotifier extends StateNotifier<ParentLinksState> {
     final error = await _repository.linkGuardian(
       patientId: patientId,
       parentUserId: parentUserId,
-      relationship: state.selectedRelationship,
-      isPrimaryContact: state.isPrimaryContact,
+      relationship: relationship,
+      isPrimaryContact: isPrimaryContact,
     );
 
     if (error != null) {
-      state = state.copyWith(isSubmitting: false, errorMessage: error);
-      return;
+      state = state.copyWith(linkingPatientId: null, errorMessage: error);
+      return error;
     }
 
     state = state.copyWith(
-      isSubmitting: false,
-      successMessage: 'Parent linked to child successfully.',
+      linkingPatientId: null,
+      successMessage: 'Parent linked successfully.',
     );
-    await loadGuardians(patientId);
+    await _loadGuardiansForPatients([patientId]);
+    return null;
+  }
+
+  Future<String?> unlinkParent({
+    required String patientId,
+    required String parentUserId,
+  }) async {
+    if (state.linkingPatientId != null || state.unlinkingPatientId != null) {
+      return 'Please wait for the current action to finish.';
+    }
+
+    state = state.copyWith(
+      unlinkingPatientId: patientId,
+      errorMessage: null,
+      successMessage: null,
+    );
+
+    final error = await _repository.unlinkGuardian(
+      patientId: patientId,
+      parentUserId: parentUserId,
+    );
+
+    if (error != null) {
+      state = state.copyWith(unlinkingPatientId: null, errorMessage: error);
+      return error;
+    }
+
+    state = state.copyWith(
+      unlinkingPatientId: null,
+      successMessage: 'Parent unlinked successfully.',
+    );
+    await _loadGuardiansForPatients([patientId]);
+    return null;
   }
 }
 

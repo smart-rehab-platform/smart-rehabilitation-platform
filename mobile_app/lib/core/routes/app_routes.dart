@@ -56,10 +56,13 @@ class AppRoutes {
     return base;
   }
 
-  static const String specialistPendingReviews = '/dashboard/specialist/pending-reviews';
+  static const String specialistPendingReviews =
+      '/dashboard/specialist/pending-reviews';
   static const String specialistSessions = '/dashboard/specialist/sessions';
-  static const String specialistTreatmentPlans = '/dashboard/specialist/treatment-plans';
-  static const String specialistPatientProgress = '/dashboard/specialist/progress';
+  static const String specialistTreatmentPlans =
+      '/dashboard/specialist/treatment-plans';
+  static const String specialistPatientProgress =
+      '/dashboard/specialist/progress';
   static const String specialistExercises = '/dashboard/specialist/exercises';
   static const String specialistReports = '/dashboard/specialist/reports';
   static const String specialistReportDetailsPath =
@@ -70,13 +73,16 @@ class AppRoutes {
     return isAi ? '$base?ai=1' : base;
   }
 
-  static const String specialistNotifications = '/dashboard/specialist/notifications';
+  static const String specialistNotifications =
+      '/dashboard/specialist/notifications';
   static const String specialistProfile = '/dashboard/specialist/profile';
-  static const String specialistEditProfile = '/dashboard/specialist/profile/edit';
+  static const String specialistEditProfile =
+      '/dashboard/specialist/profile/edit';
   static const String specialistMore = '/dashboard/specialist/more';
   static const String adminDashboard = '/dashboard/admin';
   static const String adminPatients = '/dashboard/admin/patients';
-  static const String adminPatientAssignments = '/dashboard/admin/patient-assignments';
+  static const String adminPatientAssignments =
+      '/dashboard/admin/patient-assignments';
   static const String adminSessions = '/dashboard/admin/sessions';
   static const String adminAiCenter = '/dashboard/admin/ai-center';
   static const String adminAuditLogs = '/dashboard/admin/audit-logs';
@@ -86,4 +92,32 @@ class AppRoutes {
   static const String adminNotifications = '/dashboard/admin/notifications';
   static const String adminProfile = '/dashboard/admin/profile';
   static const String adminMore = '/dashboard/admin/more';
+  static const String parentDailyTasks = '/dashboard/parent/daily-tasks';
+  static const String parentChildren = '/dashboard/parent/children';
+  static const String parentReports = '/dashboard/parent/reports';
+  static const String parentSessions = '/dashboard/parent/sessions';
+  static const String parentNotifications = '/dashboard/parent/notifications';
+  static const String parentProfile = '/dashboard/parent/profile';
+  static const String parentEditProfile = '/dashboard/parent/profile/edit';
+  static const String parentMore = '/dashboard/parent/more';
+  static const String parentChildDetail = '/dashboard/parent/children/:childId';
+  static const String parentProgress = '/dashboard/parent/progress';
+  static const String parentFeedback = '/dashboard/parent/feedback';
+  static const String parentExerciseDetails =
+      '/dashboard/parent/exercise-details';
+  static const String parentSubmitExercise =
+      '/dashboard/parent/submit-exercise';
+  static const String parentAiChat = '/dashboard/parent/ai-chat';
+  static const String parentMessages = '/dashboard/parent/messages';
+  static const String specialistMessages = '/dashboard/specialist/messages';
+  static const String parentChatPath =
+      '/dashboard/parent/messages/:conversationId';
+  static const String specialistChatPath =
+      '/dashboard/specialist/messages/:conversationId';
+
+  static String parentChat(String conversationId) =>
+      '/dashboard/parent/messages/$conversationId';
+
+  static String specialistChat(String conversationId) =>
+      '/dashboard/specialist/messages/$conversationId';
 }

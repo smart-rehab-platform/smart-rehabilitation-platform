@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../providers/specialist_edit_profile_provider.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/edit_profile_avatar_section.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'manage_goals_widgets.dart';
@@ -112,6 +113,20 @@ class _EditSpecialistProfileScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            EditProfileAvatarSection(
+              fullName: state.fullName,
+              initialsFallback: 'SP',
+              imageUrl: state.profileImageUrl,
+              previewBytes: state.pendingImageBytes,
+              isBusy: state.isSaving,
+              onImageSelected: notifier.setPendingProfileImage,
+              onImageError: (message) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(message)),
+                );
+              },
+            ),
+            SizedBox(height: context.dashSpacing),
             Text(
               'Personal',
               style: theme.textTheme.titleMedium?.copyWith(

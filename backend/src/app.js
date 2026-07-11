@@ -31,7 +31,12 @@ const dashboardRoutes = require("./modules/dashboard/dashboard.routes");
 const uploadsRoutes = require("./modules/uploads/uploads.routes");
 const aiReportsRoutes = require("./modules/aiReports/aiReports.routes");
 const presenceRoutes = require("./modules/presence/presence.routes");
+const specialistFeedbackRoutes = require("./modules/specialistFeedback/specialistFeedback.routes");
+const sessionRequestsRoutes = require("./modules/sessionRequests/sessionRequests.routes");
 const { devRequestLogger } = require("./middleware/devRequestLogger");
+const { uploadsRoot, ensureUploadDirs } = require("./config/uploads");
+
+ensureUploadDirs();
 
 const app = express();
 
@@ -88,8 +93,10 @@ app.use("/api/v1", aiClinicalProgressRoutes);
 app.use("/api/v1/speech-analyses", speechAnalysesRoutes);
 app.use("/api/v1", dashboardRoutes);
 app.use("/api/v1/uploads", uploadsRoutes);
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(uploadsRoot));
 app.use("/api/v1", aiReportsRoutes);
 app.use("/api/v1/presence", presenceRoutes);
+app.use("/api/v1/specialist-feedback", specialistFeedbackRoutes);
+app.use("/api/v1/session-requests", sessionRequestsRoutes);
 
 module.exports = app;

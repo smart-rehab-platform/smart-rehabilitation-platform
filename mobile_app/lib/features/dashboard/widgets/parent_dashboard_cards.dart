@@ -292,6 +292,16 @@ class ParentFeedbackCard extends StatelessWidget {
               ),
             ),
           ],
+          if (feedback.requiresRetry) ...[
+            SizedBox(height: context.dashSpacing * 0.35),
+            Text(
+              'Retry required',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: DashboardColors.warning,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -451,6 +461,92 @@ class DashboardErrorCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           TextButton(onPressed: onRetry, child: const Text('Retry')),
+        ],
+      ),
+    );
+  }
+}
+
+class ParentAiAssistantCard extends StatelessWidget {
+  const ParentAiAssistantCard({super.key, required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return DashboardSurfaceCard(
+      tint: DashboardColors.primary,
+      padding: EdgeInsets.all(context.dashSpacing),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(context.dashSpacing * 0.5),
+                decoration: BoxDecoration(
+                  color: DashboardColors.purpleSoft,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  Icons.smart_toy_outlined,
+                  color: DashboardColors.primary,
+                  size: context.dashSpacing * 0.75,
+                ),
+              ),
+              SizedBox(width: context.dashSpacing * 0.65),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'AI Assistant',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: DashboardColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.25),
+                    Text(
+                      'Need help understanding your child\'s progress?',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.15),
+                    Text(
+                      'Ask about exercises, reports, or daily guidance.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: context.dashSpacing * 0.75),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: onTap,
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text('Ask AI'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: DashboardColors.primary,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  vertical: context.dashSpacing * 0.65,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

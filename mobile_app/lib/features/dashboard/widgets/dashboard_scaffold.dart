@@ -25,6 +25,8 @@ class DashboardScaffold extends StatelessWidget {
     this.onAvatarTap,
     this.scrollBody = true,
     this.showBottomNav = true,
+    this.floatingActionButton,
+    this.floatingActionButtonLocation,
   });
 
   final Widget body;
@@ -41,6 +43,8 @@ class DashboardScaffold extends StatelessWidget {
   final VoidCallback? onAvatarTap;
   final bool scrollBody;
   final bool showBottomNav;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +78,8 @@ class DashboardScaffold extends StatelessWidget {
                 onTap: onNavTap,
               )
             : null,
+        floatingActionButton: floatingActionButton,
+        floatingActionButtonLocation: floatingActionButtonLocation,
       ),
     );
   }

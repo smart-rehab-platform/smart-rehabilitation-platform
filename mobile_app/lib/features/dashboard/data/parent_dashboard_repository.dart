@@ -45,17 +45,7 @@ class ParentDashboardRepository {
     if (patients.isNotEmpty) {
       return patients.map(ParentChild.fromMap).where((c) => c.id.isNotEmpty).toList();
     }
-
-    // Fallback: derive children from dashboard progress endpoint.
-    final progressRows = await _safeGetList('/dashboard/parent/children-progress');
-    final unique = <String, ParentChild>{};
-    for (final row in progressRows) {
-      final child = ParentChild.fromMap(row);
-      if (child.id.isNotEmpty) {
-        unique[child.id] = child;
-      }
-    }
-    return unique.values.toList();
+    return const [];
   }
 
   Future<List<ParentChild>> fetchChildrenProgress() async {
@@ -73,6 +63,26 @@ class ParentDashboardRepository {
   Future<List<ParentDailyTask>> fetchDailyTasks(String patientId) async {
     final rows = await _safeGetList('/patients/$patientId/daily-tasks');
     return rows.map(ParentDailyTask.fromMap).toList();
+  }
+
+  Future<List<ParentDailyTask>> fetchWeeklyTasks(String patientId) async {
+    final rows = await _safeGetList('/patients/$patientId/weekly-tasks');
+    return rows.map(ParentDailyTask.fromMap).toList();
+  }
+
+  Future<List<ParentAssignedExercise>> fetchAssignedExercises(String patientId) async {
+    final rows = await _safeGetList('/patients/$patientId/assigned-exercises');
+    return rows.map(ParentAssignedExercise.fromMap).toList();
+  }
+
+  Future<List<ParentDailyTask>> fetchParentTasks() async {
+    final rows = await _safeGetList('/dashboard/parent/tasks');
+    return rows.map(ParentDailyTask.fromMap).toList();
+  }
+
+  Future<List<ParentSessionItem>> fetchParentSessions(String parentUserId) async {
+    final rows = await _safeGetList('/parents/$parentUserId/sessions');
+    return rows.map(ParentSessionItem.fromMap).toList();
   }
 
   Future<List<ParentSubmissionItem>> fetchSubmissions(String patientId) async {
@@ -146,6 +156,90 @@ class ParentDashboardRepository {
     return _safeGetList('/patients/$patientId/progress/weekly');
   }
 
+  Future<List<ParentProgressSnapshot>> fetchProgress(String patientId) async {
+    final rows = await _safeGetList('/patients/$patientId/progress');
+    return rows.map(ParentProgressSnapshot.fromMap).toList();
+  }
+
+  Future<List<ParentProgressSnapshot>> fetchDailyProgress(String patientId) async {
+    final rows = await _safeGetList('/patients/$patientId/progress/daily');
+    return rows.map(ParentProgressSnapshot.fromMap).toList();
+  }
+
+  Future<List<ParentProgressSnapshot>> fetchMonthlyProgress(String patientId) async {
+    final rows = await _safeGetList('/patients/$patientId/progress/monthly');
+    return rows.map(ParentProgressSnapshot.fromMap).toList();
+  }
+
+  Future<ParentPerformanceMetrics> fetchPerformanceMetrics(String patientId) async {
+    final map = await _safeGetMap('/patients/$patientId/performance-metrics');
+    return ParentPerformanceMetrics.fromMap(map);
+  }
+
+  Future<List<ParentSpecialistFeedback>> fetchReviews(String patientId) async {
+    final rows = await _safeGetList('/patients/$patientId/reviews');
+    return rows.map(ParentSpecialistFeedback.fromMap).toList();
+  }
+
+  Future<ParentSpecialistFeedback?> fetchSubmissionReview(String submissionId) async {
+    final map = await _safeGetMap('/exercise-submissions/$submissionId/review');
+    if (map == null || map.isEmpty) {
+      return null;
+    }
+    return ParentSpecialistFeedback.fromMap(map);
+  }
+
+  Future<String> createExerciseSubmission({
+    required String assignedExerciseId,
+    String? parentNotes,
+  }) async {
+    final response = await _dio.post(
+      '/exercise-submissions',
+      data: {
+        'assigned_exercise_id': assignedExerciseId,
+        if (parentNotes != null && parentNotes.trim().isNotEmpty)
+          'parent_notes': parentNotes.trim(),
+      },
+    );
+    final map = ApiResponseParser.extractMap(response.data);
+    final id = ApiResponseParser.readString(map ?? {}, const ['id', '_id']);
+    if (id == null || id.isEmpty) {
+      throw Exception('Invalid submission response');
+    }
+    return id;
+  }
+
+  Future<String> uploadExerciseMediaFile(List<int> bytes, String filename) async {
+    final response = await _dio.post(
+      '/uploads/exercise-media',
+      data: FormData.fromMap({
+        'file': MultipartFile.fromBytes(bytes, filename: filename),
+      }),
+    );
+    final map = ApiResponseParser.extractMap(response.data);
+    final url = ApiResponseParser.readString(map ?? {}, const ['url', 'file_url']);
+    if (url == null || url.isEmpty) {
+      throw Exception('Invalid upload response');
+    }
+    return url;
+  }
+
+  Future<void> attachSubmissionMedia({
+    required String submissionId,
+    required String mediaType,
+    required String fileUrl,
+    int? durationSeconds,
+  }) async {
+    await _dio.post(
+      '/exercise-submissions/$submissionId/media',
+      data: {
+        'media_type': mediaType,
+        'file_url': fileUrl,
+        if (durationSeconds != null) 'duration_seconds': durationSeconds,
+      },
+    );
+  }
+
   Future<int> fetchUnreadNotificationCount(String userId) async {
     final rows = await _safeGetList('/users/$userId/notifications/unread');
     return rows.length;
@@ -154,5 +248,34 @@ class ParentDashboardRepository {
   Future<List<ParentNotificationItem>> fetchNotifications(String userId) async {
     final rows = await _safeGetList('/users/$userId/notifications');
     return rows.map(ParentNotificationItem.fromMap).toList();
+  }
+
+  Future<String?> markNotificationRead(String notificationId) async {
+    try {
+      await _dio.patch('/notifications/$notificationId/read');
+      return null;
+    } on DioException catch (error) {
+      return _readPatchError(error);
+    }
+  }
+
+  Future<String?> markAllNotificationsRead() async {
+    try {
+      await _dio.patch('/notifications/read-all');
+      return null;
+    } on DioException catch (error) {
+      return _readPatchError(error);
+    }
+  }
+
+  String _readPatchError(DioException error) {
+    final data = error.response?.data;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      return ApiResponseParser.readString(map, const ['message', 'error']) ??
+          error.message ??
+          'Request failed';
+    }
+    return error.message ?? 'Request failed';
   }
 }

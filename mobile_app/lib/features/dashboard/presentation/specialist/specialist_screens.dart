@@ -26,7 +26,8 @@ class SpecialistPatientsScreen extends ConsumerStatefulWidget {
       _SpecialistPatientsScreenState();
 }
 
-class _SpecialistPatientsScreenState extends ConsumerState<SpecialistPatientsScreen> {
+class _SpecialistPatientsScreenState
+    extends ConsumerState<SpecialistPatientsScreen> {
   @override
   void initState() {
     super.initState();
@@ -252,10 +253,10 @@ class _SpecialistPatientProgressScreenState
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
         errorMessage: state.errorMessage,
-        onRetry: () => ref.read(specialistProgressListProvider.notifier).refresh(),
+        onRetry: () =>
+            ref.read(specialistProgressListProvider.notifier).refresh(),
         isEmpty: state.items.isEmpty,
-        emptyMessage:
-            'No progress data available yet.',
+        emptyMessage: 'No progress data available yet.',
         child: DashboardSurfaceCard(
           child: Column(
             children: [
@@ -287,7 +288,8 @@ class SpecialistExercisesScreen extends ConsumerStatefulWidget {
       _SpecialistExercisesScreenState();
 }
 
-class _SpecialistExercisesScreenState extends ConsumerState<SpecialistExercisesScreen> {
+class _SpecialistExercisesScreenState
+    extends ConsumerState<SpecialistExercisesScreen> {
   late final TextEditingController _searchController;
   String _selectedCategory = specialistExerciseAllCategoryLabel;
 
@@ -426,14 +428,17 @@ class _SpecialistNotificationsScreenState
           TextButton(
             onPressed: state.isUpdating
                 ? null
-                : () => ref.read(specialistNotificationsProvider.notifier).markAllAsRead(),
+                : () => ref
+                      .read(specialistNotificationsProvider.notifier)
+                      .markAllAsRead(),
             child: const Text('Mark all as read'),
           ),
       ],
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
         errorMessage: state.errorMessage,
-        onRetry: () => ref.read(specialistNotificationsProvider.notifier).refresh(),
+        onRetry: () =>
+            ref.read(specialistNotificationsProvider.notifier).refresh(),
         isEmpty: state.items.isEmpty,
         emptyMessage: 'No notifications yet.',
         child: Column(
@@ -464,8 +469,9 @@ class _SpecialistNotificationsScreenState
                               Text(
                                 item.title,
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight:
-                                      item.isRead ? FontWeight.w500 : FontWeight.w700,
+                                  fontWeight: item.isRead
+                                      ? FontWeight.w500
+                                      : FontWeight.w700,
                                 ),
                               ),
                               if (item.body != null)
@@ -507,6 +513,11 @@ class SpecialistMoreScreen extends ConsumerWidget {
       body: ListView(
         padding: context.dashPadding,
         children: [
+          _MoreTile(
+            icon: Icons.chat_bubble_outline_rounded,
+            label: 'Messages',
+            onTap: () => context.push(AppRoutes.specialistMessages),
+          ),
           _MoreTile(
             icon: Icons.person_outline_rounded,
             label: 'Profile',
@@ -593,10 +604,7 @@ Widget _buildReviewCard(
           ),
           DashboardPriorityBadge(label: review.priority),
           SizedBox(width: context.dashSpacing * 0.25),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: DashboardColors.textMuted,
-          ),
+          Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
         ],
       ),
     ),
@@ -644,9 +652,9 @@ class _MoreTile extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
             Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),

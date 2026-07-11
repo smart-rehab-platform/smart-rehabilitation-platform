@@ -52,6 +52,74 @@ const renderVerifyEmailPage = ({ success, message }) => `<!DOCTYPE html>
   </body>
 </html>`;
 
+const isMobileUserAgent = (req) => {
+  const userAgent = req.get("user-agent") || "";
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(userAgent);
+};
+
+const getMobileResetPasswordDeepLink = (token) => {
+  const base =
+    process.env.MOBILE_RESET_PASSWORD_URL || "smartrehab://reset-password";
+  const separator = base.includes("?") ? "&" : "?";
+  return `${base}${separator}token=${encodeURIComponent(token)}`;
+};
+
+const getWebResetPasswordUrl = (token) => {
+  const frontendBase = (process.env.FRONTEND_URL || "http://localhost:5173").replace(
+    /\/$/,
+    ""
+  );
+  return `${frontendBase}/reset-password?token=${encodeURIComponent(token)}`;
+};
+
+const renderResetPasswordRedirectPage = ({ appDeepLink, webResetUrl }) => `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset Password | Smart Rehab Platform</title>
+    <script>
+      window.onload = function () {
+        // Chrome on Android often blocks automatic custom-scheme redirects.
+        // Try once, but keep manual buttons visible immediately.
+        try {
+          window.location.href = ${JSON.stringify(appDeepLink)};
+        } catch (e) {}
+      };
+    </script>
+  </head>
+  <body style="margin:0;padding:32px 16px;background:#0A1931;font-family:Arial,sans-serif;color:#F6FAFD;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td align="center">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px;background:rgba(14,32,58,0.96);border:1px solid rgba(179,207,229,0.15);border-radius:24px;overflow:hidden;">
+            <tr>
+              <td style="padding:28px 28px 12px;text-align:center;background:linear-gradient(135deg,#4A7FA7 0%,#20D6E8 100%);">
+                <h1 style="margin:0;font-size:24px;color:#0A1931;">Smart Rehab Platform</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px;text-align:center;">
+                <p style="margin:0 0 12px;font-size:22px;font-weight:700;color:#20D6E8;">Opening the app…</p>
+                <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#B3CFE5;">Tap the button below to open the Smart Rehab app and reset your password.</p>
+                <div id="fallback">
+                  <p style="margin:0 0 16px;">
+                    <a href="${appDeepLink}" style="display:inline-block;padding:14px 24px;font-size:15px;font-weight:700;color:#0A1931;background:#20D6E8;border-radius:14px;text-decoration:none;">Open Mobile App</a>
+                  </p>
+                  <p style="margin:0;font-size:14px;line-height:1.7;color:#B3CFE5;">
+                    Or continue on the web:<br />
+                    <a href="${webResetUrl}" style="color:#20D6E8;word-break:break-all;">${webResetUrl}</a>
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
 const validateRequest = (schema, payload, res) => {
   const { error, value } = schema.validate(payload, {
     abortEarly: true,
@@ -180,6 +248,33 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const openResetPassword = async (req, res) => {
+  try {
+    const validatedQuery = validateRequest(verifyEmailSchema, req.query, res);
+    if (!validatedQuery) {
+      return;
+    }
+
+    const token = validatedQuery.token;
+    const webResetUrl = getWebResetPasswordUrl(token);
+    const appDeepLink = getMobileResetPasswordDeepLink(token);
+
+    if (isMobileUserAgent(req) || wantsHtmlResponse(req)) {
+      return res
+        .status(200)
+        .type("html")
+        .send(renderResetPasswordRedirectPage({ appDeepLink, webResetUrl }));
+    }
+
+    return res.redirect(302, webResetUrl);
+  } catch (err) {
+    return res.status(err.statusCode || 400).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
 const sendVerification = async (req, res) => {
   try {
     const validatedBody = validateRequest(sendVerificationSchema, req.body, res);
@@ -249,6 +344,7 @@ module.exports = {
   login,
   forgotPassword,
   resetPassword,
+  openResetPassword,
   sendVerification,
   verifyEmail,
   me,

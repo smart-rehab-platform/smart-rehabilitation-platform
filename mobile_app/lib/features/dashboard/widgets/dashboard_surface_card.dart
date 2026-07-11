@@ -8,12 +8,14 @@ class DashboardSurfaceCard extends StatelessWidget {
     required this.child,
     this.padding,
     this.onTap,
+    this.onLongPress,
     this.tint = DashboardColors.primary,
   });
 
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final Color tint;
 
   @override
@@ -30,12 +32,13 @@ class DashboardSurfaceCard extends StatelessWidget {
         border: Border.all(color: DashboardColors.border.withValues(alpha: 0.7)),
         boxShadow: DashboardDecorations.cardShadow(tint),
       ),
-      child: onTap == null
+      child: onTap == null && onLongPress == null
           ? content
           : Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: onTap,
+                onLongPress: onLongPress,
                 borderRadius: DashboardDecorations.cardRadius,
                 child: content,
               ),

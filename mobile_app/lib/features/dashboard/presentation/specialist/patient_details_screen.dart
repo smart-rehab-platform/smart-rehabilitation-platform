@@ -9,12 +9,10 @@ import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'patient_details_widgets.dart';
+import '../communication/communication_patient_actions.dart';
 
 class SpecialistPatientDetailsScreen extends ConsumerStatefulWidget {
-  const SpecialistPatientDetailsScreen({
-    super.key,
-    required this.patientId,
-  });
+  const SpecialistPatientDetailsScreen({super.key, required this.patientId});
 
   final String patientId;
 
@@ -58,7 +56,9 @@ class _SpecialistPatientDetailsScreenState
               ),
               actions: [
                 TextButton(
-                  onPressed: isSaving ? null : () => Navigator.pop(dialogContext, false),
+                  onPressed: isSaving
+                      ? null
+                      : () => Navigator.pop(dialogContext, false),
                   child: const Text('Cancel'),
                 ),
                 FilledButton(
@@ -76,9 +76,9 @@ class _SpecialistPatientDetailsScreenState
                           if (!dialogContext.mounted) return;
                           if (error != null) {
                             setDialogState(() => isSaving = false);
-                            ScaffoldMessenger.of(dialogContext).showSnackBar(
-                              SnackBar(content: Text(error)),
-                            );
+                            ScaffoldMessenger.of(
+                              dialogContext,
+                            ).showSnackBar(SnackBar(content: Text(error)));
                             return;
                           }
                           Navigator.pop(dialogContext, true);
@@ -94,9 +94,9 @@ class _SpecialistPatientDetailsScreenState
 
     if (!mounted) return;
     if (result == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Note saved')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Note saved')));
     }
     controller.dispose();
   }
@@ -142,6 +142,8 @@ class _SpecialistPatientDetailsScreenState
                 diagnosis: data.diagnosis,
                 overallProgress: data.overallProgress,
               ),
+              SizedBox(height: context.dashSpacing),
+              SpecialistMessageParentButton(patientId: widget.patientId),
               SizedBox(height: context.dashSpacing),
               Text(
                 'Quick Statistics',
@@ -249,8 +251,8 @@ class _SpecialistPatientDetailsScreenState
                       onTap: submission.id.isEmpty
                           ? null
                           : () => context.push(
-                                AppRoutes.specialistReviewExercise(submission.id),
-                              ),
+                              AppRoutes.specialistReviewExercise(submission.id),
+                            ),
                     ),
                   ),
                 ),
@@ -298,7 +300,9 @@ class _SpecialistPatientDetailsScreenState
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('No treatment plan found for this patient.'),
+                        content: Text(
+                          'No treatment plan found for this patient.',
+                        ),
                       ),
                     );
                   }
