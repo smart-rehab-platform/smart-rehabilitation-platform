@@ -9,8 +9,7 @@ import '../providers/parent_links_provider.dart';
 import '../widgets/dashboard_layout.dart';
 import '../widgets/dashboard_surface_card.dart';
 import '../widgets/parent_dashboard_cards.dart';
-import '../../presence/providers/presence_provider.dart';
-import '../../presence/widgets/online_status_dot.dart';
+import 'specialist/manage_goals_widgets.dart';
 
 class ManageParentLinksScreen extends ConsumerStatefulWidget {
   const ManageParentLinksScreen({super.key});
@@ -20,20 +19,49 @@ class ManageParentLinksScreen extends ConsumerStatefulWidget {
       _ManageParentLinksScreenState();
 }
 
-class _ManageParentLinksScreenState extends ConsumerState<ManageParentLinksScreen> {
+class _ManageParentLinksScreenState
+    extends ConsumerState<ManageParentLinksScreen> {
+  final _patientSearchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(parentLinksProvider.notifier).initialize();
-      ref.read(presenceProvider.notifier).refreshFromApi();
     });
   }
 
   @override
+  void dispose() {
+    _patientSearchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    ref.listen<ParentLinksState>(parentLinksProvider, (previous, next) {
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+        ref.read(parentLinksProvider.notifier).clearMessages();
+      }
+      if (next.successMessage != null &&
+          next.successMessage != previous?.successMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.successMessage!),
+            backgroundColor: DashboardColors.success,
+          ),
+        );
+        ref.read(parentLinksProvider.notifier).clearMessages();
+      }
+    });
+
     final state = ref.watch(parentLinksProvider);
     final theme = Theme.of(context);
+    final filteredPatients = state.filteredPatients;
 
     return Theme(
       data: DashboardTheme.light,
@@ -49,246 +77,664 @@ class _ManageParentLinksScreenState extends ConsumerState<ManageParentLinksScree
         body: SafeArea(
           child: state.isLoading
               ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  padding: context.dashPadding,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+              : RefreshIndicator(
+                  onRefresh: () =>
+                      ref.read(parentLinksProvider.notifier).refresh(),
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: context.dashPadding,
                     children: [
-                      if (state.errorMessage != null)
+                      Text(
+                        'Link an existing parent account to one of your assigned patients.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: DashboardColors.textSecondary,
+                        ),
+                      ),
+                      SizedBox(height: context.dashSpacing * 0.75),
+                      TextField(
+                        controller: _patientSearchController,
+                        onChanged: ref
+                            .read(parentLinksProvider.notifier)
+                            .setPatientSearchQuery,
+                        decoration:
+                            goalFieldDecoration(
+                              'Search patients by name',
+                            ).copyWith(
+                              prefixIcon: const Icon(
+                                Icons.search_rounded,
+                                color: DashboardColors.textMuted,
+                              ),
+                            ),
+                      ),
+                      SizedBox(height: context.dashSpacing),
+                      if (state.errorMessage != null && state.patients.isEmpty)
                         DashboardErrorCard(
                           message: state.errorMessage!,
                           onRetry: () =>
                               ref.read(parentLinksProvider.notifier).refresh(),
-                        ),
-                      if (state.successMessage != null) ...[
-                        DashboardSurfaceCard(
-                          tint: DashboardColors.success,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline_rounded,
-                                color: DashboardColors.success,
-                                size: context.dashSpacing * 0.65,
-                              ),
-                              SizedBox(width: context.dashSpacing * 0.6),
-                              Expanded(
-                                child: Text(
-                                  state.successMessage!,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: DashboardColors.textPrimary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: context.dashSpacing * 0.75),
-                      ],
-                      DashboardSurfaceCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              'Link Parent to Child',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.75),
-                            _DropdownField<PatientOption>(
-                              label: 'Patient / Child',
-                              value: state.patients
-                                  .where((p) => p.id == state.selectedPatientId)
-                                  .cast<PatientOption?>()
-                                  .firstOrNull,
-                              items: state.patients,
-                              itemLabel: (item) => item.name,
-                              onChanged: (item) => ref
-                                  .read(parentLinksProvider.notifier)
-                                  .selectPatient(item?.id),
-                              emptyHint: 'No patients available',
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.75),
-                            _DropdownField<ParentUserOption>(
-                              label: 'Parent Account',
-                              value: state.parents
-                                  .where(
-                                    (p) => p.userId == state.selectedParentUserId,
-                                  )
-                                  .cast<ParentUserOption?>()
-                                  .firstOrNull,
-                              items: state.parents,
-                              itemLabel: (item) =>
-                                  item.email != null && item.email!.isNotEmpty
-                                      ? '${item.name} (${item.email})'
-                                      : item.name,
-                              presenceUserId: (item) => item.userId,
-                              onChanged: (item) => ref
-                                  .read(parentLinksProvider.notifier)
-                                  .selectParent(item?.userId),
-                              emptyHint: 'No parent accounts available',
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.75),
-                            _DropdownField<String>(
-                              label: 'Relationship',
-                              value: state.selectedRelationship,
-                              items: parentRelationshipOptions,
-                              itemLabel: (item) => item[0].toUpperCase() + item.substring(1),
-                              onChanged: (item) => ref
-                                  .read(parentLinksProvider.notifier)
-                                  .selectRelationship(item),
-                              emptyHint: 'Select relationship',
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.5),
-                            CheckboxListTile(
-                              contentPadding: EdgeInsets.zero,
-                              value: state.isPrimaryContact,
-                              onChanged: (value) => ref
-                                  .read(parentLinksProvider.notifier)
-                                  .setPrimaryContact(value ?? true),
-                              title: Text(
-                                'Primary contact',
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              activeColor: DashboardColors.primary,
-                              controlAffinity: ListTileControlAffinity.leading,
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.5),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: state.isSubmitting
-                                    ? null
-                                    : () => ref
-                                        .read(parentLinksProvider.notifier)
-                                        .submitLink(),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: DashboardColors.primary,
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: context.dashSpacing * 0.75,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                ),
-                                child: state.isSubmitting
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Text('Link Parent to Child'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing),
-                      Text(
-                        'Linked Parents',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.5),
-                      if (state.isLoadingGuardians)
-                        const DashboardLoadingCard(message: 'Loading linked parents...')
-                      else if (state.selectedPatientId == null)
-                        const DashboardEmptyCard(
-                          message: 'Select a patient to view linked parents.',
                         )
-                      else if (state.guardians.isEmpty)
+                      else if (state.patients.isEmpty)
                         const DashboardEmptyCard(
-                          message: 'No parents linked to this patient yet.',
+                          message: 'No assigned patients found.',
+                        )
+                      else if (filteredPatients.isEmpty)
+                        const DashboardEmptyCard(
+                          message: 'No matching patients found.',
                         )
                       else
-                        ...state.guardians.map(
-                          (guardian) => Padding(
-                            padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                            child: DashboardSurfaceCard(
-                              child: Row(
-                                children: [
-                                  Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundColor:
-                                            DashboardColors.purpleSoft,
-                                        child: Text(
-                                          dashboardAvatarLetter(
-                                            guardian.parentName,
-                                            fallback: 'P',
-                                          ),
-                                          style: TextStyle(
-                                            color: DashboardColors.primary,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        right: -1,
-                                        bottom: -1,
-                                        child: OnlineStatusDot(
-                                          userId: guardian.parentId,
-                                          size: 9,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(width: context.dashSpacing * 0.65),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                guardian.parentName,
-                                                style: theme.textTheme.bodyMedium
-                                                    ?.copyWith(
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
-                                            PresenceStatusLabel(
-                                              userId: guardian.parentId,
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          '${_formatRelationship(guardian.relationship)}'
-                                          '${guardian.isPrimaryContact ? ' • Primary contact' : ''}',
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                            color: DashboardColors.textSecondary,
-                                          ),
-                                        ),
-                                        if (guardian.email != null)
-                                          Text(
-                                            guardian.email!,
-                                            style: theme.textTheme.bodySmall
-                                                ?.copyWith(
-                                              color: DashboardColors.textMuted,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                        ...filteredPatients.map(
+                          (patient) => Padding(
+                            padding: EdgeInsets.only(
+                              bottom: context.dashSpacing * 0.75,
+                            ),
+                            child: _PatientLinkCard(
+                              patient: patient,
+                              state: state,
+                              onLink: () =>
+                                  _openParentPicker(context, patient: patient),
+                              onUnlink: (guardian) => _confirmUnlink(
+                                context,
+                                patient: patient,
+                                guardian: guardian,
                               ),
+                            ),
+                          ),
+                        ),
+                      if (state.isRefreshing)
+                        Padding(
+                          padding: EdgeInsets.only(top: context.dashSpacing),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                           ),
                         ),
                     ],
                   ),
                 ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openParentPicker(
+    BuildContext context, {
+    required PatientOption patient,
+  }) async {
+    final state = ref.read(parentLinksProvider);
+    if (state.parents.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No parent accounts are available.')),
+      );
+      return;
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return _ParentPickerSheet(
+          patient: patient,
+          parents: state.parents,
+          isSubmitting: state.linkingPatientId == patient.id,
+          onConfirm:
+              ({
+                required String parentUserId,
+                required String relationship,
+                required bool isPrimaryContact,
+              }) async {
+                final error = await ref
+                    .read(parentLinksProvider.notifier)
+                    .linkParent(
+                      patientId: patient.id,
+                      parentUserId: parentUserId,
+                      relationship: relationship,
+                      isPrimaryContact: isPrimaryContact,
+                    );
+                if (error == null && sheetContext.mounted) {
+                  Navigator.of(sheetContext).pop();
+                }
+              },
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmUnlink(
+    BuildContext context, {
+    required PatientOption patient,
+    required PatientGuardianLink guardian,
+  }) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Unlink parent?'),
+          content: Text(
+            'Remove ${guardian.parentName} as a linked parent for ${patient.name}?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(
+                'Unlink',
+                style: TextStyle(color: DashboardColors.highPriority),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    await ref
+        .read(parentLinksProvider.notifier)
+        .unlinkParent(patientId: patient.id, parentUserId: guardian.parentId);
+  }
+}
+
+class _PatientLinkCard extends StatelessWidget {
+  const _PatientLinkCard({
+    required this.patient,
+    required this.state,
+    required this.onLink,
+    required this.onUnlink,
+  });
+
+  final PatientOption patient;
+  final ParentLinksState state;
+  final VoidCallback onLink;
+  final ValueChanged<PatientGuardianLink> onUnlink;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final guardians = state.guardiansFor(patient.id);
+    final primaryGuardian = state.primaryGuardianFor(patient.id);
+    final isLoadingGuardians = state.isLoadingGuardiansFor(patient.id);
+    final isLinking = state.linkingPatientId == patient.id;
+    final isUnlinking = state.unlinkingPatientId == patient.id;
+    final isBusy = isLinking || isUnlinking;
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                backgroundColor: DashboardColors.purpleSoft,
+                child: Text(
+                  dashboardAvatarLetter(patient.name, fallback: 'P'),
+                  style: const TextStyle(
+                    color: DashboardColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              SizedBox(width: context.dashSpacing * 0.65),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      patient.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: DashboardColors.textPrimary,
+                      ),
+                    ),
+                    if (patient.subtitle != null)
+                      Text(
+                        patient.subtitle!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: DashboardColors.textSecondary,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: context.dashSpacing * 0.65),
+          if (isLoadingGuardians)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            )
+          else if (guardians.isEmpty)
+            Text(
+              'No parent linked',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: DashboardColors.textMuted,
+              ),
+            )
+          else
+            ...guardians.map(
+              (guardian) => Padding(
+                padding: EdgeInsets.only(bottom: context.dashSpacing * 0.35),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.person_outline_rounded,
+                      size: 18,
+                      color: DashboardColors.primary,
+                    ),
+                    SizedBox(width: context.dashSpacing * 0.35),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            guardian.parentName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (guardian.email != null &&
+                              guardian.email!.isNotEmpty)
+                            Text(
+                              guardian.email!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: DashboardColors.textMuted,
+                              ),
+                            ),
+                          Text(
+                            _formatRelationship(guardian.relationship) +
+                                (guardian.isPrimaryContact
+                                    ? ' • Primary contact'
+                                    : ''),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: DashboardColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          SizedBox(height: context.dashSpacing * 0.5),
+          Wrap(
+            spacing: context.dashSpacing * 0.35,
+            runSpacing: context.dashSpacing * 0.35,
+            children: [
+              if (guardians.isEmpty)
+                _ActionButton(
+                  label: 'Link Parent',
+                  icon: Icons.link_rounded,
+                  onPressed: isBusy ? null : onLink,
+                  isLoading: isLinking,
+                )
+              else if (primaryGuardian != null)
+                _ActionButton(
+                  label: 'Unlink Parent',
+                  icon: Icons.link_off_rounded,
+                  onPressed: isBusy ? null : () => onUnlink(primaryGuardian),
+                  isLoading: isUnlinking,
+                  isDestructive: true,
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.isLoading = false,
+    this.isDestructive = false,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final bool isDestructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDestructive
+        ? DashboardColors.highPriority
+        : DashboardColors.primary;
+
+    return OutlinedButton.icon(
+      onPressed: isLoading ? null : onPressed,
+      icon: isLoading
+          ? SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2, color: color),
+            )
+          : Icon(icon, size: 18, color: color),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: color,
+        side: BorderSide(color: color.withValues(alpha: 0.4)),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.dashSpacing * 0.5,
+          vertical: context.dashSpacing * 0.35,
+        ),
+      ),
+    );
+  }
+}
+
+class _ParentPickerSheet extends StatefulWidget {
+  const _ParentPickerSheet({
+    required this.patient,
+    required this.parents,
+    required this.isSubmitting,
+    required this.onConfirm,
+  });
+
+  final PatientOption patient;
+  final List<ParentUserOption> parents;
+  final bool isSubmitting;
+  final Future<void> Function({
+    required String parentUserId,
+    required String relationship,
+    required bool isPrimaryContact,
+  })
+  onConfirm;
+
+  @override
+  State<_ParentPickerSheet> createState() => _ParentPickerSheetState();
+}
+
+class _ParentPickerSheetState extends State<_ParentPickerSheet> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+  String? _selectedParentUserId;
+  String _relationship = 'mother';
+  bool _isPrimaryContact = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.parents.isNotEmpty) {
+      _selectedParentUserId = widget.parents.first.userId;
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<ParentUserOption> get _filteredParents {
+    final query = _searchQuery.trim().toLowerCase();
+    if (query.isEmpty) {
+      return widget.parents;
+    }
+    return widget.parents
+        .where(
+          (parent) =>
+              parent.name.toLowerCase().contains(query) ||
+              (parent.email?.toLowerCase().contains(query) ?? false),
+        )
+        .toList();
+  }
+
+  Future<void> _submit() async {
+    final parentUserId = _selectedParentUserId;
+    if (parentUserId == null || parentUserId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a parent account.')),
+      );
+      return;
+    }
+
+    final selectedParent = widget.parents.firstWhere(
+      (parent) => parent.userId == parentUserId,
+    );
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Link parent?'),
+          content: Text(
+            'Link ${selectedParent.name} as a parent for ${widget.patient.name}?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    await widget.onConfirm(
+      parentUserId: parentUserId,
+      relationship: _relationship,
+      isPrimaryContact: _isPrimaryContact,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final filteredParents = _filteredParents;
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+        ),
+        decoration: const BoxDecoration(
+          color: DashboardColors.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  context.dashSpacing,
+                  context.dashSpacing * 0.75,
+                  context.dashSpacing,
+                  context.dashSpacing * 0.5,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Link Parent',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.25),
+                    Text(
+                      widget.patient.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.75),
+                    TextField(
+                      controller: _searchController,
+                      onChanged: (value) =>
+                          setState(() => _searchQuery = value),
+                      decoration: goalFieldDecoration('Search by name or email')
+                          .copyWith(
+                            prefixIcon: const Icon(
+                              Icons.search_rounded,
+                              color: DashboardColors.textMuted,
+                            ),
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              Flexible(
+                child: filteredParents.isEmpty
+                    ? const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: DashboardEmptyCard(
+                          message: 'No matching parents found.',
+                        ),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: filteredParents.length,
+                        itemBuilder: (context, index) {
+                          final parent = filteredParents[index];
+                          final isSelected =
+                              _selectedParentUserId == parent.userId;
+
+                          return ListTile(
+                            selected: isSelected,
+                            selectedTileColor: DashboardColors.purpleSoft
+                                .withValues(alpha: 0.5),
+                            onTap: () {
+                              setState(
+                                () => _selectedParentUserId = parent.userId,
+                              );
+                            },
+                            leading: Icon(
+                              isSelected
+                                  ? Icons.radio_button_checked_rounded
+                                  : Icons.radio_button_off_rounded,
+                              color: isSelected
+                                  ? DashboardColors.primary
+                                  : DashboardColors.textMuted,
+                            ),
+                            title: Text(
+                              parent.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: parent.email != null
+                                ? Text(
+                                    parent.email!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  )
+                                : null,
+                          );
+                        },
+                      ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: context.dashSpacing),
+                child: DropdownButtonFormField<String>(
+                  initialValue: _relationship,
+                  isExpanded: true,
+                  decoration: goalFieldDecoration('Relationship'),
+                  items: parentRelationshipOptions
+                      .map(
+                        (option) => DropdownMenuItem(
+                          value: option,
+                          child: Text(
+                            option[0].toUpperCase() + option.substring(1),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _relationship = value);
+                    }
+                  },
+                ),
+              ),
+              CheckboxListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.dashSpacing,
+                ),
+                value: _isPrimaryContact,
+                onChanged: (value) {
+                  setState(() => _isPrimaryContact = value ?? true);
+                },
+                title: const Text('Primary contact'),
+                activeColor: DashboardColors.primary,
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  context.dashSpacing,
+                  0,
+                  context.dashSpacing,
+                  context.dashSpacing,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: widget.isSubmitting ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: DashboardColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.dashSpacing * 0.75,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: widget.isSubmitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text('Link Parent'),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -300,91 +746,4 @@ String _formatRelationship(String relationship) {
     return 'Guardian';
   }
   return '${relationship[0].toUpperCase()}${relationship.substring(1)}';
-}
-
-class _DropdownField<T> extends ConsumerWidget {
-  const _DropdownField({
-    required this.label,
-    required this.value,
-    required this.items,
-    required this.itemLabel,
-    required this.onChanged,
-    required this.emptyHint,
-    this.presenceUserId,
-  });
-
-  final String label;
-  final T? value;
-  final List<T> items;
-  final String Function(T item) itemLabel;
-  final ValueChanged<T?> onChanged;
-  final String emptyHint;
-  final String Function(T item)? presenceUserId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-
-    if (items.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: context.dashSpacing * 0.35),
-          Text(
-            emptyHint,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: DashboardColors.textSecondary,
-            ),
-          ),
-        ],
-      );
-    }
-
-    return DropdownButtonFormField<T>(
-      key: ValueKey('$label-${items.contains(value) ? value : 'none'}'),
-      initialValue: items.contains(value) ? value : null,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: DashboardColors.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: DashboardColors.border),
-        ),
-      ),
-      items: items
-          .map(
-            (item) => DropdownMenuItem<T>(
-              value: item,
-              child: presenceUserId == null
-                  ? Text(itemLabel(item))
-                  : Row(
-                      children: [
-                        OnlineStatusDot(userId: presenceUserId!(item)),
-                        SizedBox(width: context.dashSpacing * 0.35),
-                        Expanded(child: Text(itemLabel(item))),
-                      ],
-                    ),
-            ),
-          )
-          .toList(),
-      onChanged: onChanged,
-    );
-  }
-}
-
-extension _FirstOrNull<T> on Iterable<T> {
-  T? get firstOrNull {
-    final iterator = this.iterator;
-    if (!iterator.moveNext()) {
-      return null;
-    }
-    return iterator.current;
-  }
 }

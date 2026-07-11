@@ -13,7 +13,9 @@ class ParentLinksRepository {
       final response = await _dio.get(path);
       return ApiResponseParser.extractList(response.data)
           .whereType<Map>()
-          .map((item) => item.map((key, value) => MapEntry(key.toString(), value)))
+          .map(
+            (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+          )
           .toList();
     } on DioException {
       return const [];
@@ -28,11 +30,38 @@ class ParentLinksRepository {
         .toList();
   }
 
+  Future<List<PatientOption>> fetchAssignedPatients(
+    String specialistUserId,
+  ) async {
+    try {
+      final response = await _dio.get(
+        '/specialists/$specialistUserId/patients',
+      );
+      final rows = ApiResponseParser.extractList(response.data)
+          .whereType<Map>()
+          .map(
+            (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+          )
+          .toList();
+      return rows
+          .map(PatientOption.fromMap)
+          .where((patient) => patient.id.isNotEmpty)
+          .toList()
+        ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    } on DioException catch (error) {
+      throw Exception(_readError(error));
+    }
+  }
+
   /// Uses GET /parents (available to specialists). Falls back to GET /users for admins.
-  Future<List<ParentUserOption>> fetchParentUsers({bool tryUsersEndpoint = false}) async {
+  Future<List<ParentUserOption>> fetchParentUsers({
+    bool tryUsersEndpoint = false,
+  }) async {
     final parents = await _getList('/parents');
     final fromParents = _dedupeParents(
-      parents.map(ParentUserOption.fromMap).where((parent) => parent.userId.isNotEmpty),
+      parents
+          .map(ParentUserOption.fromMap)
+          .where((parent) => parent.userId.isNotEmpty),
     );
 
     if (fromParents.isNotEmpty) {
@@ -45,7 +74,9 @@ class ParentLinksRepository {
 
     final users = await _getList('/users');
     return _dedupeParents(
-      users.map(ParentUserOption.fromUserMap).where((parent) => parent.userId.isNotEmpty),
+      users
+          .map(ParentUserOption.fromUserMap)
+          .where((parent) => parent.userId.isNotEmpty),
     );
   }
 
@@ -89,13 +120,50 @@ class ParentLinksRepository {
     }
   }
 
+  /// [parentUserId] must be the parent **user** id (`users.id`), matching the
+  /// backend route param `guardianId` (deleted via `parent_id` column).
+  Future<String?> unlinkGuardian({
+    required String patientId,
+    required String parentUserId,
+  }) async {
+    try {
+      await _dio.delete('/patients/$patientId/guardians/$parentUserId');
+      return null;
+    } on DioException catch (error) {
+      return _readError(error);
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
   String _readError(DioException error) {
+    final statusCode = error.response?.statusCode;
     final data = error.response?.data;
     if (data is Map) {
       final map = data.map((key, value) => MapEntry(key.toString(), value));
-      return ApiResponseParser.readString(map, const ['message', 'error']) ??
-          error.message ??
-          'Request failed';
+      final message = ApiResponseParser.readString(map, const [
+        'message',
+        'error',
+      ]);
+      if (message != null && message.isNotEmpty) {
+        if (statusCode == 403) {
+          return 'You are not authorized to manage links for this patient.';
+        }
+        if (statusCode == 409 ||
+            message.toLowerCase().contains('duplicate') ||
+            message.toLowerCase().contains('already')) {
+          return 'This parent is already linked to the patient.';
+        }
+        return message;
+      }
+    }
+    if (statusCode == 403) {
+      return 'You are not authorized to manage links for this patient.';
+    }
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.sendTimeout) {
+      return 'Network timeout. Please try again.';
     }
     return error.message ?? 'Request failed';
   }

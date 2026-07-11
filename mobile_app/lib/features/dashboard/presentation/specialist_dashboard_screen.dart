@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../providers/specialist_dashboard_provider.dart';
+import '../providers/specialist_features_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../widgets/dashboard_bottom_nav.dart';
+import '../widgets/dashboard_chat_bubble.dart';
 import '../widgets/dashboard_components.dart';
 import '../widgets/dashboard_layout.dart';
 import '../widgets/dashboard_scaffold.dart';
@@ -29,7 +32,12 @@ class _SpecialistDashboardScreenState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistDashboardProvider.notifier).initialize();
+      ref.read(specialistNotificationsProvider.notifier).initialize();
     });
+  }
+
+  void _openMessages() {
+    context.push(AppRoutes.specialistMessages);
   }
 
   Color _progressColor(int index) {
@@ -45,16 +53,26 @@ class _SpecialistDashboardScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistDashboardProvider);
+    final auth = ref.watch(authProvider);
+    final notifications = ref.watch(specialistNotificationsProvider);
+    final unreadMessageCount = notifications.unreadMessageCount;
+    final profileImageUrl = auth.user?.profileImageUrl;
+    final displayName = auth.user?.fullName ?? state.userName;
     final theme = Theme.of(context);
-    final greetingName =
-        dashboardDisplayName(state.userName, fallback: 'Specialist');
+    final greetingName = dashboardDisplayName(
+      displayName,
+      fallback: 'Specialist',
+    );
+    final avatarInitials = dashboardInitials(displayName, fallback: 'SP');
 
     if (state.isLoading) {
       return DashboardScaffold(
-        avatarInitials: dashboardInitials(state.userName, fallback: 'SP'),
+        avatarInitials: avatarInitials,
+        avatarImageUrl: profileImageUrl,
         notificationCount: state.unreadNotifications,
         drawer: const SpecialistDrawer(),
-        onNotificationsTap: () => context.push(AppRoutes.specialistNotifications),
+        onNotificationsTap: () =>
+            context.push(AppRoutes.specialistNotifications),
         onAvatarTap: () => context.push(AppRoutes.specialistProfile),
         onNavTap: (item) => SpecialistNavigation.onNavTap(context, item),
         body: const DashboardLoadingCard(),
@@ -62,13 +80,19 @@ class _SpecialistDashboardScreenState
     }
 
     return DashboardScaffold(
-      avatarInitials: dashboardInitials(state.userName, fallback: 'SP'),
+      avatarInitials: avatarInitials,
+      avatarImageUrl: profileImageUrl,
       notificationCount: state.unreadNotifications,
       currentNav: DashboardNavItem.home,
       drawer: const SpecialistDrawer(),
       onNotificationsTap: () => context.push(AppRoutes.specialistNotifications),
       onAvatarTap: () => context.push(AppRoutes.specialistProfile),
       onNavTap: (item) => SpecialistNavigation.onNavTap(context, item),
+      floatingActionButton: DashboardChatBubble(
+        unreadCount: unreadMessageCount,
+        onTap: _openMessages,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -119,11 +143,10 @@ class _SpecialistDashboardScreenState
               ],
             ),
           ),
-          if (!state.hasAssignedPatients && state.overview.activeCases == 0) ...[
+          if (!state.hasAssignedPatients &&
+              state.overview.activeCases == 0) ...[
             SizedBox(height: context.dashSpacing * 0.75),
-            const DashboardEmptyCard(
-              message: 'No active cases assigned yet.',
-            ),
+            const DashboardEmptyCard(message: 'No active cases assigned yet.'),
           ],
           if (state.errorMessage != null) ...[
             SizedBox(height: context.dashSpacing * 0.75),
@@ -188,10 +211,14 @@ class _SpecialistDashboardScreenState
                     children: [
                       CircleAvatar(
                         radius: context.dashSpacing * 0.55,
-                        backgroundColor:
-                            DashboardColors.primary.withValues(alpha: 0.15),
+                        backgroundColor: DashboardColors.primary.withValues(
+                          alpha: 0.15,
+                        ),
                         child: Text(
-                          dashboardAvatarLetter(review.patientName, fallback: 'P'),
+                          dashboardAvatarLetter(
+                            review.patientName,
+                            fallback: 'P',
+                          ),
                           style: theme.textTheme.labelLarge?.copyWith(
                             color: DashboardColors.primary,
                             fontWeight: FontWeight.w700,
@@ -233,7 +260,9 @@ class _SpecialistDashboardScreenState
           ),
           SizedBox(height: context.dashSpacing * 0.5),
           if (state.schedule.isEmpty)
-            const DashboardEmptyCard(message: 'No sessions scheduled for today.')
+            const DashboardEmptyCard(
+              message: 'No sessions scheduled for today.',
+            )
           else
             ...state.schedule.map(
               (item) => Padding(
@@ -290,13 +319,12 @@ class _SpecialistDashboardScreenState
           SizedBox(height: context.dashSpacing * 0.6),
           DashboardSectionHeader(
             title: 'Recent Patient Progress',
-            onActionTap: () => context.push(AppRoutes.specialistPatientProgress),
+            onActionTap: () =>
+                context.push(AppRoutes.specialistPatientProgress),
           ),
           SizedBox(height: context.dashSpacing * 0.5),
           if (state.progress.isEmpty)
-            const DashboardEmptyCard(
-              message: 'No progress data available yet.',
-            )
+            const DashboardEmptyCard(message: 'No progress data available yet.')
           else
             DashboardSurfaceCard(
               onTap: () => context.push(AppRoutes.specialistPatientProgress),

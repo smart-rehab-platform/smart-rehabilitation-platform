@@ -1,20 +1,56 @@
 import '../../../core/utils/api_response_parser.dart';
 
 class PatientOption {
-  const PatientOption({required this.id, required this.name});
+  const PatientOption({
+    required this.id,
+    required this.name,
+    this.dateOfBirth,
+    this.gender,
+  });
 
   final String id;
   final String name;
+  final DateTime? dateOfBirth;
+  final String? gender;
+
+  int? get age {
+    if (dateOfBirth == null) {
+      return null;
+    }
+    final now = DateTime.now();
+    var years = now.year - dateOfBirth!.year;
+    if (now.month < dateOfBirth!.month ||
+        (now.month == dateOfBirth!.month && now.day < dateOfBirth!.day)) {
+      years--;
+    }
+    return years >= 0 ? years : null;
+  }
+
+  String? get subtitle {
+    final parts = <String>[];
+    if (age != null) {
+      parts.add('$age yrs');
+    }
+    if (gender != null && gender!.trim().isNotEmpty) {
+      parts.add(gender!.trim());
+    }
+    return parts.isEmpty ? null : parts.join(' • ');
+  }
 
   factory PatientOption.fromMap(Map<String, dynamic> map) {
     return PatientOption(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
-      name: ApiResponseParser.readString(map, const [
+      name:
+          ApiResponseParser.readString(map, const [
             'full_name',
             'fullName',
             'name',
           ]) ??
           'Patient',
+      dateOfBirth: ApiResponseParser.readDate(
+        map['date_of_birth'] ?? map['dateOfBirth'],
+      ),
+      gender: ApiResponseParser.readString(map, const ['gender']),
     );
   }
 }
@@ -34,9 +70,14 @@ class ParentUserOption {
     final nestedUser = ApiResponseParser.asMap(map['user']);
 
     // Guardian linking requires the parent USER id, not the profile id.
-    final userId = ApiResponseParser.readString(map, const ['user_id', 'userId']) ??
+    final userId =
+        ApiResponseParser.readString(map, const ['user_id', 'userId']) ??
         (nestedUser != null
-            ? ApiResponseParser.readString(nestedUser, const ['id', '_id', 'userId'])
+            ? ApiResponseParser.readString(nestedUser, const [
+                'id',
+                '_id',
+                'userId',
+              ])
             : null);
 
     final nameSource = nestedUser ?? map;
@@ -44,7 +85,8 @@ class ParentUserOption {
 
     return ParentUserOption(
       userId: userId ?? '',
-      name: ApiResponseParser.readString(nameSource, const [
+      name:
+          ApiResponseParser.readString(nameSource, const [
             'full_name',
             'fullName',
             'name',
@@ -61,8 +103,11 @@ class ParentUserOption {
     }
 
     return ParentUserOption(
-      userId: ApiResponseParser.readString(map, const ['id', '_id', 'userId']) ?? '',
-      name: ApiResponseParser.readString(map, const [
+      userId:
+          ApiResponseParser.readString(map, const ['id', '_id', 'userId']) ??
+          '',
+      name:
+          ApiResponseParser.readString(map, const [
             'full_name',
             'fullName',
             'name',
@@ -90,29 +135,24 @@ class PatientGuardianLink {
 
   factory PatientGuardianLink.fromMap(Map<String, dynamic> map) {
     return PatientGuardianLink(
-      parentId: ApiResponseParser.readString(map, const [
-            'parent_id',
-            'parentId',
-          ]) ??
+      parentId:
+          ApiResponseParser.readString(map, const ['parent_id', 'parentId']) ??
           '',
-      parentName: ApiResponseParser.readString(map, const [
+      parentName:
+          ApiResponseParser.readString(map, const [
             'full_name',
             'fullName',
             'name',
           ]) ??
           'Parent',
-      relationship: ApiResponseParser.readString(map, const ['relationship']) ??
+      relationship:
+          ApiResponseParser.readString(map, const ['relationship']) ??
           'guardian',
-      isPrimaryContact: map['is_primary_contact'] == true ||
-          map['isPrimaryContact'] == true,
+      isPrimaryContact:
+          map['is_primary_contact'] == true || map['isPrimaryContact'] == true,
       email: ApiResponseParser.readString(map, const ['email']),
     );
   }
 }
 
-const parentRelationshipOptions = [
-  'mother',
-  'father',
-  'guardian',
-  'other',
-];
+const parentRelationshipOptions = ['mother', 'father', 'guardian', 'other'];

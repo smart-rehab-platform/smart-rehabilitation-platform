@@ -1,51 +1,187 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/api_constants.dart';
 import '../../../core/constants/dashboard_colors.dart';
 
-class DashboardProfileAvatar extends StatelessWidget {
+class DashboardProfileAvatar extends StatefulWidget {
   const DashboardProfileAvatar({
     super.key,
     required this.initials,
     this.imageUrl,
+    this.previewBytes,
     this.radius = 20,
     this.isLoading = false,
+    this.imageCacheBustMs,
+    this.onTap,
   });
 
   final String initials;
   final String? imageUrl;
+  final Uint8List? previewBytes;
   final double radius;
   final bool isLoading;
+  final int? imageCacheBustMs;
+  final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final resolvedUrl = ApiConstants.resolveMediaUrl(imageUrl);
+  State<DashboardProfileAvatar> createState() => _DashboardProfileAvatarState();
+}
 
+class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
+  var _networkImageFailed = false;
+
+  @override
+  void didUpdateWidget(DashboardProfileAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.imageUrl != widget.imageUrl ||
+        oldWidget.previewBytes != widget.previewBytes ||
+        oldWidget.imageCacheBustMs != widget.imageCacheBustMs) {
+      _networkImageFailed = false;
+    }
+  }
+
+  String? _resolvedNetworkUrl() {
+    return ApiConstants.resolveProfileImageUrl(
+      widget.imageUrl,
+      cacheBustMs: widget.imageCacheBustMs,
+    );
+  }
+
+  bool get _hasPreview =>
+      widget.previewBytes != null && widget.previewBytes!.isNotEmpty;
+
+  bool get _showNetworkImage {
+    final resolvedUrl = _resolvedNetworkUrl();
+    return !_hasPreview &&
+        !_networkImageFailed &&
+        resolvedUrl != null &&
+        resolvedUrl.isNotEmpty;
+  }
+
+  Widget _initialsContent(ThemeData theme) {
+    if (widget.initials.trim().isEmpty) {
+      return Icon(
+        Icons.person_outline_rounded,
+        color: DashboardColors.primary,
+        size: widget.radius * 0.9,
+      );
+    }
+
+    return Text(
+      widget.initials,
+      style: theme.textTheme.labelLarge?.copyWith(
+        color: DashboardColors.primary,
+        fontWeight: FontWeight.w700,
+        fontSize: widget.radius * 0.72,
+      ),
+    );
+  }
+
+  Widget _initialsAvatar(ThemeData theme, {bool showLoading = false}) {
     return CircleAvatar(
-      radius: radius,
+      radius: widget.radius,
       backgroundColor: DashboardColors.purpleSoft,
-      backgroundImage:
-          resolvedUrl != null ? NetworkImage(resolvedUrl) : null,
-      child: isLoading
+      child: showLoading || widget.isLoading
           ? SizedBox(
-              width: radius,
-              height: radius,
+              width: widget.radius,
+              height: widget.radius,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
                 color: DashboardColors.primary,
               ),
             )
-          : resolvedUrl == null
-              ? Text(
-                  initials,
-                  style: theme.textTheme.labelLarge?.copyWith(
+          : _initialsContent(theme),
+    );
+  }
+
+  Widget _previewAvatar() {
+    return CircleAvatar(
+      radius: widget.radius,
+      backgroundColor: DashboardColors.purpleSoft,
+      backgroundImage: MemoryImage(widget.previewBytes!),
+    );
+  }
+
+  Widget _networkAvatar(ThemeData theme) {
+    final resolvedUrl = _resolvedNetworkUrl()!;
+
+    return ClipOval(
+      child: Image.network(
+        resolvedUrl,
+        width: widget.radius * 2,
+        height: widget.radius * 2,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          }
+          return SizedBox(
+            width: widget.radius * 2,
+            height: widget.radius * 2,
+            child: ColoredBox(
+              color: DashboardColors.purpleSoft,
+              child: Center(
+                child: SizedBox(
+                  width: widget.radius,
+                  height: widget.radius,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
                     color: DashboardColors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: radius * 0.72,
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                        : null,
                   ),
-                )
-              : null,
+                ),
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted || _networkImageFailed) {
+              return;
+            }
+            setState(() => _networkImageFailed = true);
+          });
+          return SizedBox(
+            width: widget.radius * 2,
+            height: widget.radius * 2,
+            child: ColoredBox(
+              color: DashboardColors.purpleSoft,
+              child: Center(child: _initialsContent(theme)),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final Widget avatar;
+    if (widget.isLoading && !_hasPreview && !_showNetworkImage) {
+      avatar = _initialsAvatar(theme, showLoading: true);
+    } else if (_hasPreview) {
+      avatar = _previewAvatar();
+    } else if (_showNetworkImage) {
+      avatar = _networkAvatar(theme);
+    } else {
+      avatar = _initialsAvatar(theme);
+    }
+
+    if (widget.onTap == null) {
+      return avatar;
+    }
+
+    return InkWell(
+      onTap: widget.isLoading ? null : widget.onTap,
+      customBorder: const CircleBorder(),
+      child: avatar,
     );
   }
 }
@@ -55,20 +191,27 @@ class EditableProfileAvatar extends StatelessWidget {
     super.key,
     required this.initials,
     this.imageUrl,
+    this.previewBytes,
     this.radius = 40,
     this.isLoading = false,
+    this.imageCacheBustMs,
     this.onEditTap,
+    this.onAvatarTap,
   });
 
   final String initials;
   final String? imageUrl;
+  final Uint8List? previewBytes;
   final double radius;
   final bool isLoading;
+  final int? imageCacheBustMs;
   final VoidCallback? onEditTap;
+  final VoidCallback? onAvatarTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final avatarTap = onAvatarTap ?? onEditTap;
 
     return Column(
       children: [
@@ -78,8 +221,11 @@ class EditableProfileAvatar extends StatelessWidget {
             DashboardProfileAvatar(
               initials: initials,
               imageUrl: imageUrl,
+              previewBytes: previewBytes,
               radius: radius,
               isLoading: isLoading,
+              imageCacheBustMs: imageCacheBustMs,
+              onTap: avatarTap,
             ),
             Positioned(
               right: 0,
@@ -106,7 +252,7 @@ class EditableProfileAvatar extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Tap camera to change photo',
+          'Tap photo to change',
           style: theme.textTheme.labelSmall?.copyWith(
             color: DashboardColors.textSecondary,
           ),

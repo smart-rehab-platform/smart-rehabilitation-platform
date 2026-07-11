@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is needed to capture photos and videos for exercise submissions.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is needed to record audio for exercise submissions.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is needed to attach media to exercise submissions.</string>
 </dict>
 </plist>

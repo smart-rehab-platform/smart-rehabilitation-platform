@@ -69,10 +69,10 @@ class SessionStatusBadge extends StatelessWidget {
   final SessionDisplayStatus status;
 
   Color get _color => switch (status) {
-        SessionDisplayStatus.today => DashboardColors.primary,
-        SessionDisplayStatus.upcoming => const Color(0xFF3B82F6),
+        SessionDisplayStatus.scheduled => const Color(0xFF00A884),
         SessionDisplayStatus.completed => DashboardColors.success,
         SessionDisplayStatus.cancelled => DashboardColors.highPriority,
+        SessionDisplayStatus.noShow => const Color(0xFFC62828),
       };
 
   @override

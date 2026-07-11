@@ -24,6 +24,12 @@ CREATE TYPE exercise_frequency   AS ENUM ('daily', 'weekly', 'one_time');
 CREATE TYPE media_type           AS ENUM ('video', 'audio', 'image');
 CREATE TYPE submission_status    AS ENUM ('pending', 'reviewed', 'needs_retry');
 CREATE TYPE session_status       AS ENUM ('scheduled', 'completed', 'cancelled', 'no_show');
+CREATE TYPE session_request_status AS ENUM ('pending', 'approved', 'rejected');
+CREATE TYPE session_request_reason AS ENUM (
+    'regular_follow_up', 'replacement_cancelled', 'replacement_missed',
+    'additional_session', 'consultation', 'other'
+);
+CREATE TYPE preferred_time_period AS ENUM ('morning', 'afternoon', 'evening', 'flexible');
 CREATE TYPE chatbot_sender       AS ENUM ('user', 'bot');
 CREATE TYPE recommendation_type  AS ENUM ('exercise_suggestion', 'plan_adjustment');
 CREATE TYPE recommendation_status AS ENUM ('pending', 'accepted', 'rejected');
@@ -31,7 +37,7 @@ CREATE TYPE report_type          AS ENUM ('weekly', 'monthly');
 CREATE TYPE progress_period      AS ENUM ('daily', 'weekly', 'monthly');
 CREATE TYPE notification_type    AS ENUM (
     'exercise_reminder', 'session_reminder', 'feedback_received',
-    'report_ready', 'new_message', 'general'
+    'report_ready', 'new_message', 'general', 'session_request'
 );
 
 -- =====================================================================
@@ -367,6 +373,24 @@ CREATE TABLE sessions (
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE session_requests (
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id            UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    parent_id             UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    specialist_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reason                session_request_reason NOT NULL,
+    reason_other_text     TEXT,
+    preferred_date        DATE NOT NULL,
+    preferred_time_period preferred_time_period NOT NULL,
+    notes                 TEXT,
+    status                session_request_status NOT NULL DEFAULT 'pending',
+    rejection_reason      TEXT,
+    approved_session_id   UUID REFERENCES sessions(id) ON DELETE SET NULL,
+    reviewed_at           TIMESTAMPTZ,
+    created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at            TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- =====================================================================
 -- 11. AI CHATBOT
 -- =====================================================================
@@ -551,6 +575,9 @@ CREATE TRIGGER trg_treatment_plans_updated_at BEFORE UPDATE ON treatment_plans
 CREATE TRIGGER trg_sessions_updated_at BEFORE UPDATE ON sessions
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+CREATE TRIGGER trg_session_requests_updated_at BEFORE UPDATE ON session_requests
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 -- =====================================================================
 -- INDEXES — speed up the most common lookups/joins
 -- =====================================================================
@@ -576,6 +603,15 @@ CREATE INDEX idx_conversations_specialist       ON conversations(specialist_id);
 CREATE INDEX idx_sessions_specialist            ON sessions(specialist_id);
 CREATE INDEX idx_sessions_patient               ON sessions(patient_id);
 CREATE INDEX idx_sessions_scheduled_at          ON sessions(scheduled_at);
+CREATE INDEX idx_session_requests_specialist_status ON session_requests(specialist_id, status);
+CREATE INDEX idx_session_requests_parent_id     ON session_requests(parent_id);
+CREATE INDEX idx_session_requests_patient_id    ON session_requests(patient_id);
+CREATE UNIQUE INDEX idx_session_requests_approved_session
+    ON session_requests(approved_session_id)
+    WHERE approved_session_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_session_requests_one_pending
+    ON session_requests(patient_id, parent_id, specialist_id)
+    WHERE status = 'pending';
 CREATE INDEX idx_notifications_user_unread      ON notifications(user_id, is_read);
 CREATE INDEX idx_speech_analyses_submission     ON speech_analyses(submission_id);
 CREATE INDEX idx_ai_recommendations_patient     ON ai_recommendations(patient_id);

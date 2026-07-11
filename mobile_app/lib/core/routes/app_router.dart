@@ -18,6 +18,13 @@ import '../../features/dashboard/presentation/admin/admin_users_screen.dart';
 import '../../features/dashboard/presentation/admin/patient_assignments_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
 import '../../features/dashboard/presentation/manage_parent_links_screen.dart';
+import '../../features/dashboard/presentation/parent/edit_parent_profile_screen.dart';
+import '../../features/dashboard/presentation/communication/chat_screen.dart';
+import '../../features/dashboard/presentation/communication/conversations_list_screen.dart';
+import '../../features/dashboard/models/communication_models.dart';
+import '../../features/dashboard/presentation/parent/parent_ai_chat_screen.dart';
+import '../../features/dashboard/presentation/parent/parent_extended_screens.dart';
+import '../../features/dashboard/presentation/parent/parent_screens.dart';
 import '../../features/dashboard/presentation/parent_dashboard_screen.dart';
 import '../../features/dashboard/presentation/specialist/edit_treatment_plan_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_ai_recommendations_screen.dart';
@@ -33,6 +40,7 @@ import '../../features/dashboard/presentation/specialist/specialist_speech_analy
 import '../../features/dashboard/presentation/specialist/specialist_screens.dart';
 import '../../features/dashboard/presentation/specialist_dashboard_screen.dart';
 import '../../features/dashboard/home_page.dart';
+import '../../features/exercises/presentation/parent_daily_tasks_screen.dart';
 import 'app_routes.dart';
 import 'role_routing.dart';
 
@@ -69,13 +77,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return AppRoutes.verifyEmail;
       }
 
+      if (uri.scheme == 'smartrehab' && uri.host == 'reset-password') {
+        final token = uri.queryParameters['token'];
+        if (token != null && token.trim().isNotEmpty) {
+          return '${AppRoutes.resetPassword}?token=${Uri.encodeComponent(token.trim())}';
+        }
+
+        return AppRoutes.resetPassword;
+      }
+
       final role = auth.user?.role;
 
       if (auth.isInitializing) {
         return null;
       }
 
-      final isAuthRoute = path == AppRoutes.login ||
+      final isAuthRoute =
+          path == AppRoutes.login ||
           path == AppRoutes.signup ||
           path == AppRoutes.forgotPassword ||
           path == AppRoutes.resetPassword ||
@@ -100,6 +118,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       }
 
       if (isAuthRoute || path == AppRoutes.splash) {
+        if (path == AppRoutes.resetPassword ||
+            path == AppRoutes.forgotPassword) {
+          return null;
+        }
         return home;
       }
 
@@ -159,6 +181,104 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.parentDashboard,
         name: 'parentDashboard',
         builder: (context, state) => const ParentDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentDailyTasks,
+        name: 'parentDailyTasks',
+        builder: (context, state) => const ParentDailyTasksScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentChildren,
+        name: 'parentChildren',
+        builder: (context, state) => const ParentChildrenScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentReports,
+        name: 'parentReports',
+        builder: (context, state) => const ParentReportsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentSessions,
+        name: 'parentSessions',
+        builder: (context, state) => const ParentSessionsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentNotifications,
+        name: 'parentNotifications',
+        builder: (context, state) => const ParentNotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentProfile,
+        name: 'parentProfile',
+        builder: (context, state) => const ParentProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentEditProfile,
+        name: 'parentEditProfile',
+        builder: (context, state) => const EditParentProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentMore,
+        name: 'parentMore',
+        builder: (context, state) => const ParentMoreScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentChildDetail,
+        name: 'parentChildDetail',
+        builder: (context, state) =>
+            ParentChildDetailScreen(childId: state.pathParameters['childId']!),
+      ),
+      GoRoute(
+        path: AppRoutes.parentProgress,
+        name: 'parentProgress',
+        builder: (context, state) {
+          final childId =
+              state.uri.queryParameters['childId'] ??
+              state.extra as String? ??
+              '';
+          return ParentProgressScreen(childId: childId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.parentFeedback,
+        name: 'parentFeedback',
+        builder: (context, state) => const ParentFeedbackScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentAiChat,
+        name: 'parentAiChat',
+        builder: (context, state) => const ParentAiChatScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentMessages,
+        name: 'parentMessages',
+        builder: (context, state) =>
+            const ConversationsListScreen(isParent: true),
+      ),
+      GoRoute(
+        path: AppRoutes.parentChatPath,
+        name: 'parentChat',
+        builder: (context, state) {
+          final conversationId = state.pathParameters['conversationId'] ?? '';
+          final conversation = state.extra is CommunicationConversation
+              ? state.extra as CommunicationConversation
+              : null;
+          return CommunicationChatScreen(
+            conversationId: conversationId,
+            initialConversation: conversation,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.parentExerciseDetails,
+        name: 'parentExerciseDetails',
+        builder: (context, state) {
+          final assignedExerciseId =
+              state.uri.queryParameters['assignedExerciseId'] ?? '';
+          return ParentExerciseDetailScreen(
+            assignedExerciseId: assignedExerciseId,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.specialistDashboard,
@@ -270,6 +390,26 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.specialistEditProfile,
         name: 'specialistEditProfile',
         builder: (context, state) => const EditSpecialistProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistMessages,
+        name: 'specialistMessages',
+        builder: (context, state) =>
+            const ConversationsListScreen(isParent: false),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistChatPath,
+        name: 'specialistChat',
+        builder: (context, state) {
+          final conversationId = state.pathParameters['conversationId'] ?? '';
+          final conversation = state.extra is CommunicationConversation
+              ? state.extra as CommunicationConversation
+              : null;
+          return CommunicationChatScreen(
+            conversationId: conversationId,
+            initialConversation: conversation,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.specialistMore,

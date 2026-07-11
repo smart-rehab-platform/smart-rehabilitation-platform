@@ -13,6 +13,8 @@ class DashboardSummaryCard extends StatelessWidget {
     required this.iconBackground,
     required this.iconColor,
     this.onTap,
+    this.valueMaxLines = 1,
+    this.valueStyle,
   });
 
   final String label;
@@ -21,6 +23,8 @@ class DashboardSummaryCard extends StatelessWidget {
   final Color iconBackground;
   final Color iconColor;
   final VoidCallback? onTap;
+  final int valueMaxLines;
+  final TextStyle? valueStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +51,20 @@ class DashboardSummaryCard extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.65),
           Text(
             value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: DashboardColors.textPrimary,
-            ),
+            maxLines: valueMaxLines,
+            overflow: TextOverflow.ellipsis,
+            style: valueStyle ??
+                theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: DashboardColors.textPrimary,
+                  height: 1.2,
+                ),
           ),
           SizedBox(height: context.dashSpacing * 0.15),
           Text(
             label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
               fontWeight: FontWeight.w500,
@@ -67,9 +77,14 @@ class DashboardSummaryCard extends StatelessWidget {
 }
 
 class DashboardSummaryGrid extends StatelessWidget {
-  const DashboardSummaryGrid({super.key, required this.cards});
+  const DashboardSummaryGrid({
+    super.key,
+    required this.cards,
+    this.childAspectRatio = 1.35,
+  });
 
   final List<DashboardSummaryCard> cards;
+  final double childAspectRatio;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +94,7 @@ class DashboardSummaryGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: context.dashSpacing * 0.75,
       crossAxisSpacing: context.dashSpacing * 0.75,
-      childAspectRatio: 1.35,
+      childAspectRatio: childAspectRatio,
       children: cards,
     );
   }

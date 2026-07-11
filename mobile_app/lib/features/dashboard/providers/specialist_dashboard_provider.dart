@@ -10,22 +10,31 @@ import '../models/specialist_dashboard_models.dart';
 
 final specialistDashboardRepositoryProvider =
     Provider<SpecialistDashboardRepository>((ref) {
-  return SpecialistDashboardRepository(ref.watch(dioProvider));
-});
+      return SpecialistDashboardRepository(ref.watch(dioProvider));
+    });
 
 final specialistFeaturesRepositoryForDashboardProvider =
     Provider<SpecialistFeaturesRepository>((ref) {
-  return SpecialistFeaturesRepository(ref.watch(dioProvider));
-});
+      return SpecialistFeaturesRepository(ref.watch(dioProvider));
+    });
 
 final specialistDashboardProvider =
-    StateNotifierProvider<SpecialistDashboardNotifier, SpecialistDashboardState>(
-        (ref) {
-  final repository = ref.watch(specialistDashboardRepositoryProvider);
-  final featuresRepository = ref.watch(specialistFeaturesRepositoryForDashboardProvider);
-  final authRepository = ref.watch(authRepositoryProvider);
-  return SpecialistDashboardNotifier(ref, repository, featuresRepository, authRepository);
-});
+    StateNotifierProvider<
+      SpecialistDashboardNotifier,
+      SpecialistDashboardState
+    >((ref) {
+      final repository = ref.watch(specialistDashboardRepositoryProvider);
+      final featuresRepository = ref.watch(
+        specialistFeaturesRepositoryForDashboardProvider,
+      );
+      final authRepository = ref.watch(authRepositoryProvider);
+      return SpecialistDashboardNotifier(
+        ref,
+        repository,
+        featuresRepository,
+        authRepository,
+      );
+    });
 
 class SpecialistDashboardState {
   const SpecialistDashboardState({
@@ -66,7 +75,9 @@ class SpecialistDashboardState {
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
-      userName: identical(userName, _sentinel) ? this.userName : userName as String?,
+      userName: identical(userName, _sentinel)
+          ? this.userName
+          : userName as String?,
       overview: overview ?? this.overview,
       pendingReviews: pendingReviews ?? this.pendingReviews,
       schedule: schedule ?? this.schedule,
@@ -77,7 +88,8 @@ class SpecialistDashboardState {
   }
 }
 
-class SpecialistDashboardNotifier extends StateNotifier<SpecialistDashboardState> {
+class SpecialistDashboardNotifier
+    extends StateNotifier<SpecialistDashboardState> {
   SpecialistDashboardNotifier(
     this._ref,
     this._repository,
@@ -144,6 +156,14 @@ class SpecialistDashboardNotifier extends StateNotifier<SpecialistDashboardState
   }
 
   Future<void> refresh() => initialize();
+
+  void syncUserFromAuth() {
+    final user = _ref.read(authProvider).user;
+    if (user == null) {
+      return;
+    }
+    state = state.copyWith(userName: user.fullName);
+  }
 }
 
 String formatSubmittedAgo(DateTime? date) {

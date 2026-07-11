@@ -106,7 +106,8 @@ class SpecialistDrawer extends ConsumerWidget {
                   _DrawerTile(
                     icon: Icons.rate_review_outlined,
                     label: 'Pending Reviews',
-                    onTap: () => _go(context, AppRoutes.specialistPendingReviews),
+                    onTap: () =>
+                        _go(context, AppRoutes.specialistPendingReviews),
                   ),
                   _DrawerTile(
                     icon: Icons.calendar_today_outlined,
@@ -116,12 +117,18 @@ class SpecialistDrawer extends ConsumerWidget {
                   _DrawerTile(
                     icon: Icons.assignment_outlined,
                     label: 'Treatment Plans',
-                    onTap: () => _go(context, AppRoutes.specialistTreatmentPlans),
+                    onTap: () =>
+                        _go(context, AppRoutes.specialistTreatmentPlans),
                   ),
                   _DrawerTile(
                     icon: Icons.link_rounded,
                     label: 'Manage Parent Links',
                     onTap: () => _go(context, AppRoutes.manageParentLinks),
+                  ),
+                  _DrawerTile(
+                    icon: Icons.chat_bubble_outline_rounded,
+                    label: 'Messages',
+                    onTap: () => _go(context, AppRoutes.specialistMessages),
                   ),
                   _DrawerTile(
                     icon: Icons.fitness_center_outlined,
@@ -136,7 +143,8 @@ class SpecialistDrawer extends ConsumerWidget {
                   _DrawerTile(
                     icon: Icons.notifications_none_rounded,
                     label: 'Notifications',
-                    onTap: () => _go(context, AppRoutes.specialistNotifications),
+                    onTap: () =>
+                        _go(context, AppRoutes.specialistNotifications),
                   ),
                   _DrawerTile(
                     icon: Icons.person_outline_rounded,

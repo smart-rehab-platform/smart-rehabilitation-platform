@@ -1,23 +1,43 @@
 const express = require("express");
 const multer = require("multer");
 const uploadsController = require("./uploads.controller");
+const authenticate = require("../../middleware/auth.middleware");
+const { uploadsRoot, reportsUploadDir } = require("../../config/uploads");
+const {
+  isAllowedMessageAttachment,
+  MAX_FILE_SIZE_BYTES,
+} = require("../../config/messageAttachments");
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
+const createStorage = (destination) =>
+  multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      cb(null, destination);
+    },
+    filename: (_req, file, cb) => {
+      cb(null, Date.now() + "-" + file.originalname.replace(/\s+/g, "-"));
+    },
+  });
 
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      Date.now() + "-" + file.originalname.replace(/\s+/g, "-")
+const upload = multer({ storage: createStorage(uploadsRoot) });
+const uploadReport = multer({ storage: createStorage(reportsUploadDir) });
+const uploadMessageAttachment = multer({
+  storage: createStorage(uploadsRoot),
+  limits: { fileSize: MAX_FILE_SIZE_BYTES },
+  fileFilter: (_req, file, cb) => {
+    if (isAllowedMessageAttachment(file.mimetype, file.originalname)) {
+      cb(null, true);
+      return;
+    }
+
+    const error = new Error(
+      "Unsupported file type. Allowed: images, audio, PDF, and MP4/MOV video."
     );
-  }
+    error.statusCode = 400;
+    cb(error);
+  },
 });
-
-const upload = multer({ storage });
 
 router.post(
   "/profile-image",
@@ -33,7 +53,15 @@ router.post(
 
 router.post(
   "/message-attachment",
-  upload.single("file"),
+  authenticate,
+  (req, res, next) => {
+    uploadMessageAttachment.single("file")(req, res, (err) => {
+      if (err) {
+        return uploadsController.handleUploadError(res, err);
+      }
+      next();
+    });
+  },
   uploadsController.uploadMessageAttachment
 );
 
@@ -45,7 +73,7 @@ router.post(
 
 router.post(
   "/report",
-  upload.single("file"),
+  uploadReport.single("file"),
   uploadsController.uploadReport
 );
 
