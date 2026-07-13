@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/theme/dashboard_theme.dart';
 import '../../../auth/providers/auth_provider.dart';
+import '../../../presence/widgets/chat_presence_subtitle.dart';
 import '../../models/communication_models.dart';
 import '../../providers/communication_thread_provider.dart';
 import '../../providers/conversation_notification_read.dart';
@@ -248,6 +249,7 @@ class _CommunicationChatScreenState
     final headerParticipant =
         conversation?.otherParticipantName(role) ?? 'Messages';
     final headerPatient = conversation?.patientContextLabel();
+    final otherParticipantId = conversation?.otherParticipantId(role) ?? '';
 
     return Theme(
       data: DashboardTheme.light,
@@ -268,13 +270,19 @@ class _CommunicationChatScreenState
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
+              if (otherParticipantId.isNotEmpty)
+                ChatPresenceSubtitle(userId: otherParticipantId),
               if (headerPatient != null)
                 Text(
                   'Patient: $headerPatient',
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
             ],
           ),

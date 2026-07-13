@@ -97,6 +97,28 @@ class PresenceNotifier extends StateNotifier<PresenceState> {
     }
   }
 
+  Future<void> refreshUser(String userId) async {
+    if (userId.isEmpty) {
+      return;
+    }
+
+    try {
+      final status = await _repository.fetchUser(userId);
+      if (status == null) {
+        return;
+      }
+
+      state = state.copyWith(
+        statusByUserId: {
+          ...state.statusByUserId,
+          userId: status,
+        },
+      );
+    } catch (_) {
+      // Presence refresh failures are non-critical for chat UI.
+    }
+  }
+
   void _applyOnline(PresenceStatus status) {
     final current = state.statusByUserId[status.userId];
     state = state.copyWith(

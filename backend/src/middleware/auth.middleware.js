@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const pool = require("../database/db");
+const presenceService = require("../modules/presence/presence.service");
 
 const authenticate = async (req, res, next) => {
   try {
@@ -37,6 +38,11 @@ const authenticate = async (req, res, next) => {
     }
 
     req.user = user;
+
+    presenceService.touchLastSeen(user.id).catch((error) => {
+      console.error("[presence] Failed to update last seen:", error.message);
+    });
+
     next();
   } catch (err) {
     return res.status(401).json({
