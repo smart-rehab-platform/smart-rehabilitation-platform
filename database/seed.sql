@@ -21,6 +21,39 @@ VALUES
 ('Cognitive', 'Cognitive skills activities'),
 ('Occupational', 'Occupational therapy exercises');
 
+-- Case intake categories (idempotent; unique on lower(trim(name)))
+INSERT INTO case_categories (name, description)
+VALUES
+(
+    'Speech and Language Therapy',
+    'Support for speech clarity, language development, and communication skills.'
+),
+(
+    'Behavioral Therapy',
+    'Guidance for managing behavior, emotional regulation, and social interaction.'
+),
+(
+    'Occupational Therapy',
+    'Help with daily living skills, motor coordination, and sensory processing.'
+),
+(
+    'Learning Difficulties',
+    'Support for academic learning challenges and cognitive skill building.'
+),
+(
+    'Autism Support',
+    'Specialized support for children on the autism spectrum and related needs.'
+),
+(
+    'Developmental Delay',
+    'Early intervention for milestones in speech, motor, and social development.'
+),
+(
+    'Motor Rehabilitation',
+    'Recovery and strengthening of movement, balance, and physical function.'
+)
+ON CONFLICT ((lower(trim(name)))) DO NOTHING;
+
 INSERT INTO exercises (category_id, title, description, instructions, created_by)
 SELECT 
   ec.id,
