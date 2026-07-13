@@ -30,6 +30,9 @@ CREATE TYPE session_request_reason AS ENUM (
     'additional_session', 'consultation', 'other'
 );
 CREATE TYPE preferred_time_period AS ENUM ('morning', 'afternoon', 'evening', 'flexible');
+CREATE TYPE case_intake_status   AS ENUM (
+    'pending', 'assigned', 'under_assessment', 'accepted', 'rejected', 'converted_to_patient'
+);
 CREATE TYPE chatbot_sender       AS ENUM ('user', 'bot');
 CREATE TYPE recommendation_type  AS ENUM ('exercise_suggestion', 'plan_adjustment');
 CREATE TYPE recommendation_status AS ENUM ('pending', 'accepted', 'rejected');
@@ -37,7 +40,9 @@ CREATE TYPE report_type          AS ENUM ('weekly', 'monthly');
 CREATE TYPE progress_period      AS ENUM ('daily', 'weekly', 'monthly');
 CREATE TYPE notification_type    AS ENUM (
     'exercise_reminder', 'session_reminder', 'feedback_received',
-    'report_ready', 'new_message', 'general', 'session_request'
+    'report_ready', 'new_message', 'general', 'session_request',
+    'case_request_submitted', 'case_request_assigned', 'case_request_accepted',
+    'case_request_rejected', 'case_request_converted'
 );
 
 -- =====================================================================
@@ -161,6 +166,108 @@ CREATE TABLE case_history (
     description TEXT,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Preliminary case intake before an official patient record exists
+CREATE TABLE case_categories (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name        VARCHAR(150) NOT NULL,
+    description TEXT,
+    is_active   BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT case_categories_name_not_blank CHECK (char_length(trim(name)) > 0)
+);
+
+CREATE UNIQUE INDEX idx_case_categories_name_lower
+    ON case_categories (lower(trim(name)));
+
+CREATE INDEX idx_case_categories_active
+    ON case_categories (is_active)
+    WHERE is_active = TRUE;
+
+-- specialist_id references users.id (not specialist_profiles.id)
+CREATE TABLE specialist_case_categories (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    specialist_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    category_id   UUID NOT NULL REFERENCES case_categories(id) ON DELETE RESTRICT,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (specialist_id, category_id)
+);
+
+CREATE INDEX idx_specialist_case_categories_category
+    ON specialist_case_categories (category_id);
+
+-- Conversation link is stored only on conversations.case_request_id
+CREATE TABLE case_intake_requests (
+    id                              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    parent_id                       UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    child_name                      VARCHAR(150) NOT NULL,
+    date_of_birth                   DATE NOT NULL,
+    gender                          VARCHAR(10),
+    category_id                     UUID NOT NULL REFERENCES case_categories(id) ON DELETE RESTRICT,
+    case_description                TEXT NOT NULL,
+    observed_difficulties           TEXT,
+    has_previous_diagnosis          BOOLEAN NOT NULL DEFAULT FALSE,
+    previous_diagnosis_details      TEXT,
+    is_currently_receiving_treatment BOOLEAN NOT NULL DEFAULT FALSE,
+    current_treatment_details       TEXT,
+    preferred_contact_period        preferred_time_period NOT NULL,
+    status                          case_intake_status NOT NULL DEFAULT 'pending',
+    assigned_specialist_id          UUID REFERENCES users(id) ON DELETE SET NULL,
+    reviewed_by_admin_id            UUID REFERENCES users(id) ON DELETE SET NULL,
+    patient_id                      UUID REFERENCES patients(id) ON DELETE SET NULL,
+    assessment_notes                TEXT,
+    rejection_reason                TEXT,
+    submitted_at                    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    assigned_at                     TIMESTAMPTZ,
+    accepted_at                     TIMESTAMPTZ,
+    converted_at                    TIMESTAMPTZ,
+    created_at                      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at                      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT case_intake_child_name_not_blank
+        CHECK (char_length(trim(child_name)) > 0),
+    CONSTRAINT case_intake_case_description_not_blank
+        CHECK (char_length(trim(case_description)) > 0),
+    CONSTRAINT case_intake_dob_not_future
+        CHECK (date_of_birth <= CURRENT_DATE)
+);
+
+-- Backend validation should also check duplicates; names may differ by casing/spacing.
+CREATE UNIQUE INDEX idx_case_intake_one_active_per_child
+    ON case_intake_requests (parent_id, child_name, date_of_birth)
+    WHERE status NOT IN ('rejected', 'converted_to_patient');
+
+CREATE INDEX idx_case_intake_parent_status
+    ON case_intake_requests (parent_id, status);
+
+CREATE INDEX idx_case_intake_assigned_specialist_status
+    ON case_intake_requests (assigned_specialist_id, status)
+    WHERE assigned_specialist_id IS NOT NULL;
+
+CREATE INDEX idx_case_intake_admin_inbox
+    ON case_intake_requests (status, submitted_at DESC)
+    WHERE status = 'pending';
+
+CREATE INDEX idx_case_intake_category
+    ON case_intake_requests (category_id);
+
+CREATE INDEX idx_case_intake_patient
+    ON case_intake_requests (patient_id)
+    WHERE patient_id IS NOT NULL;
+
+CREATE TABLE case_request_attachments (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    case_request_id UUID NOT NULL REFERENCES case_intake_requests(id) ON DELETE CASCADE,
+    file_url        TEXT NOT NULL,
+    file_type       VARCHAR(50),
+    original_name   VARCHAR(255),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT case_request_attachments_file_url_not_blank
+        CHECK (char_length(trim(file_url)) > 0)
+);
+
+CREATE INDEX idx_case_request_attachments_request
+    ON case_request_attachments (case_request_id);
 
 -- =====================================================================
 -- 3. ASSESSMENT SYSTEM
@@ -331,11 +438,12 @@ CREATE TABLE progress_snapshots (
 -- =====================================================================
 
 CREATE TABLE conversations (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    patient_id    UUID REFERENCES patients(id),   -- conversation context (which child it's about)
-    parent_id     UUID NOT NULL REFERENCES users(id),
-    specialist_id UUID NOT NULL REFERENCES users(id),
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id      UUID REFERENCES patients(id),   -- nullable for preliminary case conversations
+    case_request_id UUID REFERENCES case_intake_requests(id) ON DELETE RESTRICT,
+    parent_id       UUID NOT NULL REFERENCES users(id),
+    specialist_id   UUID NOT NULL REFERENCES users(id),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (parent_id, specialist_id, patient_id)
 );
 
@@ -578,6 +686,12 @@ CREATE TRIGGER trg_sessions_updated_at BEFORE UPDATE ON sessions
 CREATE TRIGGER trg_session_requests_updated_at BEFORE UPDATE ON session_requests
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+CREATE TRIGGER trg_case_categories_updated_at BEFORE UPDATE ON case_categories
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER trg_case_intake_requests_updated_at BEFORE UPDATE ON case_intake_requests
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 -- =====================================================================
 -- INDEXES — speed up the most common lookups/joins
 -- =====================================================================
@@ -600,6 +714,9 @@ CREATE INDEX idx_submission_media_submission    ON submission_media(submission_i
 CREATE INDEX idx_messages_conversation          ON messages(conversation_id);
 CREATE INDEX idx_conversations_parent           ON conversations(parent_id);
 CREATE INDEX idx_conversations_specialist       ON conversations(specialist_id);
+CREATE UNIQUE INDEX idx_conversations_case_request_id
+    ON conversations(case_request_id)
+    WHERE case_request_id IS NOT NULL;
 CREATE INDEX idx_sessions_specialist            ON sessions(specialist_id);
 CREATE INDEX idx_sessions_patient               ON sessions(patient_id);
 CREATE INDEX idx_sessions_scheduled_at          ON sessions(scheduled_at);
