@@ -33,6 +33,8 @@ const aiReportsRoutes = require("./modules/aiReports/aiReports.routes");
 const presenceRoutes = require("./modules/presence/presence.routes");
 const specialistFeedbackRoutes = require("./modules/specialistFeedback/specialistFeedback.routes");
 const sessionRequestsRoutes = require("./modules/sessionRequests/sessionRequests.routes");
+const caseCategoriesRoutes = require("./modules/caseCategories/caseCategories.routes");
+const caseIntakeRoutes = require("./modules/caseIntake/caseIntake.routes");
 const { devRequestLogger } = require("./middleware/devRequestLogger");
 const { uploadsRoot, ensureUploadDirs } = require("./config/uploads");
 
@@ -98,5 +100,7 @@ app.use("/api/v1", aiReportsRoutes);
 app.use("/api/v1/presence", presenceRoutes);
 app.use("/api/v1/specialist-feedback", specialistFeedbackRoutes);
 app.use("/api/v1/session-requests", sessionRequestsRoutes);
+app.use("/api/v1/case-categories", caseCategoriesRoutes);
+app.use("/api/v1/case-intake-requests", caseIntakeRoutes);
 
 module.exports = app;

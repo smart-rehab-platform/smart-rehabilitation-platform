@@ -52,6 +52,26 @@ const assertConversationAccess = (conversation, user) => {
   }
 };
 
+const assertCaseRequestConversationWritable = async (conversation) => {
+  if (!conversation?.case_request_id) {
+    return;
+  }
+
+  const result = await pool.query(
+    `SELECT status
+     FROM case_intake_requests
+     WHERE id = $1`,
+    [conversation.case_request_id]
+  );
+
+  if (result.rows[0]?.status === "rejected") {
+    throw createError(
+      "This conversation is read-only because the case request was rejected.",
+      409
+    );
+  }
+};
+
 const isParentLinkedToPatient = async (parentId, patientId) => {
   const result = await pool.query(
     `SELECT 1
@@ -157,6 +177,20 @@ const validateConversationCreation = async (data, user) => {
       400
     );
   }
+};
+
+const createCaseRequestConversation = async (
+  client,
+  { caseRequestId, parentId, specialistId }
+) => {
+  const result = await client.query(
+    `INSERT INTO conversations (patient_id, parent_id, specialist_id, case_request_id)
+     VALUES (NULL, $1, $2, $3)
+     RETURNING id, case_request_id, patient_id, parent_id, specialist_id`,
+    [parentId, specialistId, caseRequestId]
+  );
+
+  return result.rows[0];
 };
 
 const createConversation = async (data, user) => {
@@ -283,6 +317,7 @@ const notifyMessageRecipient = async (
 const createMessage = async (conversationId, content, senderId, user) => {
   const conversation = await getConversationById(conversationId);
   assertConversationAccess(conversation, user);
+  await assertCaseRequestConversationWritable(conversation);
 
   const trimmedContent =
     content === null || content === undefined ? "" : String(content).trim();
@@ -358,6 +393,7 @@ const createConversationAttachmentMessage = async (
 ) => {
   const conversation = await getConversationById(conversationId);
   assertConversationAccess(conversation, user);
+  await assertCaseRequestConversationWritable(conversation);
 
   const fileUrl = data?.file_url;
   const fileType = data?.file_type ?? null;
@@ -458,6 +494,7 @@ const addMessageAttachment = async (messageId, data, user) => {
 
   const conversation = await getConversationById(message.conversation_id);
   assertConversationAccess(conversation, user);
+  await assertCaseRequestConversationWritable(conversation);
 
   const { file_url, file_type } = data;
 
@@ -501,6 +538,7 @@ const markMessageAsRead = async (messageId, user) => {
 };
 
 module.exports = {
+  createCaseRequestConversation,
   createConversation,
   getAllConversations,
   getConversationById,
