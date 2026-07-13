@@ -23,14 +23,51 @@ const setIo = (io) => {
 
 const getOnlineUsersCount = () => userSockets.size;
 
-const buildPresencePayload = (row) => ({
-  id: row.id,
-  full_name: row.full_name,
-  email: row.email,
-  role: row.role,
-  is_online: row.is_online,
-  last_seen: row.last_seen ? new Date(row.last_seen).toISOString() : null
-});
+const ONLINE_ACTIVITY_WINDOW_MS = 60 * 1000;
+
+const computeEffectiveIsOnline = (isOnlineStored, lastSeen) => {
+  if (isOnlineStored === true) {
+    return true;
+  }
+
+  if (!lastSeen) {
+    return false;
+  }
+
+  const lastSeenMs = new Date(lastSeen).getTime();
+  if (Number.isNaN(lastSeenMs)) {
+    return false;
+  }
+
+  return Date.now() - lastSeenMs <= ONLINE_ACTIVITY_WINDOW_MS;
+};
+
+const buildPresencePayload = (row) => {
+  const lastSeenIso = row.last_seen
+    ? new Date(row.last_seen).toISOString()
+    : null;
+  const isOnlineComputed = computeEffectiveIsOnline(row.is_online, row.last_seen);
+
+  return {
+    id: row.id,
+    full_name: row.full_name,
+    email: row.email,
+    role: row.role,
+    is_online: row.is_online,
+    last_seen: lastSeenIso,
+    isOnline: isOnlineComputed,
+    lastSeen: lastSeenIso
+  };
+};
+
+const touchLastSeen = async (userId) => {
+  await pool.query(
+    `UPDATE users
+     SET last_seen = NOW()
+     WHERE id = $1`,
+    [userId]
+  );
+};
 
 const broadcastPresence = (event, payload) => {
   if (!ioInstance) {
@@ -190,5 +227,7 @@ module.exports = {
   getUserPresenceById,
   getBulkUsersPresence,
   getOnlineUsersCount,
-  isUserOnlineInMemory
+  isUserOnlineInMemory,
+  touchLastSeen,
+  computeEffectiveIsOnline
 };

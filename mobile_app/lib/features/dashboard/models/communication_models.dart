@@ -196,6 +196,17 @@ class CommunicationConversation {
     return 'Participant';
   }
 
+  String otherParticipantId(String? authenticatedRole) {
+    final role = authenticatedRole?.toLowerCase();
+    if (role == 'parent') {
+      return specialistId;
+    }
+    if (role == 'specialist') {
+      return parentId;
+    }
+    return '';
+  }
+
   String patientContextLabel() {
     return patientName?.trim().isNotEmpty == true
         ? patientName!.trim()

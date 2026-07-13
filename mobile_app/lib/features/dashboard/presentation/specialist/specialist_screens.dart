@@ -190,29 +190,46 @@ class _SpecialistTreatmentPlansScreenState
                 (plan) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
                   child: DashboardSurfaceCard(
-                    child: Column(
+                    onTap: plan.id.isEmpty
+                        ? null
+                        : () => context.push(
+                              AppRoutes.specialistEditTreatmentPlan(plan.id),
+                            ),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          plan.title,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                plan.title,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              SizedBox(height: context.dashSpacing * 0.2),
+                              Text(
+                                plan.patientName,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: DashboardColors.textSecondary,
+                                ),
+                              ),
+                              SizedBox(height: context.dashSpacing * 0.2),
+                              Text(
+                                '${plan.status ?? 'Active'} • ${formatDashboardDate(plan.startDate)} → ${formatDashboardDate(plan.endDate)}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: DashboardColors.textMuted,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(height: context.dashSpacing * 0.2),
-                        Text(
-                          plan.patientName,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: DashboardColors.textSecondary,
-                          ),
-                        ),
-                        SizedBox(height: context.dashSpacing * 0.2),
-                        Text(
-                          '${plan.status ?? 'Active'} • ${formatDashboardDate(plan.startDate)} → ${formatDashboardDate(plan.endDate)}',
-                          style: theme.textTheme.bodySmall?.copyWith(
+                        if (plan.id.isNotEmpty)
+                          Icon(
+                            Icons.chevron_right_rounded,
                             color: DashboardColors.textMuted,
                           ),
-                        ),
                       ],
                     ),
                   ),
