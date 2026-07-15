@@ -120,4 +120,18 @@ class AppRoutes {
 
   static String specialistChat(String conversationId) =>
       '/dashboard/specialist/messages/$conversationId';
+
+  static const String parentCaseRequests = '/dashboard/parent/case-requests';
+  static const String parentCaseRequestNew =
+      '/dashboard/parent/case-requests/new';
+  static const String parentCaseRequestDetailPath =
+      '/dashboard/parent/case-requests/:requestId';
+  static const String parentCaseRequestEditPath =
+      '/dashboard/parent/case-requests/:requestId/edit';
+
+  static String parentCaseRequestDetail(String requestId) =>
+      '/dashboard/parent/case-requests/$requestId';
+
+  static String parentCaseRequestEdit(String requestId) =>
+      '/dashboard/parent/case-requests/$requestId/edit';
 }

@@ -9,6 +9,9 @@ import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/verify_email_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import '../../features/case_intake/presentation/parent_case_request_details_screen.dart';
+import '../../features/case_intake/presentation/parent_case_request_form_screen.dart';
+import '../../features/case_intake/presentation/parent_case_requests_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_screens.dart';
 import '../../features/dashboard/presentation/admin/admin_ai_center_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_audit_logs_screen.dart';
@@ -221,6 +224,30 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.parentMore,
         name: 'parentMore',
         builder: (context, state) => const ParentMoreScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentCaseRequests,
+        name: 'parentCaseRequests',
+        builder: (context, state) => const ParentCaseRequestsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentCaseRequestNew,
+        name: 'parentCaseRequestNew',
+        builder: (context, state) => const ParentCaseRequestFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentCaseRequestEditPath,
+        name: 'parentCaseRequestEdit',
+        builder: (context, state) => ParentCaseRequestFormScreen(
+          requestId: state.pathParameters['requestId'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.parentCaseRequestDetailPath,
+        name: 'parentCaseRequestDetail',
+        builder: (context, state) => ParentCaseRequestDetailsScreen(
+          requestId: state.pathParameters['requestId']!,
+        ),
       ),
       GoRoute(
         path: AppRoutes.parentChildDetail,

@@ -248,7 +248,7 @@ class _CommunicationChatScreenState
 
     final headerParticipant =
         conversation?.otherParticipantName(role) ?? 'Messages';
-    final headerPatient = conversation?.patientContextLabel();
+    final headerSubtitle = conversation?.conversationSubtitle();
     final otherParticipantId = conversation?.otherParticipantId(role) ?? '';
 
     return Theme(
@@ -275,9 +275,9 @@ class _CommunicationChatScreenState
               ),
               if (otherParticipantId.isNotEmpty)
                 ChatPresenceSubtitle(userId: otherParticipantId),
-              if (headerPatient != null)
+              if (headerSubtitle != null)
                 Text(
-                  'Patient: $headerPatient',
+                  headerSubtitle,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
