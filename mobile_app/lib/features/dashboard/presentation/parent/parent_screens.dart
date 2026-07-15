@@ -520,6 +520,11 @@ class ParentMoreScreen extends ConsumerWidget {
         padding: context.dashPadding,
         children: [
           _MoreTile(
+            icon: Icons.assignment_outlined,
+            label: 'Case Requests',
+            onTap: () => context.push(AppRoutes.parentCaseRequests),
+          ),
+          _MoreTile(
             icon: Icons.chat_bubble_outline_rounded,
             label: 'Messages',
             onTap: () => context.push(AppRoutes.parentMessages),

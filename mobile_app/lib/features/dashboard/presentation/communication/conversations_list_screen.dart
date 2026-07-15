@@ -139,18 +139,18 @@ class CommunicationConversationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final participantName = conversation.otherParticipantName(role);
-    final isParentRole = role?.toLowerCase() == 'parent';
+    final subtitle = conversation.conversationSubtitle();
 
     return DashboardSurfaceCard(
       onTap: onTap,
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: isParentRole
+            backgroundColor: role?.toLowerCase() == 'parent'
                 ? DashboardColors.purpleSoft
                 : DashboardColors.tealSoft,
             child: Icon(
-              isParentRole
+              role?.toLowerCase() == 'parent'
                   ? Icons.medical_services_outlined
                   : Icons.family_restroom_outlined,
               color: DashboardColors.primary,
@@ -169,13 +169,15 @@ class CommunicationConversationTile extends StatelessWidget {
                     color: DashboardColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: context.dashSpacing * 0.2),
-                Text(
-                  'Patient: ${conversation.patientContextLabel()}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: DashboardColors.textSecondary,
+                if (subtitle != null) ...[
+                  SizedBox(height: context.dashSpacing * 0.2),
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: DashboardColors.textSecondary,
+                    ),
                   ),
-                ),
+                ],
                 if (conversation.createdAt != null) ...[
                   SizedBox(height: context.dashSpacing * 0.15),
                   Text(

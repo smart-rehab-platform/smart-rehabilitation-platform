@@ -127,33 +127,35 @@ class UploadedMessageAttachment {
 class CommunicationConversation {
   const CommunicationConversation({
     required this.id,
-    required this.patientId,
+    this.patientId,
     required this.parentId,
     required this.specialistId,
     this.createdAt,
     this.patientName,
     this.parentName,
     this.specialistName,
+    this.caseRequestId,
+    this.caseRequestChildName,
   });
 
   final String id;
-  final String patientId;
+  final String? patientId;
   final String parentId;
   final String specialistId;
   final DateTime? createdAt;
   final String? patientName;
   final String? parentName;
   final String? specialistName;
+  final String? caseRequestId;
+  final String? caseRequestChildName;
 
   factory CommunicationConversation.fromMap(Map<String, dynamic> map) {
     return CommunicationConversation(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
-      patientId:
-          ApiResponseParser.readString(map, const [
-            'patient_id',
-            'patientId',
-          ]) ??
-          '',
+      patientId: ApiResponseParser.readString(map, const [
+        'patient_id',
+        'patientId',
+      ]),
       parentId:
           ApiResponseParser.readString(map, const ['parent_id', 'parentId']) ??
           '',
@@ -177,6 +179,16 @@ class CommunicationConversation {
       specialistName: ApiResponseParser.readString(map, const [
         'specialist_name',
         'specialistName',
+      ]),
+      caseRequestId: ApiResponseParser.readString(map, const [
+        'case_request_id',
+        'caseRequestId',
+      ]),
+      caseRequestChildName: ApiResponseParser.readString(map, const [
+        'case_request_child_name',
+        'caseRequestChildName',
+        'child_name',
+        'childName',
       ]),
     );
   }
@@ -208,9 +220,32 @@ class CommunicationConversation {
   }
 
   String patientContextLabel() {
+    final caseChild = caseRequestChildName?.trim();
+    if (caseChild != null &&
+        caseChild.isNotEmpty &&
+        (patientId == null || patientId!.isEmpty)) {
+      return caseChild;
+    }
+
     return patientName?.trim().isNotEmpty == true
         ? patientName!.trim()
         : 'Patient';
+  }
+
+  String? conversationSubtitle() {
+    final caseChild = caseRequestChildName?.trim();
+    if (caseChild != null &&
+        caseChild.isNotEmpty &&
+        (patientId == null || patientId!.isEmpty)) {
+      return 'Regarding $caseChild';
+    }
+
+    final patient = patientName?.trim();
+    if (patient != null && patient.isNotEmpty) {
+      return 'Patient: $patient';
+    }
+
+    return null;
   }
 }
 
