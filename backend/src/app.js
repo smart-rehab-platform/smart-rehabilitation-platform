@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
+const { getExpressCorsOptions } = require("./config/cors");
 const usersRoutes = require("./modules/users/users.routes");
 const authRoutes = require("./modules/auth/auth.routes");
 const patientsRoutes = require("./modules/patients/patients.routes");
@@ -44,15 +46,9 @@ const app = express();
 
 app.set("trust proxy", true);
 
-const corsOptions = {
-  origin: true,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Authorization", "Content-Type"]
-};
-
 app.use(helmet());
-app.use(cors(corsOptions));
+app.use(cors(getExpressCorsOptions()));
+app.use(cookieParser());
 app.use(express.json());
 app.use(devRequestLogger);
 

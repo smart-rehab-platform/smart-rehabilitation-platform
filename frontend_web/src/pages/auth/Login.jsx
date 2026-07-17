@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Mail,
   Lock,
@@ -20,6 +20,7 @@ import { dashboardForRole } from "../../routes/roleRouting";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const auth = useAuth();
   const rememberedLogin = auth.loadRememberedLogin();
   const [email, setEmail] = useState(rememberedLogin.email || "");
@@ -33,6 +34,7 @@ export default function Login() {
   const [emailState, setEmailState] = useState(rememberedLogin.email ? "success" : "idle");
   const [emailMsg, setEmailMsg] = useState("");
   const [showVerifyEmailPrompt, setShowVerifyEmailPrompt] = useState(false);
+  const sessionExpiredToastShown = useRef(false);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -42,6 +44,23 @@ export default function Login() {
     setToast(true);
     setTimeout(() => setToast(false), 3000);
   };
+
+  useEffect(() => {
+    if (searchParams.get("reason") !== "session-expired") {
+      return;
+    }
+
+    if (sessionExpiredToastShown.current) {
+      return;
+    }
+
+    sessionExpiredToastShown.current = true;
+    showToast("Your session has expired. Please sign in again.", "error");
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("reason");
+    setSearchParams(nextParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const handleBlurEmail = () => {
     if (email && !emailValid) {
@@ -126,7 +145,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
-              style={{ color: C.light, opacity: 0.6 }}
+              style={{ color: C.iconInteractive, opacity: 0.85 }}
               className="transition-opacity hover:opacity-100"
             >
               {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -139,7 +158,7 @@ export default function Login() {
               onClick={() => setRemember((v) => !v)}
               className="w-4 h-4 rounded flex items-center justify-center border transition-all"
               style={{
-                borderColor: remember ? C.primary : "rgba(179,207,229,0.4)",
+                borderColor: remember ? C.primary : C.border,
                 background: remember ? C.primary : "transparent",
               }}
             >
@@ -151,8 +170,14 @@ export default function Login() {
           </label>
           <button
             onClick={() => navigate("/forgot-password")}
-            className="text-xs font-medium transition-colors hover:text-white"
-            style={{ color: C.primary }}
+            className="text-xs font-medium transition-colors"
+            style={{ color: C.soft }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = C.linkHover;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = C.soft;
+            }}
           >
             Forgot Password?
           </button>
@@ -185,8 +210,14 @@ export default function Login() {
           {"Don't have an account? "}
           <button
             onClick={() => navigate("/signup")}
-            className="font-semibold transition-colors hover:text-white"
-            style={{ color: C.primary }}
+            className="font-semibold transition-colors"
+            style={{ color: C.soft }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = C.linkHover;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = C.soft;
+            }}
           >
             Create Account
           </button>

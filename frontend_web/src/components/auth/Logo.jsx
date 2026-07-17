@@ -9,18 +9,11 @@ export function Logo({ size = 40, showWordmark = true, centered = false, titleOn
       <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
         <defs>
           <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#4A7FA7" />
-            <stop offset="100%" stopColor="#B3CFE5" />
+            <stop offset="0%" stopColor="#4FA6F8" />
+            <stop offset="100%" stopColor="#9BD7FF" />
           </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="1.5" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
         </defs>
-        <circle cx="20" cy="20" r="19" fill="#1A3D63" stroke="url(#lg1)" strokeWidth="1.5" />
+        <circle cx="20" cy="20" r="19" fill="#122846" stroke="url(#lg1)" strokeWidth="1.5" />
         <path
           d="M20 28 C20 28 11 22 11 16.5 C11 13.5 13.5 11 16.5 11 C18.2 11 19.5 12 20 13 C20.5 12 21.8 11 23.5 11 C26.5 11 29 13.5 29 16.5 C29 22 20 28 20 28Z"
           fill="url(#lg1)"
@@ -28,13 +21,12 @@ export function Logo({ size = 40, showWordmark = true, centered = false, titleOn
         />
         <path
           d="M11 18 L15 18 L17 14 L19 22 L21 16 L23 18 L29 18"
-          stroke="#6FA9CF"
+          stroke="#66C4FF"
           strokeWidth="1.8"
           strokeLinecap="round"
           strokeLinejoin="round"
-          filter="url(#glow)"
         />
-        <circle cx="20" cy="30.5" r="1.2" fill="#6FA9CF" opacity="0.8" />
+        <circle cx="20" cy="30.5" r="1.2" fill="#66C4FF" opacity="0.8" />
       </svg>
       {showWordmark && (
         <div>

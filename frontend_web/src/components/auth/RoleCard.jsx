@@ -10,9 +10,9 @@ export function RoleCard({ icon, title, bullets, selected, onClick }) {
       whileTap={{ scale: 0.98 }}
       className="flex-1 p-3.5 rounded-xl text-left relative transition-all duration-200"
       style={{
-        background: selected ? "rgba(74,127,167,0.12)" : "rgba(10,25,49,0.5)",
-        border: `1.5px solid ${selected ? C.primary : "rgba(179,207,229,0.2)"}`,
-        boxShadow: selected ? `0 0 16px ${G.glow}` : "none",
+        background: selected ? G.hoverBg : `${G.navyOverlay}, 0.5)`,
+        border: `1.5px solid ${selected ? C.primary : C.border}`,
+        boxShadow: selected ? G.cardShadow : "none",
       }}
     >
       {selected && (
@@ -20,7 +20,7 @@ export function RoleCard({ icon, title, bullets, selected, onClick }) {
           className="absolute top-2 right-2 rounded-full flex items-center justify-center w-5 h-5"
           style={{ background: C.primary }}
         >
-          <Check size={11} color={C.navy} strokeWidth={3} />
+          <Check size={11} color={C.white} strokeWidth={3} />
         </div>
       )}
       <div className="flex items-center gap-2 mb-2" style={{ color: selected ? C.soft : C.light }}>

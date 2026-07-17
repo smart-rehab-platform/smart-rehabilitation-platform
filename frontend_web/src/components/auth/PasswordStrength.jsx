@@ -32,7 +32,7 @@ export function PasswordStrength({ password }) {
     <div
       className="rounded-xl p-3 border"
       style={{
-        background: "rgba(10,25,49,0.62)",
+        background: C.inputBg,
         borderColor: `${style.color}40`,
       }}
     >
@@ -51,8 +51,7 @@ export function PasswordStrength({ password }) {
             key={index}
             className="h-1.5 rounded-full"
             style={{
-              background:
-                index < style.activeBars ? style.color : "rgba(179,207,229,0.16)",
+              background: index < style.activeBars ? style.color : "rgba(44, 79, 121, 0.35)",
             }}
           />
         ))}
@@ -64,12 +63,12 @@ export function PasswordStrength({ password }) {
             {rule.satisfied ? (
               <CheckCircle2 size={14} color="#22c55e" />
             ) : (
-              <Circle size={14} color="rgba(179,207,229,0.45)" />
+              <Circle size={14} color={C.placeholder} />
             )}
             <span
               className="text-[11px]"
               style={{
-                color: rule.satisfied ? "#22c55e" : "rgba(179,207,229,0.82)",
+                color: rule.satisfied ? "#22c55e" : C.placeholder,
                 fontWeight: rule.satisfied ? 600 : 500,
               }}
             >

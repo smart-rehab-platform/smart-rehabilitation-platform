@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const { buildFrontendPath, getFrontendBaseUrl, normalizeBaseUrl } = require("../../config/frontend");
 
 const APP_NAME = "Smart Rehab Platform";
 const DEFAULT_SENDER_EMAIL = "smartrehab.ps@gmail.com";
@@ -8,26 +9,37 @@ let transporter;
 const isSmtpConfigured = () =>
   Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
 
-const getApiBaseUrl = () =>
-  process.env.API_BASE_URL ||
-  `http://localhost:${process.env.PORT || 5000}/api/v1`;
+const getResetPasswordLinkBase = () => {
+  if (process.env.RESET_PASSWORD_URL) {
+    return normalizeBaseUrl(process.env.RESET_PASSWORD_URL);
+  }
 
-const getFrontendBaseUrl = () =>
-  process.env.FRONTEND_URL || "http://localhost:3000";
+  return `${getFrontendBaseUrl()}/reset-password`;
+};
 
-const getResetPasswordBaseUrl = () =>
-  process.env.RESET_PASSWORD_URL ||
-  `${getApiBaseUrl()}/auth/reset-password`;
+const getVerifyEmailLinkBase = () => {
+  if (process.env.VERIFY_EMAIL_URL) {
+    return normalizeBaseUrl(process.env.VERIFY_EMAIL_URL);
+  }
 
-const getVerifyEmailBaseUrl = () =>
-  process.env.VERIFY_EMAIL_URL ||
-  `${getApiBaseUrl()}/auth/verify-email`;
+  return `${getFrontendBaseUrl()}/verify-email`;
+};
 
-const buildPasswordResetLink = (token) =>
-  `${getResetPasswordBaseUrl()}?token=${encodeURIComponent(token)}`;
+const buildPasswordResetLink = (token) => {
+  if (process.env.RESET_PASSWORD_URL) {
+    return `${getResetPasswordLinkBase()}?token=${encodeURIComponent(token)}`;
+  }
 
-const buildVerificationLink = (token) =>
-  `${getVerifyEmailBaseUrl()}?token=${encodeURIComponent(token)}`;
+  return buildFrontendPath("/reset-password", { token });
+};
+
+const buildVerificationLink = (token) => {
+  if (process.env.VERIFY_EMAIL_URL) {
+    return `${getVerifyEmailLinkBase()}?token=${encodeURIComponent(token)}`;
+  }
+
+  return buildFrontendPath("/verify-email", { token });
+};
 
 const getTransporter = () => {
   if (!isSmtpConfigured()) {

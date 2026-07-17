@@ -32,8 +32,23 @@ const forgotPasswordLimiter = rateLimit({
   }
 });
 
+const refreshTokenLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    return res.status(429).json({
+      success: false,
+      message: "Too many refresh attempts. Please try again in 15 minutes."
+    });
+  }
+});
+
 router.post("/register", authController.register);
 router.post("/login", loginLimiter, authController.login);
+router.post("/refresh-token", refreshTokenLimiter, authController.refreshToken);
+router.post("/logout", authController.logout);
 router.post("/forgot-password", forgotPasswordLimiter, authController.forgotPassword);
 router.get("/reset-password", authController.openResetPassword);
 router.post("/reset-password", authController.resetPassword);
