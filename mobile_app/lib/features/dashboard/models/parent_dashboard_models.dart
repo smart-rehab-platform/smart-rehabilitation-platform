@@ -126,6 +126,7 @@ class ParentDailyTask {
     this.frequency,
     this.dueDate,
     this.exerciseId,
+    this.instructionMediaUrl,
   });
 
   final String id;
@@ -137,6 +138,7 @@ class ParentDailyTask {
   final String? frequency;
   final DateTime? dueDate;
   final String? exerciseId;
+  final String? instructionMediaUrl;
 
   factory ParentDailyTask.fromMap(Map<String, dynamic> map) {
     final dueDate = ApiResponseParser.readDate(
@@ -170,6 +172,10 @@ class ParentDailyTask {
       exerciseId: ApiResponseParser.readString(map, const [
         'exercise_id',
         'exerciseId',
+      ]),
+      instructionMediaUrl: ApiResponseParser.readString(map, const [
+        'instruction_media_url',
+        'instructionMediaUrl',
       ]),
     );
   }

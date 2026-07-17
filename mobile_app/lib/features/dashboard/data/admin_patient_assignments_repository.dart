@@ -107,6 +107,36 @@ class AdminPatientAssignmentsRepository {
     }
   }
 
+  /// [guardianId] is the parent user id (`users.id`), matching the backend route.
+  Future<String?> unlinkParent({
+    required String patientId,
+    required String guardianId,
+  }) async {
+    try {
+      await _dio.delete('/patients/$patientId/guardians/$guardianId');
+      return null;
+    } on DioException catch (error) {
+      return friendlyAssignmentError(_readError(error));
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  /// [specialistId] is the specialist user id (`users.id`).
+  Future<String?> unlinkSpecialist({
+    required String patientId,
+    required String specialistId,
+  }) async {
+    try {
+      await _dio.delete('/patients/$patientId/specialists/$specialistId');
+      return null;
+    } on DioException catch (error) {
+      return friendlyAssignmentError(_readError(error));
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
   String _readError(DioException error) {
     final data = error.response?.data;
     if (data is Map) {

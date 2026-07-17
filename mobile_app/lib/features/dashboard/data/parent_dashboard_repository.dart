@@ -210,18 +210,71 @@ class ParentDashboardRepository {
   }
 
   Future<String> uploadExerciseMediaFile(List<int> bytes, String filename) async {
-    final response = await _dio.post(
-      '/uploads/exercise-media',
-      data: FormData.fromMap({
-        'file': MultipartFile.fromBytes(bytes, filename: filename),
-      }),
-    );
-    final map = ApiResponseParser.extractMap(response.data);
-    final url = ApiResponseParser.readString(map ?? {}, const ['url', 'file_url']);
-    if (url == null || url.isEmpty) {
-      throw Exception('Invalid upload response');
+    try {
+      final response = await _dio.post(
+        '/uploads/exercise-submission-media',
+        data: FormData.fromMap({
+          'file': MultipartFile.fromBytes(bytes, filename: filename),
+        }),
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      final url = ApiResponseParser.readString(map ?? {}, const [
+        'url',
+        'file_url',
+      ]);
+      if (url == null || url.isEmpty) {
+        throw Exception('Failed to upload media. Please try again.');
+      }
+      return url;
+    } on DioException catch (error) {
+      throw Exception(friendlyExerciseSubmissionUploadError(error));
     }
-    return url;
+  }
+
+  /// Concise parent-facing upload errors (no DioException internals).
+  static String friendlyExerciseSubmissionUploadError(DioException error) {
+    final status = error.response?.statusCode;
+    final data = error.response?.data;
+    String? apiMessage;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      apiMessage =
+          ApiResponseParser.readString(map, const ['message', 'error']);
+    }
+
+    final lowerApi = (apiMessage ?? '').toLowerCase();
+    if (status == 401) {
+      return 'Please sign in to upload this file.';
+    }
+    if (status == 403) {
+      return 'You do not have permission to upload this file.';
+    }
+    if (status == 413 ||
+        lowerApi.contains('too large') ||
+        lowerApi.contains('maximum allowed size')) {
+      return 'The selected file is too large.';
+    }
+    if (status == 400 || status == 415) {
+      if (lowerApi.contains('unsupported') ||
+          lowerApi.contains('type') ||
+          lowerApi.contains('allowed')) {
+        return 'This file type is not supported.';
+      }
+      if (apiMessage != null &&
+          apiMessage.trim().isNotEmpty &&
+          !apiMessage.contains('DioException') &&
+          !apiMessage.contains('validateStatus')) {
+        return apiMessage.trim();
+      }
+      return 'This file type is not supported.';
+    }
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.connectionError) {
+      return 'Failed to upload media. Please try again.';
+    }
+    return 'Failed to upload media. Please try again.';
   }
 
   Future<void> attachSubmissionMedia({

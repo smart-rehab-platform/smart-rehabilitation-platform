@@ -143,7 +143,13 @@ class AdminDrawer extends ConsumerWidget {
                   _AdminDrawerTile(
                     icon: Icons.assignment_ind_outlined,
                     label: 'Patient Assignments',
-                    onTap: () => _go(context, AppRoutes.adminPatientAssignments),
+                    onTap: () =>
+                        _go(context, AppRoutes.adminPatientAssignments),
+                  ),
+                  _AdminDrawerTile(
+                    icon: Icons.inbox_outlined,
+                    label: 'Case Requests',
+                    onTap: () => _go(context, AppRoutes.adminCaseRequests),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.event_note_outlined,
@@ -223,9 +229,9 @@ class _AdminDrawerTile extends StatelessWidget {
       title: Text(
         label,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AdminDashboardColors.textPrimary,
-            ),
+          fontWeight: FontWeight.w600,
+          color: AdminDashboardColors.textPrimary,
+        ),
       ),
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

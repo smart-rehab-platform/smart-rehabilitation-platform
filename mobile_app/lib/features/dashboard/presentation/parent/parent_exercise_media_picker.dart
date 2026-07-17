@@ -58,7 +58,10 @@ String inferExerciseMediaType(String filename) {
   if (lower.endsWith('.mp3') ||
       lower.endsWith('.wav') ||
       lower.endsWith('.m4a') ||
-      lower.endsWith('.aac')) {
+      lower.endsWith('.aac') ||
+      lower.endsWith('.ogg') ||
+      lower.endsWith('.webm') ||
+      lower.endsWith('.flac')) {
     return 'audio';
   }
   return 'image';

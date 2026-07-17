@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/dashboard_colors.dart';
@@ -7,14 +6,28 @@ import '../../models/specialist_reports_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
-import '../../widgets/dashboard_visuals.dart';
-import 'manage_goals_widgets.dart';
+import '../shared/reports_list_widgets.dart';
 
-String _reportDateLabel(DateTime? date) {
-  if (date == null) {
-    return '—';
-  }
-  return DateFormat('MMM d, yyyy').format(date);
+export '../shared/reports_list_widgets.dart'
+    show
+        ReportFilterChips,
+        ReportListCard,
+        ReportsListBody,
+        buildSharedReportSearchField,
+        reportDateLabel;
+
+/// Backward-compatible aliases for existing specialist imports.
+typedef SpecialistReportFilterChips = ReportFilterChips;
+typedef SpecialistReportCard = ReportListCard;
+
+Widget buildReportSearchField({
+  required TextEditingController controller,
+  required ValueChanged<String> onChanged,
+}) {
+  return buildSharedReportSearchField(
+    controller: controller,
+    onChanged: onChanged,
+  );
 }
 
 String _nonEmptyLabel(String? value, {String fallback = '—'}) {
@@ -25,153 +38,6 @@ String _nonEmptyLabel(String? value, {String fallback = '—'}) {
   return trimmed;
 }
 
-class SpecialistReportFilterChips extends StatelessWidget {
-  const SpecialistReportFilterChips({
-    super.key,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final SpecialistReportFilter selected;
-  final ValueChanged<SpecialistReportFilter> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: context.dashSpacing * 2.1,
-      child: ListView.separated(
-        primary: false,
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.zero,
-        itemCount: SpecialistReportFilter.values.length,
-        separatorBuilder: (_, __) =>
-            SizedBox(width: context.dashSpacing * 0.4),
-        itemBuilder: (context, index) {
-          final filter = SpecialistReportFilter.values[index];
-          final isSelected = selected == filter;
-
-          return InkWell(
-            onTap: () => onChanged(filter),
-            borderRadius: BorderRadius.circular(14),
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dashSpacing * 0.65,
-                vertical: context.dashSpacing * 0.45,
-              ),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? DashboardColors.purpleSoft
-                    : DashboardColors.surface,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isSelected
-                      ? DashboardColors.primary
-                      : DashboardColors.border,
-                ),
-              ),
-              child: Text(
-                filter.label,
-                maxLines: 1,
-                softWrap: false,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: isSelected
-                          ? DashboardColors.primary
-                          : DashboardColors.textSecondary,
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class SpecialistReportCard extends StatelessWidget {
-  const SpecialistReportCard({
-    super.key,
-    required this.report,
-    required this.onTap,
-  });
-
-  final SpecialistReportListItem report;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final dateLabel = _reportDateLabel(report.createdAt);
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-      child: DashboardSurfaceCard(
-        onTap: onTap,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DashboardProfileAvatar(
-              initials: dashboardInitials(report.patientName, fallback: 'P'),
-              radius: context.dashSpacing * 0.65,
-            ),
-            SizedBox(width: context.dashSpacing * 0.65),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    report.patientName ?? 'Patient',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: DashboardColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: context.dashSpacing * 0.15),
-                  Text(
-                    _nonEmptyLabel(report.title, fallback: 'Report'),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: DashboardColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: context.dashSpacing * 0.25),
-                  Text(
-                    '${report.typeLabel} • $dateLabel',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: DashboardColors.textMuted,
-                    ),
-                  ),
-                  if (report.preview.isNotEmpty) ...[
-                    SizedBox(height: context.dashSpacing * 0.35),
-                    Text(
-                      report.preview,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: DashboardColors.textSecondary,
-                        height: 1.35,
-                      ),
-                    ),
-                  ],
-                  if (report.hasPdf) ...[
-                    SizedBox(height: context.dashSpacing * 0.35),
-                    DashboardPriorityBadge(label: report.statusLabel),
-                  ],
-                ],
-              ),
-            ),
-            SizedBox(width: context.dashSpacing * 0.25),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: DashboardColors.textMuted,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class SpecialistReportHeaderCard extends StatelessWidget {
   const SpecialistReportHeaderCard({super.key, required this.detail});
 
@@ -180,7 +46,7 @@ class SpecialistReportHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dateLabel = _reportDateLabel(detail.createdAt);
+    final dateLabel = reportDateLabel(detail.createdAt);
     final periodStart = detail.periodStart;
     final periodEnd = detail.periodEnd;
 
@@ -208,23 +74,32 @@ class SpecialistReportHeaderCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           Text(
-            _nonEmptyLabel(detail.title, fallback: 'Report'),
+            detail.displayTitle,
             style: theme.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.35),
-          Text(
-            '${detail.typeLabel} • $dateLabel',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: DashboardColors.textMuted,
-            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              _MetaChip(label: detail.typeLabel),
+              if (detail.isAiReport) const _MetaChip(label: 'AI'),
+              Text(
+                dateLabel,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: DashboardColors.textMuted,
+                ),
+              ),
+            ],
           ),
           if (periodStart != null && periodEnd != null) ...[
             SizedBox(height: context.dashSpacing * 0.25),
             Text(
-              'Period: ${_reportDateLabel(periodStart)} – ${_reportDateLabel(periodEnd)}',
+              'Period: ${reportDateLabel(periodStart)} – ${reportDateLabel(periodEnd)}',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -244,7 +119,7 @@ class SpecialistReportInformationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dateLabel = _reportDateLabel(detail.createdAt);
+    final dateLabel = reportDateLabel(detail.createdAt);
     final specialistLabel = detail.isAiReport
         ? '—'
         : _nonEmptyLabel(detail.specialistName);
@@ -290,7 +165,7 @@ class SpecialistReportInformationCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  DashboardPriorityBadge(label: detail.statusLabel),
+                  _MetaChip(label: detail.statusLabel),
                 ],
               ),
             ),
@@ -406,18 +281,27 @@ class SpecialistReportAttachmentCard extends StatelessWidget {
   }
 }
 
-Widget buildReportSearchField({
-  required TextEditingController controller,
-  required ValueChanged<String> onChanged,
-}) {
-  return TextField(
-    controller: controller,
-    onChanged: onChanged,
-    decoration: goalFieldDecoration('Search by patient or title').copyWith(
-      prefixIcon: const Icon(
-        Icons.search_rounded,
-        color: DashboardColors.textMuted,
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: DashboardColors.purpleSoft,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: DashboardColors.border),
       ),
-    ),
-  );
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: DashboardColors.primary,
+              fontWeight: FontWeight.w700,
+            ),
+      ),
+    );
+  }
 }

@@ -20,14 +20,8 @@ class ParentChildSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (children.isEmpty) {
-      return DashboardSurfaceCard(
-        child: Text(
-          'No linked children yet. Add a child from the specialist portal.',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: DashboardColors.textSecondary,
-              ),
-        ),
-      );
+      // Empty children UI is owned by ParentDashboardCaseIntakeSection.
+      return const SizedBox.shrink();
     }
 
     return SizedBox(
@@ -47,11 +41,11 @@ class ParentChildSwitcher extends StatelessWidget {
             selectedColor: DashboardColors.purpleSoft,
             checkmarkColor: DashboardColors.primary,
             labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: isSelected
-                      ? DashboardColors.primary
-                      : DashboardColors.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: isSelected
+                  ? DashboardColors.primary
+                  : DashboardColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
             side: BorderSide(
               color: isSelected
                   ? DashboardColors.primary
@@ -207,9 +201,9 @@ class ParentAttentionAlertCard extends StatelessWidget {
             child: Text(
               alert.message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: DashboardColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                color: DashboardColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -246,9 +240,9 @@ class ParentNextActionButton extends StatelessWidget {
         child: Text(
           action.label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );
@@ -345,7 +339,9 @@ class ParentSpeechAnalysisCard extends StatelessWidget {
             Text(
               '${delta >= 0 ? '+' : ''}${delta.round()}% from previous attempt',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: delta >= 0 ? DashboardColors.success : DashboardColors.highPriority,
+                color: delta >= 0
+                    ? DashboardColors.success
+                    : DashboardColors.highPriority,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -398,16 +394,19 @@ class _ScoreChip extends StatelessWidget {
       child: Text(
         '$label: $value%',
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: DashboardColors.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
+          color: DashboardColors.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
 }
 
 class DashboardLoadingCard extends StatelessWidget {
-  const DashboardLoadingCard({super.key, this.message = 'Loading dashboard...'});
+  const DashboardLoadingCard({
+    super.key,
+    this.message = 'Loading dashboard...',
+  });
 
   final String message;
 
@@ -426,8 +425,8 @@ class DashboardLoadingCard extends StatelessWidget {
             child: Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: DashboardColors.textSecondary,
-                  ),
+                color: DashboardColors.textSecondary,
+              ),
             ),
           ),
         ],
@@ -456,8 +455,8 @@ class DashboardErrorCard extends StatelessWidget {
           Text(
             message,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: DashboardColors.textPrimary,
-                ),
+              color: DashboardColors.textPrimary,
+            ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           TextButton(onPressed: onRetry, child: const Text('Retry')),
@@ -563,9 +562,9 @@ class DashboardEmptyCard extends StatelessWidget {
     return DashboardSurfaceCard(
       child: Text(
         message,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: DashboardColors.textSecondary,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: DashboardColors.textSecondary),
       ),
     );
   }

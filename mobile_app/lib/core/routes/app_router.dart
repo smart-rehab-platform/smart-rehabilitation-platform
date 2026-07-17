@@ -12,10 +12,17 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../features/case_intake/presentation/parent_case_request_details_screen.dart';
 import '../../features/case_intake/presentation/parent_case_request_form_screen.dart';
 import '../../features/case_intake/presentation/parent_case_requests_screen.dart';
+import '../../features/case_intake/presentation/admin/admin_case_inbox_screen.dart';
+import '../../features/case_intake/presentation/admin/admin_case_request_details_screen.dart';
+import '../../features/case_intake/presentation/admin/admin_matching_specialists_screen.dart';
+import '../../features/case_intake/presentation/specialist/specialist_assigned_cases_screen.dart';
+import '../../features/case_intake/presentation/specialist/specialist_case_request_details_screen.dart';
+import '../../features/case_intake/presentation/specialist/specialist_convert_patient_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_screens.dart';
 import '../../features/dashboard/presentation/admin/admin_ai_center_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_audit_logs_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_patients_screen.dart';
+import '../../features/dashboard/presentation/admin/admin_patient_details_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_sessions_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_users_screen.dart';
 import '../../features/dashboard/presentation/admin/patient_assignments_screen.dart';
@@ -30,11 +37,16 @@ import '../../features/dashboard/presentation/parent/parent_extended_screens.dar
 import '../../features/dashboard/presentation/parent/parent_screens.dart';
 import '../../features/dashboard/presentation/parent_dashboard_screen.dart';
 import '../../features/dashboard/presentation/specialist/edit_treatment_plan_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_create_treatment_plan_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_ai_recommendations_screen.dart';
 import '../../features/dashboard/presentation/specialist/manage_goals_screen.dart';
 import '../../features/dashboard/presentation/specialist/patient_details_screen.dart';
 import '../../features/dashboard/presentation/specialist/review_exercise_screen.dart';
 import '../../features/dashboard/presentation/specialist/edit_specialist_profile_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_assign_exercise_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_exercise_details_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_assigned_exercise_details_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_upsert_exercise_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_profile_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_report_details_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_reports_screen.dart';
@@ -381,6 +393,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SpecialistTreatmentPlansScreen(),
       ),
       GoRoute(
+        path: AppRoutes.specialistCreateTreatmentPlanPath,
+        name: 'specialistCreateTreatmentPlan',
+        builder: (context, state) {
+          final patientId = state.uri.queryParameters['patientId'] ?? '';
+          final patientName = state.uri.queryParameters['patientName'];
+          return SpecialistCreateTreatmentPlanScreen(
+            patientId: patientId,
+            patientName: patientName,
+          );
+        },
+      ),
+      GoRoute(
         path: AppRoutes.specialistPatientProgress,
         name: 'specialistPatientProgress',
         builder: (context, state) => const SpecialistPatientProgressScreen(),
@@ -391,15 +415,57 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SpecialistExercisesScreen(),
       ),
       GoRoute(
+        path: AppRoutes.specialistAddExercise,
+        name: 'specialistAddExercise',
+        builder: (context, state) => const SpecialistUpsertExerciseScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistEditExercisePath,
+        name: 'specialistEditExercise',
+        builder: (context, state) => SpecialistUpsertExerciseScreen(
+          exerciseId: state.pathParameters['exerciseId'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistExerciseDetailsPath,
+        name: 'specialistExerciseDetails',
+        builder: (context, state) => SpecialistExerciseDetailsScreen(
+          exerciseId: state.pathParameters['exerciseId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistAssignedExerciseDetailsPath,
+        name: 'specialistAssignedExerciseDetails',
+        builder: (context, state) => SpecialistAssignedExerciseDetailsScreen(
+          assignedExerciseId: state.pathParameters['assignedExerciseId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistAssignExercisePath,
+        name: 'specialistAssignExercise',
+        builder: (context, state) => SpecialistAssignExerciseScreen(
+          patientId: state.pathParameters['patientId']!,
+          planId: state.uri.queryParameters['planId'] ?? '',
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.specialistReports,
         name: 'specialistReports',
-        builder: (context, state) => const SpecialistReportsScreen(),
+        builder: (context, state) {
+          final patientId = state.uri.queryParameters['patientId']?.trim();
+          return SpecialistReportsScreen(
+            patientId: (patientId == null || patientId.isEmpty)
+                ? null
+                : patientId,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.specialistReportDetailsPath,
         name: 'specialistReportDetails',
         builder: (context, state) => SpecialistReportDetailsScreen(
           reportId: state.pathParameters['reportId']!,
+          // Only treat as AI when explicitly marked (?ai=1).
           isAiReport: state.uri.queryParameters['ai'] == '1',
         ),
       ),
@@ -444,6 +510,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SpecialistMoreScreen(),
       ),
       GoRoute(
+        path: AppRoutes.specialistCaseRequests,
+        name: 'specialistCaseRequests',
+        builder: (context, state) => const SpecialistAssignedCasesScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistCaseRequestDetailPath,
+        name: 'specialistCaseRequestDetail',
+        builder: (context, state) => SpecialistCaseRequestDetailsScreen(
+          requestId: state.pathParameters['requestId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistConvertPatientPath,
+        name: 'specialistConvertPatient',
+        builder: (context, state) => SpecialistConvertPatientScreen(
+          requestId: state.pathParameters['requestId']!,
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.adminDashboard,
         name: 'adminDashboard',
         builder: (context, state) => const AdminDashboardScreen(),
@@ -454,9 +539,35 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AdminPatientsScreen(),
       ),
       GoRoute(
+        path: AppRoutes.adminPatientDetailsPath,
+        name: 'adminPatientDetails',
+        builder: (context, state) => AdminPatientDetailsScreen(
+          patientId: state.pathParameters['patientId']!,
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.adminPatientAssignments,
         name: 'adminPatientAssignments',
         builder: (context, state) => const PatientAssignmentsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCaseRequests,
+        name: 'adminCaseRequests',
+        builder: (context, state) => const AdminCaseInboxScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCaseRequestDetailPath,
+        name: 'adminCaseRequestDetail',
+        builder: (context, state) => AdminCaseRequestDetailsScreen(
+          requestId: state.pathParameters['requestId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCaseRequestAssignPath,
+        name: 'adminCaseRequestAssign',
+        builder: (context, state) => AdminMatchingSpecialistsScreen(
+          requestId: state.pathParameters['requestId']!,
+        ),
       ),
       GoRoute(
         path: AppRoutes.adminSessions,
@@ -487,6 +598,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.adminReports,
         name: 'adminReports',
         builder: (context, state) => const AdminReportsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminReportDetailsPath,
+        name: 'adminReportDetails',
+        builder: (context, state) => SpecialistReportDetailsScreen(
+          reportId: state.pathParameters['reportId']!,
+          // Only treat as AI when explicitly marked (?ai=1). Missing/0 = regular.
+          isAiReport: state.uri.queryParameters['ai'] == '1',
+          useAdminChrome: true,
+        ),
       ),
       GoRoute(
         path: AppRoutes.adminNotifications,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
@@ -20,6 +22,10 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
   bool _isLoading = true;
   String? _error;
   AdminAiCenterData _data = const AdminAiCenterData();
+
+  final GlobalKey _attentionSectionKey = GlobalKey();
+  final GlobalKey _speechSectionKey = GlobalKey();
+  final GlobalKey _recommendationsSectionKey = GlobalKey();
 
   @override
   void initState() {
@@ -52,6 +58,50 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
     }
   }
 
+  Future<void> _scrollToSection(GlobalKey key) async {
+    final targetContext = key.currentContext;
+    if (targetContext == null || !mounted) {
+      return;
+    }
+
+    await Scrollable.ensureVisible(
+      targetContext,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+      alignment: 0.08,
+    );
+  }
+
+  Future<void> _openPatientDetails(String? patientId) async {
+    final id = patientId?.trim();
+    if (id == null || id.isEmpty || !mounted) {
+      return;
+    }
+    await context.push(AppRoutes.adminPatientDetails(id));
+  }
+
+  Future<void> _openAiReportDetails(String? reportId) async {
+    final id = reportId?.trim();
+    if (id == null || id.isEmpty || !mounted) {
+      return;
+    }
+    await context.push(AppRoutes.adminReportDetails(id, isAi: true));
+  }
+
+  String? _readId(Map<String, dynamic> item, List<String> keys) {
+    for (final key in keys) {
+      final value = item[key];
+      if (value == null) {
+        continue;
+      }
+      final text = value.toString().trim();
+      if (text.isNotEmpty) {
+        return text;
+      }
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdminPageScaffold(
@@ -71,7 +121,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                   children: [
                     const AdminPageTitle(
                       title: 'AI Insights',
-                      subtitle: 'Speech analysis, recommendations, and clinical reports',
+                      subtitle:
+                          'Speech analysis, recommendations, and clinical reports',
                     ),
                     SizedBox(height: context.dashSpacing),
                     if (_error != null)
@@ -86,6 +137,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           icon: Icons.mic_outlined,
                           iconColor: AdminDashboardColors.primary,
                           iconBackground: AdminDashboardColors.blueSoft,
+                          onTap: () => _scrollToSection(_speechSectionKey),
                         ),
                         AdminMetricCard(
                           label: 'AI Recommendations',
@@ -93,6 +145,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           icon: Icons.auto_awesome_outlined,
                           iconColor: AdminDashboardColors.emerald,
                           iconBackground: AdminDashboardColors.emeraldSoft,
+                          onTap: () =>
+                              _scrollToSection(_recommendationsSectionKey),
                         ),
                         AdminMetricCard(
                           label: 'AI Reports',
@@ -100,6 +154,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           icon: Icons.summarize_outlined,
                           iconColor: AdminDashboardColors.orange,
                           iconBackground: AdminDashboardColors.orangeSoft,
+                          onTap: () => context.push(AppRoutes.adminReports),
                         ),
                         AdminMetricCard(
                           label: 'Needs Attention',
@@ -109,78 +164,151 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           icon: Icons.warning_amber_rounded,
                           iconColor: AdminDashboardColors.danger,
                           iconBackground: AdminDashboardColors.redSoft,
+                          onTap: () => _scrollToSection(_attentionSectionKey),
                         ),
                       ],
                     ),
                     SizedBox(height: context.dashSpacing),
-                    const AdminSectionHeader(title: 'Patients Needing Attention'),
-                    SizedBox(height: context.dashSpacing * 0.5),
-                    if (_data.patientsNeedingAttention.isEmpty)
-                      const AdminEmptyCard(message: 'No patients flagged for low scores.')
-                    else
-                      AdminTableContainer(
-                        rows: _data.patientsNeedingAttention
-                            .map(
-                              (patient) => Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const AdminIconCircle(
-                                    icon: Icons.person_outline_rounded,
-                                    color: AdminDashboardColors.danger,
-                                    background: AdminDashboardColors.redSoft,
-                                    size: 40,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      '${patient['full_name'] ?? 'Patient'}',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                    ),
-                                  ),
-                                  if (patient['speech_score'] != null) ...[
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: AdminStatusBadge(
-                                        label: 'Speech ${patient['speech_score']}',
-                                        color: AdminDashboardColors.danger,
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
+                    KeyedSubtree(
+                      key: _attentionSectionKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const AdminSectionHeader(
+                            title: 'Patients Needing Attention',
+                          ),
+                          SizedBox(height: context.dashSpacing * 0.5),
+                          if (_data.patientsNeedingAttention.isEmpty)
+                            const AdminEmptyCard(
+                              message: 'No patients flagged for low scores.',
                             )
-                            .toList(),
+                          else
+                            AdminTableContainer(
+                              onRowTaps: _data.patientsNeedingAttention
+                                  .map((patient) {
+                                    final patientId = _readId(
+                                      patient,
+                                      const ['id', 'patient_id', 'patientId'],
+                                    );
+                                    if (patientId == null) {
+                                      return null;
+                                    }
+                                    return () => _openPatientDetails(patientId);
+                                  })
+                                  .toList(),
+                              rows: _data.patientsNeedingAttention
+                                  .map(
+                                    (patient) => Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const AdminIconCircle(
+                                          icon: Icons.person_outline_rounded,
+                                          color: AdminDashboardColors.danger,
+                                          background:
+                                              AdminDashboardColors.redSoft,
+                                          size: 40,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            '${patient['full_name'] ?? 'Patient'}',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                        ),
+                                        if (patient['speech_score'] !=
+                                            null) ...[
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            child: AdminStatusBadge(
+                                              label:
+                                                  'Speech ${patient['speech_score']}',
+                                              color:
+                                                  AdminDashboardColors.danger,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                        ],
                       ),
-                    SizedBox(height: context.dashSpacing),
-                    const AdminSectionHeader(title: 'Latest Speech Analyses'),
-                    SizedBox(height: context.dashSpacing * 0.5),
-                    ..._buildRecordList(
-                      _data.latestSpeech,
-                      icon: Icons.graphic_eq_rounded,
-                      iconColor: AdminDashboardColors.primary,
-                      iconBackground: AdminDashboardColors.blueSoft,
-                      titleKey: 'patient_name',
-                      subtitleBuilder: (item) =>
-                          'Score ${item['overall_score'] ?? '—'} • ${_formatDate(item['analyzed_at'])}',
                     ),
                     SizedBox(height: context.dashSpacing),
-                    const AdminSectionHeader(title: 'Latest AI Recommendations'),
-                    SizedBox(height: context.dashSpacing * 0.5),
-                    ..._buildRecordList(
-                      _data.latestRecommendations,
-                      icon: Icons.lightbulb_outline_rounded,
-                      iconColor: AdminDashboardColors.emerald,
-                      iconBackground: AdminDashboardColors.emeraldSoft,
-                      titleKey: 'patient_name',
-                      subtitleBuilder: (item) =>
-                          '${item['type'] ?? 'recommendation'} • ${item['status'] ?? 'pending'}',
-                      badgeBuilder: (item) => AdminStatusBadge(
-                        label: '${item['status'] ?? 'pending'}',
-                        color: _statusColor('${item['status']}'),
+                    KeyedSubtree(
+                      key: _speechSectionKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const AdminSectionHeader(
+                            title: 'Latest Speech Analyses',
+                          ),
+                          SizedBox(height: context.dashSpacing * 0.5),
+                          ..._buildRecordList(
+                            _data.latestSpeech,
+                            icon: Icons.graphic_eq_rounded,
+                            iconColor: AdminDashboardColors.primary,
+                            iconBackground: AdminDashboardColors.blueSoft,
+                            titleKey: 'patient_name',
+                            subtitleBuilder: (item) =>
+                                'Score ${item['overall_score'] ?? '—'} • ${_formatDate(item['analyzed_at'])}',
+                            resolveTap: (item) {
+                              final patientId = _readId(item, const [
+                                'patient_id',
+                                'patientId',
+                              ]);
+                              if (patientId == null) {
+                                return null;
+                              }
+                              return () => _openPatientDetails(patientId);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: context.dashSpacing),
+                    KeyedSubtree(
+                      key: _recommendationsSectionKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const AdminSectionHeader(
+                            title: 'Latest AI Recommendations',
+                          ),
+                          SizedBox(height: context.dashSpacing * 0.5),
+                          ..._buildRecordList(
+                            _data.latestRecommendations,
+                            icon: Icons.lightbulb_outline_rounded,
+                            iconColor: AdminDashboardColors.emerald,
+                            iconBackground: AdminDashboardColors.emeraldSoft,
+                            titleKey: 'patient_name',
+                            subtitleBuilder: (item) =>
+                                '${item['type'] ?? 'recommendation'} • ${item['status'] ?? 'pending'}',
+                            badgeBuilder: (item) => AdminStatusBadge(
+                              label: '${item['status'] ?? 'pending'}',
+                              color: _statusColor('${item['status']}'),
+                            ),
+                            resolveTap: (item) {
+                              final patientId = _readId(item, const [
+                                'patient_id',
+                                'patientId',
+                              ]);
+                              if (patientId == null) {
+                                return null;
+                              }
+                              return () => _openPatientDetails(patientId);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(height: context.dashSpacing),
@@ -194,6 +322,17 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                       titleKey: 'patient_name',
                       subtitleBuilder: (item) =>
                           '${item['type'] ?? 'report'} • ${_formatDate(item['generated_at'])}',
+                      resolveTap: (item) {
+                        final reportId = _readId(item, const [
+                          'id',
+                          'report_id',
+                          'reportId',
+                        ]);
+                        if (reportId == null) {
+                          return null;
+                        }
+                        return () => _openAiReportDetails(reportId);
+                      },
                     ),
                   ],
                 ),
@@ -210,6 +349,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
     required String titleKey,
     required String Function(Map<String, dynamic> item) subtitleBuilder,
     Widget Function(Map<String, dynamic> item)? badgeBuilder,
+    VoidCallback? Function(Map<String, dynamic> item)? resolveTap,
   }) {
     if (items.isEmpty) {
       return [const AdminEmptyCard(message: 'No records yet.')];
@@ -217,51 +357,55 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
 
     return items
         .map(
-          (item) => Padding(
-            padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-            child: AdminSurfaceCard(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AdminIconCircle(
-                    icon: icon,
-                    color: iconColor,
-                    background: iconBackground,
-                    size: 40,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${item[titleKey] ?? 'Record'}',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: AdminDashboardColors.textPrimary,
-                              ),
-                        ),
-                        Text(
-                          subtitleBuilder(item),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AdminDashboardColors.textSecondary,
-                              ),
-                        ),
-                      ],
+          (item) {
+            final onTap = resolveTap?.call(item);
+            return Padding(
+              padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
+              child: AdminSurfaceCard(
+                onTap: onTap,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AdminIconCircle(
+                      icon: icon,
+                      color: iconColor,
+                      background: iconBackground,
+                      size: 40,
                     ),
-                  ),
-                  if (badgeBuilder != null) ...[
-                    const SizedBox(width: 8),
-                    Flexible(child: badgeBuilder(item)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${item[titleKey] ?? 'Record'}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: AdminDashboardColors.textPrimary,
+                                ),
+                          ),
+                          Text(
+                            subtitleBuilder(item),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AdminDashboardColors.textSecondary,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (badgeBuilder != null) ...[
+                      const SizedBox(width: 8),
+                      Flexible(child: badgeBuilder(item)),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         )
         .toList();
   }

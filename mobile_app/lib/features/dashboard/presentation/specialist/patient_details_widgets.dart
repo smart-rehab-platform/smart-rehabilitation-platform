@@ -75,9 +75,20 @@ class PatientDetailsHeader extends StatelessWidget {
 }
 
 class PatientQuickStatsGrid extends StatelessWidget {
-  const PatientQuickStatsGrid({super.key, required this.stats});
+  const PatientQuickStatsGrid({
+    super.key,
+    required this.stats,
+    this.onActiveGoalsTap,
+    this.onAssignedExercisesTap,
+    this.onPendingReviewsTap,
+    this.onReportsTap,
+  });
 
   final PatientQuickStats stats;
+  final VoidCallback? onActiveGoalsTap;
+  final VoidCallback? onAssignedExercisesTap;
+  final VoidCallback? onPendingReviewsTap;
+  final VoidCallback? onReportsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +100,7 @@ class PatientQuickStatsGrid extends StatelessWidget {
           icon: Icons.flag_outlined,
           iconBackground: DashboardColors.purpleSoft,
           iconColor: DashboardColors.primary,
+          onTap: onActiveGoalsTap,
         ),
         DashboardSummaryCard(
           label: 'Assigned Exercises',
@@ -96,6 +108,7 @@ class PatientQuickStatsGrid extends StatelessWidget {
           icon: Icons.fitness_center_outlined,
           iconBackground: DashboardColors.tealSoft,
           iconColor: DashboardColors.accent,
+          onTap: onAssignedExercisesTap,
         ),
         DashboardSummaryCard(
           label: 'Pending Reviews',
@@ -103,6 +116,7 @@ class PatientQuickStatsGrid extends StatelessWidget {
           icon: Icons.rate_review_outlined,
           iconBackground: DashboardColors.amberSoft,
           iconColor: DashboardColors.warning,
+          onTap: onPendingReviewsTap,
         ),
         DashboardSummaryCard(
           label: 'Reports',
@@ -110,6 +124,7 @@ class PatientQuickStatsGrid extends StatelessWidget {
           icon: Icons.description_outlined,
           iconBackground: DashboardColors.blueSoft,
           iconColor: const Color(0xFF3B82F6),
+          onTap: onReportsTap,
         ),
       ],
     );
@@ -262,9 +277,14 @@ class PatientGoalCard extends StatelessWidget {
 }
 
 class PatientAssignedExerciseTile extends StatelessWidget {
-  const PatientAssignedExerciseTile({super.key, required this.exercise});
+  const PatientAssignedExerciseTile({
+    super.key,
+    required this.exercise,
+    this.onTap,
+  });
 
   final PatientAssignedExerciseItem exercise;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -274,6 +294,7 @@ class PatientAssignedExerciseTile extends StatelessWidget {
         : 'No due date';
 
     return DashboardSurfaceCard(
+      onTap: onTap,
       child: Row(
         children: [
           Container(
@@ -315,6 +336,13 @@ class PatientAssignedExerciseTile extends StatelessWidget {
             ),
           ),
           DashboardPriorityBadge(label: exercise.statusLabel),
+          if (onTap != null) ...[
+            SizedBox(width: context.dashSpacing * 0.25),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: DashboardColors.textMuted,
+            ),
+          ],
         ],
       ),
     );
@@ -438,13 +466,46 @@ class PatientNoteTile extends StatelessWidget {
 }
 
 class PatientDetailsEmptySection extends StatelessWidget {
-  const PatientDetailsEmptySection({super.key, required this.message});
+  const PatientDetailsEmptySection({
+    super.key,
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+  });
 
   final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
-    return DashboardEmptyCard(message: message);
+    if (actionLabel == null || onAction == null) {
+      return DashboardEmptyCard(message: message);
+    }
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            message,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: DashboardColors.textSecondary,
+                ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.65),
+          OutlinedButton.icon(
+            onPressed: onAction,
+            icon: const Icon(Icons.add_rounded),
+            label: Text(actionLabel!),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: DashboardColors.primary,
+              side: const BorderSide(color: DashboardColors.primary),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

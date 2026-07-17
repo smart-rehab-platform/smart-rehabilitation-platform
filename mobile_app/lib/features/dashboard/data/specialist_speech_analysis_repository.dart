@@ -1,15 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../core/utils/api_response_parser.dart';
 import '../models/specialist_speech_analysis_models.dart';
 
 /// Specialist speech analysis API access.
 ///
-/// Endpoints:
-/// - GET  /patients/:id/speech-analyses
-/// - GET  /patients/:id/speech-progress
-/// - GET  /exercise-submissions/:id/speech-analysis
-/// - POST /speech-analyses/analyze
+/// Endpoints (mounted under /api/v1):
+/// - GET  /speech-analyses/patients/:id
+/// - GET  /speech-analyses/patients/:id/progress
+/// - GET  /speech-analyses/exercise-submissions/:id
+/// - POST /speech-analyses/analyze  body: { submission_id }
 class SpecialistSpeechAnalysisRepository {
   SpecialistSpeechAnalysisRepository(this._dio);
 
@@ -83,24 +84,40 @@ class SpecialistSpeechAnalysisRepository {
     String? patientId,
     String? patientName,
   }) async {
-    final response = await _dio.post(
-      '/speech-analyses/analyze',
-      data: {'submission_id': submissionId},
-      options: Options(
-        connectTimeout: const Duration(seconds: 120),
-        receiveTimeout: const Duration(seconds: 120),
-      ),
-    );
-    final map = ApiResponseParser.extractMap(response.data);
-    if (map == null) {
-      throw Exception('Invalid speech analysis response');
-    }
+    try {
+      debugPrint(
+        '[speech-analysis] POST /speech-analyses/analyze '
+        'submissionId=$submissionId',
+      );
+      final response = await _dio.post(
+        '/speech-analyses/analyze',
+        data: {'submission_id': submissionId},
+        options: Options(
+          connectTimeout: const Duration(seconds: 120),
+          receiveTimeout: const Duration(seconds: 120),
+        ),
+      );
+      debugPrint(
+        '[speech-analysis] analyze status=${response.statusCode}',
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw Exception('Invalid speech analysis response');
+      }
 
-    return SpecialistSpeechAnalysisItem.fromMap(
-      map,
-      fallbackPatientId: patientId,
-      fallbackPatientName: patientName,
-    );
+      return SpecialistSpeechAnalysisItem.fromMap(
+        map,
+        fallbackPatientId: patientId,
+        fallbackPatientName: patientName,
+      );
+    } on DioException catch (error) {
+      debugPrint(
+        '[speech-analysis] analyze failed '
+        'status=${error.response?.statusCode} '
+        'body=${error.response?.data}',
+      );
+      throw Exception(friendlySpeechAnalysisError(error, action: 'analyze'));
+    }
   }
 
   Future<String?> fetchPatientName(String patientId) async {
@@ -110,5 +127,74 @@ class SpecialistSpeechAnalysisRepository {
       'fullName',
       'name',
     ]);
+  }
+
+  /// User-facing speech analysis errors (never raw DioException text).
+  static String friendlySpeechAnalysisError(
+    Object error, {
+    String action = 'load',
+  }) {
+    if (error is! DioException) {
+      final raw = error.toString().replaceFirst(RegExp(r'^Exception:\s*'), '');
+      if (raw.isEmpty ||
+          raw.contains('DioException') ||
+          raw.contains('validateStatus')) {
+        return action == 'analyze'
+            ? 'Speech analysis could not be completed. Please try again.'
+            : 'Failed to load speech analysis. Please try again.';
+      }
+      return raw;
+    }
+
+    final status = error.response?.statusCode;
+    final data = error.response?.data;
+    String? apiMessage;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      apiMessage =
+          ApiResponseParser.readString(map, const ['message', 'error']);
+    }
+    final lowerApi = (apiMessage ?? '').toLowerCase();
+
+    if (status == 401) {
+      return 'Please sign in to continue.';
+    }
+    if (status == 403) {
+      return 'You do not have permission to analyze this submission.';
+    }
+    if (status == 404) {
+      if (lowerApi.contains('analysis') &&
+          !lowerApi.contains('submission not found')) {
+        return 'No speech analysis is available for this submission yet.';
+      }
+      return 'The exercise submission could not be found.';
+    }
+    if (status == 400 || status == 422) {
+      if (lowerApi.contains('audio') ||
+          lowerApi.contains('recording') ||
+          lowerApi.contains('media') ||
+          lowerApi.contains('external')) {
+        return 'This submission does not contain a supported audio recording.';
+      }
+      if (apiMessage != null &&
+          apiMessage.trim().isNotEmpty &&
+          !apiMessage.contains('DioException')) {
+        return apiMessage.trim();
+      }
+      return 'This submission does not contain a supported audio recording.';
+    }
+    if (status == 502 || status == 503 || status == 504) {
+      return 'The speech analysis service is currently unavailable. Please try again.';
+    }
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.connectionError) {
+      return 'Unable to connect to the analysis service. Check your connection and try again.';
+    }
+
+    return action == 'analyze'
+        ? 'Speech analysis could not be completed. Please try again.'
+        : 'Failed to load speech analysis. Please try again.';
   }
 }

@@ -17,6 +17,7 @@ import '../../widgets/specialist_navigation.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'specialist_exercises_widgets.dart';
+import 'treatment_plans_list_widgets.dart';
 
 class SpecialistPatientsScreen extends ConsumerStatefulWidget {
   const SpecialistPatientsScreen({super.key});
@@ -161,83 +162,264 @@ class SpecialistTreatmentPlansScreen extends ConsumerStatefulWidget {
 
 class _SpecialistTreatmentPlansScreenState
     extends ConsumerState<SpecialistTreatmentPlansScreen> {
+  late final TextEditingController _searchController;
+  TreatmentPlanListFilter _filter = TreatmentPlanListFilter.all;
+
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistTreatmentPlansProvider.notifier).initialize();
+      ref.read(specialistPatientsProvider.notifier).initialize();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Set<String> _activePatientIds(List<SpecialistTreatmentPlanItem> plans) {
+    return plans
+        .where((plan) => plan.isActive)
+        .map((plan) => plan.patientId?.trim() ?? '')
+        .where((id) => id.isNotEmpty)
+        .toSet();
+  }
+
+  List<SpecialistTreatmentPlanItem> _visible(
+    List<SpecialistTreatmentPlanItem> items,
+  ) {
+    final query = _searchController.text.trim().toLowerCase();
+    return items.where((plan) {
+      if (!_filter.matches(plan)) {
+        return false;
+      }
+      if (query.isEmpty) {
+        return true;
+      }
+      return plan.title.toLowerCase().contains(query) ||
+          plan.patientName.toLowerCase().contains(query);
+    }).toList();
+  }
+
+  Future<void> _openCreateForPatient({
+    required String patientId,
+    required String patientName,
+  }) async {
+    final created = await context.push<bool>(
+      AppRoutes.specialistCreateTreatmentPlan(
+        patientId: patientId,
+        patientName: patientName,
+      ),
+    );
+    if (!mounted) return;
+    if (created == true) {
+      await ref.read(specialistTreatmentPlansProvider.notifier).refresh();
+    }
+  }
+
+  Future<void> _openPatientPicker() async {
+    final patientsState = ref.read(specialistPatientsProvider);
+    final plansState = ref.read(specialistTreatmentPlansProvider);
+    if (patientsState.items.isEmpty) {
+      await ref.read(specialistPatientsProvider.notifier).refresh();
+    }
+    if (!mounted) return;
+
+    final patients = ref.read(specialistPatientsProvider).items;
+    final activeIds = _activePatientIds(plansState.items);
+
+    if (patients.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No assigned patients available.'),
+        ),
+      );
+      return;
+    }
+
+    final selected = await showModalBottomSheet<SpecialistPatientItem>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              context.dashSpacing,
+              0,
+              context.dashSpacing,
+              context.dashSpacing,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Select patient',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                SizedBox(height: context.dashSpacing * 0.65),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.55,
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: patients.length,
+                    separatorBuilder: (_, __) =>
+                        SizedBox(height: context.dashSpacing * 0.35),
+                    itemBuilder: (context, index) {
+                      final patient = patients[index];
+                      final hasActive = activeIds.contains(patient.id);
+                      return ListTile(
+                        enabled: !hasActive,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: const BorderSide(color: DashboardColors.border),
+                        ),
+                        title: Text(patient.name),
+                        subtitle: Text(
+                          hasActive
+                              ? 'This patient already has an active treatment plan.'
+                              : 'No active plan',
+                        ),
+                        trailing: hasActive
+                            ? const Icon(Icons.lock_outline)
+                            : const Icon(Icons.chevron_right_rounded),
+                        onTap: hasActive
+                            ? null
+                            : () => Navigator.pop(sheetContext, patient),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (selected == null || !mounted) return;
+    await _openCreateForPatient(
+      patientId: selected.id,
+      patientName: selected.name,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistTreatmentPlansProvider);
-    final theme = Theme.of(context);
+    final visible = _visible(state.items);
+
+    Widget body;
+    if (state.isLoading) {
+      body = const Center(child: DashboardLoadingCard());
+    } else {
+      body = RefreshIndicator(
+        onRefresh: () =>
+            ref.read(specialistTreatmentPlansProvider.notifier).refresh(),
+        color: DashboardColors.primary,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: context.dashPadding,
+          children: [
+            if (state.errorMessage != null) ...[
+              DashboardErrorCard(
+                message: state.errorMessage!,
+                onRetry: () => ref
+                    .read(specialistTreatmentPlansProvider.notifier)
+                    .refresh(),
+              ),
+              SizedBox(height: context.dashSpacing * 0.75),
+            ],
+            TextField(
+              controller: _searchController,
+              onChanged: (_) => setState(() {}),
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                hintText: 'Search by plan title or patient',
+                prefixIcon: const Icon(Icons.search_rounded),
+                filled: true,
+                fillColor: DashboardColors.surface,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: DashboardColors.border),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: DashboardColors.border),
+                ),
+              ),
+            ),
+            SizedBox(height: context.dashSpacing * 0.75),
+            TreatmentPlanFilterChips(
+              selected: _filter,
+              onChanged: (value) => setState(() => _filter = value),
+            ),
+            SizedBox(height: context.dashSpacing * 0.75),
+            if (state.items.isEmpty)
+              DashboardSurfaceCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'No treatment plans found.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: DashboardColors.textSecondary,
+                          ),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.65),
+                    OutlinedButton.icon(
+                      onPressed: _openPatientPicker,
+                      icon: const Icon(Icons.add_rounded),
+                      label: const Text('Add Treatment Plan'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: DashboardColors.primary,
+                        side: const BorderSide(color: DashboardColors.primary),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else if (visible.isEmpty)
+              const DashboardEmptyCard(
+                message: 'No plans match your search or filter.',
+              )
+            else
+              ...visible.map(
+                (plan) => TreatmentPlanListCard(
+                  plan: plan,
+                  onTap: plan.id.isEmpty
+                      ? () {}
+                      : () => context.push(
+                            AppRoutes.specialistEditTreatmentPlan(plan.id),
+                          ),
+                ),
+              ),
+            SizedBox(height: context.dashSpacing),
+          ],
+        ),
+      );
+    }
 
     return SpecialistPageScaffold(
       title: 'Treatment Plans',
       showBackButton: true,
-      body: SpecialistAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () =>
-            ref.read(specialistTreatmentPlansProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
-        emptyMessage: 'No treatment plans found.',
-        child: Column(
-          children: state.items
-              .map(
-                (plan) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
-                    onTap: plan.id.isEmpty
-                        ? null
-                        : () => context.push(
-                              AppRoutes.specialistEditTreatmentPlan(plan.id),
-                            ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                plan.title,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              SizedBox(height: context.dashSpacing * 0.2),
-                              Text(
-                                plan.patientName,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: DashboardColors.textSecondary,
-                                ),
-                              ),
-                              SizedBox(height: context.dashSpacing * 0.2),
-                              Text(
-                                '${plan.status ?? 'Active'} • ${formatDashboardDate(plan.startDate)} → ${formatDashboardDate(plan.endDate)}',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: DashboardColors.textMuted,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (plan.id.isNotEmpty)
-                          Icon(
-                            Icons.chevron_right_rounded,
-                            color: DashboardColors.textMuted,
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
+      actions: [
+        IconButton(
+          tooltip: 'Add Treatment Plan',
+          onPressed: _openPatientPicker,
+          icon: const Icon(Icons.add_rounded),
         ),
-      ),
+      ],
+      body: body,
     );
   }
 }
@@ -399,7 +581,13 @@ class _SpecialistExercisesScreenState
             )
           else
             ...visible.map(
-              (exercise) => SpecialistExerciseCard(exercise: exercise),
+              (exercise) => SpecialistExerciseCard(
+                exercise: exercise,
+                showChevron: true,
+                onTap: () => context.push(
+                  AppRoutes.specialistExerciseDetails(exercise.id),
+                ),
+              ),
             ),
           SizedBox(height: context.dashSpacing),
         ],
@@ -409,6 +597,20 @@ class _SpecialistExercisesScreenState
     return SpecialistPageScaffold(
       title: 'Exercises',
       currentNav: DashboardNavItem.exercises,
+      actions: [
+        IconButton(
+          tooltip: 'Add Exercise',
+          onPressed: () async {
+            final created = await context.push<bool>(
+              AppRoutes.specialistAddExercise,
+            );
+            if (created == true && context.mounted) {
+              await ref.read(specialistExercisesProvider.notifier).refresh();
+            }
+          },
+          icon: const Icon(Icons.add_rounded),
+        ),
+      ],
       body: body,
     );
   }
@@ -530,6 +732,11 @@ class SpecialistMoreScreen extends ConsumerWidget {
       body: ListView(
         padding: context.dashPadding,
         children: [
+          _MoreTile(
+            icon: Icons.assignment_ind_outlined,
+            label: 'Assigned Case Requests',
+            onTap: () => context.push(AppRoutes.specialistCaseRequests),
+          ),
           _MoreTile(
             icon: Icons.chat_bubble_outline_rounded,
             label: 'Messages',

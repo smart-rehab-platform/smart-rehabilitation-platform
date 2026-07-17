@@ -237,7 +237,13 @@ class CaseIntakeRequest {
     final specialistMap =
         ApiResponseParser.asMap(map['assigned_specialist']) ??
         ApiResponseParser.asMap(map['assignedSpecialist']);
-    final attachmentsRaw = ApiResponseParser.extractList(map['attachments']);
+    // Attachments arrive as a raw JSON array on the request object.
+    // Do not use extractList() here — it expects a { data: [...] } envelope
+    // and returns [] when given a List directly.
+    final attachmentsField = map['attachments'];
+    final attachmentsRaw = attachmentsField is List
+        ? List<dynamic>.from(attachmentsField)
+        : const <dynamic>[];
 
     return CaseIntakeRequest(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',

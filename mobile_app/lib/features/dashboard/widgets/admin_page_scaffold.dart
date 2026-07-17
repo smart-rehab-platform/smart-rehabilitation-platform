@@ -24,6 +24,7 @@ class AdminPageScaffold extends ConsumerWidget {
     this.actions,
     this.floatingActionButton,
     this.wrapBodyInScrollView = false,
+    this.onBackPressed,
   });
 
   final String title;
@@ -34,6 +35,7 @@ class AdminPageScaffold extends ConsumerWidget {
   final List<Widget>? actions;
   final Widget? floatingActionButton;
   final bool wrapBodyInScrollView;
+  final VoidCallback? onBackPressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,8 +54,13 @@ class AdminPageScaffold extends ConsumerWidget {
           elevation: 0,
           leading: showBackButton
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-                  onPressed: () => AdminNavigation.popOrGoAdmin(context),
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: Colors.white,
+                  ),
+                  onPressed:
+                      onBackPressed ??
+                      () => AdminNavigation.popOrGoAdmin(context),
                 )
               : IconButton(
                   icon: const Icon(Icons.menu_rounded, color: Colors.white),
@@ -79,10 +86,7 @@ class AdminPageScaffold extends ConsumerWidget {
         ),
         body: SafeArea(
           child: wrapBodyInScrollView
-              ? SingleChildScrollView(
-                  padding: context.dashPadding,
-                  child: body,
-                )
+              ? SingleChildScrollView(padding: context.dashPadding, child: body)
               : body,
         ),
         floatingActionButton: floatingActionButton,
@@ -112,7 +116,10 @@ class _NotificationAction extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onTap,
-          icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+          icon: const Icon(
+            Icons.notifications_none_rounded,
+            color: Colors.white,
+          ),
         ),
         if (count > 0)
           Positioned(
@@ -162,7 +169,10 @@ class _AvatarAction extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 2),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.35),
+              width: 2,
+            ),
           ),
           child: DashboardProfileAvatar(
             initials: initials,

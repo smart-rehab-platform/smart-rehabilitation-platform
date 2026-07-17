@@ -101,3 +101,30 @@ class UpdateTreatmentPlanInput {
     return '$y-$m-$d';
   }
 }
+
+class CreateTreatmentPlanInput {
+  const CreateTreatmentPlanInput({
+    required this.patientId,
+    required this.title,
+    required this.startDate,
+    this.endDate,
+    this.basedOnAssessmentId,
+  });
+
+  final String patientId;
+  final String title;
+  final DateTime startDate;
+  final DateTime? endDate;
+  final String? basedOnAssessmentId;
+
+  Map<String, dynamic> toJson() => {
+        'patient_id': patientId,
+        'title': title.trim(),
+        'start_date': UpdateTreatmentPlanInput._formatDate(startDate),
+        if (endDate != null)
+          'end_date': UpdateTreatmentPlanInput._formatDate(endDate!),
+        if (basedOnAssessmentId != null &&
+            basedOnAssessmentId!.trim().isNotEmpty)
+          'based_on_assessment_id': basedOnAssessmentId!.trim(),
+      };
+}

@@ -310,6 +310,8 @@ CREATE TABLE treatment_plans (
     created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at             TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Partial unique index (one active plan per patient) applied via
+-- migrations/007_treatment_plans_one_active.sql when data is clean.
 
 -- Keeps a history every time a plan is edited (useful for the "تعديل الخطة" feature)
 CREATE TABLE treatment_plan_revisions (
@@ -346,6 +348,9 @@ CREATE TABLE goal_progress (
 -- 5. EXERCISE SYSTEM
 -- =====================================================================
 
+-- Flat taxonomy for the shared exercise library (not case_categories).
+-- Expanded via migrations/006_expand_exercise_categories.sql for general
+-- rehab areas: speech/language, OT/motor, behavioral/developmental, learning.
 CREATE TABLE exercise_categories (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name        VARCHAR(100) NOT NULL UNIQUE,

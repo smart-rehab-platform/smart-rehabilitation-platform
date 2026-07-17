@@ -4,12 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../models/specialist_patient_details_models.dart';
 import '../../providers/specialist_patient_details_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
-import 'patient_details_widgets.dart';
 import '../communication/communication_patient_actions.dart';
+import '../shared/patient_details_body.dart';
 
 class SpecialistPatientDetailsScreen extends ConsumerStatefulWidget {
   const SpecialistPatientDetailsScreen({super.key, required this.patientId});
@@ -34,78 +35,57 @@ class _SpecialistPatientDetailsScreenState
   }
 
   Future<void> _showAddNoteDialog() async {
-    final controller = TextEditingController();
-
+    final messenger = ScaffoldMessenger.of(context);
     final result = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) {
-        var isSaving = false;
-
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Add Specialist Note'),
-              content: TextField(
-                controller: controller,
-                maxLines: 4,
-                enabled: !isSaving,
-                decoration: const InputDecoration(
-                  hintText: 'Enter clinical note...',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: isSaving
-                      ? null
-                      : () => Navigator.pop(dialogContext, false),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  onPressed: isSaving
-                      ? null
-                      : () async {
-                          setDialogState(() => isSaving = true);
-                          final error = await ref
-                              .read(
-                                specialistPatientDetailsProvider(
-                                  widget.patientId,
-                                ).notifier,
-                              )
-                              .addNote(controller.text);
-                          if (!dialogContext.mounted) return;
-                          if (error != null) {
-                            setDialogState(() => isSaving = false);
-                            ScaffoldMessenger.of(
-                              dialogContext,
-                            ).showSnackBar(SnackBar(content: Text(error)));
-                            return;
-                          }
-                          Navigator.pop(dialogContext, true);
-                        },
-                  child: Text(isSaving ? 'Saving...' : 'Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (_) => _AddSpecialistNoteDialog(
+        patientId: widget.patientId,
+        messenger: messenger,
+      ),
     );
 
     if (!mounted) return;
     if (result == true) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Note saved')));
+      messenger.showSnackBar(const SnackBar(content: Text('Note saved')));
     }
-    controller.dispose();
+  }
+
+  Future<void> _openAssignExercise(SpecialistPatientDetailsBundle data) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final plan = data.treatmentPlan;
+    final planId = plan?.id.trim() ?? '';
+    final hasActivePlan = plan != null && plan.isActive && planId.isNotEmpty;
+
+    if (!hasActivePlan) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: const Text(
+            'An active treatment plan is required before assigning an exercise.',
+          ),
+          action: SnackBarAction(
+            label: 'Plans',
+            onPressed: () {
+              if (!context.mounted) return;
+              context.push(AppRoutes.specialistTreatmentPlans);
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
+    await context.push<bool>(
+      AppRoutes.specialistAssignExercise(
+        patientId: widget.patientId,
+        planId: planId,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistPatientDetailsProvider(widget.patientId));
     final data = state.data;
-    final theme = Theme.of(context);
 
     Widget body;
     if (state.isLoading) {
@@ -131,191 +111,86 @@ class _SpecialistPatientDetailsScreenState
             .read(specialistPatientDetailsProvider(widget.patientId).notifier)
             .refresh(),
         color: DashboardColors.primary,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: context.dashPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              PatientDetailsHeader(
-                patient: data.patient,
-                diagnosis: data.diagnosis,
-                overallProgress: data.overallProgress,
+        child: PatientDetailsBody(
+          patientId: widget.patientId,
+          data: data,
+          onAssignExercise: () => _openAssignExercise(data),
+          onCreateTreatmentPlan: () async {
+            final created = await context.push<bool>(
+              AppRoutes.specialistCreateTreatmentPlan(
+                patientId: widget.patientId,
+                patientName: data.patient.fullName,
               ),
-              SizedBox(height: context.dashSpacing),
-              SpecialistMessageParentButton(patientId: widget.patientId),
-              SizedBox(height: context.dashSpacing),
-              Text(
-                'Quick Statistics',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: DashboardColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              PatientQuickStatsGrid(stats: data.stats),
-              SizedBox(height: context.dashSpacing * 1.1),
-              Text(
-                'Treatment Plan',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: DashboardColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              if (data.treatmentPlan == null)
-                const PatientDetailsEmptySection(
-                  message: 'No treatment plan assigned yet.',
-                )
-              else
-                PatientTreatmentPlanCard(plan: data.treatmentPlan!),
-              SizedBox(height: context.dashSpacing * 1.1),
-              Text(
-                'Goals',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: DashboardColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              if (data.goals.isEmpty)
-                const PatientDetailsEmptySection(
-                  message: 'No goals defined for this patient.',
-                )
-              else
-                ...data.goals.map(
-                  (goal) => Padding(
-                    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                    child: PatientGoalCard(goal: goal),
+            );
+            if (!mounted) return;
+            if (created == true) {
+              await ref
+                  .read(
+                    specialistPatientDetailsProvider(widget.patientId).notifier,
+                  )
+                  .refresh();
+            }
+          },
+          onReportsTap: () => context.push(
+            AppRoutes.specialistPatientReports(widget.patientId),
+          ),
+          headerActions: SpecialistMessageParentButton(
+            patientId: widget.patientId,
+          ),
+          footer: _SpecialistActionButtons(
+            isSavingNote: state.isSavingNote,
+            hasActivePlan: data.treatmentPlan?.isActive == true,
+            onReviewExercises: () {
+              final pending = data.recentSubmissions
+                  .where((s) => s.reviewStatus == 'Pending')
+                  .toList();
+              if (pending.isNotEmpty && pending.first.id.isNotEmpty) {
+                context.push(
+                  AppRoutes.specialistReviewExercise(pending.first.id),
+                );
+              } else {
+                context.push(AppRoutes.specialistPendingReviews);
+              }
+            },
+            onAddNote: _showAddNoteDialog,
+            onViewReports: () => context.push(
+              AppRoutes.specialistPatientReports(widget.patientId),
+            ),
+            onEditTreatmentPlan: () {
+              final planId = data.treatmentPlan?.id;
+              if (planId != null && planId.isNotEmpty) {
+                context.push(AppRoutes.specialistEditTreatmentPlan(planId));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('No treatment plan found for this patient.'),
                   ),
+                );
+              }
+            },
+            onCreateTreatmentPlan: () async {
+              final created = await context.push<bool>(
+                AppRoutes.specialistCreateTreatmentPlan(
+                  patientId: widget.patientId,
+                  patientName: data.patient.fullName,
                 ),
-              if (data.treatmentPlan != null) ...[
-                SizedBox(height: context.dashSpacing * 0.5),
-                OutlinedButton.icon(
-                  onPressed: () => context.push(
-                    AppRoutes.specialistManageGoals(widget.patientId),
-                  ),
-                  icon: const Icon(Icons.flag_outlined),
-                  label: const Text('Manage Goals'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: DashboardColors.primary,
-                    side: const BorderSide(color: DashboardColors.primary),
-                    padding: EdgeInsets.symmetric(
-                      vertical: context.dashSpacing * 0.65,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                ),
-              ],
-              SizedBox(height: context.dashSpacing * 0.5),
-              Text(
-                'Assigned Exercises',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: DashboardColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              if (data.assignedExercises.isEmpty)
-                const PatientDetailsEmptySection(
-                  message: 'No exercises assigned yet.',
-                )
-              else
-                ...data.assignedExercises.map(
-                  (exercise) => Padding(
-                    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                    child: PatientAssignedExerciseTile(exercise: exercise),
-                  ),
-                ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              Text(
-                'Recent Exercise Submissions',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: DashboardColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              if (data.recentSubmissions.isEmpty)
-                const PatientDetailsEmptySection(
-                  message: 'No exercise submissions yet.',
-                )
-              else
-                ...data.recentSubmissions.map(
-                  (submission) => Padding(
-                    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                    child: PatientSubmissionTile(
-                      submission: submission,
-                      onTap: submission.id.isEmpty
-                          ? null
-                          : () => context.push(
-                              AppRoutes.specialistReviewExercise(submission.id),
-                            ),
-                    ),
-                  ),
-                ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              Text(
-                'Latest Specialist Notes',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: DashboardColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              if (data.notes.isEmpty)
-                const PatientDetailsEmptySection(
-                  message: 'No specialist notes yet.',
-                )
-              else
-                ...data.notes.map(
-                  (note) => Padding(
-                    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                    child: PatientNoteTile(note: note),
-                  ),
-                ),
-              SizedBox(height: context.dashSpacing),
-              _ActionButtons(
-                isSavingNote: state.isSavingNote,
-                onReviewExercises: () {
-                  final pending = data.recentSubmissions
-                      .where((s) => s.reviewStatus == 'Pending')
-                      .toList();
-                  if (pending.isNotEmpty && pending.first.id.isNotEmpty) {
-                    context.push(
-                      AppRoutes.specialistReviewExercise(pending.first.id),
-                    );
-                  } else {
-                    context.push(AppRoutes.specialistPendingReviews);
-                  }
-                },
-                onAddNote: _showAddNoteDialog,
-                onViewReports: () => context.push(AppRoutes.specialistReports),
-                onEditTreatmentPlan: () {
-                  final planId = data.treatmentPlan?.id;
-                  if (planId != null && planId.isNotEmpty) {
-                    context.push(AppRoutes.specialistEditTreatmentPlan(planId));
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'No treatment plan found for this patient.',
-                        ),
-                      ),
-                    );
-                  }
-                },
-                onAiRecommendations: () => context.push(
-                  AppRoutes.specialistAiRecommendations(widget.patientId),
-                ),
-                onSpeechAnalysis: () => context.push(
-                  AppRoutes.specialistPatientSpeechAnalysis(widget.patientId),
-                ),
-              ),
-              SizedBox(height: context.dashSpacing),
-            ],
+              );
+              if (!mounted) return;
+              if (created == true) {
+                await ref
+                    .read(
+                      specialistPatientDetailsProvider(widget.patientId)
+                          .notifier,
+                    )
+                    .refresh();
+              }
+            },
+            onAiRecommendations: () => context.push(
+              AppRoutes.specialistAiRecommendations(widget.patientId),
+            ),
+            onSpeechAnalysis: () => context.push(
+              AppRoutes.specialistPatientSpeechAnalysis(widget.patientId),
+            ),
           ),
         ),
       );
@@ -329,22 +204,26 @@ class _SpecialistPatientDetailsScreenState
   }
 }
 
-class _ActionButtons extends StatelessWidget {
-  const _ActionButtons({
+class _SpecialistActionButtons extends StatelessWidget {
+  const _SpecialistActionButtons({
     required this.isSavingNote,
+    required this.hasActivePlan,
     required this.onReviewExercises,
     required this.onAddNote,
     required this.onViewReports,
     required this.onEditTreatmentPlan,
+    required this.onCreateTreatmentPlan,
     required this.onAiRecommendations,
     required this.onSpeechAnalysis,
   });
 
   final bool isSavingNote;
+  final bool hasActivePlan;
   final VoidCallback onReviewExercises;
   final VoidCallback onAddNote;
   final VoidCallback onViewReports;
   final VoidCallback onEditTreatmentPlan;
+  final VoidCallback onCreateTreatmentPlan;
   final VoidCallback onAiRecommendations;
   final VoidCallback onSpeechAnalysis;
 
@@ -395,19 +274,36 @@ class _ActionButtons extends StatelessWidget {
           ),
         ),
         SizedBox(height: context.dashSpacing * 0.5),
-        OutlinedButton.icon(
-          onPressed: onEditTreatmentPlan,
-          icon: const Icon(Icons.edit_note_outlined),
-          label: const Text('Edit Treatment Plan'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: DashboardColors.primary,
-            side: const BorderSide(color: DashboardColors.primary),
-            padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+        if (hasActivePlan)
+          OutlinedButton.icon(
+            onPressed: onEditTreatmentPlan,
+            icon: const Icon(Icons.edit_note_outlined),
+            label: const Text('Edit Treatment Plan'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: DashboardColors.primary,
+              side: const BorderSide(color: DashboardColors.primary),
+              padding:
+                  EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          )
+        else
+          OutlinedButton.icon(
+            onPressed: onCreateTreatmentPlan,
+            icon: const Icon(Icons.playlist_add_check_rounded),
+            label: const Text('Create Treatment Plan'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: DashboardColors.primary,
+              side: const BorderSide(color: DashboardColors.primary),
+              padding:
+                  EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
           ),
-        ),
         SizedBox(height: context.dashSpacing * 0.5),
         OutlinedButton.icon(
           onPressed: onAiRecommendations,
@@ -435,6 +331,91 @@ class _ActionButtons extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AddSpecialistNoteDialog extends ConsumerStatefulWidget {
+  const _AddSpecialistNoteDialog({
+    required this.patientId,
+    required this.messenger,
+  });
+
+  final String patientId;
+  final ScaffoldMessengerState messenger;
+
+  @override
+  ConsumerState<_AddSpecialistNoteDialog> createState() =>
+      _AddSpecialistNoteDialogState();
+}
+
+class _AddSpecialistNoteDialogState
+    extends ConsumerState<_AddSpecialistNoteDialog> {
+  late final TextEditingController _controller;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _cancel() {
+    if (_saving) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    Navigator.of(context).pop(false);
+  }
+
+  Future<void> _save() async {
+    if (_saving) return;
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _saving = true);
+
+    final error = await ref
+        .read(specialistPatientDetailsProvider(widget.patientId).notifier)
+        .addNote(_controller.text);
+
+    if (!mounted) return;
+
+    if (error != null) {
+      setState(() => _saving = false);
+      widget.messenger.showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+
+    Navigator.of(context).pop(true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add Specialist Note'),
+      content: TextField(
+        controller: _controller,
+        maxLines: 4,
+        enabled: !_saving,
+        decoration: const InputDecoration(
+          hintText: 'Enter clinical note...',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : _cancel,
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _saving ? null : _save,
+          child: Text(_saving ? 'Saving...' : 'Save'),
         ),
       ],
     );

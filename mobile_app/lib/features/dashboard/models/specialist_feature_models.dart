@@ -41,6 +41,7 @@ class SpecialistTreatmentPlanItem {
     required this.id,
     required this.title,
     required this.patientName,
+    this.patientId,
     this.status,
     this.startDate,
     this.endDate,
@@ -50,10 +51,25 @@ class SpecialistTreatmentPlanItem {
   final String id;
   final String title;
   final String patientName;
+  final String? patientId;
   final String? status;
   final DateTime? startDate;
   final DateTime? endDate;
   final String? specialistId;
+
+  bool get isActive => status?.trim().toLowerCase() == 'active';
+
+  String get statusLabel {
+    final raw = status?.trim().toLowerCase();
+    return switch (raw) {
+      'completed' => 'Completed',
+      'archived' => 'Archived',
+      'active' => 'Active',
+      _ => (status?.trim().isNotEmpty == true)
+          ? '${status![0].toUpperCase()}${status!.substring(1)}'
+          : 'Active',
+    };
+  }
 
   factory SpecialistTreatmentPlanItem.fromMap(Map<String, dynamic> map) {
     return SpecialistTreatmentPlanItem(
@@ -67,6 +83,10 @@ class SpecialistTreatmentPlanItem {
             'patientName',
           ]) ??
           'Patient',
+      patientId: ApiResponseParser.readString(map, const [
+        'patient_id',
+        'patientId',
+      ]),
       status: ApiResponseParser.readString(map, const ['status']),
       startDate: ApiResponseParser.readDate(
         map['start_date'] ?? map['startDate'],
@@ -85,13 +105,58 @@ class SpecialistExerciseItem {
     required this.id,
     required this.title,
     this.category,
+    this.categoryId,
+    this.description,
     this.instructions,
+    this.instructionMediaUrl,
+    this.createdBy,
+    this.createdByName,
   });
 
   final String id;
   final String title;
   final String? category;
+  final String? categoryId;
+  final String? description;
   final String? instructions;
+  final String? instructionMediaUrl;
+  final String? createdBy;
+  final String? createdByName;
+
+  /// Short preview for list cards (instructions preferred, then description).
+  String? get previewText {
+    final instructionsText = instructions?.trim();
+    if (instructionsText != null && instructionsText.isNotEmpty) {
+      return instructionsText;
+    }
+    final descriptionText = description?.trim();
+    if (descriptionText != null && descriptionText.isNotEmpty) {
+      return descriptionText;
+    }
+    return null;
+  }
+
+  bool get hasMedia {
+    final url = instructionMediaUrl?.trim();
+    return url != null && url.isNotEmpty;
+  }
+
+  bool canEditBy({required String? userId, required String? role}) {
+    final normalizedRole = role?.trim().toLowerCase();
+    if (normalizedRole == 'admin') {
+      return true;
+    }
+    if (normalizedRole != 'specialist') {
+      return false;
+    }
+    final creator = createdBy?.trim();
+    final current = userId?.trim();
+    return creator != null &&
+        creator.isNotEmpty &&
+        current != null &&
+        current.isNotEmpty &&
+        creator == current;
+  }
 
   factory SpecialistExerciseItem.fromMap(Map<String, dynamic> map) {
     return SpecialistExerciseItem(
@@ -104,10 +169,183 @@ class SpecialistExerciseItem {
         'categoryName',
         'category',
       ]),
-      instructions: ApiResponseParser.readString(map, const [
-        'instructions',
-        'description',
+      categoryId: ApiResponseParser.readString(map, const [
+        'category_id',
+        'categoryId',
       ]),
+      description: ApiResponseParser.readString(map, const ['description']),
+      instructions: ApiResponseParser.readString(map, const ['instructions']),
+      instructionMediaUrl: ApiResponseParser.readString(map, const [
+        'instruction_media_url',
+        'instructionMediaUrl',
+      ]),
+      createdBy: ApiResponseParser.readString(map, const [
+        'created_by',
+        'createdBy',
+      ]),
+      createdByName: ApiResponseParser.readString(map, const [
+        'created_by_name',
+        'createdByName',
+      ]),
+    );
+  }
+}
+
+class ExerciseCategoryItem {
+  const ExerciseCategoryItem({
+    required this.id,
+    required this.name,
+    this.description,
+  });
+
+  final String id;
+  final String name;
+  final String? description;
+
+  factory ExerciseCategoryItem.fromMap(Map<String, dynamic> map) {
+    return ExerciseCategoryItem(
+      id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
+      name: ApiResponseParser.readString(map, const ['name', 'title']) ??
+          'Category',
+      description: ApiResponseParser.readString(map, const ['description']),
+    );
+  }
+}
+
+class UpsertExerciseRequest {
+  const UpsertExerciseRequest({
+    required this.categoryId,
+    required this.title,
+    this.description,
+    this.instructions,
+    this.instructionMediaUrl,
+    this.clearInstructionMedia = false,
+  });
+
+  final String categoryId;
+  final String title;
+  final String? description;
+  final String? instructions;
+  final String? instructionMediaUrl;
+  final bool clearInstructionMedia;
+
+  Map<String, dynamic> toCreateJson() {
+    return {
+      'category_id': categoryId,
+      'title': title.trim(),
+      if (description != null && description!.trim().isNotEmpty)
+        'description': description!.trim(),
+      if (instructions != null && instructions!.trim().isNotEmpty)
+        'instructions': instructions!.trim(),
+      if (instructionMediaUrl != null &&
+          instructionMediaUrl!.trim().isNotEmpty)
+        'instruction_media_url': instructionMediaUrl!.trim(),
+    };
+  }
+
+  Map<String, dynamic> toUpdateJson() {
+    return {
+      'category_id': categoryId,
+      'title': title.trim(),
+      'description': description?.trim() ?? '',
+      'instructions': instructions?.trim() ?? '',
+      'instruction_media_url': clearInstructionMedia
+          ? ''
+          : (instructionMediaUrl?.trim() ?? ''),
+    };
+  }
+}
+
+enum ExerciseAssignmentFrequency {
+  daily,
+  weekly,
+  oneTime;
+
+  String get apiValue => switch (this) {
+        ExerciseAssignmentFrequency.daily => 'daily',
+        ExerciseAssignmentFrequency.weekly => 'weekly',
+        ExerciseAssignmentFrequency.oneTime => 'one_time',
+      };
+
+  String get label => switch (this) {
+        ExerciseAssignmentFrequency.daily => 'Daily',
+        ExerciseAssignmentFrequency.weekly => 'Weekly',
+        ExerciseAssignmentFrequency.oneTime => 'One time',
+      };
+}
+
+class CreateAssignedExerciseRequest {
+  const CreateAssignedExerciseRequest({
+    required this.exerciseId,
+    required this.planId,
+    required this.patientId,
+    required this.frequency,
+    this.startDate,
+    this.dueDate,
+  });
+
+  final String exerciseId;
+  final String planId;
+  final String patientId;
+  final ExerciseAssignmentFrequency frequency;
+  final DateTime? startDate;
+  final DateTime? dueDate;
+
+  Map<String, dynamic> toJson() {
+    String formatDate(DateTime date) {
+      final local = DateTime(date.year, date.month, date.day);
+      return '${local.year.toString().padLeft(4, '0')}-'
+          '${local.month.toString().padLeft(2, '0')}-'
+          '${local.day.toString().padLeft(2, '0')}';
+    }
+
+    return {
+      'exercise_id': exerciseId,
+      'plan_id': planId,
+      'patient_id': patientId,
+      'frequency': frequency.apiValue,
+      if (startDate != null) 'start_date': formatDate(startDate!),
+      if (dueDate != null) 'due_date': formatDate(dueDate!),
+    };
+  }
+}
+
+class AssignedExerciseResult {
+  const AssignedExerciseResult({
+    required this.id,
+    required this.exerciseId,
+    required this.planId,
+    required this.patientId,
+    this.frequency,
+    this.isActive = true,
+  });
+
+  final String id;
+  final String exerciseId;
+  final String planId;
+  final String patientId;
+  final String? frequency;
+  final bool isActive;
+
+  factory AssignedExerciseResult.fromMap(Map<String, dynamic> map) {
+    return AssignedExerciseResult(
+      id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
+      exerciseId: ApiResponseParser.readString(map, const [
+            'exercise_id',
+            'exerciseId',
+          ]) ??
+          '',
+      planId:
+          ApiResponseParser.readString(map, const ['plan_id', 'planId']) ?? '',
+      patientId: ApiResponseParser.readString(map, const [
+            'patient_id',
+            'patientId',
+          ]) ??
+          '',
+      frequency: ApiResponseParser.readString(map, const ['frequency']),
+      isActive: map['is_active'] == true ||
+          map['isActive'] == true ||
+          map['is_active'] == null,
     );
   }
 }
@@ -329,5 +567,19 @@ String formatDashboardDate(DateTime? date) {
   if (date == null) {
     return '—';
   }
-  return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return '${months[date.month - 1]} ${date.day}, ${date.year}';
 }

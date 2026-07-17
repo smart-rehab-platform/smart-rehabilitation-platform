@@ -68,8 +68,12 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
     }).toList();
   }
 
-  void _showSnack(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
+  void _showSnack(
+    String message, {
+    bool isError = false,
+    ScaffoldMessengerState? messenger,
+  }) {
+    (messenger ?? ScaffoldMessenger.of(context)).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: isError ? AdminDashboardColors.danger : null,
@@ -78,6 +82,8 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
   }
 
   Future<void> _openEditDialog(AdminSessionRecord session) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final isScheduled = _isScheduledStatus(session.status);
     final dateController = TextEditingController(
       text: _formatDateInput(session.scheduledAt),
     );
@@ -95,135 +101,198 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
     );
     var selectedStatus = session.status ?? 'scheduled';
 
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Edit Session'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Patient: ${session.patientName}'),
-                    Text('Specialist: ${session.specialistName}'),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: dateController,
-                      decoration: const InputDecoration(
-                        labelText: 'Date (YYYY-MM-DD)',
-                      ),
-                    ),
-                    TextField(
-                      controller: timeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Time (HH:MM)',
-                      ),
-                    ),
-                    TextField(
-                      controller: durationController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Duration (minutes)',
-                      ),
-                    ),
-                    TextField(
-                      controller: locationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Location / Link',
-                      ),
-                    ),
-                    DropdownButtonFormField<String>(
-                      initialValue: selectedStatus,
-                      decoration: const InputDecoration(labelText: 'Status'),
-                      items: const [
-                        DropdownMenuItem(value: 'scheduled', child: Text('Scheduled')),
-                        DropdownMenuItem(value: 'completed', child: Text('Completed')),
-                        DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
-                        DropdownMenuItem(value: 'no_show', child: Text('No Show')),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setDialogState(() => selectedStatus = value);
-                        }
-                      },
-                    ),
-                    if (selectedStatus == 'cancelled')
+    try {
+      final saved = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (context, setDialogState) {
+              return AlertDialog(
+                title: const Text('Edit Session'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Patient: ${session.patientName}'),
+                      Text('Specialist: ${session.specialistName}'),
+                      const SizedBox(height: 12),
                       TextField(
-                        controller: reasonController,
+                        controller: dateController,
                         decoration: const InputDecoration(
-                          labelText: 'Cancellation reason',
+                          labelText: 'Date (YYYY-MM-DD)',
                         ),
                       ),
-                  ],
+                      TextField(
+                        controller: timeController,
+                        decoration: const InputDecoration(
+                          labelText: 'Time (HH:MM)',
+                        ),
+                      ),
+                      TextField(
+                        controller: durationController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Duration (minutes)',
+                        ),
+                      ),
+                      TextField(
+                        controller: locationController,
+                        decoration: const InputDecoration(
+                          labelText: 'Location / Link',
+                        ),
+                      ),
+                      if (isScheduled) ...[
+                        DropdownButtonFormField<String>(
+                          initialValue: selectedStatus,
+                          decoration: const InputDecoration(labelText: 'Status'),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'scheduled',
+                              child: Text('Scheduled'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'completed',
+                              child: Text('Completed'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'cancelled',
+                              child: Text('Cancelled'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'no_show',
+                              child: Text('No Show'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value != null) {
+                              setDialogState(() => selectedStatus = value);
+                            }
+                          },
+                        ),
+                        if (selectedStatus == 'cancelled')
+                          TextField(
+                            controller: reasonController,
+                            decoration: const InputDecoration(
+                              labelText: 'Cancellation reason',
+                            ),
+                          ),
+                      ] else ...[
+                        InputDecorator(
+                          decoration: const InputDecoration(labelText: 'Status'),
+                          child: Text(_formatStatusLabel(session.status)),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Status is final and cannot be changed.',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AdminDashboardColors.textSecondary,
+                              ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(true),
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    if (saved != true || !mounted) {
-      return;
-    }
-
-    final scheduledAt = _parseDateTime(dateController.text, timeController.text);
-    if (scheduledAt == null) {
-      _showSnack('Invalid date or time.', isError: true);
-      return;
-    }
-
-    final duration = int.tryParse(durationController.text.trim());
-
-    try {
-      final repo = ref.read(adminFeaturesRepositoryProvider);
-      await repo.updateSession(
-        id: session.id,
-        scheduledAt: scheduledAt,
-        durationMinutes: duration,
-        locationOrLink: locationController.text.trim(),
-        status: selectedStatus,
-        cancellationReason: selectedStatus == 'cancelled'
-            ? reasonController.text.trim()
-            : null,
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(false),
+                    child: const Text('Cancel'),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(true),
+                    child: const Text('Save'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
       );
-      _showSnack('Session updated successfully.');
-      await _load();
-    } on DioException catch (error) {
-      final repo = ref.read(adminFeaturesRepositoryProvider);
-      _showSnack(repo.readErrorMessage(error), isError: true);
-    } catch (error) {
-      _showSnack('Failed to update session: $error', isError: true);
+
+      if (saved != true || !mounted) {
+        return;
+      }
+
+      final scheduledAt = _parseDateTime(dateController.text, timeController.text);
+      if (scheduledAt == null) {
+        _showSnack('Invalid date or time.', isError: true, messenger: messenger);
+        return;
+      }
+
+      final duration = int.tryParse(durationController.text.trim());
+      final statusToSend = isScheduled ? selectedStatus : null;
+
+      try {
+        final repo = ref.read(adminFeaturesRepositoryProvider);
+        await repo.updateSession(
+          id: session.id,
+          scheduledAt: scheduledAt,
+          durationMinutes: duration,
+          locationOrLink: locationController.text.trim(),
+          status: statusToSend,
+          cancellationReason: isScheduled && selectedStatus == 'cancelled'
+              ? reasonController.text.trim()
+              : null,
+        );
+        if (!mounted) return;
+        _showSnack('Session updated successfully.', messenger: messenger);
+        await _load();
+      } on DioException catch (error) {
+        final repo = ref.read(adminFeaturesRepositoryProvider);
+        if (!mounted) return;
+        _showSnack(
+          repo.readErrorMessage(error),
+          isError: true,
+          messenger: messenger,
+        );
+        await _load();
+      } catch (error) {
+        if (!mounted) return;
+        _showSnack(
+          'Failed to update session: $error',
+          isError: true,
+          messenger: messenger,
+        );
+      }
+    } finally {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        dateController.dispose();
+        timeController.dispose();
+        durationController.dispose();
+        locationController.dispose();
+        reasonController.dispose();
+      });
     }
   }
 
-  Future<void> _quickAction(
-    AdminSessionRecord session,
-    Future<AdminSessionRecord> Function() action,
-    String successMessage,
-  ) async {
-    try {
-      await action();
-      _showSnack(successMessage);
-      await _load();
-    } on DioException catch (error) {
-      final repo = ref.read(adminFeaturesRepositoryProvider);
-      _showSnack(repo.readErrorMessage(error), isError: true);
-    } catch (error) {
-      _showSnack('Action failed: $error', isError: true);
-    }
+  Future<void> _quickAction({
+    required Future<AdminSessionRecord> Function() action,
+    required String successMessage,
+    required String title,
+    required String message,
+    required String confirmLabel,
+    bool isDestructive = false,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final repo = ref.read(adminFeaturesRepositoryProvider);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => _SessionStatusConfirmDialog(
+        title: title,
+        message: message,
+        confirmLabel: confirmLabel,
+        isDestructive: isDestructive,
+        messenger: messenger,
+        readErrorMessage: repo.readErrorMessage,
+        onConfirm: action,
+        onRejected: _load,
+      ),
+    );
+
+    if (!mounted || confirmed != true) return;
+
+    _showSnack(successMessage, messenger: messenger);
+    await _load();
   }
 
   @override
@@ -330,33 +399,48 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                                     icon: const Icon(Icons.edit_outlined, size: 18),
                                     label: const Text('Edit'),
                                   ),
-                                  if (session.status != 'completed')
+                                  if (_isScheduledStatus(session.status)) ...[
                                     TextButton(
                                       onPressed: () => _quickAction(
-                                        session,
-                                        () => repo.completeSession(session.id),
-                                        'Session marked as completed.',
+                                        action: () =>
+                                            repo.completeSession(session.id),
+                                        successMessage:
+                                            'Session marked as completed.',
+                                        title: 'Complete Session',
+                                        message:
+                                            'Are you sure you want to mark this session as completed?',
+                                        confirmLabel: 'Complete',
                                       ),
                                       child: const Text('Complete'),
                                     ),
-                                  if (session.status != 'cancelled')
                                     TextButton(
                                       onPressed: () => _quickAction(
-                                        session,
-                                        () => repo.cancelSession(session.id),
-                                        'Session cancelled.',
+                                        action: () =>
+                                            repo.cancelSession(session.id),
+                                        successMessage: 'Session cancelled.',
+                                        title: 'Cancel Session',
+                                        message:
+                                            'Are you sure you want to cancel this session?',
+                                        confirmLabel: 'Cancel Session',
+                                        isDestructive: true,
                                       ),
                                       child: const Text('Cancel'),
                                     ),
-                                  if (session.status != 'no_show')
                                     TextButton(
                                       onPressed: () => _quickAction(
-                                        session,
-                                        () => repo.markNoShow(session.id),
-                                        'Session marked as no-show.',
+                                        action: () =>
+                                            repo.markNoShow(session.id),
+                                        successMessage:
+                                            'Session marked as no-show.',
+                                        title: 'Mark as No Show',
+                                        message:
+                                            'Are you sure you want to mark this session as no show?',
+                                        confirmLabel: 'Mark No Show',
+                                        isDestructive: true,
                                       ),
                                       child: const Text('No Show'),
                                     ),
+                                  ],
                                 ],
                               ),
                             ],
@@ -370,12 +454,32 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
     );
   }
 
+  bool _isScheduledStatus(String? status) {
+    return (status ?? '').toLowerCase() == 'scheduled';
+  }
+
   bool _isPastScheduledNotCompleted(AdminSessionRecord session) {
     final scheduledAt = session.scheduledAt;
     if (scheduledAt == null) {
       return false;
     }
-    return session.status == 'scheduled' && scheduledAt.isBefore(DateTime.now());
+    return _isScheduledStatus(session.status) &&
+        scheduledAt.isBefore(DateTime.now());
+  }
+
+  String _formatStatusLabel(String? status) {
+    switch ((status ?? '').toLowerCase()) {
+      case 'completed':
+        return 'Completed';
+      case 'cancelled':
+        return 'Cancelled';
+      case 'no_show':
+        return 'No Show';
+      case 'scheduled':
+        return 'Scheduled';
+      default:
+        return status ?? 'Unknown';
+    }
   }
 
   String _formatDateTime(DateTime? date) {
@@ -424,5 +528,108 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
     }
 
     return DateTime(year, month, day, hour, minute);
+  }
+}
+
+class _SessionStatusConfirmDialog extends StatefulWidget {
+  const _SessionStatusConfirmDialog({
+    required this.title,
+    required this.message,
+    required this.confirmLabel,
+    required this.messenger,
+    required this.readErrorMessage,
+    required this.onConfirm,
+    this.onRejected,
+    this.isDestructive = false,
+  });
+
+  final String title;
+  final String message;
+  final String confirmLabel;
+  final ScaffoldMessengerState messenger;
+  final String Function(DioException error) readErrorMessage;
+  final Future<AdminSessionRecord> Function() onConfirm;
+  final Future<void> Function()? onRejected;
+  final bool isDestructive;
+
+  @override
+  State<_SessionStatusConfirmDialog> createState() =>
+      _SessionStatusConfirmDialogState();
+}
+
+class _SessionStatusConfirmDialogState
+    extends State<_SessionStatusConfirmDialog> {
+  bool _submitting = false;
+
+  Future<void> _onConfirmPressed() async {
+    if (_submitting) return;
+
+    setState(() => _submitting = true);
+
+    try {
+      await widget.onConfirm();
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+    } on DioException catch (error) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      widget.messenger.showSnackBar(
+        SnackBar(
+          content: Text(widget.readErrorMessage(error)),
+          backgroundColor: AdminDashboardColors.danger,
+        ),
+      );
+      await widget.onRejected?.call();
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      widget.messenger.showSnackBar(
+        SnackBar(
+          content: Text('Action failed: $error'),
+          backgroundColor: AdminDashboardColors.danger,
+        ),
+      );
+      await widget.onRejected?.call();
+    }
+  }
+
+  void _onCancelPressed() {
+    if (_submitting) return;
+    Navigator.of(context).pop(false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: !_submitting,
+      child: AlertDialog(
+        title: Text(widget.title),
+        content: Text(widget.message),
+        actions: [
+          TextButton(
+            onPressed: _submitting ? null : _onCancelPressed,
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: _submitting ? null : _onConfirmPressed,
+            style: widget.isDestructive
+                ? FilledButton.styleFrom(
+                    backgroundColor: AdminDashboardColors.danger,
+                  )
+                : null,
+            child: _submitting
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(widget.confirmLabel),
+          ),
+        ],
+      ),
+    );
   }
 }

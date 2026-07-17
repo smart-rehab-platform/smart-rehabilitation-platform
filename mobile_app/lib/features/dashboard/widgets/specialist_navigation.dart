@@ -126,6 +126,11 @@ class SpecialistDrawer extends ConsumerWidget {
                     onTap: () => _go(context, AppRoutes.manageParentLinks),
                   ),
                   _DrawerTile(
+                    icon: Icons.assignment_ind_outlined,
+                    label: 'Assigned Case Requests',
+                    onTap: () => _go(context, AppRoutes.specialistCaseRequests),
+                  ),
+                  _DrawerTile(
                     icon: Icons.chat_bubble_outline_rounded,
                     label: 'Messages',
                     onTap: () => _go(context, AppRoutes.specialistMessages),

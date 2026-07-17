@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
 import '../../data/admin_features_repository.dart';
 import '../../data/admin_users_repository.dart';
 import '../../providers/admin_features_provider.dart';
@@ -9,6 +8,7 @@ import '../../providers/admin_users_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/admin_ui_components.dart';
+import 'admin_audit_log_widgets.dart';
 
 class AdminAuditLogsScreen extends ConsumerStatefulWidget {
   const AdminAuditLogsScreen({super.key});
@@ -117,8 +117,6 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AdminPageScaffold(
       title: 'Audit Logs',
       showBackButton: true,
@@ -238,78 +236,11 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                   if (_logs.isEmpty)
                     const AdminEmptyCard(message: 'No audit logs found.')
                   else
-                    AdminTableContainer(
-                      rows: _logs
-                          .map(
-                            (log) => Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  log.action,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: AdminDashboardColors.textPrimary,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  log.userName ?? log.userEmail ?? 'System',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                                if (log.userEmail != null && log.userName != null)
-                                  Text(
-                                    log.userEmail!,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: AdminDashboardColors.textSecondary,
-                                    ),
-                                  ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  log.entityName ?? 'entity',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                                if (log.entityId != null && log.entityId!.isNotEmpty)
-                                  Text(
-                                    log.entityId!,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: AdminDashboardColors.textMuted,
-                                    ),
-                                  ),
-                                Text(
-                                  _formatDateTime(log.createdAt),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: AdminDashboardColors.textMuted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                          .toList(),
-                    ),
+                    ..._logs.map((log) => AdminAuditLogCard(log: log)),
                 ],
               ),
             ),
     );
-  }
-
-  String _formatDateTime(DateTime? date) {
-    if (date == null) {
-      return 'Unknown time';
-    }
-    final local = date.toLocal();
-    return '${local.day}/${local.month}/${local.year} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
   }
 }
 

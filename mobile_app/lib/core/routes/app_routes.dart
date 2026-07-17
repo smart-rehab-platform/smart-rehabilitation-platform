@@ -61,16 +61,74 @@ class AppRoutes {
   static const String specialistSessions = '/dashboard/specialist/sessions';
   static const String specialistTreatmentPlans =
       '/dashboard/specialist/treatment-plans';
+
+  static const String specialistCreateTreatmentPlanPath =
+      '/dashboard/specialist/treatment-plans/new';
+
+  static String specialistCreateTreatmentPlan({
+    required String patientId,
+    String? patientName,
+  }) {
+    final params = <String, String>{
+      'patientId': patientId,
+      if (patientName != null && patientName.trim().isNotEmpty)
+        'patientName': patientName.trim(),
+    };
+    return Uri(
+      path: specialistCreateTreatmentPlanPath,
+      queryParameters: params,
+    ).toString();
+  }
+
   static const String specialistPatientProgress =
       '/dashboard/specialist/progress';
   static const String specialistExercises = '/dashboard/specialist/exercises';
+  static const String specialistExerciseDetailsPath =
+      '/dashboard/specialist/exercises/:exerciseId';
+
+  static String specialistExerciseDetails(String exerciseId) =>
+      '/dashboard/specialist/exercises/$exerciseId';
+
+  static const String specialistAssignedExerciseDetailsPath =
+      '/dashboard/specialist/assigned-exercises/:assignedExerciseId';
+
+  static String specialistAssignedExerciseDetails(String assignedExerciseId) =>
+      '/dashboard/specialist/assigned-exercises/$assignedExerciseId';
+
+  static const String specialistAddExercise =
+      '/dashboard/specialist/exercises/new';
+
+  static const String specialistEditExercisePath =
+      '/dashboard/specialist/exercises/:exerciseId/edit';
+
+  static String specialistEditExercise(String exerciseId) =>
+      '/dashboard/specialist/exercises/$exerciseId/edit';
+
+  static const String specialistAssignExercisePath =
+      '/dashboard/specialist/patient/:patientId/assign-exercise';
+
+  static String specialistAssignExercise({
+    required String patientId,
+    required String planId,
+  }) {
+    return '/dashboard/specialist/patient/$patientId/assign-exercise'
+        '?planId=${Uri.encodeComponent(planId)}';
+  }
+
   static const String specialistReports = '/dashboard/specialist/reports';
+
+  static String specialistPatientReports(String patientId) =>
+      '/dashboard/specialist/reports?patientId=${Uri.encodeComponent(patientId)}';
+
   static const String specialistReportDetailsPath =
       '/dashboard/specialist/reports/:reportId';
 
-  static String specialistReportDetails(String reportId, {bool isAi = false}) {
-    final base = '/dashboard/specialist/reports/$reportId';
-    return isAi ? '$base?ai=1' : base;
+  /// Always emits `?ai=0` or `?ai=1` so routers never infer the source.
+  static String specialistReportDetails(
+    String reportId, {
+    required bool isAi,
+  }) {
+    return '/dashboard/specialist/reports/$reportId?ai=${isAi ? '1' : '0'}';
   }
 
   static const String specialistNotifications =
@@ -79,19 +137,59 @@ class AppRoutes {
   static const String specialistEditProfile =
       '/dashboard/specialist/profile/edit';
   static const String specialistMore = '/dashboard/specialist/more';
+  static const String specialistCaseRequests =
+      '/dashboard/specialist/case-requests';
+  static const String specialistCaseRequestDetailPath =
+      '/dashboard/specialist/case-requests/:requestId';
+
+  static String specialistCaseRequestDetail(String requestId) =>
+      '/dashboard/specialist/case-requests/$requestId';
+
+  static const String specialistConvertPatientPath =
+      '/dashboard/specialist/case-requests/:requestId/convert';
+
+  static String specialistConvertPatient(String requestId) =>
+      '/dashboard/specialist/case-requests/$requestId/convert';
+
   static const String adminDashboard = '/dashboard/admin';
   static const String adminPatients = '/dashboard/admin/patients';
+  static const String adminPatientDetailsPath =
+      '/dashboard/admin/patient/:patientId';
   static const String adminPatientAssignments =
       '/dashboard/admin/patient-assignments';
+
+  static String adminPatientDetails(String patientId) =>
+      '/dashboard/admin/patient/$patientId';
   static const String adminSessions = '/dashboard/admin/sessions';
   static const String adminAiCenter = '/dashboard/admin/ai-center';
   static const String adminAuditLogs = '/dashboard/admin/audit-logs';
   static const String adminUsers = '/dashboard/admin/users';
   static const String adminExercises = '/dashboard/admin/exercises';
   static const String adminReports = '/dashboard/admin/reports';
+  static const String adminReportDetailsPath =
+      '/dashboard/admin/reports/:reportId';
+
+  /// Always emits `?ai=0` or `?ai=1` so routers never infer the source.
+  /// [isAi] must come from the list row source (`isAiReport`), not report type.
+  static String adminReportDetails(String reportId, {required bool isAi}) {
+    return '/dashboard/admin/reports/$reportId?ai=${isAi ? '1' : '0'}';
+  }
+
   static const String adminNotifications = '/dashboard/admin/notifications';
   static const String adminProfile = '/dashboard/admin/profile';
   static const String adminMore = '/dashboard/admin/more';
+  static const String adminCaseRequests = '/dashboard/admin/case-requests';
+  static const String adminCaseRequestDetailPath =
+      '/dashboard/admin/case-requests/:requestId';
+  static const String adminCaseRequestAssignPath =
+      '/dashboard/admin/case-requests/:requestId/assign';
+
+  static String adminCaseRequestDetail(String requestId) =>
+      '/dashboard/admin/case-requests/$requestId';
+
+  static String adminCaseRequestAssign(String requestId) =>
+      '/dashboard/admin/case-requests/$requestId/assign';
+
   static const String parentDailyTasks = '/dashboard/parent/daily-tasks';
   static const String parentChildren = '/dashboard/parent/children';
   static const String parentReports = '/dashboard/parent/reports';
