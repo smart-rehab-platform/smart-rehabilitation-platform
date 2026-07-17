@@ -2,15 +2,32 @@ const speechAnalysesService = require("./speechAnalyses.service");
 
 const analyzeSpeech = async (req, res) => {
   try {
-    const analysis = await speechAnalysesService.analyzeSpeech(req.body);
+    const result = await speechAnalysesService.analyzeSpeech(req.body, {
+      actor: req.user,
+    });
 
-    res.status(201).json({
+    const created = result?.created !== false;
+    const analysis = result?.analysis ?? result;
+
+    res.status(created ? 201 : 200).json({
       success: true,
-      message: "Speech analysis completed successfully.",
+      message: created
+        ? "Speech analysis completed successfully."
+        : "Existing speech analysis returned for this submission.",
       data: analysis,
     });
   } catch (error) {
-    res.status(error.statusCode || 500).json({
+    const statusCode = error.statusCode || 500;
+    if (statusCode >= 500) {
+      console.error("[speech-analyses] analyze failed:", {
+        statusCode,
+        message: error.message,
+        code: error.code,
+        downstreamStatus: error.downstreamStatus,
+      });
+    }
+
+    res.status(statusCode).json({
       success: false,
       message: error.message,
     });
@@ -68,7 +85,7 @@ const getSpeechAnalysisBySubmission = async (req, res) => {
     if (!analysis) {
       return res.status(404).json({
         success: false,
-        message: "Speech analysis not found for this submission",
+        message: "No speech analysis is available for this submission yet.",
       });
     }
 

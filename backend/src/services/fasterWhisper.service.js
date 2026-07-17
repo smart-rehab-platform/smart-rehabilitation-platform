@@ -174,12 +174,26 @@ const transcribeAudio = async (audioFilePath) => {
   const payload = await parseJsonResponse(response);
 
   if (!response.ok) {
-    throw createError(
+    const downstreamMessage =
       payload.message ||
-        payload.error ||
-        `Faster-Whisper service returned status ${response.status}`,
-      502
-    );
+      payload.error ||
+      `Faster-Whisper service returned status ${response.status}`;
+    console.error("[faster-whisper] downstream failure:", {
+      status: response.status,
+      apiUrl,
+      message: downstreamMessage,
+    });
+    const mappedStatus =
+      response.status === 404
+        ? 502
+        : response.status >= 500
+          ? 502
+          : response.status === 400 || response.status === 422
+            ? 422
+            : 502;
+    const error = createError(downstreamMessage, mappedStatus);
+    error.downstreamStatus = response.status;
+    throw error;
   }
 
   return validateTranscriptionResponse(payload);

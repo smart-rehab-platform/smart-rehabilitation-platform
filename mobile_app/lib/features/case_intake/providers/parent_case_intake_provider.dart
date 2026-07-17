@@ -110,6 +110,7 @@ class ParentCaseIntakeNotifier extends StateNotifier<ParentCaseIntakeState> {
     try {
       final requests = await _repository.fetchMyRequests();
       state = state.copyWith(isLoading: false, requests: requests);
+      await enrichConversationsForLoadedRequests();
     } on CaseIntakeApiException catch (error) {
       state = state.copyWith(isLoading: false, errorMessage: error.message);
     } catch (error) {
@@ -126,6 +127,7 @@ class ParentCaseIntakeNotifier extends StateNotifier<ParentCaseIntakeState> {
     try {
       final requests = await _repository.fetchMyRequests();
       state = state.copyWith(isRefreshing: false, requests: requests);
+      await enrichConversationsForLoadedRequests();
     } on CaseIntakeApiException catch (error) {
       state = state.copyWith(isRefreshing: false, errorMessage: error.message);
     } catch (error) {
@@ -133,6 +135,80 @@ class ParentCaseIntakeNotifier extends StateNotifier<ParentCaseIntakeState> {
         isRefreshing: false,
         errorMessage: 'Failed to refresh case requests: $error',
       );
+    }
+  }
+
+  /// Fetches user conversations once and stamps matching [conversationId]
+  /// onto loaded case requests. Safe to call after list loads; no-ops when
+  /// nothing needs enrichment.
+  Future<void> enrichConversationsForLoadedRequests() async {
+    final needsEnrichment = state.requests.any(
+      (request) =>
+          (request.conversationId == null || request.conversationId!.isEmpty) &&
+          (request.status?.conversationAvailable ?? false) &&
+          request.assignedSpecialistId != null &&
+          request.assignedSpecialistId!.isNotEmpty,
+    );
+    if (!needsEnrichment) {
+      return;
+    }
+
+    final userId = _ref.read(authProvider).user?.id;
+    if (userId == null || userId.isEmpty) {
+      return;
+    }
+
+    try {
+      final conversations = await _communicationRepository
+          .fetchUserConversations(userId);
+      if (conversations.isEmpty) {
+        return;
+      }
+
+      final byCaseRequestId = <String, String>{};
+      for (final conversation in conversations) {
+        final caseRequestId = conversation.caseRequestId?.trim();
+        if (caseRequestId != null &&
+            caseRequestId.isNotEmpty &&
+            conversation.id.isNotEmpty) {
+          byCaseRequestId[caseRequestId] = conversation.id;
+        }
+      }
+      if (byCaseRequestId.isEmpty) {
+        return;
+      }
+
+      var changed = false;
+      final updated = state.requests.map((request) {
+        if (request.conversationId != null &&
+            request.conversationId!.isNotEmpty) {
+          return request;
+        }
+        final conversationId = byCaseRequestId[request.id];
+        if (conversationId == null || conversationId.isEmpty) {
+          return request;
+        }
+        changed = true;
+        return request.copyWith(conversationId: conversationId);
+      }).toList();
+
+      if (!changed) {
+        return;
+      }
+
+      CaseIntakeRequest? selected = state.selectedRequest;
+      if (selected != null) {
+        final conversationId = byCaseRequestId[selected.id];
+        if ((selected.conversationId == null ||
+                selected.conversationId!.isEmpty) &&
+            conversationId != null) {
+          selected = selected.copyWith(conversationId: conversationId);
+        }
+      }
+
+      state = state.copyWith(requests: updated, selectedRequest: selected);
+    } catch (_) {
+      // Leave requests without conversation IDs; UI hides Open Conversation.
     }
   }
 

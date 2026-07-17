@@ -102,6 +102,8 @@ class PatientTreatmentPlan {
   final DateTime? startDate;
   final DateTime? endDate;
 
+  bool get isActive => status.trim().toLowerCase() == 'active';
+
   factory PatientTreatmentPlan.fromMap(Map<String, dynamic> map) {
     return PatientTreatmentPlan(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
@@ -171,16 +173,35 @@ class PatientAssignedExerciseItem {
   const PatientAssignedExerciseItem({
     required this.id,
     required this.exerciseTitle,
+    this.exerciseId,
     this.category,
+    this.description,
+    this.instructions,
+    this.instructionMediaUrl,
+    this.frequency,
+    this.startDate,
+    this.createdAt,
     required this.statusLabel,
     this.dueDate,
   });
 
   final String id;
   final String exerciseTitle;
+  final String? exerciseId;
   final String? category;
+  final String? description;
+  final String? instructions;
+  final String? instructionMediaUrl;
+  final String? frequency;
+  final DateTime? startDate;
+  final DateTime? createdAt;
   final String statusLabel;
   final DateTime? dueDate;
+
+  bool get hasInstructionMedia {
+    final url = instructionMediaUrl?.trim();
+    return url != null && url.isNotEmpty;
+  }
 
   factory PatientAssignedExerciseItem.fromMap(Map<String, dynamic> map) {
     final isActive = map['is_active'] == true || map['isActive'] == true;
@@ -193,11 +214,32 @@ class PatientAssignedExerciseItem {
             'title',
           ]) ??
           'Exercise',
+      exerciseId: ApiResponseParser.readString(map, const [
+        'exercise_id',
+        'exerciseId',
+      ]),
       category: ApiResponseParser.readString(map, const [
         'category_name',
         'categoryName',
         'category',
       ]),
+      description: ApiResponseParser.readString(map, const [
+        'description',
+        'exercise_description',
+        'exerciseDescription',
+      ]),
+      instructions: ApiResponseParser.readString(map, const ['instructions']),
+      instructionMediaUrl: ApiResponseParser.readString(map, const [
+        'instruction_media_url',
+        'instructionMediaUrl',
+      ]),
+      frequency: ApiResponseParser.readString(map, const ['frequency']),
+      startDate: ApiResponseParser.readDate(
+        map['start_date'] ?? map['startDate'],
+      ),
+      createdAt: ApiResponseParser.readDate(
+        map['created_at'] ?? map['createdAt'],
+      ),
       statusLabel: isActive ? 'Active' : 'Inactive',
       dueDate: ApiResponseParser.readDate(
         map['due_date'] ?? map['dueDate'],

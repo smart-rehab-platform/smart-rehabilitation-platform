@@ -622,9 +622,53 @@ const insertAiProgressNote = async ({
   return formatAiProgressNote(result.rows[0]);
 };
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const isSpecialistAssignedToPatient = async (specialistId, patientId) => {
+  const result = await pool.query(
+    `SELECT 1
+     FROM patient_specialists
+     WHERE specialist_id = $1
+       AND patient_id = $2
+     LIMIT 1`,
+    [specialistId, patientId]
+  );
+  return result.rows.length > 0;
+};
+
+const assertSpeechAnalysisAccess = async (actor, patientId) => {
+  if (!actor || !actor.id) {
+    throw createError("Authentication required", 401);
+  }
+
+  if (actor.role === "admin") {
+    return;
+  }
+
+  if (actor.role === "specialist") {
+    const linked = await isSpecialistAssignedToPatient(actor.id, patientId);
+    if (!linked) {
+      throw createError(
+        "You do not have permission to analyze this submission.",
+        403
+      );
+    }
+    return;
+  }
+
+  throw createError(
+    "You do not have permission to analyze this submission.",
+    403
+  );
+};
+
 const resolveSubmissionAudioPath = (fileUrl) => {
   if (typeof fileUrl !== "string" || !fileUrl.trim()) {
-    throw createError("Submission audio file URL is missing", 404);
+    throw createError(
+      "This submission does not contain a supported audio recording.",
+      422
+    );
   }
 
   const normalizedFileUrl = fileUrl.trim();
@@ -634,17 +678,19 @@ const resolveSubmissionAudioPath = (fileUrl) => {
     normalizedFileUrl.startsWith("https://")
   ) {
     throw createError(
-      "External audio URLs are not supported for speech analysis transcription",
+      "External audio URLs are not supported for speech analysis transcription.",
       400
     );
   }
 
   if (normalizedFileUrl.startsWith("/uploads/")) {
-    return path.join(uploadsRoot, path.basename(normalizedFileUrl));
+    const relative = normalizedFileUrl.slice("/uploads/".length);
+    return path.join(uploadsRoot, relative);
   }
 
   if (normalizedFileUrl.startsWith("uploads/")) {
-    return path.join(uploadsRoot, path.basename(normalizedFileUrl));
+    const relative = normalizedFileUrl.slice("uploads/".length);
+    return path.join(uploadsRoot, relative);
   }
 
   if (path.isAbsolute(normalizedFileUrl)) {
@@ -654,9 +700,119 @@ const resolveSubmissionAudioPath = (fileUrl) => {
   return path.resolve(backendRoot, normalizedFileUrl);
 };
 
-const analyzeSpeech = async ({ submission_id }) => {
-  if (!submission_id) {
+const buildAnalyzeResponse = async ({
+  submission,
+  currentAnalysis,
+  created,
+}) => {
+  const previousAnalyses = await getPatientSpeechAnalyses(submission.patient_id, {
+    limit: 1,
+    excludeAnalysisId: currentAnalysis.id,
+  });
+  const previousAnalysis = previousAnalyses[0] || null;
+  const comparison = buildComparison(currentAnalysis, previousAnalysis);
+
+  let aiProgressNote = null;
+  let aiProgressNoteError = null;
+
+  if (created) {
+    try {
+      const context = await collectPatientContext(submission.patient_id);
+      const patientProfile = context.patientProfile || {
+        id: submission.patient_id,
+        full_name: submission.patient_name,
+      };
+      const prompt = buildSpeechAnalysisPrompt({
+        patientProfile,
+        currentAnalysis,
+        previousAnalysis,
+        comparison,
+        context,
+      });
+      const fallbackAiNoteData = buildFallbackAiNoteData({
+        patientProfile,
+        currentAnalysis,
+        previousAnalysis,
+        comparison,
+        context,
+      });
+      const providerResult = await aiProviderService.generateClinicalSummaryJson(
+        prompt,
+        fallbackAiNoteData
+      );
+
+      aiProgressNote = await insertAiProgressNote({
+        patientId: submission.patient_id,
+        speechAnalysisId: currentAnalysis.id,
+        generatedByAiProvider: providerResult.provider || "rule_based",
+        transcriptSummary: buildTranscriptSummary(
+          currentAnalysis.transcript,
+          currentAnalysis.language,
+          currentAnalysis.duration
+        ),
+        improvementSummary: providerResult.improvement_summary,
+        detectedChanges: providerResult.detected_changes,
+        clinicalNote: providerResult.clinical_note,
+        recommendedAction: recommendationsToText(
+          providerResult.recommendations,
+          fallbackAiNoteData.recommendations[0] || ""
+        ),
+        treatmentAnalysis: providerResult.treatment_analysis,
+        decisionSupport: providerResult.decision_support,
+        confidenceScore:
+          typeof providerResult.confidence_score === "number"
+            ? providerResult.confidence_score
+            : 0.5,
+        rawAiOutput: {
+          provider_response: providerResult,
+          comparison,
+          context_metadata: {
+            patient_id: submission.patient_id,
+            current_speech_analysis_id: currentAnalysis.id,
+            previous_speech_analysis_id: previousAnalysis?.id || null,
+            context_counts: {
+              speech_analyses: context.speechAnalyses.length,
+              progress_snapshots: context.progressSnapshots.length,
+              specialist_notes: context.specialistNotes.length,
+              exercise_reviews: context.exerciseReviews.length,
+              treatment_plan_revisions: context.treatmentPlanRevisions.length,
+              goals: context.goals.length,
+              goal_progress: context.goalProgress.length,
+            },
+            transcript: {
+              language: currentAnalysis.language,
+              duration: currentAnalysis.duration,
+              text_length: currentAnalysis.transcript?.length || 0,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      aiProgressNoteError = error.message;
+    }
+  }
+
+  return {
+    created,
+    analysis: {
+      ...currentAnalysis,
+      current_analysis: currentAnalysis,
+      previous_analysis: previousAnalysis,
+      comparison,
+      ai_progress_note: aiProgressNote,
+      ai_progress_note_error: aiProgressNoteError,
+    },
+  };
+};
+
+const analyzeSpeech = async ({ submission_id }, options = {}) => {
+  if (!submission_id || String(submission_id).trim() === "") {
     throw createError("submission_id is required", 400);
+  }
+
+  const normalizedSubmissionId = String(submission_id).trim();
+  if (!UUID_RE.test(normalizedSubmissionId)) {
+    throw createError("submission_id must be a valid UUID", 400);
   }
 
   const submissionResult = await pool.query(
@@ -671,35 +827,67 @@ const analyzeSpeech = async ({ submission_id }) => {
     JOIN patients p ON ae.patient_id = p.id
     WHERE es.id = $1
     `,
-    [submission_id]
+    [normalizedSubmissionId]
   );
 
   if (submissionResult.rows.length === 0) {
-    throw createError("Exercise submission not found", 404);
+    throw createError("Exercise submission not found.", 404);
   }
 
   const submission = submissionResult.rows[0];
+  await assertSpeechAnalysisAccess(options.actor, submission.patient_id);
+
+  const existingAnalysis = await getSpeechAnalysisBySubmission(
+    normalizedSubmissionId
+  );
+  if (existingAnalysis) {
+    return buildAnalyzeResponse({
+      submission,
+      currentAnalysis: existingAnalysis,
+      created: false,
+    });
+  }
 
   const submissionMediaResult = await pool.query(
     `
-    SELECT sm.file_url
+    SELECT sm.file_url, sm.media_type::text AS media_type
     FROM submission_media sm
     WHERE sm.submission_id = $1
-      AND sm.media_type = 'audio'
-    ORDER BY sm.created_at DESC
+      AND (
+        sm.media_type = 'audio'
+        OR sm.file_url ~* $2
+      )
+    ORDER BY
+      CASE WHEN sm.media_type = 'audio' THEN 0 ELSE 1 END,
+      sm.created_at DESC
     LIMIT 1
     `,
-    [submission_id]
+    [normalizedSubmissionId, '\\.(mp3|wav|m4a|aac|ogg|webm|flac)(\\?|#|$)']
   );
 
   if (submissionMediaResult.rows.length === 0) {
-    throw createError("No audio file found for this submission", 404);
+    throw createError(
+      "This submission does not contain a supported audio recording.",
+      422
+    );
   }
 
   const audioFilePath = resolveSubmissionAudioPath(
     submissionMediaResult.rows[0].file_url
   );
-  const transcription = await fasterWhisperService.transcribeAudio(audioFilePath);
+
+  let transcription;
+  try {
+    transcription = await fasterWhisperService.transcribeAudio(audioFilePath);
+  } catch (error) {
+    if (error.statusCode === 404) {
+      throw createError(
+        "This submission does not contain a supported audio recording.",
+        422
+      );
+    }
+    throw error;
+  }
 
   const { pronunciationScore, fluencyScore, overallScore } =
     calculateSpeechScores({
@@ -713,7 +901,7 @@ const analyzeSpeech = async ({ submission_id }) => {
     patient_name: submission.patient_name,
     transcription_engine: "faster-whisper",
     language: transcription.language,
-    duration: transcription.duration
+    duration: transcription.duration,
   };
 
   const result = await pool.query(
@@ -732,7 +920,7 @@ const analyzeSpeech = async ({ submission_id }) => {
     RETURNING *
     `,
     [
-      submission_id,
+      normalizedSubmissionId,
       transcription.transcript,
       pronunciationScore,
       fluencyScore,
@@ -745,102 +933,14 @@ const analyzeSpeech = async ({ submission_id }) => {
   const currentAnalysis = {
     ...result.rows[0],
     language: transcription.language,
-    duration: transcription.duration
+    duration: transcription.duration,
   };
 
-  const previousAnalyses = await getPatientSpeechAnalyses(submission.patient_id, {
-    limit: 1,
-    excludeAnalysisId: currentAnalysis.id
+  return buildAnalyzeResponse({
+    submission,
+    currentAnalysis,
+    created: true,
   });
-  const previousAnalysis = previousAnalyses[0] || null;
-  const comparison = buildComparison(currentAnalysis, previousAnalysis);
-
-  let aiProgressNote = null;
-  let aiProgressNoteError = null;
-
-  try {
-    const context = await collectPatientContext(submission.patient_id);
-    const patientProfile = context.patientProfile || {
-      id: submission.patient_id,
-      full_name: submission.patient_name
-    };
-    const prompt = buildSpeechAnalysisPrompt({
-      patientProfile,
-      currentAnalysis,
-      previousAnalysis,
-      comparison,
-      context
-    });
-    const fallbackAiNoteData = buildFallbackAiNoteData({
-      patientProfile,
-      currentAnalysis,
-      previousAnalysis,
-      comparison,
-      context
-    });
-    const providerResult = await aiProviderService.generateClinicalSummaryJson(
-      prompt,
-      fallbackAiNoteData
-    );
-
-    aiProgressNote = await insertAiProgressNote({
-      patientId: submission.patient_id,
-      speechAnalysisId: currentAnalysis.id,
-      generatedByAiProvider: providerResult.provider || "rule_based",
-      transcriptSummary: buildTranscriptSummary(
-        currentAnalysis.transcript,
-        currentAnalysis.language,
-        currentAnalysis.duration
-      ),
-      improvementSummary: providerResult.improvement_summary,
-      detectedChanges: providerResult.detected_changes,
-      clinicalNote: providerResult.clinical_note,
-      recommendedAction: recommendationsToText(
-        providerResult.recommendations,
-        fallbackAiNoteData.recommendations[0] || ""
-      ),
-      treatmentAnalysis: providerResult.treatment_analysis,
-      decisionSupport: providerResult.decision_support,
-      confidenceScore:
-        typeof providerResult.confidence_score === "number"
-          ? providerResult.confidence_score
-          : 0.5,
-      rawAiOutput: {
-        provider_response: providerResult,
-        comparison,
-        context_metadata: {
-          patient_id: submission.patient_id,
-          current_speech_analysis_id: currentAnalysis.id,
-          previous_speech_analysis_id: previousAnalysis?.id || null,
-          context_counts: {
-            speech_analyses: context.speechAnalyses.length,
-            progress_snapshots: context.progressSnapshots.length,
-            specialist_notes: context.specialistNotes.length,
-            exercise_reviews: context.exerciseReviews.length,
-            treatment_plan_revisions: context.treatmentPlanRevisions.length,
-            goals: context.goals.length,
-            goal_progress: context.goalProgress.length
-          },
-          transcript: {
-            language: currentAnalysis.language,
-            duration: currentAnalysis.duration,
-            text_length: currentAnalysis.transcript?.length || 0
-          }
-        }
-      }
-    });
-  } catch (error) {
-    aiProgressNoteError = error.message;
-  }
-
-  return {
-    ...currentAnalysis,
-    current_analysis: currentAnalysis,
-    previous_analysis: previousAnalysis,
-    comparison,
-    ai_progress_note: aiProgressNote,
-    ai_progress_note_error: aiProgressNoteError
-  };
 };
 
 const getSpeechAnalysisById = async (id) => {

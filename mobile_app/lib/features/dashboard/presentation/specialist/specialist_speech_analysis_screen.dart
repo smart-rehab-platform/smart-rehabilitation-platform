@@ -39,7 +39,9 @@ class _SpecialistSpeechAnalysisScreenState
   SpecialistSpeechAnalysisArgs get _providerArgs => _args;
 
   Future<void> _analyze() async {
-    await ref.read(specialistSpeechAnalysisProvider(_providerArgs).notifier).analyzeSubmission();
+    final notifier =
+        ref.read(specialistSpeechAnalysisProvider(_providerArgs).notifier);
+    await notifier.analyzeSubmission();
     if (!mounted) return;
 
     final state = ref.read(specialistSpeechAnalysisProvider(_providerArgs));
@@ -47,12 +49,27 @@ class _SpecialistSpeechAnalysisScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(state.successMessage!)),
       );
-      ref.read(specialistSpeechAnalysisProvider(_providerArgs).notifier).clearMessages();
-    } else if (state.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.error!)),
-      );
+      notifier.clearMessages();
     }
+    // Errors stay on the screen error card only (no duplicate SnackBar).
+  }
+
+  Future<void> _retry() async {
+    final state = ref.read(specialistSpeechAnalysisProvider(_providerArgs));
+    if (state.isAnalyzing || state.isLoading || state.isRefreshing) {
+      return;
+    }
+
+    final hasSubmission =
+        (state.submissionId ?? widget.submissionId)?.isNotEmpty ?? false;
+    if (hasSubmission && state.error != null) {
+      await _analyze();
+      return;
+    }
+
+    await ref
+        .read(specialistSpeechAnalysisProvider(_providerArgs).notifier)
+        .initialize();
   }
 
   @override
@@ -65,16 +82,19 @@ class _SpecialistSpeechAnalysisScreenState
     final patientName = state.patientName ?? 'Patient';
     final hasSubmissionContext =
         (state.submissionId ?? widget.submissionId)?.isNotEmpty ?? false;
+    final busy = state.isAnalyzing || state.isLoading || state.isRefreshing;
 
     Widget body;
     if (state.isLoading && state.analyses.isEmpty) {
       body = const Center(child: DashboardLoadingCard());
-    } else if (state.error != null && state.analyses.isEmpty && selected == null) {
+    } else if (state.error != null &&
+        state.analyses.isEmpty &&
+        selected == null) {
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
           message: state.error!,
-          onRetry: notifier.initialize,
+          onRetry: busy ? () {} : _retry,
         ),
       );
     } else {
@@ -88,7 +108,8 @@ class _SpecialistSpeechAnalysisScreenState
             SpeechAnalysisHeaderCard(
               patientName: patientName,
               submissionId: state.submissionId ?? widget.submissionId,
-              analyzedAt: selected?.analyzedAt ?? state.latestAnalysis?.analyzedAt,
+              analyzedAt:
+                  selected?.analyzedAt ?? state.latestAnalysis?.analyzedAt,
             ),
             if (hasSubmissionContext) ...[
               SizedBox(height: context.dashSpacing * 0.75),
@@ -101,7 +122,7 @@ class _SpecialistSpeechAnalysisScreenState
               SizedBox(height: context.dashSpacing * 0.75),
               DashboardErrorCard(
                 message: state.error!,
-                onRetry: notifier.refresh,
+                onRetry: busy ? () {} : _retry,
               ),
             ],
             if (selected == null && state.analyses.isEmpty) ...[
@@ -132,7 +153,8 @@ class _SpecialistSpeechAnalysisScreenState
                 language: selected.language,
                 durationSeconds: selected.durationSeconds,
               ),
-              if (state.comparison != null && state.comparison!.hasComparison) ...[
+              if (state.comparison != null &&
+                  state.comparison!.hasComparison) ...[
                 SizedBox(height: context.dashSpacing * 0.75),
                 SpeechAnalysisComparisonCard(comparison: state.comparison!),
               ],

@@ -1,5 +1,24 @@
 const pool = require("../../database/db");
 
+const createError = (message, statusCode) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
+
+const statusTransitionError = (targetStatus) => {
+  const messages = {
+    completed: "Only scheduled sessions can be marked as completed.",
+    cancelled: "Only scheduled sessions can be cancelled.",
+    no_show: "Only scheduled sessions can be marked as no show."
+  };
+
+  return createError(
+    messages[targetStatus] || "Only scheduled sessions can change status.",
+    400
+  );
+};
+
 const createSession = async (data) => {
   const {
     patient_id,
@@ -49,6 +68,25 @@ const getSessionById = async (id) => {
   return result.rows[0];
 };
 
+const updateSessionDetails = async (
+  id,
+  { scheduled_at, duration_minutes, location_or_link, cancellation_reason }
+) => {
+  const result = await pool.query(
+    `UPDATE sessions
+     SET scheduled_at = COALESCE($1, scheduled_at),
+         duration_minutes = COALESCE($2, duration_minutes),
+         location_or_link = COALESCE($3, location_or_link),
+         cancellation_reason = COALESCE($4, cancellation_reason),
+         updated_at = now()
+     WHERE id = $5
+     RETURNING *`,
+    [scheduled_at, duration_minutes, location_or_link, cancellation_reason, id]
+  );
+
+  return result.rows[0];
+};
+
 const updateSession = async (id, data) => {
   const {
     scheduled_at,
@@ -58,20 +96,67 @@ const updateSession = async (id, data) => {
     status
   } = data;
 
+  const wantsStatusChange = status !== undefined && status !== null;
+
+  if (!wantsStatusChange) {
+    const updated = await updateSessionDetails(id, {
+      scheduled_at,
+      duration_minutes,
+      location_or_link,
+      cancellation_reason
+    });
+    return updated || null;
+  }
+
+  const currentResult = await pool.query(
+    `SELECT id, status FROM sessions WHERE id = $1`,
+    [id]
+  );
+  const current = currentResult.rows[0];
+  if (!current) {
+    return null;
+  }
+
+  // Same status: allow detail edits without mutating status.
+  if (status === current.status) {
+    return updateSessionDetails(id, {
+      scheduled_at,
+      duration_minutes,
+      location_or_link,
+      cancellation_reason
+    });
+  }
+
+  if (current.status !== "scheduled") {
+    throw statusTransitionError(status);
+  }
+
+  // Race-safe status change: only succeeds while still scheduled.
   const result = await pool.query(
     `UPDATE sessions
      SET scheduled_at = COALESCE($1, scheduled_at),
          duration_minutes = COALESCE($2, duration_minutes),
          location_or_link = COALESCE($3, location_or_link),
          cancellation_reason = COALESCE($4, cancellation_reason),
-         status = COALESCE($5::session_status, status),
+         status = $5::session_status,
          updated_at = now()
-     WHERE id = $6
+     WHERE id = $6 AND status = 'scheduled'
      RETURNING *`,
-    [scheduled_at, duration_minutes, location_or_link, cancellation_reason, status, id]
+    [
+      scheduled_at,
+      duration_minutes,
+      location_or_link,
+      cancellation_reason,
+      status,
+      id
+    ]
   );
 
-  return result.rows[0];
+  if (result.rows[0]) {
+    return result.rows[0];
+  }
+
+  throw statusTransitionError(status);
 };
 
 const deleteSession = async (id) => {
@@ -88,26 +173,52 @@ const deleteSession = async (id) => {
 const updateSessionStatus = async (id, status) => {
   const result = await pool.query(
     `UPDATE sessions
-     SET status = $1::session_status
-     WHERE id = $2
+     SET status = $1::session_status,
+         updated_at = now()
+     WHERE id = $2 AND status = 'scheduled'
      RETURNING *`,
     [status, id]
   );
 
-  return result.rows[0];
+  if (result.rows[0]) {
+    return result.rows[0];
+  }
+
+  const existing = await pool.query(
+    `SELECT id, status FROM sessions WHERE id = $1`,
+    [id]
+  );
+  if (!existing.rows[0]) {
+    return null;
+  }
+
+  throw statusTransitionError(status);
 };
 
 const cancelSession = async (id, cancellationReason) => {
   const result = await pool.query(
     `UPDATE sessions
      SET status = 'cancelled'::session_status,
-         cancellation_reason = COALESCE($1, cancellation_reason)
-     WHERE id = $2
+         cancellation_reason = COALESCE($1, cancellation_reason),
+         updated_at = now()
+     WHERE id = $2 AND status = 'scheduled'
      RETURNING *`,
     [cancellationReason, id]
   );
 
-  return result.rows[0];
+  if (result.rows[0]) {
+    return result.rows[0];
+  }
+
+  const existing = await pool.query(
+    `SELECT id, status FROM sessions WHERE id = $1`,
+    [id]
+  );
+  if (!existing.rows[0]) {
+    return null;
+  }
+
+  throw statusTransitionError("cancelled");
 };
 
 const getPatientSessions = async (patientId) => {

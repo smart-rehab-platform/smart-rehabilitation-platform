@@ -1,6 +1,7 @@
 const express = require("express");
 
 const exercisesController = require("./exercises.controller");
+const exercisesValidation = require("./exercises.validation");
 
 const authenticate = require("../../middleware/auth.middleware");
 const authorizeRoles = require("../../middleware/role.middleware");
@@ -38,6 +39,7 @@ router.post(
   "/exercises",
   authenticate,
   authorizeRoles("admin", "specialist"),
+  exercisesValidation.validateCreateExercise,
   exercisesController.createExercise
 );
 
@@ -63,6 +65,7 @@ router.put(
   "/exercises/:id",
   authenticate,
   authorizeRoles("admin", "specialist"),
+  exercisesValidation.validateUpdateExercise,
   exercisesController.updateExercise
 );
 

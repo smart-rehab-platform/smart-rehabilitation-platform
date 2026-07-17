@@ -37,7 +37,14 @@ class SpecialistReportsRepository {
     }
   }
 
-  Future<List<SpecialistReportListItem>> fetchReports() async {
+  Future<List<SpecialistReportListItem>> fetchReports({
+    String? patientId,
+  }) async {
+    final scopedPatientId = patientId?.trim();
+    if (scopedPatientId != null && scopedPatientId.isNotEmpty) {
+      return _fetchPatientReports(scopedPatientId);
+    }
+
     final regularRows = await _getList('/reports');
     final regular = regularRows
         .map(SpecialistReportListItem.fromRegularMap)
@@ -64,6 +71,48 @@ class SpecialistReportsRepository {
     return combined;
   }
 
+  Future<List<SpecialistReportListItem>> _fetchPatientReports(
+    String patientId,
+  ) async {
+    final regularRows = await _getList('/patients/$patientId/reports');
+    final regular = regularRows
+        .map(SpecialistReportListItem.fromRegularMap)
+        .where((item) => item.id.isNotEmpty);
+
+    List<SpecialistReportListItem> ai = const [];
+    try {
+      final aiRows = await _getList('/patients/$patientId/ai-reports');
+      ai = aiRows
+          .map(SpecialistReportListItem.fromAiMap)
+          .where((item) => item.id.isNotEmpty)
+          .toList();
+    } on DioException {
+      // Fallback: load all AI reports and filter client-side.
+      try {
+        final aiRows = await _getList('/ai/reports');
+        ai = aiRows
+            .map(SpecialistReportListItem.fromAiMap)
+            .where(
+              (item) =>
+                  item.id.isNotEmpty &&
+                  item.patientId.trim() == patientId,
+            )
+            .toList();
+      } on DioException {
+        ai = const [];
+      }
+    }
+
+    final combined = [...regular, ...ai].toList()
+      ..sort((a, b) {
+        final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return bDate.compareTo(aDate);
+      });
+
+    return combined;
+  }
+
   Future<SpecialistReportDetail> fetchReportDetail({
     required String reportId,
     required bool isAiReport,
@@ -71,7 +120,10 @@ class SpecialistReportsRepository {
     final path = isAiReport ? '/ai/reports/$reportId' : '/reports/$reportId';
     final map = await _getMap(path);
     if (map == null) {
-      throw Exception('Report not found');
+      throw ReportNotFoundException(
+        reportId: reportId,
+        isAiReport: isAiReport,
+      );
     }
 
     return isAiReport
@@ -103,4 +155,19 @@ class SpecialistReportsRepository {
 
     return fetchReportDetail(reportId: reportId, isAiReport: isAiReport);
   }
+}
+
+/// Raised when GET /reports/:id or GET /ai/reports/:id returns 404.
+class ReportNotFoundException implements Exception {
+  const ReportNotFoundException({
+    required this.reportId,
+    required this.isAiReport,
+  });
+
+  final String reportId;
+  final bool isAiReport;
+
+  @override
+  String toString() =>
+      isAiReport ? 'AI report not found.' : 'Report not found.';
 }

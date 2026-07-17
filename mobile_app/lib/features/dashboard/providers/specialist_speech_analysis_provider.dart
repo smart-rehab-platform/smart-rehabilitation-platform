@@ -137,12 +137,18 @@ class SpecialistSpeechAnalysisNotifier
     } catch (error) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Failed to load speech analysis: $error',
+        error: SpecialistSpeechAnalysisRepository.friendlySpeechAnalysisError(
+          error,
+          action: 'load',
+        ),
       );
     }
   }
 
   Future<void> refresh() async {
+    if (state.isRefreshing || state.isAnalyzing) {
+      return;
+    }
     _ensureAuthToken();
     state = state.copyWith(
       isRefreshing: true,
@@ -156,7 +162,10 @@ class SpecialistSpeechAnalysisNotifier
     } catch (error) {
       state = state.copyWith(
         isRefreshing: false,
-        error: 'Failed to refresh speech analysis: $error',
+        error: SpecialistSpeechAnalysisRepository.friendlySpeechAnalysisError(
+          error,
+          action: 'load',
+        ),
       );
     }
   }
@@ -289,6 +298,10 @@ class SpecialistSpeechAnalysisNotifier
       return;
     }
 
+    if (state.isAnalyzing) {
+      return;
+    }
+
     _ensureAuthToken();
     state = state.copyWith(
       isAnalyzing: true,
@@ -297,6 +310,30 @@ class SpecialistSpeechAnalysisNotifier
     );
 
     try {
+      final existing = await _repository.fetchSubmissionSpeechAnalysis(
+        submissionId,
+        patientId: state.patientId,
+        patientName: state.patientName,
+      );
+      if (existing != null && existing.id.isNotEmpty) {
+        final refreshedAnalyses =
+            await _repository.fetchPatientSpeechAnalyses(state.patientId);
+        final refreshedProgress =
+            await _repository.fetchPatientSpeechProgress(state.patientId);
+        final merged = _mergeAnalyses(refreshedAnalyses, existing);
+        final comparison = _buildComparison(existing, merged);
+        state = state.copyWith(
+          isAnalyzing: false,
+          analyses: merged,
+          progressItems: refreshedProgress,
+          latestAnalysis: merged.isNotEmpty ? merged.first : existing,
+          selectedAnalysis: existing.withComparison(comparison),
+          comparison: comparison,
+          successMessage: 'Existing speech analysis loaded.',
+        );
+        return;
+      }
+
       final analysis = await _repository.analyzeSubmission(
         submissionId,
         patientId: state.patientId,
@@ -322,7 +359,10 @@ class SpecialistSpeechAnalysisNotifier
     } catch (error) {
       state = state.copyWith(
         isAnalyzing: false,
-        error: 'Failed to analyze submission: $error',
+        error: SpecialistSpeechAnalysisRepository.friendlySpeechAnalysisError(
+          error,
+          action: 'analyze',
+        ),
       );
     }
   }

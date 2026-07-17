@@ -106,6 +106,33 @@ class SpecialistPatientDetailsNotifier
       return 'Failed to save note';
     }
   }
+
+  Future<String?> updatePatient({
+    required String fullName,
+    DateTime? dateOfBirth,
+    String? gender,
+  }) async {
+    final trimmedName = fullName.trim();
+    if (trimmedName.isEmpty) {
+      return 'Full name is required';
+    }
+
+    _ensureAuthToken();
+
+    try {
+      await _repository.updatePatient(
+        patientId: _patientId,
+        fullName: trimmedName,
+        dateOfBirth: dateOfBirth,
+        gender: gender,
+      );
+      final data = await _repository.fetchPatientDetails(_patientId);
+      state = state.copyWith(isLoading: false, data: data, errorMessage: null);
+      return null;
+    } catch (error) {
+      return 'Failed to update patient';
+    }
+  }
 }
 
 const _sentinel = Object();

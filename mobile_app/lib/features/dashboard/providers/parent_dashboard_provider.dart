@@ -246,6 +246,44 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
 
   Future<void> refresh() => initialize();
 
+  /// Reloads dashboard data and, when [preferredPatientId] is present in the
+  /// refreshed children list, selects that child and loads its dashboard data.
+  ///
+  /// If [preferOnlyIfNoPriorSelection] is true, selection only changes when the
+  /// previous [ParentDashboardState.selectedChildId] was null/empty.
+  Future<void> refreshAndPreferChild(
+    String? preferredPatientId, {
+    bool preferOnlyIfNoPriorSelection = false,
+  }) async {
+    final previousSelectedId = state.selectedChildId;
+    final previouslyHadNoChildren = state.children.isEmpty;
+
+    await initialize();
+
+    final preferred = preferredPatientId?.trim();
+    if (preferred == null || preferred.isEmpty) {
+      return;
+    }
+
+    final exists = state.children.any((child) => child.id == preferred);
+    if (!exists) {
+      return;
+    }
+
+    if (preferOnlyIfNoPriorSelection &&
+        previousSelectedId != null &&
+        previousSelectedId.isNotEmpty &&
+        !previouslyHadNoChildren) {
+      return;
+    }
+
+    if (state.selectedChildId == preferred) {
+      return;
+    }
+
+    await selectChild(preferred);
+  }
+
   void syncUserFromAuth() {
     final user = _ref.read(authProvider).user;
     if (user == null) {

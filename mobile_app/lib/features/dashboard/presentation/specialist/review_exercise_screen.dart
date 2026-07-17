@@ -78,7 +78,7 @@ class _SpecialistReviewExerciseScreenState
         false;
     final canOpenSpeechAnalysis = bundle != null &&
         bundle.submission.patientId.isNotEmpty &&
-        (hasAudioMedia || bundle.submission.id.isNotEmpty);
+        hasAudioMedia;
 
     ref.listen(specialistExerciseReviewProvider(widget.submissionId), (previous, next) {
       if (previous?.isLoading == true &&

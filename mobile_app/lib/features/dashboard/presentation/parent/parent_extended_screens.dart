@@ -8,6 +8,7 @@ import '../../providers/parent_dashboard_provider.dart';
 import '../../providers/parent_features_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
+import '../../widgets/exercise_instruction_media_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import 'parent_exercise_media_picker.dart';
@@ -471,6 +472,12 @@ class _ParentExerciseDetailScreenState
     final assigned = _findAssigned(exercisesState);
     final title = task?.title ?? assigned?.title ?? 'Exercise';
     final instructions = task?.instructions ?? assigned?.instructions;
+    final instructionMediaUrl = (task?.instructionMediaUrl ??
+            assigned?.instructionMediaUrl)
+        ?.trim();
+    final hasInstructionMedia =
+        instructionMediaUrl != null && instructionMediaUrl.isNotEmpty;
+    final theme = Theme.of(context);
 
     return ParentPageScaffold(
       title: title,
@@ -483,28 +490,64 @@ class _ParentExerciseDetailScreenState
             if (dashboard.selectedChild != null)
               Text(
                 'For ${dashboard.selectedChild!.name}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: DashboardColors.textSecondary,
                 ),
               ),
             SizedBox(height: context.dashSpacing),
+            Text(
+              'Exercise information',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: DashboardColors.textPrimary,
+              ),
+            ),
+            SizedBox(height: context.dashSpacing * 0.55),
             DashboardSurfaceCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (instructions != null && instructions.isNotEmpty)
-                    Text(instructions)
-                  else
-                    const Text(
-                      'Follow the specialist instructions for this exercise.',
+                  Text(
+                    'Instructions',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: DashboardColors.textPrimary,
                     ),
-                  if (task?.frequency != null) ...[
-                    SizedBox(height: context.dashSpacing * 0.5),
-                    Text('Frequency: ${task!.frequency}'),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.4),
+                  if (instructions != null && instructions.isNotEmpty)
+                    Text(
+                      instructions,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: DashboardColors.textSecondary,
+                        height: 1.45,
+                      ),
+                    )
+                  else
+                    Text(
+                      'Follow the specialist instructions for this exercise.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
+                  if (task?.frequency != null ||
+                      assigned?.frequency != null) ...[
+                    SizedBox(height: context.dashSpacing * 0.55),
+                    Text(
+                      'Frequency: ${task?.frequency ?? assigned?.frequency}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textMuted,
+                      ),
+                    ),
                   ],
-                  if (task?.dueDate != null) ...[
+                  if (task?.dueDate != null || assigned?.dueDate != null) ...[
                     SizedBox(height: context.dashSpacing * 0.35),
-                    Text('Due: ${parentFormatDate(task!.dueDate)}'),
+                    Text(
+                      'Due: ${parentFormatDate(task?.dueDate ?? assigned?.dueDate)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textMuted,
+                      ),
+                    ),
                   ],
                   if (task?.isCompleted == true) ...[
                     SizedBox(height: context.dashSpacing * 0.5),
@@ -516,7 +559,23 @@ class _ParentExerciseDetailScreenState
                 ],
               ),
             ),
+            if (hasInstructionMedia) ...[
+              SizedBox(height: context.dashSpacing * 0.75),
+              ExerciseInstructionMediaCard(
+                mediaUrl: instructionMediaUrl,
+              ),
+            ],
             SizedBox(height: context.dashSpacing),
+            Divider(color: DashboardColors.border),
+            SizedBox(height: context.dashSpacing),
+            Text(
+              'Your Submission',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: DashboardColors.textPrimary,
+              ),
+            ),
+            SizedBox(height: context.dashSpacing * 0.55),
             TextField(
               controller: _notesController,
               maxLines: 3,

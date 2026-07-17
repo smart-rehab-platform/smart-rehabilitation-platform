@@ -193,10 +193,12 @@ InputDecoration _planFieldDecoration(String hint) {
 Widget buildPlanTitleField({
   required TextEditingController controller,
   required ValueChanged<String> onChanged,
+  bool enabled = true,
 }) {
   return TextField(
     controller: controller,
     onChanged: onChanged,
+    enabled: enabled,
     decoration: _planFieldDecoration('Treatment plan title'),
   );
 }
