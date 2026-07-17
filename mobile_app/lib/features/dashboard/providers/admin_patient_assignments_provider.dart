@@ -25,6 +25,7 @@ class AdminPatientAssignmentsState {
     this.isLoading = false,
     this.isSubmittingSpecialist = false,
     this.isSubmittingParent = false,
+    this.isUnlinking = false,
     this.isLoadingRelationships = false,
     this.errorMessage,
     this.successMessage,
@@ -44,6 +45,7 @@ class AdminPatientAssignmentsState {
   final bool isLoading;
   final bool isSubmittingSpecialist;
   final bool isSubmittingParent;
+  final bool isUnlinking;
   final bool isLoadingRelationships;
   final String? errorMessage;
   final String? successMessage;
@@ -63,6 +65,7 @@ class AdminPatientAssignmentsState {
     bool? isLoading,
     bool? isSubmittingSpecialist,
     bool? isSubmittingParent,
+    bool? isUnlinking,
     bool? isLoadingRelationships,
     Object? errorMessage = _sentinel,
     Object? successMessage = _sentinel,
@@ -82,6 +85,7 @@ class AdminPatientAssignmentsState {
       isLoading: isLoading ?? this.isLoading,
       isSubmittingSpecialist: isSubmittingSpecialist ?? this.isSubmittingSpecialist,
       isSubmittingParent: isSubmittingParent ?? this.isSubmittingParent,
+      isUnlinking: isUnlinking ?? this.isUnlinking,
       isLoadingRelationships: isLoadingRelationships ?? this.isLoadingRelationships,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
@@ -287,6 +291,78 @@ class AdminPatientAssignmentsNotifier extends StateNotifier<AdminPatientAssignme
       successMessage: 'Parent linked to patient successfully.',
     );
     await loadRelationships(patientId);
+  }
+
+  Future<String?> unlinkSpecialist(String specialistId) async {
+    final patientId = state.selectedPatientId;
+    if (patientId == null || patientId.isEmpty) {
+      return 'Please select a patient.';
+    }
+    if (specialistId.isEmpty) {
+      return 'Specialist id is missing.';
+    }
+    if (state.isUnlinking) {
+      return 'An unlink is already in progress.';
+    }
+
+    state = state.copyWith(
+      isUnlinking: true,
+      errorMessage: null,
+      successMessage: null,
+    );
+
+    final error = await _repository.unlinkSpecialist(
+      patientId: patientId,
+      specialistId: specialistId,
+    );
+
+    if (error != null) {
+      state = state.copyWith(isUnlinking: false, errorMessage: error);
+      return error;
+    }
+
+    state = state.copyWith(
+      isUnlinking: false,
+      successMessage: 'Specialist unlinked successfully.',
+    );
+    await loadRelationships(patientId);
+    return null;
+  }
+
+  Future<String?> unlinkParent(String guardianId) async {
+    final patientId = state.selectedPatientId;
+    if (patientId == null || patientId.isEmpty) {
+      return 'Please select a patient.';
+    }
+    if (guardianId.isEmpty) {
+      return 'Parent id is missing.';
+    }
+    if (state.isUnlinking) {
+      return 'An unlink is already in progress.';
+    }
+
+    state = state.copyWith(
+      isUnlinking: true,
+      errorMessage: null,
+      successMessage: null,
+    );
+
+    final error = await _repository.unlinkParent(
+      patientId: patientId,
+      guardianId: guardianId,
+    );
+
+    if (error != null) {
+      state = state.copyWith(isUnlinking: false, errorMessage: error);
+      return error;
+    }
+
+    state = state.copyWith(
+      isUnlinking: false,
+      successMessage: 'Parent unlinked successfully.',
+    );
+    await loadRelationships(patientId);
+    return null;
   }
 }
 

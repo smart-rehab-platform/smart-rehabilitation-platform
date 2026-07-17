@@ -374,11 +374,41 @@ class ParentExercisesNotifier extends StateNotifier<ParentExercisesState> {
             .loadSelectedChildData(childId, showLoader: false);
       }
       return null;
-    } catch (error) {
-      final message = 'Failed to submit exercise: $error';
-      state = state.copyWith(isSubmitting: false, errorMessage: message);
-      return message;
+    } catch (error, stackTrace) {
+      debugPrint('submitExercise failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      final display = _friendlySubmitExerciseError(error);
+      state = state.copyWith(isSubmitting: false, errorMessage: display);
+      return display;
     }
+  }
+
+  /// Concise parent-facing submit errors (no DioException internals).
+  String _friendlySubmitExerciseError(Object error) {
+    final raw = error.toString().replaceFirst(RegExp(r'^Exception:\s*'), '').trim();
+    if (raw.isEmpty ||
+        raw.contains('DioException') ||
+        raw.contains('validateStatus') ||
+        raw.contains('StatusCode') ||
+        raw.contains('https://') ||
+        raw.contains('http://')) {
+      return 'Failed to submit exercise. Please try again.';
+    }
+
+    const knownUploadMessages = {
+      'You do not have permission to upload this file.',
+      'This file type is not supported.',
+      'The selected file is too large.',
+      'Failed to upload media. Please try again.',
+      'Please sign in to upload this file.',
+    };
+    if (knownUploadMessages.contains(raw)) {
+      return raw;
+    }
+    if (raw.length <= 120 && !raw.contains('\n')) {
+      return raw;
+    }
+    return 'Failed to submit exercise. Please try again.';
   }
 
   String _inferMediaType(String filename) {
@@ -390,7 +420,11 @@ class ParentExercisesNotifier extends StateNotifier<ParentExercisesState> {
     }
     if (lower.endsWith('.mp3') ||
         lower.endsWith('.wav') ||
-        lower.endsWith('.m4a')) {
+        lower.endsWith('.m4a') ||
+        lower.endsWith('.aac') ||
+        lower.endsWith('.ogg') ||
+        lower.endsWith('.webm') ||
+        lower.endsWith('.flac')) {
       return 'audio';
     }
     return 'image';

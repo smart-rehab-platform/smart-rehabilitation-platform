@@ -1,24 +1,263 @@
 const pool = require("../../database/db");
 
-const createAssignedExercise = async (data, assignedBy) => {
-  const {
-    exercise_id,
-    plan_id,
-    patient_id,
-    frequency,
-    start_date,
-    due_date
-  } = data;
+const createError = (message, statusCode) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
 
-  const result = await pool.query(
-  `INSERT INTO assigned_exercises
-   (exercise_id, plan_id, patient_id, assigned_by, frequency, start_date, due_date)
-   VALUES ($1, $2, $3, $4, COALESCE($5::exercise_frequency, 'daily'::exercise_frequency), COALESCE($6, CURRENT_DATE), $7)
-   RETURNING *`,
-  [exercise_id, plan_id, patient_id, assignedBy, frequency, start_date, due_date]
-);
+const ALLOWED_FREQUENCIES = new Set(["daily", "weekly", "one_time"]);
 
-  return result.rows[0];
+const isSpecialistAssignedToPatient = async (client, specialistId, patientId) => {
+  const result = await client.query(
+    `SELECT 1
+     FROM patient_specialists
+     WHERE specialist_id = $1
+       AND patient_id = $2
+     LIMIT 1`,
+    [specialistId, patientId]
+  );
+
+  return result.rows.length > 0;
+};
+
+const parseDateOnly = (value, fieldName) => {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
+
+  const text = String(value).trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+    throw createError(`${fieldName} must be a valid date (YYYY-MM-DD).`, 400);
+  }
+
+  const [year, month, day] = text.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    throw createError(`${fieldName} must be a valid date (YYYY-MM-DD).`, 400);
+  }
+
+  return text;
+};
+
+const todayUtcDateString = () => {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(now.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const translateDbError = (error) => {
+  if (error?.statusCode) {
+    return error;
+  }
+
+  if (error?.code === "22P02") {
+    return createError("Invalid assignment value provided.", 400);
+  }
+
+  if (error?.code === "23503") {
+    return createError(
+      "Patient, exercise, or treatment plan was not found.",
+      404
+    );
+  }
+
+  if (error?.code === "23505") {
+    return createError(
+      "This exercise is already assigned with the same schedule.",
+      409
+    );
+  }
+
+  return error;
+};
+
+/**
+ * Creates an assigned exercise after authorization and relation checks.
+ *
+ * @param {object} db - pg Pool-like object with connect()
+ * @param {object} data - request body fields
+ * @param {string} assignedBy - authenticated user id (never from body)
+ * @param {{ id?: string, role?: string }} actor - authenticated user
+ */
+const createAssignedExerciseWithDb = async (
+  db,
+  data,
+  assignedBy,
+  actor = {}
+) => {
+  const exerciseId = String(data.exercise_id || "").trim();
+  const planId = String(data.plan_id || "").trim();
+  const patientId = String(data.patient_id || "").trim();
+  const role = String(actor.role || "").trim().toLowerCase();
+
+  if (!exerciseId || !planId || !patientId) {
+    throw createError(
+      "exercise_id, plan_id, and patient_id are required",
+      400
+    );
+  }
+
+  let frequency = data.frequency;
+  if (frequency === undefined || frequency === null || frequency === "") {
+    frequency = "daily";
+  } else {
+    frequency = String(frequency).trim().toLowerCase();
+  }
+
+  if (!ALLOWED_FREQUENCIES.has(frequency)) {
+    throw createError(
+      "frequency must be one of: daily, weekly, one_time.",
+      400
+    );
+  }
+
+  const startDate = parseDateOnly(data.start_date, "start_date");
+  const dueDate = parseDateOnly(data.due_date, "due_date");
+  const effectiveStartDate = startDate || todayUtcDateString();
+
+  if (dueDate && dueDate < effectiveStartDate) {
+    throw createError("Due date cannot be before the start date.", 400);
+  }
+
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const patientResult = await client.query(
+      `SELECT id
+       FROM patients
+       WHERE id = $1`,
+      [patientId]
+    );
+
+    if (!patientResult.rows[0]) {
+      throw createError("Patient not found.", 404);
+    }
+
+    if (role === "specialist") {
+      const linked = await isSpecialistAssignedToPatient(
+        client,
+        assignedBy,
+        patientId
+      );
+      if (!linked) {
+        throw createError("You do not have access to this patient.", 403);
+      }
+    }
+
+    const exerciseResult = await client.query(
+      `SELECT id
+       FROM exercises
+       WHERE id = $1`,
+      [exerciseId]
+    );
+
+    if (!exerciseResult.rows[0]) {
+      throw createError("Exercise not found.", 404);
+    }
+
+    const planResult = await client.query(
+      `SELECT id, patient_id, status
+       FROM treatment_plans
+       WHERE id = $1`,
+      [planId]
+    );
+
+    const plan = planResult.rows[0];
+    if (!plan) {
+      throw createError("Treatment plan not found.", 404);
+    }
+
+    if (String(plan.patient_id) !== patientId) {
+      throw createError(
+        "The treatment plan does not belong to this patient.",
+        400
+      );
+    }
+
+    if (String(plan.status).toLowerCase() !== "active") {
+      throw createError(
+        "An active treatment plan is required before assigning an exercise.",
+        409
+      );
+    }
+
+    const duplicateResult = await client.query(
+      `SELECT id
+       FROM assigned_exercises
+       WHERE patient_id = $1
+         AND plan_id = $2
+         AND exercise_id = $3
+         AND frequency = $4::exercise_frequency
+         AND start_date = $5::date
+         AND due_date IS NOT DISTINCT FROM $6::date
+         AND is_active = TRUE
+       LIMIT 1`,
+      [
+        patientId,
+        planId,
+        exerciseId,
+        frequency,
+        effectiveStartDate,
+        dueDate
+      ]
+    );
+
+    if (duplicateResult.rows[0]) {
+      throw createError(
+        "This exercise is already assigned with the same schedule.",
+        409
+      );
+    }
+
+    const insertResult = await client.query(
+      `INSERT INTO assigned_exercises
+         (exercise_id, plan_id, patient_id, assigned_by, frequency, start_date, due_date)
+       VALUES (
+         $1,
+         $2,
+         $3,
+         $4,
+         $5::exercise_frequency,
+         COALESCE($6::date, CURRENT_DATE),
+         $7::date
+       )
+       RETURNING *`,
+      [
+        exerciseId,
+        planId,
+        patientId,
+        assignedBy,
+        frequency,
+        startDate,
+        dueDate
+      ]
+    );
+
+    await client.query("COMMIT");
+    return insertResult.rows[0];
+  } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+    } catch (_) {
+      // ignore rollback failures
+    }
+    throw translateDbError(error);
+  } finally {
+    client.release();
+  }
+};
+
+const createAssignedExercise = async (data, assignedBy, actor = {}) => {
+  return createAssignedExerciseWithDb(pool, data, assignedBy, actor);
 };
 
 const getAllAssignedExercises = async () => {
@@ -43,11 +282,15 @@ const getAssignedExerciseById = async (id) => {
     `SELECT ae.*,
             e.title AS exercise_title,
             e.description AS exercise_description,
+            e.description,
             e.instructions,
+            e.instruction_media_url,
+            c.name AS category_name,
             p.full_name AS patient_name,
             u.full_name AS assigned_by_name
      FROM assigned_exercises ae
      JOIN exercises e ON ae.exercise_id = e.id
+     LEFT JOIN exercise_categories c ON e.category_id = c.id
      JOIN patients p ON ae.patient_id = p.id
      JOIN users u ON ae.assigned_by = u.id
      WHERE ae.id = $1`,
@@ -107,9 +350,11 @@ const getPatientAssignedExercises = async (patientId) => {
             e.title AS exercise_title,
             e.description,
             e.instructions,
-            e.instruction_media_url
+            e.instruction_media_url,
+            c.name AS category_name
      FROM assigned_exercises ae
      JOIN exercises e ON ae.exercise_id = e.id
+     LEFT JOIN exercise_categories c ON e.category_id = c.id
      WHERE ae.patient_id = $1
      ORDER BY ae.created_at DESC`,
     [patientId]
@@ -160,6 +405,7 @@ const getWeeklyTasks = async (patientId) => {
 
 module.exports = {
   createAssignedExercise,
+  createAssignedExerciseWithDb,
   getAllAssignedExercises,
   getAssignedExerciseById,
   updateAssignedExercise,

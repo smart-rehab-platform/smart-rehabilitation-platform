@@ -2,9 +2,16 @@ import 'package:dio/dio.dart';
 
 import '../../../core/utils/api_response_parser.dart';
 import '../../dashboard/models/communication_models.dart';
+import '../models/admin_case_inbox_models.dart';
+import '../models/admin_case_request_detail_model.dart';
+import '../models/assign_specialist_result_model.dart';
 import '../models/case_category_model.dart';
 import '../models/case_intake_request_model.dart';
 import '../models/case_request_attachment_model.dart';
+import '../models/matching_specialist_model.dart';
+import '../models/convert_patient_result_model.dart';
+import '../models/specialist_assigned_case_models.dart';
+import '../models/specialist_case_request_detail_model.dart';
 
 class CaseIntakeApiException implements Exception {
   CaseIntakeApiException({required this.message, this.statusCode});
@@ -64,6 +71,307 @@ class CaseIntakeRepository {
           .toList();
     } on DioException catch (error) {
       _throwFromDio(error, fallback: 'Failed to load case categories');
+    }
+  }
+
+  Future<AdminInboxPageResult> fetchAdminInbox(AdminInboxQuery query) async {
+    try {
+      final response = await _dio.get(
+        '$_requestsPath/admin/inbox',
+        queryParameters: query.toQueryParameters(),
+      );
+      final envelope = ApiResponseParser.asMap(response.data);
+      if (envelope == null) {
+        throw CaseIntakeApiException(message: 'Invalid admin inbox response');
+      }
+
+      final items = ApiResponseParser.extractList(response.data)
+          .whereType<Map>()
+          .map(
+            (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+          )
+          .map(AdminCaseInboxItem.fromMap)
+          .where((item) => item.id.isNotEmpty)
+          .toList();
+
+      final paginationMap = ApiResponseParser.asMap(envelope['pagination']);
+      final pagination = AdminInboxPagination.fromMap(paginationMap);
+
+      return AdminInboxPageResult(items: items, pagination: pagination);
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to load admin case inbox');
+    }
+  }
+
+  Future<AdminCaseRequestDetail> fetchAdminRequestById(String requestId) async {
+    try {
+      final response = await _dio.get('$_requestsPath/admin/$requestId');
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null || map.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid admin case request response',
+        );
+      }
+      final detail = AdminCaseRequestDetail.fromMap(map);
+      if (detail.request.id.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid admin case request response',
+        );
+      }
+      return detail;
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to load admin case request');
+    }
+  }
+
+  Future<List<MatchingSpecialist>> fetchMatchingSpecialists(
+    String requestId,
+  ) async {
+    try {
+      final response = await _dio.get(
+        '$_requestsPath/admin/$requestId/matching-specialists',
+      );
+      return ApiResponseParser.extractList(response.data)
+          .whereType<Map>()
+          .map(
+            (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+          )
+          .map(MatchingSpecialist.fromMap)
+          .where((specialist) => specialist.id.isNotEmpty)
+          .toList();
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to load matching specialists');
+    }
+  }
+
+  Future<AssignSpecialistResult> assignSpecialist({
+    required String requestId,
+    required String specialistId,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        '$_requestsPath/admin/$requestId/assign',
+        data: {'specialist_id': specialistId},
+      );
+      final envelope = ApiResponseParser.asMap(response.data);
+      if (envelope == null) {
+        throw CaseIntakeApiException(
+          message: 'Invalid assign specialist response',
+        );
+      }
+      return AssignSpecialistResult.fromEnvelope(envelope);
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to assign specialist');
+    }
+  }
+
+  Future<SpecialistAssignedPageResult> fetchSpecialistAssigned(
+    SpecialistAssignedQuery query,
+  ) async {
+    try {
+      final response = await _dio.get(
+        '$_requestsPath/specialist/assigned',
+        queryParameters: query.toQueryParameters(),
+      );
+      final envelope = ApiResponseParser.asMap(response.data);
+      if (envelope == null) {
+        throw CaseIntakeApiException(
+          message: 'Invalid specialist assigned cases response',
+        );
+      }
+
+      final items = ApiResponseParser.extractList(response.data)
+          .whereType<Map>()
+          .map(
+            (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+          )
+          .map(SpecialistAssignedCaseItem.fromMap)
+          .where((item) => item.id.isNotEmpty)
+          .toList();
+
+      final paginationMap = ApiResponseParser.asMap(envelope['pagination']);
+      final pagination = SpecialistAssignedPagination.fromMap(paginationMap);
+
+      return SpecialistAssignedPageResult(items: items, pagination: pagination);
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(
+        error,
+        fallback: 'Failed to load specialist assigned cases',
+      );
+    }
+  }
+
+  Future<SpecialistCaseRequestDetail> fetchSpecialistRequestById(
+    String requestId,
+  ) async {
+    try {
+      final response = await _dio.get('$_requestsPath/specialist/$requestId');
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null || map.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid specialist case request response',
+        );
+      }
+      final detail = SpecialistCaseRequestDetail.fromMap(map);
+      if (detail.request.id.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid specialist case request response',
+        );
+      }
+      return detail;
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to load specialist case request');
+    }
+  }
+
+  Future<SpecialistCaseRequestDetail> startAssessment(String requestId) async {
+    try {
+      final response = await _dio.patch(
+        '$_requestsPath/specialist/$requestId/start-assessment',
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null || map.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid start assessment response',
+        );
+      }
+      final detail = SpecialistCaseRequestDetail.fromMap(map);
+      if (detail.request.id.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid start assessment response',
+        );
+      }
+      return detail;
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to start assessment');
+    }
+  }
+
+  Future<SpecialistCaseRequestDetail> updateAssessmentNotes({
+    required String requestId,
+    required String assessmentNotes,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        '$_requestsPath/specialist/$requestId/assessment-notes',
+        data: {'assessment_notes': assessmentNotes},
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null || map.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid assessment notes response',
+        );
+      }
+      final detail = SpecialistCaseRequestDetail.fromMap(map);
+      if (detail.request.id.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid assessment notes response',
+        );
+      }
+      return detail;
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to update assessment notes');
+    }
+  }
+
+  Future<SpecialistCaseRequestDetail> acceptCaseRequest(
+    String requestId,
+  ) async {
+    try {
+      final response = await _dio.patch(
+        '$_requestsPath/specialist/$requestId/accept',
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null || map.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid accept case request response',
+        );
+      }
+      final detail = SpecialistCaseRequestDetail.fromMap(map);
+      if (detail.request.id.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid accept case request response',
+        );
+      }
+      return detail;
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to accept case request');
+    }
+  }
+
+  Future<SpecialistCaseRequestDetail> rejectCaseRequest({
+    required String requestId,
+    required String reason,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        '$_requestsPath/specialist/$requestId/reject',
+        data: {'reason': reason},
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null || map.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid reject case request response',
+        );
+      }
+      final detail = SpecialistCaseRequestDetail.fromMap(map);
+      if (detail.request.id.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid reject case request response',
+        );
+      }
+      return detail;
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to reject case request');
+    }
+  }
+
+  Future<ConvertPatientResult> convertToPatient({
+    required String requestId,
+    required ConvertToPatientInput input,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '$_requestsPath/specialist/$requestId/convert-to-patient',
+        data: input.toJson(),
+      );
+      final envelope = ApiResponseParser.asMap(response.data);
+      if (envelope == null) {
+        throw CaseIntakeApiException(
+          message: 'Invalid convert to patient response',
+        );
+      }
+      final result = ConvertPatientResult.fromEnvelope(envelope);
+      if (result.patientId == null || result.patientId!.trim().isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid convert to patient response',
+        );
+      }
+      return result;
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to convert case to patient');
     }
   }
 

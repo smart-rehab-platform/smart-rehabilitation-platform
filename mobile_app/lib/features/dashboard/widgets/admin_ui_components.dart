@@ -380,9 +380,11 @@ class AdminTableContainer extends StatelessWidget {
   const AdminTableContainer({
     super.key,
     required this.rows,
+    this.onRowTaps,
   });
 
   final List<Widget> rows;
+  final List<VoidCallback?>? onRowTaps;
 
   @override
   Widget build(BuildContext context) {
@@ -393,6 +395,9 @@ class AdminTableContainer extends StatelessWidget {
           for (var i = 0; i < rows.length; i++)
             AdminTableRow(
               index: i,
+              onTap: onRowTaps != null && i < onRowTaps!.length
+                  ? onRowTaps![i]
+                  : null,
               child: rows[i],
             ),
         ],
@@ -406,10 +411,12 @@ class AdminTableRow extends StatelessWidget {
     super.key,
     required this.index,
     required this.child,
+    this.onTap,
   });
 
   final int index;
   final Widget child;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -418,7 +425,7 @@ class AdminTableRow extends StatelessWidget {
     return Material(
       color: isAlt ? AdminDashboardColors.slateSoft : AdminDashboardColors.surface,
       child: InkWell(
-        onTap: null,
+        onTap: onTap,
         hoverColor: AdminDashboardColors.blueSoft,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

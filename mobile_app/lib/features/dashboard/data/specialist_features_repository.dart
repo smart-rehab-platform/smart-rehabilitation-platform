@@ -135,6 +135,186 @@ class SpecialistFeaturesRepository {
     }
   }
 
+  Future<SpecialistExerciseItem?> fetchExerciseById(String exerciseId) async {
+    try {
+      final response = await _dio.get('/exercises/$exerciseId');
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        return null;
+      }
+      final item = SpecialistExerciseItem.fromMap(map);
+      return item.id.isEmpty ? null : item;
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) {
+        return null;
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<ExerciseCategoryItem>> fetchExerciseCategories() async {
+    final rows = await _getList('/exercise-categories');
+    return rows
+        .map(ExerciseCategoryItem.fromMap)
+        .where((item) => item.id.isNotEmpty)
+        .toList();
+  }
+
+  Future<String> uploadExerciseInstructionMedia({
+    required List<int> bytes,
+    required String filename,
+    void Function(int sent, int total)? onSendProgress,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/uploads/exercise-media',
+        data: FormData.fromMap({
+          'file': MultipartFile.fromBytes(bytes, filename: filename),
+        }),
+        onSendProgress: onSendProgress,
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      final url = ApiResponseParser.readString(map ?? {}, const [
+        'url',
+        'file_url',
+        'fileUrl',
+      ]);
+      if (url == null || url.isEmpty) {
+        throw Exception('Invalid upload response: missing file URL');
+      }
+      return url;
+    } on DioException catch (error) {
+      throw Exception(_readExerciseError(error, fallback: 'Failed to upload media.'));
+    }
+  }
+
+  Future<SpecialistExerciseItem> createExercise(
+    UpsertExerciseRequest request,
+  ) async {
+    try {
+      final response = await _dio.post(
+        '/exercises',
+        data: request.toCreateJson(),
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw Exception('Exercise create returned no data');
+      }
+      return SpecialistExerciseItem.fromMap(map);
+    } on DioException catch (error) {
+      throw Exception(
+        _readExerciseError(error, fallback: 'Failed to create exercise.'),
+      );
+    }
+  }
+
+  Future<SpecialistExerciseItem> updateExercise({
+    required String exerciseId,
+    required UpsertExerciseRequest request,
+  }) async {
+    try {
+      final response = await _dio.put(
+        '/exercises/$exerciseId',
+        data: request.toUpdateJson(),
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw Exception('Exercise update returned no data');
+      }
+      return SpecialistExerciseItem.fromMap(map);
+    } on DioException catch (error) {
+      throw Exception(
+        _readExerciseError(error, fallback: 'Failed to update exercise.'),
+      );
+    }
+  }
+
+  String _readExerciseError(
+    DioException error, {
+    required String fallback,
+  }) {
+    final status = error.response?.statusCode;
+    final data = error.response?.data;
+    String? message;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      message = ApiResponseParser.readString(map, const ['message', 'error']);
+    }
+    if (message != null && message.trim().isNotEmpty) {
+      return message.trim();
+    }
+    if (status == 401) {
+      return 'Please sign in to continue.';
+    }
+    if (status == 403) {
+      return 'You do not have permission to perform this action.';
+    }
+    if (status == 404) {
+      return 'Exercise or category was not found.';
+    }
+    if (status == 409) {
+      return 'This exercise cannot be changed because it is in use.';
+    }
+    if (status == 413) {
+      return 'File is too large. Maximum allowed size is 50 MB.';
+    }
+    return fallback;
+  }
+
+  Future<AssignedExerciseResult> createAssignedExercise(
+    CreateAssignedExerciseRequest request,
+  ) async {
+    try {
+      final response = await _dio.post(
+        '/assigned-exercises',
+        data: request.toJson(),
+      );
+      final envelope = ApiResponseParser.asMap(response.data);
+      final data = envelope != null
+          ? ApiResponseParser.asMap(envelope['data'])
+          : ApiResponseParser.extractMap(response.data);
+      if (data == null) {
+        throw Exception('Assignment returned no data');
+      }
+      return AssignedExerciseResult.fromMap(data);
+    } on DioException catch (error) {
+      throw Exception(_readAssignedExerciseError(error));
+    }
+  }
+
+  String _readAssignedExerciseError(DioException error) {
+    final status = error.response?.statusCode;
+    final data = error.response?.data;
+    String? message;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      message = ApiResponseParser.readString(map, const ['message', 'error']);
+    }
+
+    if (status == 400) {
+      return message?.trim().isNotEmpty == true
+          ? message!.trim()
+          : 'Invalid assignment details. Check exercise, plan, and dates.';
+    }
+    if (status == 403) {
+      return 'You do not have permission to assign this exercise.';
+    }
+    if (status == 404) {
+      return message?.trim().isNotEmpty == true
+          ? message!.trim()
+          : 'Exercise, patient, or treatment plan was not found.';
+    }
+    if (status == 409) {
+      return message?.trim().isNotEmpty == true
+          ? message!.trim()
+          : 'This exercise may already be assigned.';
+    }
+    if (message != null && message.trim().isNotEmpty) {
+      return message.trim();
+    }
+    return 'Failed to assign exercise. Please try again.';
+  }
+
   Future<List<SpecialistReportItem>> fetchReports() async {
     try {
       final rows = await _getList('/reports');

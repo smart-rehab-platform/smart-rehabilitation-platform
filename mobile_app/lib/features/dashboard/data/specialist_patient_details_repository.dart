@@ -19,8 +19,7 @@ import '../models/specialist_patient_details_models.dart';
 /// - GET /patients/:id/notes
 /// - POST /patients/:id/notes
 ///
-/// Note: exercise category name is not returned by assigned-exercises;
-/// category displays as "—" unless the API adds category_name.
+/// Note: category_name is joined from exercise_categories when available.
 class SpecialistPatientDetailsRepository {
   SpecialistPatientDetailsRepository(this._dio);
 
@@ -119,6 +118,33 @@ class SpecialistPatientDetailsRepository {
 
   Future<void> addSpecialistNote(String patientId, String note) async {
     await _dio.post('/patients/$patientId/notes', data: {'note': note});
+  }
+
+  /// Updates patient profile fields supported by PUT /patients/:id.
+  Future<PatientProfile> updatePatient({
+    required String patientId,
+    required String fullName,
+    DateTime? dateOfBirth,
+    String? gender,
+    String? profileImageUrl,
+  }) async {
+    final response = await _dio.put(
+      '/patients/$patientId',
+      data: {
+        'full_name': fullName,
+        if (dateOfBirth != null)
+          'date_of_birth':
+              '${dateOfBirth.year.toString().padLeft(4, '0')}-${dateOfBirth.month.toString().padLeft(2, '0')}-${dateOfBirth.day.toString().padLeft(2, '0')}',
+        if (gender != null && gender.isNotEmpty) 'gender': gender,
+        if (profileImageUrl != null) 'profile_image_url': profileImageUrl,
+      },
+    );
+
+    final map = ApiResponseParser.extractMap(response.data);
+    if (map == null) {
+      throw Exception('Patient update returned no data');
+    }
+    return PatientProfile.fromMap(map);
   }
 
   PatientTreatmentPlan? _selectActivePlan(List<PatientTreatmentPlan> plans) {

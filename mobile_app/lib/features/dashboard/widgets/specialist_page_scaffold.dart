@@ -21,6 +21,7 @@ class SpecialistPageScaffold extends ConsumerWidget {
     this.showBackButton = false,
     this.actions,
     this.floatingActionButton,
+    this.onBackPressed,
   });
 
   final String title;
@@ -29,6 +30,7 @@ class SpecialistPageScaffold extends ConsumerWidget {
   final bool showBackButton;
   final List<Widget>? actions;
   final Widget? floatingActionButton;
+  final VoidCallback? onBackPressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,7 +49,7 @@ class SpecialistPageScaffold extends ConsumerWidget {
           leading: showBackButton
               ? IconButton(
                   icon: const Icon(Icons.arrow_back_rounded),
-                  onPressed: () => context.pop(),
+                  onPressed: onBackPressed ?? () => context.pop(),
                 )
               : IconButton(
                   icon: const Icon(Icons.menu_rounded),
@@ -55,9 +57,9 @@ class SpecialistPageScaffold extends ConsumerWidget {
                 ),
           title: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           actions: [
             ...?actions,
@@ -149,9 +151,9 @@ class _AvatarAction extends StatelessWidget {
           child: Text(
             initials,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: DashboardColors.primary,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: DashboardColors.primary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ),
@@ -190,10 +192,7 @@ class SpecialistAsyncBody extends StatelessWidget {
         children: [
           if (errorMessage != null)
             DashboardErrorCard(message: errorMessage!, onRetry: onRetry),
-          if (isEmpty)
-            DashboardEmptyCard(message: emptyMessage)
-          else
-            child,
+          if (isEmpty) DashboardEmptyCard(message: emptyMessage) else child,
         ],
       ),
     );

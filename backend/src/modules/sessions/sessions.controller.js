@@ -83,7 +83,10 @@ const updateSession = async (req, res) => {
       data: session
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
@@ -132,7 +135,10 @@ const completeSession = async (req, res) => {
       data: session
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
@@ -158,7 +164,10 @@ const cancelSession = async (req, res) => {
       data: session
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
@@ -184,7 +193,10 @@ const markNoShow = async (req, res) => {
       data: session
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 

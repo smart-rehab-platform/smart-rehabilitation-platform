@@ -4,6 +4,7 @@ import '../../../core/services/api_client.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/specialist_edit_treatment_plan_repository.dart';
 import '../models/specialist_edit_treatment_plan_models.dart';
+import 'specialist_features_provider.dart';
 import 'specialist_patient_details_provider.dart';
 
 final specialistEditTreatmentPlanRepositoryProvider =
@@ -172,13 +173,17 @@ class SpecialistEditTreatmentPlanNotifier
             .read(specialistPatientDetailsProvider(patientId).notifier)
             .refresh();
       }
+      await _ref.read(specialistTreatmentPlansProvider.notifier).refresh();
 
       state = state.copyWith(isSaving: false);
       return true;
     } catch (error) {
+      final raw = error.toString().replaceFirst(RegExp(r'^Exception:\s*'), '');
       state = state.copyWith(
         isSaving: false,
-        errorMessage: 'Failed to save treatment plan: $error',
+        errorMessage: raw.isEmpty
+            ? 'Failed to save treatment plan. Please try again.'
+            : raw,
       );
       return false;
     }

@@ -1,5 +1,16 @@
 const exercisesService = require("./exercises.service");
 
+const respondError = (res, err) => {
+  const statusCode = err.statusCode || 500;
+  return res.status(statusCode).json({
+    success: false,
+    message:
+      statusCode === 500
+        ? "Something went wrong while processing the exercise request."
+        : err.message,
+  });
+};
+
 const createExerciseCategory = async (req, res) => {
   try {
     const category = await exercisesService.createExerciseCategory(req.body);
@@ -10,7 +21,7 @@ const createExerciseCategory = async (req, res) => {
       data: category
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
@@ -24,7 +35,7 @@ const getExerciseCategories = async (req, res) => {
       data: categories
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
@@ -48,7 +59,7 @@ const updateExerciseCategory = async (req, res) => {
       data: category
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
@@ -69,9 +80,10 @@ const deleteExerciseCategory = async (req, res) => {
       data: category
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
+
 const createExercise = async (req, res) => {
   try {
     const exercise = await exercisesService.createExercise(
@@ -85,7 +97,7 @@ const createExercise = async (req, res) => {
       data: exercise
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
@@ -99,7 +111,7 @@ const getAllExercises = async (req, res) => {
       data: exercises
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
@@ -119,7 +131,7 @@ const getExerciseById = async (req, res) => {
       data: exercise
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
@@ -135,7 +147,7 @@ const getExercisesByCategory = async (req, res) => {
       data: exercises
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
@@ -143,15 +155,9 @@ const updateExercise = async (req, res) => {
   try {
     const exercise = await exercisesService.updateExercise(
       req.params.id,
-      req.body
+      req.body,
+      { id: req.user.id, role: req.user.role }
     );
-
-    if (!exercise) {
-      return res.status(404).json({
-        success: false,
-        message: "Exercise not found"
-      });
-    }
 
     return res.status(200).json({
       success: true,
@@ -159,7 +165,7 @@ const updateExercise = async (req, res) => {
       data: exercise
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
@@ -167,25 +173,18 @@ const deleteExercise = async (req, res) => {
   try {
     const exercise = await exercisesService.deleteExercise(req.params.id);
 
-    if (!exercise) {
-      return res.status(404).json({
-        success: false,
-        message: "Exercise not found"
-      });
-    }
-
     return res.status(200).json({
       success: true,
       message: "Exercise deleted successfully",
       data: exercise
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return respondError(res, err);
   }
 };
 
 module.exports = {
-   createExerciseCategory,
+  createExerciseCategory,
   getExerciseCategories,
   updateExerciseCategory,
   deleteExerciseCategory,

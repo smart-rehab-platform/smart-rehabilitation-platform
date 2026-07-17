@@ -71,8 +71,12 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     }).toList();
   }
 
-  void _showSnack(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
+  void _showSnack(
+    String message, {
+    bool isError = false,
+    ScaffoldMessengerState? messenger,
+  }) {
+    (messenger ?? ScaffoldMessenger.of(context)).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: isError ? AdminDashboardColors.danger : null,
@@ -82,84 +86,14 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
 
   Future<void> _openUserForm({AdminUserRecord? user}) async {
     final isEdit = user != null;
-    final nameController = TextEditingController(text: user?.name ?? '');
-    final emailController = TextEditingController(text: user?.email ?? '');
-    final phoneController = TextEditingController(text: user?.phone ?? '');
-    final passwordController = TextEditingController();
-    var selectedRole = user?.role ?? 'parent';
-
-    final saved = await showDialog<bool>(
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await showDialog<_AdminUserFormResult>(
       context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text(isEdit ? 'Edit User' : 'Add User'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(labelText: 'Full Name'),
-                    ),
-                    TextField(
-                      controller: emailController,
-                      enabled: !isEdit,
-                      decoration: const InputDecoration(labelText: 'Email'),
-                    ),
-                    if (!isEdit) ...[
-                      TextField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(labelText: 'Password'),
-                      ),
-                    ],
-                    TextField(
-                      controller: phoneController,
-                      decoration: const InputDecoration(labelText: 'Phone (optional)'),
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      initialValue: selectedRole,
-                      decoration: const InputDecoration(labelText: 'Role'),
-                      items: const [
-                        DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                        DropdownMenuItem(value: 'specialist', child: Text('Specialist')),
-                        DropdownMenuItem(value: 'parent', child: Text('Parent')),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setDialogState(() => selectedRole = value);
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(true),
-                  child: Text(isEdit ? 'Save' : 'Create'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (dialogContext) => _AdminUserFormDialog(user: user),
     );
 
-    if (saved != true || !mounted) {
-      nameController.dispose();
-      emailController.dispose();
-      phoneController.dispose();
-      passwordController.dispose();
-      return;
-    }
+    if (!mounted) return;
+    if (result == null) return;
 
     final repo = ref.read(adminUsersRepositoryProvider);
 
@@ -167,50 +101,69 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       if (isEdit) {
         await repo.updateUser(
           id: user.id,
-          fullName: nameController.text.trim(),
-          phone: phoneController.text.trim(),
-          role: selectedRole,
+          fullName: result.fullName,
+          phone: result.phone,
+          role: result.role,
         );
-        _showSnack('User updated successfully.');
+        if (!mounted) return;
+        _showSnack('User updated successfully.', messenger: messenger);
       } else {
-        if (nameController.text.trim().isEmpty ||
-            emailController.text.trim().isEmpty ||
-            passwordController.text.trim().length < 8) {
-          _showSnack('Please provide name, email, and a password of at least 8 characters.', isError: true);
+        if (result.fullName.isEmpty ||
+            result.email.isEmpty ||
+            result.password.length < 8) {
+          _showSnack(
+            'Please provide name, email, and a password of at least 8 characters.',
+            isError: true,
+            messenger: messenger,
+          );
           return;
         }
 
         await repo.createUser(
-          fullName: nameController.text.trim(),
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-          phone: phoneController.text.trim(),
-          role: selectedRole,
+          fullName: result.fullName,
+          email: result.email,
+          password: result.password,
+          phone: result.phone,
+          role: result.role,
         );
-        _showSnack('User created successfully.');
+        if (!mounted) return;
+        _showSnack('User created successfully.', messenger: messenger);
       }
       await _load();
     } on DioException catch (error) {
-      _showSnack(repo.readErrorMessage(error), isError: true);
+      if (!mounted) return;
+      _showSnack(repo.readErrorMessage(error), isError: true, messenger: messenger);
     } catch (error) {
-      _showSnack('Failed to save user: $error', isError: true);
-    } finally {
-      nameController.dispose();
-      emailController.dispose();
-      phoneController.dispose();
-      passwordController.dispose();
+      if (!mounted) return;
+      _showSnack('Failed to save user: $error', isError: true, messenger: messenger);
     }
   }
 
   Future<void> _toggleStatus(AdminUserRecord user) async {
+    final messenger = ScaffoldMessenger.of(context);
     final repo = ref.read(adminUsersRepositoryProvider);
-    try {
-      await repo.updateStatus(id: user.id, isActive: !user.isActive);
-      _showSnack(user.isActive ? 'User deactivated.' : 'User activated.');
-      await _load();
-    } on DioException catch (error) {
-      _showSnack(repo.readErrorMessage(error), isError: true);
-    }
+    final willDeactivate = user.isActive;
+
+    final success = await showDialog<bool>(
+      context: context,
+      builder: (_) => _ToggleUserStatusDialog(
+        willDeactivate: willDeactivate,
+        onConfirm: () => repo.updateStatus(
+          id: user.id,
+          isActive: !user.isActive,
+        ),
+        readErrorMessage: repo.readErrorMessage,
+        messenger: messenger,
+      ),
+    );
+
+    if (!mounted || success != true) return;
+
+    _showSnack(
+      willDeactivate ? 'User deactivated.' : 'User activated.',
+      messenger: messenger,
+    );
+    await _load();
   }
 
   Future<void> _confirmDelete(AdminUserRecord user) async {
@@ -447,6 +400,239 @@ String _formatRoleLabel(String role) {
     return 'User';
   }
   return '${role[0].toUpperCase()}${role.substring(1)}';
+}
+
+class _ToggleUserStatusDialog extends StatefulWidget {
+  const _ToggleUserStatusDialog({
+    required this.willDeactivate,
+    required this.onConfirm,
+    required this.readErrorMessage,
+    required this.messenger,
+  });
+
+  final bool willDeactivate;
+  final Future<void> Function() onConfirm;
+  final String Function(DioException error) readErrorMessage;
+  final ScaffoldMessengerState messenger;
+
+  @override
+  State<_ToggleUserStatusDialog> createState() => _ToggleUserStatusDialogState();
+}
+
+class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
+  bool _submitting = false;
+
+  Future<void> _onConfirmPressed() async {
+    if (_submitting) return;
+
+    setState(() => _submitting = true);
+
+    try {
+      await widget.onConfirm();
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+    } on DioException catch (error) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      widget.messenger.showSnackBar(
+        SnackBar(
+          content: Text(widget.readErrorMessage(error)),
+          backgroundColor: AdminDashboardColors.danger,
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      widget.messenger.showSnackBar(
+        SnackBar(
+          content: Text('Failed to update user status: $error'),
+          backgroundColor: AdminDashboardColors.danger,
+        ),
+      );
+    }
+  }
+
+  void _onCancelPressed() {
+    if (_submitting) return;
+    Navigator.of(context).pop(false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final willDeactivate = widget.willDeactivate;
+
+    return PopScope(
+      canPop: !_submitting,
+      child: AlertDialog(
+        title: Text(willDeactivate ? 'Deactivate User' : 'Activate User'),
+        content: Text(
+          willDeactivate
+              ? 'Are you sure you want to deactivate this user? They may lose access to the platform.'
+              : 'Are you sure you want to activate this user?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: _submitting ? null : _onCancelPressed,
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: _submitting ? null : _onConfirmPressed,
+            style: willDeactivate
+                ? FilledButton.styleFrom(backgroundColor: AdminDashboardColors.danger)
+                : null,
+            child: _submitting
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(willDeactivate ? 'Deactivate' : 'Activate'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdminUserFormResult {
+  const _AdminUserFormResult({
+    required this.fullName,
+    required this.email,
+    required this.password,
+    required this.phone,
+    required this.role,
+  });
+
+  final String fullName;
+  final String email;
+  final String password;
+  final String phone;
+  final String role;
+}
+
+class _AdminUserFormDialog extends StatefulWidget {
+  const _AdminUserFormDialog({this.user});
+
+  final AdminUserRecord? user;
+
+  @override
+  State<_AdminUserFormDialog> createState() => _AdminUserFormDialogState();
+}
+
+class _AdminUserFormDialogState extends State<_AdminUserFormDialog> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _passwordController;
+  late String _selectedRole;
+
+  bool get _isEdit => widget.user != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = widget.user;
+    _nameController = TextEditingController(text: user?.name ?? '');
+    _emailController = TextEditingController(text: user?.email ?? '');
+    _phoneController = TextEditingController(text: user?.phone ?? '');
+    _passwordController = TextEditingController();
+    _selectedRole = user?.role ?? 'parent';
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _cancel() {
+    _dismiss();
+  }
+
+  void _submit() {
+    final result = _AdminUserFormResult(
+      fullName: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+      phone: _phoneController.text.trim(),
+      role: _selectedRole,
+    );
+    _dismiss(result);
+  }
+
+  /// Clears focus while still mounted, then pops. Avoids deferred focus
+  /// cleanup looking up ancestors on the deactivating dialog route.
+  void _dismiss([_AdminUserFormResult? result]) {
+    final navigator = Navigator.of(context);
+    FocusManager.instance.primaryFocus?.unfocus();
+    FocusManager.instance.applyFocusChangesIfNeeded();
+    navigator.pop(result);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(_isEdit ? 'Edit User' : 'Add User'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Full Name'),
+            ),
+            TextField(
+              controller: _emailController,
+              enabled: !_isEdit,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            if (!_isEdit) ...[
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password'),
+              ),
+            ],
+            TextField(
+              controller: _phoneController,
+              decoration: const InputDecoration(labelText: 'Phone (optional)'),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedRole,
+              decoration: const InputDecoration(labelText: 'Role'),
+              items: const [
+                DropdownMenuItem(value: 'admin', child: Text('Admin')),
+                DropdownMenuItem(value: 'specialist', child: Text('Specialist')),
+                DropdownMenuItem(value: 'parent', child: Text('Parent')),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  _selectedRole = value;
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _cancel,
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(_isEdit ? 'Save' : 'Create'),
+        ),
+      ],
+    );
+  }
 }
 
 class _RoleChip extends StatelessWidget {

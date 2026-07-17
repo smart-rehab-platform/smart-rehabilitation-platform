@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../providers/specialist_reports_provider.dart';
+import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
@@ -16,10 +17,12 @@ class SpecialistReportDetailsScreen extends ConsumerStatefulWidget {
     super.key,
     required this.reportId,
     this.isAiReport = false,
+    this.useAdminChrome = false,
   });
 
   final String reportId;
   final bool isAiReport;
+  final bool useAdminChrome;
 
   @override
   ConsumerState<SpecialistReportDetailsScreen> createState() =>
@@ -220,6 +223,15 @@ class _SpecialistReportDetailsScreenState
             SizedBox(height: context.dashSpacing),
           ],
         ),
+      );
+    }
+
+    if (widget.useAdminChrome) {
+      return AdminPageScaffold(
+        title: 'Report Details',
+        showBackButton: true,
+        showBottomNav: false,
+        body: body,
       );
     }
 

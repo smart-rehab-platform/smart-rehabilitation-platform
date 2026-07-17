@@ -56,6 +56,7 @@ const handleMessageAttachmentUpload = (req, res) => {
 module.exports = {
   uploadProfileImage: handleUpload,
   uploadExerciseMedia: handleUpload,
+  uploadExerciseSubmissionMedia: handleUpload,
   uploadMessageAttachment: handleMessageAttachmentUpload,
   uploadResource: handleUpload,
   uploadReport: handleReportUpload,

@@ -63,20 +63,24 @@ class SpecialistReportsState {
   }
 }
 
-final specialistReportsProvider =
-    StateNotifierProvider<SpecialistReportsNotifier, SpecialistReportsState>(
-  (ref) => SpecialistReportsNotifier(
+final specialistReportsProvider = StateNotifierProvider.family<
+    SpecialistReportsNotifier,
+    SpecialistReportsState,
+    String?>((ref, patientId) {
+  return SpecialistReportsNotifier(
     ref,
     ref.watch(specialistReportsRepositoryProvider),
-  ),
-);
+    patientId,
+  );
+});
 
 class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
-  SpecialistReportsNotifier(this._ref, this._repository)
+  SpecialistReportsNotifier(this._ref, this._repository, this._patientId)
       : super(const SpecialistReportsState());
 
   final Ref _ref;
   final SpecialistReportsRepository _repository;
+  final String? _patientId;
 
   void _ensureAuthToken() {
     final token = _ref.read(authProvider).token;
@@ -90,7 +94,7 @@ class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final reports = await _repository.fetchReports();
+      final reports = await _repository.fetchReports(patientId: _patientId);
       final hasAi = reports.any((report) => report.isAiReport);
       state = state.copyWith(
         isLoading: false,
@@ -186,9 +190,21 @@ class SpecialistReportDetailNotifier
     } catch (error) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Failed to load report: $error',
+        errorMessage: _formatLoadError(error),
       );
     }
+  }
+
+  String _formatLoadError(Object error) {
+    if (error is ReportNotFoundException) {
+      return error.toString();
+    }
+    final text = error.toString();
+    if (text.contains('Report not found') ||
+        text.contains('AI report not found')) {
+      return _args.isAiReport ? 'AI report not found.' : 'Report not found.';
+    }
+    return 'Failed to load report. Please try again.';
   }
 
   Future<bool> generatePdf() async {

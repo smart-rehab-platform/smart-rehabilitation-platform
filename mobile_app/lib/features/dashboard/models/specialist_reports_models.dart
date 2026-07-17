@@ -110,6 +110,13 @@ class SpecialistReportListItem {
 
   String get statusLabel => 'PDF Ready';
 
+  /// Standardized display title without embedding the patient name.
+  String get displayTitle => standardizedReportTitle(
+        isAiReport: isAiReport,
+        reportType: reportType,
+        rawTitle: title,
+      );
+
   String get typeLabel {
     if (isAiReport) {
       final type = reportType?.trim();
@@ -120,6 +127,8 @@ class SpecialistReportListItem {
     }
     return _formatReportType(reportType);
   }
+
+  String get typeBadgeLabel => typeLabel;
 
   String get displaySummary => SpecialistReportSummary.normalize(summary) ?? '';
 
@@ -150,6 +159,13 @@ class SpecialistReportListItem {
   }
 
   factory SpecialistReportListItem.fromRegularMap(Map<String, dynamic> map) {
+    final reportType = ApiResponseParser.readString(map, const [
+      'report_type',
+      'reportType',
+    ]);
+    final rawTitle =
+        ApiResponseParser.readString(map, const ['title']) ?? 'Report';
+
     return SpecialistReportListItem(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
       patientId: ApiResponseParser.readString(map, const [
@@ -157,16 +173,17 @@ class SpecialistReportListItem {
             'patientId',
           ]) ??
           '',
-      title: ApiResponseParser.readString(map, const ['title']) ?? 'Report',
+      title: standardizedReportTitle(
+        isAiReport: false,
+        reportType: reportType,
+        rawTitle: rawTitle,
+      ),
       isAiReport: false,
       patientName: ApiResponseParser.readString(map, const [
         'patient_name',
         'patientName',
       ]),
-      reportType: ApiResponseParser.readString(map, const [
-        'report_type',
-        'reportType',
-      ]),
+      reportType: reportType,
       createdAt: ApiResponseParser.readDate(
         map['created_at'] ?? map['createdAt'],
       ),
@@ -181,6 +198,10 @@ class SpecialistReportListItem {
   }
 
   factory SpecialistReportListItem.fromAiMap(Map<String, dynamic> map) {
+    final reportType =
+        ApiResponseParser.readString(map, const ['type', 'report_type']);
+    final rawTitle = ApiResponseParser.readString(map, const ['title']);
+
     return SpecialistReportListItem(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
       patientId: ApiResponseParser.readString(map, const [
@@ -188,13 +209,17 @@ class SpecialistReportListItem {
             'patientId',
           ]) ??
           '',
-      title: _aiTitle(map),
+      title: standardizedReportTitle(
+        isAiReport: true,
+        reportType: reportType,
+        rawTitle: rawTitle,
+      ),
       isAiReport: true,
       patientName: ApiResponseParser.readString(map, const [
         'patient_name',
         'patientName',
       ]),
-      reportType: ApiResponseParser.readString(map, const ['type', 'report_type']),
+      reportType: reportType,
       createdAt: ApiResponseParser.readDate(
         map['generated_at'] ?? map['created_at'] ?? map['createdAt'],
       ),
@@ -204,25 +229,77 @@ class SpecialistReportListItem {
     );
   }
 
-  static String _aiTitle(Map<String, dynamic> map) {
-    final type = ApiResponseParser.readString(map, const ['type', 'report_type']);
-    final patient = ApiResponseParser.readString(map, const [
-      'patient_name',
-      'patientName',
-    ]);
-    if (type != null && patient != null) {
-      return '${_formatReportType(type)} — $patient';
-    }
-    return ApiResponseParser.readString(map, const ['title']) ?? 'AI Report';
-  }
-
   static String _formatReportType(String? value) {
     final text = value?.trim();
     if (text == null || text.isEmpty) {
       return 'Report';
     }
-    return text[0].toUpperCase() + text.substring(1);
+    final normalized = text.replaceAll('_', ' ');
+    return normalized
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .map((part) => '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}')
+        .join(' ');
   }
+}
+
+String standardizedReportTitle({
+  required bool isAiReport,
+  String? reportType,
+  String? rawTitle,
+}) {
+  final type = (reportType ?? '').trim().toLowerCase().replaceAll(' ', '_');
+
+  if (isAiReport) {
+    return switch (type) {
+      'weekly' => 'AI Weekly Summary',
+      'monthly' => 'AI Monthly Summary',
+      'clinical' || 'clinical_summary' || 'summary' => 'AI Clinical Summary',
+      'assessment' => 'AI Assessment Summary',
+      '' => 'AI Clinical Summary',
+      _ => 'AI ${SpecialistReportListItem._formatReportType(type)} Summary',
+    };
+  }
+
+  return switch (type) {
+    'weekly' => 'Weekly Progress Report',
+    'monthly' => 'Monthly Progress Report',
+    'assessment' => 'Assessment Report',
+    '' => _cleanEmbeddedPatientTitle(rawTitle) ?? 'Progress Report',
+    _ => _cleanEmbeddedPatientTitle(rawTitle) ??
+        '${SpecialistReportListItem._formatReportType(type)} Report',
+  };
+}
+
+String? _cleanEmbeddedPatientTitle(String? rawTitle) {
+  final trimmed = rawTitle?.trim();
+  if (trimmed == null || trimmed.isEmpty) {
+    return null;
+  }
+
+  // Strip patterns like "Weekly — Omar" / "Monthly - Patient".
+  final parts = trimmed.split(RegExp(r'\s+[—–-]\s+'));
+  if (parts.length >= 2) {
+    final left = parts.first.trim();
+    if (left.isNotEmpty) {
+      final normalized = left.toLowerCase();
+      if (normalized.contains('weekly')) {
+        return 'Weekly Progress Report';
+      }
+      if (normalized.contains('monthly')) {
+        return 'Monthly Progress Report';
+      }
+      if (normalized.contains('assessment')) {
+        return 'Assessment Report';
+      }
+      if (normalized.startsWith('ai ')) {
+        return left;
+      }
+      return left;
+    }
+  }
+
+  return trimmed;
 }
 
 class SpecialistReportDetail {
@@ -271,6 +348,12 @@ class SpecialistReportDetail {
     }
     return SpecialistReportListItem._formatReportType(reportType);
   }
+
+  String get displayTitle => standardizedReportTitle(
+        isAiReport: isAiReport,
+        reportType: reportType,
+        rawTitle: title,
+      );
 
   String get displaySummary => SpecialistReportSummary.normalize(summary) ?? '';
 
@@ -321,6 +404,10 @@ class SpecialistReportDetail {
   }
 
   factory SpecialistReportDetail.fromAiMap(Map<String, dynamic> map) {
+    final reportType =
+        ApiResponseParser.readString(map, const ['type', 'report_type']);
+    final rawTitle = ApiResponseParser.readString(map, const ['title']);
+
     return SpecialistReportDetail(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
       patientId: ApiResponseParser.readString(map, const [
@@ -328,13 +415,17 @@ class SpecialistReportDetail {
             'patientId',
           ]) ??
           '',
-      title: SpecialistReportListItem._aiTitle(map),
+      title: standardizedReportTitle(
+        isAiReport: true,
+        reportType: reportType,
+        rawTitle: rawTitle,
+      ),
       isAiReport: true,
       patientName: ApiResponseParser.readString(map, const [
         'patient_name',
         'patientName',
       ]),
-      reportType: ApiResponseParser.readString(map, const ['type', 'report_type']),
+      reportType: reportType,
       createdAt: ApiResponseParser.readDate(
         map['generated_at'] ?? map['created_at'],
       ),

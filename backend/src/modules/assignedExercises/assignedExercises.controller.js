@@ -3,7 +3,11 @@ const assignedExercisesService = require("./assignedExercises.service");
 const createAssignedExercise = async (req, res) => {
   try {
     const assignedExercise =
-      await assignedExercisesService.createAssignedExercise(req.body, req.user.id);
+      await assignedExercisesService.createAssignedExercise(
+        req.body,
+        req.user.id,
+        { id: req.user.id, role: req.user.role }
+      );
 
     return res.status(201).json({
       success: true,
@@ -11,7 +15,12 @@ const createAssignedExercise = async (req, res) => {
       data: assignedExercise
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).json({
+      success: false,
+      message:
+        statusCode === 500 ? "Failed to assign exercise." : err.message
+    });
   }
 };
 

@@ -6,13 +6,14 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
-import '../../widgets/dashboard_layout.dart';
-import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
-import 'specialist_reports_widgets.dart';
+import '../shared/reports_list_widgets.dart';
 
 class SpecialistReportsScreen extends ConsumerStatefulWidget {
-  const SpecialistReportsScreen({super.key});
+  const SpecialistReportsScreen({super.key, this.patientId});
+
+  /// When set, the list is scoped to this patient only.
+  final String? patientId;
 
   @override
   ConsumerState<SpecialistReportsScreen> createState() =>
@@ -27,7 +28,9 @@ class _SpecialistReportsScreenState extends ConsumerState<SpecialistReportsScree
     super.initState();
     _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(specialistReportsProvider.notifier).initialize();
+      ref
+          .read(specialistReportsProvider(widget.patientId).notifier)
+          .initialize();
     });
   }
 
@@ -39,74 +42,25 @@ class _SpecialistReportsScreenState extends ConsumerState<SpecialistReportsScree
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(specialistReportsProvider);
-    final notifier = ref.read(specialistReportsProvider.notifier);
-    final visible = state.visibleReports;
-
-    Widget body;
-    if (state.isLoading) {
-      body = const Center(child: DashboardLoadingCard());
-    } else if (state.errorMessage != null && state.reports.isEmpty) {
-      body = Padding(
-        padding: context.dashPadding,
-        child: DashboardErrorCard(
-          message: state.errorMessage!,
-          onRetry: notifier.refresh,
-        ),
-      );
-    } else {
-      body = RefreshIndicator(
-        onRefresh: notifier.refresh,
-        color: DashboardColors.primary,
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: context.dashPadding,
-          children: [
-            buildReportSearchField(
-              controller: _searchController,
-              onChanged: notifier.setSearchQuery,
-            ),
-            SizedBox(height: context.dashSpacing * 0.75),
-            SpecialistReportFilterChips(
-              selected: state.filter,
-              onChanged: notifier.setFilter,
-            ),
-            if (state.errorMessage != null) ...[
-              SizedBox(height: context.dashSpacing * 0.75),
-              DashboardErrorCard(
-                message: state.errorMessage!,
-                onRetry: notifier.refresh,
-              ),
-            ],
-            SizedBox(height: context.dashSpacing * 0.75),
-            if (state.reports.isEmpty)
-              const DashboardEmptyCard(message: 'No reports found.')
-            else if (visible.isEmpty)
-              const DashboardEmptyCard(
-                message: 'No reports match your search or filter.',
-              )
-            else
-              ...visible.map(
-                (report) => SpecialistReportCard(
-                  report: report,
-                  onTap: () => context.push(
-                    AppRoutes.specialistReportDetails(
-                      report.id,
-                      isAi: report.isAiReport,
-                    ),
-                  ),
-                ),
-              ),
-            SizedBox(height: context.dashSpacing),
-          ],
-        ),
-      );
-    }
+    final scoped = widget.patientId != null && widget.patientId!.isNotEmpty;
 
     return SpecialistPageScaffold(
-      title: 'Reports',
-      currentNav: DashboardNavItem.reports,
-      body: body,
+      title: scoped ? 'Patient Reports' : 'Reports',
+      showBackButton: scoped,
+      currentNav: scoped ? null : DashboardNavItem.reports,
+      body: ReportsListBody(
+        patientId: widget.patientId,
+        searchController: _searchController,
+        refreshIndicatorColor: DashboardColors.primary,
+        onReportTap: (context, report) {
+          context.push(
+            AppRoutes.specialistReportDetails(
+              report.id,
+              isAi: report.isAiReport,
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -4,17 +4,16 @@ import '../../../core/utils/api_response_parser.dart';
 import '../models/specialist_edit_treatment_plan_models.dart';
 import '../models/specialist_patient_details_models.dart';
 
-/// Treatment plan edit API access.
+/// Not supported by backend schema:
+/// - description on treatment_plans
+/// - sessions_per_week on treatment_plans
 ///
 /// Endpoints:
 /// - GET /treatment-plans/:id
 /// - GET /goals/treatment-plans/:planId/goals
 /// - GET /goals/goals/:id/progress
 /// - PUT /treatment-plans/:id
-///
-/// Not supported by backend schema:
-/// - description on treatment_plans
-/// - sessions_per_week on treatment_plans
+/// - POST /treatment-plans
 class SpecialistEditTreatmentPlanRepository {
   SpecialistEditTreatmentPlanRepository(this._dio);
 
@@ -101,14 +100,76 @@ class SpecialistEditTreatmentPlanRepository {
     String planId,
     UpdateTreatmentPlanInput input,
   ) async {
-    final response = await _dio.put(
-      '/treatment-plans/$planId',
-      data: input.toJson(),
-    );
-    final map = ApiResponseParser.extractMap(response.data);
-    if (map == null) {
-      throw Exception('Invalid treatment plan response');
+    try {
+      final response = await _dio.put(
+        '/treatment-plans/$planId',
+        data: input.toJson(),
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw Exception('Invalid treatment plan response');
+      }
+      return EditableTreatmentPlan.fromMap(map);
+    } on DioException catch (error) {
+      throw Exception(friendlyTreatmentPlanError(error, action: 'update'));
     }
-    return EditableTreatmentPlan.fromMap(map);
+  }
+
+  Future<EditableTreatmentPlan> createPlan(CreateTreatmentPlanInput input) async {
+    try {
+      final response = await _dio.post(
+        '/treatment-plans',
+        data: input.toJson(),
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw Exception('Invalid treatment plan response');
+      }
+      return EditableTreatmentPlan.fromMap(map);
+    } on DioException catch (error) {
+      throw Exception(friendlyTreatmentPlanError(error, action: 'create'));
+    }
+  }
+
+  /// Concise specialist-facing treatment plan errors.
+  static String friendlyTreatmentPlanError(
+    DioException error, {
+    required String action,
+  }) {
+    final status = error.response?.statusCode;
+    final data = error.response?.data;
+    String? apiMessage;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      apiMessage =
+          ApiResponseParser.readString(map, const ['message', 'error']);
+    }
+
+    if (status == 403) {
+      return 'You do not have access to this patient.';
+    }
+    if (status == 409) {
+      return apiMessage?.trim().isNotEmpty == true
+          ? apiMessage!.trim()
+          : 'This patient already has an active treatment plan.';
+    }
+    if (status == 404) {
+      return apiMessage?.trim().isNotEmpty == true
+          ? apiMessage!.trim()
+          : 'Patient or treatment plan not found.';
+    }
+    if (status == 400) {
+      final message = apiMessage?.trim();
+      if (message != null &&
+          message.isNotEmpty &&
+          !message.contains('DioException') &&
+          !message.contains('validateStatus')) {
+        return message;
+      }
+      return 'Please check the plan details and try again.';
+    }
+    return action == 'create'
+        ? 'Failed to create treatment plan. Please try again.'
+        : 'Failed to save treatment plan. Please try again.';
   }
 }

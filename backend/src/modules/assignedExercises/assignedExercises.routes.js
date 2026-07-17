@@ -1,6 +1,7 @@
 const express = require("express");
 
 const assignedExercisesController = require("./assignedExercises.controller");
+const assignedExercisesValidation = require("./assignedExercises.validation");
 
 const authenticate = require("../../middleware/auth.middleware");
 const authorizeRoles = require("../../middleware/role.middleware");
@@ -11,6 +12,7 @@ router.post(
   "/assigned-exercises",
   authenticate,
   authorizeRoles("admin", "specialist"),
+  assignedExercisesValidation.validateCreateAssignedExercise,
   assignedExercisesController.createAssignedExercise
 );
 

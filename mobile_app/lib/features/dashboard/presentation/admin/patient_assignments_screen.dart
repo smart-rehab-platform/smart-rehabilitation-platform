@@ -27,6 +27,48 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
     });
   }
 
+  Future<void> _confirmUnlinkSpecialist(PatientSpecialistLink link) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => _UnlinkConfirmDialog(
+        title: 'Unlink Specialist',
+        message:
+            'Are you sure you want to unlink ${link.specialistName} from this patient?',
+        messenger: messenger,
+        onConfirm: () => ref
+            .read(adminPatientAssignmentsProvider.notifier)
+            .unlinkSpecialist(link.specialistId),
+      ),
+    );
+
+    if (!mounted || confirmed != true) return;
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Specialist unlinked successfully.')),
+    );
+  }
+
+  Future<void> _confirmUnlinkParent(PatientGuardianLink guardian) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => _UnlinkConfirmDialog(
+        title: 'Unlink Parent',
+        message:
+            'Are you sure you want to unlink ${guardian.parentName} from this patient?',
+        messenger: messenger,
+        onConfirm: () => ref
+            .read(adminPatientAssignmentsProvider.notifier)
+            .unlinkParent(guardian.parentId),
+      ),
+    );
+
+    if (!mounted || confirmed != true) return;
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Parent unlinked successfully.')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(adminPatientAssignmentsProvider);
@@ -268,6 +310,13 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                           ],
                         ),
                       ),
+                      SizedBox(height: context.dashSpacing * 0.5),
+                      Text(
+                        'To change an assignment, unlink the current specialist or parent, then assign or link the new one.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AdminDashboardColors.textSecondary,
+                        ),
+                      ),
                       SizedBox(height: context.dashSpacing),
                       Text(
                         'Assigned Specialists',
@@ -327,6 +376,16 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                           ),
                                         ),
                                       ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    tooltip: 'Unlink specialist',
+                                    onPressed: state.isUnlinking
+                                        ? null
+                                        : () => _confirmUnlinkSpecialist(link),
+                                    icon: Icon(
+                                      Icons.link_off_rounded,
+                                      color: AdminDashboardColors.danger,
                                     ),
                                   ),
                                 ],
@@ -395,6 +454,16 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                       ],
                                     ),
                                   ),
+                                  IconButton(
+                                    tooltip: 'Unlink parent',
+                                    onPressed: state.isUnlinking
+                                        ? null
+                                        : () => _confirmUnlinkParent(guardian),
+                                    icon: Icon(
+                                      Icons.link_off_rounded,
+                                      color: AdminDashboardColors.danger,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -403,6 +472,87 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                     ],
                   ),
                 ),
+    );
+  }
+}
+
+class _UnlinkConfirmDialog extends StatefulWidget {
+  const _UnlinkConfirmDialog({
+    required this.title,
+    required this.message,
+    required this.messenger,
+    required this.onConfirm,
+  });
+
+  final String title;
+  final String message;
+  final ScaffoldMessengerState messenger;
+  final Future<String?> Function() onConfirm;
+
+  @override
+  State<_UnlinkConfirmDialog> createState() => _UnlinkConfirmDialogState();
+}
+
+class _UnlinkConfirmDialogState extends State<_UnlinkConfirmDialog> {
+  bool _submitting = false;
+
+  Future<void> _onConfirmPressed() async {
+    if (_submitting) return;
+
+    setState(() => _submitting = true);
+
+    final error = await widget.onConfirm();
+    if (!mounted) return;
+
+    if (error != null) {
+      setState(() => _submitting = false);
+      widget.messenger.showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: AdminDashboardColors.danger,
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).pop(true);
+  }
+
+  void _onCancelPressed() {
+    if (_submitting) return;
+    Navigator.of(context).pop(false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: !_submitting,
+      child: AlertDialog(
+        title: Text(widget.title),
+        content: Text(widget.message),
+        actions: [
+          TextButton(
+            onPressed: _submitting ? null : _onCancelPressed,
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: _submitting ? null : _onConfirmPressed,
+            style: FilledButton.styleFrom(
+              backgroundColor: AdminDashboardColors.danger,
+            ),
+            child: _submitting
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text('Unlink'),
+          ),
+        ],
+      ),
     );
   }
 }

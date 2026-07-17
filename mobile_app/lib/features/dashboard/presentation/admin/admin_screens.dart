@@ -16,6 +16,7 @@ import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import '../../../presence/widgets/online_status_dot.dart';
+import '../shared/reports_list_widgets.dart';
 
 class AdminProfileScreen extends ConsumerStatefulWidget {
   const AdminProfileScreen({super.key});
@@ -54,7 +55,9 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
     }
 
     final picked = await _imagePicker.pickImage(
-      source: action == _PhotoAction.camera ? ImageSource.camera : ImageSource.gallery,
+      source: action == _PhotoAction.camera
+          ? ImageSource.camera
+          : ImageSource.gallery,
       maxWidth: 1200,
       imageQuality: 85,
     );
@@ -67,10 +70,9 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
 
     final bytes = await picked.readAsBytes();
     final filename = picked.name.isNotEmpty ? picked.name : 'profile.jpg';
-    final success = await ref.read(authProvider.notifier).uploadProfileImage(
-          bytes,
-          filename,
-        );
+    final success = await ref
+        .read(authProvider.notifier)
+        .uploadProfileImage(bytes, filename);
 
     if (!mounted) {
       return;
@@ -83,7 +85,8 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
         content: Text(
           success
               ? 'Profile photo updated successfully.'
-              : ref.read(authProvider).errorMessage ?? 'Failed to upload photo.',
+              : ref.read(authProvider).errorMessage ??
+                    'Failed to upload photo.',
         ),
       ),
     );
@@ -167,6 +170,11 @@ class AdminMoreScreen extends ConsumerWidget {
             onTap: () => context.go(AppRoutes.adminPatientAssignments),
           ),
           _MoreTile(
+            icon: Icons.inbox_outlined,
+            label: 'Case Requests',
+            onTap: () => context.go(AppRoutes.adminCaseRequests),
+          ),
+          _MoreTile(
             icon: Icons.event_note_outlined,
             label: 'Sessions',
             onTap: () => context.go(AppRoutes.adminSessions),
@@ -206,7 +214,8 @@ class AdminExercisesScreen extends ConsumerStatefulWidget {
   const AdminExercisesScreen({super.key});
 
   @override
-  ConsumerState<AdminExercisesScreen> createState() => _AdminExercisesScreenState();
+  ConsumerState<AdminExercisesScreen> createState() =>
+      _AdminExercisesScreenState();
 }
 
 class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
@@ -274,60 +283,39 @@ class AdminReportsScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
+  late final TextEditingController _searchController;
+
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(specialistReportsProvider.notifier).initialize();
+      ref.read(specialistReportsProvider(null).notifier).initialize();
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(specialistReportsProvider);
-    final theme = Theme.of(context);
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return AdminPageScaffold(
       title: 'Reports',
       currentNav: DashboardNavItem.reports,
-      body: SpecialistAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () => ref.read(specialistReportsProvider.notifier).refresh(),
-        isEmpty: state.reports.isEmpty,
-        emptyMessage: 'No reports found.',
-        child: Column(
-          children: state.reports
-              .map(
-                (report) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: AdminSurfaceCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          report.title,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        if (report.patientName != null || report.reportType != null)
-                          Text(
-                            [
-                              if (report.patientName != null) report.patientName,
-                              if (report.reportType != null) report.reportType,
-                            ].whereType<String>().join(' • '),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AdminDashboardColors.textSecondary,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
+      body: ReportsListBody(
+        searchController: _searchController,
+        refreshIndicatorColor: AdminDashboardColors.primary,
+        onReportTap: (context, report) {
+          context.push(
+            AppRoutes.adminReportDetails(
+              report.id,
+              isAi: report.isAiReport,
+            ),
+          );
+        },
       ),
     );
   }
@@ -341,7 +329,8 @@ class AdminNotificationsScreen extends ConsumerStatefulWidget {
       _AdminNotificationsScreenState();
 }
 
-class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScreen> {
+class _AdminNotificationsScreenState
+    extends ConsumerState<AdminNotificationsScreen> {
   @override
   void initState() {
     super.initState();
@@ -363,14 +352,17 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           TextButton(
             onPressed: state.isUpdating
                 ? null
-                : () => ref.read(specialistNotificationsProvider.notifier).markAllAsRead(),
+                : () => ref
+                      .read(specialistNotificationsProvider.notifier)
+                      .markAllAsRead(),
             child: const Text('Mark all as read'),
           ),
       ],
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
         errorMessage: state.errorMessage,
-        onRetry: () => ref.read(specialistNotificationsProvider.notifier).refresh(),
+        onRetry: () =>
+            ref.read(specialistNotificationsProvider.notifier).refresh(),
         isEmpty: state.items.isEmpty,
         emptyMessage: 'No notifications yet.',
         child: Column(
@@ -401,8 +393,9 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                               Text(
                                 item.title,
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight:
-                                      item.isRead ? FontWeight.w500 : FontWeight.w700,
+                                  fontWeight: item.isRead
+                                      ? FontWeight.w500
+                                      : FontWeight.w700,
                                 ),
                               ),
                               if (item.body != null)
@@ -456,7 +449,9 @@ class _ProfileRow extends StatelessWidget {
           Text(label, style: Theme.of(context).textTheme.labelSmall),
           Text(
             value,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -496,12 +491,15 @@ class _MoreTile extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AdminDashboardColors.textPrimary,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: AdminDashboardColors.textPrimary,
+                ),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AdminDashboardColors.textMuted),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AdminDashboardColors.textMuted,
+            ),
           ],
         ),
       ),

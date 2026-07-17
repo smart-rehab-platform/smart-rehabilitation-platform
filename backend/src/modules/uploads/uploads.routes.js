@@ -2,20 +2,31 @@ const express = require("express");
 const multer = require("multer");
 const uploadsController = require("./uploads.controller");
 const authenticate = require("../../middleware/auth.middleware");
+const authorizeRoles = require("../../middleware/role.middleware");
 const { uploadsRoot, reportsUploadDir } = require("../../config/uploads");
 const {
   isAllowedMessageAttachment,
   MAX_FILE_SIZE_BYTES,
 } = require("../../config/messageAttachments");
+const {
+  isAllowedExerciseMedia,
+  isAllowedExerciseSubmissionMedia,
+  MAX_EXERCISE_MEDIA_BYTES,
+  sanitizeUploadFilename,
+} = require("../../config/exerciseMedia");
 
 const router = express.Router();
 
-const createStorage = (destination) =>
+const createStorage = (destination, { sanitizeFilename = false } = {}) =>
   multer.diskStorage({
     destination: (_req, _file, cb) => {
       cb(null, destination);
     },
     filename: (_req, file, cb) => {
+      if (sanitizeFilename) {
+        cb(null, sanitizeUploadFilename(file.originalname));
+        return;
+      }
       cb(null, Date.now() + "-" + file.originalname.replace(/\s+/g, "-"));
     },
   });
@@ -39,6 +50,40 @@ const uploadMessageAttachment = multer({
   },
 });
 
+const uploadExerciseMedia = multer({
+  storage: createStorage(uploadsRoot, { sanitizeFilename: true }),
+  limits: { fileSize: MAX_EXERCISE_MEDIA_BYTES },
+  fileFilter: (_req, file, cb) => {
+    if (isAllowedExerciseMedia(file.mimetype, file.originalname)) {
+      cb(null, true);
+      return;
+    }
+
+    const error = new Error(
+      "Unsupported instructional media type. Allowed: images, audio, PDF, and MP4/MOV video."
+    );
+    error.statusCode = 400;
+    cb(error);
+  },
+});
+
+const uploadExerciseSubmissionMedia = multer({
+  storage: createStorage(uploadsRoot, { sanitizeFilename: true }),
+  limits: { fileSize: MAX_EXERCISE_MEDIA_BYTES },
+  fileFilter: (_req, file, cb) => {
+    if (isAllowedExerciseSubmissionMedia(file.mimetype, file.originalname)) {
+      cb(null, true);
+      return;
+    }
+
+    const error = new Error(
+      "Unsupported submission media type. Allowed: images, audio, and MP4/MOV video."
+    );
+    error.statusCode = 400;
+    cb(error);
+  },
+});
+
 router.post(
   "/profile-image",
   upload.single("file"),
@@ -47,8 +92,32 @@ router.post(
 
 router.post(
   "/exercise-media",
-  upload.single("file"),
+  authenticate,
+  authorizeRoles("admin", "specialist"),
+  (req, res, next) => {
+    uploadExerciseMedia.single("file")(req, res, (err) => {
+      if (err) {
+        return uploadsController.handleUploadError(res, err);
+      }
+      next();
+    });
+  },
   uploadsController.uploadExerciseMedia
+);
+
+router.post(
+  "/exercise-submission-media",
+  authenticate,
+  authorizeRoles("parent", "admin", "specialist"),
+  (req, res, next) => {
+    uploadExerciseSubmissionMedia.single("file")(req, res, (err) => {
+      if (err) {
+        return uploadsController.handleUploadError(res, err);
+      }
+      next();
+    });
+  },
+  uploadsController.uploadExerciseSubmissionMedia
 );
 
 router.post(

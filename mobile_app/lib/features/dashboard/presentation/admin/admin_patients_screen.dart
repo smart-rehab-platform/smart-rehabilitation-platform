@@ -81,6 +81,16 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
     }).toList();
   }
 
+  Future<void> _openPatientDetails(String patientId) async {
+    final updated = await context.push<bool>(
+      AppRoutes.adminPatientDetails(patientId),
+    );
+    if (!mounted) return;
+    if (updated == true) {
+      await _load();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -137,6 +147,9 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                       (patient) => Padding(
                         padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
                         child: AdminSurfaceCard(
+                          onTap: patient.id.isEmpty
+                              ? null
+                              : () => _openPatientDetails(patient.id),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -175,6 +188,16 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                           ),
                                         ],
                                       ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    tooltip: 'Edit Patient',
+                                    onPressed: patient.id.isEmpty
+                                        ? null
+                                        : () => _openPatientDetails(patient.id),
+                                    icon: const Icon(
+                                      Icons.edit_outlined,
+                                      color: AdminDashboardColors.primary,
                                     ),
                                   ),
                                 ],
