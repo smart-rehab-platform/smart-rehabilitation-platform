@@ -51,6 +51,8 @@ import '../../features/dashboard/presentation/specialist/specialist_profile_scre
 import '../../features/dashboard/presentation/specialist/specialist_report_details_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_reports_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_sessions_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_session_details_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_upsert_session_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_speech_analysis_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_screens.dart';
 import '../../features/dashboard/presentation/specialist_dashboard_screen.dart';
@@ -386,6 +388,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.specialistSessions,
         name: 'specialistSessions',
         builder: (context, state) => const SpecialistSessionsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistCreateSession,
+        name: 'specialistCreateSession',
+        builder: (context, state) => SpecialistUpsertSessionScreen(
+          initialPatientId: state.uri.queryParameters['patientId'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistEditSessionPath,
+        name: 'specialistEditSession',
+        builder: (context, state) => SpecialistUpsertSessionScreen(
+          sessionId: state.pathParameters['sessionId'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistSessionDetailsPath,
+        name: 'specialistSessionDetails',
+        builder: (context, state) => SpecialistSessionDetailsScreen(
+          sessionId: state.pathParameters['sessionId']!,
+        ),
       ),
       GoRoute(
         path: AppRoutes.specialistTreatmentPlans,
