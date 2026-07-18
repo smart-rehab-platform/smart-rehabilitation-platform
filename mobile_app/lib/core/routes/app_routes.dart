@@ -59,6 +59,21 @@ class AppRoutes {
   static const String specialistPendingReviews =
       '/dashboard/specialist/pending-reviews';
   static const String specialistSessions = '/dashboard/specialist/sessions';
+  static const String specialistSessionDetailsPath =
+      '/dashboard/specialist/sessions/:sessionId';
+
+  static String specialistSessionDetails(String sessionId) =>
+      '/dashboard/specialist/sessions/$sessionId';
+
+  static const String specialistCreateSession =
+      '/dashboard/specialist/sessions/new';
+
+  static const String specialistEditSessionPath =
+      '/dashboard/specialist/sessions/:sessionId/edit';
+
+  static String specialistEditSession(String sessionId) =>
+      '/dashboard/specialist/sessions/$sessionId/edit';
+
   static const String specialistTreatmentPlans =
       '/dashboard/specialist/treatment-plans';
 

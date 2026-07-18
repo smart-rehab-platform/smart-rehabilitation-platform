@@ -66,6 +66,179 @@ class SpecialistFeaturesRepository {
     }
   }
 
+  Future<SpecialistSessionDetail> fetchSessionById(String sessionId) async {
+    try {
+      final response = await _dio.get('/sessions/$sessionId');
+      final sessionMap = ApiResponseParser.extractMap(response.data);
+      if (sessionMap == null) {
+        throw Exception('Session details returned no data');
+      }
+      final session = SpecialistSessionDetail.fromMap(sessionMap);
+      if (session.id.isEmpty) {
+        throw Exception('Session details returned an invalid session');
+      }
+      return session;
+    } on DioException catch (error) {
+      throw Exception(
+        _readSessionError(error, fallback: 'Failed to load session details.'),
+      );
+    }
+  }
+
+  Future<SpecialistSessionDetail> createSession({
+    required String patientId,
+    required String specialistId,
+    required DateTime scheduledAt,
+    int? durationMinutes,
+    String? locationOrLink,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/sessions',
+        data: {
+          'patient_id': patientId,
+          'specialist_id': specialistId,
+          'scheduled_at': scheduledAt.toIso8601String(),
+          if (durationMinutes != null) 'duration_minutes': durationMinutes,
+          if (locationOrLink != null && locationOrLink.trim().isNotEmpty)
+            'location_or_link': locationOrLink.trim(),
+        },
+      );
+      return _parseSessionResponse(
+        response.data,
+        fallbackError: 'Session create returned no data',
+      );
+    } on DioException catch (error) {
+      throw Exception(
+        _readSessionError(error, fallback: 'Failed to create session.'),
+      );
+    }
+  }
+
+  Future<SpecialistSessionDetail> updateSession({
+    required String sessionId,
+    DateTime? scheduledAt,
+    int? durationMinutes,
+    String? locationOrLink,
+    String? cancellationReason,
+  }) async {
+    try {
+      final response = await _dio.put(
+        '/sessions/$sessionId',
+        data: {
+          if (scheduledAt != null) 'scheduled_at': scheduledAt.toIso8601String(),
+          if (durationMinutes != null) 'duration_minutes': durationMinutes,
+          if (locationOrLink != null) 'location_or_link': locationOrLink,
+          if (cancellationReason != null)
+            'cancellation_reason': cancellationReason,
+        },
+      );
+      return _parseSessionResponse(
+        response.data,
+        fallbackError: 'Session update returned no data',
+      );
+    } on DioException catch (error) {
+      throw Exception(
+        _readSessionError(error, fallback: 'Failed to update session.'),
+      );
+    }
+  }
+
+  Future<SpecialistSessionDetail> completeSession(String sessionId) async {
+    try {
+      final response = await _dio.patch('/sessions/$sessionId/complete');
+      return _parseSessionResponse(
+        response.data,
+        fallbackError: 'Complete session returned no data',
+      );
+    } on DioException catch (error) {
+      throw Exception(
+        _readSessionError(error, fallback: 'Failed to mark session completed.'),
+      );
+    }
+  }
+
+  Future<SpecialistSessionDetail> cancelSession(
+    String sessionId, {
+    String? reason,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        '/sessions/$sessionId/cancel',
+        data: {
+          if (reason != null && reason.trim().isNotEmpty)
+            'cancellation_reason': reason.trim(),
+        },
+      );
+      return _parseSessionResponse(
+        response.data,
+        fallbackError: 'Cancel session returned no data',
+      );
+    } on DioException catch (error) {
+      throw Exception(
+        _readSessionError(error, fallback: 'Failed to cancel session.'),
+      );
+    }
+  }
+
+  Future<SpecialistSessionDetail> markSessionNoShow(String sessionId) async {
+    try {
+      final response = await _dio.patch('/sessions/$sessionId/no-show');
+      return _parseSessionResponse(
+        response.data,
+        fallbackError: 'No-show update returned no data',
+      );
+    } on DioException catch (error) {
+      throw Exception(
+        _readSessionError(error, fallback: 'Failed to mark session as no show.'),
+      );
+    }
+  }
+
+  SpecialistSessionDetail _parseSessionResponse(
+    dynamic data, {
+    required String fallbackError,
+  }) {
+    final sessionMap = ApiResponseParser.extractMap(data);
+    if (sessionMap == null) {
+      throw Exception(fallbackError);
+    }
+    final session = SpecialistSessionDetail.fromMap(sessionMap);
+    if (session.id.isEmpty) {
+      throw Exception(fallbackError);
+    }
+    return session;
+  }
+
+  String _readSessionError(
+    DioException error, {
+    required String fallback,
+  }) {
+    final status = error.response?.statusCode;
+    final data = error.response?.data;
+    String? message;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      message = ApiResponseParser.readString(map, const ['message', 'error']);
+    }
+    if (message != null && message.trim().isNotEmpty) {
+      return message.trim();
+    }
+    if (status == 400) {
+      return 'This session cannot be updated. Check the details and try again.';
+    }
+    if (status == 401) {
+      return 'Please sign in to continue.';
+    }
+    if (status == 403) {
+      return 'You do not have permission to manage this session.';
+    }
+    if (status == 404) {
+      return 'Session was not found.';
+    }
+    return fallback;
+  }
+
   Future<List<SpecialistTreatmentPlanItem>> fetchTreatmentPlans(
     String specialistUserId,
   ) async {
