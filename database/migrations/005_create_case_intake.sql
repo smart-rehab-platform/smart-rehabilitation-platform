@@ -1,9 +1,4 @@
--- Case intake and parent onboarding schema foundation
--- Supports preliminary requests before an official patient record exists.
 
--- ---------------------------------------------------------------------
--- Ensure preferred_time_period exists (created in migration 004 / schema.sql)
--- ---------------------------------------------------------------------
 DO $$
 BEGIN
     CREATE TYPE preferred_time_period AS ENUM (
@@ -16,9 +11,7 @@ EXCEPTION
     WHEN duplicate_object THEN NULL;
 END $$;
 
--- ---------------------------------------------------------------------
--- Enum: case_intake_status
--- ---------------------------------------------------------------------
+
 DO $$
 BEGIN
     CREATE TYPE case_intake_status AS ENUM (
@@ -33,18 +26,14 @@ EXCEPTION
     WHEN duplicate_object THEN NULL;
 END $$;
 
--- ---------------------------------------------------------------------
--- Extend notification_type (guarded additions; safe to re-run)
--- ---------------------------------------------------------------------
+
 ALTER TYPE notification_type ADD VALUE IF NOT EXISTS 'case_request_submitted';
 ALTER TYPE notification_type ADD VALUE IF NOT EXISTS 'case_request_assigned';
 ALTER TYPE notification_type ADD VALUE IF NOT EXISTS 'case_request_accepted';
 ALTER TYPE notification_type ADD VALUE IF NOT EXISTS 'case_request_rejected';
 ALTER TYPE notification_type ADD VALUE IF NOT EXISTS 'case_request_converted';
 
--- ---------------------------------------------------------------------
--- case_categories
--- ---------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS case_categories (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name        VARCHAR(150) NOT NULL,
@@ -67,9 +56,7 @@ CREATE TRIGGER trg_case_categories_updated_at
     BEFORE UPDATE ON case_categories
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
--- ---------------------------------------------------------------------
--- specialist_case_categories (specialist_id references users.id)
--- ---------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS specialist_case_categories (
     id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     specialist_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -81,10 +68,7 @@ CREATE TABLE IF NOT EXISTS specialist_case_categories (
 CREATE INDEX IF NOT EXISTS idx_specialist_case_categories_category
     ON specialist_case_categories (category_id);
 
--- ---------------------------------------------------------------------
--- case_intake_requests
--- Conversation link is stored only on conversations.case_request_id.
--- ---------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS case_intake_requests (
     id                              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     parent_id                       UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
@@ -119,7 +103,7 @@ CREATE TABLE IF NOT EXISTS case_intake_requests (
         CHECK (date_of_birth <= CURRENT_DATE)
 );
 
--- Backend validation should also check duplicates; names may differ by casing/spacing.
+
 CREATE UNIQUE INDEX IF NOT EXISTS idx_case_intake_one_active_per_child
     ON case_intake_requests (parent_id, child_name, date_of_birth)
     WHERE status NOT IN ('rejected', 'converted_to_patient');
@@ -147,9 +131,7 @@ CREATE TRIGGER trg_case_intake_requests_updated_at
     BEFORE UPDATE ON case_intake_requests
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
--- ---------------------------------------------------------------------
--- case_request_attachments
--- ---------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS case_request_attachments (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     case_request_id UUID NOT NULL REFERENCES case_intake_requests(id) ON DELETE CASCADE,
@@ -164,9 +146,7 @@ CREATE TABLE IF NOT EXISTS case_request_attachments (
 CREATE INDEX IF NOT EXISTS idx_case_request_attachments_request
     ON case_request_attachments (case_request_id);
 
--- ---------------------------------------------------------------------
--- conversations: link to case request (one conversation per request)
--- ---------------------------------------------------------------------
+
 ALTER TABLE conversations
     ADD COLUMN IF NOT EXISTS case_request_id UUID
     REFERENCES case_intake_requests(id) ON DELETE RESTRICT;

@@ -17,7 +17,7 @@ import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { RoleCard } from "../../components/auth/RoleCard";
 import { PasswordStrength } from "../../components/auth/PasswordStrength";
 import { Toast } from "../../components/auth/Toast";
-import { C } from "../../components/auth/tokens";
+import { C, G } from "../../components/auth/tokens";
 import {
   getPasswordStrength,
   readAuthApiMessage,
@@ -188,7 +188,7 @@ export default function Signup() {
             type="button"
             onClick={handlePhotoClick}
             className="w-16 h-16 rounded-full flex items-center justify-center relative cursor-pointer transition-all hover:scale-105 overflow-hidden"
-            style={{ border: `2px dashed ${C.primary}`, background: "rgba(74,127,167,0.08)" }}
+            style={{ border: `2px dashed ${C.primary}`, background: G.hoverBg }}
           >
             {profilePreview ? (
               <img
@@ -197,7 +197,7 @@ export default function Signup() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <Camera size={20} style={{ color: C.primary }} />
+              <Camera size={20} style={{ color: C.iconInteractive }} />
             )}
           </button>
           <p className="text-xs" style={{ color: C.light, opacity: 0.7 }}>
@@ -244,7 +244,7 @@ export default function Signup() {
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
-              style={{ color: C.light, opacity: 0.6 }}
+              style={{ color: C.iconInteractive, opacity: 0.85 }}
               className="hover:opacity-100 transition-opacity"
             >
               {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -265,7 +265,7 @@ export default function Signup() {
             <button
               type="button"
               onClick={() => setShowCf((v) => !v)}
-              style={{ color: C.light, opacity: 0.6 }}
+              style={{ color: C.iconInteractive, opacity: 0.85 }}
               className="hover:opacity-100 transition-opacity"
             >
               {showCf ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -320,8 +320,14 @@ export default function Signup() {
           Already have an account?{" "}
           <button
             onClick={() => navigate("/login")}
-            className="font-semibold transition-colors hover:text-white"
-            style={{ color: C.primary }}
+            className="font-semibold transition-colors"
+            style={{ color: C.soft }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = C.linkHover;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = C.soft;
+            }}
           >
             Sign In
           </button>

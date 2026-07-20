@@ -6,18 +6,22 @@ export function PrimaryButton({ children, loading, onClick }) {
     <button
       onClick={onClick}
       disabled={loading}
-      className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-95"
+      className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98]"
       style={{
         background: G.button,
-        color: C.navy,
-        boxShadow: `0 0 20px ${G.glow}, 0 4px 15px rgba(74,127,167,0.4)`,
+        color: C.white,
+        boxShadow: G.cardShadow,
         fontFamily: "'Inter', sans-serif",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = `0 0 30px ${G.glowStrong}, 0 6px 20px rgba(74,127,167,0.5)`;
+        e.currentTarget.style.boxShadow = `${G.cardShadow}, 0 0 20px ${G.glow}`;
+        e.currentTarget.style.transform = "translateY(-1px)";
+        e.currentTarget.style.filter = "brightness(1.06)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = `0 0 20px ${G.glow}, 0 4px 15px rgba(74,127,167,0.4)`;
+        e.currentTarget.style.boxShadow = G.cardShadow;
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.filter = "none";
       }}
     >
       {loading ? (

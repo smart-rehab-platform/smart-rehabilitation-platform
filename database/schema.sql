@@ -604,7 +604,7 @@ CREATE TABLE parent_profiles (
 CREATE TABLE refresh_tokens (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    token       TEXT NOT NULL UNIQUE,
+    token_hash  VARCHAR(64) NOT NULL UNIQUE,
     expires_at  TIMESTAMPTZ NOT NULL,
     revoked_at  TIMESTAMPTZ,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -741,7 +741,8 @@ CREATE INDEX idx_progress_snapshots_patient     ON progress_snapshots(patient_id
 
 CREATE INDEX idx_parent_profiles_user          ON parent_profiles(user_id);
 CREATE INDEX idx_refresh_tokens_user           ON refresh_tokens(user_id);
-CREATE INDEX idx_refresh_tokens_token          ON refresh_tokens(token);
+CREATE INDEX idx_refresh_tokens_expires_at     ON refresh_tokens(expires_at);
+CREATE INDEX idx_refresh_tokens_active_user    ON refresh_tokens(user_id, expires_at) WHERE revoked_at IS NULL;
 CREATE INDEX idx_resources_uploaded_by         ON resources(uploaded_by);
 CREATE INDEX idx_reports_patient               ON reports(patient_id);
 CREATE INDEX idx_reports_generated_by          ON reports(generated_by);

@@ -1,80 +1,181 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import api from "../services/api";
-import { AuthContext } from "./authContext";
+import {
+  extractAccessToken,
+  logoutFromServer,
+  resetSessionExpiredFlag,
+  tryRestoreSessionFromCookie,
+} from "../services/authRefresh";
+import {
+  registerAuthSessionHandlers,
+} from "../services/authSessionBridge";
 import {
   clearAuthSession,
-  clearPersistedSession,
   getAuthToken,
   getCurrentUser,
-  getPersistedToken,
-  getRememberMePreference,
+  getStoredAccessToken,
+  getStoredUser,
+  hasStoredAuthSession,
   loadRememberedLogin,
-  saveRememberedSession,
-  saveTemporarySession,
+  storeAuthSession,
   syncRestoredSession,
 } from "../services/authStorage";
+import { AuthContext } from "./authContext";
+
+function resolveLoginSession(data) {
+  const accessToken = extractAccessToken(data);
+  const user = data?.data?.user ?? null;
+
+  if (!accessToken || !user) {
+    throw new Error("Login response is missing session data.");
+  }
+
+  return { accessToken, user };
+}
 
 export function AuthProvider({ children }) {
+  const initialToken = getStoredAccessToken();
   const initialUser = getCurrentUser();
 
   const [authState, setAuthState] = useState(() => ({
-    token: initialUser ? getAuthToken() : null,
+    token: initialToken,
     user: initialUser,
     isInitializing: true,
   }));
 
+  const hadStoredSessionRef = useRef(hasStoredAuthSession());
+  const authGenerationRef = useRef(0);
+
   useEffect(() => {
     let cancelled = false;
+    const restoreGeneration = authGenerationRef.current;
 
-    async function restoreSession() {
-      const rememberMe = getRememberMePreference();
-      const token = getPersistedToken();
+    const shouldApplyRestore = () =>
+      !cancelled && authGenerationRef.current === restoreGeneration;
 
-      if (!rememberMe || !token) {
-        if (!rememberMe) {
-          clearAuthSession();
-        }
-
-        if (!cancelled) {
-          setAuthState({
-            token: null,
-            user: null,
-            isInitializing: false,
-          });
-        }
+    const applySession = ({ accessToken, user }, { keepInitializing = false } = {}) => {
+      if (!shouldApplyRestore()) {
         return;
       }
 
-      try {
-        const { data } = await api.get("/auth/me");
-        const user = data?.data ?? null;
+      setAuthState({
+        token: accessToken,
+        user,
+        isInitializing: keepInitializing,
+      });
+    };
 
-        syncRestoredSession({ token, user });
+    const finishInitialization = (nextState) => {
+      if (!shouldApplyRestore()) {
+        return;
+      }
 
-        if (!cancelled) {
-          setAuthState({
-            token,
-            user,
-            isInitializing: false,
-          });
+      setAuthState({
+        ...nextState,
+        isInitializing: false,
+      });
+    };
+
+    const clearSessionState = () => {
+      finishInitialization({
+        token: null,
+        user: null,
+      });
+    };
+
+    const unregisterHandlers = registerAuthSessionHandlers({
+      onTokenRefreshed: ({ accessToken, user }) => {
+        if (cancelled) {
+          return;
         }
-      } catch {
-        clearAuthSession();
 
-        if (!cancelled) {
-          setAuthState({
-            token: null,
-            user: null,
-            isInitializing: false,
-          });
+        setAuthState((previous) => ({
+          ...previous,
+          token: accessToken,
+          user,
+        }));
+      },
+      onSessionExpired: () => {
+        clearSessionState();
+      },
+      onLogout: () => {
+        clearSessionState();
+      },
+    });
+
+    const handleStorageSync = (event) => {
+      if (
+        event.key !== "auth_token" &&
+        event.key !== "auth_user" &&
+        event.key !== "accessToken" &&
+        event.key !== "user" &&
+        event.key !== "remember_me"
+      ) {
+        return;
+      }
+
+      if (!getStoredAccessToken()) {
+        clearAuthSession();
+        clearSessionState();
+      }
+    };
+
+    async function restoreSession() {
+      const token = getStoredAccessToken();
+      const user = getStoredUser();
+
+      if (token && user) {
+        applySession({ accessToken: token, user }, { keepInitializing: true });
+
+        try {
+          const { data } = await api.get("/auth/me");
+          const freshUser = data?.data ?? user;
+          syncRestoredSession({ token, user: freshUser });
+          finishInitialization({ token, user: freshUser });
+          return;
+        } catch (error) {
+          if (!error.response) {
+            finishInitialization({ token, user });
+            return;
+          }
+
+          if (error.response.status === 401) {
+            clearSessionState();
+          } else {
+            finishInitialization({ token, user });
+          }
+
+          return;
         }
       }
+
+      const restored = await tryRestoreSessionFromCookie();
+      if (restored) {
+        finishInitialization({
+          token: restored.accessToken,
+          user: restored.user,
+        });
+        return;
+      }
+
+      if (!shouldApplyRestore()) {
+        return;
+      }
+
+      if (hadStoredSessionRef.current) {
+        clearAuthSession();
+      }
+
+      clearSessionState();
     }
 
+    window.addEventListener("storage", handleStorageSync);
     restoreSession();
 
     return () => {
       cancelled = true;
+      unregisterHandlers();
+      window.removeEventListener("storage", handleStorageSync);
     };
   }, []);
 
@@ -88,21 +189,19 @@ export function AuthProvider({ children }) {
       isVerified,
       async login({ email, password, rememberMe }) {
         const { data } = await api.post("/auth/login", { email, password });
-        const token = data?.data?.token ?? null;
-        const user = data?.data?.user ?? null;
+        const { accessToken, user } = resolveLoginSession(data);
 
-        if (!token || !user) {
-          throw new Error("Login response is missing session data.");
-        }
-
-        if (rememberMe) {
-          saveRememberedSession({ token, user, email });
-        } else {
-          saveTemporarySession({ token, user });
-        }
+        resetSessionExpiredFlag();
+        authGenerationRef.current += 1;
+        storeAuthSession({
+          accessToken,
+          user,
+          rememberMe,
+          email,
+        });
 
         setAuthState({
-          token,
+          token: accessToken,
           user,
           isInitializing: false,
         });
@@ -123,7 +222,17 @@ export function AuthProvider({ children }) {
         const token = getAuthToken();
 
         if (!token) {
-          clearPersistedSession();
+          const restored = await tryRestoreSessionFromCookie();
+          if (restored) {
+            setAuthState({
+              token: restored.accessToken,
+              user: restored.user,
+              isInitializing: false,
+            });
+            return restored.user;
+          }
+
+          clearAuthSession();
           setAuthState({
             token: null,
             user: null,
@@ -136,6 +245,10 @@ export function AuthProvider({ children }) {
           const { data } = await api.get("/auth/me");
           const user = data?.data ?? null;
 
+          if (!user) {
+            throw new Error("Unable to refresh user profile.");
+          }
+
           syncRestoredSession({ token, user });
           setAuthState({
             token,
@@ -144,7 +257,11 @@ export function AuthProvider({ children }) {
           });
 
           return user;
-        } catch {
+        } catch (error) {
+          if (!error.response) {
+            return getCurrentUser();
+          }
+
           clearAuthSession();
           setAuthState({
             token: null,
@@ -158,13 +275,19 @@ export function AuthProvider({ children }) {
         const { data } = await api.post("/auth/send-verification", { email });
         return data?.message || "Verification email sent successfully.";
       },
-      logout(options = {}) {
-        clearAuthSession(options);
-        setAuthState({
-          token: null,
-          user: null,
-          isInitializing: false,
-        });
+      async logout(options = {}) {
+        try {
+          await logoutFromServer();
+        } catch {
+          // Local logout must still succeed.
+        } finally {
+          clearAuthSession(options);
+          setAuthState({
+            token: null,
+            user: null,
+            isInitializing: false,
+          });
+        }
       },
       loadRememberedLogin,
     };

@@ -5,7 +5,9 @@ import Login from "./pages/auth/Login";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Signup from "./pages/auth/Signup";
 import VerifyEmail from "./pages/auth/VerifyEmail";
+import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
+import { AuthSessionNavigator } from "./components/auth/AuthSessionNavigator";
 import { useAuth } from "./context/useAuth";
 import { canAccessRoute, dashboardForRole } from "./routes/roleRouting";
 
@@ -24,23 +26,23 @@ function AppLoadingScreen() {
   );
 }
 
-function RootRedirect() {
+function LandingRoute() {
   const { isInitializing, isAuthenticated, isVerified, user } = useAuth();
 
   if (isInitializing) {
     return <AppLoadingScreen />;
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  if (isAuthenticated) {
+    if (!isVerified) {
+      const email = user?.email ? `?email=${encodeURIComponent(user.email)}` : "";
+      return <Navigate to={`/verify-email${email}`} replace />;
+    }
+
+    return <Navigate to={dashboardForRole(user?.role) || "/login"} replace />;
   }
 
-  if (!isVerified) {
-    const email = user?.email ? `?email=${encodeURIComponent(user.email)}` : "";
-    return <Navigate to={`/verify-email${email}`} replace />;
-  }
-
-  return <Navigate to={dashboardForRole(user?.role) || "/login"} replace />;
+  return <LandingPage />;
 }
 
 function PublicAuthRoute({ children }) {
@@ -85,7 +87,7 @@ function ProtectedRoute({ children }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   if (!isVerified) {
@@ -108,8 +110,9 @@ function DashboardLanding() {
 function App() {
   return (
     <BrowserRouter>
+      <AuthSessionNavigator />
       <Routes>
-        <Route path="/" element={<RootRedirect />} />
+        <Route path="/" element={<LandingRoute />} />
         <Route
           path="/dashboard"
           element={

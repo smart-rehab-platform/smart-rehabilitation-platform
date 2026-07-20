@@ -1,7 +1,8 @@
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
 const pool = require("../../database/db");
+const { generateAccessToken } = require("./auth.tokens");
+const refreshTokenService = require("./refreshToken.service");
 const {
   buildPasswordResetLink,
   buildVerificationLink,
@@ -150,27 +151,16 @@ const loginUser = async (email, password) => {
     throw createHttpError("Please verify your email before logging in.", 403);
   }
 
-  const token = jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      role: user.role
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" }
-  );
+  const sessionUser = refreshTokenService.formatAuthUser(user);
+  const accessToken = generateAccessToken(user);
+  const { rawToken: rawRefreshToken } =
+    await refreshTokenService.createRefreshTokenRecord(user.id);
 
   return {
-    token,
-    user: {
-      id: user.id,
-      full_name: user.full_name,
-      email: user.email,
-      role: user.role,
-      phone: user.phone,
-      profile_image_url: user.profile_image_url,
-      is_email_verified: user.is_email_verified
-    }
+    token: accessToken,
+    accessToken,
+    user: sessionUser,
+    rawRefreshToken,
   };
 };
 
