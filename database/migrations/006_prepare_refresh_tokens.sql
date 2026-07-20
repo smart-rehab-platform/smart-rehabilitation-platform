@@ -1,5 +1,5 @@
--- Prepare refresh_tokens for hashed refresh token storage (HttpOnly cookie phase 1)
--- Safe to run manually; idempotent for empty or already-migrated databases.
+-- Prepare refresh_tokens for hashed refresh token storage (HttpOnly cookie )
+
 
 DO $$
 BEGIN

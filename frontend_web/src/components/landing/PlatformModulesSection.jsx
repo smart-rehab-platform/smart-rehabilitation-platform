@@ -258,7 +258,7 @@ export function PlatformModulesSection() {
 
   return (
     <section
-      id="platform-modules"
+      id="features"
       className="overflow-hidden px-5 py-16 md:py-20 lg:px-8 lg:py-24"
       style={{ background: L.sectionSoftBg }}
       aria-labelledby="platform-modules-heading"

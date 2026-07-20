@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
+import verifiedUserIcon from "../../assets/icons/verified_user.svg";
 import { FeatureIndicators } from "./FeatureIndicators";
 import { L } from "./landingTokens";
 
@@ -44,7 +45,12 @@ export function Hero() {
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          <Sparkles size={14} strokeWidth={2} style={{ color: L.primary }} />
+          <img
+            src={verifiedUserIcon}
+            alt=""
+            aria-hidden="true"
+            className="h-[18px] w-[18px] shrink-0 object-contain"
+          />
           AI-Powered • Family-Centered • Specialist-Led
         </div>
 
@@ -122,8 +128,6 @@ export function Hero() {
 
         <FeatureIndicators />
       </div>
-
-      <div id="about" className="sr-only" aria-hidden="true" />
     </section>
   );
 }

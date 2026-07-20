@@ -1,4 +1,7 @@
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import accountTreeIcon from "../../assets/icons/account_tree.svg";
+import homeHealthIcon from "../../assets/icons/home_health.svg";
+import monitoringIcon from "../../assets/icons/monitoring.svg";
 import { L } from "./landingTokens";
 
 const CHALLENGES = [
@@ -7,22 +10,36 @@ const CHALLENGES = [
     title: "Fragmented Follow-Up",
     description:
       "Communication, reports, and progress updates are often spread across different tools.",
+    icon: accountTreeIcon,
   },
   {
     label: "Challenge B",
     title: "Limited Home Guidance",
     description:
       "Families do not always receive clear and continuous support for daily rehabilitation activities.",
+    icon: homeHealthIcon,
   },
   {
     label: "Challenge C",
     title: "Delayed Progress Insight",
     description:
       "Specialists may not have enough visibility into the patient's performance between sessions.",
+    icon: monitoringIcon,
   },
 ];
 
-function ChallengeCard({ label, title, description }) {
+function ChallengeMaterialIcon({ src }) {
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      className="h-[30px] w-[30px] object-contain"
+    />
+  );
+}
+
+function ChallengeCard({ label, title, description, icon }) {
   return (
     <article
       className="flex h-full flex-col rounded-2xl border p-6"
@@ -32,20 +49,12 @@ function ChallengeCard({ label, title, description }) {
         boxShadow: L.challengeCardShadow,
       }}
     >
-      <div
-        className="mb-4 flex h-9 w-9 items-center justify-center rounded-xl"
-        style={{ background: L.challengeIconBg }}
-      >
-        <AlertTriangle
-          size={18}
-          strokeWidth={2}
-          style={{ color: L.challengeBadgeText }}
-          aria-hidden="true"
-        />
+      <div className="mb-4">
+        <ChallengeMaterialIcon src={icon} />
       </div>
 
       <span
-        className="mb-3 inline-flex w-fit rounded-full px-2.5 py-1 text-[11px] font-semibold"
+        className="mb-[18px] inline-flex w-fit rounded-full px-2.5 py-1 text-[11px] font-semibold"
         style={{
           background: L.challengeBadgeBg,
           color: L.challengeBadgeText,

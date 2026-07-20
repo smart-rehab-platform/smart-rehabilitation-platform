@@ -6,12 +6,9 @@ const PLATFORM_LINKS = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "AI Solutions", href: "#ai-solutions" },
-  { label: "For Families", href: "#for-families" },
-  { label: "For Specialists", href: "#for-specialists" },
-];
-
-const SUPPORT_LINKS = [
-  { label: "FAQ", href: "#faq" },
+  { label: "Who It's For", href: "#who-its-for" },
+  { label: "About", href: "#about" },
+  { label: "Join Us", href: "#join-us" },
 ];
 
 const ACCESS_LINKS = [
@@ -78,7 +75,7 @@ export function LandingFooter() {
       }}
     >
       <div className="mx-auto max-w-6xl px-5 py-12 lg:px-8 lg:py-14">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-12">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <LandingLogo showTagline={false} />
             <p
@@ -92,7 +89,6 @@ export function LandingFooter() {
           </div>
 
           <FooterLinkColumn title="Platform" links={PLATFORM_LINKS} />
-          <FooterLinkColumn title="Support" links={SUPPORT_LINKS} />
           <FooterLinkColumn title="Access" links={ACCESS_LINKS} />
         </div>
 

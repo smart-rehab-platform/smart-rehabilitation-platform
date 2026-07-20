@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { LandingLogo } from "./LandingLogo";
-import { L, NAV_LINKS } from "./landingTokens";
+import { L, NAV_LINKS, SCROLL_SPY_HREFS } from "./landingTokens";
+import { useScrollSpy } from "./useScrollSpy";
 
 function scrollToSection(href) {
   const id = href.replace("#", "");
@@ -12,12 +13,42 @@ function scrollToSection(href) {
   }
 }
 
+function getNavLinkColor(href, activeHref) {
+  return href === activeHref ? L.primary : L.textMuted;
+}
+
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingHref, setPendingHref] = useState(null);
+  const scrollSpyHref = useScrollSpy(SCROLL_SPY_HREFS);
+  const activeHref = pendingHref ?? scrollSpyHref;
+
+  useEffect(() => {
+    if (!pendingHref) return undefined;
+
+    const target = document.getElementById(pendingHref.replace("#", ""));
+    if (!target) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+          setPendingHref(null);
+        }
+      },
+      { threshold: [0.35, 0.5] },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [pendingHref]);
 
   const handleNavClick = (event, href) => {
     event.preventDefault();
-    scrollToSection(href);
+    const target = document.getElementById(href.replace("#", ""));
+    if (target) {
+      setPendingHref(href);
+      scrollToSection(href);
+    }
     setMobileOpen(false);
   };
 
@@ -42,15 +73,14 @@ export function Navbar() {
               onClick={(event) => handleNavClick(event, link.href)}
               className="text-[13px] font-medium transition-colors duration-200"
               style={{
-                color: link.href === "#home" ? L.primary : L.textMuted,
+                color: getNavLinkColor(link.href, activeHref),
                 fontFamily: "'Inter', sans-serif",
               }}
               onMouseEnter={(event) => {
                 event.currentTarget.style.color = L.primaryLight;
               }}
               onMouseLeave={(event) => {
-                event.currentTarget.style.color =
-                  link.href === "#home" ? L.primary : L.textMuted;
+                event.currentTarget.style.color = getNavLinkColor(link.href, activeHref);
               }}
             >
               {link.label}
@@ -112,8 +142,17 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={(event) => handleNavClick(event, link.href)}
-              className="block py-2.5 text-sm font-medium"
-              style={{ color: L.textMuted, fontFamily: "'Inter', sans-serif" }}
+              className="block py-2.5 text-sm font-medium transition-colors duration-200"
+              style={{
+                color: getNavLinkColor(link.href, activeHref),
+                fontFamily: "'Inter', sans-serif",
+              }}
+              onMouseEnter={(event) => {
+                event.currentTarget.style.color = L.primaryLight;
+              }}
+              onMouseLeave={(event) => {
+                event.currentTarget.style.color = getNavLinkColor(link.href, activeHref);
+              }}
             >
               {link.label}
             </a>
@@ -141,6 +180,18 @@ export function Navbar() {
           </div>
         </div>
       )}
+      <style>{`
+        #home,
+        #who-its-for,
+        #how-it-works,
+        #features,
+        #ai-solutions,
+        #about,
+        #faq,
+        #join-us {
+          scroll-margin-top: 5.5rem;
+        }
+      `}</style>
     </header>
   );
 }

@@ -243,7 +243,7 @@ function ReportGeneratorWidget({ accent }) {
       <div className="mb-3 flex items-center gap-2">
         <FileText size={16} style={{ color: accent }} />
         <span className="text-[13px] font-semibold" style={{ color: L.text, fontFamily: "'Inter', sans-serif" }}>
-          June_Report.pdf
+          Omar_Progress_Report.pdf
         </span>
       </div>
       <p className="mb-2 text-[11px]" style={{ color: L.textLight, fontFamily: "'Inter', sans-serif" }}>

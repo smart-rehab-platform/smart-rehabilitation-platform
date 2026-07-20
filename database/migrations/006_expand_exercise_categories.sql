@@ -1,9 +1,4 @@
--- Expand exercise_categories for a general rehabilitation platform.
--- Safe to re-run: no duplicate names, preserves existing exercise/assignment FKs.
 
--- ---------------------------------------------------------------------
--- 1) Rename Language → Language Development (by current name; ID-safe)
--- ---------------------------------------------------------------------
 DO $$
 BEGIN
   IF EXISTS (
@@ -20,11 +15,7 @@ BEGIN
   END IF;
 END $$;
 
--- ---------------------------------------------------------------------
--- 2) Ensure core + expanded taxonomy (idempotent)
--- Fixed UUIDs align with local demo seed conventions where present.
--- ON CONFLICT DO NOTHING covers both id and name unique violations.
--- ---------------------------------------------------------------------
+
 INSERT INTO exercise_categories (id, name, description)
 VALUES
   (
@@ -99,7 +90,7 @@ VALUES
   )
 ON CONFLICT DO NOTHING;
 
--- Name-only insert for databases that already have these names under other IDs
+
 INSERT INTO exercise_categories (name, description)
 VALUES
   ('Speech Articulation', 'Sound production and pronunciation drills'),

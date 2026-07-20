@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
+import arrowRightAltIcon from "../../assets/icons/arrow_right_alt.svg";
 import { L } from "./landingTokens";
 
 const BENEFITS = [
@@ -14,6 +15,7 @@ const CTA_BG = "#102847";
 export function FinalCtaSection() {
   return (
     <section
+      id="join-us"
       className="relative overflow-hidden px-5 py-16 md:py-24 lg:px-8 lg:py-28"
       style={{ background: CTA_BG }}
       aria-labelledby="final-cta-heading"
@@ -29,7 +31,7 @@ export function FinalCtaSection() {
 
       <div className="relative z-10 mx-auto max-w-4xl text-center">
         <div
-          className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] backdrop-blur-sm md:text-[12px]"
+          className="inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] backdrop-blur-sm md:text-[12px]"
           style={{
             background: L.accentSoft,
             color: L.primaryLight,
@@ -37,8 +39,7 @@ export function FinalCtaSection() {
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          <Sparkles size={14} strokeWidth={2} style={{ color: L.primary }} aria-hidden="true" />
-          GET STARTED
+          JOIN THE PLATFORM
         </div>
 
         <h2
@@ -86,7 +87,7 @@ export function FinalCtaSection() {
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row md:mt-12">
           <Link
             to="/signup"
-            className="final-cta-primary inline-flex w-full items-center justify-center rounded-xl px-7 py-3.5 text-[15px] font-semibold text-white sm:w-auto"
+            className="final-cta-primary inline-flex w-full items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-[15px] font-semibold text-white sm:w-auto"
             style={{
               background: L.gradientButton,
               fontFamily: "'Inter', sans-serif",
@@ -94,6 +95,12 @@ export function FinalCtaSection() {
             }}
           >
             Get Started
+            <img
+              src={arrowRightAltIcon}
+              alt=""
+              aria-hidden="true"
+              className="final-cta-primary-arrow h-5 w-5 shrink-0 object-contain brightness-0 invert"
+            />
           </Link>
           <Link
             to="/login"
@@ -111,6 +118,22 @@ export function FinalCtaSection() {
       </div>
 
       <style>{`
+        .final-cta-primary-arrow {
+          transition: transform 200ms ease;
+        }
+
+        @media (hover: hover) {
+          .final-cta-primary:hover .final-cta-primary-arrow {
+            transform: translateX(3px);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .final-cta-primary:hover .final-cta-primary-arrow {
+            transform: none;
+          }
+        }
+
         .final-cta-primary,
         .final-cta-secondary {
           transition:

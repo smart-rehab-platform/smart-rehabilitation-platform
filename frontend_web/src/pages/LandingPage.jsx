@@ -32,7 +32,7 @@ export default function LandingPage() {
         <ValueStrip />
         <ProblemSolutionSection />
         <section
-          id="features"
+          id="who-its-for"
           className="overflow-hidden px-5 pb-16 md:pb-24 lg:px-8 pt-10 md:pt-14"
           style={{ background: L.lightBg }}
         >

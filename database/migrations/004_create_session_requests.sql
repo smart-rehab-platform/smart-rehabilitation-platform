@@ -1,4 +1,4 @@
--- Parent-initiated session requests reviewed by assigned specialists
+
 
 CREATE TYPE session_request_status AS ENUM (
     'pending',

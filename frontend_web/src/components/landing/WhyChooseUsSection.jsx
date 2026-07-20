@@ -122,6 +122,7 @@ function ComparisonRow({ variant, text }) {
 export function WhyChooseUsSection() {
   return (
     <section
+      id="about"
       className="overflow-hidden px-5 py-16 md:py-24 lg:px-8 lg:py-[120px]"
       style={{ background: "#FAFCFE" }}
       aria-labelledby="why-choose-us-heading"

@@ -1,42 +1,38 @@
-import { ArrowRight, Check, Heart, Shield, Users } from "lucide-react";
+import { Check } from "lucide-react";
+import adminPanelSettingsIcon from "../../assets/icons/admin_panel_settings.svg";import familyRestroomIcon from "../../assets/icons/family_restroom.svg";
+import medicalServicesIcon from "../../assets/icons/medical_services.svg";
 import { L } from "./landingTokens";
 
 const ROLE_CARDS = [
   {
     key: "family",
-    sectionId: "for-families",
     eyebrow: "For Families",
-    icon: Heart,
+    iconSrc: familyRestroomIcon,
     iconBg: L.accentSoft,
     title: "Everything Parents Need in One Place",
     description:
       "Track exercises, daily tasks, sessions, AI reports, notifications and communicate directly with specialists.",
     badges: ["Exercise Tracking", "AI Reports", "Parent Dashboard", "Secure Communication"],
-    cta: "Explore Parent Features",
   },
   {
     key: "specialist",
-    sectionId: "for-specialists",
     eyebrow: "For Specialists",
-    icon: Users,
+    iconSrc: medicalServicesIcon,
     iconBg: L.accentMuted,
     title: "Complete Rehabilitation Management",
     description:
       "Manage patients, assessments, treatment plans, exercises, reviews, reports and AI-powered rehabilitation tools.",
     badges: ["Patient Management", "Treatment Plans", "Speech Analysis", "AI Recommendations"],
-    cta: "Explore Specialist Features",
   },
   {
     key: "admin",
-    sectionId: "for-administrators",
     eyebrow: "For Administrators",
-    icon: Shield,
+    iconSrc: adminPanelSettingsIcon,
     iconBg: L.accentSoft,
     title: "Complete Platform Oversight",
     description:
       "Manage users, specialists, patients, case requests, assignments, categories, and system-wide activity from one centralized workspace.",
     badges: ["User Management", "Case Requests", "Specialist Assignments", "System Analytics"],
-    cta: "Explore Admin Features",
     centeredOnTablet: true,
   },
 ];
@@ -58,23 +54,25 @@ function CardBadge({ children }) {
   );
 }
 
-function HeroCard({ sectionId, eyebrow, icon: Icon, iconBg, title, description, badges, cta, className = "" }) {
+function RoleMaterialIcon({ src }) {
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      className="h-[26px] w-[26px] object-contain"
+    />
+  );
+}
+
+function HeroCard({ eyebrow, iconSrc, iconBg, title, description, badges, className = "" }) {
   return (
     <article
-      id={sectionId}
-      className={`group flex h-full flex-col rounded-2xl border p-7 transition-all duration-300 hover:-translate-y-0.5 md:p-8 ${className}`}
+      className={`role-card flex h-full flex-col rounded-2xl border p-7 md:p-8 ${className}`}
       style={{
         background: L.bgCard,
         borderColor: L.border,
         boxShadow: L.cardShadow,
-      }}
-      onMouseEnter={(event) => {
-        event.currentTarget.style.boxShadow = L.cardShadowHover;
-        event.currentTarget.style.borderColor = L.primary;
-      }}
-      onMouseLeave={(event) => {
-        event.currentTarget.style.boxShadow = L.cardShadow;
-        event.currentTarget.style.borderColor = L.border;
       }}
     >
       <div className="mb-5 flex items-center gap-2.5">
@@ -82,7 +80,7 @@ function HeroCard({ sectionId, eyebrow, icon: Icon, iconBg, title, description, 
           className="flex h-9 w-9 items-center justify-center rounded-lg border"
           style={{ background: iconBg, borderColor: L.accentBorder }}
         >
-          <Icon size={18} style={{ color: L.primary }} strokeWidth={2} />
+          <RoleMaterialIcon src={iconSrc} />
         </div>
         <span
           className="text-[10px] font-semibold uppercase tracking-[0.14em]"
@@ -106,20 +104,11 @@ function HeroCard({ sectionId, eyebrow, icon: Icon, iconBg, title, description, 
         {description}
       </p>
 
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {badges.map((badge) => (
           <CardBadge key={badge}>{badge}</CardBadge>
         ))}
       </div>
-
-      <a
-        href={`#${sectionId}`}
-        className="inline-flex items-center gap-1.5 text-[14px] font-semibold transition-all duration-200 group-hover:gap-2.5"
-        style={{ color: L.primaryLight, fontFamily: "'Inter', sans-serif" }}
-      >
-        {cta}
-        <ArrowRight size={16} />
-      </a>
     </article>
   );
 }
@@ -146,14 +135,12 @@ export function HeroCards() {
         {ROLE_CARDS.map((card) => (
           <HeroCard
             key={card.key}
-            sectionId={card.sectionId}
             eyebrow={card.eyebrow}
-            icon={card.icon}
+            iconSrc={card.iconSrc}
             iconBg={card.iconBg}
             title={card.title}
             description={card.description}
             badges={card.badges}
-            cta={card.cta}
             className={
               card.centeredOnTablet
                 ? "md:col-span-2 md:mx-auto md:max-w-[calc(50%-12px)] lg:col-span-1 lg:mx-0 lg:max-w-none"
@@ -162,6 +149,30 @@ export function HeroCards() {
           />
         ))}
       </div>
+
+      <style>{`
+        .role-card {
+          cursor: pointer;
+          transition:
+            transform 220ms ease,
+            box-shadow 220ms ease,
+            border-color 220ms ease;
+        }
+
+        @media (hover: hover) {
+          .role-card:hover {
+            transform: translateY(-6px);
+            box-shadow: ${L.cardShadowHover};
+            border-color: ${L.primary};
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .role-card:hover {
+            transform: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }

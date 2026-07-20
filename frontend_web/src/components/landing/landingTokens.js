@@ -61,8 +61,19 @@ export const NAV_LINKS = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "AI Solutions", href: "#ai-solutions" },
-  { label: "For Families", href: "#for-families" },
-  { label: "For Specialists", href: "#for-specialists" },
+  { label: "Who It's For", href: "#who-its-for" },
   { label: "About", href: "#about" },
   { label: "FAQ", href: "#faq" },
+  { label: "Join Us", href: "#join-us" },
+];
+
+export const SCROLL_SPY_HREFS = [
+  "#home",
+  "#who-its-for",
+  "#how-it-works",
+  "#features",
+  "#ai-solutions",
+  "#about",
+  "#faq",
+  "#join-us",
 ];
