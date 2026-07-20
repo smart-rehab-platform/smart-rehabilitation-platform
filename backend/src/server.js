@@ -4,6 +4,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = require("./app");
+const { getSocketIoCorsOptions } = require("./config/cors");
 const pool = require("./database/db");
 const { initPresenceSocket } = require("./modules/presence/presence.socket");
 const presenceService = require("./modules/presence/presence.service");
@@ -24,11 +25,7 @@ const ensurePresenceColumns = async () => {
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Authorization", "Content-Type"]
-  }
+  cors: getSocketIoCorsOptions(),
 });
 
 initPresenceSocket(io);

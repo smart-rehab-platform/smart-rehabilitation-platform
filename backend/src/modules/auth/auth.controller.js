@@ -7,8 +7,14 @@ const {
   verifyEmailSchema
 } = require("./auth.validation");
 const authService = require("./auth.service");
-const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");
-const { createAuditLog } = require("../auditLogs/auditLogs.helper");
+const refreshTokenService = require("./refreshToken.service");
+const { buildFrontendPath } = require("../../config/frontend");
+const {
+  getRefreshTokenCookieName,
+  getRefreshTokenCookieOptions,
+  getRefreshTokenClearCookieOptions,
+} = require("../../config/authCookies");
+const { notifyAllAdmins } = require("../notifications/adminNotifications.helper");const { createAuditLog } = require("../auditLogs/auditLogs.helper");
 
 const wantsHtmlResponse = (req) => {
   const accept = req.get("accept") || "";
@@ -64,13 +70,8 @@ const getMobileResetPasswordDeepLink = (token) => {
   return `${base}${separator}token=${encodeURIComponent(token)}`;
 };
 
-const getWebResetPasswordUrl = (token) => {
-  const frontendBase = (process.env.FRONTEND_URL || "http://localhost:5173").replace(
-    /\/$/,
-    ""
-  );
-  return `${frontendBase}/reset-password?token=${encodeURIComponent(token)}`;
-};
+const getWebResetPasswordUrl = (token) =>
+  buildFrontendPath("/reset-password", { token });
 
 const renderResetPasswordRedirectPage = ({ appDeepLink, webResetUrl }) => `<!DOCTYPE html>
 <html lang="en">
@@ -137,6 +138,31 @@ const validateRequest = (schema, payload, res) => {
   return value;
 };
 
+const buildAuthSessionPayload = ({ accessToken, token, user }) => {
+  const resolvedAccessToken = accessToken || token;
+
+  return {
+    token: resolvedAccessToken,
+    accessToken: resolvedAccessToken,
+    user,
+  };
+};
+
+const setRefreshTokenCookie = (res, rawRefreshToken) => {
+  res.cookie(
+    getRefreshTokenCookieName(),
+    rawRefreshToken,
+    getRefreshTokenCookieOptions()
+  );
+};
+
+const clearRefreshTokenCookie = (res) => {
+  res.clearCookie(
+    getRefreshTokenCookieName(),
+    getRefreshTokenClearCookieOptions()
+  );
+};
+
 const register = async (req, res) => {
   try {
     const validatedBody = validateRequest(registerSchema, req.body, res);
@@ -190,15 +216,69 @@ const login = async (req, res) => {
       entityId: result.user.id,
     }).catch(() => {});
 
+    setRefreshTokenCookie(res, result.rawRefreshToken);
+
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      data: result
+      data: buildAuthSessionPayload(result),
     });
   } catch (err) {
     return res.status(err.statusCode || 401).json({
       success: false,
       message: err.message
+    });
+  }
+};
+
+const refreshToken = async (req, res) => {
+  const cookieName = getRefreshTokenCookieName();
+  const rawRefreshToken = req.cookies?.[cookieName];
+
+  if (!rawRefreshToken) {
+    clearRefreshTokenCookie(res);
+    return res.status(401).json({
+      success: false,
+      message: refreshTokenService.REFRESH_TOKEN_INVALID_MESSAGE,
+    });
+  }
+
+  try {
+    const result = await refreshTokenService.rotateRefreshToken(rawRefreshToken);
+
+    setRefreshTokenCookie(res, result.rawRefreshToken);
+
+    return res.status(200).json({
+      success: true,
+      message: "Token refreshed successfully",
+      data: buildAuthSessionPayload(result),
+    });
+  } catch (err) {
+    clearRefreshTokenCookie(res);
+    return res.status(err.statusCode || 401).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+const logout = async (req, res) => {
+  const cookieName = getRefreshTokenCookieName();
+  const rawRefreshToken = req.cookies?.[cookieName];
+
+  try {
+    await refreshTokenService.logoutRefreshToken(rawRefreshToken);
+    clearRefreshTokenCookie(res);
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (err) {
+    clearRefreshTokenCookie(res);
+    return res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message,
     });
   }
 };
@@ -342,6 +422,8 @@ const adminOnly = async (req, res) => {
 module.exports = {
   register,
   login,
+  refreshToken,
+  logout,
   forgotPassword,
   resetPassword,
   openResetPassword,

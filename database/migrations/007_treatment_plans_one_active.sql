@@ -1,6 +1,5 @@
 -- Enforce at most one active treatment plan per patient.
--- Safe to re-run. Does not modify existing plan rows.
--- Pre-flight: only create the index when no duplicate active rows exist.
+
 
 DO $$
 DECLARE

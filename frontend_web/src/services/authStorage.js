@@ -9,12 +9,20 @@ const LEGACY_USER_KEY = "user";
 let inMemoryToken = null;
 let inMemoryUser = null;
 
-function getStorage() {
+function getLocalStorage() {
   if (typeof window === "undefined") {
     return null;
   }
 
   return window.localStorage;
+}
+
+function getSessionStorage() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.sessionStorage;
 }
 
 function readJson(value) {
@@ -29,141 +37,7 @@ function readJson(value) {
   }
 }
 
-function writeStoredUser(user) {
-  const storage = getStorage();
-
-  if (!storage || !user) {
-    return;
-  }
-
-  const serializedUser = JSON.stringify(user);
-  storage.setItem(USER_KEY, serializedUser);
-  storage.setItem(LEGACY_USER_KEY, serializedUser);
-}
-
-export function getRememberMePreference() {
-  const storage = getStorage();
-
-  if (!storage) {
-    return false;
-  }
-
-  const rememberValue = storage.getItem(REMEMBER_ME_KEY);
-  if (rememberValue === null) {
-    return Boolean(storage.getItem(TOKEN_KEY) || storage.getItem(LEGACY_TOKEN_KEY));
-  }
-
-  return rememberValue === "true";
-}
-
-export function getSavedEmail() {
-  const storage = getStorage();
-
-  if (!storage || !getRememberMePreference()) {
-    return "";
-  }
-
-  return storage.getItem(SAVED_EMAIL_KEY) || "";
-}
-
-export function getPersistedToken() {
-  const storage = getStorage();
-
-  if (!storage) {
-    return null;
-  }
-
-  return storage.getItem(TOKEN_KEY) || storage.getItem(LEGACY_TOKEN_KEY);
-}
-
-export function getPersistedUser() {
-  const storage = getStorage();
-
-  if (!storage) {
-    return null;
-  }
-
-  return readJson(storage.getItem(USER_KEY) || storage.getItem(LEGACY_USER_KEY));
-}
-
-export function getAuthToken() {
-  if (inMemoryToken) {
-    return inMemoryToken;
-  }
-
-  if (!getRememberMePreference()) {
-    return null;
-  }
-
-  return getPersistedToken();
-}
-
-export function getCurrentUser() {
-  if (inMemoryUser) {
-    return inMemoryUser;
-  }
-
-  if (!getRememberMePreference()) {
-    return null;
-  }
-
-  return getPersistedUser();
-}
-
-export function saveRememberedSession({ token, user, email }) {
-  const storage = getStorage();
-
-  inMemoryToken = token;
-  inMemoryUser = user;
-
-  if (!storage) {
-    return;
-  }
-
-  storage.setItem(TOKEN_KEY, token);
-  storage.setItem(LEGACY_TOKEN_KEY, token);
-  writeStoredUser(user);
-  storage.setItem(REMEMBER_ME_KEY, "true");
-  storage.setItem(SAVED_EMAIL_KEY, email);
-}
-
-export function saveTemporarySession({ token, user }) {
-  const storage = getStorage();
-
-  inMemoryToken = token;
-  inMemoryUser = user;
-
-  clearPersistedSession();
-
-  if (!storage) {
-    return;
-  }
-
-  storage.setItem(REMEMBER_ME_KEY, "false");
-  storage.removeItem(SAVED_EMAIL_KEY);
-}
-
-export function syncRestoredSession({ token, user }) {
-  inMemoryToken = token;
-  inMemoryUser = user;
-
-  if (!getRememberMePreference()) {
-    return;
-  }
-
-  const storage = getStorage();
-  if (!storage) {
-    return;
-  }
-
-  storage.setItem(TOKEN_KEY, token);
-  storage.setItem(LEGACY_TOKEN_KEY, token);
-  writeStoredUser(user);
-}
-
-export function clearPersistedSession({ clearRememberedLogin = false } = {}) {
-  const storage = getStorage();
-
+function clearStorageAuthKeys(storage) {
   if (!storage) {
     return;
   }
@@ -172,10 +46,166 @@ export function clearPersistedSession({ clearRememberedLogin = false } = {}) {
   storage.removeItem(USER_KEY);
   storage.removeItem(LEGACY_TOKEN_KEY);
   storage.removeItem(LEGACY_USER_KEY);
+}
 
-  if (clearRememberedLogin) {
-    storage.removeItem(REMEMBER_ME_KEY);
-    storage.removeItem(SAVED_EMAIL_KEY);
+function writeAuthToStorage(storage, token, user) {
+  if (!storage || !token) {
+    return;
+  }
+
+  storage.setItem(TOKEN_KEY, token);
+  storage.setItem(LEGACY_TOKEN_KEY, token);
+
+  if (user) {
+    const serializedUser = JSON.stringify(user);
+    storage.setItem(USER_KEY, serializedUser);
+    storage.setItem(LEGACY_USER_KEY, serializedUser);
+  }
+}
+
+function getActiveAuthStorage() {
+  return getRememberMePreference() ? getLocalStorage() : getSessionStorage();
+}
+
+export function getRememberMePreference() {
+  const local = getLocalStorage();
+
+  if (!local) {
+    return false;
+  }
+
+  const rememberValue = local.getItem(REMEMBER_ME_KEY);
+  if (rememberValue === null) {
+    return Boolean(local.getItem(TOKEN_KEY) || local.getItem(LEGACY_TOKEN_KEY));
+  }
+
+  return rememberValue === "true";
+}
+
+export function getSavedEmail() {
+  const local = getLocalStorage();
+
+  if (!local || !getRememberMePreference()) {
+    return "";
+  }
+
+  return local.getItem(SAVED_EMAIL_KEY) || "";
+}
+
+export function getStoredAccessToken() {
+  if (inMemoryToken) {
+    return inMemoryToken;
+  }
+
+  const storage = getActiveAuthStorage();
+  if (!storage) {
+    return null;
+  }
+
+  return storage.getItem(TOKEN_KEY) || storage.getItem(LEGACY_TOKEN_KEY);
+}
+
+export function getAuthToken() {
+  return getStoredAccessToken();
+}
+
+export function getStoredUser() {
+  if (inMemoryUser) {
+    return inMemoryUser;
+  }
+
+  const storage = getActiveAuthStorage();
+  if (!storage) {
+    return null;
+  }
+
+  return readJson(storage.getItem(USER_KEY) || storage.getItem(LEGACY_USER_KEY));
+}
+
+export function getCurrentUser() {
+  return getStoredUser();
+}
+
+export function getPersistedToken() {
+  return getStoredAccessToken();
+}
+
+export function getPersistedUser() {
+  return getStoredUser();
+}
+
+export function hasStoredAuthSession() {
+  return Boolean(getStoredAccessToken() && getStoredUser());
+}
+
+export function storeAuthSession({ accessToken, token, user, rememberMe, email }) {
+  const resolvedToken = accessToken || token;
+  if (!resolvedToken || !user) {
+    return;
+  }
+
+  inMemoryToken = resolvedToken;
+  inMemoryUser = user;
+
+  const local = getLocalStorage();
+  const session = getSessionStorage();
+
+  if (rememberMe) {
+    writeAuthToStorage(local, resolvedToken, user);
+    clearStorageAuthKeys(session);
+
+    if (local) {
+      local.setItem(REMEMBER_ME_KEY, "true");
+      if (email) {
+        local.setItem(SAVED_EMAIL_KEY, email);
+      }
+    }
+    return;
+  }
+
+  writeAuthToStorage(session, resolvedToken, user);
+  clearStorageAuthKeys(local);
+
+  if (local) {
+    local.setItem(REMEMBER_ME_KEY, "false");
+    local.removeItem(SAVED_EMAIL_KEY);
+  }
+}
+
+export function updateStoredAccessToken(accessToken, user) {
+  if (!accessToken) {
+    return;
+  }
+
+  inMemoryToken = accessToken;
+
+  if (user) {
+    inMemoryUser = user;
+  }
+
+  writeAuthToStorage(getActiveAuthStorage(), accessToken, user ?? inMemoryUser);
+}
+
+export function saveRememberedSession({ token, user, email }) {
+  storeAuthSession({ token, user, rememberMe: true, email });
+}
+
+export function saveTemporarySession({ token, user }) {
+  storeAuthSession({ token, user, rememberMe: false });
+}
+
+export function syncRestoredSession({ token, user }) {
+  updateStoredAccessToken(token, user);
+}
+
+export function clearPersistedSession({ clearRememberedLogin = false } = {}) {
+  clearStorageAuthKeys(getLocalStorage());
+  clearStorageAuthKeys(getSessionStorage());
+
+  const local = getLocalStorage();
+  if (local && clearRememberedLogin) {
+    local.removeItem(REMEMBER_ME_KEY);
+    local.removeItem(SAVED_EMAIL_KEY);
   }
 }
 

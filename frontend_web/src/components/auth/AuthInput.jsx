@@ -20,11 +20,7 @@ export function AuthInput({
         ? "#ef4444"
         : G.borderSoft;
   const focusShadow =
-    state === "success"
-      ? `0 0 0 2px rgba(74,127,167,0.35)`
-      : state === "error"
-        ? "0 0 0 2px rgba(239,68,68,0.3)"
-        : `0 0 0 2px rgba(74,127,167,0.35)`;
+    state === "error" ? "0 0 0 4px rgba(239, 68, 68, 0.15)" : G.focusRing;
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -32,7 +28,7 @@ export function AuthInput({
         {label}
       </label>
       <div className="relative flex items-center">
-        <span className="absolute left-3.5 pointer-events-none" style={{ color: C.light, opacity: 0.6 }}>
+        <span className="absolute left-3.5 pointer-events-none" style={{ color: C.iconInteractive, opacity: 0.85 }}>
           {icon}
         </span>
         <input
@@ -40,7 +36,7 @@ export function AuthInput({
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-10 pr-10 py-3 text-sm rounded-xl outline-none transition-all duration-200"
+          className="auth-input w-full pl-10 pr-10 py-3 text-sm rounded-xl outline-none transition-all duration-200"
           style={{
             background: C.inputBg,
             border: `1.5px solid ${borderColor}`,
@@ -49,7 +45,7 @@ export function AuthInput({
           }}
           onFocus={(e) => {
             e.currentTarget.style.boxShadow = focusShadow;
-            e.currentTarget.style.borderColor = state === "idle" ? C.primary : borderColor;
+            e.currentTarget.style.borderColor = state === "idle" ? G.borderFocus : borderColor;
           }}
           onBlur={(e) => {
             e.currentTarget.style.boxShadow = "none";

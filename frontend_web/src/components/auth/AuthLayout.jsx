@@ -1,65 +1,48 @@
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import bgVideo from "../../assets/auth-bg.mp4";
 import { Logo } from "./Logo";
 import { C, G } from "./tokens";
 
-const transition = { duration: 0.75, ease: [0.4, 0, 0.2, 1] };
 const VIDEO_START_SECONDS = 4;
-const AUTH_BOX_DELAY_MS = 1500;
+const VIDEO_SRC = `${bgVideo}#t=${VIDEO_START_SECONDS}`;
 
 export function AuthLayout({ activeTab, onTabChange, children, scrollable = false }) {
-  const [showAuthBox, setShowAuthBox] = useState(false);
   const videoRef = useRef(null);
-  const authTimerStarted = useRef(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    let authTimer;
-
-    const startAuthReveal = () => {
-      if (authTimerStarted.current) return;
-      authTimerStarted.current = true;
-      authTimer = setTimeout(() => setShowAuthBox(true), AUTH_BOX_DELAY_MS);
-    };
-
-    const seekToStart = () => {
-      if (video.duration > VIDEO_START_SECONDS) {
-        video.currentTime = VIDEO_START_SECONDS;
-      } else {
-        video.play().catch(() => {});
-      }
-    };
-
-    const handleSeeked = () => {
+    const playVideo = () => {
       video.play().catch(() => {});
     };
 
-    const handlePlaying = () => {
-      startAuthReveal();
+    const syncStartTime = () => {
+      if (!Number.isFinite(video.duration) || video.duration <= VIDEO_START_SECONDS) return;
+      if (Math.abs(video.currentTime - VIDEO_START_SECONDS) > 0.25) {
+        video.currentTime = VIDEO_START_SECONDS;
+      }
     };
 
     const handleEnded = () => {
-      if (video.duration > VIDEO_START_SECONDS) {
-        video.currentTime = VIDEO_START_SECONDS;
-      }
-      video.play().catch(() => {});
+      syncStartTime();
+      playVideo();
     };
 
-    video.addEventListener("loadedmetadata", seekToStart);
-    video.addEventListener("seeked", handleSeeked);
-    video.addEventListener("playing", handlePlaying);
+    playVideo();
+
+    video.addEventListener("loadedmetadata", syncStartTime);
+    video.addEventListener("canplay", playVideo);
     video.addEventListener("ended", handleEnded);
 
-    if (video.readyState >= 1) seekToStart();
+    if (video.readyState >= 1) {
+      syncStartTime();
+    }
 
     return () => {
-      clearTimeout(authTimer);
-      video.removeEventListener("loadedmetadata", seekToStart);
-      video.removeEventListener("seeked", handleSeeked);
-      video.removeEventListener("playing", handlePlaying);
+      video.removeEventListener("loadedmetadata", syncStartTime);
+      video.removeEventListener("canplay", playVideo);
       video.removeEventListener("ended", handleEnded);
     };
   }, []);
@@ -78,8 +61,9 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
             transform: "scaleX(-1)",
             filter: "brightness(0.86) saturate(0.88) contrast(1.04)",
           }}
-          src={bgVideo}
+          src={VIDEO_SRC}
           preload="auto"
+          autoPlay
           muted
           playsInline
         />
@@ -88,66 +72,50 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(160deg, rgba(10,25,49,0.44) 0%, rgba(26,61,99,0.22) 42%, rgba(10,25,49,0.50) 100%)",
+              `linear-gradient(160deg, ${G.navyOverlay}, 0.44) 0%, ${G.cardOverlay}, 0.22) 42%, ${G.navyOverlay}, 0.50) 100%)`,
           }}
         />
 
-        <motion.div
+        <div
           className="absolute inset-0"
-          animate={{
-            background: showAuthBox
-              ? "linear-gradient(to right, rgba(10,25,49,0.30) 0%, rgba(10,25,49,0.46) 38%, rgba(10,25,49,0.68) 62%, rgba(10,25,49,0.80) 100%)"
-              : "linear-gradient(to right, rgba(10,25,49,0.50) 0%, rgba(10,25,49,0.42) 45%, rgba(10,25,49,0.38) 100%)",
+          style={{
+            background: `linear-gradient(to right, ${G.navyOverlay}, 0.30) 0%, ${G.navyOverlay}, 0.46) 38%, ${G.navyOverlay}, 0.68) 62%, ${G.navyOverlay}, 0.80) 100%)`,
           }}
-          transition={transition}
         />
 
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse at 25% 50%, rgba(74,127,167,0.1) 0%, transparent 55%)",
+            background: "radial-gradient(ellipse at 25% 50%, rgba(79, 166, 248, 0.1) 0%, transparent 55%)",
           }}
         />
       </div>
 
       {/* ── Top bar ── */}
       <header
-        className="relative z-20 w-full flex items-center justify-between gap-3 px-5 sm:px-8 lg:px-10 py-2 shrink-0"
+        className="relative z-20 flex h-[72px] w-full shrink-0 items-center justify-between gap-3 px-5 sm:px-8 lg:px-10"
         style={{
-          background: C.inputBg,
-          borderBottom: "1.5px solid rgba(179,207,229,0.2)",
+          background: `${G.navyOverlay}, 0.72)`,
+          borderBottom: "1px solid rgba(79, 166, 248, 0.18)",
           backdropFilter: "blur(20px)",
         }}
       >
         <Logo size={30} titleOnly />
-        <p
-          className="text-[9px] sm:text-[10px] lg:text-xs text-right max-w-[180px] sm:max-w-none leading-tight"
-          style={{ color: C.light, opacity: 0.9 }}
+        <Link
+          to="/"
+          className="auth-back-home text-sm font-medium transition-all duration-200 ease-in-out focus-visible:outline-none sm:text-[14px]"
+          style={{ color: "#B7C8DD" }}
         >
-          Where Recovery Never Stops
-        </p>
+          <span className="sm:hidden">← Back</span>
+          <span className="hidden sm:inline">← Back to Home</span>
+        </Link>
       </header>
 
-      {/* ── Content: centered hero → splits left + form ── */}
-      <div
-        className={`relative z-10 flex flex-1 w-full ${
-          showAuthBox ? "flex-col lg:flex-row" : "items-center justify-center"
-        }`}
-      >
-        <motion.div
-          layout
-          transition={transition}
-          className={`flex items-center justify-center px-8 py-10 lg:px-14 lg:py-12 ${
-            showAuthBox
-              ? "w-full lg:w-[58%] min-h-[40vh] lg:min-h-0"
-              : "w-full flex-1"
-          }`}
-        >
-          <motion.div
-            layout
-            transition={transition}
-            className="flex flex-col items-center text-center max-w-xl w-full gap-8 lg:gap-10"
-          >
+      {/* ── Content: hero + form ── */}
+      <div className="relative z-10 flex w-full flex-1 flex-col">
+        <div className="flex w-full flex-1 flex-col lg:flex-row">
+        <div className="flex w-full items-center justify-center px-8 py-10 lg:w-[58%] lg:min-h-0 lg:px-14 lg:py-12 min-h-[40vh]">
+          <div className="flex w-full max-w-xl flex-col items-center gap-8 text-center lg:gap-10">
             <div className="relative flex flex-col gap-5">
               <div
                 className="absolute pointer-events-none"
@@ -157,7 +125,7 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
                   left: "-3rem",
                   right: "-3rem",
                   background:
-                    "radial-gradient(ellipse 85% 75% at 50% 50%, rgba(10,25,49,0.72) 0%, rgba(10,25,49,0.4) 42%, transparent 72%)",
+                    `radial-gradient(ellipse 85% 75% at 50% 50%, ${G.navyOverlay}, 0.72) 0%, ${G.navyOverlay}, 0.4) 42%, transparent 72%)`,
                 }}
                 aria-hidden
               />
@@ -180,7 +148,7 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
                     WebkitTextFillColor: "transparent",
                     opacity: 1,
                     filter:
-                      "drop-shadow(0 2px 10px rgba(93,158,214,0.45)) drop-shadow(0 4px 18px rgba(0,0,0,0.28))",
+                      "drop-shadow(0 2px 10px rgba(79, 166, 248, 0.35)) drop-shadow(0 4px 18px rgba(0, 0, 0, 0.28))",
                   }}
                 >
                   Rehabilitation
@@ -190,99 +158,91 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
                 </span>
               </h1>
               <p
-                className="relative z-10 text-base sm:text-lg leading-relaxed max-w-md mx-auto"
+                className="relative z-10 mx-auto max-w-md text-base leading-relaxed sm:text-lg"
                 style={{ color: C.light, opacity: 0.92 }}
               >
                 Track progress, guide exercises, and connect families with specialists through smart daily follow-up.
               </p>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        <AnimatePresence>
-          {showAuthBox && (
-            <motion.div
-              initial={{ opacity: 0, x: 48 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 48 }}
-              transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
-              className="flex-1 flex items-center justify-center px-4 py-6 sm:px-6 lg:px-10 min-h-[45vh] lg:min-h-0"
+        <div className="flex min-h-[45vh] flex-1 items-center justify-center px-4 py-6 sm:px-6 lg:min-h-0 lg:px-10">
+          <div className="w-full max-w-[420px]">
+            <div
+              className="relative overflow-hidden rounded-3xl p-7"
+              style={{
+                background: G.cardBg,
+                border: `1.5px solid ${C.border}`,
+                backdropFilter: "blur(20px)",
+                boxShadow: G.cardShadow,
+              }}
             >
-              <div className="w-full max-w-[420px]">
-                <div
-                  className="rounded-3xl p-7 relative overflow-hidden"
-                  style={{
-                    background: G.cardBg,
-                    border: "1.5px solid rgba(179,207,229,0.28)",
-                    backdropFilter: "blur(20px)",
-                    boxShadow: `0 0 40px ${G.glowSoft}, 0 8px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)`,
-                  }}
-                >
-                  <div
-                    className="absolute top-0 left-0 right-0 h-px"
-                    style={{ background: `linear-gradient(90deg, transparent, ${G.borderFocus}, transparent)` }}
-                  />
+              <div
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{ background: `linear-gradient(90deg, transparent, ${C.primary}, transparent)` }}
+              />
 
-                  <div className="flex rounded-xl p-1 mb-6" style={{ background: "rgba(10,25,49,0.6)" }}>
-                    {["signin", "signup"].map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => onTabChange(t)}
-                        className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200"
-                        style={
-                          activeTab === t
-                            ? {
-                                background: G.tabActive,
-                                color: C.white,
-                                boxShadow: `0 2px 8px ${G.glow}`,
-                              }
-                            : { color: C.light, opacity: 0.6 }
-                        }
-                      >
-                        {t === "signin" ? "Sign In" : "Create Account"}
-                      </button>
-                    ))}
-                  </div>
-
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeTab}
-                      initial={{ opacity: 0, x: activeTab === "signin" ? -16 : 16 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: activeTab === "signin" ? 16 : -16 }}
-                      transition={{ duration: 0.22 }}
-                    >
-                      <div className={scrollable ? "max-h-[60vh] overflow-y-auto pr-1 scrollbar-thin" : ""}>
-                        {children}
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
+              <div className="mb-6 flex rounded-xl p-1" style={{ background: `${G.navyOverlay}, 0.6)` }}>
+                {["signin", "signup"].map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => onTabChange(t)}
+                    className="flex-1 rounded-lg py-2.5 text-sm font-semibold"
+                    style={
+                      activeTab === t
+                        ? {
+                            background: G.tabActive,
+                            color: C.white,
+                            boxShadow: G.cardShadow,
+                          }
+                        : { color: C.light, opacity: 0.6 }
+                    }
+                  >
+                    {t === "signin" ? "Sign In" : "Create Account"}
+                  </button>
+                ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
+              <div className={scrollable ? "scrollbar-thin max-h-[60vh] overflow-y-auto pr-1" : ""}>
+                {children}
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <p
+          className="relative z-10 mt-auto shrink-0 px-5 pb-6 pt-2 text-center text-[13px] font-normal"
+          style={{ color: "rgba(255, 255, 255, 0.55)" }}
+        >
+          © 2026 Smart Rehabilitation Platform
+        </p>
       </div>
 
-      {/* ── Bottom bar ── */}
-      <footer
-        className="relative z-20 w-full flex items-center justify-center px-5 py-2 shrink-0"
-        style={{
-          background: C.inputBg,
-          borderTop: "1px solid rgba(179,207,229,0.2)",
-          backdropFilter: "blur(20px)",
-        }}
-      >
-        <p className="text-[10px] sm:text-xs" style={{ color: C.light, opacity: 0.85 }}>
-          © Smart Rehabilitation Platform
-        </p>
-      </footer>
-
       <style>{`
+        .auth-back-home:focus-visible {
+          box-shadow: 0 0 0 3px rgba(79, 166, 248, 0.28);
+          border-radius: 6px;
+        }
+
+        @media (hover: hover) {
+          .auth-back-home:hover {
+            color: #79C7FF !important;
+            transform: translateX(-2px);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .auth-back-home:hover {
+            transform: none;
+          }
+        }
+
         .scrollbar-thin::-webkit-scrollbar { width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(74,127,167,0.25); border-radius: 99px; }
-        input::placeholder { color: rgba(179,207,229,0.45); }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 166, 248, 0.25); border-radius: 99px; }
+        input::placeholder, .auth-input::placeholder { color: ${C.placeholder}; }
       `}</style>
     </div>
   );
