@@ -124,6 +124,13 @@ class _SpecialistExerciseDetailsScreenState
                             SizedBox(height: context.dashSpacing * 0.4),
                             SpecialistExerciseCategoryBadge(label: category),
                           ],
+                          SizedBox(height: context.dashSpacing * 0.35),
+                          Text(
+                            'Language: ${exercise.languageLabel}',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: DashboardColors.textMuted,
+                            ),
+                          ),
                           if ((exercise.createdByName ?? '').trim().isNotEmpty) ...[
                             SizedBox(height: context.dashSpacing * 0.35),
                             Text(

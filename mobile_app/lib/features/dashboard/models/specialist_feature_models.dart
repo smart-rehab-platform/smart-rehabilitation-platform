@@ -109,9 +109,12 @@ class SpecialistExerciseItem {
     this.description,
     this.instructions,
     this.instructionMediaUrl,
+    this.language = 'en',
     this.createdBy,
     this.createdByName,
   });
+
+  static const defaultLanguage = 'en';
 
   final String id;
   final String title;
@@ -120,8 +123,15 @@ class SpecialistExerciseItem {
   final String? description;
   final String? instructions;
   final String? instructionMediaUrl;
+  final String language;
   final String? createdBy;
   final String? createdByName;
+
+  String get normalizedLanguage =>
+      language.trim().toLowerCase() == 'ar' ? 'ar' : defaultLanguage;
+
+  String get languageLabel =>
+      normalizedLanguage == 'ar' ? 'Arabic' : 'English';
 
   /// Short preview for list cards (instructions preferred, then description).
   String? get previewText {
@@ -179,6 +189,7 @@ class SpecialistExerciseItem {
         'instruction_media_url',
         'instructionMediaUrl',
       ]),
+      language: _parseExerciseLanguage(map),
       createdBy: ApiResponseParser.readString(map, const [
         'created_by',
         'createdBy',
@@ -219,6 +230,7 @@ class UpsertExerciseRequest {
     this.description,
     this.instructions,
     this.instructionMediaUrl,
+    this.language = SpecialistExerciseItem.defaultLanguage,
     this.clearInstructionMedia = false,
   });
 
@@ -227,12 +239,17 @@ class UpsertExerciseRequest {
   final String? description;
   final String? instructions;
   final String? instructionMediaUrl;
+  final String language;
   final bool clearInstructionMedia;
+
+  String get normalizedLanguage =>
+      language.trim().toLowerCase() == 'ar' ? 'ar' : SpecialistExerciseItem.defaultLanguage;
 
   Map<String, dynamic> toCreateJson() {
     return {
       'category_id': categoryId,
       'title': title.trim(),
+      'language': normalizedLanguage,
       if (description != null && description!.trim().isNotEmpty)
         'description': description!.trim(),
       if (instructions != null && instructions!.trim().isNotEmpty)
@@ -247,6 +264,7 @@ class UpsertExerciseRequest {
     return {
       'category_id': categoryId,
       'title': title.trim(),
+      'language': normalizedLanguage,
       'description': description?.trim() ?? '',
       'instructions': instructions?.trim() ?? '',
       'instruction_media_url': clearInstructionMedia
@@ -254,6 +272,14 @@ class UpsertExerciseRequest {
           : (instructionMediaUrl?.trim() ?? ''),
     };
   }
+}
+
+String _parseExerciseLanguage(Map<String, dynamic> map) {
+  final value = ApiResponseParser.readString(map, const ['language']);
+  if (value == null || value.trim().isEmpty) {
+    return SpecialistExerciseItem.defaultLanguage;
+  }
+  return value.trim().toLowerCase() == 'ar' ? 'ar' : SpecialistExerciseItem.defaultLanguage;
 }
 
 enum ExerciseAssignmentFrequency {

@@ -76,7 +76,8 @@ const createExercise = async (data, userId) => {
     title,
     description,
     instructions,
-    instruction_media_url
+    instruction_media_url,
+    language = "en",
   } = data;
 
   await assertCategoryExists(category_id);
@@ -89,9 +90,10 @@ const createExercise = async (data, userId) => {
        description,
        instructions,
        instruction_media_url,
+       language,
        created_by
      )
-     VALUES ($1, $2, $3, $4, $5, $6)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING *`,
     [
       category_id,
@@ -99,6 +101,7 @@ const createExercise = async (data, userId) => {
       description,
       instructions,
       instruction_media_url,
+      language,
       userId
     ]
   );
@@ -204,6 +207,9 @@ const updateExercise = async (id, data, actor = {}) => {
       "instruction_media_url",
       data.instruction_media_url === "" ? null : data.instruction_media_url
     );
+  }
+  if (Object.prototype.hasOwnProperty.call(data, "language")) {
+    pushField("language", data.language);
   }
 
   if (sets.length === 0) {

@@ -19,6 +19,7 @@ const {
 const {
   validateCreateExercise,
   validateUpdateExercise,
+  DEFAULT_EXERCISE_LANGUAGE,
 } = require("../src/modules/exercises/exercises.validation");
 
 const IDS = {
@@ -113,7 +114,84 @@ const runValidation = (fn, { params = {}, body = {} } = {}) =>
     assert.ok(captured);
     assert.strictEqual(captured.created_by, undefined);
     assert.strictEqual(captured.title, "Tongue tip");
+    assert.strictEqual(captured.language, DEFAULT_EXERCISE_LANGUAGE);
     pass("create validation strips created_by and requires title/category");
+  }
+
+  {
+    let captured;
+    await new Promise((resolve) => {
+      const req = {
+        body: {
+          category_id: IDS.category,
+          title: "Arabic drill",
+          language: "ar",
+        },
+      };
+      const res = {
+        status() {
+          return this;
+        },
+        json() {
+          resolve();
+        },
+      };
+      validateCreateExercise(req, res, () => {
+        captured = req.body;
+        resolve();
+      });
+    });
+    assert.strictEqual(captured.language, "ar");
+    pass("create validation accepts ar language");
+  }
+
+  {
+    const invalidLanguages = ["ru", "fr", "", null];
+    for (const language of invalidLanguages) {
+      const { res, next } = await runValidation(validateCreateExercise, {
+        body: {
+          category_id: IDS.category,
+          title: "Bad language",
+          language,
+        },
+      });
+      assert.strictEqual(res.statusCode, 400, `expected 400 for ${language}`);
+      assert.strictEqual(next, undefined);
+    }
+    pass("create validation rejects invalid language values");
+  }
+
+  {
+    let captured;
+    await new Promise((resolve) => {
+      const req = {
+        params: { id: IDS.exercise },
+        body: { language: "ar" },
+      };
+      const res = {
+        status() {
+          return this;
+        },
+        json() {
+          resolve();
+        },
+      };
+      validateUpdateExercise(req, res, () => {
+        captured = req.body;
+        resolve();
+      });
+    });
+    assert.strictEqual(captured.language, "ar");
+    pass("update validation accepts language change to ar");
+  }
+
+  {
+    const { res } = await runValidation(validateUpdateExercise, {
+      params: { id: IDS.exercise },
+      body: { language: "ru" },
+    });
+    assert.strictEqual(res.statusCode, 400);
+    pass("update validation rejects unsupported language");
   }
 
   {
@@ -191,8 +269,9 @@ const runValidation = (fn, { params = {}, body = {} } = {}) =>
           rows: [
             {
               id: IDS.exercise,
-              created_by: params[5],
+              created_by: params[6],
               title: params[1],
+              language: params[5],
             },
           ],
         };
@@ -222,7 +301,34 @@ const runValidation = (fn, { params = {}, body = {} } = {}) =>
       IDS.creator
     );
     assert.strictEqual(created.created_by, IDS.creator);
+    assert.strictEqual(created.language, DEFAULT_EXERCISE_LANGUAGE);
     pass("specialist create exercise sets created_by from actor");
+  }
+
+  {
+    const created = await service.createExercise(
+      {
+        category_id: IDS.category,
+        title: "Arabic exercise",
+        description: null,
+        instructions: "Practice",
+        instruction_media_url: null,
+        language: "ar",
+      },
+      IDS.creator
+    );
+    assert.strictEqual(created.language, "ar");
+    pass("specialist create exercise persists ar language");
+  }
+
+  {
+    const updated = await service.updateExercise(
+      IDS.exercise,
+      { language: "ar" },
+      { id: IDS.creator, role: "specialist" }
+    );
+    assert.ok(updated);
+    pass("creator specialist can update exercise language");
   }
 
   {

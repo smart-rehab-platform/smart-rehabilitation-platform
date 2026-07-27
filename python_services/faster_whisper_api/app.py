@@ -3,12 +3,25 @@ import tempfile
 from functools import lru_cache
 from pathlib import Path
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 from faster_whisper import WhisperModel
 
 
 DEFAULT_MODEL_SIZE = "base"
+ALLOWED_LANGUAGES = {"en", "ar"}
+DEFAULT_LANGUAGE = "en"
+
+LANGUAGE_PROMPTS = {
+    "en": (
+        "The child is practicing English speech articulation. "
+        "Transcribe only what is actually spoken. Do not invent missing words."
+    ),
+    "ar": (
+        "الطفل يتدرب على نطق كلمات عربية. "
+        "اكتب فقط ما يقوله الطفل فعليًا ولا تخمّن كلمات غير مسموعة."
+    ),
+}
 
 app = FastAPI(title="Faster Whisper API")
 
@@ -17,6 +30,13 @@ app = FastAPI(title="Faster Whisper API")
 def get_whisper_model() -> WhisperModel:
     model_size = os.getenv("WHISPER_MODEL_SIZE", DEFAULT_MODEL_SIZE).strip() or DEFAULT_MODEL_SIZE
     return WhisperModel(model_size)
+
+
+def resolve_language(value: str | None) -> str:
+    normalized = (value or "").strip().lower()
+    if normalized in ALLOWED_LANGUAGES:
+        return normalized
+    return DEFAULT_LANGUAGE
 
 
 def build_error_response(message: str, status_code: int) -> JSONResponse:
@@ -40,10 +60,15 @@ async def health_check():
 
 
 @app.post("/transcribe")
-async def transcribe_audio(audio: UploadFile = File(...)):
+async def transcribe_audio(
+    audio: UploadFile = File(...),
+    language: str = Form(DEFAULT_LANGUAGE),
+):
     if not audio.filename:
         return build_error_response("Uploaded file must have a filename", 400)
 
+    resolved_language = resolve_language(language)
+    initial_prompt = LANGUAGE_PROMPTS[resolved_language]
     suffix = Path(audio.filename).suffix or ".tmp"
     temp_file_path = None
 
@@ -58,18 +83,23 @@ async def transcribe_audio(audio: UploadFile = File(...)):
             temp_file.write(file_bytes)
 
         model = get_whisper_model()
-        segments, info = model.transcribe(temp_file_path)
+        segments, _info = model.transcribe(
+            temp_file_path,
+            language=resolved_language,
+            task="transcribe",
+            initial_prompt=initial_prompt,
+        )
         segment_list = list(segments)
-        transcript = " ".join(segment.text.strip() for segment in segment_list if segment.text).strip()
+        transcript = " ".join(
+            segment.text.strip() for segment in segment_list if segment.text
+        ).strip()
 
-        duration = getattr(info, "duration", None)
-        if duration is None:
-            duration = segment_list[-1].end if segment_list else 0.0
+        duration = segment_list[-1].end if segment_list else 0.0
 
         return {
             "success": True,
             "transcript": transcript,
-            "language": getattr(info, "language", "unknown"),
+            "language": resolved_language,
             "duration": float(duration)
         }
     except Exception as error:
