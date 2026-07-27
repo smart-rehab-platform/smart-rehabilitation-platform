@@ -3,6 +3,8 @@ const path = require("path");
 
 const FASTER_WHISPER_ENGINE = "faster-whisper";
 const DEFAULT_TIMEOUT_MS = 120000;
+const ALLOWED_TRANSCRIPTION_LANGUAGES = new Set(["en", "ar"]);
+const DEFAULT_TRANSCRIPTION_LANGUAGE = "en";
 
 const getTimeoutMs = () => {
   const parsed = Number(process.env.FASTER_WHISPER_TIMEOUT_MS);
@@ -93,7 +95,14 @@ const parseJsonResponse = async (response) => {
   }
 };
 
-const validateTranscriptionResponse = (payload) => {
+const resolveTranscriptionLanguage = (language) => {
+  const normalized = String(language || "").trim().toLowerCase();
+  return ALLOWED_TRANSCRIPTION_LANGUAGES.has(normalized)
+    ? normalized
+    : DEFAULT_TRANSCRIPTION_LANGUAGE;
+};
+
+const validateTranscriptionResponse = (payload, expectedLanguage) => {
   if (
     !payload ||
     payload.success !== true ||
@@ -107,12 +116,14 @@ const validateTranscriptionResponse = (payload) => {
 
   return {
     transcript: payload.transcript,
-    language: payload.language,
+    language: resolveTranscriptionLanguage(
+      payload.language || expectedLanguage
+    ),
     duration: payload.duration
   };
 };
 
-const transcribeAudio = async (audioFilePath) => {
+const transcribeAudio = async (audioFilePath, options = {}) => {
   if (getConfiguredEngine() !== FASTER_WHISPER_ENGINE) {
     throw createError(
       "Faster-Whisper is not enabled. Set WHISPER_ENGINE=faster-whisper",
@@ -137,6 +148,7 @@ const transcribeAudio = async (audioFilePath) => {
   }
 
   const resolvedAudioPath = await resolveAudioPath(audioFilePath);
+  const resolvedLanguage = resolveTranscriptionLanguage(options.language);
   const audioBuffer = await fs.readFile(resolvedAudioPath);
   const formData = new FormData();
   const audioBlob = new Blob([audioBuffer], {
@@ -144,6 +156,7 @@ const transcribeAudio = async (audioFilePath) => {
   });
 
   formData.append("audio", audioBlob, path.basename(resolvedAudioPath));
+  formData.append("language", resolvedLanguage);
 
   const abortController = new AbortController();
   const timeoutHandle = setTimeout(() => {
@@ -196,7 +209,7 @@ const transcribeAudio = async (audioFilePath) => {
     throw error;
   }
 
-  return validateTranscriptionResponse(payload);
+  return validateTranscriptionResponse(payload, resolvedLanguage);
 };
 
 module.exports = {

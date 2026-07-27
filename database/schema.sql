@@ -365,6 +365,8 @@ CREATE TABLE exercises (
     description             TEXT,
     instructions            TEXT,
     instruction_media_url   TEXT,         -- demo video/audio for the exercise itself
+    language                VARCHAR(2) NOT NULL DEFAULT 'en'
+                            CHECK (language IN ('en', 'ar')),
     created_by              UUID REFERENCES users(id),
     created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
