@@ -10,12 +10,18 @@ import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'specialist_session_requests_widgets.dart';
+import 'specialist_sessions_calendar_widgets.dart';
 import 'specialist_sessions_widgets.dart';
 
 enum _SpecialistSessionsSection { sessions, requests }
 
 class SpecialistSessionsScreen extends ConsumerStatefulWidget {
-  const SpecialistSessionsScreen({super.key});
+  const SpecialistSessionsScreen({
+    super.key,
+    this.initialViewMode = SpecialistSessionsViewMode.list,
+  });
+
+  final SpecialistSessionsViewMode initialViewMode;
 
   @override
   ConsumerState<SpecialistSessionsScreen> createState() =>
@@ -26,11 +32,18 @@ class _SpecialistSessionsScreenState
     extends ConsumerState<SpecialistSessionsScreen> {
   late final TextEditingController _searchController;
   _SpecialistSessionsSection _selectedSection = _SpecialistSessionsSection.sessions;
+  late SpecialistSessionsViewMode _viewMode;
+  late DateTime _visibleMonth;
+  late DateTime _selectedDate;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    _viewMode = widget.initialViewMode;
+    final today = normalizeCalendarDate(DateTime.now());
+    _selectedDate = today;
+    _visibleMonth = startOfCalendarMonth(today);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistSessionsProvider.notifier).initialize();
       ref.read(specialistSessionRequestsProvider.notifier).initialize();
@@ -50,11 +63,130 @@ class _SpecialistSessionsScreenState
     ]);
   }
 
+  void _onVisibleMonthChanged(DateTime month) {
+    setState(() {
+      _visibleMonth = startOfCalendarMonth(month);
+      final today = normalizeCalendarDate(DateTime.now());
+      if (_visibleMonth.year == today.year &&
+          _visibleMonth.month == today.month) {
+        _selectedDate = today;
+      } else {
+        _selectedDate = _visibleMonth;
+      }
+    });
+  }
+
+  void _onCalendarDateSelected(DateTime date) {
+    setState(() => _selectedDate = normalizeCalendarDate(date));
+  }
+
+  Widget _buildListBody(
+    SpecialistSessionsState sessionsState,
+    SpecialistSessionsNotifier sessionsNotifier,
+  ) {
+    final visible = sessionsState.visibleSessions;
+
+    return RefreshIndicator(
+      onRefresh: _refreshAll,
+      color: DashboardColors.primary,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: context.dashPadding,
+        children: [
+          buildSessionSearchField(
+            controller: _searchController,
+            onChanged: sessionsNotifier.setSearchQuery,
+          ),
+          SizedBox(height: context.dashSpacing * 0.75),
+          SessionFilterChips(
+            selected: sessionsState.filter,
+            onChanged: sessionsNotifier.setFilter,
+          ),
+          if (sessionsState.errorMessage != null) ...[
+            SizedBox(height: context.dashSpacing * 0.75),
+            DashboardErrorCard(
+              message: sessionsState.errorMessage!,
+              onRetry: _refreshAll,
+            ),
+          ],
+          SizedBox(height: context.dashSpacing * 0.75),
+          if (sessionsState.sessions.isEmpty)
+            const DashboardEmptyCard(message: 'No sessions found.')
+          else if (visible.isEmpty)
+            const DashboardEmptyCard(
+              message: 'No sessions match your search or filter.',
+            )
+          else
+            ...visible.map(
+              (session) => SpecialistSessionCard(
+                session: session,
+                onTap: session.id.isEmpty
+                    ? null
+                    : () => context.push(
+                          AppRoutes.specialistSessionDetails(session.id),
+                        ),
+              ),
+            ),
+          SizedBox(height: context.dashSpacing),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalendarBody(SpecialistSessionsState sessionsState) {
+    if (sessionsState.isLoading && sessionsState.sessions.isEmpty) {
+      return const Center(child: DashboardLoadingCard());
+    }
+
+    final daySessions = sessionsState.sessionsForDate(_selectedDate);
+
+    return RefreshIndicator(
+      onRefresh: _refreshAll,
+      color: DashboardColors.primary,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: context.dashPadding,
+        children: [
+          if (sessionsState.isLoading) ...[
+            LinearProgressIndicator(
+              minHeight: 2,
+              color: DashboardColors.brandCyan,
+              backgroundColor: DashboardColors.brandSoft,
+            ),
+            SizedBox(height: context.dashSpacing * 0.5),
+          ],
+          if (sessionsState.errorMessage != null) ...[
+            DashboardErrorCard(
+              message: sessionsState.errorMessage!,
+              onRetry: _refreshAll,
+            ),
+            SizedBox(height: context.dashSpacing * 0.75),
+          ],
+          SpecialistSessionsMonthCalendar(
+            visibleMonth: _visibleMonth,
+            selectedDate: _selectedDate,
+            sessions: sessionsState.sessions,
+            onMonthChanged: _onVisibleMonthChanged,
+            onDateSelected: _onCalendarDateSelected,
+          ),
+          SizedBox(height: context.dashSpacing * 0.85),
+          SpecialistCalendarDaySessionsSection(
+            selectedDate: _selectedDate,
+            sessions: daySessions,
+            onSessionTap: (session) => context.push(
+              AppRoutes.specialistSessionDetails(session.id),
+            ),
+          ),
+          SizedBox(height: context.dashSpacing),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final sessionsState = ref.watch(specialistSessionsProvider);
     final sessionsNotifier = ref.read(specialistSessionsProvider.notifier);
-    final visible = sessionsState.visibleSessions;
 
     Widget body;
     if (_selectedSection == _SpecialistSessionsSection.requests) {
@@ -63,6 +195,8 @@ class _SpecialistSessionsScreenState
         color: DashboardColors.primary,
         child: const SpecialistSessionRequestsInbox(),
       );
+    } else if (_viewMode == SpecialistSessionsViewMode.calendar) {
+      body = _buildCalendarBody(sessionsState);
     } else if (sessionsState.isLoading) {
       body = const Center(child: DashboardLoadingCard());
     } else if (sessionsState.errorMessage != null &&
@@ -75,51 +209,7 @@ class _SpecialistSessionsScreenState
         ),
       );
     } else {
-      body = RefreshIndicator(
-        onRefresh: _refreshAll,
-        color: DashboardColors.primary,
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: context.dashPadding,
-          children: [
-            buildSessionSearchField(
-              controller: _searchController,
-              onChanged: sessionsNotifier.setSearchQuery,
-            ),
-            SizedBox(height: context.dashSpacing * 0.75),
-            SessionFilterChips(
-              selected: sessionsState.filter,
-              onChanged: sessionsNotifier.setFilter,
-            ),
-            if (sessionsState.errorMessage != null) ...[
-              SizedBox(height: context.dashSpacing * 0.75),
-              DashboardErrorCard(
-                message: sessionsState.errorMessage!,
-                onRetry: _refreshAll,
-              ),
-            ],
-            SizedBox(height: context.dashSpacing * 0.75),
-            if (sessionsState.sessions.isEmpty)
-              const DashboardEmptyCard(message: 'No sessions found.')
-            else if (visible.isEmpty)
-              const DashboardEmptyCard(
-                message: 'No sessions match your search or filter.',
-              )
-            else
-              ...visible.map(
-                (session) => SpecialistSessionCard(
-                  session: session,
-                  onTap: session.id.isEmpty
-                      ? null
-                      : () => context.push(
-                            AppRoutes.specialistSessionDetails(session.id),
-                          ),
-                ),
-              ),
-            SizedBox(height: context.dashSpacing),
-          ],
-        ),
-      );
+      body = _buildListBody(sessionsState, sessionsNotifier);
     }
 
     return SpecialistPageScaffold(
@@ -151,6 +241,16 @@ class _SpecialistSessionsScreenState
               onChanged: (section) => setState(() => _selectedSection = section),
             ),
           ),
+          if (_selectedSection == _SpecialistSessionsSection.sessions) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            Padding(
+              padding: context.dashPadding.copyWith(bottom: 0),
+              child: SpecialistSessionsViewModeTabs(
+                selected: _viewMode,
+                onChanged: (mode) => setState(() => _viewMode = mode),
+              ),
+            ),
+          ],
           SizedBox(height: context.dashSpacing * 0.5),
           Expanded(child: body),
         ],

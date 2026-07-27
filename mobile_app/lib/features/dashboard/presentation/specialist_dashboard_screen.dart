@@ -14,6 +14,7 @@ import '../widgets/dashboard_scaffold.dart';
 import '../widgets/dashboard_surface_card.dart';
 import '../widgets/dashboard_visuals.dart';
 import '../widgets/parent_dashboard_cards.dart';
+import '../widgets/specialist_dashboard_weekly_schedule_card.dart';
 import '../widgets/specialist_navigation.dart';
 
 class SpecialistDashboardScreen extends ConsumerStatefulWidget {
@@ -97,6 +98,8 @@ class _SpecialistDashboardScreenState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DashboardGreeting(message: 'Welcome back, $greetingName'),
+          SizedBox(height: context.dashSpacing * 0.75),
+          SpecialistDashboardWeeklyScheduleCard(sessions: state.sessions),
           if (!state.hasAssignedPatients &&
               state.overview.activeCases == 0) ...[
             SizedBox(height: context.dashSpacing * 0.75),
@@ -202,69 +205,6 @@ class _SpecialistDashboardScreenState
                         ),
                       ),
                       DashboardPriorityBadge(label: review.priority),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          SizedBox(height: context.dashSpacing * 0.6),
-          DashboardSectionHeader(
-            title: "Today's Schedule",
-            onActionTap: () => context.push(AppRoutes.specialistSessions),
-          ),
-          SizedBox(height: context.dashSpacing * 0.5),
-          if (state.schedule.isEmpty)
-            const DashboardEmptyCard(
-              message: 'No sessions scheduled for today.',
-            )
-          else
-            ...state.schedule.map(
-              (item) => Padding(
-                padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                child: DashboardSurfaceCard(
-                  onTap: () => context.push(AppRoutes.specialistSessions),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: context.dashSpacing * 2.2,
-                        padding: EdgeInsets.symmetric(
-                          vertical: context.dashSpacing * 0.45,
-                        ),
-                        decoration: BoxDecoration(
-                          color: DashboardColors.brandSoft,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          item.timeLabel,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: DashboardColors.brandCyan,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: context.dashSpacing * 0.65),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.patientName,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: DashboardColors.textPrimary,
-                              ),
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.15),
-                            Text(
-                              item.sessionType,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: DashboardColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),

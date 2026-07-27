@@ -11,6 +11,7 @@ class SpecialistDashboardBundle {
     required this.overview,
     required this.patients,
     required this.pendingReviews,
+    required this.allSessions,
     required this.todaySessions,
     required this.treatmentPlans,
     required this.progress,
@@ -19,6 +20,7 @@ class SpecialistDashboardBundle {
   final SpecialistOverviewData overview;
   final List<SpecialistPatientItem> patients;
   final List<SpecialistPendingReview> pendingReviews;
+  final List<SpecialistSessionDetail> allSessions;
   final List<SpecialistSessionDetail> todaySessions;
   final List<SpecialistTreatmentPlanItem> treatmentPlans;
   final List<SpecialistPatientProgress> progress;
@@ -101,6 +103,7 @@ class SpecialistDashboardRepository {
       overview: overview,
       patients: patients,
       pendingReviews: pendingReviews,
+      allSessions: allSessions,
       todaySessions: todaySessions,
       treatmentPlans: treatmentPlans,
       progress: progress,
