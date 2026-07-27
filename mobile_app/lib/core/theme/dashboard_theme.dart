@@ -8,10 +8,10 @@ class DashboardTheme {
 
   static ThemeData get light {
     const colorScheme = ColorScheme.light(
-      primary: DashboardColors.primary,
+      primary: DashboardColors.brandCyan,
       onPrimary: Colors.white,
-      secondary: DashboardColors.accent,
-      onSecondary: DashboardColors.textPrimary,
+      secondary: DashboardColors.brandSecondaryBlue,
+      onSecondary: Colors.white,
       surface: DashboardColors.surface,
       onSurface: DashboardColors.textPrimary,
       onSurfaceVariant: DashboardColors.textSecondary,
@@ -52,7 +52,7 @@ class DashboardTheme {
         ),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: DashboardColors.accent,
+        color: DashboardColors.brandCyan,
         linearTrackColor: DashboardColors.border,
       ),
     );

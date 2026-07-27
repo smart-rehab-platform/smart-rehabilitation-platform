@@ -9,11 +9,10 @@ import '../models/case_intake_request_model.dart';
 import '../providers/parent_case_intake_provider.dart';
 import 'case_request_status_chip.dart';
 
-/// Parent-home Case Intake block: onboarding, featured request, or secondary card.
+/// Parent-home Case Intake block for parents without linked children yet.
 class ParentDashboardCaseIntakeSection extends StatelessWidget {
   const ParentDashboardCaseIntakeSection({
     super.key,
-    required this.hasLinkedChildren,
     required this.caseIntakeState,
     required this.featuredRequest,
     required this.onRetry,
@@ -24,7 +23,6 @@ class ParentDashboardCaseIntakeSection extends StatelessWidget {
     required this.onSubmitAnotherRequest,
   });
 
-  final bool hasLinkedChildren;
   final ParentCaseIntakeState caseIntakeState;
   final CaseIntakeRequest? featuredRequest;
   final VoidCallback onRetry;
@@ -60,22 +58,8 @@ class ParentDashboardCaseIntakeSection extends StatelessWidget {
     }
 
     if (featuredRequest == null) {
-      if (hasLinkedChildren) {
-        return const SizedBox.shrink();
-      }
       return _OnboardingCard(
         onSubmitNewRequest: onSubmitNewRequest,
-        onViewAllRequests: onViewAllRequests,
-      );
-    }
-
-    if (hasLinkedChildren) {
-      return _SecondaryFeaturedCard(
-        request: featuredRequest!,
-        onViewRequest: () => onViewRequest(featuredRequest!),
-        onOpenConversation: _canOpenConversation(featuredRequest!)
-            ? () => onOpenConversation(featuredRequest!)
-            : null,
         onViewAllRequests: onViewAllRequests,
       );
     }
@@ -304,67 +288,6 @@ class _RejectedFeaturedCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SecondaryFeaturedCard extends StatelessWidget {
-  const _SecondaryFeaturedCard({
-    required this.request,
-    required this.onViewRequest,
-    required this.onViewAllRequests,
-    this.onOpenConversation,
-  });
-
-  final CaseIntakeRequest request;
-  final VoidCallback onViewRequest;
-  final VoidCallback onViewAllRequests;
-  final VoidCallback? onOpenConversation;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'Active Case Request',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: DashboardColors.textPrimary,
-          ),
-        ),
-        SizedBox(height: context.dashSpacing * 0.45),
-        DashboardSurfaceCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _RequestSummary(request: request),
-              SizedBox(height: context.dashSpacing * 0.65),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  FilledButton(
-                    onPressed: onViewRequest,
-                    child: const Text('View Request'),
-                  ),
-                  if (onOpenConversation != null)
-                    OutlinedButton(
-                      onPressed: onOpenConversation,
-                      child: const Text('Open Conversation'),
-                    ),
-                  TextButton(
-                    onPressed: onViewAllRequests,
-                    child: const Text('View All Requests'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

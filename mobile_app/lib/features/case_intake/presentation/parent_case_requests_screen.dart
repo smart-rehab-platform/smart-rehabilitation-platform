@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
+import '../../dashboard/widgets/dashboard_components.dart';
 import '../../dashboard/widgets/parent_dashboard_cards.dart';
 import '../../dashboard/widgets/parent_page_scaffold.dart';
 import '../providers/parent_case_intake_provider.dart';
@@ -44,6 +45,7 @@ class _ParentCaseRequestsScreenState
       body = RefreshIndicator(
         onRefresh: () =>
             ref.read(parentCaseIntakeProvider.notifier).refreshRequests(),
+        color: DashboardColors.brandCyan,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
@@ -63,10 +65,13 @@ class _ParentCaseRequestsScreenState
               ),
             ),
             SizedBox(height: context.dashSpacing * 0.75),
-            FilledButton.icon(
-              onPressed: _openNewRequest,
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Submit New Case Request'),
+            SizedBox(
+              width: double.infinity,
+              child: BrandGradientButton(
+                onPressed: _openNewRequest,
+                icon: Icons.add_rounded,
+                label: 'Submit New Case Request',
+              ),
             ),
             SizedBox(height: context.dashSpacing),
             if (state.isRefreshing)
@@ -138,6 +143,7 @@ class _EmptyCaseRequestsCard extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.75),
           OutlinedButton(
             onPressed: onSubmit,
+            style: brandOutlinedButtonStyle(),
             child: const Text('Submit New Case Request'),
           ),
         ],

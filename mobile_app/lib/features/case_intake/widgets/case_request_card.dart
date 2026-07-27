@@ -79,7 +79,7 @@ class CaseRequestCard extends StatelessWidget {
                 Icon(
                   Icons.medical_services_outlined,
                   size: 14,
-                  color: DashboardColors.primary,
+                  color: DashboardColors.brandCyan,
                 ),
                 SizedBox(width: context.dashSpacing * 0.12),
                 Expanded(

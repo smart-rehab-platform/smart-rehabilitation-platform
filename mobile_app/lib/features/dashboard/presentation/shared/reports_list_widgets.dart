@@ -54,12 +54,12 @@ class ReportFilterChips extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? DashboardColors.purpleSoft
+                    ? DashboardColors.brandSoft
                     : DashboardColors.surface,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: isSelected
-                      ? DashboardColors.primary
+                      ? DashboardColors.brandCyan
                       : DashboardColors.border,
                 ),
               ),
@@ -69,7 +69,7 @@ class ReportFilterChips extends StatelessWidget {
                 softWrap: false,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: isSelected
-                          ? DashboardColors.primary
+                          ? DashboardColors.brandCyan
                           : DashboardColors.textSecondary,
                       fontWeight: FontWeight.w700,
                     ),
@@ -196,7 +196,7 @@ class ReportsListBody extends ConsumerWidget {
     super.key,
     required this.searchController,
     required this.onReportTap,
-    this.refreshIndicatorColor = DashboardColors.primary,
+    this.refreshIndicatorColor = DashboardColors.brandCyan,
     this.patientId,
   });
 

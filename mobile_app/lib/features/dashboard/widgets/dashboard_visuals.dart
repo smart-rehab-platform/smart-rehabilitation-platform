@@ -63,6 +63,77 @@ class DashboardProgressRing extends StatelessWidget {
   }
 }
 
+/// Compact circular progress ring for tight dashboard surfaces (e.g. hero cards).
+class DashboardCompactProgressRing extends StatelessWidget {
+  const DashboardCompactProgressRing({
+    super.key,
+    required this.progress,
+    this.size = 72,
+    this.label,
+    this.color = DashboardColors.brandCyan,
+    this.trackColor = DashboardColors.brandSoft,
+  });
+
+  final double progress;
+  final double size;
+  final String? label;
+  final Color color;
+  final Color trackColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final clamped = progress.clamp(0.0, 1.0);
+    final percentLabel = '${(clamped * 100).round()}%';
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: size,
+          height: size,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              CustomPaint(
+                size: Size.square(size),
+                painter: _RingPainter(
+                  progress: clamped,
+                  color: color,
+                  trackColor: trackColor,
+                ),
+              ),
+              Text(
+                percentLabel,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (label != null && label!.trim().isNotEmpty) ...[
+          SizedBox(height: context.dashSpacing * 0.25),
+          SizedBox(
+            width: size,
+            child: Text(
+              label!,
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: DashboardColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class _RingPainter extends CustomPainter {
   _RingPainter({
     required this.progress,
@@ -113,10 +184,10 @@ class DashboardPriorityBadge extends StatelessWidget {
   final String label;
 
   Color get _color => switch (label.toLowerCase()) {
-        'high' => DashboardColors.highPriority,
-        'medium' => DashboardColors.mediumPriority,
-        _ => DashboardColors.lowPriority,
-      };
+    'high' => DashboardColors.highPriority,
+    'medium' => DashboardColors.mediumPriority,
+    _ => DashboardColors.lowPriority,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -132,9 +203,9 @@ class DashboardPriorityBadge extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: _color,
-              fontWeight: FontWeight.w700,
-            ),
+          color: _color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -161,8 +232,8 @@ class DashboardLinearProgressTile extends StatelessWidget {
         CircleAvatar(
           radius: context.dashSpacing * 0.55,
           backgroundColor: avatarColor.withValues(alpha: 0.18),
-            child: Text(
-              dashboardAvatarLetter(name, fallback: 'P'),
+          child: Text(
+            dashboardAvatarLetter(name, fallback: 'P'),
             style: theme.textTheme.labelLarge?.copyWith(
               color: avatarColor,
               fontWeight: FontWeight.w700,
@@ -233,18 +304,14 @@ class DashboardSimpleBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final maxValue = [
-      ...usersValues,
-      ...patientsValues,
-      1.0,
-    ].reduce(math.max);
+    final maxValue = [...usersValues, ...patientsValues, 1.0].reduce(math.max);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            _LegendDot(color: DashboardColors.primary, label: 'Users'),
+            _LegendDot(color: DashboardColors.brandCyan, label: 'Users'),
             SizedBox(width: context.dashSpacing),
             _LegendDot(color: DashboardColors.accent, label: 'Patients'),
           ],
@@ -273,7 +340,7 @@ class DashboardSimpleBarChart extends StatelessWidget {
                             Expanded(
                               child: _Bar(
                                 heightFactor: userHeight,
-                                color: DashboardColors.primary,
+                                color: DashboardColors.brandCyan,
                               ),
                             ),
                             SizedBox(width: context.dashSpacing * 0.15),
@@ -325,9 +392,9 @@ class _LegendDot extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: DashboardColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
+            color: DashboardColors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );
@@ -344,7 +411,8 @@ class _Bar extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxHeight = constraints.maxHeight.isFinite && constraints.maxHeight > 0
+        final maxHeight =
+            constraints.maxHeight.isFinite && constraints.maxHeight > 0
             ? constraints.maxHeight
             : context.dashSpacing * 4;
         final barHeight = maxHeight * heightFactor.clamp(0.08, 1);

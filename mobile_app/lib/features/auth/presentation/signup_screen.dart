@@ -233,8 +233,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     AuthBackButton(
                       onPressed: () => context.go(AppRoutes.splash),
                     ),
-                    const SizedBox(width: 10),
-                    const AuthTopLogo(),
+                    const SizedBox(width: 6),
+                    const AuthTopLogo(
+                      logoAsset: AuthTopLogo.brandingAsset,
+                      logoSize: 26,
+                      logoColor: Color(0xFF2AA4C9),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 14),

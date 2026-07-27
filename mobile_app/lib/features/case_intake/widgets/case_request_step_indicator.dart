@@ -17,10 +17,12 @@ class CaseRequestStepIndicator extends StatelessWidget {
     super.key,
     required this.currentStep,
     required this.totalSteps,
+    this.accentColor = DashboardColors.brandCyan,
   });
 
   final int currentStep;
   final int totalSteps;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class CaseRequestStepIndicator extends StatelessWidget {
             final isComplete = index < currentStep;
             final isCurrent = index == currentStep;
             final color = isComplete || isCurrent
-                ? DashboardColors.primary
+                ? accentColor
                 : DashboardColors.border;
 
             return Expanded(

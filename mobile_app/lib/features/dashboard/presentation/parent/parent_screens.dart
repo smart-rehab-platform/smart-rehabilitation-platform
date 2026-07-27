@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../case_intake/providers/parent_case_intake_provider.dart';
 import '../../models/parent_dashboard_models.dart';
 import '../../models/parent_profile_models.dart';
 import '../../providers/parent_dashboard_provider.dart';
 import '../../providers/parent_features_provider.dart';
 import '../../providers/parent_profile_provider.dart';
+import '../../utils/parent_notification_navigation.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_field.dart';
@@ -93,11 +95,11 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: DashboardColors.purpleSoft,
+                      backgroundColor: DashboardColors.brandSoft,
                       child: Text(
                         dashboardAvatarLetter(child.name),
                         style: const TextStyle(
-                          color: DashboardColors.primary,
+                          color: DashboardColors.brandCyan,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -142,7 +144,7 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
                       Text(
                         '${progress <= 1 ? (progress * 100).round() : progress.round()}%',
                         style: theme.textTheme.titleMedium?.copyWith(
-                          color: DashboardColors.primary,
+                          color: DashboardColors.brandCyan,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -204,11 +206,11 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                     ),
                   ParentChildSwitcher(
                     children: state.children,
-                    selectedChildId: state.selectedChildId,
+                    selectedPatientId: state.selectedPatientId,
                     onSelected: (childId) {
                       ref
                           .read(parentDashboardProvider.notifier)
-                          .selectChild(childId);
+                          .selectPatient(childId);
                     },
                   ),
                   SizedBox(height: context.dashSpacing),
@@ -221,7 +223,7 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                   else if (state.reports.isEmpty)
                     DashboardEmptyCard(
                       message:
-                          'No reports available for ${selectedChild.name} yet.',
+                          'No reports available for ${selectedChild.name}.',
                     )
                   else
                     ...state.reports.map(
@@ -249,12 +251,12 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                                   context.dashSpacing * 0.5,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: DashboardColors.purpleSoft,
+                                  color: DashboardColors.brandSoft,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
                                   Icons.description_outlined,
-                                  color: DashboardColors.primary,
+                                  color: DashboardColors.brandCyan,
                                   size: context.dashSpacing * 0.6,
                                 ),
                               ),
@@ -302,7 +304,7 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                                   tooltip: 'Open report',
                                   icon: Icon(
                                     Icons.open_in_new_outlined,
-                                    color: DashboardColors.primary,
+                                    color: DashboardColors.brandCyan,
                                   ),
                                 ),
                             ],
@@ -333,6 +335,30 @@ class _ParentNotificationsScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(parentNotificationsProvider.notifier).initialize();
     });
+  }
+
+  Future<void> _onNotificationTap(ParentNotificationItem item) async {
+    if (!item.isRead) {
+      await ref.read(parentNotificationsProvider.notifier).markAsRead(item.id);
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    if (isCaseRequestNotification(item)) {
+      await refreshParentDataAfterCaseNotification(ref);
+      if (!mounted) {
+        return;
+      }
+    }
+
+    final destination = await resolveParentNotificationDestination(ref, item);
+    if (!mounted || destination == null) {
+      return;
+    }
+
+    await context.push(destination);
   }
 
   @override
@@ -366,11 +392,7 @@ class _ParentNotificationsScreenState
                 (item) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
                   child: DashboardSurfaceCard(
-                    onTap: item.isRead
-                        ? null
-                        : () => ref
-                              .read(parentNotificationsProvider.notifier)
-                              .markAsRead(item.id),
+                    onTap: () => _onNotificationTap(item),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -380,7 +402,7 @@ class _ParentNotificationsScreenState
                               : Icons.notifications_active_rounded,
                           color: item.isRead
                               ? DashboardColors.textMuted
-                              : DashboardColors.primary,
+                              : DashboardColors.brandCyan,
                         ),
                         SizedBox(width: context.dashSpacing * 0.65),
                         Expanded(
@@ -483,7 +505,7 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
     } else {
       body = RefreshIndicator(
         onRefresh: () => ref.read(parentProfileProvider.notifier).refresh(),
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
@@ -493,6 +515,9 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
             imageUrl: bundle.profileImageUrl,
             fields: _profileFields(bundle),
             presenceUserId: bundle.userId,
+            accentColor: DashboardColors.brandCyan,
+            cardTint: DashboardColors.brandCyan,
+            useBrandLogoutGradient: true,
             onEditPressed: () => context.push(AppRoutes.parentEditProfile),
             onLogout: () => ParentNavigation.logout(context, ref),
           ),
@@ -508,11 +533,29 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
   }
 }
 
-class ParentMoreScreen extends ConsumerWidget {
+class ParentMoreScreen extends ConsumerStatefulWidget {
   const ParentMoreScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ParentMoreScreen> createState() => _ParentMoreScreenState();
+}
+
+class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(parentCaseIntakeProvider.notifier).loadRequests();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final caseIntakeState = ref.watch(parentCaseIntakeProvider);
+    final activeCaseRequestCount = countActiveParentCaseRequests(
+      caseIntakeState.requests,
+    );
+
     return ParentPageScaffold(
       title: 'More',
       currentNav: DashboardNavItem.more,
@@ -522,6 +565,7 @@ class ParentMoreScreen extends ConsumerWidget {
           _MoreTile(
             icon: Icons.assignment_outlined,
             label: 'Case Requests',
+            badgeCount: activeCaseRequestCount,
             onTap: () => context.push(AppRoutes.parentCaseRequests),
           ),
           _MoreTile(
@@ -555,11 +599,13 @@ class _MoreTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    this.badgeCount = 0,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final int badgeCount;
 
   @override
   Widget build(BuildContext context) {
@@ -569,7 +615,7 @@ class _MoreTile extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
-            Icon(icon, color: DashboardColors.primary),
+            Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
               child: Text(
@@ -579,6 +625,22 @@ class _MoreTile extends StatelessWidget {
                 ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
+            if (badgeCount > 0)
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: DashboardColors.brandCyan,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  badgeCount > 9 ? '9+' : '$badgeCount',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
             Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
           ],
         ),

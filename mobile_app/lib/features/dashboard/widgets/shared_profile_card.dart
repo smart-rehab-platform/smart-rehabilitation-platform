@@ -18,6 +18,9 @@ class SharedProfileCard extends ConsumerWidget {
     this.initialsFallback = 'SR',
     this.presenceUserId,
     this.onEditPressed,
+    this.accentColor = DashboardColors.brandCyan,
+    this.cardTint = DashboardColors.brandCyan,
+    this.useBrandLogoutGradient = false,
   });
 
   final String initials;
@@ -27,10 +30,14 @@ class SharedProfileCard extends ConsumerWidget {
   final String? presenceUserId;
   final VoidCallback? onEditPressed;
   final VoidCallback onLogout;
+  final Color accentColor;
+  final Color cardTint;
+  final bool useBrandLogoutGradient;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return DashboardSurfaceCard(
+      tint: cardTint,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -62,8 +69,8 @@ class SharedProfileCard extends ConsumerWidget {
               icon: const Icon(Icons.edit_outlined),
               label: const Text('Edit Profile'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: DashboardColors.primary,
-                side: const BorderSide(color: DashboardColors.primary),
+                foregroundColor: accentColor,
+                side: BorderSide(color: accentColor),
                 padding: EdgeInsets.symmetric(
                   vertical: context.dashSpacing * 0.75,
                 ),
@@ -74,21 +81,104 @@ class SharedProfileCard extends ConsumerWidget {
             ),
             SizedBox(height: context.dashSpacing * 0.5),
           ],
-          ElevatedButton(
-            onPressed: onLogout,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: DashboardColors.primary,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(
-                vertical: context.dashSpacing * 0.75,
+          if (useBrandLogoutGradient)
+            _BrandGradientButton(
+              onPressed: onLogout,
+              label: 'Logout',
+              verticalPadding: context.dashSpacing * 0.75,
+            )
+          else
+            ElevatedButton(
+              onPressed: onLogout,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: accentColor,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  vertical: context.dashSpacing * 0.75,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+              child: const Text('Logout'),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BrandGradientButton extends StatefulWidget {
+  const _BrandGradientButton({
+    required this.onPressed,
+    required this.label,
+    required this.verticalPadding,
+  });
+
+  final VoidCallback onPressed;
+  final String label;
+  final double verticalPadding;
+
+  @override
+  State<_BrandGradientButton> createState() => _BrandGradientButtonState();
+}
+
+class _BrandGradientButtonState extends State<_BrandGradientButton> {
+  static const _pressDuration = Duration(milliseconds: 135);
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed == value) {
+      return;
+    }
+    setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) => _setPressed(false),
+      onTapCancel: () => _setPressed(false),
+      onTap: widget.onPressed,
+      child: AnimatedScale(
+        scale: _pressed ? 0.975 : 1,
+        duration: _pressDuration,
+        curve: Curves.easeInOut,
+        child: AnimatedContainer(
+          duration: _pressDuration,
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            gradient: DashboardColors.brandPrimaryGradient,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: DashboardColors.brandCyan.withValues(alpha: 0.22),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+              if (_pressed)
+                BoxShadow(
+                  color: DashboardColors.brandCyan.withValues(alpha: 0.11),
+                  blurRadius: 22,
+                  spreadRadius: 1,
+                ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: widget.verticalPadding),
+            child: Center(
+              child: Text(
+                widget.label,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
             ),
-            child: const Text('Logout'),
           ),
-        ],
+        ),
       ),
     );
   }

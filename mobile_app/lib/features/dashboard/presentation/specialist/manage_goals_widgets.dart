@@ -86,7 +86,7 @@ class _GoalActionButton extends StatelessWidget {
       icon: Icon(icon, size: context.dashSpacing * 0.5),
       label: Text(label),
       style: OutlinedButton.styleFrom(
-        foregroundColor: DashboardColors.primary,
+        foregroundColor: DashboardColors.brandCyan,
         side: const BorderSide(color: DashboardColors.border),
         padding: EdgeInsets.symmetric(
           horizontal: context.dashSpacing * 0.55,
@@ -129,12 +129,12 @@ class GoalTermSelector extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: selected
-                      ? DashboardColors.purpleSoft
+                      ? DashboardColors.brandSoft
                       : DashboardColors.surface,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: selected
-                        ? DashboardColors.primary
+                        ? DashboardColors.brandCyan
                         : DashboardColors.border,
                   ),
                 ),
@@ -143,7 +143,7 @@ class GoalTermSelector extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: selected
-                            ? DashboardColors.primary
+                            ? DashboardColors.brandCyan
                             : DashboardColors.textSecondary,
                         fontWeight: FontWeight.w700,
                       ),
@@ -172,7 +172,7 @@ InputDecoration goalFieldDecoration(String hint) {
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(color: DashboardColors.primary),
+      borderSide: const BorderSide(color: DashboardColors.brandCyan),
     ),
   );
 }
@@ -442,7 +442,7 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
               contentPadding: EdgeInsets.zero,
               title: const Text('Mark as achieved'),
               value: _isAchieved,
-              activeThumbColor: DashboardColors.primary,
+              activeThumbColor: DashboardColors.brandCyan,
               onChanged: (value) => setState(() => _isAchieved = value),
             ),
             if (_error != null) ...[

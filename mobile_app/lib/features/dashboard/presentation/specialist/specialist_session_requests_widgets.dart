@@ -93,12 +93,12 @@ class SessionRequestInboxFilterChips extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? DashboardColors.purpleSoft
+                      ? DashboardColors.brandSoft
                       : DashboardColors.surface,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isSelected
-                        ? DashboardColors.primary
+                        ? DashboardColors.brandCyan
                         : DashboardColors.border,
                   ),
                 ),
@@ -106,7 +106,7 @@ class SessionRequestInboxFilterChips extends StatelessWidget {
                   filter.label,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: isSelected
-                            ? DashboardColors.primary
+                            ? DashboardColors.brandCyan
                             : DashboardColors.textSecondary,
                         fontWeight: FontWeight.w700,
                       ),
@@ -361,7 +361,7 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: isProcessing ? null : onApprove,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DashboardColors.primary,
+                        backgroundColor: DashboardColors.brandCyan,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(
                           vertical: context.dashSpacing * 0.5,
@@ -723,7 +723,7 @@ class _ApproveSessionRequestSheetState
               ElevatedButton(
                 onPressed: isProcessing ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.primary,
+                  backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
                     vertical: context.dashSpacing * 0.62,
@@ -977,7 +977,7 @@ class _PickerField extends StatelessWidget {
             ],
           ),
         ),
-        Icon(icon, color: DashboardColors.primary, size: 20),
+        Icon(icon, color: DashboardColors.brandCyan, size: 20),
       ],
     );
   }

@@ -204,6 +204,7 @@ CREATE TABLE case_intake_requests (
     child_name                      VARCHAR(150) NOT NULL,
     date_of_birth                   DATE NOT NULL,
     gender                          VARCHAR(10),
+    child_image_url                 TEXT,
     category_id                     UUID NOT NULL REFERENCES case_categories(id) ON DELETE RESTRICT,
     case_description                TEXT NOT NULL,
     observed_difficulties           TEXT,
@@ -313,7 +314,7 @@ CREATE TABLE treatment_plans (
 -- Partial unique index (one active plan per patient) applied via
 -- migrations/007_treatment_plans_one_active.sql when data is clean.
 
--- Keeps a history every time a plan is edited (useful for the "تعديل الخطة" feature)
+-- Keeps a history every time a plan is edited 
 CREATE TABLE treatment_plan_revisions (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     plan_id         UUID NOT NULL REFERENCES treatment_plans(id) ON DELETE CASCADE,
@@ -334,7 +335,7 @@ CREATE TABLE goals (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Tracks goal completion percentage over time (powers "نسبة إنجاز الأهداف")
+-- Tracks goal completion percentage over time 
 CREATE TABLE goal_progress (
     id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     goal_id                UUID NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
@@ -564,7 +565,7 @@ CREATE TABLE speech_analyses (
     pronunciation_score     NUMERIC(5,2),
     fluency_score           NUMERIC(5,2),
     overall_score           NUMERIC(5,2),
-    compared_to_analysis_id UUID REFERENCES speech_analyses(id),  -- self-reference for "مقارنة الأداء السابق"
+    compared_to_analysis_id UUID REFERENCES speech_analyses(id),  -- self-reference for 
     raw_ai_output           JSONB,          -- full model output, kept for debugging/audit
     analyzed_at             TIMESTAMPTZ NOT NULL DEFAULT now()
 );

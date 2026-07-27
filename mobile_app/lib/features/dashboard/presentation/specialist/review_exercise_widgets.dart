@@ -77,7 +77,7 @@ class SubmissionMediaCard extends StatelessWidget {
             children: [
               Icon(
                 _iconForType(media.mediaType),
-                color: DashboardColors.primary,
+                color: DashboardColors.brandCyan,
                 size: context.dashSpacing * 0.55,
               ),
               SizedBox(width: context.dashSpacing * 0.45),
@@ -295,7 +295,7 @@ class _NetworkAudioPlayerState extends State<_NetworkAudioPlayer> {
     return Container(
       padding: EdgeInsets.all(context.dashSpacing * 0.65),
       decoration: BoxDecoration(
-        color: DashboardColors.purpleSoft,
+        color: DashboardColors.brandSoft,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -313,14 +313,14 @@ class _NetworkAudioPlayerState extends State<_NetworkAudioPlayer> {
                   ? Icons.pause_circle_filled_rounded
                   : Icons.play_circle_fill_rounded,
               size: 44,
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
             ),
           ),
           VideoProgressIndicator(
             _controller,
             allowScrubbing: true,
             colors: const VideoProgressColors(
-              playedColor: DashboardColors.primary,
+              playedColor: DashboardColors.brandCyan,
               bufferedColor: DashboardColors.border,
               backgroundColor: DashboardColors.border,
             ),
@@ -419,10 +419,10 @@ class _DecisionChip extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.55),
         decoration: BoxDecoration(
-          color: selected ? DashboardColors.purpleSoft : DashboardColors.surface,
+          color: selected ? DashboardColors.brandSoft : DashboardColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? DashboardColors.primary : DashboardColors.border,
+            color: selected ? DashboardColors.brandCyan : DashboardColors.border,
           ),
         ),
         alignment: Alignment.center,
@@ -430,7 +430,7 @@ class _DecisionChip extends StatelessWidget {
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: selected
-                    ? DashboardColors.primary
+                    ? DashboardColors.brandCyan
                     : DashboardColors.textSecondary,
                 fontWeight: FontWeight.w700,
               ),

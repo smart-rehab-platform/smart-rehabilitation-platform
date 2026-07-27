@@ -184,7 +184,7 @@ class _SpecialistReviewExerciseScreenState
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: DashboardColors.primary),
+                  borderSide: const BorderSide(color: DashboardColors.brandCyan),
                 ),
               ),
             ),
@@ -222,8 +222,8 @@ class _SpecialistReviewExerciseScreenState
                 icon: const Icon(Icons.record_voice_over_outlined),
                 label: const Text('View Speech Analysis'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: DashboardColors.primary,
-                  side: const BorderSide(color: DashboardColors.primary),
+                  foregroundColor: DashboardColors.brandCyan,
+                  side: const BorderSide(color: DashboardColors.brandCyan),
                   padding:
                       EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
                   shape: RoundedRectangleBorder(
@@ -236,7 +236,7 @@ class _SpecialistReviewExerciseScreenState
             ElevatedButton(
               onPressed: state.isSubmitting ? null : _submitReview,
               style: ElevatedButton.styleFrom(
-                backgroundColor: DashboardColors.primary,
+                backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
                 shape: RoundedRectangleBorder(

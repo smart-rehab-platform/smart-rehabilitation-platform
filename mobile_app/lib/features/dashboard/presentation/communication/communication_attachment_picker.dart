@@ -370,7 +370,7 @@ class _AttachmentSheetTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: DashboardColors.primary),
+            Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
               child: Text(

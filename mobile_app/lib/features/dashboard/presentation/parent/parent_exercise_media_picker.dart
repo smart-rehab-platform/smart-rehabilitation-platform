@@ -193,7 +193,7 @@ class _MediaSheetTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: DashboardColors.primary),
+            Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
               child: Text(
@@ -513,7 +513,7 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
                     _isRecording ? Icons.fiber_manual_record : Icons.mic_none,
                     color: _isRecording
                         ? DashboardColors.warning
-                        : DashboardColors.primary,
+                        : DashboardColors.brandCyan,
                   ),
                   SizedBox(width: context.dashSpacing * 0.65),
                   Expanded(
@@ -534,7 +534,7 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
                 icon: const Icon(Icons.fiber_manual_record),
                 label: const Text('Start Recording'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.primary,
+                  backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
                     vertical: context.dashSpacing * 0.75,
@@ -590,8 +590,8 @@ class ParentExerciseMediaSection extends StatelessWidget {
           icon: const Icon(Icons.add_photo_alternate_outlined),
           label: const Text('Add media'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: DashboardColors.primary,
-            side: BorderSide(color: DashboardColors.primary.withValues(alpha: 0.35)),
+            foregroundColor: DashboardColors.brandCyan,
+            side: BorderSide(color: DashboardColors.brandCyan.withValues(alpha: 0.35)),
             padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.75),
           ),
         ),
@@ -603,12 +603,12 @@ class ParentExerciseMediaSection extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(context.dashSpacing * 0.45),
                   decoration: BoxDecoration(
-                    color: DashboardColors.purpleSoft,
+                    color: DashboardColors.brandSoft,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     selection!.icon,
-                    color: DashboardColors.primary,
+                    color: DashboardColors.brandCyan,
                   ),
                 ),
                 SizedBox(width: context.dashSpacing * 0.65),

@@ -10,6 +10,7 @@ import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../dashboard/models/communication_models.dart';
 import '../../dashboard/presentation/communication/communication_attachment_picker.dart';
+import '../../dashboard/widgets/dashboard_components.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
 import '../../dashboard/widgets/dashboard_surface_card.dart';
 import '../../dashboard/widgets/parent_dashboard_cards.dart';
@@ -345,7 +346,7 @@ class _ProgressSection extends StatelessWidget {
             final color = isFailed
                 ? DashboardColors.highPriority
                 : isComplete || isCurrent
-                ? DashboardColors.primary
+                ? DashboardColors.brandCyan
                 : DashboardColors.textMuted;
 
             return Padding(
@@ -438,7 +439,7 @@ class _ConvertedCard extends StatelessWidget {
             'Child Profile Active',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.35),
@@ -449,11 +450,14 @@ class _ConvertedCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
-          FilledButton(
-            onPressed: () => context.push(
-              AppRoutes.parentChildDetail.replaceFirst(':childId', patientId),
+          SizedBox(
+            width: double.infinity,
+            child: BrandGradientButton(
+              onPressed: () => context.push(
+                AppRoutes.parentChildDetail.replaceFirst(':childId', patientId),
+              ),
+              label: 'Open Child Profile',
             ),
-            child: const Text('Open Child Profile'),
           ),
         ],
       ),
@@ -593,14 +597,14 @@ class _SpecialistSection extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: DashboardColors.purpleSoft,
+                backgroundColor: DashboardColors.brandSoft,
                 backgroundImage: imageUrl != null
                     ? CachedNetworkImageProvider(imageUrl)
                     : null,
                 child: imageUrl == null
                     ? Icon(
                         Icons.person_outline_rounded,
-                        color: DashboardColors.primary,
+                        color: DashboardColors.brandCyan,
                       )
                     : null,
               ),
@@ -631,10 +635,13 @@ class _SpecialistSection extends StatelessWidget {
           ),
           if (onOpenConversation != null) ...[
             SizedBox(height: context.dashSpacing * 0.75),
-            FilledButton.icon(
-              onPressed: onOpenConversation,
-              icon: const Icon(Icons.chat_bubble_outline_rounded),
-              label: const Text('Open Conversation'),
+            SizedBox(
+              width: double.infinity,
+              child: BrandGradientButton(
+                onPressed: onOpenConversation,
+                icon: Icons.chat_bubble_outline_rounded,
+                label: 'Open Conversation',
+              ),
             ),
           ],
         ],
@@ -696,7 +703,7 @@ class _AttachmentsSection extends StatelessWidget {
                   children: [
                     Icon(
                       _attachmentIcon(attachment),
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                       size: 20,
                     ),
                     SizedBox(width: context.dashSpacing * 0.35),
@@ -744,6 +751,7 @@ class _AttachmentsSection extends StatelessWidget {
             else
               OutlinedButton.icon(
                 onPressed: onAdd,
+                style: brandOutlinedButtonStyle(),
                 icon: const Icon(Icons.attach_file_rounded),
                 label: const Text('Add Attachment'),
               ),

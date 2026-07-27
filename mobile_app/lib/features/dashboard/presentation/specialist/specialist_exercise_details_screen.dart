@@ -145,8 +145,8 @@ class _SpecialistExerciseDetailsScreenState
                     icon: const Icon(Icons.edit_outlined),
                     label: const Text('Edit Exercise'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: DashboardColors.primary,
-                      side: const BorderSide(color: DashboardColors.primary),
+                      foregroundColor: DashboardColors.brandCyan,
+                      side: const BorderSide(color: DashboardColors.brandCyan),
                     ),
                   ),
                 ],

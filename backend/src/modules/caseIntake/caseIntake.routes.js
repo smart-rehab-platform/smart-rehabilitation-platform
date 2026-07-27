@@ -91,15 +91,6 @@ router.patch(
   caseIntakeController.rejectCaseRequest
 );
 
-router.post(
-  "/specialist/:id/convert-to-patient",
-  authenticate,
-  authorizeRoles("specialist"),
-  caseIntakeValidation.validateRequestIdParam,
-  caseIntakeValidation.validateConvertToPatient,
-  caseIntakeController.convertToPatient
-);
-
 router.get(
   "/specialist/:id",
   authenticate,

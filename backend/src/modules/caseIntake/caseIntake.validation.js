@@ -33,6 +33,7 @@ const ALLOWED_UPDATE_FIELDS = new Set([
   "child_name",
   "date_of_birth",
   "gender",
+  "child_image_url",
   "category_id",
   "case_description",
   "observed_difficulties",
@@ -199,6 +200,28 @@ const validateRequestPayload = (body, res, { requireAll = false } = {}) => {
         message: "gender must not exceed 10 characters",
       });
       return false;
+    }
+  }
+
+  if (body.child_image_url !== undefined && body.child_image_url !== null) {
+    if (typeof body.child_image_url !== "string") {
+      res.status(400).json({
+        success: false,
+        message: "child_image_url must be a string or null when provided",
+      });
+      return false;
+    }
+
+    const trimmed = body.child_image_url.trim();
+    if (trimmed.length > 0) {
+      const { isTrustedUploadUrl } = require("../../config/messageAttachments");
+      if (!isTrustedUploadUrl(trimmed)) {
+        res.status(400).json({
+          success: false,
+          message: "child_image_url must be a trusted local upload URL",
+        });
+        return false;
+      }
     }
   }
 
@@ -886,161 +909,6 @@ const validateRejectReason = (req, res, next) => {
   next();
 };
 
-const RELATIONSHIP_TYPES = ["mother", "father", "guardian", "other"];
-
-const FORBIDDEN_CONVERT_FIELDS = new Set([
-  "parent_id",
-  "specialist_id",
-  "patient_id",
-  "status",
-  "conversation_id",
-  "created_by",
-  "admin_id",
-  "category_id",
-  "assigned_specialist_id",
-  "reviewed_by_admin_id",
-  "id",
-]);
-
-const ALLOWED_CONVERT_FIELDS = new Set([
-  "full_name",
-  "date_of_birth",
-  "gender",
-  "profile_image_url",
-  "relationship",
-  "is_primary_contact",
-]);
-
-const validateConvertToPatient = (req, res, next) => {
-  const body = req.body || {};
-
-  if (rejectForbiddenFields(body, FORBIDDEN_CONVERT_FIELDS, res)) {
-    return;
-  }
-
-  const unknownKeys = Object.keys(body).filter(
-    (key) => !ALLOWED_CONVERT_FIELDS.has(key)
-  );
-
-  if (unknownKeys.length > 0) {
-    return res.status(400).json({
-      success: false,
-      message: `Unknown fields are not allowed: ${unknownKeys.join(", ")}`,
-    });
-  }
-
-  if (!body.relationship) {
-    return res.status(400).json({
-      success: false,
-      message: "relationship is required",
-    });
-  }
-
-  if (!RELATIONSHIP_TYPES.includes(body.relationship)) {
-    return res.status(400).json({
-      success: false,
-      message: "relationship must be one of: mother, father, guardian, other",
-    });
-  }
-
-  if (body.full_name !== undefined && body.full_name !== null) {
-    if (typeof body.full_name !== "string" || !body.full_name.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "full_name must not be empty when provided",
-      });
-    }
-    if (body.full_name.trim().length > 150) {
-      return res.status(400).json({
-        success: false,
-        message: "full_name must not exceed 150 characters",
-      });
-    }
-  }
-
-  if (body.date_of_birth !== undefined && body.date_of_birth !== null && body.date_of_birth !== "") {
-    if (!isValidDateString(body.date_of_birth)) {
-      return res.status(400).json({
-        success: false,
-        message: "date_of_birth must be a valid date in YYYY-MM-DD format",
-      });
-    }
-    if (!isNotFutureDate(body.date_of_birth)) {
-      return res.status(400).json({
-        success: false,
-        message: "date_of_birth cannot be in the future",
-      });
-    }
-  }
-
-  if (body.gender !== undefined && body.gender !== null) {
-    if (typeof body.gender !== "string") {
-      return res.status(400).json({
-        success: false,
-        message: "gender must be a string when provided",
-      });
-    }
-    if (body.gender.trim().length > 10) {
-      return res.status(400).json({
-        success: false,
-        message: "gender must not exceed 10 characters",
-      });
-    }
-  }
-
-  if (body.profile_image_url !== undefined && body.profile_image_url !== null) {
-    if (typeof body.profile_image_url !== "string") {
-      return res.status(400).json({
-        success: false,
-        message: "profile_image_url must be a string or null when provided",
-      });
-    }
-    const trimmed = body.profile_image_url.trim();
-    if (trimmed.length > 0) {
-      const { isTrustedUploadUrl } = require("../../config/messageAttachments");
-      if (!isTrustedUploadUrl(trimmed)) {
-        return res.status(400).json({
-          success: false,
-          message: "profile_image_url must be a trusted local upload URL",
-        });
-      }
-    }
-  }
-
-  if (
-    body.is_primary_contact !== undefined &&
-    body.is_primary_contact !== null &&
-    typeof body.is_primary_contact !== "boolean"
-  ) {
-    return res.status(400).json({
-      success: false,
-      message: "is_primary_contact must be true or false",
-    });
-  }
-
-  req.convertBody = {
-    full_name:
-      body.full_name !== undefined && body.full_name !== null
-        ? body.full_name.trim()
-        : undefined,
-    date_of_birth:
-      body.date_of_birth !== undefined && body.date_of_birth !== null && body.date_of_birth !== ""
-        ? body.date_of_birth.trim()
-        : undefined,
-    gender: body.gender,
-    profile_image_url:
-      body.profile_image_url === undefined
-        ? undefined
-        : body.profile_image_url === null
-          ? null
-          : body.profile_image_url.trim() || null,
-    relationship: body.relationship,
-    is_primary_contact: body.is_primary_contact,
-  };
-
-  next();
-};
-
 module.exports = {
   validateCreateCaseIntakeRequest,
   validateUpdateCaseIntakeRequest,
@@ -1053,5 +921,4 @@ module.exports = {
   validateSpecialistListQuery,
   validateAssessmentNotes,
   validateRejectReason,
-  validateConvertToPatient,
 };

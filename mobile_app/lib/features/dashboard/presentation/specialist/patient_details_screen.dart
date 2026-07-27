@@ -110,7 +110,7 @@ class _SpecialistPatientDetailsScreenState
         onRefresh: () => ref
             .read(specialistPatientDetailsProvider(widget.patientId).notifier)
             .refresh(),
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: PatientDetailsBody(
           patientId: widget.patientId,
           data: data,
@@ -237,8 +237,8 @@ class _SpecialistActionButtons extends StatelessWidget {
           icon: const Icon(Icons.rate_review_outlined),
           label: const Text('Review Exercises'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: DashboardColors.primary,
-            side: const BorderSide(color: DashboardColors.primary),
+            foregroundColor: DashboardColors.brandCyan,
+            side: const BorderSide(color: DashboardColors.brandCyan),
             padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
@@ -251,7 +251,7 @@ class _SpecialistActionButtons extends StatelessWidget {
           icon: const Icon(Icons.note_add_outlined),
           label: Text(isSavingNote ? 'Saving...' : 'Add Specialist Note'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: DashboardColors.primary,
+            backgroundColor: DashboardColors.brandCyan,
             foregroundColor: Colors.white,
             padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
             shape: RoundedRectangleBorder(
@@ -265,8 +265,8 @@ class _SpecialistActionButtons extends StatelessWidget {
           icon: const Icon(Icons.description_outlined),
           label: const Text('View Reports'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: DashboardColors.primary,
-            side: const BorderSide(color: DashboardColors.primary),
+            foregroundColor: DashboardColors.brandCyan,
+            side: const BorderSide(color: DashboardColors.brandCyan),
             padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
@@ -280,8 +280,8 @@ class _SpecialistActionButtons extends StatelessWidget {
             icon: const Icon(Icons.edit_note_outlined),
             label: const Text('Edit Treatment Plan'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: DashboardColors.primary,
-              side: const BorderSide(color: DashboardColors.primary),
+              foregroundColor: DashboardColors.brandCyan,
+              side: const BorderSide(color: DashboardColors.brandCyan),
               padding:
                   EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
               shape: RoundedRectangleBorder(
@@ -295,8 +295,8 @@ class _SpecialistActionButtons extends StatelessWidget {
             icon: const Icon(Icons.playlist_add_check_rounded),
             label: const Text('Create Treatment Plan'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: DashboardColors.primary,
-              side: const BorderSide(color: DashboardColors.primary),
+              foregroundColor: DashboardColors.brandCyan,
+              side: const BorderSide(color: DashboardColors.brandCyan),
               padding:
                   EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
               shape: RoundedRectangleBorder(
@@ -310,8 +310,8 @@ class _SpecialistActionButtons extends StatelessWidget {
           icon: const Icon(Icons.auto_awesome_outlined),
           label: const Text('AI Recommendations'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: DashboardColors.primary,
-            side: const BorderSide(color: DashboardColors.primary),
+            foregroundColor: DashboardColors.brandCyan,
+            side: const BorderSide(color: DashboardColors.brandCyan),
             padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
@@ -324,8 +324,8 @@ class _SpecialistActionButtons extends StatelessWidget {
           icon: const Icon(Icons.graphic_eq_rounded),
           label: const Text('Speech Analysis'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: DashboardColors.primary,
-            side: const BorderSide(color: DashboardColors.primary),
+            foregroundColor: DashboardColors.brandCyan,
+            side: const BorderSide(color: DashboardColors.brandCyan),
             padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),

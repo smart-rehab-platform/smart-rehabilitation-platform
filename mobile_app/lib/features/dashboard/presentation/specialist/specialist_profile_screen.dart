@@ -94,7 +94,7 @@ class _SpecialistProfileScreenState extends ConsumerState<SpecialistProfileScree
     } else {
       body = RefreshIndicator(
         onRefresh: () => ref.read(specialistProfileProvider.notifier).refresh(),
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,

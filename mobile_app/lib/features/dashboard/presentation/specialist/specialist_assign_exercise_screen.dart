@@ -209,7 +209,7 @@ class _SpecialistAssignExerciseScreenState
           if (_selectedExercise != null) ...[
             SizedBox(height: context.dashSpacing * 0.5),
             DashboardSurfaceCard(
-              tint: DashboardColors.primary,
+              tint: DashboardColors.brandCyan,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -217,7 +217,7 @@ class _SpecialistAssignExerciseScreenState
                     'Selected exercise',
                     style: theme.textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                     ),
                   ),
                   SizedBox(height: context.dashSpacing * 0.25),
@@ -258,10 +258,10 @@ class _SpecialistAssignExerciseScreenState
                 onSelected: assignState.isSubmitting
                     ? null
                     : (_) => setState(() => _frequency = value),
-                selectedColor: DashboardColors.purpleSoft,
+                selectedColor: DashboardColors.brandSoft,
                 labelStyle: theme.textTheme.labelLarge?.copyWith(
                   color: selected
-                      ? DashboardColors.primary
+                      ? DashboardColors.brandCyan
                       : DashboardColors.textSecondary,
                   fontWeight: FontWeight.w700,
                 ),
@@ -282,8 +282,8 @@ class _SpecialistAssignExerciseScreenState
             icon: const Icon(Icons.calendar_today_outlined),
             label: Text(dateFormat.format(_startDate)),
             style: OutlinedButton.styleFrom(
-              foregroundColor: DashboardColors.primary,
-              side: const BorderSide(color: DashboardColors.primary),
+              foregroundColor: DashboardColors.brandCyan,
+              side: const BorderSide(color: DashboardColors.brandCyan),
               padding: EdgeInsets.symmetric(
                 vertical: context.dashSpacing * 0.65,
               ),
@@ -318,8 +318,8 @@ class _SpecialistAssignExerciseScreenState
               _dueDate == null ? 'Set due date' : dateFormat.format(_dueDate!),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: DashboardColors.primary,
-              side: const BorderSide(color: DashboardColors.primary),
+              foregroundColor: DashboardColors.brandCyan,
+              side: const BorderSide(color: DashboardColors.brandCyan),
               padding: EdgeInsets.symmetric(
                 vertical: context.dashSpacing * 0.65,
               ),
@@ -349,7 +349,7 @@ class _SpecialistAssignExerciseScreenState
               assignState.isSubmitting ? 'Assigning...' : 'Assign Exercise',
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DashboardColors.primary,
+              backgroundColor: DashboardColors.brandCyan,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(
                 vertical: context.dashSpacing * 0.7,

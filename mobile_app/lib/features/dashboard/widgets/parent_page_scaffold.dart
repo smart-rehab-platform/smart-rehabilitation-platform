@@ -5,11 +5,11 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/dashboard_theme.dart';
-import '../../auth/providers/auth_provider.dart';
 import '../providers/parent_dashboard_provider.dart';
 import '../providers/parent_features_provider.dart';
 import 'dashboard_bottom_nav.dart';
 import 'dashboard_layout.dart';
+import 'dashboard_profile_avatar.dart';
 import 'parent_navigation.dart';
 import 'specialist_page_scaffold.dart';
 
@@ -31,12 +31,15 @@ class ParentPageScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final auth = ref.watch(authProvider);
-    final userName = auth.user?.fullName;
-    final dashboardUnread = ref.watch(parentDashboardProvider).unreadNotifications;
-    final notificationsUnread =
-        ref.watch(parentNotificationsProvider).unreadCount;
-    final unread = notificationsUnread > 0 ? notificationsUnread : dashboardUnread;
+    final dashboardUnread = ref
+        .watch(parentDashboardProvider)
+        .unreadNotifications;
+    final notificationsUnread = ref
+        .watch(parentNotificationsProvider)
+        .unreadCount;
+    final unread = notificationsUnread > 0
+        ? notificationsUnread
+        : dashboardUnread;
 
     return Theme(
       data: DashboardTheme.light,
@@ -54,9 +57,9 @@ class ParentPageScaffold extends ConsumerWidget {
           automaticallyImplyLeading: showBackButton,
           title: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           actions: [
             ...?actions,
@@ -64,8 +67,9 @@ class ParentPageScaffold extends ConsumerWidget {
               count: unread,
               onTap: () => context.push(AppRoutes.parentNotifications),
             ),
-            _AvatarAction(
-              initials: dashboardInitials(userName, fallback: 'PR'),
+            CurrentUserAvatar(
+              radius: 18,
+              initialsFallback: 'PR',
               onTap: () => context.push(AppRoutes.parentProfile),
             ),
             SizedBox(width: context.dashSpacing * 0.35),
@@ -77,6 +81,7 @@ class ParentPageScaffold extends ConsumerWidget {
             : DashboardBottomNav(
                 currentIndex: currentNav!,
                 onTap: (item) => ParentNavigation.onNavTap(context, item),
+                accentColor: DashboardColors.brandCyan,
               ),
       ),
     );
@@ -121,33 +126,6 @@ class _NotificationAction extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-class _AvatarAction extends StatelessWidget {
-  const _AvatarAction({required this.initials, required this.onTap});
-
-  final String initials;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: CircleAvatar(
-        radius: 18,
-        backgroundColor: DashboardColors.purpleSoft,
-        child: Text(
-          initials,
-          style: const TextStyle(
-            color: DashboardColors.primary,
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
-          ),
-        ),
-      ),
     );
   }
 }
