@@ -382,29 +382,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'specialistSessions',
         builder: (context, state) => const SpecialistSessionsScreen(),
       ),
-GoRoute(
-  path: AppRoutes.specialistCreateSession,
-  name: 'specialistCreateSession',
-  builder: (context, state) => SpecialistUpsertSessionScreen(
-    initialPatientId: state.uri.queryParameters['patientId'],
-  ),
-),
-GoRoute(
-  path: AppRoutes.specialistEditSessionPath,
-  name: 'specialistEditSession',
-  builder: (context, state) => SpecialistUpsertSessionScreen(
-    sessionId: state.pathParameters['sessionId'],
-  ),
-),
-GoRoute(
-  path: AppRoutes.specialistSessionDetailsPath,
-  name: 'specialistSessionDetails',
-  builder: (context, state) => SpecialistSessionDetailsScreen(
-    sessionId: state.pathParameters['sessionId']!,
-  ),
-),
-
-      
       GoRoute(
         path: AppRoutes.specialistCreateSession,
         name: 'specialistCreateSession',
