@@ -21,7 +21,7 @@ class ParentTreatmentPlanSection extends StatelessWidget {
         return DashboardColors.textMuted;
       case 'active':
       default:
-        return DashboardColors.primary;
+        return DashboardColors.brandCyan;
     }
   }
 
@@ -232,7 +232,7 @@ class _FeedbackFormCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
-      tint: DashboardColors.primary,
+      tint: DashboardColors.brandCyan,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -304,7 +304,7 @@ class _FeedbackFormCard extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: DashboardColors.primary),
+                borderSide: const BorderSide(color: DashboardColors.brandCyan),
               ),
               counterStyle: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
@@ -324,7 +324,7 @@ class _FeedbackFormCard extends StatelessWidget {
                         height: 22,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
-                          color: DashboardColors.primary,
+                          color: DashboardColors.brandCyan,
                         ),
                       ),
                     ),
@@ -333,10 +333,10 @@ class _FeedbackFormCard extends StatelessWidget {
                     key: const ValueKey('submit'),
                     onPressed: rating > 0 ? onSubmit : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: DashboardColors.primary,
+                      backgroundColor: DashboardColors.brandCyan,
                       foregroundColor: Colors.white,
                       disabledBackgroundColor:
-                          DashboardColors.primary.withValues(alpha: 0.35),
+                          DashboardColors.brandCyan.withValues(alpha: 0.35),
                       disabledForegroundColor: Colors.white70,
                       padding: EdgeInsets.symmetric(
                         vertical: context.dashSpacing * 0.7,
@@ -374,7 +374,7 @@ class _ThankYouCard extends StatelessWidget {
     final showRating = rating >= 1 && rating <= 5;
 
     return DashboardSurfaceCard(
-      tint: DashboardColors.primary,
+      tint: DashboardColors.brandCyan,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -382,12 +382,12 @@ class _ThankYouCard extends StatelessWidget {
             width: context.dashSpacing * 2.4,
             height: context.dashSpacing * 2.4,
             decoration: BoxDecoration(
-              color: DashboardColors.purpleSoft,
+              color: DashboardColors.brandSoft,
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.check_circle_rounded,
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
               size: context.dashSpacing * 1.15,
             ),
           ),
@@ -428,7 +428,7 @@ class _ThankYouCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: DashboardColors.primary,
+                color: DashboardColors.brandCyan,
               ),
             ),
             SizedBox(height: context.dashSpacing * 0.2),

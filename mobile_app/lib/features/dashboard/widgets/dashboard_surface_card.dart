@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import 'dashboard_layout.dart';
+
 class DashboardSurfaceCard extends StatelessWidget {
   const DashboardSurfaceCard({
     super.key,
@@ -9,7 +10,9 @@ class DashboardSurfaceCard extends StatelessWidget {
     this.padding,
     this.onTap,
     this.onLongPress,
-    this.tint = DashboardColors.primary,
+    this.tint = DashboardColors.brandCyan,
+    this.backgroundColor = DashboardColors.surface,
+    this.decoration,
   });
 
   final Widget child;
@@ -17,6 +20,8 @@ class DashboardSurfaceCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final Color tint;
+  final Color backgroundColor;
+  final BoxDecoration? decoration;
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +31,16 @@ class DashboardSurfaceCard extends StatelessWidget {
     );
 
     final card = DecoratedBox(
-      decoration: BoxDecoration(
-        color: DashboardColors.surface,
-        borderRadius: DashboardDecorations.cardRadius,
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.7)),
-        boxShadow: DashboardDecorations.cardShadow(tint),
-      ),
+      decoration:
+          decoration ??
+          BoxDecoration(
+            color: backgroundColor,
+            borderRadius: DashboardDecorations.cardRadius,
+            border: Border.all(
+              color: DashboardColors.border.withValues(alpha: 0.7),
+            ),
+            boxShadow: DashboardDecorations.cardShadow(tint),
+          ),
       child: onTap == null && onLongPress == null
           ? content
           : Material(

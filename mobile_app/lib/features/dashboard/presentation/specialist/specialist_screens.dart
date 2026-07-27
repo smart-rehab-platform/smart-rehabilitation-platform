@@ -325,7 +325,7 @@ class _SpecialistTreatmentPlansScreenState
       body = RefreshIndicator(
         onRefresh: () =>
             ref.read(specialistTreatmentPlansProvider.notifier).refresh(),
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
@@ -381,8 +381,8 @@ class _SpecialistTreatmentPlansScreenState
                       icon: const Icon(Icons.add_rounded),
                       label: const Text('Add Treatment Plan'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: DashboardColors.primary,
-                        side: const BorderSide(color: DashboardColors.primary),
+                        foregroundColor: DashboardColors.brandCyan,
+                        side: const BorderSide(color: DashboardColors.brandCyan),
                       ),
                     ),
                   ],
@@ -678,7 +678,7 @@ class _SpecialistNotificationsScreenState
                               : Icons.notifications_active_rounded,
                           color: item.isRead
                               ? DashboardColors.textMuted
-                              : DashboardColors.primary,
+                              : DashboardColors.brandCyan,
                         ),
                         SizedBox(width: context.dashSpacing * 0.65),
                         Expanded(
@@ -748,11 +748,6 @@ class SpecialistMoreScreen extends ConsumerWidget {
             onTap: () => context.push(AppRoutes.specialistProfile),
           ),
           _MoreTile(
-            icon: Icons.link_rounded,
-            label: 'Manage Parent Links',
-            onTap: () => context.push(AppRoutes.manageParentLinks),
-          ),
-          _MoreTile(
             icon: Icons.notifications_none_rounded,
             label: 'Notifications',
             onTap: () => context.push(AppRoutes.specialistNotifications),
@@ -797,11 +792,11 @@ Widget _buildReviewCard(
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: DashboardColors.primary.withValues(alpha: 0.15),
+            backgroundColor: DashboardColors.brandCyan.withValues(alpha: 0.15),
             child: Text(
               dashboardAvatarLetter(review.patientName),
               style: TextStyle(
-                color: DashboardColors.primary,
+                color: DashboardColors.brandCyan,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -837,7 +832,7 @@ Widget _buildReviewCard(
 
 Color _progressColor(int index) {
   const colors = [
-    DashboardColors.primary,
+    DashboardColors.brandCyan,
     DashboardColors.accent,
     Color(0xFF3B82F6),
     DashboardColors.warning,
@@ -871,7 +866,7 @@ class _MoreTile extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
-            Icon(icon, color: DashboardColors.primary),
+            Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
               child: Text(

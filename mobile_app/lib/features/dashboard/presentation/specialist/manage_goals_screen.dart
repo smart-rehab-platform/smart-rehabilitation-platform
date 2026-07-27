@@ -150,7 +150,7 @@ class _SpecialistManageGoalsScreenState
     } else {
       body = RefreshIndicator(
         onRefresh: notifier.refresh,
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
@@ -199,7 +199,7 @@ class _SpecialistManageGoalsScreenState
                 icon: const Icon(Icons.add_rounded),
                 label: Text(state.isSaving ? 'Saving...' : 'Add New Goal'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.primary,
+                  backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
                     vertical: context.dashSpacing * 0.65,

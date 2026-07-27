@@ -269,16 +269,13 @@ class _SpecialistCaseRequestDetailsScreenState
     required bool savingNotes,
     required bool accepting,
     required bool rejecting,
-    required bool converting,
   }) {
     final message = savingNotes
         ? 'Please wait while assessment notes are being saved.'
         : accepting
-        ? 'Please wait while the case is being accepted.'
+        ? 'Please wait while the patient profile is being created.'
         : rejecting
         ? 'Please wait while the case is being rejected.'
-        : converting
-        ? 'Please wait while the patient profile is being created.'
         : 'Please wait while the assessment is starting.';
     ScaffoldMessenger.of(
       context,
@@ -396,7 +393,7 @@ class _SpecialistCaseRequestDetailsScreenState
       return;
     }
 
-    final success = await ref
+    final patientId = await ref
         .read(specialistCaseRequestDetailProvider(widget.requestId).notifier)
         .acceptCaseRequest();
     if (!mounted) {
@@ -407,10 +404,13 @@ class _SpecialistCaseRequestDetailsScreenState
       specialistCaseRequestDetailProvider(widget.requestId),
     );
 
-    if (success) {
+    if (patientId != null && patientId.trim().isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Case request accepted successfully')),
+        const SnackBar(
+          content: Text('Patient profile created successfully.'),
+        ),
       );
+      context.push(AppRoutes.specialistPatientDetails(patientId));
       return;
     }
 
@@ -472,36 +472,6 @@ class _SpecialistCaseRequestDetailsScreenState
     }
   }
 
-  Future<void> _onCreatePatientProfilePressed() async {
-    final state = ref.read(
-      specialistCaseRequestDetailProvider(widget.requestId),
-    );
-    if (state.hasActiveMutation) {
-      return;
-    }
-    if (state.detail?.request.status != CaseIntakeStatus.accepted) {
-      return;
-    }
-
-    final converted = await context.push<bool>(
-      AppRoutes.specialistConvertPatient(widget.requestId),
-    );
-    if (!mounted) {
-      return;
-    }
-    if (converted == true) {
-      final message =
-          ref
-              .read(specialistCaseRequestDetailProvider(widget.requestId))
-              .lastConvertResult
-              ?.message ??
-          'Case request converted to patient successfully';
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(
@@ -513,7 +483,6 @@ class _SpecialistCaseRequestDetailsScreenState
     final savingNotes = state.isSavingAssessmentNotes;
     final accepting = state.isAccepting;
     final rejecting = state.isRejecting;
-    final converting = state.isConverting;
     final mutationInProgress = state.hasActiveMutation;
     final theme = Theme.of(context);
     final hasConversation =
@@ -523,7 +492,6 @@ class _SpecialistCaseRequestDetailsScreenState
         detail?.request.status == CaseIntakeStatus.assigned;
     final isUnderAssessment =
         detail?.request.status == CaseIntakeStatus.underAssessment;
-    final isAccepted = detail?.request.status == CaseIntakeStatus.accepted;
     final showReadOnlyNotes =
         !isUnderAssessment &&
         detail?.request.status != CaseIntakeStatus.assigned &&
@@ -578,7 +546,6 @@ class _SpecialistCaseRequestDetailsScreenState
           savingNotes: savingNotes,
           accepting: accepting,
           rejecting: rejecting,
-          converting: converting,
         );
       },
       child: SpecialistPageScaffold(
@@ -590,7 +557,6 @@ class _SpecialistCaseRequestDetailsScreenState
                 savingNotes: savingNotes,
                 accepting: accepting,
                 rejecting: rejecting,
-                converting: converting,
               )
             : null,
         body: isInitialLoading
@@ -718,7 +684,7 @@ class _SpecialistCaseRequestDetailsScreenState
                               : _onAcceptCasePressed,
                           child: accepting
                               ? _InlineActionProgress(
-                                  label: 'Accepting...',
+                                  label: 'Creating patient profile...',
                                   color: theme.colorScheme.onPrimary,
                                 )
                               : const Text('Accept Case'),
@@ -743,18 +709,6 @@ class _SpecialistCaseRequestDetailsScreenState
                                   color: DashboardColors.highPriority,
                                 )
                               : const Text('Reject Case'),
-                        ),
-                      ),
-                    ],
-                    if (isAccepted) ...[
-                      SizedBox(height: context.dashSpacing * 0.75),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: mutationInProgress
-                              ? null
-                              : _onCreatePatientProfilePressed,
-                          child: const Text('Create Patient Profile'),
                         ),
                       ),
                     ],
@@ -1041,7 +995,7 @@ class _TimelineStepRow extends StatelessWidget {
       ),
       _TimelineVisual.current => (
         Icons.radio_button_checked_rounded,
-        DashboardColors.primary,
+        DashboardColors.brandCyan,
       ),
       _TimelineVisual.incomplete => (
         Icons.radio_button_unchecked_rounded,
@@ -1326,14 +1280,14 @@ class _ParentInformationCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: DashboardColors.purpleSoft,
+                backgroundColor: DashboardColors.brandSoft,
                 backgroundImage: imageUrl != null
                     ? CachedNetworkImageProvider(imageUrl)
                     : null,
                 child: imageUrl == null
                     ? const Icon(
                         Icons.person_outline_rounded,
-                        color: DashboardColors.primary,
+                        color: DashboardColors.brandCyan,
                       )
                     : null,
               ),
@@ -1465,7 +1419,7 @@ class _AttachmentsCard extends StatelessWidget {
                   children: [
                     Icon(
                       _attachmentIcon(attachment),
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                       size: 20,
                     ),
                     SizedBox(width: context.dashSpacing * 0.35),

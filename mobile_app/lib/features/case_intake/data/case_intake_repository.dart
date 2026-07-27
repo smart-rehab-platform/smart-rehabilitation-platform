@@ -9,7 +9,6 @@ import '../models/case_category_model.dart';
 import '../models/case_intake_request_model.dart';
 import '../models/case_request_attachment_model.dart';
 import '../models/matching_specialist_model.dart';
-import '../models/convert_patient_result_model.dart';
 import '../models/specialist_assigned_case_models.dart';
 import '../models/specialist_case_request_detail_model.dart';
 
@@ -31,6 +30,7 @@ class CaseIntakeRepository {
   static const _categoriesPath = '/case-categories';
   static const _requestsPath = '/case-intake-requests';
   static const _uploadPath = '/uploads/message-attachment';
+  static const _childImageUploadPath = '/uploads/child-image';
 
   String _extractMessage(dynamic responseData, {String? fallback}) {
     final map = ApiResponseParser.asMap(responseData);
@@ -346,35 +346,6 @@ class CaseIntakeRepository {
     }
   }
 
-  Future<ConvertPatientResult> convertToPatient({
-    required String requestId,
-    required ConvertToPatientInput input,
-  }) async {
-    try {
-      final response = await _dio.post(
-        '$_requestsPath/specialist/$requestId/convert-to-patient',
-        data: input.toJson(),
-      );
-      final envelope = ApiResponseParser.asMap(response.data);
-      if (envelope == null) {
-        throw CaseIntakeApiException(
-          message: 'Invalid convert to patient response',
-        );
-      }
-      final result = ConvertPatientResult.fromEnvelope(envelope);
-      if (result.patientId == null || result.patientId!.trim().isEmpty) {
-        throw CaseIntakeApiException(
-          message: 'Invalid convert to patient response',
-        );
-      }
-      return result;
-    } on CaseIntakeApiException {
-      rethrow;
-    } on DioException catch (error) {
-      _throwFromDio(error, fallback: 'Failed to convert case to patient');
-    }
-  }
-
   Future<List<CaseIntakeRequest>> fetchMyRequests() async {
     try {
       final response = await _dio.get('$_requestsPath/mine');
@@ -443,6 +414,37 @@ class CaseIntakeRepository {
       rethrow;
     } on DioException catch (error) {
       _throwFromDio(error, fallback: 'Failed to update case request');
+    }
+  }
+
+  Future<UploadedMessageAttachment> uploadChildImage({
+    required List<int> bytes,
+    required String filename,
+    void Function(int sent, int total)? onProgress,
+  }) async {
+    try {
+      final response = await _dio.post(
+        _childImageUploadPath,
+        data: FormData.fromMap({
+          'image': MultipartFile.fromBytes(bytes, filename: filename),
+        }),
+        onSendProgress: onProgress,
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw CaseIntakeApiException(message: 'Invalid child image upload response');
+      }
+      final uploaded = UploadedMessageAttachment.fromMap(map);
+      if (uploaded.url.isEmpty) {
+        throw CaseIntakeApiException(
+          message: 'Invalid child image upload response: missing file URL',
+        );
+      }
+      return uploaded;
+    } on CaseIntakeApiException {
+      rethrow;
+    } on DioException catch (error) {
+      _throwFromDio(error, fallback: 'Failed to upload child image');
     }
   }
 

@@ -260,6 +260,28 @@ class ParentCaseIntakeNotifier extends StateNotifier<ParentCaseIntakeState> {
     }
   }
 
+  Future<String?> uploadChildImage({
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    _ensureAuthToken();
+    try {
+      final uploaded = await _repository.uploadChildImage(
+        bytes: bytes,
+        filename: filename,
+      );
+      return uploaded.url;
+    } on CaseIntakeApiException catch (error) {
+      state = state.copyWith(errorMessage: error.message);
+      return null;
+    } catch (error) {
+      state = state.copyWith(
+        errorMessage: 'Failed to upload child image: $error',
+      );
+      return null;
+    }
+  }
+
   Future<CaseIntakeRequest?> createRequest(CaseIntakeRequestInput input) async {
     _ensureAuthToken();
     state = state.copyWith(isSubmitting: true, errorMessage: null);

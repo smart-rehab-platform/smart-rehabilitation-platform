@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/data/auth_repository.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/case_intake_repository.dart';
-import '../models/convert_patient_result_model.dart';
 import '../models/specialist_case_request_detail_model.dart';
 import 'case_categories_provider.dart';
 
@@ -16,10 +15,8 @@ class SpecialistCaseRequestDetailState {
     this.isSavingAssessmentNotes = false,
     this.isAccepting = false,
     this.isRejecting = false,
-    this.isConverting = false,
     this.errorMessage,
     this.actionErrorMessage,
-    this.lastConvertResult,
   });
 
   final SpecialistCaseRequestDetail? detail;
@@ -29,17 +26,14 @@ class SpecialistCaseRequestDetailState {
   final bool isSavingAssessmentNotes;
   final bool isAccepting;
   final bool isRejecting;
-  final bool isConverting;
   final String? errorMessage;
   final String? actionErrorMessage;
-  final ConvertPatientResult? lastConvertResult;
 
   bool get hasActiveMutation =>
       isStartingAssessment ||
       isSavingAssessmentNotes ||
       isAccepting ||
-      isRejecting ||
-      isConverting;
+      isRejecting;
 
   SpecialistCaseRequestDetailState copyWith({
     Object? detail = _sentinel,
@@ -49,10 +43,8 @@ class SpecialistCaseRequestDetailState {
     bool? isSavingAssessmentNotes,
     bool? isAccepting,
     bool? isRejecting,
-    bool? isConverting,
     Object? errorMessage = _sentinel,
     Object? actionErrorMessage = _sentinel,
-    Object? lastConvertResult = _sentinel,
   }) {
     return SpecialistCaseRequestDetailState(
       detail: identical(detail, _sentinel)
@@ -65,16 +57,12 @@ class SpecialistCaseRequestDetailState {
           isSavingAssessmentNotes ?? this.isSavingAssessmentNotes,
       isAccepting: isAccepting ?? this.isAccepting,
       isRejecting: isRejecting ?? this.isRejecting,
-      isConverting: isConverting ?? this.isConverting,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
       actionErrorMessage: identical(actionErrorMessage, _sentinel)
           ? this.actionErrorMessage
           : actionErrorMessage as String?,
-      lastConvertResult: identical(lastConvertResult, _sentinel)
-          ? this.lastConvertResult
-          : lastConvertResult as ConvertPatientResult?,
     );
   }
 }
@@ -90,11 +78,6 @@ const _staleAcceptMessage =
 const _staleRejectMessages = <String>{
   'Only assigned or under-assessment requests can be rejected',
   'This case request can no longer be rejected',
-};
-
-const _staleConvertMessages = <String>{
-  'Only accepted case requests can be converted to a patient',
-  'This case request has already been converted to a patient',
 };
 
 final specialistCaseRequestDetailProvider = StateNotifierProvider.autoDispose
@@ -310,12 +293,12 @@ class SpecialistCaseRequestDetailNotifier
     }
   }
 
-  Future<bool> acceptCaseRequest() async {
+  Future<String?> acceptCaseRequest() async {
     if (state.hasActiveMutation) {
-      return false;
+      return null;
     }
     if (state.detail == null || requestId.trim().isEmpty) {
-      return false;
+      return null;
     }
 
     _ensureAuthToken();
@@ -324,17 +307,17 @@ class SpecialistCaseRequestDetailNotifier
     try {
       final detail = await _repository.acceptCaseRequest(requestId);
       if (!mounted) {
-        return true;
+        return detail.request.patientId;
       }
       state = state.copyWith(
         isAccepting: false,
         detail: detail,
         actionErrorMessage: null,
       );
-      return true;
+      return detail.request.patientId;
     } on CaseIntakeApiException catch (error) {
       if (!mounted) {
-        return false;
+        return null;
       }
       state = state.copyWith(
         isAccepting: false,
@@ -343,16 +326,16 @@ class SpecialistCaseRequestDetailNotifier
       if (error.message == _staleAcceptMessage) {
         await refresh();
       }
-      return false;
+      return null;
     } catch (_) {
       if (!mounted) {
-        return false;
+        return null;
       }
       state = state.copyWith(
         isAccepting: false,
         actionErrorMessage: 'Failed to accept case request. Please try again.',
       );
-      return false;
+      return null;
     }
   }
 
@@ -400,75 +383,6 @@ class SpecialistCaseRequestDetailNotifier
       state = state.copyWith(
         isRejecting: false,
         actionErrorMessage: 'Failed to reject case request. Please try again.',
-      );
-      return false;
-    }
-  }
-
-  Future<bool> convertToPatient(ConvertToPatientInput input) async {
-    if (state.hasActiveMutation) {
-      return false;
-    }
-    if (state.detail == null || requestId.trim().isEmpty) {
-      return false;
-    }
-
-    _ensureAuthToken();
-    state = state.copyWith(
-      isConverting: true,
-      actionErrorMessage: null,
-      lastConvertResult: null,
-    );
-
-    try {
-      final result = await _repository.convertToPatient(
-        requestId: requestId,
-        input: input,
-      );
-      if (!mounted) {
-        return true;
-      }
-
-      SpecialistCaseRequestDetail? refreshedDetail;
-      try {
-        refreshedDetail = await _repository.fetchSpecialistRequestById(
-          requestId,
-        );
-      } catch (_) {
-        refreshedDetail = null;
-      }
-
-      if (!mounted) {
-        return true;
-      }
-
-      state = state.copyWith(
-        isConverting: false,
-        detail: refreshedDetail ?? state.detail,
-        actionErrorMessage: null,
-        lastConvertResult: result,
-      );
-      return true;
-    } on CaseIntakeApiException catch (error) {
-      if (!mounted) {
-        return false;
-      }
-      state = state.copyWith(
-        isConverting: false,
-        actionErrorMessage: error.message,
-      );
-      if (_staleConvertMessages.contains(error.message)) {
-        await refresh();
-      }
-      return false;
-    } catch (_) {
-      if (!mounted) {
-        return false;
-      }
-      state = state.copyWith(
-        isConverting: false,
-        actionErrorMessage:
-            'Failed to convert case to patient. Please try again.',
       );
       return false;
     }

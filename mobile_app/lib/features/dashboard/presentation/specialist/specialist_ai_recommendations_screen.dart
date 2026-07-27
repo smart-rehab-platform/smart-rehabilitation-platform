@@ -116,7 +116,7 @@ class _SpecialistAiRecommendationsScreenState
     } else {
       body = RefreshIndicator(
         onRefresh: notifier.refresh,
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,

@@ -45,6 +45,19 @@ const resolveMimeType = (mimetype, originalname) => {
 const isAllowedMessageAttachment = (mimetype, originalname) =>
   resolveMimeType(mimetype, originalname) !== null;
 
+const PROFILE_IMAGE_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+
+const MAX_PROFILE_IMAGE_BYTES = 10 * 1024 * 1024;
+
+const isAllowedProfileImage = (mimetype, originalname) => {
+  const resolved = resolveMimeType(mimetype, originalname);
+  return resolved !== null && PROFILE_IMAGE_MIME_TYPES.has(resolved);
+};
+
 const isTrustedUploadUrl = (fileUrl) => {
   if (!fileUrl || typeof fileUrl !== "string") {
     return false;
@@ -95,9 +108,12 @@ const buildAttachmentNotificationPreview = (fileType, caption) => {
 
 module.exports = {
   ALLOWED_MIME_TYPES,
+  PROFILE_IMAGE_MIME_TYPES,
   MAX_FILE_SIZE_BYTES,
+  MAX_PROFILE_IMAGE_BYTES,
   resolveMimeType,
   isAllowedMessageAttachment,
+  isAllowedProfileImage,
   isTrustedUploadUrl,
   buildAttachmentNotificationPreview,
 };

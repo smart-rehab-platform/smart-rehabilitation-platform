@@ -147,7 +147,7 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
                       Icon(
                         Icons.info_outline_rounded,
                         size: context.dashSpacing * 0.55,
-                        color: DashboardColors.primary,
+                        color: DashboardColors.brandCyan,
                       ),
                       SizedBox(width: context.dashSpacing * 0.5),
                       Expanded(
@@ -185,7 +185,7 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
                                 .read(parentAiChatProvider.notifier)
                                 .refresh(),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: DashboardColors.primary,
+                              backgroundColor: DashboardColors.brandCyan,
                               foregroundColor: Colors.white,
                             ),
                             child: const Text('Retry'),
@@ -235,7 +235,7 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: DashboardColors.primary,
+                          color: DashboardColors.brandCyan,
                         ),
                       ),
                       SizedBox(width: context.dashSpacing * 0.45),
@@ -282,13 +282,13 @@ class _EmptyChatState extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(context.dashSpacing),
             decoration: BoxDecoration(
-              color: DashboardColors.purpleSoft,
+              color: DashboardColors.brandSoft,
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.smart_toy_outlined,
               size: context.dashSpacing * 1.2,
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
             ),
           ),
           SizedBox(height: context.dashSpacing),
@@ -312,7 +312,7 @@ class _EmptyChatState extends StatelessWidget {
                     backgroundColor: DashboardColors.surface,
                     side: BorderSide(color: DashboardColors.border),
                     labelStyle: theme.textTheme.labelMedium?.copyWith(
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -347,7 +347,7 @@ class _QuickPromptRow extends StatelessWidget {
             backgroundColor: DashboardColors.surface,
             side: BorderSide(color: DashboardColors.border),
             labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: DashboardColors.primary,
+                  color: DashboardColors.brandCyan,
                   fontWeight: FontWeight.w600,
                 ),
           );
@@ -368,7 +368,7 @@ class _ChatBubble extends StatelessWidget {
     final isUser = message.isUser;
     final alignment = isUser ? Alignment.centerRight : Alignment.centerLeft;
     final bubbleColor = isUser
-        ? DashboardColors.primary
+        ? DashboardColors.brandCyan
         : DashboardColors.surface;
     final textColor = isUser ? Colors.white : DashboardColors.textPrimary;
 
@@ -399,7 +399,7 @@ class _ChatBubble extends StatelessWidget {
           boxShadow: isUser
               ? [
                   BoxShadow(
-                    color: DashboardColors.primary.withValues(alpha: 0.18),
+                    color: DashboardColors.brandCyan.withValues(alpha: 0.18),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -417,13 +417,13 @@ class _ChatBubble extends StatelessWidget {
                   Icon(
                     Icons.auto_awesome,
                     size: 14,
-                    color: DashboardColors.primary,
+                    color: DashboardColors.brandCyan,
                   ),
                   SizedBox(width: context.dashSpacing * 0.2),
                   Text(
                     'AI Assistant',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -508,7 +508,7 @@ class _ChatInputBar extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: DashboardColors.primary),
+                  borderSide: const BorderSide(color: DashboardColors.brandCyan),
                 ),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: context.dashSpacing * 0.75,
@@ -519,7 +519,7 @@ class _ChatInputBar extends StatelessWidget {
           ),
           SizedBox(width: context.dashSpacing * 0.45),
           Material(
-            color: DashboardColors.primary,
+            color: DashboardColors.brandCyan,
             borderRadius: BorderRadius.circular(16),
             child: InkWell(
               onTap: isSending ? null : onSend,

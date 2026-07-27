@@ -100,7 +100,7 @@ class _SpecialistSpeechAnalysisScreenState
     } else {
       body = RefreshIndicator(
         onRefresh: notifier.refresh,
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
@@ -207,7 +207,7 @@ class _SpecialistSpeechAnalysisScreenState
                   right: 0,
                   child: LinearProgressIndicator(
                     minHeight: 2,
-                    color: DashboardColors.primary,
+                    color: DashboardColors.brandCyan,
                     backgroundColor: Colors.transparent,
                   ),
                 ),

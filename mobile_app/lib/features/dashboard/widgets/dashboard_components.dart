@@ -106,11 +106,13 @@ class DashboardSectionHeader extends StatelessWidget {
     required this.title,
     this.actionLabel = 'See all',
     this.onActionTap,
+    this.linkColor = DashboardColors.brandCyan,
   });
 
   final String title;
   final String actionLabel;
   final VoidCallback? onActionTap;
+  final Color linkColor;
 
   @override
   Widget build(BuildContext context) {
@@ -130,13 +132,13 @@ class DashboardSectionHeader extends StatelessWidget {
         TextButton(
           onPressed: onActionTap ?? () {},
           style: TextButton.styleFrom(
-            foregroundColor: DashboardColors.primary,
+            foregroundColor: linkColor,
             padding: EdgeInsets.symmetric(horizontal: context.dashSpacing * 0.25),
           ),
           child: Text(
             actionLabel,
             style: theme.textTheme.labelLarge?.copyWith(
-              color: DashboardColors.primary,
+              color: linkColor,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -162,4 +164,216 @@ class DashboardGreeting extends StatelessWidget {
           ),
     );
   }
+}
+
+class BrandGradientButton extends StatefulWidget {
+  const BrandGradientButton({
+    super.key,
+    required this.onPressed,
+    required this.label,
+    this.icon,
+    this.isLoading = false,
+    this.verticalPadding,
+  });
+
+  final VoidCallback? onPressed;
+  final String label;
+  final IconData? icon;
+  final bool isLoading;
+  final double? verticalPadding;
+
+  @override
+  State<BrandGradientButton> createState() => _BrandGradientButtonState();
+}
+
+class _BrandGradientButtonState extends State<BrandGradientButton> {
+  static const _pressDuration = Duration(milliseconds: 135);
+  bool _pressed = false;
+
+  bool get _isEnabled => widget.onPressed != null && !widget.isLoading;
+
+  void _setPressed(bool value) {
+    if (_pressed == value) {
+      return;
+    }
+    setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final padding = widget.verticalPadding ?? context.dashSpacing * 0.75;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: _isEnabled ? (_) => _setPressed(true) : null,
+      onTapUp: _isEnabled ? (_) => _setPressed(false) : null,
+      onTapCancel: _isEnabled ? () => _setPressed(false) : null,
+      onTap: _isEnabled ? widget.onPressed : null,
+      child: AnimatedScale(
+        scale: _pressed && _isEnabled ? 0.975 : 1,
+        duration: _pressDuration,
+        curve: Curves.easeInOut,
+        child: AnimatedContainer(
+          duration: _pressDuration,
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            gradient: _isEnabled
+                ? DashboardColors.brandPrimaryGradient
+                : LinearGradient(
+                    colors: [
+                      DashboardColors.brandCyan.withValues(alpha: 0.45),
+                      DashboardColors.brandSecondaryBlue.withValues(alpha: 0.4),
+                    ],
+                  ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: _isEnabled
+                ? [
+                    BoxShadow(
+                      color: DashboardColors.brandCyan.withValues(alpha: 0.22),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                    if (_pressed)
+                      BoxShadow(
+                        color: DashboardColors.brandCyan.withValues(alpha: 0.11),
+                        blurRadius: 22,
+                        spreadRadius: 1,
+                      ),
+                  ]
+                : null,
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: padding, horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.isLoading) ...[
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ] else if (widget.icon != null) ...[
+                  Icon(widget.icon, color: Colors.white, size: 18),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  widget.label,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class BrandGradientIconButton extends StatefulWidget {
+  const BrandGradientIconButton({
+    super.key,
+    required this.onPressed,
+    required this.icon,
+    this.isLoading = false,
+    this.enabled = true,
+    this.size = 48,
+  });
+
+  final VoidCallback? onPressed;
+  final IconData icon;
+  final bool isLoading;
+  final bool enabled;
+  final double size;
+
+  @override
+  State<BrandGradientIconButton> createState() => _BrandGradientIconButtonState();
+}
+
+class _BrandGradientIconButtonState extends State<BrandGradientIconButton> {
+  static const _pressDuration = Duration(milliseconds: 135);
+  bool _pressed = false;
+
+  bool get _isEnabled => widget.enabled && widget.onPressed != null && !widget.isLoading;
+
+  void _setPressed(bool value) {
+    if (_pressed == value) {
+      return;
+    }
+    setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: _isEnabled ? (_) => _setPressed(true) : null,
+      onTapUp: _isEnabled ? (_) => _setPressed(false) : null,
+      onTapCancel: _isEnabled ? () => _setPressed(false) : null,
+      onTap: _isEnabled ? widget.onPressed : null,
+      child: AnimatedScale(
+        scale: _pressed && _isEnabled ? 0.975 : 1,
+        duration: _pressDuration,
+        curve: Curves.easeInOut,
+        child: AnimatedContainer(
+          duration: _pressDuration,
+          curve: Curves.easeInOut,
+          width: widget.size,
+          height: widget.size,
+          decoration: BoxDecoration(
+            gradient: _isEnabled ? DashboardColors.brandPrimaryGradient : null,
+            color: _isEnabled
+                ? null
+                : DashboardColors.brandCyan.withValues(alpha: 0.35),
+            shape: BoxShape.circle,
+            boxShadow: _isEnabled
+                ? [
+                    BoxShadow(
+                      color: DashboardColors.brandCyan.withValues(alpha: 0.22),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                    if (_pressed)
+                      BoxShadow(
+                        color: DashboardColors.brandCyan.withValues(alpha: 0.11),
+                        blurRadius: 22,
+                        spreadRadius: 1,
+                      ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: widget.isLoading
+                ? SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  )
+                : Icon(widget.icon, color: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+ButtonStyle brandOutlinedButtonStyle({BorderRadius? borderRadius}) {
+  return OutlinedButton.styleFrom(
+    foregroundColor: DashboardColors.brandCyan,
+    side: const BorderSide(color: DashboardColors.brandCyan),
+    shape: RoundedRectangleBorder(
+      borderRadius: borderRadius ?? BorderRadius.circular(14),
+    ),
+  );
 }

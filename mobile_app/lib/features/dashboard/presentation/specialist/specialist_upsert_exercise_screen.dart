@@ -590,7 +590,7 @@ class _SpecialistUpsertExerciseScreenState
                           : 'Create Exercise',
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DashboardColors.primary,
+              backgroundColor: DashboardColors.brandCyan,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(
                 vertical: context.dashSpacing * 0.7,

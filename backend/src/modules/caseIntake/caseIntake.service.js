@@ -39,8 +39,15 @@ const normalizePayload = (data) => {
   return {
     child_name: data.child_name.trim(),
     date_of_birth: data.date_of_birth.trim(),
+
     gender: normalizeText(data.gender)?.toLowerCase() ?? null,
     child_image_url: normalizeText(data.child_image_url),
+
+    gender: normalizeText(data.gender),
+    child_image_url:
+      data.child_image_url === undefined || data.child_image_url === null
+        ? null
+        : normalizeText(data.child_image_url),
     category_id: data.category_id.trim(),
     case_description: data.case_description.trim(),
     observed_difficulties: normalizeText(data.observed_difficulties),
@@ -414,8 +421,20 @@ const getRequestRowForParent = async (
   return row;
 };
 
+const assertTrustedChildImageUrl = (childImageUrl) => {
+  if (!childImageUrl) {
+    return;
+  }
+
+  if (!isTrustedUploadUrl(childImageUrl)) {
+    throw createError("Invalid or untrusted child image URL", 400);
+  }
+};
+
 const createCaseIntakeRequest = async (parentId, body) => {
   const payload = normalizePayload(body);
+
+  assertTrustedChildImageUrl(payload.child_image_url);
 
   await assertActiveCategory(payload.category_id);
 
@@ -537,6 +556,8 @@ const updatePendingRequest = async (requestId, parentId, body) => {
   }
 
   const payload = mergeUpdatePayload(existingRow, body);
+
+  assertTrustedChildImageUrl(payload.child_image_url);
 
   await assertActiveCategory(payload.category_id);
 
@@ -1274,36 +1295,68 @@ const updateAssessmentNotes = async (requestId, specialistId, assessmentNotes) =
 };
 
 const acceptCaseRequest = async (requestId, specialistId) => {
-  const result = await pool.query(
-    `UPDATE case_intake_requests
-     SET status = 'accepted'::case_intake_status,
-         accepted_at = now(),
-         rejection_reason = NULL
-     WHERE id = $1
-       AND assigned_specialist_id = $2
-       AND status = 'under_assessment'::case_intake_status
-       AND assessment_notes IS NOT NULL
-       AND char_length(trim(assessment_notes)) > 0
-     RETURNING id, parent_id`,
-    [requestId, specialistId]
-  );
+  const client = await pool.connect();
+  const defaultConvertBody = {
+    relationship: "guardian",
+    is_primary_contact: true,
+  };
 
-  if (!result.rows[0]) {
-    const request = await loadSpecialistOwnedRequest(requestId, specialistId);
+  let conversion;
+  let parentId;
 
-    if (request.status === "under_assessment" && !normalizeText(request.assessment_notes)) {
-      throw createError(
-        "Assessment notes are required before accepting a case request",
-        409
-      );
+  try {
+    await client.query("BEGIN");
+
+    const acceptResult = await client.query(
+      `UPDATE case_intake_requests
+       SET status = 'accepted'::case_intake_status,
+           accepted_at = now(),
+           rejection_reason = NULL
+       WHERE id = $1
+         AND assigned_specialist_id = $2
+         AND status = 'under_assessment'::case_intake_status
+         AND assessment_notes IS NOT NULL
+         AND char_length(trim(assessment_notes)) > 0
+       RETURNING id, parent_id`,
+      [requestId, specialistId]
+    );
+
+    if (!acceptResult.rows[0]) {
+      const request = await loadSpecialistOwnedRequest(requestId, specialistId);
+
+      if (
+        request.status === "under_assessment" &&
+        !normalizeText(request.assessment_notes)
+      ) {
+        throw createError(
+          "Assessment notes are required before accepting a case request",
+          409
+        );
+      }
+
+      throw createError("Only case requests under assessment can be accepted", 409);
     }
 
-    throw createError("Only case requests under assessment can be accepted", 409);
+    parentId = acceptResult.rows[0].parent_id;
+
+    conversion = await convertRequestToPatient(
+      requestId,
+      specialistId,
+      defaultConvertBody,
+      { client, deferNotifications: true }
+    );
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
 
   notificationsService
     .createNotification({
-      user_id: result.rows[0].parent_id,
+      user_id: parentId,
       type: "case_request_accepted",
       title: "Case request accepted",
       body: "Your preliminary case request has been accepted by the specialist.",
@@ -1320,8 +1373,18 @@ const acceptCaseRequest = async (requestId, specialistId) => {
     related_entity_id: requestId,
   }).catch(() => {});
 
+  sendConversionNotifications({
+    parentId,
+    specialistId,
+    fullName: conversion.patient.full_name,
+    patientId: conversion.patient.id,
+  });
+
   const row = await getRequestRowForSpecialist(requestId, specialistId);
-  return formatSpecialistRequestDetail(row);
+  return {
+    detail: formatSpecialistRequestDetail(row),
+    conversion,
+  };
 };
 
 const rejectCaseRequest = async (requestId, specialistId, reason) => {
@@ -1394,11 +1457,52 @@ const formatConvertedPatient = (row) => ({
   created_by: row.created_by,
 });
 
-const convertRequestToPatient = async (requestId, specialistId, body) => {
-  const client = await pool.connect();
+const sendConversionNotifications = ({
+  parentId,
+  specialistId,
+  fullName,
+  patientId,
+}) => {
+  notificationsService
+    .createNotification({
+      user_id: parentId,
+      type: "case_request_converted",
+      title: "Child profile is now active",
+      body: `${fullName}'s official patient profile is now active.`,
+      related_entity_type: "patient",
+      related_entity_id: patientId,
+    })
+    .catch(() => {});
+
+  notificationsService
+    .createNotification({
+      user_id: specialistId,
+      type: "case_request_converted",
+      title: "Case converted to patient",
+      body: `${fullName}'s case request was converted to an official patient profile.`,
+      related_entity_type: "patient",
+      related_entity_id: patientId,
+    })
+    .catch(() => {});
+
+  notifyAllAdmins({
+    type: "case_request_converted",
+    title: "Case request converted to patient",
+    body: `${fullName}'s preliminary case request was converted to an official patient profile.`,
+    related_entity_type: "patient",
+    related_entity_id: patientId,
+  }).catch(() => {});
+};
+
+const convertRequestToPatient = async (requestId, specialistId, body, options = {}) => {
+  const ownsTransaction = !options.client;
+  const client = options.client || (await pool.connect());
+  const deferNotifications = Boolean(options.deferNotifications);
 
   try {
-    await client.query("BEGIN");
+    if (ownsTransaction) {
+      await client.query("BEGIN");
+    }
 
     const requestResult = await client.query(
       `SELECT *
@@ -1486,9 +1590,9 @@ const convertRequestToPatient = async (requestId, specialistId, body) => {
         ? normalizeText(body.gender)
         : normalizeText(request.gender);
     const profileImageUrl =
-      body.profile_image_url === undefined || body.profile_image_url === null
-        ? null
-        : normalizeText(body.profile_image_url);
+      body.profile_image_url !== undefined && body.profile_image_url !== null
+        ? normalizeText(body.profile_image_url)
+        : normalizeText(request.child_image_url);
 
     if (profileImageUrl && !isTrustedUploadUrl(profileImageUrl)) {
       throw createError("Invalid or untrusted profile image URL", 400);
@@ -1543,6 +1647,8 @@ const convertRequestToPatient = async (requestId, specialistId, body) => {
       );
     }
 
+    const convertedRequest = updatedRequestResult.rows[0];
+
     const updatedConversationResult = await client.query(
       `UPDATE conversations
        SET patient_id = $1
@@ -1577,41 +1683,7 @@ const convertRequestToPatient = async (requestId, specialistId, body) => {
       `Specialist assigned during conversion from case intake request ${requestId}`
     );
 
-    await client.query("COMMIT");
-
-    const convertedRequest = updatedRequestResult.rows[0];
-
-    notificationsService
-      .createNotification({
-        user_id: request.parent_id,
-        type: "case_request_converted",
-        title: "Child profile is now active",
-        body: `${fullName}'s official patient profile is now active.`,
-        related_entity_type: "patient",
-        related_entity_id: patient.id,
-      })
-      .catch(() => {});
-
-    notificationsService
-      .createNotification({
-        user_id: specialistId,
-        type: "case_request_converted",
-        title: "Case converted to patient",
-        body: `${fullName}'s case request was converted to an official patient profile.`,
-        related_entity_type: "patient",
-        related_entity_id: patient.id,
-      })
-      .catch(() => {});
-
-    notifyAllAdmins({
-      type: "case_request_converted",
-      title: "Case request converted to patient",
-      body: `${fullName}'s preliminary case request was converted to an official patient profile.`,
-      related_entity_type: "patient",
-      related_entity_id: patient.id,
-    }).catch(() => {});
-
-    return {
+    const conversionResult = {
       request: {
         id: convertedRequest.id,
         status: convertedRequest.status,
@@ -1634,8 +1706,25 @@ const convertRequestToPatient = async (requestId, specialistId, body) => {
         patient_id: updatedConversation.patient_id,
       },
     };
+
+    if (ownsTransaction) {
+      await client.query("COMMIT");
+
+      if (!deferNotifications) {
+        sendConversionNotifications({
+          parentId: request.parent_id,
+          specialistId,
+          fullName,
+          patientId: patient.id,
+        });
+      }
+    }
+
+    return conversionResult;
   } catch (error) {
-    await client.query("ROLLBACK");
+    if (ownsTransaction) {
+      await client.query("ROLLBACK");
+    }
 
     if (isUniqueViolation(error)) {
       throw createError(
@@ -1646,8 +1735,98 @@ const convertRequestToPatient = async (requestId, specialistId, body) => {
 
     throw error;
   } finally {
-    client.release();
+    if (ownsTransaction) {
+      client.release();
+    }
   }
+};
+
+const repairAcceptedCaseRequestConversion = async (requestId) => {
+  const requestResult = await pool.query(
+    `SELECT id, status, patient_id, assigned_specialist_id, child_name
+     FROM case_intake_requests
+     WHERE id = $1`,
+    [requestId]
+  );
+
+  const request = requestResult.rows[0];
+
+  if (!request) {
+    throw createError("Case intake request not found", 404);
+  }
+
+  if (request.status === "converted_to_patient" && request.patient_id) {
+    const patientResult = await pool.query(
+      `SELECT *
+       FROM patients
+       WHERE id = $1`,
+      [request.patient_id]
+    );
+    const patient = patientResult.rows[0];
+
+    if (!patient) {
+      throw createError(
+        "Converted case request references a missing patient record",
+        409
+      );
+    }
+
+    const guardianResult = await pool.query(
+      `SELECT patient_id, parent_id, relationship, is_primary_contact
+       FROM patient_guardians
+       WHERE patient_id = $1
+       LIMIT 1`,
+      [request.patient_id]
+    );
+
+    const specialistLinkResult = await pool.query(
+      `SELECT patient_id, specialist_id, is_primary
+       FROM patient_specialists
+       WHERE patient_id = $1
+       LIMIT 1`,
+      [request.patient_id]
+    );
+
+    return {
+      alreadyConverted: true,
+      request: {
+        id: request.id,
+        status: request.status,
+        patient_id: request.patient_id,
+      },
+      patient: formatConvertedPatient(patient),
+      parent_link: guardianResult.rows[0] || null,
+      specialist_link: specialistLinkResult.rows[0] || null,
+    };
+  }
+
+  if (request.status !== "accepted" || request.patient_id) {
+    throw createError(
+      "Only accepted case requests without a patient can be repaired",
+      409
+    );
+  }
+
+  if (!request.assigned_specialist_id) {
+    throw createError(
+      "Case request is missing an assigned specialist for conversion",
+      409
+    );
+  }
+
+  const conversion = await convertRequestToPatient(
+    requestId,
+    request.assigned_specialist_id,
+    {
+      relationship: "guardian",
+      is_primary_contact: true,
+    }
+  );
+
+  return {
+    alreadyConverted: false,
+    ...conversion,
+  };
 };
 
 module.exports = {
@@ -1668,4 +1847,5 @@ module.exports = {
   acceptCaseRequest,
   rejectCaseRequest,
   convertRequestToPatient,
+  repairAcceptedCaseRequestConversion,
 };

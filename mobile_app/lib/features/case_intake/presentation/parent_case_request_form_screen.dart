@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,10 +8,13 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../dashboard/models/session_requests_models.dart';
+import '../../dashboard/widgets/dashboard_components.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
+import '../../dashboard/widgets/dashboard_profile_avatar.dart';
 import '../../dashboard/widgets/dashboard_surface_card.dart';
 import '../../dashboard/widgets/parent_dashboard_cards.dart';
 import '../../dashboard/widgets/parent_page_scaffold.dart';
+import '../../dashboard/widgets/profile_image_picker.dart';
 import '../models/case_category_model.dart';
 import '../models/case_intake_request_model.dart';
 import '../providers/case_categories_provider.dart';
@@ -42,6 +47,11 @@ class _ParentCaseRequestFormScreenState
   DateTime? _dateOfBirth;
   CaseIntakeGender? _gender;
   String? _selectedCategoryId;
+  Uint8List? _pendingChildImageBytes;
+  String? _pendingChildImageFilename;
+  String? _existingChildImageUrl;
+  bool _clearExistingChildImage = false;
+  bool _isUploadingChildImage = false;
   bool _hasPreviousDiagnosis = false;
   bool _isCurrentlyReceivingTreatment = false;
   PreferredTimePeriod? _preferredContactPeriod;
@@ -123,6 +133,10 @@ class _ParentCaseRequestFormScreenState
     setState(() {
       _dateOfBirth = request.dateOfBirth;
       _gender = CaseIntakeGender.fromApi(request.gender);
+      _existingChildImageUrl = request.childImageUrl;
+      _pendingChildImageBytes = null;
+      _pendingChildImageFilename = null;
+      _clearExistingChildImage = false;
       _selectedCategoryId = request.categoryId ?? request.category?.id;
       _hasPreviousDiagnosis = request.hasPreviousDiagnosis;
       _isCurrentlyReceivingTreatment = request.isCurrentlyReceivingTreatment;
@@ -203,6 +217,9 @@ class _ParentCaseRequestFormScreenState
         if (dob.isAfter(DateTime(today.year, today.month, today.day))) {
           return 'Date of birth cannot be in the future.';
         }
+        if (_gender == null) {
+          return 'Gender is required.';
+        }
         return null;
       case 1:
         if (_selectedCategoryId == null || _selectedCategoryId!.isEmpty) {
@@ -259,7 +276,7 @@ class _ParentCaseRequestFormScreenState
     });
   }
 
-  CaseIntakeRequestInput _buildInput() {
+  CaseIntakeRequestInput _buildInput({String? childImageUrl, bool clearChildImageUrl = false}) {
     return CaseIntakeRequestInput(
       childName: _childNameController.text.trim(),
       dateOfBirth: DateFormat('yyyy-MM-dd').format(_dateOfBirth!),
@@ -278,6 +295,8 @@ class _ParentCaseRequestFormScreenState
           ? _currentTreatmentController.text.trim()
           : null,
       preferredContactPeriod: _preferredContactPeriod!,
+      childImageUrl: childImageUrl,
+      clearChildImageUrl: clearChildImageUrl,
     );
   }
 
@@ -288,8 +307,40 @@ class _ParentCaseRequestFormScreenState
       return;
     }
 
-    final input = _buildInput();
     final notifier = ref.read(parentCaseIntakeProvider.notifier);
+    String? childImageUrl;
+    var clearChildImageUrl = false;
+
+    if (_pendingChildImageBytes != null && _pendingChildImageFilename != null) {
+      setState(() => _isUploadingChildImage = true);
+      childImageUrl = await notifier.uploadChildImage(
+        bytes: _pendingChildImageBytes!,
+        filename: _pendingChildImageFilename!,
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() => _isUploadingChildImage = false);
+      if (childImageUrl == null || childImageUrl.isEmpty) {
+        final message = ref.read(parentCaseIntakeProvider).errorMessage;
+        if (message != null && message.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message)),
+          );
+        }
+        return;
+      }
+    } else if (_clearExistingChildImage) {
+      clearChildImageUrl = true;
+    } else if (_existingChildImageUrl != null &&
+        _existingChildImageUrl!.trim().isNotEmpty) {
+      childImageUrl = _existingChildImageUrl;
+    }
+
+    final input = _buildInput(
+      childImageUrl: childImageUrl,
+      clearChildImageUrl: clearChildImageUrl,
+    );
     final result = widget.isEditMode
         ? await notifier.updateRequest(widget.requestId!, input)
         : await notifier.createRequest(input);
@@ -340,11 +391,59 @@ class _ParentCaseRequestFormScreenState
     }
   }
 
+  Future<void> _pickChildPhoto() async {
+    if (_isUploadingChildImage) {
+      return;
+    }
+
+    final picker = ProfileImagePicker();
+    try {
+      final result = await picker.showSourceSheet(context);
+      if (result == null || !mounted) {
+        return;
+      }
+      setState(() {
+        _pendingChildImageBytes = result.bytes;
+        _pendingChildImageFilename = result.filename;
+        _clearExistingChildImage = false;
+        _isDirty = true;
+      });
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to select image: $error')),
+      );
+    }
+  }
+
+  void _removeChildPhoto() {
+    setState(() {
+      _pendingChildImageBytes = null;
+      _pendingChildImageFilename = null;
+      if (_existingChildImageUrl != null &&
+          _existingChildImageUrl!.trim().isNotEmpty) {
+        _clearExistingChildImage = true;
+      }
+      _isDirty = true;
+    });
+  }
+
+  bool get _hasChildPhotoPreview =>
+      _pendingChildImageBytes != null ||
+      (!_clearExistingChildImage &&
+          _existingChildImageUrl != null &&
+          _existingChildImageUrl!.trim().isNotEmpty);
+
   @override
   Widget build(BuildContext context) {
     final categoriesState = ref.watch(caseCategoriesProvider);
     final intakeState = ref.watch(parentCaseIntakeProvider);
-    final isSubmitting = intakeState.isSubmitting || intakeState.isUpdating;
+    final isSubmitting =
+        intakeState.isSubmitting ||
+        intakeState.isUpdating ||
+        _isUploadingChildImage;
     final theme = Theme.of(context);
 
     if (_isLoadingExisting) {
@@ -404,6 +503,7 @@ class _ParentCaseRequestFormScreenState
                   CaseRequestStepIndicator(
                     currentStep: _currentStep,
                     totalSteps: caseRequestFormSteps.length,
+                    accentColor: DashboardColors.brandCyan,
                   ),
                   SizedBox(height: context.dashSpacing),
                   if (_stepError != null) ...[
@@ -427,33 +527,25 @@ class _ParentCaseRequestFormScreenState
                       Expanded(
                         child: OutlinedButton(
                           onPressed: isSubmitting ? null : _handleBack,
+                          style: brandOutlinedButtonStyle(),
                           child: const Text('Back'),
                         ),
                       ),
                     if (_currentStep > 0)
                       SizedBox(width: context.dashSpacing * 0.5),
                     Expanded(
-                      child: FilledButton(
+                      child: BrandGradientButton(
                         onPressed: isSubmitting
                             ? null
                             : _currentStep == caseRequestFormSteps.length - 1
                             ? _submit
                             : _goNext,
-                        child: isSubmitting
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                _currentStep == caseRequestFormSteps.length - 1
-                                    ? (widget.isEditMode
-                                          ? 'Save Changes'
-                                          : 'Submit Request')
-                                    : 'Continue',
-                              ),
+                        isLoading: isSubmitting,
+                        label: _currentStep == caseRequestFormSteps.length - 1
+                            ? (widget.isEditMode
+                                  ? 'Save Changes'
+                                  : 'Submit Case Request')
+                            : 'Next',
                       ),
                     ),
                   ],
@@ -473,6 +565,14 @@ class _ParentCaseRequestFormScreenState
           childNameController: _childNameController,
           dateOfBirth: _dateOfBirth,
           gender: _gender,
+          childName: _childNameController.text,
+          existingChildImageUrl: _clearExistingChildImage
+              ? null
+              : _existingChildImageUrl,
+          previewBytes: _pendingChildImageBytes,
+          isBusy: _isUploadingChildImage,
+          onPickPhoto: _pickChildPhoto,
+          onRemovePhoto: _removeChildPhoto,
           onPickDob: _pickDateOfBirth,
           onGenderChanged: (value) => setState(() {
             _gender = value;
@@ -529,6 +629,9 @@ class _ParentCaseRequestFormScreenState
           childName: _childNameController.text.trim(),
           dateOfBirth: _dateOfBirth,
           gender: _gender,
+          childImageUrl: _clearExistingChildImage ? null : _existingChildImageUrl,
+          previewBytes: _pendingChildImageBytes,
+          hasChildPhoto: _hasChildPhotoPreview,
           category: categories.firstWhere(
             (item) => item.id == _selectedCategoryId,
             orElse: () => const CaseCategory(id: '', name: 'Not selected'),
@@ -552,6 +655,12 @@ class _ChildInfoStep extends StatelessWidget {
     required this.childNameController,
     required this.dateOfBirth,
     required this.gender,
+    required this.childName,
+    required this.existingChildImageUrl,
+    required this.previewBytes,
+    required this.isBusy,
+    required this.onPickPhoto,
+    required this.onRemovePhoto,
     required this.onPickDob,
     required this.onGenderChanged,
     required this.childNameMax,
@@ -560,9 +669,19 @@ class _ChildInfoStep extends StatelessWidget {
   final TextEditingController childNameController;
   final DateTime? dateOfBirth;
   final CaseIntakeGender? gender;
+  final String childName;
+  final String? existingChildImageUrl;
+  final Uint8List? previewBytes;
+  final bool isBusy;
+  final VoidCallback onPickPhoto;
+  final VoidCallback onRemovePhoto;
   final VoidCallback onPickDob;
   final ValueChanged<CaseIntakeGender?> onGenderChanged;
   final int childNameMax;
+
+  bool get _hasPhoto =>
+      previewBytes != null ||
+      (existingChildImageUrl != null && existingChildImageUrl!.trim().isNotEmpty);
 
   @override
   Widget build(BuildContext context) {
@@ -570,6 +689,10 @@ class _ChildInfoStep extends StatelessWidget {
     final dobLabel = dateOfBirth != null
         ? DateFormat('MMM d, yyyy').format(dateOfBirth!)
         : 'Select date of birth';
+    final initials = dashboardInitials(
+      childName.trim().isEmpty ? 'Child' : childName.trim(),
+      fallback: 'CH',
+    );
 
     return DashboardSurfaceCard(
       child: Column(
@@ -579,6 +702,74 @@ class _ChildInfoStep extends StatelessWidget {
             'Child Information',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.75),
+          Center(
+            child: Column(
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    DashboardProfileAvatar(
+                      initials: initials,
+                      imageUrl: previewBytes == null ? existingChildImageUrl : null,
+                      previewBytes: previewBytes,
+                      radius: 40,
+                      isLoading: isBusy,
+                      onTap: isBusy ? null : onPickPhoto,
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Material(
+                        color: DashboardColors.brandCyan,
+                        shape: const CircleBorder(),
+                        elevation: 2,
+                        child: InkWell(
+                          onTap: isBusy ? null : onPickPhoto,
+                          customBorder: const CircleBorder(),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(
+                              Icons.camera_alt_rounded,
+                              size: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: context.dashSpacing * 0.35),
+                Text(
+                  _hasPhoto ? 'Change child photo' : 'Add child photo',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: DashboardColors.brandCyan,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'Optional',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: DashboardColors.textMuted,
+                  ),
+                ),
+                if (_hasPhoto) ...[
+                  SizedBox(height: context.dashSpacing * 0.25),
+                  TextButton(
+                    onPressed: isBusy ? null : onRemovePhoto,
+                    child: Text(
+                      'Remove photo',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: DashboardColors.brandCyan,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
@@ -593,6 +784,7 @@ class _ChildInfoStep extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.5),
           OutlinedButton.icon(
             onPressed: onPickDob,
+            style: brandOutlinedButtonStyle(),
             icon: const Icon(Icons.calendar_today_outlined),
             label: Text(dobLabel),
           ),
@@ -604,15 +796,37 @@ class _ChildInfoStep extends StatelessWidget {
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.35),
-          Wrap(
-            spacing: 8,
-            children: CaseIntakeGender.values.map((option) {
-              return ChoiceChip(
-                label: Text(option.label),
-                selected: gender == option,
-                onSelected: (_) => onGenderChanged(option),
-              );
-            }).toList(),
+          Row(
+            children: [
+              for (var index = 0; index < CaseIntakeGender.values.length; index++) ...[
+                if (index > 0) SizedBox(width: context.dashSpacing * 0.35),
+                Expanded(
+                  child: ChoiceChip(
+                    label: Center(
+                      child: Text(CaseIntakeGender.values[index].label),
+                    ),
+                    selected: gender == CaseIntakeGender.values[index],
+                    onSelected: (_) =>
+                        onGenderChanged(CaseIntakeGender.values[index]),
+                    selectedColor: DashboardColors.brandSoft,
+                    checkmarkColor: DashboardColors.brandCyan,
+                    side: BorderSide(
+                      color: gender == CaseIntakeGender.values[index]
+                          ? DashboardColors.brandCyan
+                          : DashboardColors.border,
+                    ),
+                    labelStyle: TextStyle(
+                      color: gender == CaseIntakeGender.values[index]
+                          ? DashboardColors.brandCyan
+                          : DashboardColors.textPrimary,
+                      fontWeight: gender == CaseIntakeGender.values[index]
+                          ? FontWeight.w700
+                          : FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ),
@@ -681,7 +895,7 @@ class _CategoryStep extends StatelessWidget {
                         ? Icons.radio_button_checked_rounded
                         : Icons.radio_button_off_rounded,
                     color: isSelected
-                        ? DashboardColors.primary
+                        ? DashboardColors.brandCyan
                         : DashboardColors.textMuted,
                   ),
                   SizedBox(width: context.dashSpacing * 0.45),
@@ -803,6 +1017,8 @@ class _HistoryStep extends StatelessWidget {
             title: const Text('Has previous diagnosis?'),
             value: hasPreviousDiagnosis,
             onChanged: onPreviousDiagnosisChanged,
+            activeThumbColor: DashboardColors.brandCyan,
+            activeTrackColor: DashboardColors.brandCyan.withValues(alpha: 0.35),
           ),
           if (hasPreviousDiagnosis)
             TextField(
@@ -820,6 +1036,8 @@ class _HistoryStep extends StatelessWidget {
             title: const Text('Currently receiving treatment?'),
             value: isCurrentlyReceivingTreatment,
             onChanged: onCurrentTreatmentChanged,
+            activeThumbColor: DashboardColors.brandCyan,
+            activeTrackColor: DashboardColors.brandCyan.withValues(alpha: 0.35),
           ),
           if (isCurrentlyReceivingTreatment)
             TextField(
@@ -873,6 +1091,20 @@ class _ContactStep extends StatelessWidget {
                 label: Text(period.label),
                 selected: selected == period,
                 onSelected: (_) => onSelected(period),
+                selectedColor: DashboardColors.brandSoft,
+                checkmarkColor: DashboardColors.brandCyan,
+                side: BorderSide(
+                  color: selected == period
+                      ? DashboardColors.brandCyan
+                      : DashboardColors.border,
+                ),
+                labelStyle: TextStyle(
+                  color: selected == period
+                      ? DashboardColors.brandCyan
+                      : DashboardColors.textPrimary,
+                  fontWeight:
+                      selected == period ? FontWeight.w700 : FontWeight.w500,
+                ),
               );
             }).toList(),
           ),
@@ -887,6 +1119,9 @@ class _ReviewStep extends StatelessWidget {
     required this.childName,
     required this.dateOfBirth,
     required this.gender,
+    required this.hasChildPhoto,
+    this.childImageUrl,
+    this.previewBytes,
     required this.category,
     required this.caseDescription,
     required this.observedDifficulties,
@@ -900,6 +1135,9 @@ class _ReviewStep extends StatelessWidget {
   final String childName;
   final DateTime? dateOfBirth;
   final CaseIntakeGender? gender;
+  final bool hasChildPhoto;
+  final String? childImageUrl;
+  final Uint8List? previewBytes;
   final CaseCategory category;
   final String caseDescription;
   final String observedDifficulties;
@@ -927,6 +1165,17 @@ class _ReviewStep extends StatelessWidget {
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
+          if (hasChildPhoto) ...[
+            Center(
+              child: DashboardProfileAvatar(
+                initials: dashboardInitials(childName, fallback: 'CH'),
+                imageUrl: previewBytes == null ? childImageUrl : null,
+                previewBytes: previewBytes,
+                radius: 32,
+              ),
+            ),
+            SizedBox(height: context.dashSpacing * 0.75),
+          ],
           _ReviewRow(label: 'Child name', value: childName),
           _ReviewRow(label: 'Date of birth', value: dobLabel),
           _ReviewRow(label: 'Gender', value: gender?.label ?? 'Not specified'),

@@ -14,6 +14,7 @@ class DashboardScaffold extends StatelessWidget {
     required this.body,
     this.avatarInitials = 'SR',
     this.avatarImageUrl,
+    this.messageCount = 0,
     this.notificationCount = 0,
     this.currentNav = DashboardNavItem.home,
     this.onNavTap,
@@ -21,17 +22,20 @@ class DashboardScaffold extends StatelessWidget {
     this.showMenuButton = true,
     this.userDisplayName,
     this.onMenuTap,
+    this.onMessagesTap,
     this.onNotificationsTap,
     this.onAvatarTap,
     this.scrollBody = true,
     this.showBottomNav = true,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    this.navAccentColor = DashboardColors.brandCyan,
   });
 
   final Widget body;
   final String avatarInitials;
   final String? avatarImageUrl;
+  final int messageCount;
   final int notificationCount;
   final DashboardNavItem currentNav;
   final ValueChanged<DashboardNavItem>? onNavTap;
@@ -39,12 +43,14 @@ class DashboardScaffold extends StatelessWidget {
   final bool showMenuButton;
   final String? userDisplayName;
   final VoidCallback? onMenuTap;
+  final VoidCallback? onMessagesTap;
   final VoidCallback? onNotificationsTap;
   final VoidCallback? onAvatarTap;
   final bool scrollBody;
   final bool showBottomNav;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final Color navAccentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +64,11 @@ class DashboardScaffold extends StatelessWidget {
           avatarImageUrl: avatarImageUrl,
           userDisplayName: userDisplayName,
           showMenuButton: showMenuButton,
+          messageCount: messageCount,
           notificationCount: notificationCount,
           onMenuTap: onMenuTap ??
               (drawer != null ? () => SpecialistNavigation.openDrawer(context) : null),
+          onMessagesTap: onMessagesTap,
           onNotificationsTap: onNotificationsTap,
           onAvatarTap: onAvatarTap,
         ),
@@ -76,6 +84,7 @@ class DashboardScaffold extends StatelessWidget {
             ? DashboardBottomNav(
                 currentIndex: currentNav,
                 onTap: onNavTap,
+                accentColor: navAccentColor,
               )
             : null,
         floatingActionButton: floatingActionButton,

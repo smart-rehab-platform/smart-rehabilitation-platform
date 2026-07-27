@@ -366,12 +366,12 @@ class ParentExercisesNotifier extends StateNotifier<ParentExercisesState> {
         );
       }
       state = state.copyWith(isSubmitting: false);
-      final childId = _ref.read(parentDashboardProvider).selectedChildId;
-      if (childId != null) {
-        await loadForChild(childId);
+      final patientId = _ref.read(parentDashboardProvider).selectedPatientId;
+      if (patientId != null) {
+        await loadForChild(patientId);
         await _ref
             .read(parentDashboardProvider.notifier)
-            .loadSelectedChildData(childId, showLoader: false);
+            .loadSelectedChildData(patientId, showLoader: false);
       }
       return null;
     } catch (error, stackTrace) {

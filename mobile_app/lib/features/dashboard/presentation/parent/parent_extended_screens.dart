@@ -82,7 +82,7 @@ class _ParentChildDetailScreenState
                     Text(
                       'Progress: ${child.progressPercent!.round()}%',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: DashboardColors.primary,
+                        color: DashboardColors.brandCyan,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -230,7 +230,7 @@ class _ParentProgressScreenState extends ConsumerState<ParentProgressScreen> {
                   'Improvement: ${state.improvementPercentage!.round()}%',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: DashboardColors.primary,
+                    color: DashboardColors.brandCyan,
                   ),
                 ),
               ),
@@ -597,7 +597,7 @@ class _ParentExerciseDetailScreenState
                   ? null
                   : _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: DashboardColors.primary,
+                backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(
                   vertical: context.dashSpacing * 0.75,
