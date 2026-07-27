@@ -1,3 +1,4 @@
+import { BRAND_ASSETS } from "../../../styles/brandTokens";
 import {
   Activity,
   Bell,
@@ -14,7 +15,6 @@ import {
   TrendingUp,
   User,
   Users,
-  Zap,
 } from "lucide-react";
 
 const ICONS = {
@@ -61,7 +61,11 @@ export function ParentSidebar({
         <div className="pd-sidebar-top">
           <div className="pd-brand">
             <span className="pd-brand-mark" aria-hidden="true">
-              <Zap size={18} />
+              <img
+                src={BRAND_ASSETS.icon}
+                alt=""
+                className="pd-brand-mark-img"
+              />
             </span>
             {!collapsed ? (
               <span className="pd-brand-text">

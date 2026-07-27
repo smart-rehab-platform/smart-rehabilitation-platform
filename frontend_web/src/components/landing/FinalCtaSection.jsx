@@ -147,20 +147,20 @@ export function FinalCtaSection() {
         .final-cta-primary:focus-visible,
         .final-cta-secondary:focus-visible {
           outline: none;
-          box-shadow: 0 0 0 3px rgba(79, 166, 248, 0.28);
+          box-shadow: 0 0 0 3px rgba(42, 164, 201, 0.28);
         }
 
         @media (hover: hover) {
           .final-cta-primary:hover {
             transform: translateY(-2px);
             background: linear-gradient(135deg, #5BB0FF 0%, #78D0FF 100%);
-            box-shadow: 0 8px 32px rgba(79, 166, 248, 0.32);
+            box-shadow: 0 8px 32px rgba(42, 164, 201, 0.32);
           }
 
           .final-cta-secondary:hover {
-            background: rgba(79, 166, 248, 0.08);
-            border-color: #4FA6F8;
-            color: #4FA6F8;
+            background: rgba(42, 164, 201, 0.08);
+            border-color: #2AA4C9;
+            color: #2AA4C9;
           }
         }
 

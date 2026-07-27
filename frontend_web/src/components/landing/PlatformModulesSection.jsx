@@ -374,7 +374,7 @@ export function PlatformModulesSection() {
               style={{
                 width: index === activeIndex ? "24px" : "8px",
                 height: "8px",
-                background: index === activeIndex ? L.primary : "rgba(79, 166, 248, 0.25)",
+                background: index === activeIndex ? L.primary : "rgba(42, 164, 201, 0.25)",
               }}
               aria-label={`Go to ${module.title}`}
               aria-current={index === activeIndex ? "true" : undefined}
@@ -401,7 +401,7 @@ export function PlatformModulesSection() {
 
           .module-carousel-cta:hover {
             background-color: ${L.modulesHoverBg};
-            border-color: rgba(79, 166, 248, 0.18);
+            border-color: rgba(42, 164, 201, 0.18);
           }
         }
 

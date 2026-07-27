@@ -86,7 +86,7 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse at 25% 50%, rgba(79, 166, 248, 0.1) 0%, transparent 55%)",
+            background: "radial-gradient(ellipse at 25% 50%, rgba(42, 164, 201, 0.1) 0%, transparent 55%)",
           }}
         />
       </div>
@@ -96,7 +96,7 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
         className="relative z-20 flex h-[72px] w-full shrink-0 items-center justify-between gap-3 px-5 sm:px-8 lg:px-10"
         style={{
           background: `${G.navyOverlay}, 0.72)`,
-          borderBottom: "1px solid rgba(79, 166, 248, 0.18)",
+          borderBottom: "1px solid rgba(42, 164, 201, 0.18)",
           backdropFilter: "blur(20px)",
         }}
       >
@@ -148,7 +148,7 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
                     WebkitTextFillColor: "transparent",
                     opacity: 1,
                     filter:
-                      "drop-shadow(0 2px 10px rgba(79, 166, 248, 0.35)) drop-shadow(0 4px 18px rgba(0, 0, 0, 0.28))",
+                      "drop-shadow(0 2px 10px rgba(42, 164, 201, 0.35)) drop-shadow(0 4px 18px rgba(0, 0, 0, 0.28))",
                   }}
                 >
                   Rehabilitation
@@ -222,7 +222,7 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
 
       <style>{`
         .auth-back-home:focus-visible {
-          box-shadow: 0 0 0 3px rgba(79, 166, 248, 0.28);
+          box-shadow: 0 0 0 3px rgba(42, 164, 201, 0.28);
           border-radius: 6px;
         }
 
@@ -241,7 +241,7 @@ export function AuthLayout({ activeTab, onTabChange, children, scrollable = fals
 
         .scrollbar-thin::-webkit-scrollbar { width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 166, 248, 0.25); border-radius: 99px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(42, 164, 201, 0.25); border-radius: 99px; }
         input::placeholder, .auth-input::placeholder { color: ${C.placeholder}; }
       `}</style>
     </div>

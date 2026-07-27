@@ -7,6 +7,9 @@ const fasterWhisperService = require("../../services/fasterWhisper.service");
 const backendRoot = path.resolve(__dirname, "..", "..", "..");
 const uploadsRoot = path.resolve(backendRoot, "uploads");
 
+const ALLOWED_EXERCISE_LANGUAGES = new Set(["en", "ar"]);
+const DEFAULT_EXERCISE_LANGUAGE = "en";
+
 const createError = (message, statusCode) => {
   const error = new Error(message);
   error.statusCode = statusCode;
@@ -20,6 +23,51 @@ const toNumber = (value) => {
 
   const parsed = Number(value);
   return Number.isNaN(parsed) ? null : parsed;
+};
+
+const resolveExerciseLanguage = (value) => {
+  const normalized = String(value || "").trim().toLowerCase();
+  return ALLOWED_EXERCISE_LANGUAGES.has(normalized)
+    ? normalized
+    : DEFAULT_EXERCISE_LANGUAGE;
+};
+
+const readStoredAnalysisLanguage = (row) => {
+  if (!row || typeof row !== "object") {
+    return DEFAULT_EXERCISE_LANGUAGE;
+  }
+
+  const rawOutput =
+    row.raw_ai_output && typeof row.raw_ai_output === "object"
+      ? row.raw_ai_output
+      : null;
+
+  return resolveExerciseLanguage(row.language ?? rawOutput?.language);
+};
+
+const readStoredAnalysisDuration = (row) => {
+  if (!row || typeof row !== "object") {
+    return null;
+  }
+
+  const rawOutput =
+    row.raw_ai_output && typeof row.raw_ai_output === "object"
+      ? row.raw_ai_output
+      : null;
+
+  return toNumber(row.duration ?? rawOutput?.duration);
+};
+
+const hydrateSpeechAnalysisRow = (row) => {
+  if (!row) {
+    return row;
+  }
+
+  return {
+    ...row,
+    language: readStoredAnalysisLanguage(row),
+    duration: readStoredAnalysisDuration(row),
+  };
 };
 
 const clampScore = (value) => Math.min(100, Math.max(0, value));
@@ -821,9 +869,12 @@ const analyzeSpeech = async ({ submission_id }, options = {}) => {
       es.id AS submission_id,
       es.assigned_exercise_id,
       ae.patient_id,
-      p.full_name AS patient_name
+      ae.exercise_id,
+      p.full_name AS patient_name,
+      e.language AS exercise_language
     FROM exercise_submissions es
     JOIN assigned_exercises ae ON es.assigned_exercise_id = ae.id
+    JOIN exercises e ON ae.exercise_id = e.id
     JOIN patients p ON ae.patient_id = p.id
     WHERE es.id = $1
     `,
@@ -843,7 +894,7 @@ const analyzeSpeech = async ({ submission_id }, options = {}) => {
   if (existingAnalysis) {
     return buildAnalyzeResponse({
       submission,
-      currentAnalysis: existingAnalysis,
+      currentAnalysis: hydrateSpeechAnalysisRow(existingAnalysis),
       created: false,
     });
   }
@@ -876,9 +927,13 @@ const analyzeSpeech = async ({ submission_id }, options = {}) => {
     submissionMediaResult.rows[0].file_url
   );
 
+  const resolvedLanguage = resolveExerciseLanguage(submission.exercise_language);
+
   let transcription;
   try {
-    transcription = await fasterWhisperService.transcribeAudio(audioFilePath);
+    transcription = await fasterWhisperService.transcribeAudio(audioFilePath, {
+      language: resolvedLanguage,
+    });
   } catch (error) {
     if (error.statusCode === 404) {
       throw createError(
@@ -900,7 +955,7 @@ const analyzeSpeech = async ({ submission_id }, options = {}) => {
     analysis_type: "faster_whisper_transcription",
     patient_name: submission.patient_name,
     transcription_engine: "faster-whisper",
-    language: transcription.language,
+    language: resolvedLanguage,
     duration: transcription.duration,
   };
 
@@ -930,11 +985,11 @@ const analyzeSpeech = async ({ submission_id }, options = {}) => {
     ]
   );
 
-  const currentAnalysis = {
+  const currentAnalysis = hydrateSpeechAnalysisRow({
     ...result.rows[0],
-    language: transcription.language,
+    language: resolvedLanguage,
     duration: transcription.duration,
-  };
+  });
 
   return buildAnalyzeResponse({
     submission,
@@ -953,7 +1008,7 @@ const getSpeechAnalysisById = async (id) => {
     [id]
   );
 
-  return result.rows[0];
+  return hydrateSpeechAnalysisRow(result.rows[0]);
 };
 
 const getSpeechAnalysesByPatient = async (patientId) => {
@@ -969,7 +1024,7 @@ const getSpeechAnalysesByPatient = async (patientId) => {
     [patientId]
   );
 
-  return result.rows;
+  return result.rows.map(hydrateSpeechAnalysisRow);
 };
 
 const getSpeechAnalysisBySubmission = async (submissionId) => {
@@ -984,7 +1039,7 @@ const getSpeechAnalysisBySubmission = async (submissionId) => {
     [submissionId]
   );
 
-  return result.rows[0];
+  return hydrateSpeechAnalysisRow(result.rows[0]);
 };
 
 const getSpeechProgressByPatient = async (patientId) => {

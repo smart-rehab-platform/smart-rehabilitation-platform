@@ -73,6 +73,7 @@ class _SpecialistUpsertExerciseScreenState
 
   List<ExerciseCategoryItem> _categories = const [];
   String? _selectedCategoryId;
+  String _selectedLanguage = SpecialistExerciseItem.defaultLanguage;
   String? _existingMediaUrl;
   _PendingMedia? _pendingMedia;
   bool _clearExistingMedia = false;
@@ -157,6 +158,7 @@ class _SpecialistUpsertExerciseScreenState
         _descriptionController.text = exercise.description ?? '';
         _instructionsController.text = exercise.instructions ?? '';
         _selectedCategoryId = exercise.categoryId ?? _selectedCategoryId;
+        _selectedLanguage = exercise.normalizedLanguage;
         _existingMediaUrl = exercise.instructionMediaUrl;
         _clearExistingMedia = false;
         _pendingMedia = null;
@@ -344,6 +346,7 @@ class _SpecialistUpsertExerciseScreenState
         description: _descriptionController.text,
         instructions: _instructionsController.text,
         instructionMediaUrl: mediaUrl,
+        language: _selectedLanguage,
         clearInstructionMedia: _clearExistingMedia && mediaUrl == null,
       );
 
@@ -447,6 +450,29 @@ class _SpecialistUpsertExerciseScreenState
                   ? null
                   : (value) => setState(() => _selectedCategoryId = value),
             ),
+          SizedBox(height: context.dashSpacing * 0.75),
+          DropdownButtonFormField<String>(
+            key: ValueKey(_selectedLanguage),
+            initialValue: _selectedLanguage,
+            isExpanded: true,
+            decoration: goalFieldDecoration('Exercise Language'),
+            items: const [
+              DropdownMenuItem(
+                value: 'en',
+                child: Text('English'),
+              ),
+              DropdownMenuItem(
+                value: 'ar',
+                child: Text('Arabic'),
+              ),
+            ],
+            onChanged: busy
+                ? null
+                : (value) {
+                    if (value == null) return;
+                    setState(() => _selectedLanguage = value);
+                  },
+          ),
           SizedBox(height: context.dashSpacing * 0.75),
           TextField(
             controller: _titleController,

@@ -63,7 +63,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle, idPrefix }) {
     <div
       className={`faq-item rounded-[15px] border bg-white ${isOpen ? "faq-item-open" : "faq-item-closed"}`}
       style={{
-        borderColor: isOpen ? "rgba(79, 166, 248, 0.28)" : "rgba(15, 35, 66, 0.08)",
+        borderColor: isOpen ? "rgba(42, 164, 201, 0.28)" : "rgba(15, 35, 66, 0.08)",
         background: isOpen ? "#FBFDFF" : "#FFFFFF",
         boxShadow: "0 6px 20px rgba(15, 35, 66, 0.05)",
       }}
@@ -85,7 +85,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle, idPrefix }) {
         <span
           className="faq-chevron flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full"
           style={{
-            background: isOpen ? "rgba(79, 166, 248, 0.12)" : "#F3F7FA",
+            background: isOpen ? "rgba(42, 164, 201, 0.12)" : "#F3F7FA",
           }}
           aria-hidden="true"
         >
@@ -188,7 +188,7 @@ export function FaqSection() {
 
         .faq-item-button:focus-visible {
           outline: none;
-          box-shadow: 0 0 0 3px rgba(79, 166, 248, 0.22);
+          box-shadow: 0 0 0 3px rgba(42, 164, 201, 0.22);
         }
 
         .faq-chevron {
@@ -202,16 +202,16 @@ export function FaqSection() {
         @media (hover: hover) {
           .faq-item-closed:hover {
             background: #EAF5FC !important;
-            border-color: rgba(79, 166, 248, 0.24) !important;
+            border-color: rgba(42, 164, 201, 0.24) !important;
             transform: translateY(-1px);
           }
 
           .faq-item-closed:hover .faq-chevron {
-            background: rgba(79, 166, 248, 0.12) !important;
+            background: rgba(42, 164, 201, 0.12) !important;
           }
 
           .faq-item-closed:hover .faq-chevron-icon {
-            color: #4FA6F8 !important;
+            color: #2AA4C9 !important;
           }
         }
 
