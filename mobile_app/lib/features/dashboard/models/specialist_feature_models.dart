@@ -463,6 +463,7 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
     required super.timeLabel,
     required super.patientName,
     required super.sessionType,
+    this.patientProfileImageUrl,
     this.scheduledAt,
     this.location,
     this.status,
@@ -474,6 +475,7 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
 
   final String id;
   final String patientId;
+  final String? patientProfileImageUrl;
   final DateTime? scheduledAt;
   final String? location;
   final String? status;
@@ -515,6 +517,12 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
             'notes',
           ]) ??
           'Therapy Session',
+      patientProfileImageUrl: ApiResponseParser.readString(map, const [
+        'patient_profile_image_url',
+        'patientProfileImageUrl',
+        'profile_image_url',
+        'profileImageUrl',
+      ]),
       scheduledAt: scheduledAt,
       location: ApiResponseParser.readString(map, const [
         'location_or_link',

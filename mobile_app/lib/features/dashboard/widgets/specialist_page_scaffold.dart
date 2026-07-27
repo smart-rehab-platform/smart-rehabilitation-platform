@@ -23,6 +23,8 @@ class SpecialistPageScaffold extends ConsumerWidget {
     this.actions,
     this.floatingActionButton,
     this.onBackPressed,
+    this.appBarShowBrandTitle = true,
+    this.appBarShowMessagesAction = true,
   });
 
   final String title;
@@ -32,6 +34,8 @@ class SpecialistPageScaffold extends ConsumerWidget {
   final List<Widget>? actions;
   final Widget? floatingActionButton;
   final VoidCallback? onBackPressed;
+  final bool appBarShowBrandTitle;
+  final bool appBarShowMessagesAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,6 +48,8 @@ class SpecialistPageScaffold extends ConsumerWidget {
       backgroundColor: DashboardColors.background,
       appBar: DashboardAppBar(
         showMenuButton: false,
+        showBrandTitle: appBarShowBrandTitle,
+        showMessagesAction: appBarShowMessagesAction,
         avatarInitials: avatarInitials,
         avatarImageUrl: auth.user?.profileImageUrl,
         messageCount: notifications.unreadMessageCount,

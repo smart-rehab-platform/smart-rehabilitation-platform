@@ -62,6 +62,17 @@ class AppRoutes {
   static const String specialistSessions =
       '/dashboard/specialist/sessions';
 
+  /// Opens Specialist Sessions in calendar or list mode via `?view=`.
+  static String specialistSessionsWithView({String view = 'list'}) {
+    if (view == 'calendar') {
+      return Uri(
+        path: specialistSessions,
+        queryParameters: const {'view': 'calendar'},
+      ).toString();
+    }
+    return specialistSessions;
+  }
+
   static const String specialistSessionDetailsPath =
       '/dashboard/specialist/sessions/:sessionId';
 

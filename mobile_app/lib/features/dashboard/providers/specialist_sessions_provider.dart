@@ -33,6 +33,35 @@ class SpecialistSessionsState {
     }).toList();
   }
 
+  List<SpecialistSessionDetail> sessionsForDate(DateTime date) {
+    final normalized = DateTime(date.year, date.month, date.day);
+    final matches = sessions.where((session) {
+      final scheduledAt = session.scheduledAt;
+      if (scheduledAt == null) {
+        return false;
+      }
+      return scheduledAt.year == normalized.year &&
+          scheduledAt.month == normalized.month &&
+          scheduledAt.day == normalized.day;
+    }).toList()
+      ..sort((a, b) => a.scheduledAt!.compareTo(b.scheduledAt!));
+    return matches;
+  }
+
+  int sessionCountForDate(DateTime date) => sessionsForDate(date).length;
+
+  bool hasSessionsOnDate(DateTime date) => sessionCountForDate(date) > 0;
+
+  Iterable<SpecialistSessionDetail> sessionsInMonth(DateTime month) {
+    return sessions.where((session) {
+      final scheduledAt = session.scheduledAt;
+      if (scheduledAt == null) {
+        return false;
+      }
+      return scheduledAt.year == month.year && scheduledAt.month == month.month;
+    });
+  }
+
   SpecialistSessionsState copyWith({
     bool? isLoading,
     Object? errorMessage = _sentinel,

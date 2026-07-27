@@ -26,6 +26,8 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onNotificationsTap,
     this.onAvatarTap,
     this.additionalActions,
+    this.showBrandTitle = true,
+    this.showMessagesAction = true,
   });
 
   final int messageCount;
@@ -43,6 +45,10 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onAvatarTap;
 
   final List<Widget>? additionalActions;
+
+  final bool showBrandTitle;
+
+  final bool showMessagesAction;
 
 
 
@@ -93,21 +99,23 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
 
-          SizedBox(width: context.dashSpacing * 0.45),
+          if (showBrandTitle) ...[
+            SizedBox(width: context.dashSpacing * 0.45),
 
-          Text(
+            Text(
 
-            'Smart Rehabilitation',
+              'Smart Rehabilitation',
 
-            style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
 
-              fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w700,
 
-              color: DashboardColors.textPrimary,
+                color: DashboardColors.textPrimary,
+
+              ),
 
             ),
-
-          ),
+          ],
 
         ],
 
@@ -129,7 +137,8 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
         ...?additionalActions,
-        Stack(
+        if (showMessagesAction)
+          Stack(
           clipBehavior: Clip.none,
           children: [
             IconButton(

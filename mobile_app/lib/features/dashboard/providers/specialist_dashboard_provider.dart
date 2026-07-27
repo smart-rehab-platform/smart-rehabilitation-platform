@@ -7,6 +7,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../data/specialist_dashboard_repository.dart';
 import '../data/specialist_features_repository.dart';
 import '../models/specialist_dashboard_models.dart';
+import '../models/specialist_feature_models.dart';
 
 final specialistDashboardRepositoryProvider =
     Provider<SpecialistDashboardRepository>((ref) {
@@ -44,6 +45,7 @@ class SpecialistDashboardState {
     this.overview = const SpecialistOverviewData(),
     this.pendingReviews = const [],
     this.schedule = const [],
+    this.sessions = const [],
     this.progress = const [],
     this.unreadNotifications = 0,
     this.hasAssignedPatients = false,
@@ -55,6 +57,7 @@ class SpecialistDashboardState {
   final SpecialistOverviewData overview;
   final List<SpecialistPendingReview> pendingReviews;
   final List<SpecialistScheduleItem> schedule;
+  final List<SpecialistSessionDetail> sessions;
   final List<SpecialistPatientProgress> progress;
   final int unreadNotifications;
   final bool hasAssignedPatients;
@@ -66,6 +69,7 @@ class SpecialistDashboardState {
     SpecialistOverviewData? overview,
     List<SpecialistPendingReview>? pendingReviews,
     List<SpecialistScheduleItem>? schedule,
+    List<SpecialistSessionDetail>? sessions,
     List<SpecialistPatientProgress>? progress,
     int? unreadNotifications,
     bool? hasAssignedPatients,
@@ -81,6 +85,7 @@ class SpecialistDashboardState {
       overview: overview ?? this.overview,
       pendingReviews: pendingReviews ?? this.pendingReviews,
       schedule: schedule ?? this.schedule,
+      sessions: sessions ?? this.sessions,
       progress: progress ?? this.progress,
       unreadNotifications: unreadNotifications ?? this.unreadNotifications,
       hasAssignedPatients: hasAssignedPatients ?? this.hasAssignedPatients,
@@ -143,6 +148,7 @@ class SpecialistDashboardNotifier
         overview: bundle.overview,
         pendingReviews: bundle.pendingReviews.take(5).toList(),
         schedule: schedule,
+        sessions: bundle.allSessions,
         progress: bundle.progress,
         unreadNotifications: unreadCount,
         hasAssignedPatients: bundle.patients.isNotEmpty,
