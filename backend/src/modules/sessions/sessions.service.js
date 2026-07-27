@@ -43,6 +43,7 @@ const getAllSessions = async () => {
   const result = await pool.query(
     `SELECT s.*,
             p.full_name AS patient_name,
+            p.profile_image_url AS patient_profile_image_url,
             u.full_name AS specialist_name
      FROM sessions s
      JOIN patients p ON s.patient_id = p.id
@@ -57,6 +58,7 @@ const getSessionById = async (id) => {
   const result = await pool.query(
     `SELECT s.*,
             p.full_name AS patient_name,
+            p.profile_image_url AS patient_profile_image_url,
             u.full_name AS specialist_name
      FROM sessions s
      JOIN patients p ON s.patient_id = p.id
@@ -225,6 +227,7 @@ const getPatientSessions = async (patientId) => {
   const result = await pool.query(
     `SELECT s.*,
             p.full_name AS patient_name,
+            p.profile_image_url AS patient_profile_image_url,
             u.full_name AS specialist_name
      FROM sessions s
      JOIN patients p ON s.patient_id = p.id
@@ -241,6 +244,7 @@ const getSpecialistSessions = async (specialistId) => {
   const result = await pool.query(
     `SELECT s.*,
             p.full_name AS patient_name,
+            p.profile_image_url AS patient_profile_image_url,
             u.full_name AS specialist_name
      FROM sessions s
      JOIN patients p ON s.patient_id = p.id
@@ -257,6 +261,7 @@ const getParentSessions = async (parentId) => {
   const result = await pool.query(
     `SELECT s.*,
             p.full_name AS patient_name,
+            p.profile_image_url AS patient_profile_image_url,
             u.full_name AS specialist_name
      FROM sessions s
      JOIN patients p ON s.patient_id = p.id

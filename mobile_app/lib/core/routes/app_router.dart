@@ -48,6 +48,7 @@ import '../../features/dashboard/presentation/specialist/specialist_upsert_exerc
 import '../../features/dashboard/presentation/specialist/specialist_profile_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_report_details_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_reports_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_sessions_calendar_widgets.dart';
 import '../../features/dashboard/presentation/specialist/specialist_sessions_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_session_details_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_upsert_session_screen.dart';
@@ -380,7 +381,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.specialistSessions,
         name: 'specialistSessions',
-        builder: (context, state) => const SpecialistSessionsScreen(),
+        builder: (context, state) {
+          final view = state.uri.queryParameters['view'];
+          final initialViewMode = view == 'calendar'
+              ? SpecialistSessionsViewMode.calendar
+              : SpecialistSessionsViewMode.list;
+          return SpecialistSessionsScreen(initialViewMode: initialViewMode);
+        },
       ),
       GoRoute(
         path: AppRoutes.specialistCreateSession,
