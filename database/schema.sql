@@ -204,6 +204,7 @@ CREATE TABLE case_intake_requests (
     child_name                      VARCHAR(150) NOT NULL,
     date_of_birth                   DATE NOT NULL,
     gender                          VARCHAR(10),
+    child_image_url                 TEXT,
     category_id                     UUID NOT NULL REFERENCES case_categories(id) ON DELETE RESTRICT,
     case_description                TEXT NOT NULL,
     observed_difficulties           TEXT,

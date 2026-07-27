@@ -9,11 +9,15 @@ const {
   MAX_FILE_SIZE_BYTES,
 } = require("../../config/messageAttachments");
 const {
-  isAllowedExerciseMedia,
   isAllowedExerciseSubmissionMedia,
+  isAllowedExerciseMedia,
   MAX_EXERCISE_MEDIA_BYTES,
   sanitizeUploadFilename,
 } = require("../../config/exerciseMedia");
+const {
+  isAllowedCaseRequestChildImage,
+  MAX_CASE_REQUEST_CHILD_IMAGE_BYTES,
+} = require("../../config/caseRequestChildImage");
 
 const router = express.Router();
 
@@ -84,6 +88,23 @@ const uploadExerciseSubmissionMedia = multer({
   },
 });
 
+const uploadCaseRequestChildImage = multer({
+  storage: createStorage(uploadsRoot, { sanitizeFilename: true }),
+  limits: { fileSize: MAX_CASE_REQUEST_CHILD_IMAGE_BYTES },
+  fileFilter: (_req, file, cb) => {
+    if (isAllowedCaseRequestChildImage(file.mimetype, file.originalname)) {
+      cb(null, true);
+      return;
+    }
+
+    const error = new Error(
+      "Unsupported image type. Allowed: JPEG, PNG, and WebP."
+    );
+    error.statusCode = 400;
+    cb(error);
+  },
+});
+
 router.post(
   "/profile-image",
   upload.single("file"),
@@ -132,6 +153,21 @@ router.post(
     });
   },
   uploadsController.uploadMessageAttachment
+);
+
+router.post(
+  "/case-request-child-image",
+  authenticate,
+  authorizeRoles("parent"),
+  (req, res, next) => {
+    uploadCaseRequestChildImage.single("child_image")(req, res, (err) => {
+      if (err) {
+        return uploadsController.handleUploadError(res, err, { maxSizeLabel: "5 MB" });
+      }
+      next();
+    });
+  },
+  uploadsController.uploadCaseRequestChildImage
 );
 
 router.post(

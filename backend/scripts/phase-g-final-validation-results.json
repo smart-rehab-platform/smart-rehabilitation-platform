@@ -1,0 +1,252 @@
+{
+  "webBase": "http://localhost:5173",
+  "results": [
+    {
+      "name": "GET notifications API",
+      "passed": true,
+      "detail": "count=37"
+    },
+    {
+      "name": "Unread report_ready data present",
+      "passed": false,
+      "detail": "missing"
+    },
+    {
+      "name": "Unread session_reminder data present",
+      "passed": false,
+      "detail": "missing"
+    },
+    {
+      "name": "Loading state visible",
+      "passed": true,
+      "detail": "fast load (optional)"
+    },
+    {
+      "name": "Error state on GET failure",
+      "passed": false,
+      "detail": "errorBlocks=0"
+    },
+    {
+      "name": "Retry restores list",
+      "passed": false,
+      "detail": "skipped — error UI not shown"
+    },
+    {
+      "name": "Newest sort renders list",
+      "passed": true,
+      "detail": "cards=37"
+    },
+    {
+      "name": "Oldest sort changes order",
+      "passed": true,
+      "detail": "order changed"
+    },
+    {
+      "name": "Unread-first sort",
+      "passed": true,
+      "detail": "pd-card pd-card-pad pd-task-hub-card pd-notification-hub-card pd-section-enter"
+    },
+    {
+      "name": "Child filter Omar",
+      "passed": true,
+      "detail": "visible=2/37"
+    },
+    {
+      "name": "Child filter Layla",
+      "passed": true,
+      "detail": "visible=1"
+    },
+    {
+      "name": "Child filter All restores list",
+      "passed": true,
+      "detail": "visible=37"
+    },
+    {
+      "name": "Report deep navigation URL",
+      "passed": false,
+      "detail": "no unread report_ready data"
+    },
+    {
+      "name": "Report detail refresh",
+      "passed": false,
+      "detail": "skipped"
+    },
+    {
+      "name": "Sidebar Reports active on detail",
+      "passed": false,
+      "detail": "skipped"
+    },
+    {
+      "name": "Session deep navigation",
+      "passed": false,
+      "detail": "no unread session_reminder data"
+    },
+    {
+      "name": "Sidebar Sessions active",
+      "passed": false,
+      "detail": "skipped"
+    },
+    {
+      "name": "Mark-all failure rollback",
+      "passed": true,
+      "detail": "skipped — insufficient unread"
+    },
+    {
+      "name": "Mark all button visible with unread",
+      "passed": false,
+      "detail": "Stay updated on sessions, reports, feedback, and messages. 0 unread of 37 notifications."
+    },
+    {
+      "name": "Mark all clears unread styling",
+      "passed": false,
+      "detail": "button not shown"
+    },
+    {
+      "name": "Mark all updates unread count",
+      "passed": false,
+      "detail": "skipped"
+    },
+    {
+      "name": "Mark all hides button",
+      "passed": false,
+      "detail": "skipped"
+    },
+    {
+      "name": "Mark all single PATCH",
+      "passed": false,
+      "detail": "skipped"
+    },
+    {
+      "name": "Mark all persists after refresh",
+      "passed": false,
+      "detail": "skipped"
+    },
+    {
+      "name": "Desktop responsive",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "Tablet responsive",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "Narrow responsive",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "Console no blocking errors",
+      "passed": true,
+      "detail": "none"
+    },
+    {
+      "name": "Refresh-token 401 documented",
+      "passed": true,
+      "detail": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+    },
+    {
+      "name": "Network GET notifications 200",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "networkSample": [
+    {
+      "method": "GET",
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/notifications/NotificationCard.jsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/notifications/NotificationFilters.jsx?t=1785013929372"
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/notifications/NotificationEmptyState.jsx"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/sessions/SessionCard.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/sessions/SessionEmptyState.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/sessions/SessionFilters.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/sessions/SessionRequestCard.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/sessions/SessionRequestForm.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/sessions/SessionsHubAreas.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/sessions/SessionsListTabs.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/reports/ReportCard.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/reports/ReportFilters.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/reports/ReportsEmptyState.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/reports/ReportFileAction.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/reports/ReportSummarySections.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/notifications/NotificationFilters.jsx?t=1785013929372",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/notifications/NotificationCard.jsx",
+      "method": "GET"
+    },
+    {
+      "status": 304,
+      "url": "http://localhost:5173/src/features/parent-dashboard-preview/components/notifications/NotificationEmptyState.jsx",
+      "method": "GET"
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:5000/api/v1/users/de000001-0001-4001-8001-000000000004/notifications"
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:5000/api/v1/users/de000001-0001-4001-8001-000000000004/notifications"
+    }
+  ]
+}

@@ -1,10 +1,11 @@
 const uploadsService = require("./uploads.service");
 
-const handleUploadError = (res, err) => {
+const handleUploadError = (res, err, options = {}) => {
   if (err && err.code === "LIMIT_FILE_SIZE") {
+    const maxLabel = options.maxSizeLabel || "50 MB";
     return res.status(400).json({
       success: false,
-      message: "File is too large. Maximum allowed size is 50 MB.",
+      message: `File is too large. Maximum allowed size is ${maxLabel}.`,
     });
   }
 
@@ -57,6 +58,7 @@ module.exports = {
   uploadProfileImage: handleUpload,
   uploadExerciseMedia: handleUpload,
   uploadExerciseSubmissionMedia: handleUpload,
+  uploadCaseRequestChildImage: handleUpload,
   uploadMessageAttachment: handleMessageAttachmentUpload,
   uploadResource: handleUpload,
   uploadReport: handleReportUpload,

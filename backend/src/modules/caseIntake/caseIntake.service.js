@@ -39,7 +39,8 @@ const normalizePayload = (data) => {
   return {
     child_name: data.child_name.trim(),
     date_of_birth: data.date_of_birth.trim(),
-    gender: normalizeText(data.gender),
+    gender: normalizeText(data.gender)?.toLowerCase() ?? null,
+    child_image_url: normalizeText(data.child_image_url),
     category_id: data.category_id.trim(),
     case_description: data.case_description.trim(),
     observed_difficulties: normalizeText(data.observed_difficulties),
@@ -79,6 +80,10 @@ const mergeUpdatePayload = (existing, updates) => {
         ? updates.date_of_birth
         : toDateString(existing.date_of_birth),
     gender: updates.gender !== undefined ? updates.gender : existing.gender,
+    child_image_url:
+      updates.child_image_url !== undefined
+        ? updates.child_image_url
+        : existing.child_image_url,
     category_id:
       updates.category_id !== undefined
         ? updates.category_id
@@ -167,6 +172,7 @@ const formatRequest = (row, { includeAttachments = false, audience = "parent" } 
     child_name: row.child_name,
     date_of_birth: toDateString(row.date_of_birth),
     gender: row.gender,
+    child_image_url: row.child_image_url,
     category_id: row.category_id,
     case_description: row.case_description,
     observed_difficulties: row.observed_difficulties,
@@ -211,6 +217,7 @@ const formatAdminInboxItem = (row) => ({
   child_name: row.child_name,
   date_of_birth: toDateString(row.date_of_birth),
   gender: row.gender,
+  child_image_url: row.child_image_url,
   status: row.status,
   submitted_at: row.submitted_at,
   assigned_at: row.assigned_at,
@@ -237,6 +244,7 @@ const formatSpecialistListItem = (row) => ({
   child_name: row.child_name,
   date_of_birth: toDateString(row.date_of_birth),
   gender: row.gender,
+  child_image_url: row.child_image_url,
   status: row.status,
   submitted_at: row.submitted_at,
   assigned_at: row.assigned_at,
@@ -431,6 +439,7 @@ const createCaseIntakeRequest = async (parentId, body) => {
          child_name,
          date_of_birth,
          gender,
+         child_image_url,
          category_id,
          case_description,
          observed_difficulties,
@@ -440,13 +449,14 @@ const createCaseIntakeRequest = async (parentId, body) => {
          current_treatment_details,
          preferred_contact_period
        )
-       VALUES ($1, $2, $3::date, $4, $5, $6, $7, $8, $9, $10, $11, $12::preferred_time_period)
+       VALUES ($1, $2, $3::date, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::preferred_time_period)
        RETURNING *`,
       [
         parentId,
         payload.child_name,
         payload.date_of_birth,
         payload.gender,
+        payload.child_image_url,
         payload.category_id,
         payload.case_description,
         payload.observed_difficulties,
@@ -550,21 +560,23 @@ const updatePendingRequest = async (requestId, parentId, body) => {
        SET child_name = $1,
            date_of_birth = $2::date,
            gender = $3,
-           category_id = $4,
-           case_description = $5,
-           observed_difficulties = $6,
-           has_previous_diagnosis = $7,
-           previous_diagnosis_details = $8,
-           is_currently_receiving_treatment = $9,
-           current_treatment_details = $10,
-           preferred_contact_period = $11::preferred_time_period
-       WHERE id = $12
-         AND parent_id = $13
+           child_image_url = $4,
+           category_id = $5,
+           case_description = $6,
+           observed_difficulties = $7,
+           has_previous_diagnosis = $8,
+           previous_diagnosis_details = $9,
+           is_currently_receiving_treatment = $10,
+           current_treatment_details = $11,
+           preferred_contact_period = $12::preferred_time_period
+       WHERE id = $13
+         AND parent_id = $14
          AND status = 'pending'::case_intake_status`,
       [
         payload.child_name,
         payload.date_of_birth,
         payload.gender,
+        payload.child_image_url,
         payload.category_id,
         payload.case_description,
         payload.observed_difficulties,
