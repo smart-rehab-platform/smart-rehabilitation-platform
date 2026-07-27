@@ -149,4 +149,4 @@ Ensure the backend is running and reachable at the URL configured in `api_consta
 
 ## License
 
-This project was developed as part of a **Graduation Project** and is intended for **educational purposes**.
+
