@@ -440,6 +440,10 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
     this.scheduledAt,
     this.location,
     this.status,
+    this.durationMinutes,
+    this.cancellationReason,
+    this.createdAt,
+    this.updatedAt,
   });
 
   final String id;
@@ -447,11 +451,19 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
   final DateTime? scheduledAt;
   final String? location;
   final String? status;
+  final int? durationMinutes;
+  final String? cancellationReason;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   factory SpecialistSessionDetail.fromMap(Map<String, dynamic> map) {
     final scheduledAt = ApiResponseParser.readDate(
       map['scheduled_at'] ?? map['scheduledAt'],
     );
+    final duration = ApiResponseParser.readInt(map, const [
+      'duration_minutes',
+      'durationMinutes',
+    ]);
 
     return SpecialistSessionDetail(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
@@ -484,7 +496,37 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
         'locationOrLink',
       ]),
       status: ApiResponseParser.readString(map, const ['status']),
+      durationMinutes: duration,
+      cancellationReason: ApiResponseParser.readString(map, const [
+        'cancellation_reason',
+        'cancellationReason',
+      ]),
+      createdAt: ApiResponseParser.readDate(
+        map['created_at'] ?? map['createdAt'],
+      ),
+      updatedAt: ApiResponseParser.readDate(
+        map['updated_at'] ?? map['updatedAt'],
+      ),
     );
+  }
+
+  DateTime? get endsAt {
+    if (scheduledAt == null) {
+      return null;
+    }
+    final minutes = durationMinutes ?? 45;
+    return scheduledAt!.add(Duration(minutes: minutes));
+  }
+
+  String get endTimeLabel {
+    final end = endsAt;
+    if (end == null) {
+      return '—';
+    }
+    final hour = end.hour % 12 == 0 ? 12 : end.hour % 12;
+    final minute = end.minute.toString().padLeft(2, '0');
+    final suffix = end.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $suffix';
   }
 
   bool get isToday => sessionIsToday(scheduledAt: scheduledAt);
@@ -496,10 +538,27 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
 
   bool get isCompleted => status?.toLowerCase() == 'completed';
 
+  bool get isScheduled {
+    final normalized = status?.toLowerCase().trim();
+    return normalized == null ||
+        normalized.isEmpty ||
+        normalized == 'scheduled';
+  }
+
+  bool get isTerminal =>
+      displayStatus == SessionDisplayStatus.completed ||
+      displayStatus == SessionDisplayStatus.cancelled ||
+      displayStatus == SessionDisplayStatus.noShow;
+
+  bool get canModify => isScheduled && !isTerminal;
+
   bool get isCancelled {
     final normalized = status?.toLowerCase();
     return normalized == 'cancelled' || normalized == 'no_show';
   }
+
+  /// True when [location] looks like an http(s) meeting link.
+  bool get hasOnlineMeetingLink => extractSessionMeetingUrl(location) != null;
 
   SessionDisplayStatus get displayStatus {
     switch (status?.toLowerCase().trim()) {
@@ -533,6 +592,28 @@ class SpecialistSessionDetail extends SpecialistScheduleItem {
     ];
     return parts.isEmpty ? 'Therapy Session' : parts.join(' • ');
   }
+}
+
+/// Parses an http(s) URL from a location/link string, if present.
+Uri? extractSessionMeetingUrl(String? locationOrLink) {
+  final raw = locationOrLink?.trim();
+  if (raw == null || raw.isEmpty) {
+    return null;
+  }
+
+  final direct = Uri.tryParse(raw);
+  if (direct != null &&
+      direct.hasScheme &&
+      (direct.scheme == 'http' || direct.scheme == 'https')) {
+    return direct;
+  }
+
+  final match = RegExp(r'https?://[^\s]+', caseSensitive: false).firstMatch(raw);
+  if (match != null) {
+    return Uri.tryParse(match.group(0)!);
+  }
+
+  return null;
 }
 
 enum SessionListFilter {

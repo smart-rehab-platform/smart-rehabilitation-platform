@@ -114,7 +114,7 @@ Color exerciseCategoryIconColor(String? category) {
   if (normalized.contains('articulation') ||
       normalized.contains('speech') ||
       normalized.contains('voice')) {
-    return DashboardColors.primary;
+    return DashboardColors.brandCyan;
   }
   if (normalized.contains('fluency')) {
     return DashboardColors.accent;
@@ -131,7 +131,7 @@ Color exerciseCategoryIconColor(String? category) {
       normalized.contains('social') ||
       normalized.contains('autism') ||
       normalized.contains('developmental')) {
-    return const Color(0xFF7C3AED);
+    return DashboardColors.brandSecondaryBlue;
   }
   return DashboardColors.warning;
 }
@@ -141,7 +141,7 @@ Color exerciseCategoryIconBackground(String? category) {
   if (normalized.contains('articulation') ||
       normalized.contains('speech') ||
       normalized.contains('voice')) {
-    return DashboardColors.purpleSoft;
+    return DashboardColors.brandSoft;
   }
   if (normalized.contains('fluency')) {
     return DashboardColors.tealSoft;
@@ -158,7 +158,7 @@ Color exerciseCategoryIconBackground(String? category) {
       normalized.contains('social') ||
       normalized.contains('autism') ||
       normalized.contains('developmental')) {
-    return DashboardColors.purpleSoft;
+    return DashboardColors.brandSoft;
   }
   return DashboardColors.amberSoft;
 }
@@ -222,12 +222,12 @@ class SpecialistExerciseCategoryChips extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? DashboardColors.purpleSoft
+                      ? DashboardColors.brandSoft
                       : DashboardColors.surface,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isSelected
-                        ? DashboardColors.primary
+                        ? DashboardColors.brandCyan
                         : DashboardColors.border,
                   ),
                 ),
@@ -238,7 +238,7 @@ class SpecialistExerciseCategoryChips extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: isSelected
-                            ? DashboardColors.primary
+                            ? DashboardColors.brandCyan
                             : DashboardColors.textSecondary,
                         fontWeight: FontWeight.w700,
                       ),
@@ -311,7 +311,7 @@ class SpecialistExerciseCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
       child: DashboardSurfaceCard(
-        tint: isSelected ? DashboardColors.primary : iconColor,
+        tint: isSelected ? DashboardColors.brandCyan : iconColor,
         onTap: onTap,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,7 +395,7 @@ class SpecialistExerciseCard extends StatelessWidget {
                     Text(
                       'Selected',
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: DashboardColors.primary,
+                        color: DashboardColors.brandCyan,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -410,7 +410,7 @@ class SpecialistExerciseCard extends StatelessWidget {
                     ? Icons.check_circle_rounded
                     : Icons.chevron_right_rounded,
                 color: isSelected
-                    ? DashboardColors.primary
+                    ? DashboardColors.brandCyan
                     : DashboardColors.textMuted,
               ),
             ],

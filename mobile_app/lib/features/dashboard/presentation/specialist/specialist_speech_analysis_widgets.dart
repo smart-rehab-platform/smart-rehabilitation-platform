@@ -125,8 +125,8 @@ class SpeechAnalysisScoreGrid extends StatelessWidget {
                 child: _ScoreTile(
                   label: 'Overall',
                   value: formatSpeechScore(overallScore),
-                  color: DashboardColors.primary,
-                  background: DashboardColors.purpleSoft,
+                  color: DashboardColors.brandCyan,
+                  background: DashboardColors.brandSoft,
                 ),
               ),
             ],
@@ -361,7 +361,7 @@ class SpeechTrendBadge extends StatelessWidget {
     final color = switch (normalized) {
       'improvement' => DashboardColors.success,
       'regression' => DashboardColors.highPriority,
-      'baseline' => DashboardColors.primary,
+      'baseline' => DashboardColors.brandCyan,
       _ => DashboardColors.textMuted,
     };
 
@@ -480,7 +480,7 @@ class _FeedbackSection extends StatelessWidget {
             title,
             style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w700,
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.2),
@@ -556,7 +556,7 @@ class SpeechAnalysisProgressCard extends StatelessWidget {
                               widthFactor: 1,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: DashboardColors.primary,
+                                  color: DashboardColors.brandCyan,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
@@ -613,13 +613,13 @@ class SpeechAnalysisHistoryTile extends StatelessWidget {
               padding: EdgeInsets.all(context.dashSpacing * 0.45),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? DashboardColors.primary.withValues(alpha: 0.15)
-                    : DashboardColors.purpleSoft,
+                    ? DashboardColors.brandCyan.withValues(alpha: 0.15)
+                    : DashboardColors.brandSoft,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 Icons.graphic_eq_rounded,
-                color: isSelected ? DashboardColors.primary : DashboardColors.textMuted,
+                color: isSelected ? DashboardColors.brandCyan : DashboardColors.textMuted,
                 size: context.dashSpacing * 0.55,
               ),
             ),
@@ -648,7 +648,7 @@ class SpeechAnalysisHistoryTile extends StatelessWidget {
             if (isSelected)
               Icon(
                 Icons.check_circle_rounded,
-                color: DashboardColors.primary,
+                color: DashboardColors.brandCyan,
                 size: context.dashSpacing * 0.55,
               )
             else
@@ -678,7 +678,7 @@ class SpeechAnalysisAnalyzeCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
-      tint: DashboardColors.primary,
+      tint: DashboardColors.brandCyan,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -711,7 +711,7 @@ class SpeechAnalysisAnalyzeCard extends StatelessWidget {
                 : const Icon(Icons.record_voice_over_outlined),
             label: Text(isAnalyzing ? 'Analyzing...' : 'Analyze Submission'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DashboardColors.primary,
+              backgroundColor: DashboardColors.brandCyan,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
               shape: RoundedRectangleBorder(

@@ -429,7 +429,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                           ),
                           const SizedBox(height: 4),
                           SelectableText(
-                            entityId!,
+                            entityId,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AdminDashboardColors.textSecondary,
                               fontFamily: 'monospace',

@@ -7,6 +7,7 @@ class ParentChild {
     this.progressPercent,
     this.dateOfBirth,
     this.gender,
+    this.profileImageUrl,
   });
 
   final String id;
@@ -14,6 +15,7 @@ class ParentChild {
   final double? progressPercent;
   final DateTime? dateOfBirth;
   final String? gender;
+  final String? profileImageUrl;
 
   int? get age {
     if (dateOfBirth == null) {
@@ -47,6 +49,12 @@ class ParentChild {
         map['date_of_birth'] ?? map['dateOfBirth'] ?? map['dob'],
       ),
       gender: ApiResponseParser.readString(map, const ['gender']),
+      profileImageUrl: ApiResponseParser.readString(map, const [
+        'profile_image_url',
+        'profileImageUrl',
+        'profile_image',
+        'profileImage',
+      ]),
     );
   }
 
@@ -55,6 +63,7 @@ class ParentChild {
     double? progressPercent,
     DateTime? dateOfBirth,
     String? gender,
+    String? profileImageUrl,
   }) {
     return ParentChild(
       id: id,
@@ -62,6 +71,7 @@ class ParentChild {
       progressPercent: progressPercent ?? this.progressPercent,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       gender: gender ?? this.gender,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
     );
   }
 }

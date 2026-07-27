@@ -6,7 +6,9 @@ const authorizeRoles = require("../../middleware/role.middleware");
 const { uploadsRoot, reportsUploadDir } = require("../../config/uploads");
 const {
   isAllowedMessageAttachment,
+  isAllowedProfileImage,
   MAX_FILE_SIZE_BYTES,
+  MAX_PROFILE_IMAGE_BYTES,
 } = require("../../config/messageAttachments");
 const {
   isAllowedExerciseMedia,
@@ -84,6 +86,23 @@ const uploadExerciseSubmissionMedia = multer({
   },
 });
 
+const uploadChildImage = multer({
+  storage: createStorage(uploadsRoot, { sanitizeFilename: true }),
+  limits: { fileSize: MAX_PROFILE_IMAGE_BYTES },
+  fileFilter: (_req, file, cb) => {
+    if (isAllowedProfileImage(file.mimetype, file.originalname)) {
+      cb(null, true);
+      return;
+    }
+
+    const error = new Error(
+      "Unsupported image type. Allowed: JPG, JPEG, PNG, and WEBP."
+    );
+    error.statusCode = 400;
+    cb(error);
+  },
+});
+
 router.post(
   "/profile-image",
   upload.single("file"),
@@ -132,6 +151,23 @@ router.post(
     });
   },
   uploadsController.uploadMessageAttachment
+);
+
+router.post(
+  "/child-image",
+  authenticate,
+  authorizeRoles("parent"),
+  (req, res, next) => {
+    uploadChildImage.single("image")(req, res, (err) => {
+      if (err) {
+        return uploadsController.handleUploadError(res, err, {
+          maxSizeMessage: "Image is too large. Maximum allowed size is 10 MB.",
+        });
+      }
+      next();
+    });
+  },
+  uploadsController.uploadChildImage
 );
 
 router.post(

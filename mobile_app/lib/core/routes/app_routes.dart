@@ -10,7 +10,6 @@ class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String parentDashboard = '/dashboard/parent';
   static const String specialistDashboard = '/dashboard/specialist';
-  static const String manageParentLinks = '/dashboard/specialist/parent-links';
   static const String specialistPatients = '/dashboard/specialist/patients';
   static const String specialistPatientDetailsPath =
       '/dashboard/specialist/patient/:patientId';
@@ -57,10 +56,28 @@ class AppRoutes {
   }
 
   static const String specialistPendingReviews =
-      '/dashboard/specialist/pending-reviews';
-  static const String specialistSessions = '/dashboard/specialist/sessions';
-  static const String specialistTreatmentPlans =
-      '/dashboard/specialist/treatment-plans';
+    '/dashboard/specialist/pending-reviews';
+
+static const String specialistSessions =
+    '/dashboard/specialist/sessions';
+
+static const String specialistSessionDetailsPath =
+    '/dashboard/specialist/sessions/:sessionId';
+
+static String specialistSessionDetails(String sessionId) =>
+    '/dashboard/specialist/sessions/$sessionId';
+
+static const String specialistCreateSession =
+    '/dashboard/specialist/sessions/new';
+
+static const String specialistEditSessionPath =
+    '/dashboard/specialist/sessions/:sessionId/edit';
+
+static String specialistEditSession(String sessionId) =>
+    '/dashboard/specialist/sessions/$sessionId/edit';
+
+static const String specialistTreatmentPlans =
+    '/dashboard/specialist/treatment-plans';
 
   static const String specialistCreateTreatmentPlanPath =
       '/dashboard/specialist/treatment-plans/new';
@@ -144,12 +161,6 @@ class AppRoutes {
 
   static String specialistCaseRequestDetail(String requestId) =>
       '/dashboard/specialist/case-requests/$requestId';
-
-  static const String specialistConvertPatientPath =
-      '/dashboard/specialist/case-requests/:requestId/convert';
-
-  static String specialistConvertPatient(String requestId) =>
-      '/dashboard/specialist/case-requests/$requestId/convert';
 
   static const String adminDashboard = '/dashboard/admin';
   static const String adminPatients = '/dashboard/admin/patients';

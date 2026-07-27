@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../models/admin_assignments_models.dart';
 import '../../models/parent_links_models.dart';
@@ -87,11 +88,18 @@ class _ParentMessageSpecialistButtonState
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: _isOpening ? null : _openConversation,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: DashboardColors.brandCyan,
+        side: const BorderSide(color: DashboardColors.brandCyan),
+      ),
       icon: _isOpening
-          ? const SizedBox(
+          ? SizedBox(
               width: 16,
               height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: DashboardColors.brandCyan,
+              ),
             )
           : const Icon(Icons.chat_bubble_outline_rounded),
       label: Text(_isOpening ? 'Opening...' : 'Message Specialist'),

@@ -165,7 +165,7 @@ class _SpecialistReportDetailsScreenState
                 icon: const Icon(Icons.picture_as_pdf_outlined),
                 label: const Text('View PDF'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.primary,
+                  backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
                     vertical: context.dashSpacing * 0.65,
@@ -181,14 +181,14 @@ class _SpecialistReportDetailsScreenState
                 icon: const Icon(Icons.link_rounded),
                 label: const Text('Copy PDF Link'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: DashboardColors.primary,
+                  foregroundColor: DashboardColors.brandCyan,
                   padding: EdgeInsets.symmetric(
                     vertical: context.dashSpacing * 0.65,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  side: const BorderSide(color: DashboardColors.primary),
+                  side: const BorderSide(color: DashboardColors.brandCyan),
                 ),
               ),
             ] else ...[
@@ -209,7 +209,7 @@ class _SpecialistReportDetailsScreenState
                   state.isExporting ? 'Generating PDF...' : 'Generate PDF',
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.primary,
+                  backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
                     vertical: context.dashSpacing * 0.65,

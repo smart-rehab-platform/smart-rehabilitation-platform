@@ -198,8 +198,8 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                     icon: const Icon(Icons.flag_outlined),
                     label: const Text('Manage Goals'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: DashboardColors.primary,
-                      side: const BorderSide(color: DashboardColors.primary),
+                      foregroundColor: DashboardColors.brandCyan,
+                      side: const BorderSide(color: DashboardColors.brandCyan),
                       padding: EdgeInsets.symmetric(
                         vertical: context.dashSpacing * 0.65,
                       ),
@@ -233,8 +233,8 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                     icon: const Icon(Icons.fitness_center_outlined),
                     label: const Text('Assign Exercise'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: DashboardColors.primary,
-                      side: const BorderSide(color: DashboardColors.primary),
+                      foregroundColor: DashboardColors.brandCyan,
+                      side: const BorderSide(color: DashboardColors.brandCyan),
                       padding: EdgeInsets.symmetric(
                         vertical: context.dashSpacing * 0.65,
                       ),

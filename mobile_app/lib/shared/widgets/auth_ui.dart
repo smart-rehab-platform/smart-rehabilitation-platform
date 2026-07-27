@@ -427,10 +427,16 @@ class AuthGradientHeadline extends StatelessWidget {
 }
 
 class AuthFeaturePill extends StatelessWidget {
-  const AuthFeaturePill({super.key, required this.icon, required this.text});
+  const AuthFeaturePill({
+    super.key,
+    required this.icon,
+    required this.text,
+    this.iconSize = 14,
+  });
 
   final IconData icon;
   final String text;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -443,7 +449,7 @@ class AuthFeaturePill extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: AppColors.mediumBlue),
+          Icon(icon, size: iconSize, color: AppColors.mediumBlue),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -479,13 +485,42 @@ class AuthBackButton extends StatelessWidget {
 }
 
 class AuthTopLogo extends StatelessWidget {
-  const AuthTopLogo({super.key});
+  const AuthTopLogo({
+    super.key,
+    this.logoAsset,
+    this.logoSize = 20,
+    this.logoColor,
+  });
+
+  static const brandingAsset = 'assets/branding/smart_rehab_icon.png';
+
+  final String? logoAsset;
+  final double logoSize;
+  final Color? logoColor;
 
   @override
   Widget build(BuildContext context) {
-    return const _RoundGlassButton(
+    Widget logoChild;
+    if (logoAsset != null) {
+      logoChild = Image.asset(
+        logoAsset!,
+        width: logoSize,
+        height: logoSize,
+        fit: BoxFit.contain,
+      );
+      if (logoColor != null) {
+        logoChild = ColorFiltered(
+          colorFilter: ColorFilter.mode(logoColor!, BlendMode.srcIn),
+          child: logoChild,
+        );
+      }
+    } else {
+      logoChild = AuthLogoMark(size: logoSize);
+    }
+
+    return _RoundGlassButton(
       onPressed: null,
-      child: AuthLogoMark(size: 20),
+      child: logoChild,
     );
   }
 }
@@ -521,9 +556,9 @@ class AuthTabSwitcher extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: isActive
                       ? const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [AppColors.mediumBlue, AppColors.buttonHighlight],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [Color(0xFF2398BD), Color(0xFF56B6E9)],
                         )
                       : null,
                   color: isActive ? null : AppColors.darkBlue,
@@ -701,7 +736,7 @@ class AuthInputField extends StatelessWidget {
   }
 }
 
-class AuthGradientButton extends StatelessWidget {
+class AuthGradientButton extends StatefulWidget {
   const AuthGradientButton({
     super.key,
     required this.label,
@@ -716,41 +751,73 @@ class AuthGradientButton extends StatelessWidget {
   final IconData? trailingIcon;
 
   @override
-  Widget build(BuildContext context) {
-    final isEnabled = onPressed != null && !isLoading;
+  State<AuthGradientButton> createState() => _AuthGradientButtonState();
+}
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isEnabled
-              ? const [AppColors.mediumBlue, AppColors.buttonHighlight]
-              : [
-                  AppColors.mediumBlue.withValues(alpha: 0.45),
-                  AppColors.buttonHighlight.withValues(alpha: 0.4),
-                ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: isEnabled
-            ? [
-                BoxShadow(
-                  color: AppColors.mediumBlue.withValues(alpha: 0.22),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : null,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: isEnabled ? onPressed : null,
-          borderRadius: BorderRadius.circular(16),
+class _AuthGradientButtonState extends State<AuthGradientButton> {
+  static const _pressDuration = Duration(milliseconds: 135);
+  static const _brandCyan = Color(0xFF2AA4C9);
+
+  bool _pressed = false;
+
+  bool get _isEnabled => widget.onPressed != null && !widget.isLoading;
+
+  void _setPressed(bool value) {
+    if (_pressed == value) {
+      return;
+    }
+    setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: _isEnabled ? (_) => _setPressed(true) : null,
+      onTapUp: _isEnabled ? (_) => _setPressed(false) : null,
+      onTapCancel: _isEnabled ? () => _setPressed(false) : null,
+      onTap: _isEnabled ? widget.onPressed : null,
+      child: AnimatedScale(
+        scale: _pressed && _isEnabled ? 0.975 : 1,
+        duration: _pressDuration,
+        curve: Curves.easeInOut,
+        child: AnimatedContainer(
+          duration: _pressDuration,
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: _isEnabled
+                  ? const [Color(0xFF2398BD), Color(0xFF56B6E9)]
+                  : [
+                      const Color(0xFF2398BD).withValues(alpha: 0.45),
+                      const Color(0xFF56B6E9).withValues(alpha: 0.4),
+                    ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: _isEnabled
+                ? [
+                    BoxShadow(
+                      color: AppColors.mediumBlue.withValues(alpha: 0.22),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                    if (_pressed)
+                      BoxShadow(
+                        color: _brandCyan.withValues(alpha: 0.11),
+                        blurRadius: 22,
+                        spreadRadius: 1,
+                      ),
+                  ]
+                : null,
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (isLoading) ...[
+                if (widget.isLoading) ...[
                   const SizedBox(
                     width: 16,
                     height: 16,
@@ -762,16 +829,16 @@ class AuthGradientButton extends StatelessWidget {
                   const SizedBox(width: 10),
                 ],
                 Text(
-                  label,
+                  widget.label,
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AppColors.white,
                   ),
                 ),
-                if (!isLoading && trailingIcon != null) ...[
+                if (!widget.isLoading && widget.trailingIcon != null) ...[
                   const SizedBox(width: 6),
-                  Icon(trailingIcon, size: 16, color: AppColors.white),
+                  Icon(widget.trailingIcon, size: 16, color: AppColors.white),
                 ],
               ],
             ),

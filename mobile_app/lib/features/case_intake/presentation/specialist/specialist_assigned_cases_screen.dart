@@ -330,7 +330,7 @@ class _FilterDropdowns extends StatelessWidget {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
-          color: DashboardColors.primary,
+          color: DashboardColors.brandCyan,
           width: 1.5,
         ),
       ),

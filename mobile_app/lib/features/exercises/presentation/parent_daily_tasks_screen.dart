@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../dashboard/models/parent_dashboard_models.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../dashboard/providers/parent_dashboard_provider.dart';
 import '../../dashboard/providers/parent_features_provider.dart';
 import '../../dashboard/widgets/dashboard_bottom_nav.dart';
@@ -45,7 +46,9 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
 
   void _onTabChanged() {
     if (!_tabController.indexIsChanging) {
-      ref.read(parentExercisesProvider.notifier).selectTab(_tabController.index);
+      ref
+          .read(parentExercisesProvider.notifier)
+          .selectTab(_tabController.index);
       setState(() {});
     }
   }
@@ -59,7 +62,7 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
   }
 
   void _loadExercisesForSelectedChild() {
-    final childId = ref.read(parentDashboardProvider).selectedChildId;
+    final childId = ref.read(parentDashboardProvider).selectedPatientId;
     if (childId != null) {
       ref.read(parentExercisesProvider.notifier).loadForChild(childId);
     }
@@ -81,7 +84,7 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
 
   Color _taskColor(int index) {
     const colors = [
-      DashboardColors.primary,
+      DashboardColors.brandCyan,
       DashboardColors.accent,
       Color(0xFF3B82F6),
       DashboardColors.warning,
@@ -277,14 +280,20 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
   @override
   Widget build(BuildContext context) {
     final dashboard = ref.watch(parentDashboardProvider);
+    final auth = ref.watch(authProvider);
     final exercises = ref.watch(parentExercisesProvider);
     final theme = Theme.of(context);
     final selectedChild = dashboard.selectedChild;
+    final displayName = auth.user?.fullName ?? dashboard.user?.fullName;
+    final avatarInitials = dashboardInitials(displayName);
+    final profileImageUrl = auth.user?.profileImageUrl;
 
     if (dashboard.isLoading) {
       return DashboardScaffold(
-        avatarInitials: dashboardInitials(dashboard.user?.fullName),
+        avatarInitials: avatarInitials,
+        avatarImageUrl: profileImageUrl,
         notificationCount: dashboard.unreadNotifications,
+        showMenuButton: false,
         currentNav: DashboardNavItem.exercises,
         onNavTap: (item) => ParentNavigation.onNavTap(context, item),
         onNotificationsTap: _onNotificationsTap,
@@ -295,8 +304,10 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
 
     if (dashboard.errorMessage != null && !dashboard.hasAuth) {
       return DashboardScaffold(
-        avatarInitials: dashboardInitials(dashboard.user?.fullName),
+        avatarInitials: avatarInitials,
+        avatarImageUrl: profileImageUrl,
         notificationCount: dashboard.unreadNotifications,
+        showMenuButton: false,
         currentNav: DashboardNavItem.exercises,
         onNavTap: (item) => ParentNavigation.onNavTap(context, item),
         onNotificationsTap: _onNotificationsTap,
@@ -309,8 +320,10 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
     }
 
     return DashboardScaffold(
-      avatarInitials: dashboardInitials(dashboard.user?.fullName),
+      avatarInitials: avatarInitials,
+      avatarImageUrl: profileImageUrl,
       notificationCount: dashboard.unreadNotifications,
+      showMenuButton: false,
       currentNav: DashboardNavItem.exercises,
       onNavTap: (item) => ParentNavigation.onNavTap(context, item),
       onNotificationsTap: _onNotificationsTap,
@@ -318,7 +331,10 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const DashboardSectionHeader(title: 'Exercises'),
+          const DashboardSectionHeader(
+            title: 'Exercises',
+            linkColor: DashboardColors.brandCyan,
+          ),
           if (selectedChild != null) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
@@ -332,9 +348,9 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
           SizedBox(height: context.dashSpacing * 0.75),
           ParentChildSwitcher(
             children: dashboard.children,
-            selectedChildId: dashboard.selectedChildId,
+            selectedPatientId: dashboard.selectedPatientId,
             onSelected: (childId) {
-              ref.read(parentDashboardProvider.notifier).selectChild(childId);
+              ref.read(parentDashboardProvider.notifier).selectPatient(childId);
               ref.read(parentExercisesProvider.notifier).loadForChild(childId);
             },
           ),
@@ -356,9 +372,9 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
           SizedBox(height: context.dashSpacing * 0.5),
           TabBar(
             controller: _tabController,
-            labelColor: DashboardColors.primary,
+            labelColor: DashboardColors.brandCyan,
             unselectedLabelColor: DashboardColors.textMuted,
-            indicatorColor: DashboardColors.primary,
+            indicatorColor: DashboardColors.brandCyan,
             tabs: const [
               Tab(text: 'Daily'),
               Tab(text: 'Weekly'),
@@ -380,24 +396,24 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
           else
             switch (_tabController.index) {
               0 => _buildTaskList(
-                  theme: theme,
-                  childName: selectedChild.name,
-                  tasks: exercises.dailyTasks,
-                  emptyMessage:
-                      'No daily tasks assigned for ${selectedChild.name} today.',
-                ),
+                theme: theme,
+                childName: selectedChild.name,
+                tasks: exercises.dailyTasks,
+                emptyMessage:
+                    'No daily tasks assigned for ${selectedChild.name} today.',
+              ),
               1 => _buildTaskList(
-                  theme: theme,
-                  childName: selectedChild.name,
-                  tasks: exercises.weeklyTasks,
-                  emptyMessage:
-                      'No weekly tasks assigned for ${selectedChild.name}.',
-                ),
+                theme: theme,
+                childName: selectedChild.name,
+                tasks: exercises.weeklyTasks,
+                emptyMessage:
+                    'No weekly tasks assigned for ${selectedChild.name}.',
+              ),
               _ => _buildAssignedList(
-                  theme: theme,
-                  childName: selectedChild.name,
-                  exercises: exercises.assignedExercises,
-                ),
+                theme: theme,
+                childName: selectedChild.name,
+                exercises: exercises.assignedExercises,
+              ),
             },
           SizedBox(height: context.dashSpacing),
         ],

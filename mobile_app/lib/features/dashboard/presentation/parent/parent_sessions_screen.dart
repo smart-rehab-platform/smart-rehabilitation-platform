@@ -6,7 +6,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../models/parent_dashboard_models.dart';
+import '../../providers/parent_dashboard_provider.dart';
 import '../../providers/parent_features_provider.dart';
+import '../../providers/parent_selected_patient_provider.dart';
 import '../../providers/session_requests_provider.dart';
 import '../../utils/session_classification.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -308,11 +310,31 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
     );
   }
 
+  List<ParentSessionItem> _sessionsForSelectedPatient(
+    List<ParentSessionItem> sessions,
+    String? selectedPatientId,
+  ) {
+    final patientId = selectedPatientId?.trim();
+    if (patientId == null || patientId.isEmpty) {
+      return const [];
+    }
+
+    return sessions
+        .where((session) => session.patientId?.trim() == patientId)
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final dashboard = ref.watch(parentDashboardProvider);
+    final selectedPatientId = ref.watch(selectedPatientIdProvider);
     final state = ref.watch(parentSessionsProvider);
-    final upcoming = _upcomingSessions(state.sessions);
-    final past = _pastSessions(state.sessions);
+    final patientSessions = _sessionsForSelectedPatient(
+      state.sessions,
+      selectedPatientId,
+    );
+    final upcoming = _upcomingSessions(patientSessions);
+    final past = _pastSessions(patientSessions);
 
     return ParentPageScaffold(
       title: 'Sessions',
@@ -320,7 +342,7 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
       body: state.isLoading
           ? const Center(child: DashboardLoadingCard())
           : RefreshIndicator(
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
               onRefresh: _refresh,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -330,6 +352,18 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (dashboard.children.isNotEmpty) ...[
+                      ParentChildSwitcher(
+                        children: dashboard.children,
+                        selectedPatientId: dashboard.selectedPatientId,
+                        onSelected: (patientId) {
+                          ref
+                              .read(parentDashboardProvider.notifier)
+                              .selectPatient(patientId);
+                        },
+                      ),
+                      SizedBox(height: context.dashSpacing),
+                    ],
                     if (state.errorMessage != null) ...[
                       DashboardErrorCard(
                         message: state.errorMessage!,
@@ -415,7 +449,7 @@ class _SegmentTabButton extends StatelessWidget {
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOutCubic,
       decoration: BoxDecoration(
-        color: isSelected ? DashboardColors.purpleSoft : Colors.transparent,
+        color: isSelected ? DashboardColors.brandSoft : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Material(
@@ -434,7 +468,7 @@ class _SegmentTabButton extends StatelessWidget {
                   icon,
                   size: 18,
                   color: isSelected
-                      ? DashboardColors.primary
+                      ? DashboardColors.brandCyan
                       : DashboardColors.textMuted,
                 ),
                 SizedBox(width: context.dashSpacing * 0.25),
@@ -442,7 +476,7 @@ class _SegmentTabButton extends StatelessWidget {
                   label,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: isSelected
-                        ? DashboardColors.primary
+                        ? DashboardColors.brandCyan
                         : DashboardColors.textSecondary,
                     fontWeight: FontWeight.w700,
                   ),
@@ -470,10 +504,10 @@ class _SessionSummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(context.dashSpacing * 0.85),
       decoration: BoxDecoration(
-        color: DashboardColors.purpleSoft,
+        color: DashboardColors.brandSoft,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: DashboardColors.primary.withValues(alpha: 0.08),
+          color: DashboardColors.brandCyan.withValues(alpha: 0.08),
         ),
       ),
       child: Row(
@@ -487,7 +521,7 @@ class _SessionSummaryCard extends StatelessWidget {
             ),
             child: Icon(
               Icons.calendar_month_rounded,
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
               size: context.dashSpacing * 0.72,
             ),
           ),
@@ -500,7 +534,7 @@ class _SessionSummaryCard extends StatelessWidget {
                   hasUpcoming ? 'Stay on track!' : 'No upcoming sessions',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: DashboardColors.primary,
+                    color: DashboardColors.brandCyan,
                   ),
                 ),
                 SizedBox(height: context.dashSpacing * 0.15),
@@ -585,13 +619,13 @@ class _SessionSectionTitle extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: DashboardColors.purpleSoft,
+            color: DashboardColors.brandSoft,
             borderRadius: BorderRadius.circular(999),
           ),
           child: Text(
             '$count',
             style: theme.textTheme.labelMedium?.copyWith(
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -622,17 +656,17 @@ class _ModernSessionCard extends StatelessWidget {
 
   Color _leadingIconColor() {
     if (parentSessionIsOnline(session)) {
-      return DashboardColors.primary;
+      return DashboardColors.brandCyan;
     }
     if (session.status?.toLowerCase() == 'completed') {
       return _completedStatusFg;
     }
-    return DashboardColors.primary;
+    return DashboardColors.brandCyan;
   }
 
   Color _leadingIconBackground() {
     if (parentSessionIsOnline(session)) {
-      return DashboardColors.purpleSoft;
+      return DashboardColors.brandSoft;
     }
     if (session.status?.toLowerCase() == 'completed') {
       return _completedStatusBg;
@@ -649,7 +683,7 @@ class _ModernSessionCard extends StatelessWidget {
     return Material(
       color: DashboardColors.surface,
       elevation: 0,
-      shadowColor: DashboardColors.primary.withValues(alpha: 0.08),
+      shadowColor: DashboardColors.brandCyan.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(24),
       child: InkWell(
         onTap: () => parentShowSessionDetailsBottomSheet(context, session),
@@ -860,14 +894,14 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                     width: context.dashSpacing * 2.2,
                     height: context.dashSpacing * 2.2,
                     decoration: BoxDecoration(
-                      color: DashboardColors.purpleSoft,
+                      color: DashboardColors.brandSoft,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Icon(
                       isOnline
                           ? Icons.videocam_rounded
                           : Icons.event_note_rounded,
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                       size: context.dashSpacing * 0.72,
                     ),
                   ),
@@ -902,15 +936,15 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
               _SessionDetailRow(
                 icon: Icons.person_outline_rounded,
                 iconBackground: DashboardColors.blueSoft,
-                iconColor: DashboardColors.primary,
+                iconColor: DashboardColors.brandCyan,
                 label: 'Specialist',
                 value: session.specialistName ?? 'Specialist',
               ),
               SizedBox(height: context.dashSpacing * 0.55),
               _SessionDetailRow(
                 icon: Icons.calendar_today_outlined,
-                iconBackground: DashboardColors.purpleSoft,
-                iconColor: DashboardColors.primary,
+                iconBackground: DashboardColors.brandSoft,
+                iconColor: DashboardColors.brandCyan,
                 label: 'Date',
                 value: parentSessionFormatDate(session.scheduledAt),
               ),
@@ -952,9 +986,9 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                         icon: const Icon(Icons.copy_rounded, size: 18),
                         label: const Text('Copy Link'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: DashboardColors.primary,
+                          foregroundColor: DashboardColors.brandCyan,
                           side: BorderSide(
-                            color: DashboardColors.primary.withValues(alpha: 0.35),
+                            color: DashboardColors.brandCyan.withValues(alpha: 0.35),
                           ),
                           padding: EdgeInsets.symmetric(
                             vertical: context.dashSpacing * 0.55,
@@ -973,7 +1007,7 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                         icon: const Icon(Icons.open_in_new_rounded, size: 18),
                         label: const Text('Open Link'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: DashboardColors.primary,
+                          backgroundColor: DashboardColors.brandCyan,
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(
                             vertical: context.dashSpacing * 0.55,
@@ -996,7 +1030,7 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                     icon: const Icon(Icons.open_in_new_rounded, size: 18),
                     label: const Text('Open Link'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: DashboardColors.primary,
+                      backgroundColor: DashboardColors.brandCyan,
                       foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(
                         vertical: context.dashSpacing * 0.55,
@@ -1238,7 +1272,7 @@ class _RequestSessionCard extends StatelessWidget {
                 ),
                 child: Icon(
                   Icons.event_note_rounded,
-                  color: DashboardColors.primary,
+                  color: DashboardColors.brandCyan,
                   size: context.dashSpacing * 0.75,
                 ),
               ),
@@ -1274,7 +1308,7 @@ class _RequestSessionCard extends StatelessWidget {
               icon: const Icon(Icons.calendar_month_outlined, size: 18),
               label: const Text('Request New Session'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: DashboardColors.primary,
+                backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(
                   vertical: context.dashSpacing * 0.62,

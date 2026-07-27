@@ -17,7 +17,6 @@ import '../../features/case_intake/presentation/admin/admin_case_request_details
 import '../../features/case_intake/presentation/admin/admin_matching_specialists_screen.dart';
 import '../../features/case_intake/presentation/specialist/specialist_assigned_cases_screen.dart';
 import '../../features/case_intake/presentation/specialist/specialist_case_request_details_screen.dart';
-import '../../features/case_intake/presentation/specialist/specialist_convert_patient_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_screens.dart';
 import '../../features/dashboard/presentation/admin/admin_ai_center_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_audit_logs_screen.dart';
@@ -27,7 +26,6 @@ import '../../features/dashboard/presentation/admin/admin_sessions_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_users_screen.dart';
 import '../../features/dashboard/presentation/admin/patient_assignments_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
-import '../../features/dashboard/presentation/manage_parent_links_screen.dart';
 import '../../features/dashboard/presentation/parent/edit_parent_profile_screen.dart';
 import '../../features/dashboard/presentation/communication/chat_screen.dart';
 import '../../features/dashboard/presentation/communication/conversations_list_screen.dart';
@@ -51,6 +49,8 @@ import '../../features/dashboard/presentation/specialist/specialist_profile_scre
 import '../../features/dashboard/presentation/specialist/specialist_report_details_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_reports_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_sessions_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_session_details_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_upsert_session_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_speech_analysis_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_screens.dart';
 import '../../features/dashboard/presentation/specialist_dashboard_screen.dart';
@@ -325,11 +325,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SpecialistDashboardScreen(),
       ),
       GoRoute(
-        path: AppRoutes.manageParentLinks,
-        name: 'manageParentLinks',
-        builder: (context, state) => const ManageParentLinksScreen(),
-      ),
-      GoRoute(
         path: AppRoutes.specialistPatients,
         name: 'specialistPatients',
         builder: (context, state) => const SpecialistPatientsScreen(),
@@ -387,6 +382,29 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'specialistSessions',
         builder: (context, state) => const SpecialistSessionsScreen(),
       ),
+GoRoute(
+  path: AppRoutes.specialistCreateSession,
+  name: 'specialistCreateSession',
+  builder: (context, state) => SpecialistUpsertSessionScreen(
+    initialPatientId: state.uri.queryParameters['patientId'],
+  ),
+),
+GoRoute(
+  path: AppRoutes.specialistEditSessionPath,
+  name: 'specialistEditSession',
+  builder: (context, state) => SpecialistUpsertSessionScreen(
+    sessionId: state.pathParameters['sessionId'],
+  ),
+),
+GoRoute(
+  path: AppRoutes.specialistSessionDetailsPath,
+  name: 'specialistSessionDetails',
+  builder: (context, state) => SpecialistSessionDetailsScreen(
+    sessionId: state.pathParameters['sessionId']!,
+  ),
+),
+
+      
       GoRoute(
         path: AppRoutes.specialistTreatmentPlans,
         name: 'specialistTreatmentPlans',
@@ -518,13 +536,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.specialistCaseRequestDetailPath,
         name: 'specialistCaseRequestDetail',
         builder: (context, state) => SpecialistCaseRequestDetailsScreen(
-          requestId: state.pathParameters['requestId']!,
-        ),
-      ),
-      GoRoute(
-        path: AppRoutes.specialistConvertPatientPath,
-        name: 'specialistConvertPatient',
-        builder: (context, state) => SpecialistConvertPatientScreen(
           requestId: state.pathParameters['requestId']!,
         ),
       ),

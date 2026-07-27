@@ -8,7 +8,6 @@ import '../providers/specialist_dashboard_provider.dart';
 import '../providers/specialist_features_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../widgets/dashboard_bottom_nav.dart';
-import '../widgets/dashboard_chat_bubble.dart';
 import '../widgets/dashboard_components.dart';
 import '../widgets/dashboard_layout.dart';
 import '../widgets/dashboard_scaffold.dart';
@@ -42,7 +41,7 @@ class _SpecialistDashboardScreenState
 
   Color _progressColor(int index) {
     const colors = [
-      DashboardColors.primary,
+      DashboardColors.brandCyan,
       DashboardColors.accent,
       Color(0xFF3B82F6),
       DashboardColors.warning,
@@ -70,7 +69,10 @@ class _SpecialistDashboardScreenState
         avatarInitials: avatarInitials,
         avatarImageUrl: profileImageUrl,
         notificationCount: state.unreadNotifications,
-        drawer: const SpecialistDrawer(),
+        messageCount: unreadMessageCount,
+        navAccentColor: DashboardColors.brandCyan,
+        showMenuButton: false,
+        onMessagesTap: _openMessages,
         onNotificationsTap: () =>
             context.push(AppRoutes.specialistNotifications),
         onAvatarTap: () => context.push(AppRoutes.specialistProfile),
@@ -83,66 +85,18 @@ class _SpecialistDashboardScreenState
       avatarInitials: avatarInitials,
       avatarImageUrl: profileImageUrl,
       notificationCount: state.unreadNotifications,
+      messageCount: unreadMessageCount,
       currentNav: DashboardNavItem.home,
-      drawer: const SpecialistDrawer(),
+      navAccentColor: DashboardColors.brandCyan,
+      showMenuButton: false,
+      onMessagesTap: _openMessages,
       onNotificationsTap: () => context.push(AppRoutes.specialistNotifications),
       onAvatarTap: () => context.push(AppRoutes.specialistProfile),
       onNavTap: (item) => SpecialistNavigation.onNavTap(context, item),
-      floatingActionButton: DashboardChatBubble(
-        unreadCount: unreadMessageCount,
-        onTap: _openMessages,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DashboardGreeting(message: 'Welcome back, $greetingName'),
-          SizedBox(height: context.dashSpacing * 0.75),
-          DashboardSurfaceCard(
-            tint: DashboardColors.primary,
-            onTap: () => context.push(AppRoutes.manageParentLinks),
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(context.dashSpacing * 0.45),
-                  decoration: BoxDecoration(
-                    color: DashboardColors.purpleSoft,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.link_rounded,
-                    color: DashboardColors.primary,
-                    size: context.dashSpacing * 0.6,
-                  ),
-                ),
-                SizedBox(width: context.dashSpacing * 0.65),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Manage Parent Links',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: DashboardColors.textPrimary,
-                        ),
-                      ),
-                      Text(
-                        'Link a parent account to a patient/child',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: DashboardColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: DashboardColors.textMuted,
-                ),
-              ],
-            ),
-          ),
           if (!state.hasAssignedPatients &&
               state.overview.activeCases == 0) ...[
             SizedBox(height: context.dashSpacing * 0.75),
@@ -171,8 +125,8 @@ class _SpecialistDashboardScreenState
                 label: 'Pending Reviews',
                 value: '${state.overview.pendingReviews}',
                 icon: Icons.rate_review_outlined,
-                iconBackground: DashboardColors.purpleSoft,
-                iconColor: DashboardColors.primary,
+                iconBackground: DashboardColors.brandSoft,
+                iconColor: DashboardColors.brandCyan,
                 onTap: () => context.push(AppRoutes.specialistPendingReviews),
               ),
               DashboardSummaryCard(
@@ -211,7 +165,7 @@ class _SpecialistDashboardScreenState
                     children: [
                       CircleAvatar(
                         radius: context.dashSpacing * 0.55,
-                        backgroundColor: DashboardColors.primary.withValues(
+                        backgroundColor: DashboardColors.brandCyan.withValues(
                           alpha: 0.15,
                         ),
                         child: Text(
@@ -220,7 +174,7 @@ class _SpecialistDashboardScreenState
                             fallback: 'P',
                           ),
                           style: theme.textTheme.labelLarge?.copyWith(
-                            color: DashboardColors.primary,
+                            color: DashboardColors.brandCyan,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -277,14 +231,14 @@ class _SpecialistDashboardScreenState
                           vertical: context.dashSpacing * 0.45,
                         ),
                         decoration: BoxDecoration(
-                          color: DashboardColors.purpleSoft,
+                          color: DashboardColors.brandSoft,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           item.timeLabel,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: DashboardColors.primary,
+                            color: DashboardColors.brandCyan,
                             fontWeight: FontWeight.w700,
                           ),
                         ),

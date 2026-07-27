@@ -48,10 +48,10 @@ class DashboardChatBubble extends StatelessWidget {
                     top: 0,
                     child: Material(
                       elevation: 4,
-                      shadowColor: DashboardColors.primary.withValues(
+                      shadowColor: DashboardColors.brandCyan.withValues(
                         alpha: 0.28,
                       ),
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                       borderRadius: BorderRadius.circular(size * 0.38),
                       child: SizedBox(
                         width: size,
@@ -69,7 +69,7 @@ class DashboardChatBubble extends StatelessWidget {
                     child: CustomPaint(
                       size: Size(size * 0.28, size * 0.18),
                       painter: _ChatBubbleTailPainter(
-                        color: DashboardColors.primary,
+                        color: DashboardColors.brandCyan,
                       ),
                     ),
                   ),

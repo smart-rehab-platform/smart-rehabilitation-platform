@@ -109,10 +109,10 @@ class _SpecialistSessionsScreenState
               ...visible.map(
                 (session) => SpecialistSessionCard(
                   session: session,
-                  onTap: session.patientId.isEmpty
+                  onTap: session.id.isEmpty
                       ? null
                       : () => context.push(
-                            AppRoutes.specialistPatientDetails(session.patientId),
+                            AppRoutes.specialistSessionDetails(session.id),
                           ),
                 ),
               ),
@@ -125,6 +125,22 @@ class _SpecialistSessionsScreenState
     return SpecialistPageScaffold(
       title: 'Sessions',
       showBackButton: true,
+      floatingActionButton: _selectedSection == _SpecialistSessionsSection.sessions
+          ? FloatingActionButton.extended(
+              onPressed: () async {
+                final created = await context.push<bool>(
+                  AppRoutes.specialistCreateSession,
+                );
+                if (created == true && mounted) {
+                  await _refreshAll();
+                }
+              },
+              backgroundColor: DashboardColors.primary,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Schedule Session'),
+            )
+          : null,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -126,8 +126,8 @@ class ExerciseInstructionMediaCard extends StatelessWidget {
             icon: const Icon(Icons.open_in_new_rounded),
             label: Text(kind == 'pdf' ? 'Open PDF' : 'Open externally'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: DashboardColors.primary,
-              side: const BorderSide(color: DashboardColors.primary),
+              foregroundColor: DashboardColors.brandCyan,
+              side: const BorderSide(color: DashboardColors.brandCyan),
             ),
           ),
         ],
@@ -289,7 +289,7 @@ class _InstructionNetworkAudioPlayerState
     return Container(
       padding: EdgeInsets.all(context.dashSpacing * 0.65),
       decoration: BoxDecoration(
-        color: DashboardColors.purpleSoft,
+        color: DashboardColors.brandSoft,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -307,14 +307,14 @@ class _InstructionNetworkAudioPlayerState
                   ? Icons.pause_circle_filled_rounded
                   : Icons.play_circle_filled_rounded,
               size: 44,
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
             ),
           ),
           VideoProgressIndicator(
             controller,
             allowScrubbing: true,
             colors: const VideoProgressColors(
-              playedColor: DashboardColors.primary,
+              playedColor: DashboardColors.brandCyan,
               bufferedColor: DashboardColors.border,
               backgroundColor: Colors.white,
             ),

@@ -100,7 +100,7 @@ class AiRecommendationsGenerateCard extends StatelessWidget {
                   : 'Generate Exercise Suggestion',
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: DashboardColors.primary,
+              backgroundColor: DashboardColors.brandCyan,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(
                 vertical: context.dashSpacing * 0.65,
@@ -124,8 +124,8 @@ class AiRecommendationsGenerateCard extends StatelessWidget {
                   : 'Generate Plan Adjustment',
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: DashboardColors.primary,
-              side: const BorderSide(color: DashboardColors.primary),
+              foregroundColor: DashboardColors.brandCyan,
+              side: const BorderSide(color: DashboardColors.brandCyan),
               padding: EdgeInsets.symmetric(
                 vertical: context.dashSpacing * 0.65,
               ),
@@ -155,7 +155,7 @@ class AiRecommendationsGenerateCard extends StatelessWidget {
       height: context.dashSpacing * 0.55,
       child: CircularProgressIndicator(
         strokeWidth: 2,
-        color: outlined ? DashboardColors.primary : Colors.white,
+        color: outlined ? DashboardColors.brandCyan : Colors.white,
       ),
     );
   }
@@ -285,7 +285,7 @@ class AiRecommendationCard extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: isUpdating ? null : onAccept,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DashboardColors.primary,
+                        backgroundColor: DashboardColors.brandCyan,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(
                           vertical: context.dashSpacing * 0.5,

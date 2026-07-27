@@ -144,7 +144,7 @@ class _SpecialistCreateTreatmentPlanScreenState
             ElevatedButton(
               onPressed: busy ? null : _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: DashboardColors.primary,
+                backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(
                   vertical: context.dashSpacing * 0.65,
@@ -159,8 +159,8 @@ class _SpecialistCreateTreatmentPlanScreenState
             OutlinedButton(
               onPressed: busy ? null : () => context.pop(false),
               style: OutlinedButton.styleFrom(
-                foregroundColor: DashboardColors.primary,
-                side: const BorderSide(color: DashboardColors.primary),
+                foregroundColor: DashboardColors.brandCyan,
+                side: const BorderSide(color: DashboardColors.brandCyan),
                 padding: EdgeInsets.symmetric(
                   vertical: context.dashSpacing * 0.65,
                 ),

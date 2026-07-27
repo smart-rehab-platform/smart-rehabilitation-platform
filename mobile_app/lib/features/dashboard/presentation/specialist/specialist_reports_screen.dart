@@ -51,7 +51,7 @@ class _SpecialistReportsScreenState extends ConsumerState<SpecialistReportsScree
       body: ReportsListBody(
         patientId: widget.patientId,
         searchController: _searchController,
-        refreshIndicatorColor: DashboardColors.primary,
+        refreshIndicatorColor: DashboardColors.brandCyan,
         onReportTap: (context, report) {
           context.push(
             AppRoutes.specialistReportDetails(

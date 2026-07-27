@@ -10,10 +10,12 @@ class DashboardBottomNav extends StatelessWidget {
     super.key,
     this.currentIndex,
     this.onTap,
+    this.accentColor = DashboardColors.brandCyan,
   });
 
   final DashboardNavItem? currentIndex;
   final ValueChanged<DashboardNavItem>? onTap;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class DashboardBottomNav extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: DashboardColors.primary.withValues(alpha: 0.05),
+            color: accentColor.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -48,6 +50,7 @@ class DashboardBottomNav extends StatelessWidget {
                 label: 'Home',
                 isActive: currentIndex == DashboardNavItem.home,
                 onTap: () => onTap?.call(DashboardNavItem.home),
+                accentColor: accentColor,
                 theme: theme,
               ),
               _NavItem(
@@ -55,6 +58,7 @@ class DashboardBottomNav extends StatelessWidget {
                 label: 'Patients',
                 isActive: currentIndex == DashboardNavItem.patients,
                 onTap: () => onTap?.call(DashboardNavItem.patients),
+                accentColor: accentColor,
                 theme: theme,
               ),
               _NavItem(
@@ -62,6 +66,7 @@ class DashboardBottomNav extends StatelessWidget {
                 label: 'Exercises',
                 isActive: currentIndex == DashboardNavItem.exercises,
                 onTap: () => onTap?.call(DashboardNavItem.exercises),
+                accentColor: accentColor,
                 theme: theme,
               ),
               _NavItem(
@@ -69,6 +74,7 @@ class DashboardBottomNav extends StatelessWidget {
                 label: 'Reports',
                 isActive: currentIndex == DashboardNavItem.reports,
                 onTap: () => onTap?.call(DashboardNavItem.reports),
+                accentColor: accentColor,
                 theme: theme,
               ),
               _NavItem(
@@ -76,6 +82,7 @@ class DashboardBottomNav extends StatelessWidget {
                 label: 'More',
                 isActive: currentIndex == DashboardNavItem.more,
                 onTap: () => onTap?.call(DashboardNavItem.more),
+                accentColor: accentColor,
                 theme: theme,
               ),
             ],
@@ -92,6 +99,7 @@ class _NavItem extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.onTap,
+    required this.accentColor,
     required this.theme,
   });
 
@@ -99,12 +107,12 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool isActive;
   final VoidCallback? onTap;
+  final Color accentColor;
   final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isActive ? DashboardColors.primary : DashboardColors.textMuted;
+    final color = isActive ? accentColor : DashboardColors.textMuted;
 
     return InkWell(
       onTap: onTap,

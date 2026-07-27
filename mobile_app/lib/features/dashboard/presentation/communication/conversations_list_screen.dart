@@ -147,13 +147,13 @@ class CommunicationConversationTile extends StatelessWidget {
         children: [
           CircleAvatar(
             backgroundColor: role?.toLowerCase() == 'parent'
-                ? DashboardColors.purpleSoft
+                ? DashboardColors.brandSoft
                 : DashboardColors.tealSoft,
             child: Icon(
               role?.toLowerCase() == 'parent'
                   ? Icons.medical_services_outlined
                   : Icons.family_restroom_outlined,
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
               size: context.dashSpacing * 0.55,
             ),
           ),

@@ -303,7 +303,7 @@ const updateAssessmentNotes = async (req, res) => {
 
 const acceptCaseRequest = async (req, res) => {
   try {
-    const request = await caseIntakeService.acceptCaseRequest(
+    const { detail, conversion } = await caseIntakeService.acceptCaseRequest(
       req.params.id,
       req.user.id
     );
@@ -315,10 +315,18 @@ const acceptCaseRequest = async (req, res) => {
       entityId: req.params.id,
     }).catch(() => {});
 
+    createAuditLog({
+      userId: req.user.id,
+      action: "case_intake_request_convert",
+      entityName: "patient",
+      entityId: conversion.patient.id,
+    }).catch(() => {});
+
     return res.status(200).json({
       success: true,
-      message: "Case request accepted successfully",
-      data: request,
+      message: "Patient profile created successfully",
+      data: detail,
+      conversion,
     });
   } catch (error) {
     return handleError(res, error);
@@ -350,31 +358,6 @@ const rejectCaseRequest = async (req, res) => {
   }
 };
 
-const convertToPatient = async (req, res) => {
-  try {
-    const result = await caseIntakeService.convertRequestToPatient(
-      req.params.id,
-      req.user.id,
-      req.convertBody
-    );
-
-    createAuditLog({
-      userId: req.user.id,
-      action: "case_intake_request_convert",
-      entityName: "patient",
-      entityId: result.patient.id,
-    }).catch(() => {});
-
-    return res.status(201).json({
-      success: true,
-      message: "Case request converted to patient successfully",
-      data: result,
-    });
-  } catch (error) {
-    return handleError(res, error);
-  }
-};
-
 module.exports = {
   createCaseIntakeRequest,
   listMyRequests,
@@ -392,5 +375,4 @@ module.exports = {
   updateAssessmentNotes,
   acceptCaseRequest,
   rejectCaseRequest,
-  convertToPatient,
 };

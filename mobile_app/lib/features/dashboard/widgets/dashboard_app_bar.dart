@@ -15,16 +15,20 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const DashboardAppBar({
     super.key,
+    this.messageCount = 0,
     this.notificationCount = 0,
     this.avatarInitials = 'LM',
     this.avatarImageUrl,
     this.userDisplayName,
     this.showMenuButton = true,
     this.onMenuTap,
+    this.onMessagesTap,
     this.onNotificationsTap,
     this.onAvatarTap,
+    this.additionalActions,
   });
 
+  final int messageCount;
   final int notificationCount;
   final String avatarInitials;
   final String? avatarImageUrl;
@@ -32,9 +36,13 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showMenuButton;
   final VoidCallback? onMenuTap;
 
+  final VoidCallback? onMessagesTap;
+
   final VoidCallback? onNotificationsTap;
 
   final VoidCallback? onAvatarTap;
+
+  final List<Widget>? additionalActions;
 
 
 
@@ -56,6 +64,9 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: DashboardColors.background,
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
+      centerTitle: false,
+      leadingWidth: showMenuButton ? null : 0,
+      titleSpacing: showMenuButton ? null : 16,
       leading: showMenuButton
           ? IconButton(
               onPressed: onMenuTap,
@@ -69,13 +80,24 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
 
         children: [
 
-          const AuthLogoMark(size: 28),
+          ColorFiltered(
+            colorFilter: const ColorFilter.mode(
+              Color(0xFF2AA4C9),
+              BlendMode.srcIn,
+            ),
+            child: Image.asset(
+              AuthTopLogo.brandingAsset,
+              width: 26,
+              height: 26,
+              fit: BoxFit.contain,
+            ),
+          ),
 
-          SizedBox(width: context.dashSpacing * 0.5),
+          SizedBox(width: context.dashSpacing * 0.45),
 
           Text(
 
-            'Smart Rehab',
+            'Smart Rehabilitation',
 
             style: theme.textTheme.titleMedium?.copyWith(
 
@@ -106,68 +128,71 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ],
+        ...?additionalActions,
         Stack(
-
           clipBehavior: Clip.none,
-
           children: [
-
             IconButton(
-
-              onPressed: onNotificationsTap,
-
-              icon: const Icon(Icons.notifications_none_rounded),
-
+              onPressed: onMessagesTap,
+              icon: const Icon(Icons.chat_bubble_outline_rounded),
               color: DashboardColors.textPrimary,
-
+              tooltip: 'Messages',
             ),
-
-            if (notificationCount > 0)
-
+            if (messageCount > 0)
               Positioned(
-
                 top: 10,
-
                 right: 10,
-
                 child: Container(
-
                   padding: const EdgeInsets.all(4),
-
                   decoration: const BoxDecoration(
-
                     color: DashboardColors.highPriority,
-
                     shape: BoxShape.circle,
-
                   ),
-
                   constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-
                   child: Text(
-
-                    '$notificationCount',
-
+                    messageCount > 99 ? '99+' : '$messageCount',
                     textAlign: TextAlign.center,
-
                     style: theme.textTheme.labelSmall?.copyWith(
-
                       color: Colors.white,
-
                       fontWeight: FontWeight.w700,
-
                       fontSize: 9,
-
                     ),
-
                   ),
-
                 ),
-
               ),
-
           ],
-
+        ),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            IconButton(
+              onPressed: onNotificationsTap,
+              icon: const Icon(Icons.notifications_none_rounded),
+              color: DashboardColors.textPrimary,
+            ),
+            if (notificationCount > 0)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: DashboardColors.highPriority,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  child: Text(
+                    '$notificationCount',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 9,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
 
         Padding(
