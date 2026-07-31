@@ -353,3 +353,14 @@ class CommunicationMessage {
     );
   }
 }
+
+/// Optional navigation payload for opening a chat with a prefilled draft message.
+class CommunicationChatRouteArgs {
+  const CommunicationChatRouteArgs({
+    this.conversation,
+    this.initialDraftMessage,
+  });
+
+  final CommunicationConversation? conversation;
+  final String? initialDraftMessage;
+}

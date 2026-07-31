@@ -204,6 +204,7 @@ Future<void> openOrCreateConversation({
   required String parentId,
   required String specialistId,
   required bool isParent,
+  String? initialDraftMessage,
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   messenger.hideCurrentSnackBar();
@@ -233,7 +234,14 @@ Future<void> openOrCreateConversation({
     final route = isParent
         ? AppRoutes.parentChat(conversation.id)
         : AppRoutes.specialistChat(conversation.id);
-    context.push(route, extra: conversation);
+    final draft = initialDraftMessage?.trim();
+    final extra = draft != null && draft.isNotEmpty
+        ? CommunicationChatRouteArgs(
+            conversation: conversation,
+            initialDraftMessage: draft,
+          )
+        : conversation;
+    context.push(route, extra: extra);
   } on CommunicationApiException catch (error) {
     if (!context.mounted) {
       return;

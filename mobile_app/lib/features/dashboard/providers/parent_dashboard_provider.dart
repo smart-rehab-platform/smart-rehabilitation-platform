@@ -7,6 +7,7 @@ import '../../auth/models/auth_user.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/parent_dashboard_repository.dart';
 import '../models/parent_dashboard_models.dart';
+import 'parent_features_provider.dart';
 
 final parentDashboardRepositoryProvider = Provider<ParentDashboardRepository>((
   ref,
@@ -426,6 +427,8 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
               : 'No report yet',
         ),
       );
+
+      _ensureTreatmentJourneyLoaded(patientId);
     } catch (error) {
       if (state.selectedPatientId != patientId) {
         return;
@@ -681,6 +684,16 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
       label: 'View Latest Report',
       type: ParentNextActionType.viewReport,
     );
+  }
+
+  void _ensureTreatmentJourneyLoaded(String patientId) {
+    if (patientId.trim().isEmpty) {
+      return;
+    }
+
+    _ref
+        .read(parentProgressProvider(patientId).notifier)
+        .changeJourneyPeriod(patientId, 'weekly');
   }
 }
 
