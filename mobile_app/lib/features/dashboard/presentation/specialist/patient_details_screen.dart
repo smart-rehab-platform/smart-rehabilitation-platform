@@ -5,12 +5,18 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../models/specialist_patient_details_models.dart';
+import '../../../auth/providers/auth_provider.dart';
+import '../../models/parent_links_models.dart';
+import '../../providers/parent_links_provider.dart';
 import '../../providers/specialist_patient_details_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import '../communication/communication_patient_actions.dart';
+import '../communication/conversations_list_screen.dart';
 import '../shared/patient_details_body.dart';
+import 'family_pattern_details_sheet.dart';
+import 'family_pattern_insight_card.dart';
 
 class SpecialistPatientDetailsScreen extends ConsumerStatefulWidget {
   const SpecialistPatientDetailsScreen({super.key, required this.patientId});
@@ -34,13 +40,14 @@ class _SpecialistPatientDetailsScreenState
     });
   }
 
-  Future<void> _showAddNoteDialog() async {
+  Future<void> _showAddNoteDialog({String? initialText}) async {
     final messenger = ScaffoldMessenger.of(context);
     final result = await showDialog<bool>(
       context: context,
       builder: (_) => _AddSpecialistNoteDialog(
         patientId: widget.patientId,
         messenger: messenger,
+        initialText: initialText,
       ),
     );
 
@@ -48,6 +55,103 @@ class _SpecialistPatientDetailsScreenState
     if (result == true) {
       messenger.showSnackBar(const SnackBar(content: Text('Note saved')));
     }
+  }
+
+  PatientGuardianLink? _pickPrimaryGuardian(
+    List<PatientGuardianLink> guardians,
+  ) {
+    if (guardians.isEmpty) {
+      return null;
+    }
+    for (final guardian in guardians) {
+      if (guardian.isPrimaryContact) {
+        return guardian;
+      }
+    }
+    return guardians.first;
+  }
+
+  Future<void> _openParentChatWithDraft(String draftText) async {
+    final specialistId = ref.read(authProvider).user?.id;
+    if (specialistId == null || specialistId.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sign in to send messages.')),
+      );
+      return;
+    }
+
+    final token = ref.read(authProvider).token;
+    if (token != null && token.isNotEmpty) {
+      ref.read(authRepositoryProvider).setAuthToken(token);
+    }
+
+    final guardians = await ref
+        .read(parentLinksRepositoryProvider)
+        .fetchGuardians(widget.patientId);
+    final parent = _pickPrimaryGuardian(guardians);
+
+    if (!mounted) return;
+
+    if (parent == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No parent is linked to this patient yet.'),
+        ),
+      );
+      return;
+    }
+
+    await openOrCreateConversation(
+      ref: ref,
+      context: context,
+      patientId: widget.patientId,
+      parentId: parent.parentId,
+      specialistId: specialistId,
+      isParent: false,
+      initialDraftMessage: draftText,
+    );
+  }
+
+  Future<void> _openScheduleFollowUp(String draftNotes) async {
+    if (!mounted) return;
+    await context.push(
+      '${AppRoutes.specialistCreateSession}?patientId=${widget.patientId}',
+      extra: draftNotes,
+    );
+  }
+
+  Future<void> _openFamilyPatternDetails() async {
+    final insight = ref
+        .read(specialistPatientDetailsProvider(widget.patientId))
+        .familyPatternInsight;
+    if (insight == null) {
+      return;
+    }
+
+    final repository = ref.read(specialistPatientDetailsRepositoryProvider);
+
+    await showFamilyPatternDetailsSheet(
+      context: context,
+      patientId: widget.patientId,
+      insight: insight,
+      repository: repository,
+      onAddClinicalNote: (draft) async {
+        if (!mounted) return;
+        Navigator.of(context).pop();
+        await _showAddNoteDialog(initialText: draft);
+      },
+      onContactParent: (draft) async {
+        if (!mounted) return;
+        Navigator.of(context).pop();
+        await _openParentChatWithDraft(draft);
+      },
+      onScheduleFollowUp: (draftNotes) async {
+        if (!mounted) return;
+        Navigator.of(context).pop();
+        await _openScheduleFollowUp(draftNotes);
+      },
+    );
   }
 
   Future<void> _openAssignExercise(SpecialistPatientDetailsBundle data) async {
@@ -114,6 +218,7 @@ class _SpecialistPatientDetailsScreenState
         child: PatientDetailsBody(
           patientId: widget.patientId,
           data: data,
+          familyPatternSection: _buildFamilyPatternSection(state),
           onAssignExercise: () => _openAssignExercise(data),
           onCreateTreatmentPlan: () async {
             final created = await context.push<bool>(
@@ -179,8 +284,9 @@ class _SpecialistPatientDetailsScreenState
               if (created == true) {
                 await ref
                     .read(
-                      specialistPatientDetailsProvider(widget.patientId)
-                          .notifier,
+                      specialistPatientDetailsProvider(
+                        widget.patientId,
+                      ).notifier,
                     )
                     .refresh();
               }
@@ -200,6 +306,30 @@ class _SpecialistPatientDetailsScreenState
       title: data?.patient.fullName ?? 'Patient Details',
       showBackButton: true,
       body: body,
+    );
+  }
+
+  Widget? _buildFamilyPatternSection(SpecialistPatientDetailsState state) {
+    if (state.familyPatternLoading) {
+      return const FamilyPatternInsightLoadingCard();
+    }
+
+    if (state.familyPatternLoadFailed) {
+      return FamilyPatternInsightRetryCard(
+        onRetry: () => ref
+            .read(specialistPatientDetailsProvider(widget.patientId).notifier)
+            .retryFamilyPatternInsight(),
+      );
+    }
+
+    final insight = state.familyPatternInsight;
+    if (insight == null) {
+      return null;
+    }
+
+    return FamilyPatternInsightCard(
+      insight: insight,
+      onReviewMatchedChildren: _openFamilyPatternDetails,
     );
   }
 }
@@ -282,8 +412,9 @@ class _SpecialistActionButtons extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: DashboardColors.brandCyan,
               side: const BorderSide(color: DashboardColors.brandCyan),
-              padding:
-                  EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+              padding: EdgeInsets.symmetric(
+                vertical: context.dashSpacing * 0.65,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -297,8 +428,9 @@ class _SpecialistActionButtons extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: DashboardColors.brandCyan,
               side: const BorderSide(color: DashboardColors.brandCyan),
-              padding:
-                  EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+              padding: EdgeInsets.symmetric(
+                vertical: context.dashSpacing * 0.65,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -341,10 +473,12 @@ class _AddSpecialistNoteDialog extends ConsumerStatefulWidget {
   const _AddSpecialistNoteDialog({
     required this.patientId,
     required this.messenger,
+    this.initialText,
   });
 
   final String patientId;
   final ScaffoldMessengerState messenger;
+  final String? initialText;
 
   @override
   ConsumerState<_AddSpecialistNoteDialog> createState() =>
@@ -359,7 +493,7 @@ class _AddSpecialistNoteDialogState
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = TextEditingController(text: widget.initialText ?? '');
   }
 
   @override

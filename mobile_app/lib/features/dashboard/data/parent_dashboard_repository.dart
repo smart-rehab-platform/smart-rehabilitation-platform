@@ -176,6 +176,72 @@ class ParentDashboardRepository {
     return ParentPerformanceMetrics.fromMap(map);
   }
 
+  static const Set<String> _validJourneyPeriods = {'weekly', 'monthly', 'full'};
+
+  static bool isValidJourneyPeriod(String period) {
+    return _validJourneyPeriods.contains(period.trim().toLowerCase());
+  }
+
+  static String normalizeJourneyPeriod(String period) {
+    final normalized = period.trim().toLowerCase();
+    return _validJourneyPeriods.contains(normalized) ? normalized : 'weekly';
+  }
+
+  Future<ParentTreatmentJourney> fetchTreatmentJourney(
+    String patientId, {
+    String period = 'weekly',
+  }) async {
+    final normalizedPeriod = normalizeJourneyPeriod(period);
+
+    try {
+      final response = await _dio.get(
+        '/patients/$patientId/treatment-journey',
+        queryParameters: {'period': normalizedPeriod},
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null || map.isEmpty) {
+        throw Exception('Invalid treatment journey response');
+      }
+      return ParentTreatmentJourney.fromMap(map);
+    } on DioException catch (error) {
+      throw Exception(friendlyTreatmentJourneyError(error));
+    }
+  }
+
+  /// Concise errors for treatment journey fetch failures.
+  static String friendlyTreatmentJourneyError(DioException error) {
+    final status = error.response?.statusCode;
+    final data = error.response?.data;
+    String? apiMessage;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      apiMessage =
+          ApiResponseParser.readString(map, const ['message', 'error']);
+    }
+
+    if (status == 401) {
+      return 'Please sign in to view treatment journey progress.';
+    }
+    if (status == 403) {
+      return 'You do not have access to this child\'s treatment journey.';
+    }
+    if (status == 404) {
+      return 'Treatment journey data was not found for this child.';
+    }
+    if (apiMessage != null &&
+        apiMessage.trim().isNotEmpty &&
+        !apiMessage.contains('DioException')) {
+      return apiMessage.trim();
+    }
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.connectionError) {
+      return 'Failed to load treatment journey. Please try again.';
+    }
+    return 'Failed to load treatment journey. Please try again.';
+  }
+
   Future<List<ParentSpecialistFeedback>> fetchReviews(String patientId) async {
     final rows = await _safeGetList('/patients/$patientId/reviews');
     return rows.map(ParentSpecialistFeedback.fromMap).toList();

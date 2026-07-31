@@ -21,10 +21,12 @@ class SpecialistUpsertSessionScreen extends ConsumerStatefulWidget {
     super.key,
     this.sessionId,
     this.initialPatientId,
+    this.initialSessionNotes,
   });
 
   final String? sessionId;
   final String? initialPatientId;
+  final String? initialSessionNotes;
 
   bool get isEditing => sessionId != null && sessionId!.trim().isNotEmpty;
 
@@ -58,13 +60,19 @@ class _SpecialistUpsertSessionScreenState
   void initState() {
     super.initState();
     final now = DateTime.now();
-    _scheduledDate = DateTime(now.year, now.month, now.day).add(
-      const Duration(days: 1),
-    );
+    _scheduledDate = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).add(const Duration(days: 1));
     _scheduledTime = const TimeOfDay(hour: 9, minute: 0);
     _selectedPatientId = widget.initialPatientId?.trim().isNotEmpty == true
         ? widget.initialPatientId!.trim()
         : null;
+    final initialNotes = widget.initialSessionNotes?.trim();
+    if (initialNotes != null && initialNotes.isNotEmpty) {
+      _notesController.text = initialNotes;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistPatientsProvider.notifier).initialize();
@@ -84,12 +92,12 @@ class _SpecialistUpsertSessionScreenState
   }
 
   DateTime get _scheduledDateTime => DateTime(
-        _scheduledDate.year,
-        _scheduledDate.month,
-        _scheduledDate.day,
-        _scheduledTime.hour,
-        _scheduledTime.minute,
-      );
+    _scheduledDate.year,
+    _scheduledDate.month,
+    _scheduledDate.day,
+    _scheduledTime.hour,
+    _scheduledTime.minute,
+  );
 
   Future<void> _loadExistingSession() async {
     setState(() {
@@ -301,221 +309,219 @@ class _SpecialistUpsertSessionScreenState
       body: _isLoading
           ? const Center(child: DashboardLoadingCard())
           : _loadError != null
-              ? Padding(
-                  padding: context.dashPadding,
-                  child: DashboardErrorCard(
-                    message: _loadError!,
-                    onRetry: _loadExistingSession,
+          ? Padding(
+              padding: context.dashPadding,
+              child: DashboardErrorCard(
+                message: _loadError!,
+                onRetry: _loadExistingSession,
+              ),
+            )
+          : SingleChildScrollView(
+              padding: context.dashPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    widget.isEditing
+                        ? 'Update the session schedule details.'
+                        : 'Schedule a session for one of your assigned patients.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: DashboardColors.textSecondary,
+                    ),
                   ),
-                )
-              : SingleChildScrollView(
-                  padding: context.dashPadding,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        widget.isEditing
-                            ? 'Update the session schedule details.'
-                            : 'Schedule a session for one of your assigned patients.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: DashboardColors.textSecondary,
-                        ),
+                  SizedBox(height: context.dashSpacing),
+                  if (widget.isEditing) ...[
+                    DashboardSurfaceCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Patient',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: DashboardColors.textMuted,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(height: context.dashSpacing * 0.2),
+                          Text(
+                            _existingSession?.patientName ?? 'Patient',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: context.dashSpacing),
-                      if (widget.isEditing) ...[
-                        DashboardSurfaceCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Patient',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: DashboardColors.textMuted,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                    ),
+                  ] else ...[
+                    Text(
+                      'Patient',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.35),
+                    if (patientsState.isLoading)
+                      const LinearProgressIndicator()
+                    else if (patients.isEmpty)
+                      const DashboardEmptyCard(
+                        message:
+                            'No assigned patients found. Assign a patient before scheduling.',
+                      )
+                    else
+                      DropdownButtonFormField<String>(
+                        initialValue:
+                            patients.any((p) => p.id == _selectedPatientId)
+                            ? _selectedPatientId
+                            : null,
+                        decoration: goalFieldDecoration(
+                          'Select patient',
+                        ).copyWith(errorText: _patientError),
+                        items: patients
+                            .map(
+                              (patient) => DropdownMenuItem(
+                                value: patient.id,
+                                child: Text(patient.name),
                               ),
-                              SizedBox(height: context.dashSpacing * 0.2),
-                              Text(
-                                _existingSession?.patientName ?? 'Patient',
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ] else ...[
-                        Text(
-                          'Patient',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(height: context.dashSpacing * 0.35),
-                        if (patientsState.isLoading)
-                          const LinearProgressIndicator()
-                        else if (patients.isEmpty)
-                          const DashboardEmptyCard(
-                            message:
-                                'No assigned patients found. Assign a patient before scheduling.',
-                          )
-                        else
-                          DropdownButtonFormField<String>(
-                            initialValue: patients.any(
-                              (p) => p.id == _selectedPatientId,
                             )
-                                ? _selectedPatientId
-                                : null,
-                            decoration: goalFieldDecoration('Select patient')
-                                .copyWith(errorText: _patientError),
-                            items: patients
-                                .map(
-                                  (patient) => DropdownMenuItem(
-                                    value: patient.id,
-                                    child: Text(patient.name),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: _isSaving
-                                ? null
-                                : (value) {
-                                    setState(() {
-                                      _selectedPatientId = value;
-                                      _patientError = null;
-                                    });
-                                  },
-                          ),
-                      ],
-                      SizedBox(height: context.dashSpacing * 0.75),
-                      Text(
-                        'Session type / title',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.35),
-                      TextField(
-                        controller: _titleController,
-                        enabled: !_isSaving,
-                        decoration: goalFieldDecoration('Therapy Session')
-                            .copyWith(errorText: _titleError),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.75),
-                      DashboardSurfaceCard(
-                        onTap: _isSaving ? null : _pickDate,
-                        child: _PickerRow(
-                          label: 'Date',
-                          value:
-                              DateFormat('MMM d, yyyy').format(_scheduledDate),
-                          icon: Icons.calendar_today_outlined,
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.55),
-                      DashboardSurfaceCard(
-                        onTap: _isSaving ? null : _pickTime,
-                        child: _PickerRow(
-                          label: 'Start time',
-                          value: _scheduledTime.format(context),
-                          icon: Icons.access_time_rounded,
-                        ),
-                      ),
-                      if (_dateError != null) ...[
-                        SizedBox(height: context.dashSpacing * 0.35),
-                        Text(
-                          _dateError!,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: DashboardColors.highPriority,
-                          ),
-                        ),
-                      ],
-                      SizedBox(height: context.dashSpacing * 0.75),
-                      Text(
-                        'Duration (minutes)',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.35),
-                      TextField(
-                        controller: _durationController,
-                        enabled: !_isSaving,
-                        keyboardType: TextInputType.number,
-                        decoration: goalFieldDecoration('45').copyWith(
-                          errorText: _durationError,
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.75),
-                      Text(
-                        'Location or meeting link',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.35),
-                      TextField(
-                        controller: _locationController,
-                        enabled: !_isSaving,
-                        decoration: goalFieldDecoration(
-                          'Clinic room or https://…',
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.75),
-                      Text(
-                        'Notes (optional)',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.35),
-                      TextField(
-                        controller: _notesController,
-                        enabled: !_isSaving,
-                        maxLines: 3,
-                        decoration: goalFieldDecoration(
-                          'Additional details for this session',
-                        ),
-                      ),
-                      SizedBox(height: context.dashSpacing * 0.2),
-                      Text(
-                        'Title and notes are kept for this form. The server stores patient, schedule, duration, and location/link.',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: DashboardColors.textMuted,
-                        ),
-                      ),
-                      if (_apiError != null) ...[
-                        SizedBox(height: context.dashSpacing * 0.75),
-                        Text(
-                          _apiError!,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: DashboardColors.highPriority,
-                          ),
-                        ),
-                      ],
-                      SizedBox(height: context.dashSpacing),
-                      FilledButton(
-                        onPressed: _isSaving ||
-                                (!widget.isEditing && patients.isEmpty)
+                            .toList(),
+                        onChanged: _isSaving
                             ? null
-                            : _submit,
-                        child: _isSaving
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                widget.isEditing
-                                    ? 'Save Changes'
-                                    : 'Schedule Session',
-                              ),
+                            : (value) {
+                                setState(() {
+                                  _selectedPatientId = value;
+                                  _patientError = null;
+                                });
+                              },
                       ),
-                      SizedBox(height: context.dashSpacing),
-                    ],
+                  ],
+                  SizedBox(height: context.dashSpacing * 0.75),
+                  Text(
+                    'Session type / title',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
+                  SizedBox(height: context.dashSpacing * 0.35),
+                  TextField(
+                    controller: _titleController,
+                    enabled: !_isSaving,
+                    decoration: goalFieldDecoration(
+                      'Therapy Session',
+                    ).copyWith(errorText: _titleError),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.75),
+                  DashboardSurfaceCard(
+                    onTap: _isSaving ? null : _pickDate,
+                    child: _PickerRow(
+                      label: 'Date',
+                      value: DateFormat('MMM d, yyyy').format(_scheduledDate),
+                      icon: Icons.calendar_today_outlined,
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.55),
+                  DashboardSurfaceCard(
+                    onTap: _isSaving ? null : _pickTime,
+                    child: _PickerRow(
+                      label: 'Start time',
+                      value: _scheduledTime.format(context),
+                      icon: Icons.access_time_rounded,
+                    ),
+                  ),
+                  if (_dateError != null) ...[
+                    SizedBox(height: context.dashSpacing * 0.35),
+                    Text(
+                      _dateError!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.highPriority,
+                      ),
+                    ),
+                  ],
+                  SizedBox(height: context.dashSpacing * 0.75),
+                  Text(
+                    'Duration (minutes)',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.35),
+                  TextField(
+                    controller: _durationController,
+                    enabled: !_isSaving,
+                    keyboardType: TextInputType.number,
+                    decoration: goalFieldDecoration(
+                      '45',
+                    ).copyWith(errorText: _durationError),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.75),
+                  Text(
+                    'Location or meeting link',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.35),
+                  TextField(
+                    controller: _locationController,
+                    enabled: !_isSaving,
+                    decoration: goalFieldDecoration('Clinic room or https://…'),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.75),
+                  Text(
+                    'Notes (optional)',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.35),
+                  TextField(
+                    controller: _notesController,
+                    enabled: !_isSaving,
+                    maxLines: 3,
+                    decoration: goalFieldDecoration(
+                      'Additional details for this session',
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.2),
+                  Text(
+                    'Title and notes are kept for this form. The server stores patient, schedule, duration, and location/link.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: DashboardColors.textMuted,
+                    ),
+                  ),
+                  if (_apiError != null) ...[
+                    SizedBox(height: context.dashSpacing * 0.75),
+                    Text(
+                      _apiError!,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: DashboardColors.highPriority,
+                      ),
+                    ),
+                  ],
+                  SizedBox(height: context.dashSpacing),
+                  FilledButton(
+                    onPressed:
+                        _isSaving || (!widget.isEditing && patients.isEmpty)
+                        ? null
+                        : _submit,
+                    child: _isSaving
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            widget.isEditing
+                                ? 'Save Changes'
+                                : 'Schedule Session',
+                          ),
+                  ),
+                  SizedBox(height: context.dashSpacing),
+                ],
+              ),
+            ),
     );
   }
 }

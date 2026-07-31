@@ -20,10 +20,12 @@ class CommunicationChatScreen extends ConsumerStatefulWidget {
     super.key,
     required this.conversationId,
     this.initialConversation,
+    this.initialDraftMessage,
   });
 
   final String conversationId;
   final CommunicationConversation? initialConversation;
+  final String? initialDraftMessage;
 
   @override
   ConsumerState<CommunicationChatScreen> createState() =>
@@ -42,6 +44,10 @@ class _CommunicationChatScreenState
   @override
   void initState() {
     super.initState();
+    final draft = widget.initialDraftMessage?.trim();
+    if (draft != null && draft.isNotEmpty) {
+      _inputController.text = draft;
+    }
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref
