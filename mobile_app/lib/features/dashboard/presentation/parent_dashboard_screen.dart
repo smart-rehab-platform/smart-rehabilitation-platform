@@ -21,6 +21,7 @@ import '../widgets/dashboard_layout.dart';
 import '../widgets/dashboard_scaffold.dart';
 import '../widgets/dashboard_surface_card.dart';
 import '../widgets/parent_dashboard_cards.dart';
+import '../widgets/parent_treatment_journey_card.dart';
 import '../widgets/parent_navigation.dart';
 
 class ParentDashboardScreen extends ConsumerStatefulWidget {
@@ -394,6 +395,9 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
     final theme = Theme.of(context);
     final userName = dashboardDisplayName(displayName);
     final selectedChild = state.selectedChild;
+    final journeyState = selectedChild != null
+        ? ref.watch(parentProgressProvider(selectedChild.id))
+        : const ParentProgressState();
     final avatarInitials = dashboardInitials(displayName);
     final featuredRequest = selectFeaturedCaseRequest(
       requests: caseIntakeState.requests,
@@ -553,6 +557,21 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                       selectedChild.id,
                     ),
                     onViewDetails: _openChildDetails,
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.75),
+                  ParentTreatmentJourneyCard(
+                    journey: journeyState.treatmentJourney,
+                    isLoading: journeyState.isJourneyLoading,
+                    error: journeyState.journeyError,
+                    onTap: _openProgress,
+                    onRetry: () => ref
+                        .read(
+                          parentProgressProvider(selectedChild.id).notifier,
+                        )
+                        .loadTreatmentJourney(
+                          selectedChild.id,
+                          period: 'weekly',
+                        ),
                   ),
                   SizedBox(height: context.dashSpacing * 0.75),
                   ParentTodaySummaryRow(

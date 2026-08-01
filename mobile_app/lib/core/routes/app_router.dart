@@ -300,12 +300,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'parentChat',
         builder: (context, state) {
           final conversationId = state.pathParameters['conversationId'] ?? '';
-          final conversation = state.extra is CommunicationConversation
-              ? state.extra as CommunicationConversation
-              : null;
+          final extra = state.extra;
+          CommunicationConversation? conversation;
+          String? initialDraftMessage;
+          if (extra is CommunicationChatRouteArgs) {
+            conversation = extra.conversation;
+            initialDraftMessage = extra.initialDraftMessage;
+          } else if (extra is CommunicationConversation) {
+            conversation = extra;
+          }
           return CommunicationChatScreen(
             conversationId: conversationId,
             initialConversation: conversation,
+            initialDraftMessage: initialDraftMessage,
           );
         },
       ),
@@ -392,9 +399,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.specialistCreateSession,
         name: 'specialistCreateSession',
-        builder: (context, state) => SpecialistUpsertSessionScreen(
-          initialPatientId: state.uri.queryParameters['patientId'],
-        ),
+        builder: (context, state) {
+          final initialNotes = state.extra is String
+              ? state.extra as String
+              : null;
+          return SpecialistUpsertSessionScreen(
+            initialPatientId: state.uri.queryParameters['patientId'],
+            initialSessionNotes: initialNotes,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.specialistEditSessionPath,
@@ -518,12 +531,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'specialistChat',
         builder: (context, state) {
           final conversationId = state.pathParameters['conversationId'] ?? '';
-          final conversation = state.extra is CommunicationConversation
-              ? state.extra as CommunicationConversation
-              : null;
+          final extra = state.extra;
+          CommunicationConversation? conversation;
+          String? initialDraftMessage;
+          if (extra is CommunicationChatRouteArgs) {
+            conversation = extra.conversation;
+            initialDraftMessage = extra.initialDraftMessage;
+          } else if (extra is CommunicationConversation) {
+            conversation = extra;
+          }
           return CommunicationChatScreen(
             conversationId: conversationId,
             initialConversation: conversation,
+            initialDraftMessage: initialDraftMessage,
           );
         },
       ),

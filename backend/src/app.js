@@ -37,6 +37,7 @@ const specialistFeedbackRoutes = require("./modules/specialistFeedback/specialis
 const sessionRequestsRoutes = require("./modules/sessionRequests/sessionRequests.routes");
 const caseCategoriesRoutes = require("./modules/caseCategories/caseCategories.routes");
 const caseIntakeRoutes = require("./modules/caseIntake/caseIntake.routes");
+const familyPatternsRoutes = require("./modules/familyPatterns/familyPatterns.routes");
 const { devRequestLogger } = require("./middleware/devRequestLogger");
 const { uploadsRoot, ensureUploadDirs } = require("./config/uploads");
 
@@ -98,5 +99,6 @@ app.use("/api/v1/specialist-feedback", specialistFeedbackRoutes);
 app.use("/api/v1/session-requests", sessionRequestsRoutes);
 app.use("/api/v1/case-categories", caseCategoriesRoutes);
 app.use("/api/v1/case-intake-requests", caseIntakeRoutes);
+app.use("/api/v1", familyPatternsRoutes);
 
 module.exports = app;
