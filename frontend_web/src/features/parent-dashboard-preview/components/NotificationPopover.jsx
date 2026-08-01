@@ -1,16 +1,9 @@
 import { useEffect, useId, useRef } from "react";
-import { Bell, CalendarDays, FileText, MessageCircle } from "lucide-react";
+import { Bell } from "lucide-react";
+import { PlatformNotificationIcon } from "./PlatformNotificationIcon";
 
 function NotifIcon({ type }) {
-  switch (type) {
-    case "calendar":
-      return <CalendarDays size={14} />;
-    case "report":
-      return <FileText size={14} />;
-    case "message":
-    default:
-      return <MessageCircle size={14} />;
-  }
+  return <PlatformNotificationIcon type={type} size={14} />;
 }
 
 export function NotificationPopover({

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../providers/specialist_features_provider.dart';
@@ -13,8 +14,10 @@ import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
+import '../../widgets/dashboard_scaffold.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import '../specialist/specialist_exercises_widgets.dart';
 import '../../../presence/widgets/online_status_dot.dart';
 import '../shared/reports_list_widgets.dart';
 
@@ -219,57 +222,105 @@ class AdminExercisesScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
+  late final TextEditingController _searchController;
+  String _selectedCategory = specialistExerciseAllCategoryLabel;
+
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistExercisesProvider.notifier).initialize();
     });
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openAddExercise() async {
+    final created = await context.push<bool>(AppRoutes.adminAddExercise);
+    if (!mounted) return;
+    if (created == true) {
+      await ref.read(specialistExercisesProvider.notifier).refresh();
+    }
+  }
+
+  Future<void> _openEditExercise(String exerciseId) async {
+    final updated = await context.push<bool>(
+      AppRoutes.adminEditExercise(exerciseId),
+    );
+    if (!mounted) return;
+    if (updated == true) {
+      await ref.read(specialistExercisesProvider.notifier).refresh();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistExercisesProvider);
-    final theme = Theme.of(context);
+    final notifier = ref.read(specialistExercisesProvider.notifier);
+    final auth = ref.watch(authProvider);
+    final unread = ref.watch(specialistNotificationsProvider).unreadCount;
 
-    return AdminPageScaffold(
-      title: 'Exercises',
+    return DashboardScaffold(
+      avatarInitials: dashboardInitials(auth.user?.fullName, fallback: 'AD'),
+      avatarImageUrl: auth.user?.profileImageUrl,
+      notificationCount: unread,
       currentNav: DashboardNavItem.exercises,
-      body: SpecialistAsyncBody(
+      onNavTap: (item) => AdminNavigation.onNavTap(context, item),
+      drawer: const AdminDrawer(),
+      onMenuTap: () => AdminNavigation.openDrawer(context),
+      onNotificationsTap: () => context.push(AppRoutes.adminNotifications),
+      onAvatarTap: () => context.push(AppRoutes.adminProfile),
+      scrollBody: false,
+      appBarActions: [
+        IconButton(
+          tooltip: 'Add Exercise',
+          onPressed: _openAddExercise,
+          icon: const Icon(Icons.add_rounded),
+        ),
+      ],
+      body: ExerciseLibraryBody(
         isLoading: state.isLoading,
         errorMessage: state.errorMessage,
-        onRetry: () => ref.read(specialistExercisesProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
-        emptyMessage: 'No exercises available yet.',
-        child: Column(
-          children: state.items
-              .map(
-                (exercise) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: AdminSurfaceCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          exercise.title,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        if (exercise.instructions != null)
-                          Text(
-                            exercise.instructions!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AdminDashboardColors.textSecondary,
-                            ),
-                          ),
-                      ],
+        onRetry: notifier.refresh,
+        items: state.items,
+        searchController: _searchController,
+        selectedCategory: _selectedCategory,
+        onCategoryChanged: (value) => setState(() => _selectedCategory = value),
+        onSearchChanged: (_) => setState(() {}),
+        itemBuilder: (context, exercise) {
+          final canEdit = exercise.canEditBy(
+            userId: auth.user?.id,
+            role: auth.user?.role,
+          );
+
+          return SpecialistExerciseCard(
+            exercise: exercise,
+            showChevron: true,
+            onTap: () =>
+                context.push(AppRoutes.adminExerciseDetails(exercise.id)),
+            trailing: canEdit
+                ? IconButton(
+                    tooltip: 'Edit Exercise',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
                     ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
+                    onPressed: () => _openEditExercise(exercise.id),
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      color: DashboardColors.primary,
+                      size: 20,
+                    ),
+                  )
+                : null,
+          );
+        },
       ),
     );
   }
@@ -310,10 +361,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
         refreshIndicatorColor: AdminDashboardColors.primary,
         onReportTap: (context, report) {
           context.push(
-            AppRoutes.adminReportDetails(
-              report.id,
-              isAi: report.isAiReport,
-            ),
+            AppRoutes.adminReportDetails(report.id, isAi: report.isAiReport),
           );
         },
       ),

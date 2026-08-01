@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Download, FileText } from "lucide-react";
+import { Download } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../../components/platform/PlatformMaterialIcon";
 import {
   getAttachmentDisplayName,
   getMessageAttachmentKind,
@@ -94,7 +95,7 @@ function MessageFileAttachment({ attachment }) {
       rel="noreferrer"
       className="pd-message-attachment-file"
     >
-      <FileText size={16} aria-hidden="true" />
+      <PlatformMaterialIcon icon="report" size={16} />
       <span>{kind === "pdf" ? "PDF document" : label}</span>
       <Download size={14} aria-hidden="true" />
     </a>

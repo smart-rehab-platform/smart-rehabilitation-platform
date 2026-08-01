@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../core/theme/dashboard_theme.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_exercise_assignment_provider.dart';
+import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/exercise_instruction_media_card.dart';
@@ -18,9 +20,11 @@ class SpecialistExerciseDetailsScreen extends ConsumerStatefulWidget {
   const SpecialistExerciseDetailsScreen({
     super.key,
     required this.exerciseId,
+    this.useAdminChrome = false,
   });
 
   final String exerciseId;
+  final bool useAdminChrome;
 
   @override
   ConsumerState<SpecialistExerciseDetailsScreen> createState() =>
@@ -41,7 +45,9 @@ class _SpecialistExerciseDetailsScreenState
 
   Future<void> _openEdit(SpecialistExerciseItem exercise) async {
     final updated = await context.push<bool>(
-      AppRoutes.specialistEditExercise(exercise.id),
+      widget.useAdminChrome
+          ? AppRoutes.adminEditExercise(exercise.id)
+          : AppRoutes.specialistEditExercise(exercise.id),
     );
     if (!mounted) return;
     if (updated == true) {
@@ -53,9 +59,12 @@ class _SpecialistExerciseDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(specialistExerciseDetailProvider(widget.exerciseId));
-    final notifier =
-        ref.read(specialistExerciseDetailProvider(widget.exerciseId).notifier);
+    final state = ref.watch(
+      specialistExerciseDetailProvider(widget.exerciseId),
+    );
+    final notifier = ref.read(
+      specialistExerciseDetailProvider(widget.exerciseId).notifier,
+    );
     final auth = ref.watch(authProvider);
     final theme = Theme.of(context);
 
@@ -124,7 +133,9 @@ class _SpecialistExerciseDetailsScreenState
                             SizedBox(height: context.dashSpacing * 0.4),
                             SpecialistExerciseCategoryBadge(label: category),
                           ],
-                          if ((exercise.createdByName ?? '').trim().isNotEmpty) ...[
+                          if ((exercise.createdByName ?? '')
+                              .trim()
+                              .isNotEmpty) ...[
                             SizedBox(height: context.dashSpacing * 0.35),
                             Text(
                               'Created by ${exercise.createdByName}',
@@ -179,6 +190,15 @@ class _SpecialistExerciseDetailsScreenState
       );
     }
 
+    if (widget.useAdminChrome) {
+      return AdminPageScaffold(
+        title: 'Exercise Details',
+        showBackButton: true,
+        showBottomNav: false,
+        body: Theme(data: DashboardTheme.light, child: body),
+      );
+    }
+
     return SpecialistPageScaffold(
       title: 'Exercise Details',
       showBackButton: true,
@@ -188,10 +208,7 @@ class _SpecialistExerciseDetailsScreenState
 }
 
 class _DetailSection extends StatelessWidget {
-  const _DetailSection({
-    required this.title,
-    required this.body,
-  });
+  const _DetailSection({required this.title, required this.body});
 
   final String title;
   final String body;

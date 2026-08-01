@@ -9,6 +9,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../providers/specialist_features_provider.dart';
 import 'admin_navigation.dart';
 import 'admin_ui_components.dart';
+import 'dashboard_app_bar.dart';
 import 'dashboard_bottom_nav.dart';
 import 'dashboard_layout.dart';
 import 'dashboard_profile_avatar.dart';
@@ -25,6 +26,7 @@ class AdminPageScaffold extends ConsumerWidget {
     this.floatingActionButton,
     this.wrapBodyInScrollView = false,
     this.onBackPressed,
+    this.useBrandedAppBar = false,
   });
 
   final String title;
@@ -36,6 +38,7 @@ class AdminPageScaffold extends ConsumerWidget {
   final Widget? floatingActionButton;
   final bool wrapBodyInScrollView;
   final VoidCallback? onBackPressed;
+  final bool useBrandedAppBar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,42 +51,55 @@ class AdminPageScaffold extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: AdminDashboardColors.background,
         drawer: const AdminDrawer(),
-        appBar: AppBar(
-          backgroundColor: AdminDashboardColors.appBar,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          leading: showBackButton
-              ? IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    color: Colors.white,
-                  ),
-                  onPressed:
-                      onBackPressed ??
-                      () => AdminNavigation.popOrGoAdmin(context),
-                )
-              : IconButton(
-                  icon: const Icon(Icons.menu_rounded, color: Colors.white),
-                  onPressed: () => AdminNavigation.openDrawer(context),
+        appBar: useBrandedAppBar
+            ? DashboardAppBar(
+                avatarInitials: dashboardInitials(userName, fallback: 'AD'),
+                avatarImageUrl: auth.user?.profileImageUrl,
+                notificationCount: unread,
+                onMenuTap: () => AdminNavigation.openDrawer(context),
+                onNotificationsTap: () =>
+                    context.push(AppRoutes.adminNotifications),
+                onAvatarTap: () => context.push(AppRoutes.adminProfile),
+              )
+            : AppBar(
+                backgroundColor: AdminDashboardColors.appBar,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                leading: showBackButton
+                    ? IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_rounded,
+                          color: Colors.white,
+                        ),
+                        onPressed:
+                            onBackPressed ??
+                            () => AdminNavigation.popOrGoAdmin(context),
+                      )
+                    : IconButton(
+                        icon: const Icon(
+                          Icons.menu_rounded,
+                          color: Colors.white,
+                        ),
+                        onPressed: () => AdminNavigation.openDrawer(context),
+                      ),
+                title: Text(
+                  title,
+                  style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
-          title: Text(
-            title,
-            style: Theme.of(context).appBarTheme.titleTextStyle,
-          ),
-          actions: [
-            ...?actions,
-            _NotificationAction(
-              count: unread,
-              onTap: () => context.push(AppRoutes.adminNotifications),
-            ),
-            _AvatarAction(
-              initials: dashboardInitials(userName, fallback: 'AD'),
-              imageUrl: auth.user?.profileImageUrl,
-              onTap: () => context.push(AppRoutes.adminProfile),
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
+                actions: [
+                  ...?actions,
+                  _NotificationAction(
+                    count: unread,
+                    onTap: () => context.push(AppRoutes.adminNotifications),
+                  ),
+                  _AvatarAction(
+                    initials: dashboardInitials(userName, fallback: 'AD'),
+                    imageUrl: auth.user?.profileImageUrl,
+                    onTap: () => context.push(AppRoutes.adminProfile),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
         body: SafeArea(
           child: wrapBodyInScrollView
               ? SingleChildScrollView(padding: context.dashPadding, child: body)

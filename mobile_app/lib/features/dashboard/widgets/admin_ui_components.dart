@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/admin_dashboard_colors.dart';
+import '../../../core/constants/api_constants.dart';
 import 'dashboard_bottom_nav.dart';
 import 'dashboard_layout.dart';
 
@@ -43,8 +44,12 @@ class AdminSurfaceCard extends StatelessWidget {
               child: InkWell(
                 onTap: onTap,
                 borderRadius: AdminDecorations.cardRadius,
-                splashColor: AdminDashboardColors.primary.withValues(alpha: 0.08),
-                highlightColor: AdminDashboardColors.primary.withValues(alpha: 0.04),
+                splashColor: AdminDashboardColors.primary.withValues(
+                  alpha: 0.08,
+                ),
+                highlightColor: AdminDashboardColors.primary.withValues(
+                  alpha: 0.04,
+                ),
                 child: content,
               ),
             ),
@@ -61,23 +66,51 @@ class AdminIconCircle extends StatelessWidget {
     required this.color,
     required this.background,
     this.size = 52,
+    this.imageUrl,
   });
 
   final IconData icon;
   final Color color;
   final Color background;
   final double size;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
+    final resolvedUrl = ApiConstants.resolveProfileImageUrl(imageUrl);
+
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: background,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: color, size: size * 0.48),
+      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
+      clipBehavior: Clip.antiAlias,
+      child: resolvedUrl == null
+          ? Icon(icon, color: color, size: size * 0.48)
+          : Image.network(
+              resolvedUrl,
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                }
+
+                return Center(
+                  child: SizedBox(
+                    width: size * 0.35,
+                    height: size * 0.35,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: color,
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(icon, color: color, size: size * 0.48);
+              },
+            ),
     );
   }
 }
@@ -184,12 +217,7 @@ class AdminMetricGrid extends StatelessWidget {
           spacing: spacing,
           runSpacing: spacing,
           children: cards
-              .map(
-                (card) => SizedBox(
-                  width: itemWidth,
-                  child: card,
-                ),
-              )
+              .map((card) => SizedBox(width: itemWidth, child: card))
               .toList(),
         );
       },
@@ -217,9 +245,9 @@ class AdminSectionHeader extends StatelessWidget {
           child: Text(
             title,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AdminDashboardColors.textPrimary,
-                ),
+              fontWeight: FontWeight.w800,
+              color: AdminDashboardColors.textPrimary,
+            ),
           ),
         ),
         if (onActionTap != null)
@@ -231,9 +259,9 @@ class AdminSectionHeader extends StatelessWidget {
             child: Text(
               actionLabel,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AdminDashboardColors.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: AdminDashboardColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
       ],
@@ -242,11 +270,7 @@ class AdminSectionHeader extends StatelessWidget {
 }
 
 class AdminPageTitle extends StatelessWidget {
-  const AdminPageTitle({
-    super.key,
-    required this.title,
-    this.subtitle,
-  });
+  const AdminPageTitle({super.key, required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -259,9 +283,9 @@ class AdminPageTitle extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: AdminDashboardColors.textPrimary,
-              ),
+            fontWeight: FontWeight.w800,
+            color: AdminDashboardColors.textPrimary,
+          ),
         ),
         if (subtitle != null) ...[
           const SizedBox(height: 6),
@@ -269,8 +293,8 @@ class AdminPageTitle extends StatelessWidget {
             subtitle!,
             softWrap: true,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AdminDashboardColors.textSecondary,
-                ),
+              color: AdminDashboardColors.textSecondary,
+            ),
           ),
         ],
       ],
@@ -307,9 +331,9 @@ class AdminErrorCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   message,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -336,8 +360,8 @@ class AdminEmptyCard extends StatelessWidget {
           child: Text(
             message,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AdminDashboardColors.textSecondary,
-                ),
+              color: AdminDashboardColors.textSecondary,
+            ),
             textAlign: TextAlign.center,
           ),
         ),
@@ -365,8 +389,8 @@ class AdminLoadingCard extends StatelessWidget {
               Text(
                 message!,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AdminDashboardColors.textSecondary,
-                    ),
+                  color: AdminDashboardColors.textSecondary,
+                ),
               ),
             ],
           ],
@@ -377,11 +401,7 @@ class AdminLoadingCard extends StatelessWidget {
 }
 
 class AdminTableContainer extends StatelessWidget {
-  const AdminTableContainer({
-    super.key,
-    required this.rows,
-    this.onRowTaps,
-  });
+  const AdminTableContainer({super.key, required this.rows, this.onRowTaps});
 
   final List<Widget> rows;
   final List<VoidCallback?>? onRowTaps;
@@ -423,7 +443,9 @@ class AdminTableRow extends StatelessWidget {
     final isAlt = index.isOdd;
 
     return Material(
-      color: isAlt ? AdminDashboardColors.slateSoft : AdminDashboardColors.surface,
+      color: isAlt
+          ? AdminDashboardColors.slateSoft
+          : AdminDashboardColors.surface,
       child: InkWell(
         onTap: onTap,
         hoverColor: AdminDashboardColors.blueSoft,
@@ -451,8 +473,115 @@ class AdminSearchField extends StatelessWidget {
     return TextField(
       decoration: InputDecoration(
         hintText: hintText,
-        prefixIcon: const Icon(Icons.search_rounded, color: AdminDashboardColors.textMuted),
+        prefixIcon: const Icon(
+          Icons.search_rounded,
+          color: AdminDashboardColors.textMuted,
+        ),
       ),
+      onChanged: onChanged,
+    );
+  }
+}
+
+class AdminFilterOption<T> {
+  const AdminFilterOption({required this.value, required this.label});
+
+  final T value;
+  final String label;
+}
+
+class AdminFilterDropdown<T> extends StatelessWidget {
+  const AdminFilterDropdown({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  final String label;
+  final T value;
+  final List<AdminFilterOption<T>> options;
+  final ValueChanged<T?> onChanged;
+
+  InputDecoration _decoration() {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: AdminDashboardColors.surface,
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AdminDashboardColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AdminDashboardColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(
+          color: AdminDashboardColors.primary,
+          width: 1.5,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return DropdownButtonFormField<T>(
+      key: ValueKey('$label-$value'),
+      isExpanded: true,
+      initialValue: value,
+      itemHeight: kMinInteractiveDimension,
+      menuMaxHeight: 320,
+      decoration: _decoration(),
+      borderRadius: BorderRadius.circular(14),
+      dropdownColor: AdminDashboardColors.surface,
+      elevation: 8,
+      icon: const Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: AdminDashboardColors.textMuted,
+      ),
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: AdminDashboardColors.textPrimary,
+        fontWeight: FontWeight.w500,
+        fontSize: 14,
+        height: 1.25,
+      ),
+      items: options
+          .map(
+            (option) => DropdownMenuItem<T>(
+              value: option.value,
+              child: Text(
+                option.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: 14,
+                  height: 1.25,
+                  color: AdminDashboardColors.textPrimary,
+                ),
+              ),
+            ),
+          )
+          .toList(),
+      selectedItemBuilder: (context) => options
+          .map(
+            (option) => Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                option.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+          .toList(),
       onChanged: onChanged,
     );
   }
@@ -481,13 +610,15 @@ class AdminFilterChip extends StatelessWidget {
         selectedColor: AdminDashboardColors.blueSoft,
         checkmarkColor: AdminDashboardColors.primary,
         labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: selected
-                  ? AdminDashboardColors.primary
-                  : AdminDashboardColors.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
+          color: selected
+              ? AdminDashboardColors.primary
+              : AdminDashboardColors.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
         side: BorderSide(
-          color: selected ? AdminDashboardColors.primary : AdminDashboardColors.border,
+          color: selected
+              ? AdminDashboardColors.primary
+              : AdminDashboardColors.border,
         ),
       ),
     );
@@ -509,58 +640,85 @@ class AdminBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final maxValue = [
-      ...usersValues,
-      ...patientsValues,
-      1.0,
-    ].reduce(math.max);
+    final spacing = context.dashSpacing;
+    final hasUsersData = usersValues.any((value) => value > 0);
+    final hasPatientsData = patientsValues.any((value) => value > 0);
+    final userMax = hasUsersData ? usersValues.reduce(math.max) : 1.0;
+    final patientMax = hasPatientsData ? patientsValues.reduce(math.max) : 1.0;
+    final chartHeight = math.max(context.dashboardSize.height * 0.16, 136.0);
+    final dayGap = spacing * 0.28;
+    final barPairGap = spacing * 0.28;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            _LegendDot(color: AdminDashboardColors.primary, label: 'Users'),
-            SizedBox(width: context.dashSpacing),
-            _LegendDot(color: AdminDashboardColors.success, label: 'Patients'),
-          ],
-        ),
-        SizedBox(height: context.dashSpacing),
+        if (hasUsersData || hasPatientsData)
+          Row(
+            children: [
+              if (hasUsersData) ...[
+                _LegendDot(color: AdminDashboardColors.primary, label: 'Users'),
+                if (hasPatientsData) SizedBox(width: spacing * 0.85),
+              ],
+              if (hasPatientsData)
+                _LegendDot(
+                  color: AdminDashboardColors.success,
+                  label: 'Patients',
+                ),
+            ],
+          ),
+        if (hasUsersData || hasPatientsData) SizedBox(height: spacing * 0.65),
         SizedBox(
-          height: math.max(context.dashboardSize.height * 0.18, 148),
+          height: chartHeight,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: List.generate(labels.length, (index) {
-              final userHeight = usersValues[index] / maxValue;
-              final patientHeight = patientsValues[index] / maxValue;
+              final userHeight = hasUsersData
+                  ? _normalizedHeight(usersValues[index], userMax)
+                  : 0.0;
+              final patientHeight = hasPatientsData
+                  ? _normalizedHeight(patientsValues[index], patientMax)
+                  : 0.0;
 
               return Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: context.dashSpacing * 0.15),
+                  padding: EdgeInsets.symmetric(horizontal: dayGap),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: _Bar(
-                                heightFactor: userHeight,
-                                color: AdminDashboardColors.primary,
-                              ),
-                            ),
-                            SizedBox(width: context.dashSpacing * 0.15),
-                            Expanded(
-                              child: _Bar(
-                                heightFactor: patientHeight,
-                                color: AdminDashboardColors.success,
-                              ),
-                            ),
-                          ],
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final showBoth = hasUsersData && hasPatientsData;
+                            final barWidth = showBoth
+                                ? ((constraints.maxWidth - barPairGap) / 2) *
+                                      0.72
+                                : constraints.maxWidth * 0.45;
+
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (hasUsersData) ...[
+                                  _Bar(
+                                    width: barWidth,
+                                    heightFactor: userHeight,
+                                    color: AdminDashboardColors.primary,
+                                  ),
+                                  if (hasPatientsData)
+                                    SizedBox(width: barPairGap),
+                                ],
+                                if (hasPatientsData)
+                                  _Bar(
+                                    width: barWidth,
+                                    heightFactor: patientHeight,
+                                    color: AdminDashboardColors.success,
+                                  ),
+                              ],
+                            );
+                          },
                         ),
                       ),
-                      SizedBox(height: context.dashSpacing * 0.35),
+                      SizedBox(height: spacing * 0.3),
                       Text(
                         labels[index],
                         maxLines: 1,
@@ -581,6 +739,14 @@ class AdminBarChart extends StatelessWidget {
       ],
     );
   }
+
+  double _normalizedHeight(double value, double maxValue) {
+    if (value <= 0 || maxValue <= 0) {
+      return 0;
+    }
+
+    return (value / maxValue).clamp(0.12, 1);
+  }
 }
 
 class _LegendDot extends StatelessWidget {
@@ -592,19 +758,22 @@ class _LegendDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 10,
-          height: 10,
+          width: 8,
+          height: 8,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 8),
         Text(
           label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AdminDashboardColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AdminDashboardColors.textSecondary,
+            fontWeight: FontWeight.w600,
+            height: 1.2,
+          ),
         ),
       ],
     );
@@ -612,29 +781,38 @@ class _LegendDot extends StatelessWidget {
 }
 
 class _Bar extends StatelessWidget {
-  const _Bar({required this.heightFactor, required this.color});
+  const _Bar({
+    required this.heightFactor,
+    required this.color,
+    required this.width,
+  });
 
   final double heightFactor;
   final Color color;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxHeight = constraints.maxHeight.isFinite && constraints.maxHeight > 0
+        final maxHeight =
+            constraints.maxHeight.isFinite && constraints.maxHeight > 0
             ? constraints.maxHeight
             : context.dashSpacing * 4;
-        final barHeight = maxHeight * heightFactor.clamp(0.08, 1);
+        final barHeight = heightFactor <= 0 ? 0.0 : maxHeight * heightFactor;
 
         return Align(
           alignment: Alignment.bottomCenter,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 350),
             curve: Curves.easeOutCubic,
+            width: width,
             height: barHeight,
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(8),
+              ),
             ),
           ),
         );
@@ -644,11 +822,7 @@ class _Bar extends StatelessWidget {
 }
 
 class AdminBottomNav extends StatelessWidget {
-  const AdminBottomNav({
-    super.key,
-    this.currentIndex,
-    this.onTap,
-  });
+  const AdminBottomNav({super.key, this.currentIndex, this.onTap});
 
   final DashboardNavItem? currentIndex;
   final ValueChanged<DashboardNavItem>? onTap;
@@ -660,7 +834,9 @@ class AdminBottomNav extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: AdminDashboardColors.surface,
-        border: const Border(top: BorderSide(color: AdminDashboardColors.border)),
+        border: const Border(
+          top: BorderSide(color: AdminDashboardColors.border),
+        ),
         boxShadow: [
           BoxShadow(
             color: AdminDashboardColors.primary.withValues(alpha: 0.05),
@@ -739,8 +915,9 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isActive ? AdminDashboardColors.primary : AdminDashboardColors.textMuted;
+    final color = isActive
+        ? AdminDashboardColors.primary
+        : AdminDashboardColors.textMuted;
 
     return InkWell(
       onTap: onTap,

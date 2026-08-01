@@ -1,8 +1,8 @@
-import { CalendarPlus, MessageSquare } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 const ACTIONS = [
-  { id: "request-session", label: "Request Session", icon: CalendarPlus },
-  { id: "message", label: "Message Specialist", icon: MessageSquare },
+  { id: "request-session", label: "Request Session", icon: "request-session" },
+  { id: "message", label: "Message Specialist", icon: "message" },
 ];
 
 export function QuickActionsCompact({ onAction }) {
@@ -10,20 +10,17 @@ export function QuickActionsCompact({ onAction }) {
     <section className="pd-quick-compact" aria-label="Quick actions">
       <p className="pd-eyebrow">Quick Actions</p>
       <div className="pd-quick-compact-row">
-        {ACTIONS.map((action) => {
-          const Icon = action.icon;
-          return (
-            <button
-              key={action.id}
-              type="button"
-              className="pd-btn pd-btn-outline pd-btn-sm pd-quick-compact-btn"
-              onClick={() => onAction?.(action.label)}
-            >
-              <Icon size={14} aria-hidden="true" />
-              {action.label}
-            </button>
-          );
-        })}
+        {ACTIONS.map((action) => (
+          <button
+            key={action.id}
+            type="button"
+            className="pd-btn pd-btn-outline pd-btn-sm pd-quick-compact-btn"
+            onClick={() => onAction?.(action.label)}
+          >
+            <PlatformMaterialIcon icon={action.icon} size={14} />
+            {action.label}
+          </button>
+        ))}
       </div>
     </section>
   );

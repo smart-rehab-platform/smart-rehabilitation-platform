@@ -27,6 +27,7 @@ class DashboardScaffold extends StatelessWidget {
     this.showBottomNav = true,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    this.appBarActions,
   });
 
   final Widget body;
@@ -45,6 +46,7 @@ class DashboardScaffold extends StatelessWidget {
   final bool showBottomNav;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final List<Widget>? appBarActions;
 
   @override
   Widget build(BuildContext context) {
@@ -59,24 +61,22 @@ class DashboardScaffold extends StatelessWidget {
           userDisplayName: userDisplayName,
           showMenuButton: showMenuButton,
           notificationCount: notificationCount,
-          onMenuTap: onMenuTap ??
-              (drawer != null ? () => SpecialistNavigation.openDrawer(context) : null),
+          extraActions: appBarActions,
+          onMenuTap:
+              onMenuTap ??
+              (drawer != null
+                  ? () => SpecialistNavigation.openDrawer(context)
+                  : null),
           onNotificationsTap: onNotificationsTap,
           onAvatarTap: onAvatarTap,
         ),
         body: SafeArea(
           child: scrollBody
-              ? SingleChildScrollView(
-                  padding: context.dashPadding,
-                  child: body,
-                )
+              ? SingleChildScrollView(padding: context.dashPadding, child: body)
               : body,
         ),
         bottomNavigationBar: showBottomNav
-            ? DashboardBottomNav(
-                currentIndex: currentNav,
-                onTap: onNavTap,
-              )
+            ? DashboardBottomNav(currentIndex: currentNav, onTap: onNavTap)
             : null,
         floatingActionButton: floatingActionButton,
         floatingActionButtonLocation: floatingActionButtonLocation,

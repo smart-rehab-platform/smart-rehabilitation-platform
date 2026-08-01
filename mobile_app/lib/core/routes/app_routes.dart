@@ -139,10 +139,7 @@ class AppRoutes {
       '/dashboard/specialist/reports/:reportId';
 
   /// Always emits `?ai=0` or `?ai=1` so routers never infer the source.
-  static String specialistReportDetails(
-    String reportId, {
-    required bool isAi,
-  }) {
+  static String specialistReportDetails(String reportId, {required bool isAi}) {
     return '/dashboard/specialist/reports/$reportId?ai=${isAi ? '1' : '0'}';
   }
 
@@ -180,6 +177,18 @@ class AppRoutes {
   static const String adminAuditLogs = '/dashboard/admin/audit-logs';
   static const String adminUsers = '/dashboard/admin/users';
   static const String adminExercises = '/dashboard/admin/exercises';
+  static const String adminAddExercise = '/dashboard/admin/exercises/new';
+  static const String adminEditExercisePath =
+      '/dashboard/admin/exercises/:exerciseId/edit';
+  static const String adminExerciseDetailsPath =
+      '/dashboard/admin/exercises/:exerciseId';
+
+  static String adminEditExercise(String exerciseId) =>
+      '/dashboard/admin/exercises/$exerciseId/edit';
+
+  static String adminExerciseDetails(String exerciseId) =>
+      '/dashboard/admin/exercises/$exerciseId';
+
   static const String adminReports = '/dashboard/admin/reports';
   static const String adminReportDetailsPath =
       '/dashboard/admin/reports/:reportId';

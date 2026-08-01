@@ -1,4 +1,5 @@
-import { ArrowRight, FileText, MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 function buildUpdates({ latestReport, recentFeedback }) {
   const items = [];
@@ -30,9 +31,9 @@ function buildUpdates({ latestReport, recentFeedback }) {
 
 function UpdateIcon({ type }) {
   if (type === "report") {
-    return <FileText size={15} strokeWidth={1.75} />;
+    return <PlatformMaterialIcon icon="report" size={15} />;
   }
-  return <MessageCircle size={15} strokeWidth={1.75} />;
+  return <PlatformMaterialIcon icon="message" size={15} />;
 }
 
 function toneForType(type) {

@@ -1,11 +1,11 @@
-import { Sparkles } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 export function CompactAISupportCard({ aiSupport, onOpen }) {
   return (
     <section className="pd-ai-support">
       <div className="pd-ai-copy">
         <span className="pd-ai-icon" aria-hidden="true">
-          <Sparkles size={16} />
+          <PlatformMaterialIcon icon="ai" size={16} />
         </span>
         <div>
           <strong>{aiSupport.title}</strong>

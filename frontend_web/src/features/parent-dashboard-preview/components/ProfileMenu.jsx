@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronDown, LogOut, User } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 import { UserProfileAvatar } from "./profile/UserProfileAvatar";
 
 export function ProfileMenu({ parent, onViewProfile, onSignOut }) {
@@ -63,7 +64,7 @@ export function ProfileMenu({ parent, onViewProfile, onSignOut }) {
               setOpen(false);
             }}
           >
-            <User size={16} aria-hidden="true" />
+            <PlatformMaterialIcon icon="profile" size={16} />
             View profile
           </button>
           <button

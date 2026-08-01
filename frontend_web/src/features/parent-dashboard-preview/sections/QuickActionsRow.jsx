@@ -1,10 +1,10 @@
-import { CalendarPlus, MessageSquarePlus, PlusCircle, Sparkles } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
-const ICONS = {
-  "request-session": CalendarPlus,
-  message: MessageSquarePlus,
-  case: PlusCircle,
-  ai: Sparkles,
+const ACTION_ICON_KEYS = {
+  "request-session": "request-session",
+  message: "message",
+  case: "case",
+  ai: "ai",
 };
 
 export function QuickActionsRow({ actions, onAction }) {
@@ -13,7 +13,8 @@ export function QuickActionsRow({ actions, onAction }) {
       <h2 className="pd-eyebrow">Quick Actions</h2>
       <div className="pd-quick-grid">
         {actions.map((action) => {
-          const Icon = ICONS[action.id] || Sparkles;
+          const iconKey = ACTION_ICON_KEYS[action.id] || "ai";
+
           return (
             <button
               key={action.id}
@@ -22,7 +23,7 @@ export function QuickActionsRow({ actions, onAction }) {
               onClick={() => onAction(action.label)}
             >
               <span className="pd-quick-icon" aria-hidden="true">
-                <Icon size={18} />
+                <PlatformMaterialIcon icon={iconKey} size={18} />
               </span>
               <span>{action.label}</span>
             </button>

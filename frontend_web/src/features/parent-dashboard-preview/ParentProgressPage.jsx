@@ -5,14 +5,14 @@ import { useAuth } from "../../context/useAuth";
 import { PARENT_WEB_ROUTES, buildParentProgressPath } from "../../routes/parentDashboardRoutes";
 import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
+import { TreatmentJourneyPanel } from "./components/treatment-journey/TreatmentJourneyPanel";
 import { useParentProgress } from "./hooks/useParentProgress";
+import { useParentTreatmentJourney } from "./hooks/useParentTreatmentJourney";
 import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  PROGRESS_EMPTY_MESSAGE,
   PROGRESS_PERIOD_LABELS,
-  hasProgressData,
 } from "./utils/parentProgressUtils";
 import "./styles/parentDashboardTokens.css";
 
@@ -66,12 +66,25 @@ export default function ParentProgressPage() {
     monthly,
     improvementPercentage,
     metrics,
-    isLoading,
+    isLoadingChildren,
+    isLoadingProgress,
     childrenError,
     progressError,
-    refetch,
+    refetch: refetchProgress,
     setValidChildId,
   } = useParentProgress(parentUserId, requestedChildId);
+
+  const {
+    journey,
+    period,
+    isLoading: isJourneyLoading,
+    isRefreshing,
+    isPeriodLoading,
+    error: journeyError,
+    setPeriod,
+    retry: retryJourney,
+    refresh: refreshJourney,
+  } = useParentTreatmentJourney(validChildId);
 
   const {
     notifications,
@@ -167,16 +180,64 @@ export default function ParentProgressPage() {
     }
   }, [navigate, setValidChildId]);
 
-  const progressState = useMemo(() => ({
-    improvementPercentage,
-    metrics,
-    daily,
-    weekly,
-    monthly,
-  }), [improvementPercentage, metrics, daily, weekly, monthly]);
+  const renderSupportingSections = () => {
+    if (isLoadingProgress) {
+      return (
+        <section className="pd-card pd-card-pad pd-task-hub-state">
+          <p className="pd-inline-loading">Loading supporting progress details...</p>
+        </section>
+      );
+    }
+
+    if (progressError) {
+      return (
+        <section className="pd-card pd-card-pad pd-task-hub-state">
+          <p className="pd-inline-error">{progressError}</p>
+          <button type="button" className="pd-btn pd-btn-soft" onClick={refetchProgress}>
+            Retry
+          </button>
+        </section>
+      );
+    }
+
+    const hasSupportingData = Boolean(
+      improvementPercentage != null
+      || metrics.totalExercisesCompleted != null
+      || daily.length
+      || weekly.length
+      || monthly.length,
+    );
+
+    if (!hasSupportingData) {
+      return null;
+    }
+
+    return (
+      <div className="pd-tj-supporting-progress">
+        <h3 className="pd-section-title">Supporting Progress Details</h3>
+        {(improvementPercentage != null || metrics.totalExercisesCompleted != null) ? (
+          <section className="pd-card pd-card-pad">
+            {improvementPercentage != null ? (
+              <p className="pd-progress-highlight">
+                Improvement: {Math.round(improvementPercentage)}%
+              </p>
+            ) : null}
+            {metrics.totalExercisesCompleted != null ? (
+              <p className="pd-section-sub">
+                Completed exercises: {metrics.totalExercisesCompleted}
+              </p>
+            ) : null}
+          </section>
+        ) : null}
+        <ProgressSection title={PROGRESS_PERIOD_LABELS.weekly} items={weekly} />
+        <ProgressSection title={PROGRESS_PERIOD_LABELS.daily} items={daily} />
+        <ProgressSection title={PROGRESS_PERIOD_LABELS.monthly} items={monthly} />
+      </div>
+    );
+  };
 
   const renderContent = () => {
-    if (isLoading) {
+    if (isLoadingChildren) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-loading">Loading progress...</p>
@@ -184,11 +245,11 @@ export default function ParentProgressPage() {
       );
     }
 
-    if (childrenError || progressError) {
+    if (childrenError) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-error">{childrenError || progressError}</p>
-          <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
+          <p className="pd-inline-error">{childrenError}</p>
+          <button type="button" className="pd-btn pd-btn-soft" onClick={refetchProgress}>
             Retry
           </button>
         </section>
@@ -203,35 +264,30 @@ export default function ParentProgressPage() {
       );
     }
 
-    if (!hasProgressData(progressState)) {
+    if (!validChildId || !selectedChild) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p>{PROGRESS_EMPTY_MESSAGE}</p>
+          <p>Select a child to view treatment journey progress.</p>
         </section>
       );
     }
 
     return (
       <div className="pd-progress-page-stack">
-        {selectedChild ? (
-          <section className="pd-card pd-card-pad">
-            <h2 className="pd-section-title">{selectedChild.fullName}</h2>
-            {improvementPercentage != null ? (
-              <p className="pd-progress-highlight">
-                Improvement: {Math.round(improvementPercentage)}%
-              </p>
-            ) : null}
-            {metrics.totalExercisesCompleted != null ? (
-              <p className="pd-section-sub">
-                Completed exercises: {metrics.totalExercisesCompleted}
-              </p>
-            ) : null}
-          </section>
-        ) : null}
-
-        <ProgressSection title={PROGRESS_PERIOD_LABELS.weekly} items={weekly} />
-        <ProgressSection title={PROGRESS_PERIOD_LABELS.daily} items={daily} />
-        <ProgressSection title={PROGRESS_PERIOD_LABELS.monthly} items={monthly} />
+        <TreatmentJourneyPanel
+          child={selectedChild}
+          hasMultipleChildren={children.length > 1}
+          journey={journey}
+          period={period}
+          isLoading={isJourneyLoading}
+          isPeriodLoading={isPeriodLoading}
+          isRefreshing={isRefreshing}
+          error={journeyError}
+          onPeriodChange={setPeriod}
+          onRetry={retryJourney}
+          onRefresh={refreshJourney}
+        />
+        {renderSupportingSections()}
       </div>
     );
   };
@@ -268,13 +324,13 @@ export default function ParentProgressPage() {
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Progress</h1>
+            <h1 className="pd-task-hub-title">Treatment Journey</h1>
             <p className="pd-task-hub-subtitle">
-              Daily, weekly, and monthly exercise progress for your children.
+              See how your child&apos;s progress has changed over time.
             </p>
           </header>
 
-          {children.length > 0 ? (
+          {children.length > 1 ? (
             <div className="pd-progress-filter">
               <label htmlFor="pd-progress-child-filter">Child</label>
               <select

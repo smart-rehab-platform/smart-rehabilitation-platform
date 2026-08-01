@@ -1,4 +1,4 @@
-import { Activity } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 import { exerciseStatusMeta, MONTH_NAMES } from "../mock/parentDashboardMock";
 import { StatusBadge } from "../components/StatusBadge";
 
@@ -53,7 +53,7 @@ export function SelectedDayExercises({
             return (
               <li key={exercise.id} className="pd-day-exercise-item">
                 <span className="pd-exercise-icon" aria-hidden="true">
-                  <Activity size={14} />
+                  <PlatformMaterialIcon icon="activity" size={14} />
                 </span>
                 <div className="pd-exercise-copy">
                   <strong>{exercise.title}</strong>

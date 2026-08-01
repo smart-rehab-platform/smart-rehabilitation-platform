@@ -1,4 +1,5 @@
 const progressService = require('./progress.service');
+const treatmentJourneyService = require('./treatmentJourney.service');
 
 const createSnapshot = async (req, res) => {
   try {
@@ -137,6 +138,33 @@ const getPerformanceMetrics = async (req, res) => {
   }
 };
 
+const getTreatmentJourney = async (req, res) => {
+  try {
+    const journey = await treatmentJourneyService.getTreatmentJourney(
+      req.params.id,
+      req.query.period
+    );
+
+    if (!journey) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: journey
+    });
+  } catch (error) {
+    console.error('Get treatment journey error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get treatment journey'
+    });
+  }
+};
+
 module.exports = {
   createSnapshot,
   getAllSnapshots,
@@ -145,5 +173,6 @@ module.exports = {
   getWeeklyProgress,
   getMonthlyProgress,
   getImprovementPercentage,
-  getPerformanceMetrics
+  getPerformanceMetrics,
+  getTreatmentJourney
 };

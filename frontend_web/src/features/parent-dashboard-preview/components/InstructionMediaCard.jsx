@@ -1,4 +1,5 @@
-import { ExternalLink, FileText } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = "Instructional Media" }) {
   if (!mediaUrl) {
@@ -50,7 +51,7 @@ export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = 
       {kind === "pdf" || kind === "unknown" ? (
         <div className="pd-instruction-media-file">
           <span className="pd-instruction-media-file-icon" aria-hidden="true">
-            <FileText size={20} />
+            <PlatformMaterialIcon icon="report" size={20} />
           </span>
           <div className="pd-instruction-media-file-copy">
             <strong>{kind === "pdf" ? "PDF document" : "Media file"}</strong>

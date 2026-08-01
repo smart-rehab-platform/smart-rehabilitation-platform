@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import 'dashboard_layout.dart';
+
 class DashboardSurfaceCard extends StatelessWidget {
   const DashboardSurfaceCard({
     super.key,
@@ -10,6 +11,7 @@ class DashboardSurfaceCard extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.tint = DashboardColors.primary,
+    this.expand = false,
   });
 
   final Widget child;
@@ -17,6 +19,7 @@ class DashboardSurfaceCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final Color tint;
+  final bool expand;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +32,9 @@ class DashboardSurfaceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: DashboardColors.surface,
         borderRadius: DashboardDecorations.cardRadius,
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.7)),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.7),
+        ),
         boxShadow: DashboardDecorations.cardShadow(tint),
       ),
       child: onTap == null && onLongPress == null
@@ -45,6 +50,14 @@ class DashboardSurfaceCard extends StatelessWidget {
             ),
     );
 
-    return card;
+    if (!expand) {
+      return card;
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
+      child: card,
+    );
   }
 }

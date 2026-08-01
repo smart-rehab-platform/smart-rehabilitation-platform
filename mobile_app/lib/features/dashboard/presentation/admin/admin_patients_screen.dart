@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/constants/admin_dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../case_intake/models/case_category_model.dart';
+import '../../../case_intake/providers/case_categories_provider.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
@@ -16,7 +19,8 @@ class AdminPatientsScreen extends ConsumerStatefulWidget {
   const AdminPatientsScreen({super.key});
 
   @override
-  ConsumerState<AdminPatientsScreen> createState() => _AdminPatientsScreenState();
+  ConsumerState<AdminPatientsScreen> createState() =>
+      _AdminPatientsScreenState();
 }
 
 class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
@@ -29,7 +33,10 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _load();
+      ref.read(caseCategoriesProvider.notifier).loadCategories();
+    });
   }
 
   Future<void> _load() async {
@@ -57,26 +64,28 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
     }
   }
 
-  List<String> get _conditions {
-    final values = _patients
-        .map((patient) => patient.condition?.trim())
-        .whereType<String>()
-        .where((value) => value.isNotEmpty)
-        .toSet()
-        .toList()
-      ..sort();
-    return values;
+  List<String> _buildConditionFilterOptions(List<CaseCategory> categories) {
+    final options = <String>{
+      for (final category in categories)
+        if (category.name.trim().isNotEmpty) category.name.trim(),
+      for (final patient in _patients)
+        if (_hasCondition(patient)) patient.condition!.trim(),
+    }.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    return options;
   }
 
-  List<AdminPatientRecord> get _filteredPatients {
+  List<AdminPatientRecord> _filteredPatients(String? conditionFilter) {
     final query = _searchQuery.trim().toLowerCase();
     return _patients.where((patient) {
-      final matchesSearch = query.isEmpty ||
+      final matchesSearch =
+          query.isEmpty ||
           patient.fullName.toLowerCase().contains(query) ||
           (patient.condition ?? '').toLowerCase().contains(query);
-      final matchesCondition = _conditionFilter == null ||
-          _conditionFilter!.isEmpty ||
-          patient.condition == _conditionFilter;
+      final matchesCondition =
+          conditionFilter == null ||
+          conditionFilter.isEmpty ||
+          patient.condition == conditionFilter;
       return matchesSearch && matchesCondition;
     }).toList();
   }
@@ -94,6 +103,15 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final categoriesState = ref.watch(caseCategoriesProvider);
+    final conditionOptions = _buildConditionFilterOptions(
+      categoriesState.categories,
+    );
+    final effectiveConditionFilter =
+        _conditionFilter != null && conditionOptions.contains(_conditionFilter)
+        ? _conditionFilter
+        : null;
+    final filteredPatients = _filteredPatients(effectiveConditionFilter);
 
     return AdminPageScaffold(
       title: 'Patients',
@@ -119,101 +137,170 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                     onChanged: (value) => setState(() => _searchQuery = value),
                   ),
                   SizedBox(height: context.dashSpacing * 0.75),
-                  if (_conditions.isNotEmpty)
-                    DropdownButtonFormField<String?>(
-                      initialValue: _conditionFilter,
-                      decoration: const InputDecoration(
-                        labelText: 'Filter by condition',
-                      ),
-                      items: [
-                        const DropdownMenuItem<String?>(
+                  if (categoriesState.isLoading && conditionOptions.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: LinearProgressIndicator(),
+                    )
+                  else
+                    AdminFilterDropdown<String?>(
+                      label: 'Filter by condition',
+                      value: effectiveConditionFilter,
+                      options: [
+                        const AdminFilterOption<String?>(
                           value: null,
-                          child: Text('All conditions'),
+                          label: 'All conditions',
                         ),
-                        ..._conditions.map(
-                          (condition) => DropdownMenuItem<String?>(
+                        ...conditionOptions.map(
+                          (condition) => AdminFilterOption<String?>(
                             value: condition,
-                            child: Text(condition),
+                            label: condition,
                           ),
                         ),
                       ],
-                      onChanged: (value) => setState(() => _conditionFilter = value),
+                      onChanged: (value) =>
+                          setState(() => _conditionFilter = value),
                     ),
                   SizedBox(height: context.dashSpacing),
-                  if (_filteredPatients.isEmpty)
+                  if (filteredPatients.isEmpty)
                     const AdminEmptyCard(message: 'No patients found.')
                   else
-                    ..._filteredPatients.map(
+                    ...filteredPatients.map(
                       (patient) => Padding(
-                        padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
+                        padding: EdgeInsets.only(
+                          bottom: context.dashSpacing * 0.6,
+                        ),
                         child: AdminSurfaceCard(
                           onTap: patient.id.isEmpty
                               ? null
                               : () => _openPatientDetails(patient.id),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.dashSpacing * 0.75,
+                            vertical: context.dashSpacing * 0.48,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const AdminIconCircle(
+                                  AdminIconCircle(
                                     icon: Icons.person_outline_rounded,
                                     color: AdminDashboardColors.primary,
                                     background: AdminDashboardColors.blueSoft,
-                                    size: 44,
+                                    size: 38,
+                                    imageUrl: patient.profileImageUrl,
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
                                           patient.fullName,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
-                                          style: theme.textTheme.titleMedium?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            color: AdminDashboardColors.textPrimary,
-                                          ),
+                                          style: theme.textTheme.titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w800,
+                                                color: AdminDashboardColors
+                                                    .textPrimary,
+                                                height: 1.2,
+                                              ),
                                         ),
-                                        if (patient.condition != null &&
-                                            patient.condition!.isNotEmpty) ...[
-                                          const SizedBox(height: 8),
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: AdminStatusBadge(
-                                              label: patient.condition!,
-                                              color: AdminDashboardColors.primary,
+                                        if (_hasCondition(patient) ||
+                                            _hasGender(patient)) ...[
+                                          const SizedBox(height: 4),
+                                          if (_hasCondition(patient) &&
+                                              _hasGender(patient))
+                                            Wrap(
+                                              crossAxisAlignment:
+                                                  WrapCrossAlignment.center,
+                                              spacing: 6,
+                                              runSpacing: 4,
+                                              children: [
+                                                AdminStatusBadge(
+                                                  label: patient.condition!,
+                                                  color: AdminDashboardColors
+                                                      .primary,
+                                                ),
+                                                Text(
+                                                  '•',
+                                                  style: theme
+                                                      .textTheme
+                                                      .labelSmall
+                                                      ?.copyWith(
+                                                        color:
+                                                            AdminDashboardColors
+                                                                .textMuted,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                ),
+                                                Text(
+                                                  patient.gender!,
+                                                  style: theme
+                                                      .textTheme
+                                                      .labelSmall
+                                                      ?.copyWith(
+                                                        color:
+                                                            AdminDashboardColors
+                                                                .textMuted,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                ),
+                                              ],
+                                            )
+                                          else if (_hasCondition(patient))
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: AdminStatusBadge(
+                                                label: patient.condition!,
+                                                color: AdminDashboardColors
+                                                    .primary,
+                                              ),
+                                            )
+                                          else
+                                            Text(
+                                              patient.gender!,
+                                              style: theme.textTheme.labelSmall
+                                                  ?.copyWith(
+                                                    color: AdminDashboardColors
+                                                        .textMuted,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
                                             ),
-                                          ),
                                         ],
                                       ],
                                     ),
                                   ),
                                   IconButton(
                                     tooltip: 'Edit Patient',
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(
+                                      minWidth: 36,
+                                      minHeight: 36,
+                                    ),
                                     onPressed: patient.id.isEmpty
                                         ? null
                                         : () => _openPatientDetails(patient.id),
                                     icon: const Icon(
                                       Icons.edit_outlined,
                                       color: AdminDashboardColors.primary,
+                                      size: 20,
                                     ),
                                   ),
                                 ],
                               ),
-                              if (patient.gender != null) ...[
-                                SizedBox(height: context.dashSpacing * 0.25),
-                                Text(
-                                  patient.gender!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: AdminDashboardColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                              SizedBox(height: context.dashSpacing * 0.5),
-                              const Divider(height: 1, color: AdminDashboardColors.border),
-                              SizedBox(height: context.dashSpacing * 0.5),
+                              SizedBox(height: context.dashSpacing * 0.3),
+                              const Divider(
+                                height: 1,
+                                color: AdminDashboardColors.border,
+                              ),
+                              SizedBox(height: context.dashSpacing * 0.25),
                               Text(
                                 'Previous Session',
                                 style: theme.textTheme.labelMedium?.copyWith(
@@ -221,25 +308,35 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                   color: AdminDashboardColors.textPrimary,
                                 ),
                               ),
-                              SizedBox(height: context.dashSpacing * 0.35),
+                              const SizedBox(height: 4),
                               if (patient.previousSession == null ||
                                   patient.previousSession!.id.isEmpty)
                                 Text(
                                   'No previous session',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                  style: theme.textTheme.bodySmall?.copyWith(
                                     color: AdminDashboardColors.textMuted,
                                   ),
                                 )
                               else ...[
                                 Text(
-                                  _formatDateTime(patient.previousSession!.scheduledAt),
-                                  style: theme.textTheme.bodyMedium,
+                                  _formatDateTime(
+                                    patient.previousSession!.scheduledAt,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: AdminDashboardColors.textSecondary,
+                                  ),
                                 ),
-                                SizedBox(height: context.dashSpacing * 0.35),
-                                AdminStatusBadge.sessionStatus(
-                                  patient.previousSession!.status,
-                                  isPastScheduled: _isPastScheduledNotCompleted(
-                                    patient.previousSession!,
+                                const SizedBox(height: 4),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: AdminStatusBadge.sessionStatus(
+                                    patient.previousSession!.status,
+                                    isPastScheduled:
+                                        _isPastScheduledNotCompleted(
+                                          patient.previousSession!,
+                                        ),
                                   ),
                                 ),
                               ],
@@ -254,19 +351,31 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
     );
   }
 
+  bool _hasCondition(AdminPatientRecord patient) {
+    final condition = patient.condition?.trim();
+    return condition != null && condition.isNotEmpty;
+  }
+
+  bool _hasGender(AdminPatientRecord patient) {
+    final gender = patient.gender?.trim();
+    return gender != null && gender.isNotEmpty;
+  }
+
   bool _isPastScheduledNotCompleted(AdminPreviousSession session) {
     final scheduledAt = session.scheduledAt;
     if (scheduledAt == null) {
       return false;
     }
-    return session.status == 'scheduled' && scheduledAt.isBefore(DateTime.now());
+    return session.status == 'scheduled' &&
+        scheduledAt.isBefore(DateTime.now());
   }
 
   String _formatDateTime(DateTime? date) {
     if (date == null) {
       return 'Unknown date';
     }
+
     final local = date.toLocal();
-    return '${local.day}/${local.month}/${local.year} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+    return '${DateFormat('d MMM yyyy').format(local)} • ${DateFormat('HH:mm').format(local)}';
   }
 }

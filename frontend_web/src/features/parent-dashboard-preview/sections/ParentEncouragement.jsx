@@ -1,10 +1,10 @@
-import { Sparkles } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 export function ParentEncouragement({ message }) {
   return (
     <aside className="pd-encouragement pd-section-enter" aria-label="Encouragement">
       <span className="pd-encouragement-icon" aria-hidden="true">
-        <Sparkles size={16} />
+        <PlatformMaterialIcon icon="ai" size={16} />
       </span>
       <p>{message}</p>
     </aside>

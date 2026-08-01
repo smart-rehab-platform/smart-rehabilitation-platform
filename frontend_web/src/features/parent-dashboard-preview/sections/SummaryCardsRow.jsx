@@ -1,9 +1,10 @@
-import { Activity, CalendarDays, CheckCircle2, MessageCircle } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 const CARDS = [
   {
     key: "exercises",
-    icon: Activity,
+    icon: "activity",
     tone: "blue",
     valueKey: "todaysExercises",
     label: "Today's Exercises",
@@ -11,7 +12,8 @@ const CARDS = [
   },
   {
     key: "completed",
-    icon: CheckCircle2,
+    icon: null,
+    lucide: CheckCircle2,
     tone: "green",
     valueKey: "completed",
     label: "Completed",
@@ -19,7 +21,7 @@ const CARDS = [
   },
   {
     key: "session",
-    icon: CalendarDays,
+    icon: "calendarDays",
     tone: "orange",
     valueKey: "nextSessionLabel",
     label: "Next Session",
@@ -27,7 +29,7 @@ const CARDS = [
   },
   {
     key: "feedback",
-    icon: MessageCircle,
+    icon: "message",
     tone: "red",
     valueKey: "newFeedback",
     label: "New Feedback",
@@ -38,19 +40,20 @@ const CARDS = [
 export function SummaryCardsRow({ summary }) {
   return (
     <section className="pd-summary-row" aria-label="Today summary">
-      {CARDS.map((card) => {
-        const Icon = card.icon;
-        return (
-          <article key={card.key} className="pd-card pd-summary-card">
-            <span className={`pd-summary-icon pd-tone-${card.tone}`} aria-hidden="true">
-              <Icon size={18} />
-            </span>
-            <strong className="pd-summary-value">{summary[card.valueKey]}</strong>
-            <span className="pd-summary-label">{card.label}</span>
-            <span className="pd-summary-detail">{card.detail(summary)}</span>
-          </article>
-        );
-      })}
+      {CARDS.map((card) => (
+        <article key={card.key} className="pd-card pd-summary-card">
+          <span className={`pd-summary-icon pd-tone-${card.tone}`} aria-hidden="true">
+            {card.icon ? (
+              <PlatformMaterialIcon icon={card.icon} size={18} />
+            ) : (
+              <card.lucide size={18} />
+            )}
+          </span>
+          <strong className="pd-summary-value">{summary[card.valueKey]}</strong>
+          <span className="pd-summary-label">{card.label}</span>
+          <span className="pd-summary-detail">{card.detail(summary)}</span>
+        </article>
+      ))}
     </section>
   );
 }

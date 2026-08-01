@@ -1,4 +1,5 @@
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 export function LatestReportCard({ report, onOpen }) {
   if (!report) return null;
@@ -12,7 +13,7 @@ export function LatestReportCard({ report, onOpen }) {
     >
       <span className="pd-shortcut-row-left">
         <span className="pd-shortcut-icon pd-shortcut-icon-report" aria-hidden="true">
-          <FileText size={18} strokeWidth={1.75} />
+          <PlatformMaterialIcon icon="report" size={18} />
         </span>
         <span className="pd-shortcut-copy">
           <span className="pd-shortcut-label">Latest Report</span>

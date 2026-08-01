@@ -1,4 +1,4 @@
-import { ClipboardList } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 import { StatusBadge } from "../components/StatusBadge";
 
 export function ActiveCaseBanner({ caseRequest, onView }) {
@@ -11,7 +11,7 @@ export function ActiveCaseBanner({ caseRequest, onView }) {
   return (
     <section className="pd-case-banner" aria-label="Active case request">
       <span className="pd-case-banner-icon" aria-hidden="true">
-        <ClipboardList size={16} />
+        <PlatformMaterialIcon icon="caseRequests" size={16} />
       </span>
 
       <div className="pd-case-banner-copy">

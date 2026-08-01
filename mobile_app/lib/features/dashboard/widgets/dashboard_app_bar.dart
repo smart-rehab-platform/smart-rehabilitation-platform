@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 import '../../../core/constants/dashboard_colors.dart';
 
 import '../../../shared/widgets/auth_ui.dart';
@@ -9,10 +7,7 @@ import '../../../shared/widgets/auth_ui.dart';
 import 'dashboard_layout.dart';
 import 'dashboard_profile_avatar.dart';
 
-
-
 class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
-
   const DashboardAppBar({
     super.key,
     this.notificationCount = 0,
@@ -23,6 +18,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onMenuTap,
     this.onNotificationsTap,
     this.onAvatarTap,
+    this.extraActions,
   });
 
   final int notificationCount;
@@ -35,26 +31,19 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onNotificationsTap;
 
   final VoidCallback? onAvatarTap;
-
-
+  final List<Widget>? extraActions;
 
   @override
-
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
-
-
   @override
-
   Widget build(BuildContext context) {
-
     final theme = Theme.of(context);
-
-
 
     return AppBar(
       backgroundColor: DashboardColors.background,
       surfaceTintColor: Colors.transparent,
+      centerTitle: true,
       automaticallyImplyLeading: false,
       leading: showMenuButton
           ? IconButton(
@@ -64,34 +53,27 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       title: Row(
-
         mainAxisSize: MainAxisSize.min,
 
         children: [
-
           const AuthLogoMark(size: 28),
 
           SizedBox(width: context.dashSpacing * 0.5),
 
           Text(
-
             'Smart Rehab',
 
             style: theme.textTheme.titleMedium?.copyWith(
-
               fontWeight: FontWeight.w700,
 
               color: DashboardColors.textPrimary,
-
             ),
-
           ),
-
         ],
-
       ),
 
       actions: [
+        ...?extraActions,
         if (userDisplayName != null && userDisplayName!.isNotEmpty) ...[
           Center(
             child: Padding(
@@ -107,75 +89,59 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
         Stack(
-
           clipBehavior: Clip.none,
 
           children: [
-
             IconButton(
-
               onPressed: onNotificationsTap,
 
               icon: const Icon(Icons.notifications_none_rounded),
 
               color: DashboardColors.textPrimary,
-
             ),
 
             if (notificationCount > 0)
-
               Positioned(
-
                 top: 10,
 
                 right: 10,
 
                 child: Container(
-
                   padding: const EdgeInsets.all(4),
 
                   decoration: const BoxDecoration(
-
                     color: DashboardColors.highPriority,
 
                     shape: BoxShape.circle,
-
                   ),
 
-                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
 
                   child: Text(
-
                     '$notificationCount',
 
                     textAlign: TextAlign.center,
 
                     style: theme.textTheme.labelSmall?.copyWith(
-
                       color: Colors.white,
 
                       fontWeight: FontWeight.w700,
 
                       fontSize: 9,
-
                     ),
-
                   ),
-
                 ),
-
               ),
-
           ],
-
         ),
 
         Padding(
-
           padding: EdgeInsets.only(right: context.dashSpacing * 0.5),
 
           child: InkWell(
-
             onTap: onAvatarTap,
 
             borderRadius: BorderRadius.circular(24),
@@ -185,17 +151,9 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
               imageUrl: avatarImageUrl,
               radius: context.dashSpacing * 0.55,
             ),
-
           ),
-
         ),
-
       ],
-
     );
-
   }
-
 }
-
-
