@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
   Mail,
   Lock,
@@ -20,6 +20,7 @@ import { dashboardForRole } from "../../routes/roleRouting";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const auth = useAuth();
   const rememberedLogin = auth.loadRememberedLogin();
@@ -61,6 +62,18 @@ export default function Login() {
     nextParams.delete("reason");
     setSearchParams(nextParams, { replace: true });
   }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    const prefillEmail =
+      location.state?.prefillEmail?.trim() || location.state?.email?.trim();
+    if (!prefillEmail) {
+      return;
+    }
+
+    setEmail(prefillEmail);
+    setEmailState(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(prefillEmail) ? "success" : "idle");
+    setEmailMsg("");
+  }, [location.state?.prefillEmail, location.state?.email]);
 
   const handleBlurEmail = () => {
     if (email && !emailValid) {
@@ -107,15 +120,7 @@ export default function Login() {
   return (
     <>
       <Toast message={toastMessage} visible={toast} variant={toastVariant} />
-      <div className="flex flex-col gap-1 mb-6">
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "'Syne', sans-serif", color: C.white }}>
-          Welcome Back
-        </h2>
-        <p className="text-sm" style={{ color: C.light }}>
-          Continue your smart rehabilitation journey
-        </p>
-      </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <AuthInput
           label="Email Address"
           icon={<Mail size={16} />}
@@ -152,31 +157,36 @@ export default function Login() {
             </button>
           }
         />
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer">
+        <div className="auth-remember-row flex items-center justify-between gap-3 pt-0.5">
+          <label className="flex cursor-pointer items-center gap-2.5">
             <div
               onClick={() => setRemember((v) => !v)}
-              className="w-4 h-4 rounded flex items-center justify-center border transition-all"
+              className="flex h-[18px] w-[18px] items-center justify-center rounded-[5px] border transition-all duration-200"
               style={{
-                borderColor: remember ? C.primary : C.border,
-                background: remember ? C.primary : "transparent",
+                borderColor: remember ? C.primary : "rgba(79, 166, 248, 0.35)",
+                background: remember ? C.primary : "rgba(255, 255, 255, 0.7)",
+                boxShadow: remember ? "0 0 12px rgba(79, 166, 248, 0.25)" : "none",
               }}
             >
-              {remember && <Check size={10} color={C.white} strokeWidth={3} />}
+              {remember && <Check size={11} color={C.white} strokeWidth={3} />}
             </div>
-            <span className="text-xs" style={{ color: C.light }}>
+            <span className="auth-footer-text text-[13px] font-medium tracking-[-0.01em]">
               Remember Me
             </span>
           </label>
           <button
-            onClick={() => navigate("/forgot-password")}
-            className="text-xs font-medium transition-colors"
-            style={{ color: C.soft }}
+            type="button"
+            onClick={() =>
+              navigate("/forgot-password", {
+                state: { email: email.trim() },
+              })
+            }
+            className="auth-footer-text text-[13px] font-medium tracking-[-0.01em] transition-colors duration-200"
             onMouseEnter={(e) => {
               e.currentTarget.style.color = C.linkHover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = C.soft;
+              e.currentTarget.style.color = "";
             }}
           >
             Forgot Password?
@@ -202,26 +212,14 @@ export default function Login() {
           ) : (
             <>
               <span>Sign In</span>
-              <ChevronRight size={16} />
+              <ChevronRight size={16} className="auth-btn-arrow" />
             </>
           )}
         </PrimaryButton>
-        <p className="text-center text-xs" style={{ color: C.light }}>
-          {"Don't have an account? "}
-          <button
-            onClick={() => navigate("/signup")}
-            className="font-semibold transition-colors"
-            style={{ color: C.soft }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = C.linkHover;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = C.soft;
-            }}
-          >
-            Create Account
-          </button>
-        </p>
+        <p className="auth-footer-text pt-1 text-center text-xs">Don&apos;t have an account?</p>
+        <button type="button" onClick={() => navigate("/signup")} className="auth-secondary-btn">
+          Create Account
+        </button>
       </div>
     </>
   );

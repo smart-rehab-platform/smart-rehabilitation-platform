@@ -647,14 +647,7 @@ CREATE TABLE audit_logs (
 );
 
 
--- =====================================================================
--- 17. DASHBOARDS
--- Note: dashboards don't need dedicated tables — they're computed with
--- aggregation queries (or materialized views) over the tables above:
---   Specialist dashboard  -> patient_specialists + sessions + treatment_plans
---   Parent dashboard      -> patient_guardians + assigned_exercises + ai_reports
---   Admin dashboard       -> users + exercises + progress_snapshots
--- =====================================================================
+
 
 -- =====================================================================
 -- TRIGGERS: auto-update `updated_at` on row changes

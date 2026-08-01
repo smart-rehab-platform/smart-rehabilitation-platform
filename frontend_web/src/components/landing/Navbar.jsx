@@ -62,7 +62,7 @@ export function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <a href="#home" onClick={(event) => handleNavClick(event, "#home")} className="no-underline">
-          <LandingLogo />
+          <LandingLogo useAuthBrandIcon />
         </a>
 
         <nav className="hidden xl:flex items-center gap-6">

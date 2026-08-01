@@ -31,4 +31,14 @@ export const G = {
   hoverBg: "rgba(79, 166, 248, 0.08)",
   navyOverlay: "rgba(15, 35, 66",
   cardOverlay: "rgba(18, 40, 70",
+  glassBg: "rgba(14, 32, 58, 0.44)",
+  glassBorder: "rgba(179, 220, 255, 0.24)",
+  glassHighlight: "rgba(255, 255, 255, 0.06)",
+  glassShadow:
+    "0 28px 64px rgba(0, 0, 0, 0.36), 0 0 0 1px rgba(255, 255, 255, 0.07) inset, 0 0 56px rgba(79, 166, 248, 0.1)",
+  glassShadowHover:
+    "0 32px 72px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.09) inset, 0 0 64px rgba(79, 166, 248, 0.14)",
+  inputGlass: "rgba(10, 25, 49, 0.55)",
+  inputInnerShadow: "inset 0 1px 2px rgba(0, 0, 0, 0.18)",
+  segmentBg: "rgba(8, 20, 38, 0.45)",
 };

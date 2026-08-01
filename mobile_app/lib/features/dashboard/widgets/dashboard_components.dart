@@ -12,6 +12,8 @@ class DashboardSummaryCard extends StatelessWidget {
     required this.icon,
     required this.iconBackground,
     required this.iconColor,
+    this.backgroundColor,
+    this.circularIcon = false,
     this.onTap,
     this.valueMaxLines = 1,
     this.valueStyle,
@@ -22,6 +24,8 @@ class DashboardSummaryCard extends StatelessWidget {
   final IconData icon;
   final Color iconBackground;
   final Color iconColor;
+  final Color? backgroundColor;
+  final bool circularIcon;
   final VoidCallback? onTap;
   final int valueMaxLines;
   final TextStyle? valueStyle;
@@ -29,49 +33,113 @@ class DashboardSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final iconSize = context.dashSpacing * 0.55;
+
+    Widget iconWidget = Icon(
+      icon,
+      size: iconSize,
+      color: iconColor,
+    );
+
+    if (circularIcon) {
+      iconWidget = Container(
+        width: iconSize * 2.35,
+        height: iconSize * 2.35,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: iconBackground,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          size: iconSize,
+          color: iconColor,
+        ),
+      );
+    } else {
+      iconWidget = Container(
+        padding: EdgeInsets.all(context.dashSpacing * 0.45),
+        decoration: BoxDecoration(
+          color: iconBackground,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: iconWidget,
+      );
+    }
+
+    final cardDecoration = backgroundColor != null
+        ? BoxDecoration(
+            color: backgroundColor,
+            borderRadius: DashboardDecorations.cardRadius,
+            border: Border.all(
+              color: iconBackground.withValues(alpha: 0.65),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: iconColor.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          )
+        : null;
+
+    final valueText = Text(
+      value,
+      maxLines: valueMaxLines,
+      overflow: TextOverflow.ellipsis,
+      style: valueStyle ??
+          theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: DashboardColors.textPrimary,
+            height: 1.2,
+          ),
+    );
+
+    final labelText = Text(
+      label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: DashboardColors.textSecondary,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+
+    final cardContent = circularIcon
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  iconWidget,
+                  const SizedBox(width: 14),
+                  Expanded(child: valueText),
+                ],
+              ),
+              SizedBox(height: context.dashSpacing * 0.25),
+              labelText,
+            ],
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              iconWidget,
+              SizedBox(height: context.dashSpacing * 0.65),
+              valueText,
+              SizedBox(height: context.dashSpacing * 0.15),
+              labelText,
+            ],
+          );
 
     return DashboardSurfaceCard(
       onTap: onTap,
       padding: EdgeInsets.all(context.dashSpacing * 0.75),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(context.dashSpacing * 0.45),
-            decoration: BoxDecoration(
-              color: iconBackground,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              size: context.dashSpacing * 0.55,
-              color: iconColor,
-            ),
-          ),
-          SizedBox(height: context.dashSpacing * 0.65),
-          Text(
-            value,
-            maxLines: valueMaxLines,
-            overflow: TextOverflow.ellipsis,
-            style: valueStyle ??
-                theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: DashboardColors.textPrimary,
-                  height: 1.2,
-                ),
-          ),
-          SizedBox(height: context.dashSpacing * 0.15),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: DashboardColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: backgroundColor ?? DashboardColors.surface,
+      tint: iconColor,
+      decoration: cardDecoration,
+      child: cardContent,
     );
   }
 }

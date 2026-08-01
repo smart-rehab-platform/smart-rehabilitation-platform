@@ -1,338 +1,200 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  User,
-  Phone,
-  Camera,
-  Users,
-  Stethoscope,
-  ChevronRight,
-} from "lucide-react";
-import { AuthInput } from "../../components/auth/AuthInput";
+import { AnimatePresence, motion } from "motion/react";
+import { Users, Stethoscope, ChevronRight } from "lucide-react";
+import { OnboardingRoleCard } from "../../components/auth/OnboardingRoleCard";
 import { PrimaryButton } from "../../components/auth/PrimaryButton";
-import { RoleCard } from "../../components/auth/RoleCard";
-import { PasswordStrength } from "../../components/auth/PasswordStrength";
-import { Toast } from "../../components/auth/Toast";
-import { C, G } from "../../components/auth/tokens";
-import {
-  getPasswordStrength,
-  readAuthApiMessage,
-  strongPasswordMessage,
-} from "../../components/auth/authHelpers";
-import api from "../../services/api";
-import { useAuth } from "../../context/useAuth";
+import { useSignupWizard } from "../../context/SignupWizardContext";
+import { SignupStep2PersonalInfo } from "./SignupStep2PersonalInfo";
+import { SignupStep3ProfessionalInfo } from "./SignupStep3ProfessionalInfo";
+import { SignupStep4AccountSecurity } from "./SignupStep4AccountSecurity";
+import { SignupStep5Review } from "./SignupStep5Review";
+import { getStepBeforeSecurity } from "./signupWizardHelpers";
 
 export default function Signup() {
   const navigate = useNavigate();
-  const auth = useAuth();
-  const fileInputRef = useRef(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [showPw, setShowPw] = useState(false);
-  const [showCf, setShowCf] = useState(false);
-  const [role, setRole] = useState(null);
-  const [profilePhoto, setProfilePhoto] = useState(null);
-  const [profilePreview, setProfilePreview] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState("success");
-
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const passwordStrength = getPasswordStrength(password);
-  const pwValid = passwordStrength.isStrong;
-  const cfValid = confirm === password && confirm.length > 0;
-
-  const emailState = email ? (emailValid ? "success" : "error") : "idle";
-  const pwState = password ? (pwValid ? "success" : "error") : "idle";
-  const cfState = confirm ? (cfValid ? "success" : "error") : "idle";
-
-  const showToast = (message, variant = "success") => {
-    setToastMessage(message);
-    setToastVariant(variant);
-    setToast(true);
-    setTimeout(() => setToast(false), 3000);
-  };
+  const { wizardStep, setWizardStep, updateWizardData, wizardData, isRegistrationSubmitting } =
+    useSignupWizard();
+  const [selectedRole, setSelectedRole] = useState(null);
 
   useEffect(() => {
-    return () => {
-      if (profilePreview) URL.revokeObjectURL(profilePreview);
-    };
-  }, [profilePreview]);
+    if (wizardStep === 3 && wizardData.role !== "specialist") {
+      setWizardStep(4);
+    }
+  }, [wizardStep, wizardData.role, setWizardStep]);
 
-  const handlePhotoClick = () => {
-    fileInputRef.current?.click();
+  useEffect(() => {
+    if (wizardStep === 1 && wizardData.role) {
+      setSelectedRole(wizardData.role);
+    }
+  }, [wizardStep, wizardData.role]);
+
+  const handleContinue = () => {
+    if (!selectedRole) return;
+    updateWizardData({
+      role: selectedRole,
+      specialist_profile: selectedRole === "specialist" ? wizardData.specialist_profile : null,
+    });
+    setWizardStep(2);
   };
 
-  const handlePhotoChange = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
-    if (!allowedTypes.includes(file.type)) {
-      showToast("Please select a JPG, PNG, or WEBP image", "error");
-      event.target.value = "";
-      return;
+  const handleBackToStep1 = () => {
+    if (wizardData.role) {
+      setSelectedRole(wizardData.role);
     }
-
-    if (file.size > 5 * 1024 * 1024) {
-      showToast("Image must be smaller than 5MB", "error");
-      event.target.value = "";
-      return;
-    }
-
-    if (profilePreview) URL.revokeObjectURL(profilePreview);
-
-    setProfilePhoto(file);
-    setProfilePreview(URL.createObjectURL(file));
+    setWizardStep(1);
   };
 
-  const handleSubmit = async () => {
-    if (!name.trim()) {
-      showToast("Please enter your full name", "error");
-      return;
-    }
+  const handleBackToStep2 = () => {
+    setWizardStep(2);
+  };
 
-    if (!emailValid) {
-      showToast("Invalid email address", "error");
-      return;
-    }
+  const handleBackFromSecurity = () => {
+    setWizardStep(getStepBeforeSecurity(wizardData.role));
+  };
 
-    if (!phone.trim()) {
-      showToast("Please enter your phone number", "error");
-      return;
-    }
-
-    if (!pwValid) {
-      showToast(strongPasswordMessage, "error");
-      return;
-    }
-
-    if (!cfValid) {
-      showToast("Passwords do not match.", "error");
-      return;
-    }
-
-    if (!role) {
-      showToast("Please select your role", "error");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      let profileImageUrl = null;
-
-      if (profilePhoto) {
-        const formData = new FormData();
-        formData.append("file", profilePhoto);
-
-        const uploadResponse = await api.post("/uploads/profile-image", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        profileImageUrl = uploadResponse.data.data.url;
-      }
-
-      await auth.register({
-        full_name: name.trim(),
-        email,
-        password,
-        phone: phone.trim(),
-        role,
-        profile_image_url: profileImageUrl,
-      });
-
-      showToast(
-        "Account created successfully. Please verify your email before signing in.",
-        "success"
-      );
-      setTimeout(() => navigate(`/verify-email?email=${encodeURIComponent(email)}`), 1500);
-    } catch (error) {
-      const message = readAuthApiMessage(error, "Registration failed");
-      showToast(message, "error");
-    } finally {
-      setLoading(false);
-    }
+  const handleBackFromReview = () => {
+    setWizardStep(4);
   };
 
   return (
-    <>
-      <Toast message={toastMessage} visible={toast} variant={toastVariant} />
-      <div className="flex flex-col gap-1 mb-5">
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "'Syne', sans-serif", color: C.white }}>
-          Create Account
-        </h2>
-        <p className="text-sm" style={{ color: C.light }}>
-          Join the Smart Rehabilitation Platform
-        </p>
-      </div>
-
-      <div className="flex justify-center mb-5">
-        <div className="flex flex-col items-center gap-1.5">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/jpg"
-            className="hidden"
-            onChange={handlePhotoChange}
-          />
-          <button
-            type="button"
-            onClick={handlePhotoClick}
-            className="w-16 h-16 rounded-full flex items-center justify-center relative cursor-pointer transition-all hover:scale-105 overflow-hidden"
-            style={{ border: `2px dashed ${C.primary}`, background: G.hoverBg }}
+    <div className="signup-wizard flex flex-col pb-2">
+      <AnimatePresence mode="wait">
+        {wizardStep === 1 && (
+          <motion.div
+            key="signup-step-1"
+            className="signup-wizard-step flex flex-col"
+            initial={{ opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -18 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
-            {profilePreview ? (
-              <img
-                src={profilePreview}
-                alt="Profile preview"
-                className="w-full h-full object-cover"
+            <div className="mb-3 flex flex-col gap-2.5">
+              <OnboardingRoleCard
+                icon={<Users size={20} strokeWidth={1.75} />}
+                title="Parent"
+                description="Monitor your child's progress, communicate with specialists, and complete home exercises."
+                selected={selectedRole === "parent"}
+                onClick={() => {
+                  setSelectedRole("parent");
+                  updateWizardData({ specialist_profile: null });
+                }}
               />
-            ) : (
-              <Camera size={20} style={{ color: C.iconInteractive }} />
-            )}
-          </button>
-          <p className="text-xs" style={{ color: C.light, opacity: 0.7 }}>
-            Profile photo optional
-          </p>
-        </div>
-      </div>
+              <OnboardingRoleCard
+                icon={<Stethoscope size={20} strokeWidth={1.75} />}
+                title="Specialist"
+                description="Manage patients, create treatment plans, review progress, and provide professional guidance."
+                selected={selectedRole === "specialist"}
+                onClick={() => setSelectedRole("specialist")}
+              />
+            </div>
 
-      <div className="flex flex-col gap-3.5">
-        <AuthInput
-          label="Full Name"
-          icon={<User size={16} />}
-          placeholder="Dr. Sarah Johnson"
-          value={name}
-          onChange={setName}
-        />
-        <AuthInput
-          label="Email Address"
-          icon={<Mail size={16} />}
-          type="email"
-          placeholder="name@example.com"
-          value={email}
-          onChange={setEmail}
-          state={emailState}
-          message={emailState === "error" ? "Invalid email address" : ""}
-        />
-        <AuthInput
-          label="Phone Number"
-          icon={<Phone size={16} />}
-          placeholder="+970 59 000 0000"
-          value={phone}
-          onChange={setPhone}
-        />
-        <AuthInput
-          label="Password"
-          icon={<Lock size={16} />}
-          type={showPw ? "text" : "password"}
-          placeholder="Min. 8 characters"
-          value={password}
-          onChange={setPassword}
-          state={pwState}
-          message={pwState === "error" ? strongPasswordMessage : ""}
-          rightSlot={
-            <button
-              type="button"
-              onClick={() => setShowPw((v) => !v)}
-              style={{ color: C.iconInteractive, opacity: 0.85 }}
-              className="hover:opacity-100 transition-opacity"
-            >
-              {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          }
-        />
-        <PasswordStrength password={password} />
-        <AuthInput
-          label="Confirm Password"
-          icon={<Lock size={16} />}
-          type={showCf ? "text" : "password"}
-          placeholder="Re-enter your password"
-          value={confirm}
-          onChange={setConfirm}
-          state={cfState}
-          message={cfState === "error" ? "Passwords do not match." : ""}
-          rightSlot={
-            <button
-              type="button"
-              onClick={() => setShowCf((v) => !v)}
-              style={{ color: C.iconInteractive, opacity: 0.85 }}
-              className="hover:opacity-100 transition-opacity"
-            >
-              {showCf ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          }
-        />
+            <div className="pt-2">
+              <PrimaryButton disabled={!selectedRole} onClick={handleContinue}>
+                <span>Continue</span>
+                <ChevronRight size={16} className="auth-btn-arrow" />
+              </PrimaryButton>
+            </div>
+          </motion.div>
+        )}
 
-        <div>
-          <p className="text-xs font-semibold mb-2.5" style={{ color: C.light }}>
-            I am a...
-          </p>
-          <div className="flex gap-3">
-            <RoleCard
-              icon={<Users size={16} />}
-              title="Parent"
-              bullets={[
-                "Track child progress",
-                "Upload exercises",
-                "View reports",
-                "Communicate with specialists",
-              ]}
-              selected={role === "parent"}
-              onClick={() => setRole("parent")}
-            />
-            <RoleCard
-              icon={<Stethoscope size={16} />}
-              title="Specialist"
-              bullets={[
-                "Manage patients",
-                "Create treatment plans",
-                "Review exercises",
-                "Generate reports",
-              ]}
-              selected={role === "specialist"}
-              onClick={() => setRole("specialist")}
-            />
-          </div>
-        </div>
-
-        <PrimaryButton loading={loading} onClick={handleSubmit}>
-          {loading ? (
-            "Creating Account..."
-          ) : (
-            <>
-              <span>Create My Account</span>
-              <ChevronRight size={16} />
-            </>
-          )}
-        </PrimaryButton>
-
-        <p className="text-center text-xs" style={{ color: C.light }}>
-          Already have an account?{" "}
-          <button
-            onClick={() => navigate("/login")}
-            className="font-semibold transition-colors"
-            style={{ color: C.soft }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = C.linkHover;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = C.soft;
-            }}
+        {wizardStep === 2 && (
+          <motion.div
+            key="signup-step-2"
+            initial={{ opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -18 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
-            Sign In
-          </button>
-        </p>
-      </div>
-    </>
+            <SignupStep2PersonalInfo onBack={handleBackToStep1} />
+          </motion.div>
+        )}
+
+        {wizardStep === 3 && wizardData.role === "specialist" && (
+          <motion.div
+            key="signup-step-3"
+            initial={{ opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -18 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SignupStep3ProfessionalInfo onBack={handleBackToStep2} />
+          </motion.div>
+        )}
+
+        {wizardStep === 4 && (
+          <motion.div
+            key="signup-step-4"
+            initial={{ opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -18 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SignupStep4AccountSecurity onBack={handleBackFromSecurity} />
+          </motion.div>
+        )}
+
+        {wizardStep >= 5 && (
+          <motion.div
+            key="signup-step-5"
+            className="signup-wizard-step"
+            initial={{ opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -18 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SignupStep5Review onBack={handleBackFromReview} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <p className="auth-footer-text mt-8 text-center text-xs">
+        Already have an account?{" "}
+        <button
+          type="button"
+          onClick={() => navigate("/login")}
+          disabled={isRegistrationSubmitting}
+          className="auth-footer-link font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Sign In
+        </button>
+      </p>
+
+      <style>{`
+        @media (hover: hover) {
+          .onboarding-role-card:not([aria-pressed="true"]):hover {
+            border-color: rgba(79, 166, 248, 0.45) !important;
+            box-shadow: 0 10px 28px rgba(79, 166, 248, 0.12);
+            background: rgba(255, 255, 255, 0.92);
+          }
+        }
+
+        .signup-wizard-step {
+          animation: signupWizardStepIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes signupWizardStepIn {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .signup-wizard-step {
+            animation: none;
+          }
+
+          .signup-wizard-step,
+          .signup-wizard-step * {
+            transition: none !important;
+          }
+        }
+      `}</style>
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import axios from "axios";
 import { API_BASE_URL } from "./apiConfig";
 import {
   clearAuthSession,
+  shouldAllowRefreshFromCookie,
   updateStoredAccessToken,
 } from "./authStorage";
 import {
@@ -70,6 +71,17 @@ async function requestRefreshToken() {
 }
 
 export async function refreshAccessToken({ notifyOnFailure = true } = {}) {
+  if (!shouldAllowRefreshFromCookie()) {
+    const error = new Error("Refresh token is not available for this session.");
+
+    if (notifyOnFailure) {
+      clearAuthSession();
+      notifySessionExpiredOnce();
+    }
+
+    throw error;
+  }
+
   if (!refreshPromise) {
     refreshPromise = requestRefreshToken()
       .catch((error) => {
@@ -88,6 +100,10 @@ export async function refreshAccessToken({ notifyOnFailure = true } = {}) {
 }
 
 export async function tryRestoreSessionFromCookie() {
+  if (!shouldAllowRefreshFromCookie()) {
+    return null;
+  }
+
   try {
     return await refreshAccessToken({ notifyOnFailure: false });
   } catch {

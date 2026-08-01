@@ -12,21 +12,6 @@ export function Hero() {
   return (
     <section id="home" className="relative overflow-hidden px-5 pt-12 pb-16 md:pt-16 md:pb-20 lg:px-8">
       <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `
-            linear-gradient(${L.gridLine} 1px, transparent 1px),
-            linear-gradient(90deg, ${L.gridLine} 1px, transparent 1px)
-          `,
-          backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(ellipse 80% 70% at 50% 30%, black 20%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 80% 70% at 50% 30%, black 20%, transparent 100%)",
-        }}
-        aria-hidden="true"
-      />
-
-      <div
         className="pointer-events-none absolute left-1/2 top-24 md:top-28 -translate-x-1/2 w-[min(720px,90vw)] h-[360px] md:h-[420px]"
         style={{
           background:

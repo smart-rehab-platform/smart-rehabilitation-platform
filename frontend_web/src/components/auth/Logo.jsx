@@ -1,34 +1,79 @@
+import smartRehabHorizontalLogo from "../../assets/branding/smart_rehab_horizontal_logo.png";
+import smartRehabHorizontalLogoHero from "../../assets/branding/smart_rehab_horizontal_logo2222.png";
+import smartRehabIcon from "../../assets/branding/smart_rehab_icon.png";
 import { C } from "./tokens";
 
-export function Logo({ size = 40, showWordmark = true, centered = false, titleOnly = false }) {
+const BRAND_LOGOS = {
+  standard: smartRehabHorizontalLogo,
+  hero: smartRehabHorizontalLogoHero,
+};
+
+function BrandLogoImage({
+  maxHeight,
+  alt = "Smart Rehabilitation",
+  decorative = false,
+  brandAsset = "hero",
+}) {
+  return (
+    <img
+      src={BRAND_LOGOS[brandAsset] ?? BRAND_LOGOS.hero}
+      alt={decorative ? "" : alt}
+      aria-hidden={decorative || undefined}
+      draggable={false}
+      className="select-none"
+      style={{
+        objectFit: "contain",
+        width: "auto",
+        height: "auto",
+        maxHeight,
+      }}
+    />
+  );
+}
+
+export function BrandIcon({ size = 44, color = C.primary }) {
+  return (
+    <span
+      aria-hidden
+      className="inline-block shrink-0 select-none"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: color,
+        WebkitMaskImage: `url(${smartRehabIcon})`,
+        WebkitMaskSize: "contain",
+        WebkitMaskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        maskImage: `url(${smartRehabIcon})`,
+        maskSize: "contain",
+        maskRepeat: "no-repeat",
+        maskPosition: "center",
+        filter: "drop-shadow(0 1px 2px rgba(15, 35, 66, 0.12))",
+      }}
+    />
+  );
+}
+
+function BrandIconMark({ size, color = C.primary }) {
+  return <BrandIcon size={size} color={color} />;
+}
+
+export function Logo({
+  maxHeight = 36,
+  iconSize = 34,
+  size = 32,
+  centered = false,
+  showWordmark = false,
+  titleOnly = false,
+  brandAsset = "hero",
+}) {
   const titleSize = Math.round(size * 0.36);
   const taglineSize = Math.round(size * 0.21);
 
-  return (
-    <div className={`flex items-center gap-3 ${centered ? "flex-col text-center" : ""}`}>
-      <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
-        <defs>
-          <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#4FA6F8" />
-            <stop offset="100%" stopColor="#9BD7FF" />
-          </linearGradient>
-        </defs>
-        <circle cx="20" cy="20" r="19" fill="#122846" stroke="url(#lg1)" strokeWidth="1.5" />
-        <path
-          d="M20 28 C20 28 11 22 11 16.5 C11 13.5 13.5 11 16.5 11 C18.2 11 19.5 12 20 13 C20.5 12 21.8 11 23.5 11 C26.5 11 29 13.5 29 16.5 C29 22 20 28 20 28Z"
-          fill="url(#lg1)"
-          opacity="0.3"
-        />
-        <path
-          d="M11 18 L15 18 L17 14 L19 22 L21 16 L23 18 L29 18"
-          stroke="#66C4FF"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle cx="20" cy="30.5" r="1.2" fill="#66C4FF" opacity="0.8" />
-      </svg>
-      {showWordmark && (
+  if (showWordmark) {
+    return (
+      <div className="flex items-center gap-3">
+        <BrandIconMark size={iconSize} />
         <div>
           <p
             className="font-bold leading-none"
@@ -45,7 +90,13 @@ export function Logo({ size = 40, showWordmark = true, centered = false, titleOn
             </p>
           )}
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex shrink-0 ${centered ? "w-full justify-center" : "items-center"}`}>
+      <BrandLogoImage maxHeight={maxHeight} brandAsset={brandAsset} />
     </div>
   );
 }

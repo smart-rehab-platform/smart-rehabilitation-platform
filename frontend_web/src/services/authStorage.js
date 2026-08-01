@@ -82,6 +82,21 @@ export function getRememberMePreference() {
   return rememberValue === "true";
 }
 
+export function shouldAllowRefreshFromCookie() {
+  if (getRememberMePreference()) {
+    return true;
+  }
+
+  const session = getSessionStorage();
+  if (!session) {
+    return false;
+  }
+
+  return Boolean(
+    session.getItem(TOKEN_KEY) || session.getItem(LEGACY_TOKEN_KEY),
+  );
+}
+
 export function getSavedEmail() {
   const local = getLocalStorage();
 

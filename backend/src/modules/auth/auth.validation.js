@@ -31,6 +31,21 @@ const passwordSchema = Joi.string()
     "string.empty": "Password is required."
   });
 
+const specialistProfileSchema = Joi.object({
+  specialization: Joi.string().max(150).allow("", null).messages({
+    "string.max": "Specialization must not exceed 150 characters."
+  }),
+  license_number: Joi.string().max(100).allow("", null).messages({
+    "string.max": "License number must not exceed 100 characters."
+  }),
+  years_of_experience: Joi.number().integer().min(0).allow(null).messages({
+    "number.base": "Years of experience must be a number.",
+    "number.integer": "Years of experience must be an integer.",
+    "number.min": "Years of experience must be at least 0."
+  }),
+  bio: Joi.string().allow("", null),
+}).optional();
+
 const registerSchema = Joi.object({
   full_name: Joi.string().min(3).max(150).required().messages({
     "any.required": "Full name is required.",
@@ -51,6 +66,11 @@ const registerSchema = Joi.object({
     "any.only": "Role must be parent, specialist, or admin."
   }),
   profile_image_url: Joi.string().allow("", null),
+  specialist_profile: Joi.when("role", {
+    is: "specialist",
+    then: specialistProfileSchema,
+    otherwise: Joi.any().strip(),
+  }),
 });
 
 const loginSchema = Joi.object({
@@ -98,6 +118,7 @@ const verifyEmailSchema = Joi.object({
 
 module.exports = {
   registerSchema,
+  specialistProfileSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,

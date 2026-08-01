@@ -28,26 +28,31 @@ const renderVerifyEmailPage = ({ success, message }) => `<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${success ? "Email Verified" : "Verification Failed"} | Smart Rehab Platform</title>
   </head>
-  <body style="margin:0;padding:32px 16px;background:#0A1931;font-family:Arial,sans-serif;color:#F6FAFD;">
+  <body style="margin:0;padding:32px 16px;background:#0A1A31;font-family:Inter,'Segoe UI',Roboto,Arial,sans-serif;color:#FFFFFF;">
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
       <tr>
         <td align="center">
-          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px;background:rgba(14,32,58,0.96);border:1px solid rgba(179,207,229,0.15);border-radius:24px;overflow:hidden;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px;background:#0F2342;border:1px solid rgba(143,197,255,0.20);border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(15,35,66,0.22);">
             <tr>
-              <td style="padding:28px 28px 12px;text-align:center;background:linear-gradient(135deg,#4A7FA7 0%,#20D6E8 100%);">
-                <h1 style="margin:0;font-size:24px;color:#0A1931;">Smart Rehab Platform</h1>
+              <td style="padding:24px 28px 16px;text-align:center;background:#D9EEFF;background-image:linear-gradient(180deg,#D9EEFF 0%,#CFE8FF 100%);">
+                <h1 style="margin:0;font-size:24px;font-weight:700;color:#0F2342;">Smart Rehab Platform</h1>
               </td>
             </tr>
             <tr>
-              <td style="padding:28px;text-align:center;">
-                <p style="margin:0 0 12px;font-size:22px;font-weight:700;color:${success ? "#20D6E8" : "#ff8a8a"};">
-                  ${success ? "Email verified successfully" : "Verification failed"}
-                </p>
-                <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#B3CFE5;">${message}</p>
+              <td style="padding:36px 32px 32px;text-align:center;background:#0F2342;">
                 ${
                   success
-                    ? '<p style="margin:0;font-size:14px;color:#B3CFE5;">You can now return to the app and sign in.</p>'
-                    : '<p style="margin:0;font-size:14px;color:#B3CFE5;">Request a new verification email from the app or contact support.</p>'
+                    ? ""
+                    : `<div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;margin:0 auto 20px;border-radius:50%;background:rgba(255,138,138,0.12);border:1px solid rgba(255,138,138,0.28);font-size:28px;line-height:1;color:#ff8a8a;font-weight:700;">&#10007;</div>`
+                }
+                <p style="margin:0 0 16px;font-size:24px;font-weight:700;line-height:1.25;color:${success ? "#4FA6F8" : "#ff8a8a"};">
+                  ${success ? "Email verified successfully" : "Verification failed"}
+                </p>
+                <p style="margin:0 0 20px;font-size:15px;line-height:1.75;color:#D7E4F5;">${message}</p>
+                ${
+                  success
+                    ? '<p style="margin:0;font-size:14px;line-height:1.7;color:#D7E4F5;">You can now return to the app and sign in.</p>'
+                    : '<p style="margin:0;font-size:14px;line-height:1.7;color:#D7E4F5;">Request a new verification email from the app or contact support.</p>'
                 }
               </td>
             </tr>
@@ -79,6 +84,85 @@ const renderResetPasswordRedirectPage = ({ appDeepLink, webResetUrl }) => `<!DOC
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reset Password | Smart Rehab Platform</title>
+    <style>
+      .reset-actions {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+
+      .reset-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 14px 24px;
+        font-size: 15px;
+        font-weight: 700;
+        border-radius: 12px;
+        text-decoration: none;
+        box-sizing: border-box;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      }
+
+      .reset-btn-primary {
+        color: #FFFFFF;
+        background: linear-gradient(90deg, #4FA6F8 0%, #66C4FF 100%);
+        border: 1px solid #4FA6F8;
+        box-shadow: 0 6px 18px rgba(79, 166, 248, 0.22);
+      }
+
+      .reset-btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 22px rgba(79, 166, 248, 0.28);
+      }
+
+      .reset-btn-secondary {
+        color: #4FA6F8;
+        background: transparent;
+        border: 1px solid #4FA6F8;
+      }
+
+      .reset-btn-secondary:hover {
+        transform: translateY(-1px);
+        background: rgba(79, 166, 248, 0.08);
+        border-color: #4FA6F8;
+        box-shadow: 0 6px 16px rgba(79, 166, 248, 0.12);
+      }
+
+      .reset-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 18px 0;
+        color: rgba(143, 163, 188, 0.85);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .reset-divider::before,
+      .reset-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(143, 163, 188, 0.28);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
     <script>
       window.onload = function () {
         // Chrome on Android often blocks automatic custom-scheme redirects.
@@ -89,29 +173,36 @@ const renderResetPasswordRedirectPage = ({ appDeepLink, webResetUrl }) => `<!DOC
       };
     </script>
   </head>
-  <body style="margin:0;padding:32px 16px;background:#0A1931;font-family:Arial,sans-serif;color:#F6FAFD;">
+  <body style="margin:0;padding:32px 16px;background:#0A1A31;font-family:Inter,'Segoe UI',Roboto,Arial,sans-serif;color:#F6FAFD;">
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
       <tr>
         <td align="center">
-          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px;background:rgba(14,32,58,0.96);border:1px solid rgba(179,207,229,0.15);border-radius:24px;overflow:hidden;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px;background:#0F2342;border:1px solid rgba(143,197,255,0.20);border-radius:24px;overflow:hidden;box-shadow:0 8px 28px rgba(15,35,66,0.22);">
             <tr>
-              <td style="padding:28px 28px 12px;text-align:center;background:linear-gradient(135deg,#4A7FA7 0%,#20D6E8 100%);">
-                <h1 style="margin:0;font-size:24px;color:#0A1931;">Smart Rehab Platform</h1>
+              <td style="padding:28px 28px 12px;text-align:center;background:#D9EEFF;background-image:linear-gradient(180deg,#D9EEFF 0%,#CFE8FF 100%);">
+                <h1 style="margin:0;font-size:24px;font-weight:700;color:#0F2342;">Smart Rehab Platform</h1>
               </td>
             </tr>
             <tr>
-              <td style="padding:28px;text-align:center;">
-                <p style="margin:0 0 12px;font-size:22px;font-weight:700;color:#20D6E8;">Opening the app…</p>
-                <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#B3CFE5;">Tap the button below to open the Smart Rehab app and reset your password.</p>
-                <div id="fallback">
-                  <p style="margin:0 0 16px;">
-                    <a href="${appDeepLink}" style="display:inline-block;padding:14px 24px;font-size:15px;font-weight:700;color:#0A1931;background:#20D6E8;border-radius:14px;text-decoration:none;">Open Mobile App</a>
-                  </p>
-                  <p style="margin:0;font-size:14px;line-height:1.7;color:#B3CFE5;">
-                    Or continue on the web:<br />
-                    <a href="${webResetUrl}" style="color:#20D6E8;word-break:break-all;">${webResetUrl}</a>
-                  </p>
+              <td style="padding:28px;text-align:center;background:#0F2342;">
+                <p style="margin:0 0 12px;font-size:22px;font-weight:700;color:#4FA6F8;">Opening the app…</p>
+                <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#E6EEF8;">Tap the button below to open the Smart Rehab app and reset your password.</p>
+                <div id="fallback" class="reset-actions">
+                  <a href="${appDeepLink}" class="reset-btn reset-btn-primary">Open Mobile App</a>
+                  <div class="reset-divider" aria-hidden="true">OR</div>
+                  <a href="${webResetUrl}" class="reset-btn reset-btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.75"></circle>
+                      <path d="M3 12h18M12 3c2.5 2.6 3.8 5.4 3.8 9s-1.3 6.4-3.8 9M12 3C9.5 5.6 8.2 8.4 8.2 12s1.3 6.4 3.8 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path>
+                    </svg>
+                    Continue on Web
+                  </a>
                 </div>
+                <noscript>
+                  <p class="sr-only">
+                    <a href="${webResetUrl}">Continue password reset on web</a>
+                  </p>
+                </noscript>
               </td>
             </tr>
           </table>

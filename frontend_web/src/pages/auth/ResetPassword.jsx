@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ChevronRight, Eye, EyeOff, Lock, KeyRound } from "lucide-react";
+import { ChevronRight, Eye, EyeOff, Lock } from "lucide-react";
 import { AuthStatusCard } from "../../components/auth/AuthStatusCard";
 import { AuthInput } from "../../components/auth/AuthInput";
 import { PasswordStrength } from "../../components/auth/PasswordStrength";
 import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { Toast } from "../../components/auth/Toast";
+import {
+  authPageHeadingClassName,
+  authPageHeadingStyle,
+  authPageSubtitleClassName,
+  authPageSubtitleStyle,
+  isInvalidResetTokenMessage,
+} from "../../components/auth/authPageStyles";
 import { C } from "../../components/auth/tokens";
 import {
   getPasswordStrength,
@@ -17,7 +24,8 @@ import api from "../../services/api";
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [token, setToken] = useState(searchParams.get("token") || "");
+  const resetToken = searchParams.get("token")?.trim() || "";
+
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -27,6 +35,7 @@ export default function ResetPassword() {
   const [toastMessage, setToastMessage] = useState("");
   const [toastVariant, setToastVariant] = useState("success");
   const [success, setSuccess] = useState(false);
+  const [linkInvalid, setLinkInvalid] = useState(!resetToken);
 
   const passwordStrength = getPasswordStrength(password);
   const pwValid = passwordStrength.isStrong;
@@ -43,8 +52,8 @@ export default function ResetPassword() {
   };
 
   const handleSubmit = async () => {
-    if (!token.trim()) {
-      showToast("Please enter your reset token", "error");
+    if (!resetToken) {
+      setLinkInvalid(true);
       return;
     }
 
@@ -62,7 +71,7 @@ export default function ResetPassword() {
 
     try {
       const { data } = await api.post("/auth/reset-password", {
-        token: token.trim(),
+        token: resetToken,
         newPassword: password,
       });
 
@@ -70,11 +79,29 @@ export default function ResetPassword() {
       setSuccess(true);
     } catch (error) {
       const message = readAuthApiMessage(error, "Failed to reset password");
+
+      if (isInvalidResetTokenMessage(message)) {
+        setLinkInvalid(true);
+        return;
+      }
+
       showToast(message, "error");
     } finally {
       setLoading(false);
     }
   };
+
+  if (linkInvalid) {
+    return (
+      <AuthStatusCard
+        variant="error"
+        title="Reset link expired"
+        message="This password reset link is no longer valid. Please request a new password reset email."
+        actionLabel="Request New Link"
+        onAction={() => navigate("/forgot-password")}
+      />
+    );
+  }
 
   return (
     <>
@@ -88,23 +115,16 @@ export default function ResetPassword() {
         />
       ) : (
         <>
-          <div className="flex flex-col gap-1 mb-6">
-            <h2 className="text-2xl font-bold" style={{ fontFamily: "'Syne', sans-serif", color: C.white }}>
+          <div className="mb-6 flex flex-col gap-2">
+            <h2 className={authPageHeadingClassName} style={authPageHeadingStyle}>
               Reset Password
             </h2>
-            <p className="text-sm" style={{ color: C.light }}>
-              Enter your reset token and choose a strong new password.
+            <p className={authPageSubtitleClassName} style={authPageSubtitleStyle}>
+              Enter your new password below.
             </p>
           </div>
 
           <div className="flex flex-col gap-4">
-            <AuthInput
-              label="Reset Token"
-              icon={<KeyRound size={16} />}
-              placeholder="Paste your reset token"
-              value={token}
-              onChange={setToken}
-            />
             <AuthInput
               label="New Password"
               icon={<Lock size={16} />}
@@ -117,9 +137,10 @@ export default function ResetPassword() {
               rightSlot={
                 <button
                   type="button"
-                  onClick={() => setShowPw((v) => !v)}
-                  style={{ color: C.light, opacity: 0.6 }}
-                  className="hover:opacity-100 transition-opacity"
+                  onClick={() => setShowPw((value) => !value)}
+                  aria-label={showPw ? "Hide password" : "Show password"}
+                  style={{ color: C.iconInteractive, opacity: 0.85 }}
+                  className="transition-opacity hover:opacity-100"
                 >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -138,9 +159,10 @@ export default function ResetPassword() {
               rightSlot={
                 <button
                   type="button"
-                  onClick={() => setShowCf((v) => !v)}
-                  style={{ color: C.light, opacity: 0.6 }}
-                  className="hover:opacity-100 transition-opacity"
+                  onClick={() => setShowCf((value) => !value)}
+                  aria-label={showCf ? "Hide confirm password" : "Show confirm password"}
+                  style={{ color: C.iconInteractive, opacity: 0.85 }}
+                  className="transition-opacity hover:opacity-100"
                 >
                   {showCf ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -153,17 +175,17 @@ export default function ResetPassword() {
               ) : (
                 <>
                   <span>Reset Password</span>
-                  <ChevronRight size={16} />
+                  <ChevronRight size={16} className="auth-btn-arrow" />
                 </>
               )}
             </PrimaryButton>
 
-            <p className="text-center text-xs" style={{ color: C.light }}>
+            <p className="auth-footer-text text-center text-[13px] font-medium leading-relaxed">
               Back to{" "}
               <button
+                type="button"
                 onClick={() => navigate("/login")}
-                className="font-semibold transition-colors hover:text-white"
-                style={{ color: C.primary }}
+                className="auth-footer-link font-semibold transition-colors"
               >
                 Sign In
               </button>

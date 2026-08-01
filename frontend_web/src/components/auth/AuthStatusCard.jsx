@@ -1,5 +1,11 @@
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { C } from "./tokens";
+import {
+  authPageHeadingClassName,
+  authPageHeadingStyle,
+  authPageSubtitleClassName,
+  authPageSubtitleStyle,
+} from "./authPageStyles";
 import { PrimaryButton } from "./PrimaryButton";
 
 export function AuthStatusCard({
@@ -11,12 +17,12 @@ export function AuthStatusCard({
 }) {
   const isLoading = variant === "loading";
   const isError = variant === "error";
-  const accent = isError ? "#ef4444" : "#22c55e";
+  const accent = isError ? "#ef4444" : C.primary;
 
   return (
     <div className="flex flex-col items-center text-center">
       <div
-        className="w-[72px] h-[72px] rounded-full flex items-center justify-center border"
+        className="flex h-[72px] w-[72px] items-center justify-center rounded-full border"
         style={{
           background: `${accent}1f`,
           borderColor: `${accent}4d`,
@@ -33,18 +39,21 @@ export function AuthStatusCard({
       </div>
 
       <h2
-        className="text-2xl font-bold mt-5"
-        style={{ fontFamily: "'Syne', sans-serif", color: C.white }}
+        className={`${authPageHeadingClassName} mt-5`}
+        style={authPageHeadingStyle}
       >
         {title}
       </h2>
 
-      <p className="text-sm leading-6 mt-2 max-w-sm" style={{ color: C.light, opacity: 0.9 }}>
+      <p
+        className={`${authPageSubtitleClassName} mt-2 max-w-sm`}
+        style={authPageSubtitleStyle}
+      >
         {message}
       </p>
 
       {actionLabel && onAction && (
-        <div className="w-full mt-6">
+        <div className="mt-6 w-full">
           <PrimaryButton onClick={onAction}>{actionLabel}</PrimaryButton>
         </div>
       )}
