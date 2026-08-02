@@ -469,4 +469,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authPasswordRuleSpecialCharacter => 'Contains special character';
+
+  @override
+  String get authValidationInvalidEmail => 'Invalid email address';
+
+  @override
+  String get loginTitle => 'Welcome Back';
+
+  @override
+  String get loginSubtitle => 'Continue your smart rehabilitation journey';
+
+  @override
+  String get loginEmailHint => 'name@example.com';
+
+  @override
+  String get loginPasswordHint => 'Enter your password';
+
+  @override
+  String get loginRememberMe => 'Remember Me';
+
+  @override
+  String get loginForgotPassword => 'Forgot Password?';
+
+  @override
+  String get loginSigningIn => 'Signing In…';
+
+  @override
+  String get loginEnterEmailAndPassword => 'Please enter email and password';
+
+  @override
+  String get loginSuccess => 'Login successful';
+
+  @override
+  String get loginFailed => 'Login failed. Please try again.';
+
+  @override
+  String get loginUnableToSignIn =>
+      'Unable to sign in right now. Please try again.';
+
+  @override
+  String get loginUnableToDetermineRole =>
+      'Unable to determine your account role. Please contact support.';
+
+  @override
+  String get loginGoToEmailVerification => 'Go to Email Verification';
+
+  @override
+  String get loginNoAccountPrompt => 'Don\'t have an account? ';
+
+  @override
+  String get loginShowPassword => 'Show password';
+
+  @override
+  String get loginHidePassword => 'Hide password';
 }

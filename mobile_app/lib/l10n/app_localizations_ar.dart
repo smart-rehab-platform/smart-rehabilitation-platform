@@ -469,4 +469,58 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authPasswordRuleSpecialCharacter => 'تحتوي على رمز خاص';
+
+  @override
+  String get authValidationInvalidEmail => 'عنوان بريد إلكتروني غير صالح';
+
+  @override
+  String get loginTitle => 'مرحباً بعودتك';
+
+  @override
+  String get loginSubtitle => 'تابع رحلة التأهيل الذكي';
+
+  @override
+  String get loginEmailHint => 'name@example.com';
+
+  @override
+  String get loginPasswordHint => 'أدخل كلمة المرور';
+
+  @override
+  String get loginRememberMe => 'تذكرني';
+
+  @override
+  String get loginForgotPassword => 'نسيت كلمة المرور؟';
+
+  @override
+  String get loginSigningIn => 'جارٍ تسجيل الدخول…';
+
+  @override
+  String get loginEnterEmailAndPassword =>
+      'يرجى إدخال البريد الإلكتروني وكلمة المرور';
+
+  @override
+  String get loginSuccess => 'تم تسجيل الدخول بنجاح';
+
+  @override
+  String get loginFailed => 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get loginUnableToSignIn =>
+      'تعذر تسجيل الدخول حالياً. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get loginUnableToDetermineRole =>
+      'تعذر تحديد دور حسابك. يرجى التواصل مع الدعم.';
+
+  @override
+  String get loginGoToEmailVerification => 'الانتقال إلى التحقق من البريد';
+
+  @override
+  String get loginNoAccountPrompt => 'ليس لديك حساب؟ ';
+
+  @override
+  String get loginShowPassword => 'إظهار كلمة المرور';
+
+  @override
+  String get loginHidePassword => 'إخفاء كلمة المرور';
 }

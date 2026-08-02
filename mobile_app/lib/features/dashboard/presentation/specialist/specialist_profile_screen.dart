@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/locale/language_selector.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../models/specialist_profile_models.dart';
 import '../../providers/specialist_profile_provider.dart';
@@ -21,7 +22,8 @@ class SpecialistProfileScreen extends ConsumerStatefulWidget {
       _SpecialistProfileScreenState();
 }
 
-class _SpecialistProfileScreenState extends ConsumerState<SpecialistProfileScreen> {
+class _SpecialistProfileScreenState
+    extends ConsumerState<SpecialistProfileScreen> {
   @override
   void initState() {
     super.initState();
@@ -30,7 +32,9 @@ class _SpecialistProfileScreenState extends ConsumerState<SpecialistProfileScree
     });
   }
 
-  List<DashboardProfileFieldEntry> _profileFields(SpecialistProfileBundle bundle) {
+  List<DashboardProfileFieldEntry> _profileFields(
+    SpecialistProfileBundle bundle,
+  ) {
     final professional = bundle.professional;
     final fields = buildRequiredProfileFields(
       fullName: bundle.fullName,
@@ -98,14 +102,23 @@ class _SpecialistProfileScreenState extends ConsumerState<SpecialistProfileScree
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
-          child: SharedProfileCard(
-            initials: bundle.fullName,
-            initialsFallback: 'SP',
-            imageUrl: bundle.profileImageUrl,
-            fields: _profileFields(bundle),
-            presenceUserId: bundle.userId,
-            onEditPressed: () => context.push(AppRoutes.specialistEditProfile),
-            onLogout: () => SpecialistNavigation.logout(context, ref),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const LanguageSelector(
+                presentation: LanguageSelectorPresentation.settingsTile,
+              ),
+              SharedProfileCard(
+                initials: bundle.fullName,
+                initialsFallback: 'SP',
+                imageUrl: bundle.profileImageUrl,
+                fields: _profileFields(bundle),
+                presenceUserId: bundle.userId,
+                onEditPressed: () =>
+                    context.push(AppRoutes.specialistEditProfile),
+                onLogout: () => SpecialistNavigation.logout(context, ref),
+              ),
+            ],
           ),
         ),
       );

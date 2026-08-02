@@ -1021,6 +1021,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contains special character'**
   String get authPasswordRuleSpecialCharacter;
+
+  /// Validation message for malformed email input.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email address'**
+  String get authValidationInvalidEmail;
+
+  /// Login form heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Back'**
+  String get loginTitle;
+
+  /// Login form supporting subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue your smart rehabilitation journey'**
+  String get loginSubtitle;
+
+  /// Placeholder hint for the login email field.
+  ///
+  /// In en, this message translates to:
+  /// **'name@example.com'**
+  String get loginEmailHint;
+
+  /// Placeholder hint for the login password field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get loginPasswordHint;
+
+  /// Remember me checkbox label on the login form.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember Me'**
+  String get loginRememberMe;
+
+  /// Link to the forgot password flow from login.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get loginForgotPassword;
+
+  /// Login button label while authentication is in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing In…'**
+  String get loginSigningIn;
+
+  /// Validation snackbar when login fields are empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter email and password'**
+  String get loginEnterEmailAndPassword;
+
+  /// Snack bar shown after a successful login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful'**
+  String get loginSuccess;
+
+  /// Generic fallback message when login fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed. Please try again.'**
+  String get loginFailed;
+
+  /// Fallback message when the login request cannot complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to sign in right now. Please try again.'**
+  String get loginUnableToSignIn;
+
+  /// Shown when login succeeds but the user role is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to determine your account role. Please contact support.'**
+  String get loginUnableToDetermineRole;
+
+  /// Login form button shown when email verification is required.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Email Verification'**
+  String get loginGoToEmailVerification;
+
+  /// Login footer prompt before the create account link.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? '**
+  String get loginNoAccountPrompt;
+
+  /// Accessibility label for revealing the login password.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get loginShowPassword;
+
+  /// Accessibility label for concealing the login password.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get loginHidePassword;
 }
 
 class _AppLocalizationsDelegate

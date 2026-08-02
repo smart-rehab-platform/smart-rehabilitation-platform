@@ -645,6 +645,7 @@ class AuthInputField extends StatelessWidget {
     this.state = AuthFieldState.idle,
     this.message,
     this.textCapitalization = TextCapitalization.none,
+    this.textDirection,
   });
 
   final TextEditingController controller;
@@ -660,6 +661,7 @@ class AuthInputField extends StatelessWidget {
   final AuthFieldState state;
   final String? message;
   final TextCapitalization textCapitalization;
+  final TextDirection? textDirection;
 
   @override
   Widget build(BuildContext context) {
@@ -704,6 +706,7 @@ class AuthInputField extends StatelessWidget {
           obscureText: obscureText,
           autocorrect: false,
           textCapitalization: textCapitalization,
+          textDirection: textDirection,
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w500,
@@ -873,7 +876,12 @@ class _AuthGradientButtonState extends State<AuthGradientButton> {
                 ),
                 if (!widget.isLoading && widget.trailingIcon != null) ...[
                   const SizedBox(width: 6),
-                  Icon(widget.trailingIcon, size: 16, color: AppColors.white),
+                  Icon(
+                    widget.trailingIcon,
+                    size: 16,
+                    color: AppColors.white,
+                    textDirection: Directionality.of(context),
+                  ),
                 ],
               ],
             ),

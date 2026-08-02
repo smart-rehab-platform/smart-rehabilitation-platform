@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/locale/language_selector.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../providers/specialist_features_provider.dart';
@@ -130,6 +131,9 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
                 ),
               ],
               SizedBox(height: context.dashSpacing),
+              const LanguageSelector(
+                presentation: LanguageSelectorPresentation.settingsTile,
+              ),
               FilledButton(
                 onPressed: () => AdminNavigation.logout(context, ref),
                 child: const Text('Logout'),
@@ -155,6 +159,9 @@ class AdminMoreScreen extends ConsumerWidget {
       body: ListView(
         padding: context.dashPadding,
         children: [
+          const LanguageSelector(
+            presentation: LanguageSelectorPresentation.settingsTile,
+          ),
           _MoreTile(
             icon: Icons.groups_outlined,
             label: 'Users',

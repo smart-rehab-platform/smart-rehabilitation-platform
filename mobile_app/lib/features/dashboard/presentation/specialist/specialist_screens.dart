@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/locale/language_selector.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/dashboard_theme.dart';
 import '../../models/specialist_dashboard_models.dart';
@@ -745,6 +746,9 @@ class SpecialistMoreScreen extends ConsumerWidget {
       body: ListView(
         padding: context.dashPadding,
         children: [
+          const LanguageSelector(
+            presentation: LanguageSelectorPresentation.settingsTile,
+          ),
           _MoreTile(
             icon: Icons.assignment_ind_outlined,
             label: 'Assigned Case Requests',

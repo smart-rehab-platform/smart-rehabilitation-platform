@@ -21,7 +21,7 @@ import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_navigation.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import 'parent_ui_helpers.dart';
-import '../../../../core/locale/developer_locale_switch.dart';
+import '../../../../core/locale/language_selector.dart';
 
 export 'parent_sessions_screen.dart';
 
@@ -510,17 +510,25 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
-          child: SharedProfileCard(
-            initials: bundle.fullName,
-            initialsFallback: 'PR',
-            imageUrl: bundle.profileImageUrl,
-            fields: _profileFields(bundle),
-            presenceUserId: bundle.userId,
-            accentColor: DashboardColors.brandCyan,
-            cardTint: DashboardColors.brandCyan,
-            useBrandLogoutGradient: true,
-            onEditPressed: () => context.push(AppRoutes.parentEditProfile),
-            onLogout: () => ParentNavigation.logout(context, ref),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const LanguageSelector(
+                presentation: LanguageSelectorPresentation.settingsTile,
+              ),
+              SharedProfileCard(
+                initials: bundle.fullName,
+                initialsFallback: 'PR',
+                imageUrl: bundle.profileImageUrl,
+                fields: _profileFields(bundle),
+                presenceUserId: bundle.userId,
+                accentColor: DashboardColors.brandCyan,
+                cardTint: DashboardColors.brandCyan,
+                useBrandLogoutGradient: true,
+                onEditPressed: () => context.push(AppRoutes.parentEditProfile),
+                onLogout: () => ParentNavigation.logout(context, ref),
+              ),
+            ],
           ),
         ),
       );
@@ -563,7 +571,9 @@ class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
       body: ListView(
         padding: context.dashPadding,
         children: [
-          const DeveloperLocaleSwitch(),
+          const LanguageSelector(
+            presentation: LanguageSelectorPresentation.settingsTile,
+          ),
           _MoreTile(
             icon: Icons.assignment_outlined,
             label: 'Case Requests',

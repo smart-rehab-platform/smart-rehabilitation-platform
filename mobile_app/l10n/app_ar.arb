@@ -164,5 +164,24 @@
   "authPasswordRuleUppercase": "تحتوي على حرف كبير",
   "authPasswordRuleLowercase": "تحتوي على حرف صغير",
   "authPasswordRuleNumber": "تحتوي على رقم",
-  "authPasswordRuleSpecialCharacter": "تحتوي على رمز خاص"
+  "authPasswordRuleSpecialCharacter": "تحتوي على رمز خاص",
+
+  "authValidationInvalidEmail": "عنوان بريد إلكتروني غير صالح",
+
+  "loginTitle": "مرحباً بعودتك",
+  "loginSubtitle": "تابع رحلة التأهيل الذكي",
+  "loginEmailHint": "name@example.com",
+  "loginPasswordHint": "أدخل كلمة المرور",
+  "loginRememberMe": "تذكرني",
+  "loginForgotPassword": "نسيت كلمة المرور؟",
+  "loginSigningIn": "جارٍ تسجيل الدخول…",
+  "loginEnterEmailAndPassword": "يرجى إدخال البريد الإلكتروني وكلمة المرور",
+  "loginSuccess": "تم تسجيل الدخول بنجاح",
+  "loginFailed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+  "loginUnableToSignIn": "تعذر تسجيل الدخول حالياً. يرجى المحاولة مرة أخرى.",
+  "loginUnableToDetermineRole": "تعذر تحديد دور حسابك. يرجى التواصل مع الدعم.",
+  "loginGoToEmailVerification": "الانتقال إلى التحقق من البريد",
+  "loginNoAccountPrompt": "ليس لديك حساب؟ ",
+  "loginShowPassword": "إظهار كلمة المرور",
+  "loginHidePassword": "إخفاء كلمة المرور"
 }
