@@ -55,12 +55,10 @@ class AppRoutes {
     return base;
   }
 
- 
   static const String specialistPendingReviews =
       '/dashboard/specialist/pending-reviews';
 
-  static const String specialistSessions =
-      '/dashboard/specialist/sessions';
+  static const String specialistSessions = '/dashboard/specialist/sessions';
 
   /// Opens Specialist Sessions in calendar or list mode via `?view=`.
   static String specialistSessionsWithView({String view = 'list'}) {

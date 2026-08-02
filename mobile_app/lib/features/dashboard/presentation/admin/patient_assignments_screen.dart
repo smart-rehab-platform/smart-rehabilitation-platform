@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../models/admin_assignments_models.dart';
 import '../../models/parent_links_models.dart';
 import '../../providers/admin_patient_assignments_provider.dart';
@@ -93,12 +93,12 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                         ),
                       if (state.successMessage != null) ...[
                         AdminSurfaceCard(
-                          tint: AdminDashboardColors.success,
+                          tint: DashboardColors.success,
                           child: Row(
                             children: [
                               Icon(
                                 Icons.check_circle_outline_rounded,
-                                color: AdminDashboardColors.success,
+                                color: DashboardColors.success,
                                 size: context.dashSpacing * 0.65,
                               ),
                               SizedBox(width: context.dashSpacing * 0.6),
@@ -171,7 +171,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              activeColor: AdminDashboardColors.primary,
+                              activeColor: DashboardColors.brandCyan,
                               controlAffinity: ListTileControlAffinity.leading,
                             ),
                             SizedBox(height: context.dashSpacing * 0.35),
@@ -184,7 +184,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                         .read(adminPatientAssignmentsProvider.notifier)
                                         .assignSpecialist(),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AdminDashboardColors.primary,
+                                  backgroundColor: DashboardColors.brandCyan,
                                   foregroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
                                     vertical: context.dashSpacing * 0.75,
@@ -268,7 +268,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              activeColor: AdminDashboardColors.primary,
+                              activeColor: DashboardColors.brandCyan,
                               controlAffinity: ListTileControlAffinity.leading,
                             ),
                             SizedBox(height: context.dashSpacing * 0.35),
@@ -281,7 +281,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                         .read(adminPatientAssignmentsProvider.notifier)
                                         .linkParent(),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AdminDashboardColors.primary,
+                                  backgroundColor: DashboardColors.brandCyan,
                                   foregroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
                                     vertical: context.dashSpacing * 0.75,
@@ -314,7 +314,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                       Text(
                         'To change an assignment, unlink the current specialist or parent, then assign or link the new one.',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: AdminDashboardColors.textSecondary,
+                          color: DashboardColors.textSecondary,
                         ),
                       ),
                       SizedBox(height: context.dashSpacing),
@@ -344,11 +344,11 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CircleAvatar(
-                                    backgroundColor: AdminDashboardColors.emeraldSoft,
+                                    backgroundColor: DashboardColors.tealSoft,
                                     child: Text(
                                       dashboardAvatarLetter(link.specialistName),
                                       style: TextStyle(
-                                        color: AdminDashboardColors.emerald,
+                                        color: DashboardColors.success,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
@@ -372,7 +372,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: theme.textTheme.bodySmall?.copyWith(
-                                            color: AdminDashboardColors.textSecondary,
+                                            color: DashboardColors.textSecondary,
                                           ),
                                         ),
                                       ],
@@ -385,7 +385,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                         : () => _confirmUnlinkSpecialist(link),
                                     icon: Icon(
                                       Icons.link_off_rounded,
-                                      color: AdminDashboardColors.danger,
+                                      color: DashboardColors.highPriority,
                                     ),
                                   ),
                                 ],
@@ -420,11 +420,11 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CircleAvatar(
-                                    backgroundColor: AdminDashboardColors.blueSoft,
+                                    backgroundColor: DashboardColors.blueSoft,
                                     child: Text(
                                       dashboardAvatarLetter(guardian.parentName),
                                       style: TextStyle(
-                                        color: AdminDashboardColors.primary,
+                                        color: DashboardColors.brandCyan,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
@@ -448,7 +448,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: theme.textTheme.bodySmall?.copyWith(
-                                            color: AdminDashboardColors.textSecondary,
+                                            color: DashboardColors.textSecondary,
                                           ),
                                         ),
                                       ],
@@ -461,7 +461,7 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
                                         : () => _confirmUnlinkParent(guardian),
                                     icon: Icon(
                                       Icons.link_off_rounded,
-                                      color: AdminDashboardColors.danger,
+                                      color: DashboardColors.highPriority,
                                     ),
                                   ),
                                 ],
@@ -509,7 +509,7 @@ class _UnlinkConfirmDialogState extends State<_UnlinkConfirmDialog> {
       widget.messenger.showSnackBar(
         SnackBar(
           content: Text(error),
-          backgroundColor: AdminDashboardColors.danger,
+          backgroundColor: DashboardColors.highPriority,
         ),
       );
       return;
@@ -538,7 +538,7 @@ class _UnlinkConfirmDialogState extends State<_UnlinkConfirmDialog> {
           FilledButton(
             onPressed: _submitting ? null : _onConfirmPressed,
             style: FilledButton.styleFrom(
-              backgroundColor: AdminDashboardColors.danger,
+              backgroundColor: DashboardColors.highPriority,
             ),
             child: _submitting
                 ? const SizedBox(
@@ -596,12 +596,12 @@ class _DropdownField<T> extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         filled: true,
-        fillColor: AdminDashboardColors.surface,
+        fillColor: DashboardColors.surface,
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AdminDashboardColors.border),
+          borderSide: BorderSide(color: DashboardColors.border),
         ),
       ),
       items: items

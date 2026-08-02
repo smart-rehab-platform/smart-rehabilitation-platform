@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../case_intake/models/case_intake_request_model.dart';
@@ -100,7 +99,7 @@ class _AdminPatientDetailsScreenState
         onRefresh: () => ref
             .read(specialistPatientDetailsProvider(widget.patientId).notifier)
             .refresh(),
-        color: AdminDashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: PatientDetailsBody(
           patientId: widget.patientId,
           data: data,
@@ -114,7 +113,7 @@ class _AdminPatientDetailsScreenState
                 icon: const Icon(Icons.edit_outlined),
                 label: const Text('Edit Patient'),
                 style: FilledButton.styleFrom(
-                  backgroundColor: AdminDashboardColors.primary,
+                  backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
                     vertical: context.dashSpacing * 0.65,
@@ -128,8 +127,8 @@ class _AdminPatientDetailsScreenState
                 icon: const Icon(Icons.assignment_ind_outlined),
                 label: const Text('Patient Assignments'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AdminDashboardColors.primary,
-                  side: const BorderSide(color: AdminDashboardColors.primary),
+                  foregroundColor: DashboardColors.brandCyan,
+                  side: const BorderSide(color: DashboardColors.brandCyan),
                   padding: EdgeInsets.symmetric(
                     vertical: context.dashSpacing * 0.65,
                   ),
@@ -239,7 +238,7 @@ class _EditPatientDialogState extends State<_EditPatientDialog> {
       widget.messenger.showSnackBar(
         SnackBar(
           content: Text(error),
-          backgroundColor: AdminDashboardColors.danger,
+          backgroundColor: DashboardColors.highPriority,
         ),
       );
       return;

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../case_intake/models/case_category_model.dart';
 import '../../../case_intake/providers/case_categories_provider.dart';
@@ -186,8 +186,8 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                 children: [
                                   AdminIconCircle(
                                     icon: Icons.person_outline_rounded,
-                                    color: AdminDashboardColors.primary,
-                                    background: AdminDashboardColors.blueSoft,
+                                    color: DashboardColors.primary,
+                                    background: DashboardColors.blueSoft,
                                     size: 38,
                                     imageUrl: patient.profileImageUrl,
                                   ),
@@ -205,7 +205,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
                                                 fontWeight: FontWeight.w800,
-                                                color: AdminDashboardColors
+                                                color: DashboardColors
                                                     .textPrimary,
                                                 height: 1.2,
                                               ),
@@ -223,8 +223,8 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                               children: [
                                                 AdminStatusBadge(
                                                   label: patient.condition!,
-                                                  color: AdminDashboardColors
-                                                      .primary,
+                                                  color: DashboardColors
+                                                      .brandCyan,
                                                 ),
                                                 Text(
                                                   '•',
@@ -233,7 +233,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                                       .labelSmall
                                                       ?.copyWith(
                                                         color:
-                                                            AdminDashboardColors
+                                                            DashboardColors
                                                                 .textMuted,
                                                         fontWeight:
                                                             FontWeight.w500,
@@ -246,7 +246,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                                       .labelSmall
                                                       ?.copyWith(
                                                         color:
-                                                            AdminDashboardColors
+                                                            DashboardColors
                                                                 .textMuted,
                                                         fontWeight:
                                                             FontWeight.w500,
@@ -259,8 +259,8 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                               alignment: Alignment.centerLeft,
                                               child: AdminStatusBadge(
                                                 label: patient.condition!,
-                                                color: AdminDashboardColors
-                                                    .primary,
+                                                color: DashboardColors
+                                                    .brandCyan,
                                               ),
                                             )
                                           else
@@ -268,7 +268,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                               patient.gender!,
                                               style: theme.textTheme.labelSmall
                                                   ?.copyWith(
-                                                    color: AdminDashboardColors
+                                                    color: DashboardColors
                                                         .textMuted,
                                                     fontWeight: FontWeight.w500,
                                                   ),
@@ -289,7 +289,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                         : () => _openPatientDetails(patient.id),
                                     icon: const Icon(
                                       Icons.edit_outlined,
-                                      color: AdminDashboardColors.primary,
+                                      color: DashboardColors.primary,
                                       size: 20,
                                     ),
                                   ),
@@ -298,14 +298,14 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                               SizedBox(height: context.dashSpacing * 0.3),
                               const Divider(
                                 height: 1,
-                                color: AdminDashboardColors.border,
+                                color: DashboardColors.border,
                               ),
                               SizedBox(height: context.dashSpacing * 0.25),
                               Text(
                                 'Previous Session',
                                 style: theme.textTheme.labelMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
-                                  color: AdminDashboardColors.textPrimary,
+                                  color: DashboardColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -314,7 +314,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                 Text(
                                   'No previous session',
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: AdminDashboardColors.textMuted,
+                                    color: DashboardColors.textMuted,
                                   ),
                                 )
                               else ...[
@@ -325,7 +325,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: AdminDashboardColors.textSecondary,
+                                    color: DashboardColors.textSecondary,
                                   ),
                                 ),
                                 const SizedBox(height: 4),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/admin_dashboard_colors.dart';
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -13,6 +12,7 @@ import '../widgets/admin_ui_components.dart';
 import '../widgets/dashboard_bottom_nav.dart';
 import '../widgets/dashboard_components.dart';
 import '../widgets/dashboard_layout.dart';
+import '../widgets/parent_dashboard_cards.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -42,28 +42,31 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         (adminDisplayName != null && adminDisplayName.isNotEmpty)
         ? adminDisplayName
         : state.userName?.trim();
+    final greetingName = userDisplayName != null && userDisplayName.isNotEmpty
+        ? userDisplayName
+        : 'Admin';
 
     return AdminPageScaffold(
       title: '',
-      useBrandedAppBar: true,
       currentNav: DashboardNavItem.home,
       wrapBodyInScrollView: true,
       body: state.isLoading
-          ? const AdminLoadingCard()
+          ? const DashboardLoadingCard()
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AdminPageTitle(
-                  title: userDisplayName != null && userDisplayName.isNotEmpty
-                      ? 'Welcome, $userDisplayName'
-                      : 'Welcome, Admin',
-                  subtitle:
-                      'Manage your rehabilitation platform from one place.',
+                DashboardGreeting(message: 'Welcome, $greetingName'),
+                const SizedBox(height: 6),
+                Text(
+                  'Manage your rehabilitation platform from one place.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: DashboardColors.textSecondary,
+                  ),
                 ),
                 SizedBox(height: context.dashSpacing * 0.75),
                 AdminSurfaceCard(
                   onTap: () => context.push(AppRoutes.adminPatientAssignments),
-                  tint: AdminDashboardColors.primary,
+                  tint: DashboardColors.brandCyan,
                   padding: EdgeInsets.symmetric(
                     horizontal: context.dashSpacing * 0.9,
                     vertical: context.dashSpacing * 0.85,
@@ -71,10 +74,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const AdminIconCircle(
+                      AdminIconCircle(
                         icon: Icons.assignment_ind_outlined,
-                        color: AdminDashboardColors.primary,
-                        background: AdminDashboardColors.blueSoft,
+                        color: DashboardColors.brandCyan,
+                        background: DashboardColors.blueSoft,
                       ),
                       SizedBox(width: context.dashSpacing * 0.65),
                       Expanded(
@@ -86,7 +89,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                               'Patient Assignments',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w800,
-                                color: AdminDashboardColors.textPrimary,
+                                color: DashboardColors.textPrimary,
                                 height: 1.25,
                               ),
                             ),
@@ -96,7 +99,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: AdminDashboardColors.textSecondary,
+                                color: DashboardColors.textSecondary,
                                 height: 1.4,
                               ),
                             ),
@@ -105,7 +108,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       ),
                       Icon(
                         Icons.chevron_right_rounded,
-                        color: AdminDashboardColors.textMuted,
+                        color: DashboardColors.textMuted,
                         size: context.dashSpacing * 0.55,
                       ),
                     ],
@@ -113,7 +116,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 ),
                 if (state.errorMessage != null) ...[
                   SizedBox(height: context.dashSpacing * 0.75),
-                  AdminErrorCard(
+                  DashboardErrorCard(
                     message: state.errorMessage!,
                     onRetry: () =>
                         ref.read(adminDashboardProvider.notifier).refresh(),
@@ -172,29 +175,25 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     Expanded(
                       child: Text(
                         'System Analytics',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: AdminDashboardColors.textPrimary,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: DashboardColors.textPrimary,
                         ),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AdminDashboardColors.surface,
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(color: AdminDashboardColors.border),
-                      ),
-                      child: Text(
-                        'This Week',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AdminDashboardColors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    AdminSystemAnalyticsPeriodControls(
+                      periodLabel: state.weeklySystemActivity.periodLabel,
+                      canGoForward: state.systemActivityWeekOffset > 0,
+                      isLoading: state.isSystemActivityLoading,
+                      onPreviousWeek: () => ref
+                          .read(adminDashboardProvider.notifier)
+                          .showPreviousSystemActivityWeek(),
+                      onNextWeek: () => ref
+                          .read(adminDashboardProvider.notifier)
+                          .showNextSystemActivityWeek(),
+                      onPresetSelected: (offset) => ref
+                          .read(adminDashboardProvider.notifier)
+                          .setSystemActivityWeekOffset(offset),
                     ),
                   ],
                 ),
@@ -202,21 +201,18 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 AdminSurfaceCard(
                   padding: EdgeInsets.all(context.dashSpacing * 0.75),
                   child: AdminBarChart(
-                    labels: const [
-                      'Mon',
-                      'Tue',
-                      'Wed',
-                      'Thu',
-                      'Fri',
-                      'Sat',
-                      'Sun',
-                    ],
-                    usersValues: _weeklyUserBars(
-                      state.overview.newSignupsThisWeek,
-                    ),
-                    patientsValues: _weeklyPatientBars(
-                      state.overview.totalPatients,
-                    ),
+                    periodKey:
+                        'week-${state.systemActivityWeekOffset}-${state.weeklySystemActivity.weekStart?.toIso8601String() ?? 'empty'}',
+                    isLoading: state.isSystemActivityLoading,
+                    labels: state.weeklySystemActivity.days
+                        .map((day) => day.label)
+                        .toList(),
+                    fullDayLabels: state.weeklySystemActivity.days
+                        .map((day) => day.fullLabel)
+                        .toList(),
+                    values: state.weeklySystemActivity.days
+                        .map((day) => day.activityCount)
+                        .toList(),
                   ),
                 ),
                 SizedBox(height: context.dashSpacing * 1.2),
@@ -226,7 +222,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 ),
                 SizedBox(height: context.dashSpacing * 0.5),
                 if (state.recentUsers.isEmpty)
-                  const AdminEmptyCard(message: 'No users found.')
+                  const DashboardEmptyCard(message: 'No users found.')
                 else
                   Column(
                     children: [
@@ -278,7 +274,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                             style: theme.textTheme.bodyMedium
                                                 ?.copyWith(
                                                   fontWeight: FontWeight.w800,
-                                                  color: AdminDashboardColors
+                                                  color: DashboardColors
                                                       .textPrimary,
                                                 ),
                                           ),
@@ -290,8 +286,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           style: theme.textTheme.labelSmall
                                               ?.copyWith(
-                                                color: AdminDashboardColors
-                                                    .textMuted,
+                                                color:
+                                                    DashboardColors.textMuted,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                         ),
@@ -306,8 +302,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                       overflow: TextOverflow.ellipsis,
                                       style: theme.textTheme.bodySmall
                                           ?.copyWith(
-                                            color: AdminDashboardColors
-                                                .textSecondary,
+                                            color:
+                                                DashboardColors.textSecondary,
                                             fontWeight: FontWeight.w500,
                                           ),
                                     ),
@@ -324,29 +320,5 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
               ],
             ),
     );
-  }
-
-  List<double> _weeklyUserBars(int newSignupsThisWeek) {
-    const weights = [0.85, 1.05, 1.25, 1.15, 1.35, 0.95, 0.75];
-    return _distributeByWeights(newSignupsThisWeek.toDouble(), weights);
-  }
-
-  List<double> _weeklyPatientBars(int totalPatients) {
-    const weights = [0.75, 0.95, 1.35, 1.45, 1.2, 1.05, 0.65];
-    if (totalPatients <= 0) {
-      return List<double>.filled(weights.length, 0);
-    }
-
-    final dailyBase = totalPatients / 4.0;
-    return weights.map((weight) => dailyBase * weight).toList();
-  }
-
-  List<double> _distributeByWeights(double total, List<double> weights) {
-    if (total <= 0) {
-      return List<double>.filled(weights.length, 0);
-    }
-
-    final weightSum = weights.reduce((a, b) => a + b);
-    return weights.map((weight) => total * weight / weightSum).toList();
   }
 }

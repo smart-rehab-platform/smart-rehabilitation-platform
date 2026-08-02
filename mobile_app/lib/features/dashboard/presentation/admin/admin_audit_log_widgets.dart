@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../data/admin_features_repository.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -153,32 +153,32 @@ AuditActionPresentation auditActionPresentation(String rawAction) {
         badgeLabel: 'Create',
         category: category,
         icon: Icons.add_circle_outline_rounded,
-        color: AdminDashboardColors.success,
-        background: AdminDashboardColors.emeraldSoft,
+        color: DashboardColors.success,
+        background: DashboardColors.tealSoft,
       ),
     AuditActionCategory.update => AuditActionPresentation(
         title: title,
         badgeLabel: 'Update',
         category: category,
         icon: Icons.edit_outlined,
-        color: AdminDashboardColors.primary,
-        background: AdminDashboardColors.blueSoft,
+        color: DashboardColors.brandCyan,
+        background: DashboardColors.blueSoft,
       ),
     AuditActionCategory.complete => AuditActionPresentation(
         title: title,
         badgeLabel: 'Complete',
         category: category,
         icon: Icons.check_circle_outline_rounded,
-        color: AdminDashboardColors.orange,
-        background: AdminDashboardColors.orangeSoft,
+        color: DashboardColors.warning,
+        background: DashboardColors.amberSoft,
       ),
     AuditActionCategory.delete => AuditActionPresentation(
         title: title,
         badgeLabel: 'Delete',
         category: category,
         icon: Icons.delete_outline_rounded,
-        color: AdminDashboardColors.danger,
-        background: AdminDashboardColors.redSoft,
+        color: DashboardColors.highPriority,
+        background: DashboardColors.amberSoft,
       ),
     AuditActionCategory.assign => AuditActionPresentation(
         title: title,
@@ -195,15 +195,15 @@ AuditActionPresentation auditActionPresentation(String rawAction) {
         icon: key.contains('logout')
             ? Icons.logout_rounded
             : Icons.login_rounded,
-        color: AdminDashboardColors.textSecondary,
-        background: AdminDashboardColors.slateSoft,
+        color: DashboardColors.textSecondary,
+        background: DashboardColors.purpleSoft,
       ),
     AuditActionCategory.cancel => AuditActionPresentation(
         title: title,
         badgeLabel: 'Cancel',
         category: category,
         icon: Icons.cancel_outlined,
-        color: AdminDashboardColors.warning,
+        color: DashboardColors.warning,
         background: const Color(0xFFFFFBEB),
       ),
     AuditActionCategory.other => AuditActionPresentation(
@@ -211,8 +211,8 @@ AuditActionPresentation auditActionPresentation(String rawAction) {
         badgeLabel: 'Activity',
         category: category,
         icon: Icons.history_rounded,
-        color: AdminDashboardColors.textSecondary,
-        background: AdminDashboardColors.slateSoft,
+        color: DashboardColors.textSecondary,
+        background: DashboardColors.purpleSoft,
       ),
   };
 }
@@ -312,7 +312,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                         presentation.title,
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: AdminDashboardColors.textPrimary,
+                          color: DashboardColors.textPrimary,
                           height: 1.25,
                         ),
                       ),
@@ -339,7 +339,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AdminDashboardColors.textPrimary,
+                          color: DashboardColors.textPrimary,
                         ),
                       ),
                       if (userEmail != null && userEmail.isNotEmpty) ...[
@@ -349,7 +349,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: AdminDashboardColors.textSecondary,
+                            color: DashboardColors.textSecondary,
                           ),
                         ),
                       ],
@@ -398,23 +398,23 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                     'Details',
                     style: theme.textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AdminDashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                     ),
                   ),
                   trailing: Icon(
                     _detailsExpanded
                         ? Icons.expand_less_rounded
                         : Icons.expand_more_rounded,
-                    color: AdminDashboardColors.primary,
+                    color: DashboardColors.brandCyan,
                   ),
                   children: [
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AdminDashboardColors.slateSoft,
+                        color: DashboardColors.purpleSoft,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AdminDashboardColors.border),
+                        border: Border.all(color: DashboardColors.border),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,7 +423,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                             'Reference ID',
                             style: theme.textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.w700,
-                              color: AdminDashboardColors.textMuted,
+                              color: DashboardColors.textMuted,
                               letterSpacing: 0.2,
                             ),
                           ),
@@ -431,7 +431,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                           SelectableText(
                             entityId,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: AdminDashboardColors.textSecondary,
+                              color: DashboardColors.textSecondary,
                               fontFamily: 'monospace',
                               height: 1.35,
                             ),
@@ -498,15 +498,15 @@ class _AuditUserAvatar extends StatelessWidget {
       height: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AdminDashboardColors.blueSoft,
+        color: DashboardColors.blueSoft,
         shape: BoxShape.circle,
-        border: Border.all(color: AdminDashboardColors.border),
+        border: Border.all(color: DashboardColors.border),
       ),
       child: Text(
         initials,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AdminDashboardColors.primary,
+              color: DashboardColors.brandCyan,
             ),
       ),
     );
@@ -527,14 +527,14 @@ class _AuditMetaChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AdminDashboardColors.slateSoft,
+        color: DashboardColors.purpleSoft,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AdminDashboardColors.border),
+        border: Border.all(color: DashboardColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AdminDashboardColors.textMuted),
+          Icon(icon, size: 14, color: DashboardColors.textMuted),
           const SizedBox(width: 6),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 180),
@@ -544,7 +544,7 @@ class _AuditMetaChip extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AdminDashboardColors.textSecondary,
+                    color: DashboardColors.textSecondary,
                   ),
             ),
           ),

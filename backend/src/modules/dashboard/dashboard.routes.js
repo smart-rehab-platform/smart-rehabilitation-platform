@@ -30,6 +30,13 @@ router.get(
 );
 
 router.get(
+  "/dashboard/admin/weekly-system-activity",
+  authenticate,
+  authorizeRoles("admin"),
+  dashboardController.getWeeklySystemActivity
+);
+
+router.get(
   "/dashboard/admin/patients",
   authenticate,
   authorizeRoles("admin"),

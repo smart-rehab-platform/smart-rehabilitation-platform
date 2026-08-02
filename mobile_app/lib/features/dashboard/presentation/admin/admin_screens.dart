@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../auth/providers/auth_provider.dart';
@@ -14,8 +13,7 @@ import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
-import '../../widgets/dashboard_scaffold.dart';
-import '../../widgets/admin_ui_components.dart';
+import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import '../specialist/specialist_exercises_widgets.dart';
 import '../../../presence/widgets/online_status_dot.dart';
@@ -105,7 +103,7 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
       showBottomNav: false,
       body: SingleChildScrollView(
         padding: context.dashPadding,
-        child: AdminSurfaceCard(
+        child: DashboardSurfaceCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -263,21 +261,12 @@ class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
     final state = ref.watch(specialistExercisesProvider);
     final notifier = ref.read(specialistExercisesProvider.notifier);
     final auth = ref.watch(authProvider);
-    final unread = ref.watch(specialistNotificationsProvider).unreadCount;
 
-    return DashboardScaffold(
-      avatarInitials: dashboardInitials(auth.user?.fullName, fallback: 'AD'),
-      avatarImageUrl: auth.user?.profileImageUrl,
-      notificationCount: unread,
+    return AdminPageScaffold(
+      title: 'Exercises',
       currentNav: DashboardNavItem.exercises,
-      onNavTap: (item) => AdminNavigation.onNavTap(context, item),
-      drawer: const AdminDrawer(),
-      onMenuTap: () => AdminNavigation.openDrawer(context),
-      onNotificationsTap: () => context.push(AppRoutes.adminNotifications),
-      onAvatarTap: () => context.push(AppRoutes.adminProfile),
-      scrollBody: false,
-      showMessagesAction: false,
-      appBarActions: [
+      wrapBodyInScrollView: false,
+      actions: [
         IconButton(
           tooltip: 'Add Exercise',
           onPressed: _openAddExercise,
@@ -359,7 +348,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
       currentNav: DashboardNavItem.reports,
       body: ReportsListBody(
         searchController: _searchController,
-        refreshIndicatorColor: AdminDashboardColors.primary,
+        refreshIndicatorColor: DashboardColors.brandCyan,
         onReportTap: (context, report) {
           context.push(
             AppRoutes.adminReportDetails(report.id, isAi: report.isAiReport),
@@ -396,17 +385,7 @@ class _AdminNotificationsScreenState
     return AdminPageScaffold(
       title: 'Notifications',
       showBackButton: true,
-      actions: [
-        if (state.unreadCount > 0)
-          TextButton(
-            onPressed: state.isUpdating
-                ? null
-                : () => ref
-                      .read(specialistNotificationsProvider.notifier)
-                      .markAllAsRead(),
-            child: const Text('Mark all as read'),
-          ),
-      ],
+      showBottomNav: false,
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
         errorMessage: state.errorMessage,
@@ -415,60 +394,85 @@ class _AdminNotificationsScreenState
         isEmpty: state.items.isEmpty,
         emptyMessage: 'No notifications yet.',
         child: Column(
-          children: state.items
-              .map(
-                (item) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: AdminSurfaceCard(
-                    onTap: () => ref
-                        .read(specialistNotificationsProvider.notifier)
-                        .markAsRead(item.id),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          item.isRead
-                              ? Icons.notifications_none_rounded
-                              : Icons.notifications_active_rounded,
-                          color: item.isRead
-                              ? AdminDashboardColors.textMuted
-                              : AdminDashboardColors.primary,
-                        ),
-                        SizedBox(width: context.dashSpacing * 0.65),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.title,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: item.isRead
-                                      ? FontWeight.w500
-                                      : FontWeight.w700,
-                                ),
-                              ),
-                              if (item.body != null)
-                                Text(
-                                  item.body!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: AdminDashboardColors.textSecondary,
-                                  ),
-                                ),
-                              Text(
-                                '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: AdminDashboardColors.textMuted,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Notifications',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: DashboardColors.textPrimary,
                     ),
                   ),
                 ),
-              )
-              .toList(),
+                if (state.unreadCount > 0)
+                  TextButton(
+                    onPressed: state.isUpdating
+                        ? null
+                        : () => ref
+                              .read(specialistNotificationsProvider.notifier)
+                              .markAllAsRead(),
+                    child: const Text('Mark all as read'),
+                  ),
+              ],
+            ),
+            SizedBox(height: context.dashSpacing * 0.75),
+            ...state.items.map(
+              (item) => Padding(
+                padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
+                child: DashboardSurfaceCard(
+                  onTap: () => ref
+                      .read(specialistNotificationsProvider.notifier)
+                      .markAsRead(item.id),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        item.isRead
+                            ? Icons.notifications_none_rounded
+                            : Icons.notifications_active_rounded,
+                        color: item.isRead
+                            ? DashboardColors.textMuted
+                            : DashboardColors.brandCyan,
+                      ),
+                      SizedBox(width: context.dashSpacing * 0.65),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.title,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: item.isRead
+                                    ? FontWeight.w500
+                                    : FontWeight.w700,
+                              ),
+                            ),
+                            if (item.body != null)
+                              Text(
+                                item.body!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: DashboardColors.textSecondary,
+                                ),
+                              ),
+                            Text(
+                              '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: DashboardColors.textMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -523,16 +527,11 @@ class _MoreTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-      child: AdminSurfaceCard(
+      child: DashboardSurfaceCard(
         onTap: onTap,
         child: Row(
           children: [
-            AdminIconCircle(
-              icon: icon,
-              color: AdminDashboardColors.primary,
-              background: AdminDashboardColors.blueSoft,
-              size: 44,
-            ),
+            Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
               child: Text(
@@ -541,13 +540,13 @@ class _MoreTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AdminDashboardColors.textPrimary,
+                  color: DashboardColors.textPrimary,
                 ),
               ),
             ),
             const Icon(
               Icons.chevron_right_rounded,
-              color: AdminDashboardColors.textMuted,
+              color: DashboardColors.textMuted,
             ),
           ],
         ),
