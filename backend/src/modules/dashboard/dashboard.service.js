@@ -127,16 +127,16 @@ exports.getWeeklySystemActivity = async (weekOffset = 0) => {
 
       UNION ALL
 
-      SELECT COALESCE(ar.generated_at, ar.created_at)::date AS activity_day
+      SELECT ar.generated_at::date AS activity_day
       FROM ai_reports ar
-      WHERE COALESCE(ar.generated_at, ar.created_at)::date
+      WHERE ar.generated_at::date
         BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
 
       UNION ALL
 
-      SELECT COALESCE(rec.generated_at, rec.created_at)::date AS activity_day
+      SELECT rec.generated_at::date AS activity_day
       FROM ai_recommendations rec
-      WHERE COALESCE(rec.generated_at, rec.created_at)::date
+      WHERE rec.generated_at::date
         BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
 
       UNION ALL

@@ -182,39 +182,56 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       ),
                     ),
                     AdminSystemAnalyticsPeriodControls(
-                      periodLabel: state.weeklySystemActivity.periodLabel,
+                      periodLabel: state.selectedSystemActivityPeriodLabel,
+                      selectedWeekOffset: state.systemActivityWeekOffset,
                       canGoForward: state.systemActivityWeekOffset > 0,
                       isLoading: state.isSystemActivityLoading,
-                      onPreviousWeek: () => ref
-                          .read(adminDashboardProvider.notifier)
-                          .showPreviousSystemActivityWeek(),
-                      onNextWeek: () => ref
-                          .read(adminDashboardProvider.notifier)
-                          .showNextSystemActivityWeek(),
-                      onPresetSelected: (offset) => ref
-                          .read(adminDashboardProvider.notifier)
-                          .setSystemActivityWeekOffset(offset),
+                      onPreviousWeek: () {
+                        ref
+                            .read(adminDashboardProvider.notifier)
+                            .showPreviousSystemActivityWeek();
+                      },
+                      onNextWeek: () {
+                        ref
+                            .read(adminDashboardProvider.notifier)
+                            .showNextSystemActivityWeek();
+                      },
+                      onPresetSelected: (offset) {
+                        ref
+                            .read(adminDashboardProvider.notifier)
+                            .setSystemActivityWeekOffset(offset);
+                      },
                     ),
                   ],
                 ),
                 SizedBox(height: context.dashSpacing * 0.75),
-                AdminSurfaceCard(
-                  padding: EdgeInsets.all(context.dashSpacing * 0.75),
-                  child: AdminBarChart(
-                    periodKey:
-                        'week-${state.systemActivityWeekOffset}-${state.weeklySystemActivity.weekStart?.toIso8601String() ?? 'empty'}',
-                    isLoading: state.isSystemActivityLoading,
-                    labels: state.weeklySystemActivity.days
-                        .map((day) => day.label)
-                        .toList(),
-                    fullDayLabels: state.weeklySystemActivity.days
-                        .map((day) => day.fullLabel)
-                        .toList(),
-                    values: state.weeklySystemActivity.days
-                        .map((day) => day.activityCount)
-                        .toList(),
+                if (state.systemActivityErrorMessage != null)
+                  DashboardErrorCard(
+                    message: state.systemActivityErrorMessage!,
+                    onRetry: () => ref
+                        .read(adminDashboardProvider.notifier)
+                        .setSystemActivityWeekOffset(
+                          state.systemActivityWeekOffset,
+                        ),
+                  )
+                else
+                  AdminSurfaceCard(
+                    padding: EdgeInsets.all(context.dashSpacing * 0.75),
+                    child: AdminBarChart(
+                      periodKey:
+                          'week-${state.systemActivityWeekOffset}-${state.weeklySystemActivity.weekStart?.toIso8601String() ?? 'empty'}',
+                      isLoading: state.isSystemActivityLoading,
+                      labels: state.weeklySystemActivity.days
+                          .map((day) => day.label)
+                          .toList(),
+                      fullDayLabels: state.weeklySystemActivity.days
+                          .map((day) => day.fullLabel)
+                          .toList(),
+                      values: state.weeklySystemActivity.days
+                          .map((day) => day.activityCount)
+                          .toList(),
+                    ),
                   ),
-                ),
                 SizedBox(height: context.dashSpacing * 1.2),
                 AdminSectionHeader(
                   title: 'Recent Users',

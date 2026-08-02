@@ -88,14 +88,35 @@ class WeeklySystemActivityData {
         ),
       );
 
-  factory WeeklySystemActivityData.fromMap(Map<String, dynamic>? map) {
+  static WeeklySystemActivityData forRequestedWeek(int weekOffset) {
+    return WeeklySystemActivityData(
+      days: empty.days,
+      weekOffset: weekOffset.clamp(0, 52),
+    );
+  }
+
+  factory WeeklySystemActivityData.fromMap(
+    Map<String, dynamic>? map, {
+    int requestedWeekOffset = 0,
+  }) {
+    final normalizedOffset = requestedWeekOffset.clamp(0, 52);
+
     if (map == null) {
-      return WeeklySystemActivityData.empty;
+      return WeeklySystemActivityData.forRequestedWeek(normalizedOffset);
     }
 
     final rawDays = map['days'];
     if (rawDays is! List || rawDays.isEmpty) {
-      return WeeklySystemActivityData.empty;
+      return WeeklySystemActivityData(
+        days: empty.days,
+        weekOffset: ApiResponseParser.readInt(map, const [
+              'week_offset',
+              'weekOffset',
+            ]) ??
+            normalizedOffset,
+        weekStart: _parseDate(map['week_start'] ?? map['weekStart']),
+        weekEnd: _parseDate(map['week_end'] ?? map['weekEnd']),
+      );
     }
 
     final days = rawDays
@@ -108,7 +129,16 @@ class WeeklySystemActivityData {
         .toList();
 
     if (days.length != 7) {
-      return WeeklySystemActivityData.empty;
+      return WeeklySystemActivityData(
+        days: empty.days,
+        weekOffset: ApiResponseParser.readInt(map, const [
+              'week_offset',
+              'weekOffset',
+            ]) ??
+            normalizedOffset,
+        weekStart: _parseDate(map['week_start'] ?? map['weekStart']),
+        weekEnd: _parseDate(map['week_end'] ?? map['weekEnd']),
+      );
     }
 
     return WeeklySystemActivityData(
@@ -117,7 +147,7 @@ class WeeklySystemActivityData {
             'week_offset',
             'weekOffset',
           ]) ??
-          0,
+          normalizedOffset,
       weekStart: _parseDate(map['week_start'] ?? map['weekStart']),
       weekEnd: _parseDate(map['week_end'] ?? map['weekEnd']),
     );
@@ -325,11 +355,16 @@ class AdminDashboardRepository {
   Future<WeeklySystemActivityData> fetchWeeklySystemActivity({
     int weekOffset = 0,
   }) async {
-    final map = await _getMap(
+    final normalizedOffset = weekOffset.clamp(0, 52);
+    final response = await _dio.get(
       '/dashboard/admin/weekly-system-activity',
-      queryParameters: {'week_offset': weekOffset},
+      queryParameters: {'week_offset': normalizedOffset},
     );
-    return WeeklySystemActivityData.fromMap(map);
+    final map = ApiResponseParser.extractMap(response.data);
+    return WeeklySystemActivityData.fromMap(
+      map,
+      requestedWeekOffset: normalizedOffset,
+    );
   }
 
   Future<List<AdminRecentUser>> fetchRecentUsers() async {

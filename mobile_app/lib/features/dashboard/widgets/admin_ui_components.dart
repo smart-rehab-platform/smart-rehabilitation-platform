@@ -545,6 +545,7 @@ class AdminSystemAnalyticsPeriodControls extends StatelessWidget {
   const AdminSystemAnalyticsPeriodControls({
     super.key,
     required this.periodLabel,
+    required this.selectedWeekOffset,
     required this.canGoForward,
     required this.isLoading,
     required this.onPreviousWeek,
@@ -553,6 +554,7 @@ class AdminSystemAnalyticsPeriodControls extends StatelessWidget {
   });
 
   final String periodLabel;
+  final int selectedWeekOffset;
   final bool canGoForward;
   final bool isLoading;
   final VoidCallback onPreviousWeek;
@@ -576,7 +578,11 @@ class AdminSystemAnalyticsPeriodControls extends StatelessWidget {
           enabled: !isLoading,
           offset: const Offset(0, 36),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          onSelected: onPresetSelected,
+          onSelected: (offset) {
+            if (offset != selectedWeekOffset) {
+              onPresetSelected(offset);
+            }
+          },
           itemBuilder: (context) {
             return systemActivityPresetOffsets.entries
                 .map(

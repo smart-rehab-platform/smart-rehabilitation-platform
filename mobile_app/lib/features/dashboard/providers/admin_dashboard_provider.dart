@@ -29,6 +29,7 @@ class AdminDashboardState {
     WeeklySystemActivityData? weeklySystemActivity,
     this.systemActivityWeekOffset = 0,
     this.isSystemActivityLoading = false,
+    this.systemActivityErrorMessage,
   }) : weeklySystemActivity = weeklySystemActivity ?? WeeklySystemActivityData.empty;
 
   final bool isLoading;
@@ -40,6 +41,13 @@ class AdminDashboardState {
   final WeeklySystemActivityData weeklySystemActivity;
   final int systemActivityWeekOffset;
   final bool isSystemActivityLoading;
+  final String? systemActivityErrorMessage;
+
+  String get selectedSystemActivityPeriodLabel => systemActivityPeriodLabel(
+        weekOffset: systemActivityWeekOffset,
+        weekStart: weeklySystemActivity.weekStart,
+        weekEnd: weeklySystemActivity.weekEnd,
+      );
 
   AdminDashboardState copyWith({
     bool? isLoading,
@@ -51,6 +59,7 @@ class AdminDashboardState {
     WeeklySystemActivityData? weeklySystemActivity,
     int? systemActivityWeekOffset,
     bool? isSystemActivityLoading,
+    Object? systemActivityErrorMessage = _sentinel,
   }) {
     return AdminDashboardState(
       isLoading: isLoading ?? this.isLoading,
@@ -66,6 +75,9 @@ class AdminDashboardState {
           systemActivityWeekOffset ?? this.systemActivityWeekOffset,
       isSystemActivityLoading:
           isSystemActivityLoading ?? this.isSystemActivityLoading,
+      systemActivityErrorMessage: identical(systemActivityErrorMessage, _sentinel)
+          ? this.systemActivityErrorMessage
+          : systemActivityErrorMessage as String?,
     );
   }
 }
@@ -115,8 +127,8 @@ class AdminDashboardNotifier extends StateNotifier<AdminDashboardState> {
         recentUsers: results[1] as List<AdminRecentUser>,
         unreadNotifications: results[2] as int,
         weeklySystemActivity: results[3] as WeeklySystemActivityData,
-        systemActivityWeekOffset:
-            (results[3] as WeeklySystemActivityData).weekOffset,
+        systemActivityWeekOffset: state.systemActivityWeekOffset,
+        systemActivityErrorMessage: null,
       );
     } catch (error) {
       state = state.copyWith(
@@ -136,6 +148,7 @@ class AdminDashboardNotifier extends StateNotifier<AdminDashboardState> {
     state = state.copyWith(
       systemActivityWeekOffset: normalizedOffset,
       isSystemActivityLoading: true,
+      systemActivityErrorMessage: null,
     );
 
     try {
@@ -143,13 +156,31 @@ class AdminDashboardNotifier extends StateNotifier<AdminDashboardState> {
         weekOffset: normalizedOffset,
       );
 
+      if (normalizedOffset != state.systemActivityWeekOffset) {
+        return;
+      }
+
       state = state.copyWith(
-        weeklySystemActivity: activity,
-        systemActivityWeekOffset: activity.weekOffset,
+        weeklySystemActivity: WeeklySystemActivityData(
+          days: activity.days,
+          weekOffset: normalizedOffset,
+          weekStart: activity.weekStart,
+          weekEnd: activity.weekEnd,
+        ),
+        systemActivityWeekOffset: normalizedOffset,
         isSystemActivityLoading: false,
+        systemActivityErrorMessage: null,
       );
     } catch (error) {
-      state = state.copyWith(isSystemActivityLoading: false);
+      if (normalizedOffset != state.systemActivityWeekOffset) {
+        return;
+      }
+
+      state = state.copyWith(
+        isSystemActivityLoading: false,
+        systemActivityErrorMessage:
+            'Failed to load system activity. Please try again.',
+      );
     }
   }
 
