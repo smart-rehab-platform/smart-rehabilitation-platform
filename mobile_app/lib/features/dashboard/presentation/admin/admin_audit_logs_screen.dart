@@ -14,7 +14,8 @@ class AdminAuditLogsScreen extends ConsumerStatefulWidget {
   const AdminAuditLogsScreen({super.key});
 
   @override
-  ConsumerState<AdminAuditLogsScreen> createState() => _AdminAuditLogsScreenState();
+  ConsumerState<AdminAuditLogsScreen> createState() =>
+      _AdminAuditLogsScreenState();
 }
 
 class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
@@ -245,10 +246,7 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
 }
 
 class _AuditFilterOption<T> {
-  const _AuditFilterOption({
-    required this.value,
-    required this.label,
-  });
+  const _AuditFilterOption({required this.value, required this.label});
 
   final T value;
   final String label;
@@ -273,10 +271,7 @@ class _AuditFilterDropdown<T> extends StatelessWidget {
       key: ValueKey('$label-$value'),
       isExpanded: true,
       initialValue: value,
-      decoration: InputDecoration(
-        labelText: label,
-        isDense: true,
-      ),
+      decoration: InputDecoration(labelText: label, isDense: true),
       items: items
           .map(
             (item) => DropdownMenuItem<T>(
@@ -292,7 +287,7 @@ class _AuditFilterDropdown<T> extends StatelessWidget {
       selectedItemBuilder: (context) => items
           .map(
             (item) => Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
                 item.label,
                 maxLines: 1,

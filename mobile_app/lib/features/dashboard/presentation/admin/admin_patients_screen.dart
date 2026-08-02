@@ -205,8 +205,8 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
                                                 fontWeight: FontWeight.w800,
-                                                color: DashboardColors
-                                                    .textPrimary,
+                                                color:
+                                                    DashboardColors.textPrimary,
                                                 height: 1.2,
                                               ),
                                         ),
@@ -223,8 +223,8 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                               children: [
                                                 AdminStatusBadge(
                                                   label: patient.condition!,
-                                                  color: DashboardColors
-                                                      .brandCyan,
+                                                  color:
+                                                      DashboardColors.brandCyan,
                                                 ),
                                                 Text(
                                                   '•',
@@ -232,9 +232,8 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                                       .textTheme
                                                       .labelSmall
                                                       ?.copyWith(
-                                                        color:
-                                                            DashboardColors
-                                                                .textMuted,
+                                                        color: DashboardColors
+                                                            .textMuted,
                                                         fontWeight:
                                                             FontWeight.w500,
                                                       ),
@@ -245,9 +244,8 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                                       .textTheme
                                                       .labelSmall
                                                       ?.copyWith(
-                                                        color:
-                                                            DashboardColors
-                                                                .textMuted,
+                                                        color: DashboardColors
+                                                            .textMuted,
                                                         fontWeight:
                                                             FontWeight.w500,
                                                       ),
@@ -256,11 +254,12 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                             )
                                           else if (_hasCondition(patient))
                                             Align(
-                                              alignment: Alignment.centerLeft,
+                                              alignment: AlignmentDirectional
+                                                  .centerStart,
                                               child: AdminStatusBadge(
                                                 label: patient.condition!,
-                                                color: DashboardColors
-                                                    .brandCyan,
+                                                color:
+                                                    DashboardColors.brandCyan,
                                               ),
                                             )
                                           else
@@ -330,7 +329,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Align(
-                                  alignment: Alignment.centerLeft,
+                                  alignment: AlignmentDirectional.centerStart,
                                   child: AdminStatusBadge.sessionStatus(
                                     patient.previousSession!.status,
                                     isPastScheduled:

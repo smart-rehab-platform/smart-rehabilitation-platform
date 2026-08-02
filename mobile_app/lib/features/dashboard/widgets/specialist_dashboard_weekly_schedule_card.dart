@@ -26,8 +26,7 @@ SpecialistSessionDetail? findNextUpcomingSession(
     }
 
     return !session.scheduledAt!.isBefore(clock);
-  }).toList()
-    ..sort((a, b) => a.scheduledAt!.compareTo(b.scheduledAt!));
+  }).toList()..sort((a, b) => a.scheduledAt!.compareTo(b.scheduledAt!));
 
   return upcoming.isEmpty ? null : upcoming.first;
 }
@@ -56,7 +55,8 @@ String formatTodayRemainingSessionsLabel({
   }
 
   final clock = now ?? DateTime.now();
-  final nextIsToday = nextSession != null &&
+  final nextIsToday =
+      nextSession != null &&
       sessionIsToday(scheduledAt: nextSession.scheduledAt, now: clock);
   final remaining = nextIsToday ? todayScheduledCount - 1 : todayScheduledCount;
 
@@ -90,7 +90,9 @@ String formatNextSessionScheduleLabel(SpecialistSessionDetail session) {
 
 DateTime startOfWeekMonday(DateTime date) {
   final normalized = DateTime(date.year, date.month, date.day);
-  return normalized.subtract(Duration(days: normalized.weekday - DateTime.monday));
+  return normalized.subtract(
+    Duration(days: normalized.weekday - DateTime.monday),
+  );
 }
 
 bool isSameDay(DateTime a, DateTime b) {
@@ -132,8 +134,10 @@ class _SpecialistDashboardWeeklyScheduleCardState
       (index) => weekStart.add(Duration(days: index)),
     );
     final nextSession = findNextUpcomingSession(widget.sessions, now: now);
-    final todayScheduledCount =
-        countTodayScheduledSessions(widget.sessions, now: now);
+    final todayScheduledCount = countTodayScheduledSessions(
+      widget.sessions,
+      now: now,
+    );
     final footerLabel = formatTodayRemainingSessionsLabel(
       todayScheduledCount: todayScheduledCount,
       nextSession: nextSession,
@@ -164,8 +168,8 @@ class _SpecialistDashboardWeeklyScheduleCardState
               const Spacer(),
               InkWell(
                 onTap: () => context.push(
-                      AppRoutes.specialistSessionsWithView(view: 'calendar'),
-                    ),
+                  AppRoutes.specialistSessionsWithView(view: 'calendar'),
+                ),
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -346,10 +350,7 @@ class _EmptyNextSession extends StatelessWidget {
 }
 
 class _NextSessionRow extends StatelessWidget {
-  const _NextSessionRow({
-    required this.session,
-    required this.theme,
-  });
+  const _NextSessionRow({required this.session, required this.theme});
 
   final SpecialistSessionDetail session;
   final ThemeData theme;
@@ -433,7 +434,7 @@ class _NextSessionRow extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Align(
-                alignment: Alignment.centerRight,
+                alignment: AlignmentDirectional.centerEnd,
                 child: viewButton,
               ),
             ],
@@ -456,10 +457,7 @@ class _NextSessionRow extends StatelessWidget {
 }
 
 class _ViewSessionButton extends StatelessWidget {
-  const _ViewSessionButton({
-    required this.session,
-    required this.theme,
-  });
+  const _ViewSessionButton({required this.session, required this.theme});
 
   final SpecialistSessionDetail session;
   final ThemeData theme;
@@ -472,7 +470,8 @@ class _ViewSessionButton extends StatelessWidget {
       child: InkWell(
         onTap: session.id.isEmpty
             ? null
-            : () => context.push(AppRoutes.specialistSessionDetails(session.id)),
+            : () =>
+                  context.push(AppRoutes.specialistSessionDetails(session.id)),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

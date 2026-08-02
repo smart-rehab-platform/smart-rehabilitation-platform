@@ -21,6 +21,7 @@ import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_navigation.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import 'parent_ui_helpers.dart';
+import '../../../../core/locale/developer_locale_switch.dart';
 
 export 'parent_sessions_screen.dart';
 
@@ -562,6 +563,7 @@ class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
       body: ListView(
         padding: context.dashPadding,
         children: [
+          const DeveloperLocaleSwitch(),
           _MoreTile(
             icon: Icons.assignment_outlined,
             label: 'Case Requests',
@@ -627,7 +629,7 @@ class _MoreTile extends StatelessWidget {
             ),
             if (badgeCount > 0)
               Container(
-                margin: const EdgeInsets.only(right: 8),
+                margin: const EdgeInsetsDirectional.only(end: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: DashboardColors.brandCyan,

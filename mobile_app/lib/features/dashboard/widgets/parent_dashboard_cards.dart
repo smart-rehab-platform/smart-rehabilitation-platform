@@ -424,7 +424,7 @@ class ParentDashboardHeroCard extends StatelessWidget {
                       children: [
                         Container(color: DashboardColors.border),
                         FractionallySizedBox(
-                          alignment: Alignment.centerLeft,
+                          alignment: AlignmentDirectional.centerStart,
                           widthFactor: normalized,
                           child: const DecoratedBox(
                             decoration: BoxDecoration(
@@ -486,7 +486,7 @@ class ParentDashboardHeroCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.65),
           Align(
-            alignment: Alignment.centerRight,
+            alignment: AlignmentDirectional.centerEnd,
             child: TextButton(
               onPressed: onViewDetails,
               style: TextButton.styleFrom(
@@ -1210,7 +1210,7 @@ class ParentFeedbackCard extends StatelessWidget {
           ],
           SizedBox(height: context.dashSpacing * 0.45),
           Align(
-            alignment: Alignment.centerRight,
+            alignment: AlignmentDirectional.centerEnd,
             child: Text(
               'View Details',
               style: theme.textTheme.labelMedium?.copyWith(

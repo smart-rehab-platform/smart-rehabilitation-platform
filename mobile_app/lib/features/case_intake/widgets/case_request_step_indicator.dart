@@ -42,10 +42,8 @@ class CaseRequestStepIndicator extends StatelessWidget {
             return Expanded(
               child: Container(
                 height: 4,
-                margin: EdgeInsets.only(
-                  right: index == totalSteps - 1
-                      ? 0
-                      : context.dashSpacing * 0.2,
+                margin: EdgeInsetsDirectional.only(
+                  end: index == totalSteps - 1 ? 0 : context.dashSpacing * 0.2,
                 ),
                 decoration: BoxDecoration(
                   color: color,

@@ -25,7 +25,7 @@ class SessionFilterChips extends StatelessWidget {
         children: SessionListFilter.values.map((filter) {
           final isSelected = selected == filter;
           return Padding(
-            padding: EdgeInsets.only(right: context.dashSpacing * 0.4),
+            padding: EdgeInsetsDirectional.only(end: context.dashSpacing * 0.4),
             child: InkWell(
               onTap: () => onChanged(filter),
               borderRadius: BorderRadius.circular(14),

@@ -219,7 +219,7 @@ class PatientGoalCard extends StatelessWidget {
               ),
               if (goal.isAchieved)
                 Padding(
-                  padding: EdgeInsets.only(right: context.dashSpacing * 0.35),
+                  padding: EdgeInsetsDirectional.only(end: context.dashSpacing * 0.35),
                   child: DashboardPriorityBadge(label: 'Achieved'),
                 ),
               Text(

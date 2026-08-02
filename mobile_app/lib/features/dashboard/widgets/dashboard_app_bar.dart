@@ -89,7 +89,9 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
         if (userDisplayName != null && userDisplayName!.isNotEmpty) ...[
           Center(
             child: Padding(
-              padding: EdgeInsets.only(right: context.dashSpacing * 0.25),
+              padding: EdgeInsetsDirectional.only(
+                end: context.dashSpacing * 0.25,
+              ),
               child: Text(
                 userDisplayName!,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -112,9 +114,9 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                 tooltip: 'Messages',
               ),
               if (messageCount > 0)
-                Positioned(
+                PositionedDirectional(
                   top: 10,
-                  right: 10,
+                  end: 10,
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: const BoxDecoration(
@@ -147,9 +149,9 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
               color: DashboardColors.textPrimary,
             ),
             if (notificationCount > 0)
-              Positioned(
+              PositionedDirectional(
                 top: 10,
-                right: 10,
+                end: 10,
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
@@ -174,7 +176,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
         Padding(
-          padding: EdgeInsets.only(right: context.dashSpacing * 0.5),
+          padding: EdgeInsetsDirectional.only(end: context.dashSpacing * 0.5),
           child: InkWell(
             onTap: onAvatarTap,
             borderRadius: BorderRadius.circular(24),

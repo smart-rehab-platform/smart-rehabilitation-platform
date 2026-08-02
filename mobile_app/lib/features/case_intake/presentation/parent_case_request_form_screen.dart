@@ -719,8 +719,8 @@ class _ChildInfoStep extends StatelessWidget {
                       isLoading: isBusy,
                       onTap: isBusy ? null : onPickPhoto,
                     ),
-                    Positioned(
-                      right: 0,
+                    PositionedDirectional(
+                      end: 0,
                       bottom: 0,
                       child: Material(
                         color: DashboardColors.brandCyan,

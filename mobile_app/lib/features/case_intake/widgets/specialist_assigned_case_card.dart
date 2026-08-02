@@ -54,7 +54,7 @@ class SpecialistAssignedCaseCard extends StatelessWidget {
                 SizedBox(width: context.dashSpacing * 0.4),
                 Flexible(
                   child: Align(
-                    alignment: Alignment.topRight,
+                    alignment: AlignmentDirectional.topEnd,
                     child: CaseRequestStatusChip(status: item.status),
                   ),
                 ),

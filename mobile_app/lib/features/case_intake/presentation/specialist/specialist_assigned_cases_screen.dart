@@ -165,7 +165,7 @@ class _SpecialistAssignedCasesScreenState
                         if (state.hasActiveFilters) ...[
                           SizedBox(height: context.dashSpacing * 0.35),
                           Align(
-                            alignment: Alignment.centerRight,
+                            alignment: AlignmentDirectional.centerEnd,
                             child: TextButton.icon(
                               onPressed: notifier.clearFilters,
                               icon: const Icon(
@@ -359,7 +359,7 @@ class _FilterDropdowns extends StatelessWidget {
       selectedItemBuilder: (context) => _statusOptions
           .map(
             (option) => Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
                 option.$2,
                 maxLines: 1,
@@ -409,7 +409,7 @@ class _FilterDropdowns extends StatelessWidget {
               return labels
                   .map(
                     (label) => Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       child: Text(
                         label,
                         maxLines: 1,

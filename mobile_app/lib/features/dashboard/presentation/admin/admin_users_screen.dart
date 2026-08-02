@@ -313,8 +313,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                Positioned(
-                                                  right: -2,
+                                                PositionedDirectional(
+                                                  end: -2,
                                                   bottom: -2,
                                                   child: OnlineStatusDot(userId: user.id),
                                                 ),
@@ -649,7 +649,7 @@ class _RoleChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsetsDirectional.only(end: 8),
       child: FilterChip(
         label: Text(label),
         selected: selected,

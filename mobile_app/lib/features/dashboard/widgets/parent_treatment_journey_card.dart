@@ -208,7 +208,7 @@ class _ErrorBody extends StatelessWidget {
         if (onRetry != null) ...[
           SizedBox(height: context.dashSpacing * 0.35),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: TextButton(
               onPressed: onRetry,
               style: TextButton.styleFrom(
@@ -396,9 +396,7 @@ class TreatmentJourneySparklinePainter extends CustomPainter {
           ? horizontalPadding + plotWidth / 2
           : horizontalPadding + (plotWidth * index / (scores.length - 1));
 
-      final normalized = range == 0
-          ? 0.5
-          : (scores[index] - minScore) / range;
+      final normalized = range == 0 ? 0.5 : (scores[index] - minScore) / range;
 
       final y = verticalPadding + plotHeight * (1 - normalized);
       return Offset(x, y);

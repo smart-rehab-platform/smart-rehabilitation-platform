@@ -477,7 +477,7 @@ class AdminFilterDropdown<T> extends StatelessWidget {
       selectedItemBuilder: (context) => options
           .map(
             (option) => Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
                 option.label,
                 maxLines: 1,
@@ -506,7 +506,7 @@ class AdminFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: context.dashSpacing * 0.4),
+      padding: EdgeInsetsDirectional.only(end: context.dashSpacing * 0.4),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
@@ -577,7 +577,9 @@ class AdminSystemAnalyticsPeriodControls extends StatelessWidget {
           tooltip: 'Select period',
           enabled: !isLoading,
           offset: const Offset(0, 36),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           onSelected: (offset) {
             if (offset != selectedWeekOffset) {
               onPresetSelected(offset);
@@ -707,9 +709,7 @@ class _AdminBarChartState extends State<AdminBarChart> {
     final theme = Theme.of(context);
     final spacing = context.dashSpacing;
     final hasData = widget.values.any((value) => value > 0);
-    final maxValue = hasData
-        ? widget.values.reduce(math.max).toDouble()
-        : 1.0;
+    final maxValue = hasData ? widget.values.reduce(math.max).toDouble() : 1.0;
     final chartHeight = math.max(context.dashboardSize.height * 0.16, 136.0);
     final dayGap = spacing * 0.28;
     final animationKey = widget.periodKey;
@@ -745,8 +745,10 @@ class _AdminBarChartState extends State<AdminBarChart> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: List.generate(widget.labels.length, (index) {
                   final count = widget.values[index];
-                  final heightFactor =
-                      _normalizedHeight(count.toDouble(), maxValue);
+                  final heightFactor = _normalizedHeight(
+                    count.toDouble(),
+                    maxValue,
+                  );
 
                   return Expanded(
                     child: Padding(
@@ -766,8 +768,8 @@ class _AdminBarChartState extends State<AdminBarChart> {
                                           setState(() {
                                             _selectedIndex =
                                                 _selectedIndex == index
-                                                    ? null
-                                                    : index;
+                                                ? null
+                                                : index;
                                           });
                                         }
                                       : null,
@@ -925,7 +927,9 @@ class _Bar extends StatelessWidget {
         return Align(
           alignment: Alignment.bottomCenter,
           child: AnimatedContainer(
-            duration: animate ? const Duration(milliseconds: 350) : Duration.zero,
+            duration: animate
+                ? const Duration(milliseconds: 350)
+                : Duration.zero,
             curve: Curves.easeOutCubic,
             width: width,
             height: barHeight,

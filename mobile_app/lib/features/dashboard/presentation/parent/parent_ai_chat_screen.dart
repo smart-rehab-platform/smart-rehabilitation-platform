@@ -366,7 +366,9 @@ class _ChatBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isUser = message.isUser;
-    final alignment = isUser ? Alignment.centerRight : Alignment.centerLeft;
+    final alignment = isUser
+        ? AlignmentDirectional.centerEnd
+        : AlignmentDirectional.centerStart;
     final bubbleColor = isUser
         ? DashboardColors.brandCyan
         : DashboardColors.surface;

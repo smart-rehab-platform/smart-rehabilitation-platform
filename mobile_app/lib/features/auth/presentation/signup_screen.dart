@@ -515,7 +515,7 @@ class _ProfilePhotoPlaceholder extends StatelessWidget {
                     color: AppColors.cyan,
                   ),
                 Align(
-                  alignment: Alignment.bottomRight,
+                  alignment: AlignmentDirectional.bottomEnd,
                   child: Container(
                     width: 22,
                     height: 22,

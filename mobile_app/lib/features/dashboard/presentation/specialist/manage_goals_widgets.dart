@@ -117,8 +117,8 @@ class GoalTermSelector extends StatelessWidget {
         final selected = term == value;
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(
-              right: value == GoalTerm.shortTerm ? context.dashSpacing * 0.35 : 0,
+            padding: EdgeInsetsDirectional.only(
+              end: value == GoalTerm.shortTerm ? context.dashSpacing * 0.35 : 0,
             ),
             child: InkWell(
               onTap: () => onChanged(value),

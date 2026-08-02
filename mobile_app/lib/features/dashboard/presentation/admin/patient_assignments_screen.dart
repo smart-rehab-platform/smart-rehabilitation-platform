@@ -619,7 +619,7 @@ class _DropdownField<T> extends StatelessWidget {
       selectedItemBuilder: (context) => items
           .map(
             (item) => Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
                 itemLabel(item),
                 maxLines: 1,

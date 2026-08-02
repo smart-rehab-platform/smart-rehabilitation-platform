@@ -34,7 +34,9 @@ class _SpecialistCreateTreatmentPlanScreenState
     super.initState();
     _titleController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(specialistCreateTreatmentPlanProvider.notifier).configure(
+      ref
+          .read(specialistCreateTreatmentPlanProvider.notifier)
+          .configure(
             patientId: widget.patientId,
             patientName: widget.patientName ?? 'Patient',
           );
@@ -49,8 +51,9 @@ class _SpecialistCreateTreatmentPlanScreenState
 
   Future<void> _submit() async {
     final messenger = ScaffoldMessenger.of(context);
-    final error =
-        await ref.read(specialistCreateTreatmentPlanProvider.notifier).create();
+    final error = await ref
+        .read(specialistCreateTreatmentPlanProvider.notifier)
+        .create();
     if (!mounted) return;
     if (error != null) {
       messenger.showSnackBar(SnackBar(content: Text(error)));
@@ -84,7 +87,7 @@ class _SpecialistCreateTreatmentPlanScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: DashboardPriorityBadge(label: 'Active'),
             ),
             SizedBox(height: context.dashSpacing * 0.35),

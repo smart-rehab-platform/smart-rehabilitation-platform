@@ -495,7 +495,9 @@ class _CommunicationChatScreenState
             SizedBox(height: context.dashSpacing * 0.45),
           ],
           Padding(
-            padding: EdgeInsets.only(right: _showScrollToLatest ? 56 : 0),
+            padding: EdgeInsetsDirectional.only(
+              end: _showScrollToLatest ? 56 : 0,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -609,14 +611,16 @@ class CommunicationMessageBubble extends StatelessWidget {
         : Border.all(color: DashboardColors.border.withValues(alpha: 0.8));
 
     return Padding(
-      padding: EdgeInsets.only(
+      padding: EdgeInsetsDirectional.only(
         top: context.dashSpacing * 0.25,
         bottom: context.dashSpacing * 0.25,
-        left: isMine ? context.dashSpacing * 2 : 0,
-        right: isMine ? 0 : context.dashSpacing * 2,
+        start: isMine ? context.dashSpacing * 2 : 0,
+        end: isMine ? 0 : context.dashSpacing * 2,
       ),
       child: Align(
-        alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+        alignment: isMine
+            ? AlignmentDirectional.centerEnd
+            : AlignmentDirectional.centerStart,
         child: ConstrainedBox(
           constraints: BoxConstraints(
             maxWidth: MediaQuery.sizeOf(context).width * 0.78,

@@ -223,28 +223,28 @@ class _AuthBackgroundState extends State<AuthBackground> {
             const _GlowOrb(
               size: 260,
               top: -70,
-              left: -90,
+              start: -90,
               color: AppColors.mediumBlue,
               opacity: 0.08,
             ),
             const _GlowOrb(
               size: 320,
               top: 80,
-              right: -130,
+              end: -130,
               color: AppColors.buttonHighlight,
               opacity: 0.05,
             ),
             const _GlowOrb(
               size: 300,
               bottom: -110,
-              left: -70,
+              start: -70,
               color: AppColors.mediumBlue,
               opacity: 0.06,
             ),
             const _GlowOrb(
               size: 240,
               bottom: 10,
-              right: -80,
+              end: -80,
               color: AppColors.buttonHighlight,
               opacity: 0.04,
             ),
@@ -916,7 +916,7 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
               return Expanded(
                 child: Container(
                   height: 6,
-                  margin: EdgeInsets.only(right: index == 2 ? 0 : 6),
+                  margin: EdgeInsetsDirectional.only(end: index == 2 ? 0 : 6),
                   decoration: BoxDecoration(
                     color: isActive
                         ? strengthColor
@@ -1114,9 +1114,9 @@ class AuthRoleCard extends StatelessWidget {
             child: Stack(
               children: [
                 if (isSelected)
-                  Positioned(
+                  PositionedDirectional(
                     top: 0,
-                    right: 0,
+                    end: 0,
                     child: Container(
                       width: 18,
                       height: 18,
@@ -1234,26 +1234,26 @@ class _GlowOrb extends StatelessWidget {
     required this.color,
     required this.opacity,
     this.top,
-    this.right,
+    this.end,
     this.bottom,
-    this.left,
+    this.start,
   });
 
   final double size;
   final Color color;
   final double opacity;
   final double? top;
-  final double? right;
+  final double? end;
   final double? bottom;
-  final double? left;
+  final double? start;
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
+    return PositionedDirectional(
       top: top,
-      right: right,
+      end: end,
       bottom: bottom,
-      left: left,
+      start: start,
       child: IgnorePointer(
         child: Container(
           width: size,

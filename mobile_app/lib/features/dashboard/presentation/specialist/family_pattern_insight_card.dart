@@ -214,7 +214,7 @@ class _FullInsightCardState extends State<_FullInsightCard> {
           ),
           if (hasHiddenPatterns) ...[
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: TextButton.icon(
                 onPressed: () {
                   setState(() => _showAllFindings = !_showAllFindings);

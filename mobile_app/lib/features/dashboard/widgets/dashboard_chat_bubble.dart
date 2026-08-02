@@ -74,9 +74,9 @@ class DashboardChatBubble extends StatelessWidget {
                     ),
                   ),
                   if (badgeLabel != null)
-                    Positioned(
+                    PositionedDirectional(
                       top: -4,
-                      right: 0,
+                      end: 0,
                       child: _UnreadBadge(label: badgeLabel),
                     ),
                 ],
