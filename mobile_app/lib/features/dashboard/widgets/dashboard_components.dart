@@ -17,6 +17,9 @@ class DashboardSummaryCard extends StatelessWidget {
     this.onTap,
     this.valueMaxLines = 1,
     this.valueStyle,
+    this.subtitle,
+    this.labelMaxLines = 1,
+    this.compact = false,
   });
 
   final String label;
@@ -29,11 +32,20 @@ class DashboardSummaryCard extends StatelessWidget {
   final VoidCallback? onTap;
   final int valueMaxLines;
   final TextStyle? valueStyle;
+  final String? subtitle;
+  final int labelMaxLines;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final iconSize = context.dashSpacing * 0.55;
+    final spacing = context.dashSpacing;
+
+    if (compact) {
+      return _buildCompactHorizontalCard(context, theme, spacing);
+    }
+
+    final iconSize = spacing * 0.55;
 
     Widget iconWidget = Icon(
       icon,
@@ -58,7 +70,7 @@ class DashboardSummaryCard extends StatelessWidget {
       );
     } else {
       iconWidget = Container(
-        padding: EdgeInsets.all(context.dashSpacing * 0.45),
+        padding: EdgeInsets.all(spacing * 0.45),
         decoration: BoxDecoration(
           color: iconBackground,
           borderRadius: BorderRadius.circular(12),
@@ -98,13 +110,25 @@ class DashboardSummaryCard extends StatelessWidget {
 
     final labelText = Text(
       label,
-      maxLines: 1,
+      maxLines: labelMaxLines,
       overflow: TextOverflow.ellipsis,
       style: theme.textTheme.bodySmall?.copyWith(
         color: DashboardColors.textSecondary,
         fontWeight: FontWeight.w500,
       ),
     );
+
+    final subtitleWidget = subtitle == null
+        ? null
+        : Text(
+            subtitle!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
+              fontWeight: FontWeight.w500,
+            ),
+          );
 
     final cardContent = circularIcon
         ? Column(
@@ -118,29 +142,149 @@ class DashboardSummaryCard extends StatelessWidget {
                   Expanded(child: valueText),
                 ],
               ),
-              SizedBox(height: context.dashSpacing * 0.25),
+              SizedBox(height: spacing * 0.25),
               labelText,
+              if (subtitleWidget != null) ...[
+                SizedBox(height: spacing * 0.15),
+                subtitleWidget,
+              ],
             ],
           )
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               iconWidget,
-              SizedBox(height: context.dashSpacing * 0.65),
+              SizedBox(height: spacing * 0.65),
               valueText,
-              SizedBox(height: context.dashSpacing * 0.15),
+              SizedBox(height: spacing * 0.15),
               labelText,
+              if (subtitleWidget != null) ...[
+                SizedBox(height: spacing * 0.15),
+                subtitleWidget,
+              ],
             ],
           );
 
     return DashboardSurfaceCard(
       onTap: onTap,
-      padding: EdgeInsets.all(context.dashSpacing * 0.75),
+      padding: EdgeInsets.all(spacing * 0.75),
       backgroundColor: backgroundColor ?? DashboardColors.surface,
       tint: iconColor,
       decoration: cardDecoration,
       child: cardContent,
     );
+  }
+
+  Widget _buildCompactHorizontalCard(
+    BuildContext context,
+    ThemeData theme,
+    double spacing,
+  ) {
+    const iconTextGap = 10.0;
+    final cardPadding = spacing * 0.55;
+    final iconPadding = spacing * 0.64;
+    final iconSize = spacing * 1.1;
+    final gapAfterValue = spacing * 0.08;
+    final gapAfterLabel = spacing * 0.08;
+    final baseValueFontSize = theme.textTheme.titleLarge?.fontSize ?? 22;
+    final compactValueStyle = theme.textTheme.titleLarge?.copyWith(
+      fontWeight: FontWeight.w800,
+      color: DashboardColors.textPrimary,
+      height: 1.1,
+      fontSize: baseValueFontSize * 1.1,
+    );
+
+    return DashboardSurfaceCard(
+      onTap: onTap,
+      expand: true,
+      padding: EdgeInsets.all(cardPadding),
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildIconBadge(iconPadding: iconPadding, iconSize: iconSize),
+            const SizedBox(width: iconTextGap),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: _buildTextBlock(
+                  theme: theme,
+                  valueHeight: 1.1,
+                  labelHeight: 1.2,
+                  gapAfterValue: gapAfterValue,
+                  gapAfterLabel: gapAfterLabel,
+                  valueTextStyle: compactValueStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIconBadge({
+    required double iconPadding,
+    required double iconSize,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(iconPadding),
+      decoration: BoxDecoration(
+        color: iconBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(icon, size: iconSize, color: iconColor),
+    );
+  }
+
+  List<Widget> _buildTextBlock({
+    required ThemeData theme,
+    required double valueHeight,
+    required double labelHeight,
+    required double gapAfterValue,
+    required double gapAfterLabel,
+    TextStyle? valueTextStyle,
+  }) {
+    return [
+      Text(
+        value,
+        maxLines: valueMaxLines,
+        overflow: TextOverflow.ellipsis,
+        style:
+            valueTextStyle ??
+            valueStyle ??
+            theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: DashboardColors.textPrimary,
+              height: valueHeight,
+            ),
+      ),
+      SizedBox(height: gapAfterValue),
+      Text(
+        label,
+        maxLines: labelMaxLines,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: DashboardColors.textSecondary,
+          fontWeight: FontWeight.w500,
+          height: labelHeight,
+        ),
+      ),
+      if (subtitle != null) ...[
+        SizedBox(height: gapAfterLabel),
+        Text(
+          subtitle!,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: DashboardColors.textMuted,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    ];
   }
 }
 
@@ -149,21 +293,35 @@ class DashboardSummaryGrid extends StatelessWidget {
     super.key,
     required this.cards,
     this.childAspectRatio = 1.35,
+    this.compact = false,
   });
 
   final List<DashboardSummaryCard> cards;
   final double childAspectRatio;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
+    final gridSpacing = context.dashSpacing * (compact ? 0.55 : 0.75);
+    final horizontalInset = compact ? context.dashSpacing * 0.45 : 0.0;
+
+    final grid = GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: context.dashSpacing * 0.75,
-      crossAxisSpacing: context.dashSpacing * 0.75,
+      mainAxisSpacing: gridSpacing,
+      crossAxisSpacing: gridSpacing,
       childAspectRatio: childAspectRatio,
       children: cards,
+    );
+
+    if (horizontalInset <= 0) {
+      return grid;
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalInset),
+      child: grid,
     );
   }
 }
@@ -201,7 +359,9 @@ class DashboardSectionHeader extends StatelessWidget {
           onPressed: onActionTap ?? () {},
           style: TextButton.styleFrom(
             foregroundColor: linkColor,
-            padding: EdgeInsets.symmetric(horizontal: context.dashSpacing * 0.25),
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dashSpacing * 0.25,
+            ),
           ),
           child: Text(
             actionLabel,
@@ -226,10 +386,10 @@ class DashboardGreeting extends StatelessWidget {
     return Text(
       message,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: DashboardColors.textPrimary,
-            height: 1.35,
-          ),
+        fontWeight: FontWeight.w700,
+        color: DashboardColors.textPrimary,
+        height: 1.35,
+      ),
     );
   }
 }
@@ -303,7 +463,9 @@ class _BrandGradientButtonState extends State<BrandGradientButton> {
                     ),
                     if (_pressed)
                       BoxShadow(
-                        color: DashboardColors.brandCyan.withValues(alpha: 0.11),
+                        color: DashboardColors.brandCyan.withValues(
+                          alpha: 0.11,
+                        ),
                         blurRadius: 22,
                         spreadRadius: 1,
                       ),
@@ -333,9 +495,9 @@ class _BrandGradientButtonState extends State<BrandGradientButton> {
                 Text(
                   widget.label,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
@@ -363,14 +525,16 @@ class BrandGradientIconButton extends StatefulWidget {
   final double size;
 
   @override
-  State<BrandGradientIconButton> createState() => _BrandGradientIconButtonState();
+  State<BrandGradientIconButton> createState() =>
+      _BrandGradientIconButtonState();
 }
 
 class _BrandGradientIconButtonState extends State<BrandGradientIconButton> {
   static const _pressDuration = Duration(milliseconds: 135);
   bool _pressed = false;
 
-  bool get _isEnabled => widget.enabled && widget.onPressed != null && !widget.isLoading;
+  bool get _isEnabled =>
+      widget.enabled && widget.onPressed != null && !widget.isLoading;
 
   void _setPressed(bool value) {
     if (_pressed == value) {
@@ -411,7 +575,9 @@ class _BrandGradientIconButtonState extends State<BrandGradientIconButton> {
                     ),
                     if (_pressed)
                       BoxShadow(
-                        color: DashboardColors.brandCyan.withValues(alpha: 0.11),
+                        color: DashboardColors.brandCyan.withValues(
+                          alpha: 0.11,
+                        ),
                         blurRadius: 22,
                         spreadRadius: 1,
                       ),

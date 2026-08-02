@@ -8,6 +8,23 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import { AuthSessionNavigator } from "./components/auth/AuthSessionNavigator";
+import ParentDashboardPreviewPage from "./features/parent-dashboard-preview/ParentDashboardPreviewPage";
+import ParentExerciseDetailPage from "./features/parent-dashboard-preview/ParentExerciseDetailPage";
+import ParentDailyTasksPage from "./features/parent-dashboard-preview/ParentDailyTasksPage";
+import ParentFeedbackPage from "./features/parent-dashboard-preview/ParentFeedbackPage";
+import ParentSessionsPage from "./features/parent-dashboard-preview/ParentSessionsPage";
+import ParentReportsPage from "./features/parent-dashboard-preview/ParentReportsPage";
+import ParentReportDetailPage from "./features/parent-dashboard-preview/ParentReportDetailPage";
+import ParentNotificationsPage from "./features/parent-dashboard-preview/ParentNotificationsPage";
+import ParentAiAssistantPage from "./features/parent-dashboard-preview/ParentAiAssistantPage";
+import ParentProfilePage from "./features/parent-dashboard-preview/ParentProfilePage";
+import ParentChildrenPage from "./features/parent-dashboard-preview/ParentChildrenPage";
+import ParentChildDetailPage from "./features/parent-dashboard-preview/ParentChildDetailPage";
+import ParentProgressPage from "./features/parent-dashboard-preview/ParentProgressPage";
+import ParentCaseRequestsPage from "./features/parent-dashboard-preview/ParentCaseRequestsPage";
+import ParentCaseRequestDetailPage from "./features/parent-dashboard-preview/ParentCaseRequestDetailPage";
+import ParentCaseRequestFormPage from "./features/parent-dashboard-preview/ParentCaseRequestFormPage";
+import ParentMessagesPage from "./features/parent-dashboard-preview/ParentMessagesPage";
 import { useAuth } from "./context/useAuth";
 import { canAccessRoute, dashboardForRole } from "./routes/roleRouting";
 import { isAuthRouteAllowingAuthenticatedSession } from "./routes/publicAuthRoutes";
@@ -143,7 +160,159 @@ function App() {
           path="/dashboard/parent"
           element={
             <ProtectedRoute>
-              <Dashboard role="parent" />
+              <ParentDashboardPreviewPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/exercise-details"
+          element={
+            <ProtectedRoute>
+              <ParentExerciseDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/daily-tasks"
+          element={
+            <ProtectedRoute>
+              <ParentDailyTasksPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/feedback"
+          element={
+            <ProtectedRoute>
+              <ParentFeedbackPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/sessions"
+          element={
+            <ProtectedRoute>
+              <ParentSessionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/reports"
+          element={
+            <ProtectedRoute>
+              <ParentReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/reports/:reportId"
+          element={
+            <ProtectedRoute>
+              <ParentReportDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/notifications"
+          element={
+            <ProtectedRoute>
+              <ParentNotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/ai-assistant"
+          element={
+            <ProtectedRoute>
+              <ParentAiAssistantPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/ai-assistant/:conversationId"
+          element={
+            <ProtectedRoute>
+              <ParentAiAssistantPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/profile"
+          element={
+            <ProtectedRoute>
+              <ParentProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/children"
+          element={
+            <ProtectedRoute>
+              <ParentChildrenPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/children/:childId"
+          element={
+            <ProtectedRoute>
+              <ParentChildDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/progress"
+          element={
+            <ProtectedRoute>
+              <ParentProgressPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/case-requests"
+          element={
+            <ProtectedRoute>
+              <ParentCaseRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/case-requests/new"
+          element={
+            <ProtectedRoute>
+              <ParentCaseRequestFormPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/case-requests/:requestId/edit"
+          element={
+            <ProtectedRoute>
+              <ParentCaseRequestFormPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/case-requests/:requestId"
+          element={
+            <ProtectedRoute>
+              <ParentCaseRequestDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/messages"
+          element={
+            <ProtectedRoute>
+              <ParentMessagesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/messages/:conversationId"
+          element={
+            <ProtectedRoute>
+              <ParentMessagesPage />
             </ProtectedRoute>
           }
         />

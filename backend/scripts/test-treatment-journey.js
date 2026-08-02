@@ -30,12 +30,12 @@ let failed = 0;
 
 function pass(label) {
   passed += 1;
-  console.log(`  ✓ ${label}`);
+  console.log(`  [pass] ${label}`);
 }
 
 function fail(label, error) {
   failed += 1;
-  console.error(`  ✗ ${label}`);
+  console.error(`  [fail] ${label}`);
   console.error(`    ${error.message || error}`);
 }
 

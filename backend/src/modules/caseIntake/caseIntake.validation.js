@@ -3,6 +3,8 @@ const UUID_REGEX =
 
 const PREFERRED_TIME_PERIODS = ["morning", "afternoon", "evening", "flexible"];
 
+const CASE_INTAKE_GENDERS = ["male", "female"];
+
 const CASE_INTAKE_STATUSES = [
   "pending",
   "assigned",
@@ -42,6 +44,7 @@ const ALLOWED_UPDATE_FIELDS = new Set([
   "is_currently_receiving_treatment",
   "current_treatment_details",
   "preferred_contact_period",
+  "child_image_url",
 ]);
 
 const isValidUuid = (value) =>
@@ -138,6 +141,68 @@ const validateOptionalText = (value, fieldName, res, maxLength) => {
   return true;
 };
 
+const validateCaseIntakeGender = (value, res, { required = false } = {}) => {
+  if (value === undefined || value === null || value === "") {
+    if (required) {
+      res.status(400).json({
+        success: false,
+        message: "gender is required and must be male or female",
+      });
+      return false;
+    }
+    return true;
+  }
+
+  if (typeof value !== "string") {
+    res.status(400).json({
+      success: false,
+      message: "gender must be a string when provided",
+    });
+    return false;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (!CASE_INTAKE_GENDERS.includes(normalized)) {
+    res.status(400).json({
+      success: false,
+      message: "gender must be male or female",
+    });
+    return false;
+  }
+
+  return true;
+};
+
+const validateChildImageUrl = (value, res) => {
+  if (value === undefined || value === null) {
+    return true;
+  }
+
+  if (typeof value !== "string") {
+    res.status(400).json({
+      success: false,
+      message: "child_image_url must be a string when provided",
+    });
+    return false;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return true;
+  }
+
+  const { isTrustedUploadUrl } = require("../../config/messageAttachments");
+  if (!isTrustedUploadUrl(trimmed)) {
+    res.status(400).json({
+      success: false,
+      message: "child_image_url must be a valid uploaded file path",
+    });
+    return false;
+  }
+
+  return true;
+};
+
 const validateRequestPayload = (body, res, { requireAll = false } = {}) => {
   const checkRequired = (field) => requireAll || body[field] !== undefined;
 
@@ -186,19 +251,12 @@ const validateRequestPayload = (body, res, { requireAll = false } = {}) => {
     }
   }
 
-  if (body.gender !== undefined && body.gender !== null) {
-    if (typeof body.gender !== "string") {
-      res.status(400).json({
-        success: false,
-        message: "gender must be a string when provided",
-      });
+  if (checkRequired("gender")) {
+    if (!validateCaseIntakeGender(body.gender, res, { required: true })) {
       return false;
     }
-    if (body.gender.trim().length > 10) {
-      res.status(400).json({
-        success: false,
-        message: "gender must not exceed 10 characters",
-      });
+  } else if (body.gender !== undefined && body.gender !== null) {
+    if (!validateCaseIntakeGender(body.gender, res, { required: false })) {
       return false;
     }
   }

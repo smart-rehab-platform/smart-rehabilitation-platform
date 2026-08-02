@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
@@ -112,7 +112,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
           ? const AdminLoadingCard()
           : RefreshIndicator(
               onRefresh: _load,
-              color: AdminDashboardColors.primary,
+              color: DashboardColors.primary,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: context.dashPadding,
@@ -135,16 +135,16 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           subtitle:
                               'Avg score ${_data.speechAverageScore.toStringAsFixed(1)}',
                           icon: Icons.mic_outlined,
-                          iconColor: AdminDashboardColors.primary,
-                          iconBackground: AdminDashboardColors.blueSoft,
+                          iconColor: DashboardColors.primary,
+                          iconBackground: DashboardColors.blueSoft,
                           onTap: () => _scrollToSection(_speechSectionKey),
                         ),
                         AdminMetricCard(
                           label: 'AI Recommendations',
                           value: '${_data.recommendationsTotal}',
                           icon: Icons.auto_awesome_outlined,
-                          iconColor: AdminDashboardColors.emerald,
-                          iconBackground: AdminDashboardColors.emeraldSoft,
+                          iconColor: DashboardColors.success,
+                          iconBackground: DashboardColors.tealSoft,
                           onTap: () =>
                               _scrollToSection(_recommendationsSectionKey),
                         ),
@@ -152,8 +152,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           label: 'AI Reports',
                           value: '${_data.reportsTotal}',
                           icon: Icons.summarize_outlined,
-                          iconColor: AdminDashboardColors.orange,
-                          iconBackground: AdminDashboardColors.orangeSoft,
+                          iconColor: DashboardColors.warning,
+                          iconBackground: DashboardColors.amberSoft,
                           onTap: () => context.push(AppRoutes.adminReports),
                         ),
                         AdminMetricCard(
@@ -162,8 +162,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           subtitle:
                               '${_data.usageStatistics['pending_recommendations'] ?? 0} pending reviews',
                           icon: Icons.warning_amber_rounded,
-                          iconColor: AdminDashboardColors.danger,
-                          iconBackground: AdminDashboardColors.redSoft,
+                          iconColor: DashboardColors.highPriority,
+                          iconBackground: DashboardColors.amberSoft,
                           onTap: () => _scrollToSection(_attentionSectionKey),
                         ),
                       ],
@@ -204,9 +204,9 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                                       children: [
                                         const AdminIconCircle(
                                           icon: Icons.person_outline_rounded,
-                                          color: AdminDashboardColors.danger,
+                                          color: DashboardColors.highPriority,
                                           background:
-                                              AdminDashboardColors.redSoft,
+                                              DashboardColors.amberSoft,
                                           size: 40,
                                         ),
                                         const SizedBox(width: 12),
@@ -231,7 +231,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                                               label:
                                                   'Speech ${patient['speech_score']}',
                                               color:
-                                                  AdminDashboardColors.danger,
+                                                  DashboardColors.highPriority,
                                             ),
                                           ),
                                         ],
@@ -256,8 +256,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           ..._buildRecordList(
                             _data.latestSpeech,
                             icon: Icons.graphic_eq_rounded,
-                            iconColor: AdminDashboardColors.primary,
-                            iconBackground: AdminDashboardColors.blueSoft,
+                            iconColor: DashboardColors.primary,
+                            iconBackground: DashboardColors.blueSoft,
                             titleKey: 'patient_name',
                             subtitleBuilder: (item) =>
                                 'Score ${item['overall_score'] ?? '—'} • ${_formatDate(item['analyzed_at'])}',
@@ -288,8 +288,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           ..._buildRecordList(
                             _data.latestRecommendations,
                             icon: Icons.lightbulb_outline_rounded,
-                            iconColor: AdminDashboardColors.emerald,
-                            iconBackground: AdminDashboardColors.emeraldSoft,
+                            iconColor: DashboardColors.success,
+                            iconBackground: DashboardColors.tealSoft,
                             titleKey: 'patient_name',
                             subtitleBuilder: (item) =>
                                 '${item['type'] ?? 'recommendation'} • ${item['status'] ?? 'pending'}',
@@ -317,8 +317,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                     ..._buildRecordList(
                       _data.latestReports,
                       icon: Icons.description_outlined,
-                      iconColor: AdminDashboardColors.orange,
-                      iconBackground: AdminDashboardColors.orangeSoft,
+                      iconColor: DashboardColors.warning,
+                      iconBackground: DashboardColors.amberSoft,
                       titleKey: 'patient_name',
                       subtitleBuilder: (item) =>
                           '${item['type'] ?? 'report'} • ${_formatDate(item['generated_at'])}',
@@ -383,7 +383,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
-                                  color: AdminDashboardColors.textPrimary,
+                                  color: DashboardColors.textPrimary,
                                 ),
                           ),
                           Text(
@@ -391,7 +391,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AdminDashboardColors.textSecondary,
+                                  color: DashboardColors.textSecondary,
                                 ),
                           ),
                         ],
@@ -413,11 +413,11 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
       case 'accepted':
-        return AdminDashboardColors.success;
+        return DashboardColors.success;
       case 'rejected':
-        return AdminDashboardColors.danger;
+        return DashboardColors.highPriority;
       default:
-        return AdminDashboardColors.warning;
+        return DashboardColors.warning;
     }
   }
 

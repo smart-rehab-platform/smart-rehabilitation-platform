@@ -631,6 +631,28 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AdminExercisesScreen(),
       ),
       GoRoute(
+        path: AppRoutes.adminAddExercise,
+        name: 'adminAddExercise',
+        builder: (context, state) =>
+            const SpecialistUpsertExerciseScreen(useAdminChrome: true),
+      ),
+      GoRoute(
+        path: AppRoutes.adminEditExercisePath,
+        name: 'adminEditExercise',
+        builder: (context, state) => SpecialistUpsertExerciseScreen(
+          exerciseId: state.pathParameters['exerciseId'],
+          useAdminChrome: true,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.adminExerciseDetailsPath,
+        name: 'adminExerciseDetails',
+        builder: (context, state) => SpecialistExerciseDetailsScreen(
+          exerciseId: state.pathParameters['exerciseId']!,
+          useAdminChrome: true,
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.adminReports,
         name: 'adminReports',
         builder: (context, state) => const AdminReportsScreen(),

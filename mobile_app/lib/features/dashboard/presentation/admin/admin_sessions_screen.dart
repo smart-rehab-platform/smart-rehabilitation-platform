@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
@@ -76,7 +76,7 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
     (messenger ?? ScaffoldMessenger.of(context)).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? AdminDashboardColors.danger : null,
+        backgroundColor: isError ? DashboardColors.highPriority : null,
       ),
     );
   }
@@ -185,7 +185,7 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                         Text(
                           'Status is final and cannot be changed.',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AdminDashboardColors.textSecondary,
+                                color: DashboardColors.textSecondary,
                               ),
                         ),
                       ],
@@ -367,7 +367,7 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                               Text(
                                 'Specialist: ${session.specialistName}',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: AdminDashboardColors.textSecondary,
+                                  color: DashboardColors.textSecondary,
                                 ),
                               ),
                               Text(
@@ -386,7 +386,7 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: AdminDashboardColors.textSecondary,
+                                    color: DashboardColors.textSecondary,
                                   ),
                                 ),
                               SizedBox(height: context.dashSpacing * 0.5),
@@ -576,7 +576,7 @@ class _SessionStatusConfirmDialogState
       widget.messenger.showSnackBar(
         SnackBar(
           content: Text(widget.readErrorMessage(error)),
-          backgroundColor: AdminDashboardColors.danger,
+          backgroundColor: DashboardColors.highPriority,
         ),
       );
       await widget.onRejected?.call();
@@ -586,7 +586,7 @@ class _SessionStatusConfirmDialogState
       widget.messenger.showSnackBar(
         SnackBar(
           content: Text('Action failed: $error'),
-          backgroundColor: AdminDashboardColors.danger,
+          backgroundColor: DashboardColors.highPriority,
         ),
       );
       await widget.onRejected?.call();
@@ -614,7 +614,7 @@ class _SessionStatusConfirmDialogState
             onPressed: _submitting ? null : _onConfirmPressed,
             style: widget.isDestructive
                 ? FilledButton.styleFrom(
-                    backgroundColor: AdminDashboardColors.danger,
+                    backgroundColor: DashboardColors.highPriority,
                   )
                 : null,
             child: _submitting

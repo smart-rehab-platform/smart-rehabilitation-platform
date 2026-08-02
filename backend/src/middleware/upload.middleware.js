@@ -1,12 +1,13 @@
 const multer = require("multer");
 const path = require("path");
+const { uploadsRoot } = require("../config/uploads");
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
+  destination: (_req, _file, cb) => {
+    cb(null, uploadsRoot);
   },
 
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     const uniqueName =
       Date.now() + "-" + Math.round(Math.random() * 1e9);
 

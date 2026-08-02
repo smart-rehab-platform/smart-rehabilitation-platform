@@ -79,7 +79,7 @@ function CircularProgress({ value, size = 72 }) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(79, 166, 248, 0.12)"
+          stroke="rgba(42, 164, 201, 0.12)"
           strokeWidth={stroke}
         />
         <circle
@@ -141,7 +141,7 @@ function PatientJourneyCard() {
             {PROGRESS_PERCENT}%
           </span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "rgba(79, 166, 248, 0.12)" }}>
+        <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "rgba(42, 164, 201, 0.12)" }}>
           <div
             className="h-full rounded-full"
             style={{ width: `${PROGRESS_PERCENT}%`, background: L.gradientButton }}
@@ -271,7 +271,7 @@ function ParentDashboardPreview() {
         <p className="mt-0.5 text-[12px] font-semibold" style={{ color: L.text, fontFamily: "'Inter', sans-serif" }}>
           2 Completed · 1 Remaining
         </p>
-        <div className="mt-2 h-1 overflow-hidden rounded-full" style={{ background: "rgba(79, 166, 248, 0.12)" }}>
+        <div className="mt-2 h-1 overflow-hidden rounded-full" style={{ background: "rgba(42, 164, 201, 0.12)" }}>
           <div className="h-full w-2/3 rounded-full" style={{ background: L.primary }} />
         </div>
       </div>
@@ -285,7 +285,7 @@ function ParentDashboardPreview() {
           <li
             key={label}
             className="flex items-start gap-2 rounded-lg px-2 py-1.5"
-            style={{ background: "rgba(79, 166, 248, 0.06)" }}
+            style={{ background: "rgba(42, 164, 201, 0.06)" }}
           >
             <Icon size={12} className="mt-0.5 shrink-0" style={{ color: L.primarySecondary }} aria-hidden="true" />
             <div>
@@ -417,7 +417,7 @@ export function JourneySection() {
         }
 
         .journey-steps-scroll::-webkit-scrollbar-thumb {
-          background: rgba(79, 166, 248, 0.25);
+          background: rgba(42, 164, 201, 0.25);
           border-radius: 99px;
         }
 

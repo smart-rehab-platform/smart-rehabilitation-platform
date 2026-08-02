@@ -321,14 +321,14 @@ export function ArtificialIntelligenceSection() {
 
         <div className="grid grid-cols-1 gap-7 md:grid-cols-2 md:gap-8">
           <AiCardShell
-            accent="#4FA6F8"
+            accent="#2AA4C9"
             iconSrc={neurologyIcon}
             title="AI Speech Analysis"
             description="Analyze pronunciation, fluency and speech quality from uploaded recordings."
             index={0}
             visible={visible}
           >
-            <SpeechScoreWidget accent="#4FA6F8" />
+            <SpeechScoreWidget accent="#2AA4C9" />
           </AiCardShell>
 
           <AiCardShell
