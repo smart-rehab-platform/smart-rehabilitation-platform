@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../models/parent_dashboard_models.dart';
@@ -50,6 +51,7 @@ class _ParentChildSwitcherState extends State<ParentChildSwitcher> {
       context: context,
       showDragHandle: true,
       builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -63,7 +65,7 @@ class _ParentChildSwitcherState extends State<ParentChildSwitcher> {
                   context.dashSpacing * 0.35,
                 ),
                 child: Text(
-                  'Select Child',
+                  l10n.parentDashboardSelectChild,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: DashboardColors.textPrimary,
@@ -108,9 +110,11 @@ class _ParentChildSwitcherState extends State<ParentChildSwitcher> {
     required ParentChild selected,
     required VoidCallback onTap,
   }) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Semantics(
       button: true,
-      label: 'Select child, currently ${selected.name}',
+      label: l10n.parentDashboardSelectChildSemantics(selected.name),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -130,7 +134,9 @@ class _ParentChildSwitcherState extends State<ParentChildSwitcher> {
               ),
             ),
             child: Row(
-              mainAxisSize: widget.compact ? MainAxisSize.min : MainAxisSize.max,
+              mainAxisSize: widget.compact
+                  ? MainAxisSize.min
+                  : MainAxisSize.max,
               children: [
                 widget.compact
                     ? Flexible(
@@ -138,10 +144,11 @@ class _ParentChildSwitcherState extends State<ParentChildSwitcher> {
                           selected.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: DashboardColors.brandCyan,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: DashboardColors.brandCyan,
+                              ),
                         ),
                       )
                     : Expanded(
@@ -149,10 +156,11 @@ class _ParentChildSwitcherState extends State<ParentChildSwitcher> {
                           selected.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: DashboardColors.brandCyan,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: DashboardColors.brandCyan,
+                              ),
                         ),
                       ),
                 const Icon(
@@ -183,7 +191,9 @@ class _ParentChildSwitcherState extends State<ParentChildSwitcher> {
             ),
           ),
           foregroundColor: WidgetStatePropertyAll(
-            isSelected ? DashboardColors.brandCyan : DashboardColors.textPrimary,
+            isSelected
+                ? DashboardColors.brandCyan
+                : DashboardColors.textPrimary,
           ),
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.hovered) ||
@@ -237,7 +247,8 @@ class _ParentChildSwitcherState extends State<ParentChildSwitcher> {
   Widget _buildCompactDropdown(BuildContext context, ParentChild selected) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final menuWidth = constraints.maxWidth.isFinite && constraints.maxWidth > 0
+        final menuWidth =
+            constraints.maxWidth.isFinite && constraints.maxWidth > 0
             ? constraints.maxWidth
             : 160.0;
 
@@ -332,6 +343,7 @@ class ParentDashboardHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final normalized =
         (progress <= 1
                 ? progress.clamp(0.0, 1.0)
@@ -346,8 +358,12 @@ class ParentDashboardHeroCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: DashboardColors.brandHeroBackground,
         borderRadius: DashboardDecorations.cardRadius,
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.55)),
-        boxShadow: DashboardDecorations.heroCardShadow(DashboardColors.brandCyan),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.55),
+        ),
+        boxShadow: DashboardDecorations.heroCardShadow(
+          DashboardColors.brandCyan,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -405,7 +421,7 @@ class ParentDashboardHeroCard extends StatelessWidget {
           ),
           SizedBox(height: sectionGap),
           Text(
-            'Overall Progress',
+            l10n.parentDashboardOverallProgress,
             style: theme.textTheme.labelMedium?.copyWith(
               color: DashboardColors.textSecondary,
               fontWeight: FontWeight.w600,
@@ -449,7 +465,7 @@ class ParentDashboardHeroCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.2),
           Text(
-            'Keep going!',
+            l10n.parentDashboardKeepGoing,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(
@@ -466,7 +482,7 @@ class ParentDashboardHeroCard extends StatelessWidget {
               ),
               SizedBox(width: context.dashSpacing * 0.2),
               Text(
-                'Next Session',
+                l10n.parentDashboardNextSession,
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: DashboardColors.textSecondary,
                   fontWeight: FontWeight.w600,
@@ -495,7 +511,7 @@ class ParentDashboardHeroCard extends StatelessWidget {
                   horizontal: context.dashSpacing * 0.5,
                 ),
               ),
-              child: const Text('View Details →'),
+              child: Text(l10n.parentDashboardViewDetailsArrow),
             ),
           ),
         ],
@@ -622,6 +638,7 @@ class ParentTodaySummaryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final spacing = context.dashSpacing;
     final tasksFooter = tasksSubtitle;
 
@@ -632,7 +649,7 @@ class ParentTodaySummaryRow extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                "Today's Summary",
+                l10n.parentDashboardTodaysSummary,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: DashboardColors.textPrimary,
@@ -652,7 +669,7 @@ class ParentTodaySummaryRow extends StatelessWidget {
           children: [
             Expanded(
               child: ParentCompactSummaryCard(
-                title: 'Tasks',
+                title: l10n.parentDashboardTasksLabel,
                 value: tasksValue,
                 footer: tasksFooter,
                 icon: Icons.task_alt_outlined,
@@ -665,7 +682,7 @@ class ParentTodaySummaryRow extends StatelessWidget {
             SizedBox(width: spacing * 0.65),
             Expanded(
               child: ParentCompactSummaryCard(
-                title: 'Session',
+                title: l10n.entitySession,
                 value: sessionsValue,
                 footer: sessionsSubtitle,
                 icon: Icons.event_outlined,
@@ -701,13 +718,12 @@ class ParentLatestUpdatesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final hasReport = reportTitle.trim().isNotEmpty && reportTitle != '—';
     final hasFeedback = feedback != null;
 
     if (!hasReport && !hasFeedback) {
-      return const DashboardEmptyCard(
-        message: 'No recent reports or specialist feedback yet.',
-      );
+      return DashboardEmptyCard(message: l10n.parentDashboardNoRecentUpdates);
     }
 
     return Column(
@@ -737,7 +753,7 @@ class ParentLatestUpdatesSection extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Weekly Progress Report',
+                          l10n.parentDashboardWeeklyProgressReport,
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: DashboardColors.textSecondary,
                             fontWeight: FontWeight.w600,
@@ -801,7 +817,7 @@ class ParentLatestUpdatesSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Latest Specialist Feedback',
+                        l10n.parentDashboardLatestSpecialistFeedback,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: DashboardColors.textSecondary,
                           fontWeight: FontWeight.w600,
@@ -863,6 +879,7 @@ class ParentChildProgressCard extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final progressLabel = '${(progress * 100).round()}%';
 
     return DashboardSurfaceCard(
@@ -896,7 +913,7 @@ class ParentChildProgressCard extends StatelessWidget {
                 ),
                 SizedBox(height: context.dashSpacing * 0.15),
                 Text(
-                  '$progressLabel overall progress',
+                  '$progressLabel ${l10n.parentDashboardOverallProgress.toLowerCase()}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -967,6 +984,7 @@ class ParentAiInsightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       tint: DashboardColors.brandCyan,
@@ -992,7 +1010,7 @@ class ParentAiInsightCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'AI Daily Insight',
+                  l10n.parentDashboardAiDailyInsight,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: DashboardColors.brandCyan,
                     fontWeight: FontWeight.w700,
@@ -1157,6 +1175,7 @@ class ParentFeedbackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       onTap: onTap,
@@ -1167,7 +1186,7 @@ class ParentFeedbackCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Latest Specialist Feedback',
+                  l10n.parentDashboardLatestSpecialistFeedback,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: DashboardColors.brandCyan,
                     fontWeight: FontWeight.w700,
@@ -1201,7 +1220,7 @@ class ParentFeedbackCard extends StatelessWidget {
           if (feedback.requiresRetry) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
-              'Retry required',
+              l10n.parentDashboardRetryRequired,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: DashboardColors.warning,
                 fontWeight: FontWeight.w700,
@@ -1212,7 +1231,7 @@ class ParentFeedbackCard extends StatelessWidget {
           Align(
             alignment: AlignmentDirectional.centerEnd,
             child: Text(
-              'View Details',
+              l10n.parentDashboardViewDetails,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: DashboardColors.brandCyan,
                 fontWeight: FontWeight.w600,
@@ -1233,6 +1252,7 @@ class ParentSpeechAnalysisCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final overall = summary.overallScore?.round();
     final delta = summary.deltaFromPrevious;
 
@@ -1242,7 +1262,7 @@ class ParentSpeechAnalysisCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Speech Analysis',
+            l10n.clinicalSpeechAnalysis,
             style: theme.textTheme.labelLarge?.copyWith(
               color: DashboardColors.accent,
               fontWeight: FontWeight.w700,
@@ -1251,7 +1271,7 @@ class ParentSpeechAnalysisCard extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.45),
           if (overall != null)
             Text(
-              'Last pronunciation score: $overall%',
+              l10n.parentDashboardLastPronunciationScore(overall),
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -1260,7 +1280,9 @@ class ParentSpeechAnalysisCard extends StatelessWidget {
           if (delta != null) ...[
             SizedBox(height: context.dashSpacing * 0.25),
             Text(
-              '${delta >= 0 ? '+' : ''}${delta.round()}% from previous attempt',
+              l10n.parentDashboardDeltaFromPrevious(
+                '${delta >= 0 ? '+' : ''}${delta.round()}%',
+              ),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: delta >= 0
                     ? DashboardColors.success
@@ -1276,17 +1298,17 @@ class ParentSpeechAnalysisCard extends StatelessWidget {
             children: [
               if (summary.pronunciationScore != null)
                 _ScoreChip(
-                  label: 'Pronunciation',
+                  label: l10n.parentDashboardPronunciation,
                   value: summary.pronunciationScore!.round(),
                 ),
               if (summary.fluencyScore != null)
                 _ScoreChip(
-                  label: 'Fluency',
+                  label: l10n.parentDashboardFluency,
                   value: summary.fluencyScore!.round(),
                 ),
               if (summary.overallScore != null)
                 _ScoreChip(
-                  label: 'Overall',
+                  label: l10n.parentDashboardOverall,
                   value: summary.overallScore!.round(),
                 ),
             ],
@@ -1326,15 +1348,15 @@ class _ScoreChip extends StatelessWidget {
 }
 
 class DashboardLoadingCard extends StatelessWidget {
-  const DashboardLoadingCard({
-    super.key,
-    this.message = 'Loading dashboard...',
-  });
+  const DashboardLoadingCard({super.key, this.message});
 
-  final String message;
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final displayMessage = message ?? l10n.parentDashboardLoading;
+
     return DashboardSurfaceCard(
       child: Row(
         children: [
@@ -1346,7 +1368,7 @@ class DashboardLoadingCard extends StatelessWidget {
           SizedBox(width: context.dashSpacing * 0.75),
           Expanded(
             child: Text(
-              message,
+              displayMessage,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -1370,6 +1392,8 @@ class DashboardErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSurfaceCard(
       tint: DashboardColors.highPriority,
       child: Column(
@@ -1382,7 +1406,7 @@ class DashboardErrorCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
+          TextButton(onPressed: onRetry, child: Text(l10n.commonRetry)),
         ],
       ),
     );
@@ -1397,6 +1421,7 @@ class ParentAiAssistantCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       tint: DashboardColors.brandCyan,
@@ -1425,7 +1450,7 @@ class ParentAiAssistantCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'AI Assistant',
+                      l10n.clinicalAiAssistant,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: DashboardColors.textPrimary,
@@ -1433,14 +1458,14 @@ class ParentAiAssistantCard extends StatelessWidget {
                     ),
                     SizedBox(height: context.dashSpacing * 0.25),
                     Text(
-                      'Need help understanding your child\'s progress?',
+                      l10n.parentDashboardAiAssistantHelp,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: DashboardColors.textSecondary,
                       ),
                     ),
                     SizedBox(height: context.dashSpacing * 0.15),
                     Text(
-                      'Ask about exercises, reports, or daily guidance.',
+                      l10n.parentDashboardAiAssistantHint,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: DashboardColors.textSecondary,
                       ),
@@ -1456,7 +1481,7 @@ class ParentAiAssistantCard extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onTap,
               icon: const Icon(Icons.auto_awesome),
-              label: const Text('Ask AI'),
+              label: Text(l10n.parentDashboardAskAi),
               style: ElevatedButton.styleFrom(
                 backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,

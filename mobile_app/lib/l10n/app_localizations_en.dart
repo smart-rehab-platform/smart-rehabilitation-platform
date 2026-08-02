@@ -522,4 +522,289 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginHidePassword => 'Hide password';
+
+  @override
+  String parentDashboardWelcomeBack(String userName) {
+    return 'Welcome back, $userName';
+  }
+
+  @override
+  String get parentDashboardSeeAll => 'See all';
+
+  @override
+  String get parentDashboardTodaysTasks => 'Today\'s Tasks';
+
+  @override
+  String get parentDashboardLatestUpdates => 'Latest Updates';
+
+  @override
+  String get parentDashboardSelectChild => 'Select Child';
+
+  @override
+  String parentDashboardSelectChildSemantics(String childName) {
+    return 'Select child, currently $childName';
+  }
+
+  @override
+  String get parentDashboardOverallProgress => 'Overall Progress';
+
+  @override
+  String get parentDashboardKeepGoing => 'Keep going!';
+
+  @override
+  String get parentDashboardNextSession => 'Next Session';
+
+  @override
+  String get parentDashboardViewDetailsArrow => 'View Details →';
+
+  @override
+  String get parentDashboardTodaysSummary => 'Today\'s Summary';
+
+  @override
+  String get parentDashboardTasksLabel => 'Tasks';
+
+  @override
+  String get parentDashboardNoRecentUpdates =>
+      'No recent reports or specialist feedback yet.';
+
+  @override
+  String get parentDashboardWeeklyProgressReport => 'Weekly Progress Report';
+
+  @override
+  String get parentDashboardLatestSpecialistFeedback =>
+      'Latest Specialist Feedback';
+
+  @override
+  String get parentDashboardAiDailyInsight => 'AI Daily Insight';
+
+  @override
+  String get parentDashboardAiAssistantHelp =>
+      'Need help understanding your child\'s progress?';
+
+  @override
+  String get parentDashboardAiAssistantHint =>
+      'Ask about exercises, reports, or daily guidance.';
+
+  @override
+  String get parentDashboardAskAi => 'Ask AI';
+
+  @override
+  String parentDashboardLastPronunciationScore(int score) {
+    return 'Last pronunciation score: $score%';
+  }
+
+  @override
+  String parentDashboardDeltaFromPrevious(String delta) {
+    return '$delta from previous attempt';
+  }
+
+  @override
+  String get parentDashboardPronunciation => 'Pronunciation';
+
+  @override
+  String get parentDashboardFluency => 'Fluency';
+
+  @override
+  String get parentDashboardOverall => 'Overall';
+
+  @override
+  String get parentDashboardLoading => 'Loading dashboard...';
+
+  @override
+  String get parentDashboardUpdatingInsights => 'Updating child insights...';
+
+  @override
+  String get parentDashboardRetryRequired => 'Retry required';
+
+  @override
+  String get parentDashboardViewDetails => 'View Details';
+
+  @override
+  String get parentDashboardAssignedForToday => 'Assigned for today';
+
+  @override
+  String parentDashboardCompletedCount(int completed, int total) {
+    return '$completed of $total completed';
+  }
+
+  @override
+  String get parentDashboardSessionScheduled => 'Session scheduled';
+
+  @override
+  String get parentDashboardSessionsScheduled => 'Sessions scheduled';
+
+  @override
+  String parentDashboardRehabStreak(int days) {
+    return '$days-day rehab streak';
+  }
+
+  @override
+  String get parentDashboardSelectChildForProgress =>
+      'Select a child to view progress.';
+
+  @override
+  String get parentDashboardSelectChildForDetails =>
+      'Select a child to view details.';
+
+  @override
+  String get parentDashboardNoExercisesToday => 'No exercises assigned today.';
+
+  @override
+  String get parentDashboardNoReportsYet => 'No reports available yet.';
+
+  @override
+  String get parentDashboardConversationUnavailable =>
+      'Conversation is not available yet.';
+
+  @override
+  String get parentDashboardTasksEmptyAwaitingProfile =>
+      'Daily tasks will appear after the child profile is created and a specialist assigns exercises.';
+
+  @override
+  String get parentDashboardTasksEmptySelectChild =>
+      'Select a child to view today\'s tasks.';
+
+  @override
+  String parentDashboardTasksEmptyForChild(String childName) {
+    return 'No tasks assigned for $childName today.';
+  }
+
+  @override
+  String get parentDashboardRehabilitationFollowUp =>
+      'Rehabilitation follow-up';
+
+  @override
+  String parentDashboardImprovementFromPrevious(String delta) {
+    return '$delta improvement from previous attempt';
+  }
+
+  @override
+  String get parentDashboardRecently => 'Recently';
+
+  @override
+  String get parentSessionNoUpcoming => 'No upcoming session';
+
+  @override
+  String get parentSessionInOneDay => 'In 1 day';
+
+  @override
+  String parentSessionInDays(int count) {
+    return 'In $count days';
+  }
+
+  @override
+  String get parentSessionInOneMinute => 'In 1 minute';
+
+  @override
+  String parentSessionInMinutes(int count) {
+    return 'In $count minutes';
+  }
+
+  @override
+  String get parentSessionInOneHour => 'In 1 hour';
+
+  @override
+  String parentSessionInHours(int count) {
+    return 'In $count hours';
+  }
+
+  @override
+  String get parentTreatmentJourneyTitle => 'Treatment Journey';
+
+  @override
+  String get parentTreatmentJourneySubtitle =>
+      'Progress throughout the treatment period';
+
+  @override
+  String get parentTreatmentJourneyViewDetails => 'View details';
+
+  @override
+  String get parentTreatmentJourneyLoadError =>
+      'Couldn\'t load treatment progress.';
+
+  @override
+  String get parentTreatmentJourneyEmpty =>
+      'Progress will appear after exercises are reviewed.';
+
+  @override
+  String parentTreatmentJourneyScoreChangePositive(int points) {
+    return '+$points points';
+  }
+
+  @override
+  String parentTreatmentJourneyScoreChangeNegative(int points) {
+    return '$points points';
+  }
+
+  @override
+  String get parentTreatmentJourneyScoreChangeZero => '0 points';
+
+  @override
+  String get parentTreatmentJourneySemanticsLoading =>
+      'Treatment Journey, loading progress';
+
+  @override
+  String get parentTreatmentJourneySemanticsError =>
+      'Treatment Journey, could not load treatment progress';
+
+  @override
+  String get parentTreatmentJourneySemanticsEmpty =>
+      'Treatment Journey, progress will appear after exercises are reviewed';
+
+  @override
+  String parentTreatmentJourneySemanticsLoaded(int score, String trend) {
+    return 'Treatment Journey, current progress $score percent, $trend';
+  }
+
+  @override
+  String get parentDashboardCaseIntakeLoading => 'Loading case requests...';
+
+  @override
+  String get parentDashboardCaseIntakeTitle =>
+      'Start Your Child\'s Follow-Up Journey';
+
+  @override
+  String get parentDashboardCaseIntakeDescription =>
+      'Tell us about the observed condition. The admin team will review the request and assign a suitable specialist.';
+
+  @override
+  String get parentDashboardCaseIntakeDisclaimer =>
+      'The selected category is preliminary and does not represent a medical diagnosis.';
+
+  @override
+  String get parentDashboardCaseIntakeSubmitNew => 'Submit New Case Request';
+
+  @override
+  String get parentDashboardCaseIntakeViewRequests => 'View Case Requests';
+
+  @override
+  String get parentDashboardCaseRequest => 'Case Request';
+
+  @override
+  String get parentDashboardCaseConversationPending =>
+      'Conversation becomes available after specialist assignment.';
+
+  @override
+  String get parentDashboardCaseViewRequest => 'View Request';
+
+  @override
+  String get parentDashboardCaseOpenConversation => 'Open Conversation';
+
+  @override
+  String get parentDashboardCaseViewAllRequests => 'View All Requests';
+
+  @override
+  String get parentDashboardCaseUpdateTitle => 'Case Request Update';
+
+  @override
+  String get parentDashboardCaseSubmitAnother => 'Submit Another Request';
+
+  @override
+  String get parentDashboardCaseNoRejectionReason =>
+      'No rejection reason was provided.';
+
+  @override
+  String parentDashboardCaseSubmittedOn(String date) {
+    return 'Submitted $date';
+  }
 }

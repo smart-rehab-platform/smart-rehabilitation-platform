@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../models/parent_dashboard_models.dart';
@@ -29,7 +30,8 @@ class ParentTreatmentJourneyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final summaryLabel = _buildSemanticsLabel();
+    final l10n = AppLocalizations.of(context)!;
+    final summaryLabel = _buildSemanticsLabel(l10n);
 
     return Semantics(
       button: true,
@@ -47,7 +49,7 @@ class ParentTreatmentJourneyCard extends StatelessWidget {
             else if (error != null)
               _ErrorBody(onRetry: onRetry)
             else if (!_hasChartData)
-              const _EmptyBody()
+              _EmptyBody()
             else
               _LoadedBody(journey: journey!),
           ],
@@ -56,20 +58,20 @@ class ParentTreatmentJourneyCard extends StatelessWidget {
     );
   }
 
-  String _buildSemanticsLabel() {
+  String _buildSemanticsLabel(AppLocalizations l10n) {
     if (isLoading) {
-      return 'Treatment Journey, loading progress';
+      return l10n.parentTreatmentJourneySemanticsLoading;
     }
     if (error != null) {
-      return 'Treatment Journey, could not load treatment progress';
+      return l10n.parentTreatmentJourneySemanticsError;
     }
     if (!_hasChartData) {
-      return 'Treatment Journey, progress will appear after exercises are reviewed';
+      return l10n.parentTreatmentJourneySemanticsEmpty;
     }
 
     final current = journey!.currentScore?.round();
-    final trend = treatmentJourneyTrendLabel(journey!.trend);
-    return 'Treatment Journey, current progress ${current ?? 0} percent, $trend';
+    final trend = localizedTreatmentJourneyTrendLabel(l10n, journey!.trend);
+    return l10n.parentTreatmentJourneySemanticsLoaded(current ?? 0, trend);
   }
 }
 
@@ -81,6 +83,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +108,7 @@ class _Header extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Treatment Journey',
+                l10n.parentTreatmentJourneyTitle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleSmall?.copyWith(
@@ -115,7 +118,7 @@ class _Header extends StatelessWidget {
               ),
               SizedBox(height: context.dashSpacing * 0.15),
               Text(
-                'Progress throughout the treatment period',
+                l10n.parentTreatmentJourneySubtitle,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -140,7 +143,7 @@ class _Header extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'View details',
+                l10n.parentTreatmentJourneyViewDetails,
                 style: theme.textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -194,12 +197,13 @@ class _ErrorBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Couldn\'t load treatment progress.',
+          l10n.parentTreatmentJourneyLoadError,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: DashboardColors.textPrimary,
             fontWeight: FontWeight.w600,
@@ -217,7 +221,7 @@ class _ErrorBody extends StatelessWidget {
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text('Retry'),
+              child: Text(l10n.commonRetry),
             ),
           ),
         ],
@@ -227,11 +231,10 @@ class _ErrorBody extends StatelessWidget {
 }
 
 class _EmptyBody extends StatelessWidget {
-  const _EmptyBody();
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       children: [
@@ -242,7 +245,7 @@ class _EmptyBody extends StatelessWidget {
         ),
         SizedBox(height: context.dashSpacing * 0.45),
         Text(
-          'Progress will appear after exercises are reviewed.',
+          l10n.parentTreatmentJourneyEmpty,
           textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(
             color: DashboardColors.textSecondary,
@@ -262,11 +265,13 @@ class _LoadedBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final currentScore = journey.currentScore?.round() ?? 0;
-    final scoreChangeLabel = formatTreatmentJourneyScoreChange(
+    final scoreChangeLabel = localizedFormatTreatmentJourneyScoreChange(
+      l10n,
       journey.scoreChange,
     );
-    final trendLabel = treatmentJourneyTrendLabel(journey.trend);
+    final trendLabel = localizedTreatmentJourneyTrendLabel(l10n, journey.trend);
     final previewScores = treatmentJourneyPreviewScores(journey.chartPoints);
 
     return Column(
@@ -280,7 +285,7 @@ class _LoadedBody extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Current Progress',
+                    l10n.clinicalCurrentProgress,
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: DashboardColors.textSecondary,
                       fontWeight: FontWeight.w600,

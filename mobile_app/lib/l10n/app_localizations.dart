@@ -1123,6 +1123,474 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide password'**
   String get loginHidePassword;
+
+  /// Greeting on the parent dashboard home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back, {userName}'**
+  String parentDashboardWelcomeBack(String userName);
+
+  /// Link to view all items in a dashboard section.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get parentDashboardSeeAll;
+
+  /// Section header for daily assigned exercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Tasks'**
+  String get parentDashboardTodaysTasks;
+
+  /// Section header for recent reports and feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Updates'**
+  String get parentDashboardLatestUpdates;
+
+  /// Title for the child picker bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Child'**
+  String get parentDashboardSelectChild;
+
+  /// Accessibility label for the child switcher control.
+  ///
+  /// In en, this message translates to:
+  /// **'Select child, currently {childName}'**
+  String parentDashboardSelectChildSemantics(String childName);
+
+  /// Label for aggregate treatment progress on the hero card.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Progress'**
+  String get parentDashboardOverallProgress;
+
+  /// Encouragement shown below the progress bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going!'**
+  String get parentDashboardKeepGoing;
+
+  /// Label for the upcoming therapy session countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Session'**
+  String get parentDashboardNextSession;
+
+  /// Link to open child detail from the hero card.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details →'**
+  String get parentDashboardViewDetailsArrow;
+
+  /// Heading for the daily tasks and sessions summary row.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Summary'**
+  String get parentDashboardTodaysSummary;
+
+  /// Compact summary card title for daily tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get parentDashboardTasksLabel;
+
+  /// Empty state when no reports or feedback exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent reports or specialist feedback yet.'**
+  String get parentDashboardNoRecentUpdates;
+
+  /// Label for the latest weekly report card.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Progress Report'**
+  String get parentDashboardWeeklyProgressReport;
+
+  /// Label for the most recent specialist feedback card.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Specialist Feedback'**
+  String get parentDashboardLatestSpecialistFeedback;
+
+  /// Heading for the AI-generated daily insight card.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Daily Insight'**
+  String get parentDashboardAiDailyInsight;
+
+  /// Prompt on the AI assistant card.
+  ///
+  /// In en, this message translates to:
+  /// **'Need help understanding your child\'s progress?'**
+  String get parentDashboardAiAssistantHelp;
+
+  /// Secondary hint on the AI assistant card.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about exercises, reports, or daily guidance.'**
+  String get parentDashboardAiAssistantHint;
+
+  /// Button label to open the AI chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask AI'**
+  String get parentDashboardAskAi;
+
+  /// Most recent pronunciation score on the speech analysis card.
+  ///
+  /// In en, this message translates to:
+  /// **'Last pronunciation score: {score}%'**
+  String parentDashboardLastPronunciationScore(int score);
+
+  /// Score change compared to the previous speech attempt.
+  ///
+  /// In en, this message translates to:
+  /// **'{delta} from previous attempt'**
+  String parentDashboardDeltaFromPrevious(String delta);
+
+  /// Speech analysis metric label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation'**
+  String get parentDashboardPronunciation;
+
+  /// Speech analysis metric label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fluency'**
+  String get parentDashboardFluency;
+
+  /// Overall speech score chip label.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall'**
+  String get parentDashboardOverall;
+
+  /// Loading state for the parent dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading dashboard...'**
+  String get parentDashboardLoading;
+
+  /// Loading state while refreshing selected child data.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating child insights...'**
+  String get parentDashboardUpdatingInsights;
+
+  /// Indicates an exercise needs to be attempted again.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry required'**
+  String get parentDashboardRetryRequired;
+
+  /// Link to open detail view.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get parentDashboardViewDetails;
+
+  /// Tasks summary when none are completed yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned for today'**
+  String get parentDashboardAssignedForToday;
+
+  /// Daily task completion summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} completed'**
+  String parentDashboardCompletedCount(int completed, int total);
+
+  /// Singular upcoming session summary footer.
+  ///
+  /// In en, this message translates to:
+  /// **'Session scheduled'**
+  String get parentDashboardSessionScheduled;
+
+  /// Plural upcoming sessions summary footer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions scheduled'**
+  String get parentDashboardSessionsScheduled;
+
+  /// Consecutive days of rehabilitation activity.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}-day rehab streak'**
+  String parentDashboardRehabStreak(int days);
+
+  /// Snack bar when progress is opened without a selected child.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a child to view progress.'**
+  String get parentDashboardSelectChildForProgress;
+
+  /// Snack bar when child details are opened without a selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a child to view details.'**
+  String get parentDashboardSelectChildForDetails;
+
+  /// Snack bar when no daily exercises are available.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises assigned today.'**
+  String get parentDashboardNoExercisesToday;
+
+  /// Snack bar when reports list is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports available yet.'**
+  String get parentDashboardNoReportsYet;
+
+  /// Snack bar when case conversation cannot be opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation is not available yet.'**
+  String get parentDashboardConversationUnavailable;
+
+  /// Empty tasks state before a child profile exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily tasks will appear after the child profile is created and a specialist assigns exercises.'**
+  String get parentDashboardTasksEmptyAwaitingProfile;
+
+  /// Empty tasks state when no child is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a child to view today\'s tasks.'**
+  String get parentDashboardTasksEmptySelectChild;
+
+  /// Empty tasks state for a selected child with no assignments.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks assigned for {childName} today.'**
+  String parentDashboardTasksEmptyForChild(String childName);
+
+  /// Default category label on the parent hero card.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehabilitation follow-up'**
+  String get parentDashboardRehabilitationFollowUp;
+
+  /// Improvement delta shown on the hero card.
+  ///
+  /// In en, this message translates to:
+  /// **'{delta} improvement from previous attempt'**
+  String parentDashboardImprovementFromPrevious(String delta);
+
+  /// Fallback date label when no date is available.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently'**
+  String get parentDashboardRecently;
+
+  /// Hero card label when no session is scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming session'**
+  String get parentSessionNoUpcoming;
+
+  /// Session countdown for one day away.
+  ///
+  /// In en, this message translates to:
+  /// **'In 1 day'**
+  String get parentSessionInOneDay;
+
+  /// Session countdown for multiple days away.
+  ///
+  /// In en, this message translates to:
+  /// **'In {count} days'**
+  String parentSessionInDays(int count);
+
+  /// Session countdown for one minute away.
+  ///
+  /// In en, this message translates to:
+  /// **'In 1 minute'**
+  String get parentSessionInOneMinute;
+
+  /// Session countdown for multiple minutes away.
+  ///
+  /// In en, this message translates to:
+  /// **'In {count} minutes'**
+  String parentSessionInMinutes(int count);
+
+  /// Session countdown for one hour away.
+  ///
+  /// In en, this message translates to:
+  /// **'In 1 hour'**
+  String get parentSessionInOneHour;
+
+  /// Session countdown for multiple hours away.
+  ///
+  /// In en, this message translates to:
+  /// **'In {count} hours'**
+  String parentSessionInHours(int count);
+
+  /// Title for the treatment journey preview card.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment Journey'**
+  String get parentTreatmentJourneyTitle;
+
+  /// Subtitle for the treatment journey preview card.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress throughout the treatment period'**
+  String get parentTreatmentJourneySubtitle;
+
+  /// Link on the treatment journey card.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get parentTreatmentJourneyViewDetails;
+
+  /// Error message on the treatment journey card.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load treatment progress.'**
+  String get parentTreatmentJourneyLoadError;
+
+  /// Empty state on the treatment journey card.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress will appear after exercises are reviewed.'**
+  String get parentTreatmentJourneyEmpty;
+
+  /// Positive score change on the treatment journey card.
+  ///
+  /// In en, this message translates to:
+  /// **'+{points} points'**
+  String parentTreatmentJourneyScoreChangePositive(int points);
+
+  /// Negative score change on the treatment journey card.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} points'**
+  String parentTreatmentJourneyScoreChangeNegative(int points);
+
+  /// Zero score change on the treatment journey card.
+  ///
+  /// In en, this message translates to:
+  /// **'0 points'**
+  String get parentTreatmentJourneyScoreChangeZero;
+
+  /// Screen reader label while journey data loads.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment Journey, loading progress'**
+  String get parentTreatmentJourneySemanticsLoading;
+
+  /// Screen reader label when journey data fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment Journey, could not load treatment progress'**
+  String get parentTreatmentJourneySemanticsError;
+
+  /// Screen reader label when journey chart has no data.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment Journey, progress will appear after exercises are reviewed'**
+  String get parentTreatmentJourneySemanticsEmpty;
+
+  /// Screen reader label when journey chart is loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment Journey, current progress {score} percent, {trend}'**
+  String parentTreatmentJourneySemanticsLoaded(int score, String trend);
+
+  /// Loading state for the case intake section.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading case requests...'**
+  String get parentDashboardCaseIntakeLoading;
+
+  /// Onboarding title for new parents without a linked child.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Your Child\'s Follow-Up Journey'**
+  String get parentDashboardCaseIntakeTitle;
+
+  /// Onboarding description for case intake.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about the observed condition. The admin team will review the request and assign a suitable specialist.'**
+  String get parentDashboardCaseIntakeDescription;
+
+  /// Medical disclaimer on the case intake onboarding card.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected category is preliminary and does not represent a medical diagnosis.'**
+  String get parentDashboardCaseIntakeDisclaimer;
+
+  /// Primary action to start a new case request.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit New Case Request'**
+  String get parentDashboardCaseIntakeSubmitNew;
+
+  /// Secondary action to browse existing case requests.
+  ///
+  /// In en, this message translates to:
+  /// **'View Case Requests'**
+  String get parentDashboardCaseIntakeViewRequests;
+
+  /// Title for an active featured case request card.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Request'**
+  String get parentDashboardCaseRequest;
+
+  /// Hint when conversation is not yet available.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation becomes available after specialist assignment.'**
+  String get parentDashboardCaseConversationPending;
+
+  /// Button to open case request details.
+  ///
+  /// In en, this message translates to:
+  /// **'View Request'**
+  String get parentDashboardCaseViewRequest;
+
+  /// Button to open the case conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Conversation'**
+  String get parentDashboardCaseOpenConversation;
+
+  /// Button to browse all case requests.
+  ///
+  /// In en, this message translates to:
+  /// **'View All Requests'**
+  String get parentDashboardCaseViewAllRequests;
+
+  /// Title for a rejected case request update card.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Request Update'**
+  String get parentDashboardCaseUpdateTitle;
+
+  /// Button to submit a new request after rejection.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Another Request'**
+  String get parentDashboardCaseSubmitAnother;
+
+  /// Fallback when a rejected request has no reason.
+  ///
+  /// In en, this message translates to:
+  /// **'No rejection reason was provided.'**
+  String get parentDashboardCaseNoRejectionReason;
+
+  /// Submission date label on a case request summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted {date}'**
+  String parentDashboardCaseSubmittedOn(String date);
 }
 
 class _AppLocalizationsDelegate

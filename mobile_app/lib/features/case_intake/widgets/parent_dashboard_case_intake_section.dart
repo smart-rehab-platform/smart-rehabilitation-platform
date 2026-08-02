@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
@@ -41,9 +42,13 @@ class ParentDashboardCaseIntakeSection extends StatelessWidget {
         caseIntakeState.errorMessage!.isNotEmpty;
 
     if (isInitialLoading) {
-      return const Padding(
-        padding: EdgeInsets.only(bottom: 8),
-        child: DashboardLoadingCard(message: 'Loading case requests...'),
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: DashboardLoadingCard(
+          message: AppLocalizations.of(
+            context,
+          )!.parentDashboardCaseIntakeLoading,
+        ),
       );
     }
 
@@ -109,13 +114,14 @@ class _OnboardingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            "Start Your Child's Follow-Up Journey",
+            l10n.parentDashboardCaseIntakeTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w800,
               color: DashboardColors.textPrimary,
@@ -123,14 +129,14 @@ class _OnboardingCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.4),
           Text(
-            'Tell us about the observed condition. The admin team will review the request and assign a suitable specialist.',
+            l10n.parentDashboardCaseIntakeDescription,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           Text(
-            'The selected category is preliminary and does not represent a medical diagnosis.',
+            l10n.parentDashboardCaseIntakeDisclaimer,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textMuted,
               fontStyle: FontStyle.italic,
@@ -139,12 +145,12 @@ class _OnboardingCard extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.85),
           FilledButton(
             onPressed: onSubmitNewRequest,
-            child: const Text('Submit New Case Request'),
+            child: Text(l10n.parentDashboardCaseIntakeSubmitNew),
           ),
           SizedBox(height: context.dashSpacing * 0.4),
           OutlinedButton(
             onPressed: onViewAllRequests,
-            child: const Text('View Case Requests'),
+            child: Text(l10n.parentDashboardCaseIntakeViewRequests),
           ),
         ],
       ),
@@ -169,12 +175,14 @@ class _ActiveFeaturedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Case Request',
+            l10n.parentDashboardCaseRequest,
             style: Theme.of(
               context,
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
@@ -184,7 +192,7 @@ class _ActiveFeaturedCard extends StatelessWidget {
           if (conversationUnavailableHint) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
-              'Conversation becomes available after specialist assignment.',
+              l10n.parentDashboardCaseConversationPending,
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: DashboardColors.textMuted),
@@ -197,16 +205,16 @@ class _ActiveFeaturedCard extends StatelessWidget {
             children: [
               FilledButton(
                 onPressed: onViewRequest,
-                child: const Text('View Request'),
+                child: Text(l10n.parentDashboardCaseViewRequest),
               ),
               if (onOpenConversation != null)
                 OutlinedButton(
                   onPressed: onOpenConversation,
-                  child: const Text('Open Conversation'),
+                  child: Text(l10n.parentDashboardCaseOpenConversation),
                 ),
               TextButton(
                 onPressed: onViewAllRequests,
-                child: const Text('View All Requests'),
+                child: Text(l10n.parentDashboardCaseViewAllRequests),
               ),
             ],
           ),
@@ -232,9 +240,10 @@ class _RejectedFeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final reason = request.rejectionReason?.trim().isNotEmpty == true
         ? request.rejectionReason!.trim()
-        : 'No rejection reason was provided.';
+        : l10n.parentDashboardCaseNoRejectionReason;
 
     return DashboardSurfaceCard(
       child: Column(
@@ -244,7 +253,7 @@ class _RejectedFeaturedCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Case Request Update',
+                  l10n.parentDashboardCaseUpdateTitle,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -274,15 +283,15 @@ class _RejectedFeaturedCard extends StatelessWidget {
             children: [
               FilledButton(
                 onPressed: onSubmitAnotherRequest,
-                child: const Text('Submit Another Request'),
+                child: Text(l10n.parentDashboardCaseSubmitAnother),
               ),
               OutlinedButton(
                 onPressed: onViewRequest,
-                child: const Text('View Request'),
+                child: Text(l10n.parentDashboardCaseViewRequest),
               ),
               TextButton(
                 onPressed: onViewAllRequests,
-                child: const Text('View All Requests'),
+                child: Text(l10n.parentDashboardCaseViewAllRequests),
               ),
             ],
           ),
@@ -300,9 +309,10 @@ class _RequestSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final submittedLabel = request.submittedAt != null
         ? DateFormat('MMM d, yyyy').format(request.submittedAt!)
-        : 'Date unavailable';
+        : l10n.parentDashboardRecently;
     final specialistName = request.assignedSpecialist?.fullName?.trim();
 
     return Column(
@@ -336,7 +346,7 @@ class _RequestSummary extends StatelessWidget {
         ],
         SizedBox(height: context.dashSpacing * 0.25),
         Text(
-          'Submitted $submittedLabel',
+          l10n.parentDashboardCaseSubmittedOn(submittedLabel),
           style: theme.textTheme.bodySmall?.copyWith(
             color: DashboardColors.textSecondary,
           ),

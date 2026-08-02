@@ -356,5 +356,239 @@
   "loginShowPassword": "Show password",
   "@loginShowPassword": { "description": "Accessibility label for revealing the login password." },
   "loginHidePassword": "Hide password",
-  "@loginHidePassword": { "description": "Accessibility label for concealing the login password." }
+  "@loginHidePassword": { "description": "Accessibility label for concealing the login password." },
+
+  "parentDashboardWelcomeBack": "Welcome back, {userName}",
+  "@parentDashboardWelcomeBack": {
+    "description": "Greeting on the parent dashboard home screen.",
+    "placeholders": {
+      "userName": { "type": "String", "example": "Sarah" }
+    }
+  },
+  "parentDashboardSeeAll": "See all",
+  "@parentDashboardSeeAll": { "description": "Link to view all items in a dashboard section." },
+  "parentDashboardTodaysTasks": "Today's Tasks",
+  "@parentDashboardTodaysTasks": { "description": "Section header for daily assigned exercises." },
+  "parentDashboardLatestUpdates": "Latest Updates",
+  "@parentDashboardLatestUpdates": { "description": "Section header for recent reports and feedback." },
+  "parentDashboardSelectChild": "Select Child",
+  "@parentDashboardSelectChild": { "description": "Title for the child picker bottom sheet." },
+  "parentDashboardSelectChildSemantics": "Select child, currently {childName}",
+  "@parentDashboardSelectChildSemantics": {
+    "description": "Accessibility label for the child switcher control.",
+    "placeholders": {
+      "childName": { "type": "String", "example": "Omar" }
+    }
+  },
+  "parentDashboardOverallProgress": "Overall Progress",
+  "@parentDashboardOverallProgress": { "description": "Label for aggregate treatment progress on the hero card." },
+  "parentDashboardKeepGoing": "Keep going!",
+  "@parentDashboardKeepGoing": { "description": "Encouragement shown below the progress bar." },
+  "parentDashboardNextSession": "Next Session",
+  "@parentDashboardNextSession": { "description": "Label for the upcoming therapy session countdown." },
+  "parentDashboardViewDetailsArrow": "View Details →",
+  "@parentDashboardViewDetailsArrow": { "description": "Link to open child detail from the hero card." },
+  "parentDashboardTodaysSummary": "Today's Summary",
+  "@parentDashboardTodaysSummary": { "description": "Heading for the daily tasks and sessions summary row." },
+  "parentDashboardTasksLabel": "Tasks",
+  "@parentDashboardTasksLabel": { "description": "Compact summary card title for daily tasks." },
+  "parentDashboardNoRecentUpdates": "No recent reports or specialist feedback yet.",
+  "@parentDashboardNoRecentUpdates": { "description": "Empty state when no reports or feedback exist." },
+  "parentDashboardWeeklyProgressReport": "Weekly Progress Report",
+  "@parentDashboardWeeklyProgressReport": { "description": "Label for the latest weekly report card." },
+  "parentDashboardLatestSpecialistFeedback": "Latest Specialist Feedback",
+  "@parentDashboardLatestSpecialistFeedback": { "description": "Label for the most recent specialist feedback card." },
+  "parentDashboardAiDailyInsight": "AI Daily Insight",
+  "@parentDashboardAiDailyInsight": { "description": "Heading for the AI-generated daily insight card." },
+  "parentDashboardAiAssistantHelp": "Need help understanding your child's progress?",
+  "@parentDashboardAiAssistantHelp": { "description": "Prompt on the AI assistant card." },
+  "parentDashboardAiAssistantHint": "Ask about exercises, reports, or daily guidance.",
+  "@parentDashboardAiAssistantHint": { "description": "Secondary hint on the AI assistant card." },
+  "parentDashboardAskAi": "Ask AI",
+  "@parentDashboardAskAi": { "description": "Button label to open the AI chat." },
+  "parentDashboardLastPronunciationScore": "Last pronunciation score: {score}%",
+  "@parentDashboardLastPronunciationScore": {
+    "description": "Most recent pronunciation score on the speech analysis card.",
+    "placeholders": {
+      "score": { "type": "int", "example": "82" }
+    }
+  },
+  "parentDashboardDeltaFromPrevious": "{delta} from previous attempt",
+  "@parentDashboardDeltaFromPrevious": {
+    "description": "Score change compared to the previous speech attempt.",
+    "placeholders": {
+      "delta": { "type": "String", "example": "+5%" }
+    }
+  },
+  "parentDashboardPronunciation": "Pronunciation",
+  "@parentDashboardPronunciation": { "description": "Speech analysis metric label." },
+  "parentDashboardFluency": "Fluency",
+  "@parentDashboardFluency": { "description": "Speech analysis metric label." },
+  "parentDashboardOverall": "Overall",
+  "@parentDashboardOverall": { "description": "Overall speech score chip label." },
+  "parentDashboardLoading": "Loading dashboard...",
+  "@parentDashboardLoading": { "description": "Loading state for the parent dashboard." },
+  "parentDashboardUpdatingInsights": "Updating child insights...",
+  "@parentDashboardUpdatingInsights": { "description": "Loading state while refreshing selected child data." },
+  "parentDashboardRetryRequired": "Retry required",
+  "@parentDashboardRetryRequired": { "description": "Indicates an exercise needs to be attempted again." },
+  "parentDashboardViewDetails": "View Details",
+  "@parentDashboardViewDetails": { "description": "Link to open detail view." },
+  "parentDashboardAssignedForToday": "Assigned for today",
+  "@parentDashboardAssignedForToday": { "description": "Tasks summary when none are completed yet." },
+  "parentDashboardCompletedCount": "{completed} of {total} completed",
+  "@parentDashboardCompletedCount": {
+    "description": "Daily task completion summary.",
+    "placeholders": {
+      "completed": { "type": "int", "example": "2" },
+      "total": { "type": "int", "example": "5" }
+    }
+  },
+  "parentDashboardSessionScheduled": "Session scheduled",
+  "@parentDashboardSessionScheduled": { "description": "Singular upcoming session summary footer." },
+  "parentDashboardSessionsScheduled": "Sessions scheduled",
+  "@parentDashboardSessionsScheduled": { "description": "Plural upcoming sessions summary footer." },
+  "parentDashboardRehabStreak": "{days}-day rehab streak",
+  "@parentDashboardRehabStreak": {
+    "description": "Consecutive days of rehabilitation activity.",
+    "placeholders": {
+      "days": { "type": "int", "example": "7" }
+    }
+  },
+  "parentDashboardSelectChildForProgress": "Select a child to view progress.",
+  "@parentDashboardSelectChildForProgress": { "description": "Snack bar when progress is opened without a selected child." },
+  "parentDashboardSelectChildForDetails": "Select a child to view details.",
+  "@parentDashboardSelectChildForDetails": { "description": "Snack bar when child details are opened without a selection." },
+  "parentDashboardNoExercisesToday": "No exercises assigned today.",
+  "@parentDashboardNoExercisesToday": { "description": "Snack bar when no daily exercises are available." },
+  "parentDashboardNoReportsYet": "No reports available yet.",
+  "@parentDashboardNoReportsYet": { "description": "Snack bar when reports list is empty." },
+  "parentDashboardConversationUnavailable": "Conversation is not available yet.",
+  "@parentDashboardConversationUnavailable": { "description": "Snack bar when case conversation cannot be opened." },
+  "parentDashboardTasksEmptyAwaitingProfile": "Daily tasks will appear after the child profile is created and a specialist assigns exercises.",
+  "@parentDashboardTasksEmptyAwaitingProfile": { "description": "Empty tasks state before a child profile exists." },
+  "parentDashboardTasksEmptySelectChild": "Select a child to view today's tasks.",
+  "@parentDashboardTasksEmptySelectChild": { "description": "Empty tasks state when no child is selected." },
+  "parentDashboardTasksEmptyForChild": "No tasks assigned for {childName} today.",
+  "@parentDashboardTasksEmptyForChild": {
+    "description": "Empty tasks state for a selected child with no assignments.",
+    "placeholders": {
+      "childName": { "type": "String", "example": "Omar" }
+    }
+  },
+  "parentDashboardRehabilitationFollowUp": "Rehabilitation follow-up",
+  "@parentDashboardRehabilitationFollowUp": { "description": "Default category label on the parent hero card." },
+  "parentDashboardImprovementFromPrevious": "{delta} improvement from previous attempt",
+  "@parentDashboardImprovementFromPrevious": {
+    "description": "Improvement delta shown on the hero card.",
+    "placeholders": {
+      "delta": { "type": "String", "example": "+8%" }
+    }
+  },
+  "parentDashboardRecently": "Recently",
+  "@parentDashboardRecently": { "description": "Fallback date label when no date is available." },
+  "parentSessionNoUpcoming": "No upcoming session",
+  "@parentSessionNoUpcoming": { "description": "Hero card label when no session is scheduled." },
+  "parentSessionInOneDay": "In 1 day",
+  "@parentSessionInOneDay": { "description": "Session countdown for one day away." },
+  "parentSessionInDays": "In {count} days",
+  "@parentSessionInDays": {
+    "description": "Session countdown for multiple days away.",
+    "placeholders": {
+      "count": { "type": "int", "example": "3" }
+    }
+  },
+  "parentSessionInOneMinute": "In 1 minute",
+  "@parentSessionInOneMinute": { "description": "Session countdown for one minute away." },
+  "parentSessionInMinutes": "In {count} minutes",
+  "@parentSessionInMinutes": {
+    "description": "Session countdown for multiple minutes away.",
+    "placeholders": {
+      "count": { "type": "int", "example": "15" }
+    }
+  },
+  "parentSessionInOneHour": "In 1 hour",
+  "@parentSessionInOneHour": { "description": "Session countdown for one hour away." },
+  "parentSessionInHours": "In {count} hours",
+  "@parentSessionInHours": {
+    "description": "Session countdown for multiple hours away.",
+    "placeholders": {
+      "count": { "type": "int", "example": "4" }
+    }
+  },
+  "parentTreatmentJourneyTitle": "Treatment Journey",
+  "@parentTreatmentJourneyTitle": { "description": "Title for the treatment journey preview card." },
+  "parentTreatmentJourneySubtitle": "Progress throughout the treatment period",
+  "@parentTreatmentJourneySubtitle": { "description": "Subtitle for the treatment journey preview card." },
+  "parentTreatmentJourneyViewDetails": "View details",
+  "@parentTreatmentJourneyViewDetails": { "description": "Link on the treatment journey card." },
+  "parentTreatmentJourneyLoadError": "Couldn't load treatment progress.",
+  "@parentTreatmentJourneyLoadError": { "description": "Error message on the treatment journey card." },
+  "parentTreatmentJourneyEmpty": "Progress will appear after exercises are reviewed.",
+  "@parentTreatmentJourneyEmpty": { "description": "Empty state on the treatment journey card." },
+  "parentTreatmentJourneyScoreChangePositive": "+{points} points",
+  "@parentTreatmentJourneyScoreChangePositive": {
+    "description": "Positive score change on the treatment journey card.",
+    "placeholders": {
+      "points": { "type": "int", "example": "5" }
+    }
+  },
+  "parentTreatmentJourneyScoreChangeNegative": "{points} points",
+  "@parentTreatmentJourneyScoreChangeNegative": {
+    "description": "Negative score change on the treatment journey card.",
+    "placeholders": {
+      "points": { "type": "int", "example": "-3" }
+    }
+  },
+  "parentTreatmentJourneyScoreChangeZero": "0 points",
+  "@parentTreatmentJourneyScoreChangeZero": { "description": "Zero score change on the treatment journey card." },
+  "parentTreatmentJourneySemanticsLoading": "Treatment Journey, loading progress",
+  "@parentTreatmentJourneySemanticsLoading": { "description": "Screen reader label while journey data loads." },
+  "parentTreatmentJourneySemanticsError": "Treatment Journey, could not load treatment progress",
+  "@parentTreatmentJourneySemanticsError": { "description": "Screen reader label when journey data fails to load." },
+  "parentTreatmentJourneySemanticsEmpty": "Treatment Journey, progress will appear after exercises are reviewed",
+  "@parentTreatmentJourneySemanticsEmpty": { "description": "Screen reader label when journey chart has no data." },
+  "parentTreatmentJourneySemanticsLoaded": "Treatment Journey, current progress {score} percent, {trend}",
+  "@parentTreatmentJourneySemanticsLoaded": {
+    "description": "Screen reader label when journey chart is loaded.",
+    "placeholders": {
+      "score": { "type": "int", "example": "72" },
+      "trend": { "type": "String", "example": "Improving" }
+    }
+  },
+  "parentDashboardCaseIntakeLoading": "Loading case requests...",
+  "@parentDashboardCaseIntakeLoading": { "description": "Loading state for the case intake section." },
+  "parentDashboardCaseIntakeTitle": "Start Your Child's Follow-Up Journey",
+  "@parentDashboardCaseIntakeTitle": { "description": "Onboarding title for new parents without a linked child." },
+  "parentDashboardCaseIntakeDescription": "Tell us about the observed condition. The admin team will review the request and assign a suitable specialist.",
+  "@parentDashboardCaseIntakeDescription": { "description": "Onboarding description for case intake." },
+  "parentDashboardCaseIntakeDisclaimer": "The selected category is preliminary and does not represent a medical diagnosis.",
+  "@parentDashboardCaseIntakeDisclaimer": { "description": "Medical disclaimer on the case intake onboarding card." },
+  "parentDashboardCaseIntakeSubmitNew": "Submit New Case Request",
+  "@parentDashboardCaseIntakeSubmitNew": { "description": "Primary action to start a new case request." },
+  "parentDashboardCaseIntakeViewRequests": "View Case Requests",
+  "@parentDashboardCaseIntakeViewRequests": { "description": "Secondary action to browse existing case requests." },
+  "parentDashboardCaseRequest": "Case Request",
+  "@parentDashboardCaseRequest": { "description": "Title for an active featured case request card." },
+  "parentDashboardCaseConversationPending": "Conversation becomes available after specialist assignment.",
+  "@parentDashboardCaseConversationPending": { "description": "Hint when conversation is not yet available." },
+  "parentDashboardCaseViewRequest": "View Request",
+  "@parentDashboardCaseViewRequest": { "description": "Button to open case request details." },
+  "parentDashboardCaseOpenConversation": "Open Conversation",
+  "@parentDashboardCaseOpenConversation": { "description": "Button to open the case conversation." },
+  "parentDashboardCaseViewAllRequests": "View All Requests",
+  "@parentDashboardCaseViewAllRequests": { "description": "Button to browse all case requests." },
+  "parentDashboardCaseUpdateTitle": "Case Request Update",
+  "@parentDashboardCaseUpdateTitle": { "description": "Title for a rejected case request update card." },
+  "parentDashboardCaseSubmitAnother": "Submit Another Request",
+  "@parentDashboardCaseSubmitAnother": { "description": "Button to submit a new request after rejection." },
+  "parentDashboardCaseNoRejectionReason": "No rejection reason was provided.",
+  "@parentDashboardCaseNoRejectionReason": { "description": "Fallback when a rejected request has no reason." },
+  "parentDashboardCaseSubmittedOn": "Submitted {date}",
+  "@parentDashboardCaseSubmittedOn": {
+    "description": "Submission date label on a case request summary.",
+    "placeholders": {
+      "date": { "type": "String", "example": "Aug 2, 2026" }
+    }
+  }
 }

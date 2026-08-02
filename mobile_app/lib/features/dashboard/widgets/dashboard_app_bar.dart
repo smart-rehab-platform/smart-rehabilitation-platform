@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/auth_ui.dart';
 import 'dashboard_layout.dart';
 import 'dashboard_profile_avatar.dart';
@@ -43,6 +44,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return AppBar(
       backgroundColor: DashboardColors.background,
@@ -76,7 +78,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           if (showBrandTitle) ...[
             SizedBox(width: context.dashSpacing * 0.45),
             Text(
-              'Smart Rehabilitation',
+              l10n.appTitle,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -111,7 +113,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: onMessagesTap,
                 icon: const Icon(Icons.chat_bubble_outline_rounded),
                 color: DashboardColors.textPrimary,
-                tooltip: 'Messages',
+                tooltip: l10n.navMessages,
               ),
               if (messageCount > 0)
                 PositionedDirectional(

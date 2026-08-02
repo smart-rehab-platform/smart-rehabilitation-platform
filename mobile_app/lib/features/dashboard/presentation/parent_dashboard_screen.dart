@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
@@ -147,11 +148,12 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
 
   void _handleNextAction(ParentNextAction action) {
     final state = ref.read(parentDashboardProvider);
+    final l10n = AppLocalizations.of(context)!;
     switch (action.type) {
       case ParentNextActionType.startExercise:
         if (state.selectedChild == null || state.dailyTasks.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No exercises assigned today.')),
+            SnackBar(content: Text(l10n.parentDashboardNoExercisesToday)),
           );
           return;
         }
@@ -175,9 +177,10 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
 
   void _openProgress() {
     final childId = ref.read(parentDashboardProvider).selectedPatientId;
+    final l10n = AppLocalizations.of(context)!;
     if (childId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Select a child to view progress.')),
+        SnackBar(content: Text(l10n.parentDashboardSelectChildForProgress)),
       );
       return;
     }
@@ -203,13 +206,14 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
   }
 
   void _onLatestReportCardTap(ParentDashboardState state) {
+    final l10n = AppLocalizations.of(context)!;
     final label = state.overview.latestReportLabel;
     final hasReport =
         label.isNotEmpty && label != 'No report yet' && label != '—';
     if (!hasReport && state.reports.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No reports available yet.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.parentDashboardNoReportsYet)));
       return;
     }
     _pushAndRefresh(AppRoutes.parentReports);
@@ -220,13 +224,14 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
   }
 
   Future<void> _openCaseConversation(CaseIntakeRequest request) async {
+    final l10n = AppLocalizations.of(context)!;
     final conversationId = request.conversationId;
     if (conversationId == null || conversationId.isEmpty) {
       if (!mounted) {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Conversation is not available yet.')),
+        SnackBar(content: Text(l10n.parentDashboardConversationUnavailable)),
       );
       return;
     }
@@ -292,9 +297,10 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
 
   void _openChildDetails() {
     final childId = ref.read(parentDashboardProvider).selectedPatientId;
+    final l10n = AppLocalizations.of(context)!;
     if (childId == null || childId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Select a child to view details.')),
+        SnackBar(content: Text(l10n.parentDashboardSelectChildForDetails)),
       );
       return;
     }
@@ -326,6 +332,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
     ParentChild? selectedChild,
     ParentCaseIntakeState caseIntakeState,
     ParentDashboardState state,
+    AppLocalizations l10n,
   ) {
     if (selectedChild == null) {
       return null;
@@ -343,42 +350,49 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
     }
     if (selectedChild.gender != null &&
         selectedChild.gender!.trim().isNotEmpty) {
-      return 'Rehabilitation follow-up';
+      return l10n.parentDashboardRehabilitationFollowUp;
     }
-    return 'Rehabilitation follow-up';
+    return l10n.parentDashboardRehabilitationFollowUp;
   }
 
-  String? _improvementLabel(ParentDashboardState state) {
+  String? _improvementLabel(ParentDashboardState state, AppLocalizations l10n) {
     final delta = state.speechSummary?.deltaFromPrevious;
     if (delta == null) {
       return null;
     }
     final sign = delta >= 0 ? '+' : '';
-    return '$sign${delta.round()}% improvement from previous attempt';
+    return l10n.parentDashboardImprovementFromPrevious(
+      '$sign${delta.round()}%',
+    );
   }
 
   String _heroUpcomingSessionCountdown(
+    AppLocalizations l10n,
     ParentDashboardState state,
     String? selectedPatientId,
   ) {
-    return parentHeroUpcomingSessionCountdownLabel(
+    return localizedParentHeroUpcomingSessionCountdownLabel(
+      l10n,
       sessions: state.sessions,
       selectedPatientId: selectedPatientId,
     );
   }
 
-  String _tasksSummarySubtitle(ParentDashboardState state) {
+  String _tasksSummarySubtitle(
+    ParentDashboardState state,
+    AppLocalizations l10n,
+  ) {
     final completed = state.streakInfo.completedToday;
     final total = state.streakInfo.totalToday;
     if (total <= 0) {
-      return 'Assigned for today';
+      return l10n.parentDashboardAssignedForToday;
     }
-    return '$completed of $total completed';
+    return l10n.parentDashboardCompletedCount(completed, total);
   }
 
-  String _formatDate(DateTime? date) {
+  String _formatDate(DateTime? date, AppLocalizations l10n) {
     if (date == null) {
-      return 'Recently';
+      return l10n.parentDashboardRecently;
     }
     return DateFormat('MMM d, yyyy').format(date);
   }
@@ -389,6 +403,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
     final caseIntakeState = ref.watch(parentCaseIntakeProvider);
     final auth = ref.watch(authProvider);
     final notifications = ref.watch(parentNotificationsProvider);
+    final l10n = AppLocalizations.of(context)!;
     final unreadMessageCount = notifications.unreadMessageCount;
     final profileImageUrl = auth.user?.profileImageUrl;
     final displayName = auth.user?.fullName ?? state.user?.fullName;
@@ -469,7 +484,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
           elevation: 0,
           highlightElevation: 0,
           foregroundColor: Colors.white,
-          tooltip: 'AI Assistant',
+          tooltip: l10n.clinicalAiAssistant,
           child: const Icon(Icons.smart_toy_outlined),
         ),
       ),
@@ -483,7 +498,9 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (state.children.isEmpty) ...[
-                DashboardGreeting(message: 'Welcome back, $userName'),
+                DashboardGreeting(
+                  message: l10n.parentDashboardWelcomeBack(userName),
+                ),
                 SizedBox(height: context.dashSpacing * 0.75),
                 ParentDashboardCaseIntakeSection(
                   caseIntakeState: caseIntakeState,
@@ -506,7 +523,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                   children: [
                     Expanded(
                       child: DashboardGreeting(
-                        message: 'Welcome back, $userName',
+                        message: l10n.parentDashboardWelcomeBack(userName),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -538,8 +555,8 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
               if (state.children.isNotEmpty) ...[
                 SizedBox(height: context.dashSpacing * 0.85),
                 if (state.isLoadingChild)
-                  const DashboardLoadingCard(
-                    message: 'Updating child insights...',
+                  DashboardLoadingCard(
+                    message: l10n.parentDashboardUpdatingInsights,
                   )
                 else if (selectedChild != null) ...[
                   ParentDashboardHeroCard(
@@ -549,10 +566,12 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                       selectedChild,
                       caseIntakeState,
                       state,
+                      l10n,
                     ),
                     progress: _childProgressValue(state, selectedChild.id),
-                    improvementLabel: _improvementLabel(state),
+                    improvementLabel: _improvementLabel(state, l10n),
                     upcomingSessionLabel: _heroUpcomingSessionCountdown(
+                      l10n,
                       state,
                       selectedChild.id,
                     ),
@@ -565,9 +584,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                     error: journeyState.journeyError,
                     onTap: _openProgress,
                     onRetry: () => ref
-                        .read(
-                          parentProgressProvider(selectedChild.id).notifier,
-                        )
+                        .read(parentProgressProvider(selectedChild.id).notifier)
                         .loadTreatmentJourney(
                           selectedChild.id,
                           period: 'weekly',
@@ -577,13 +594,14 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                   ParentTodaySummaryRow(
                     tasksValue:
                         '${state.streakInfo.totalToday > 0 ? state.streakInfo.totalToday : state.overview.todaysTasksCount}',
-                    tasksSubtitle: _tasksSummarySubtitle(state),
-                    tasksStreakLabel:
-                        '${state.streakInfo.streakDays}-day rehab streak',
+                    tasksSubtitle: _tasksSummarySubtitle(state, l10n),
+                    tasksStreakLabel: l10n.parentDashboardRehabStreak(
+                      state.streakInfo.streakDays,
+                    ),
                     sessionsValue: '${state.overview.upcomingSessionsCount}',
                     sessionsSubtitle: state.overview.upcomingSessionsCount == 1
-                        ? 'Session scheduled'
-                        : 'Sessions scheduled',
+                        ? l10n.parentDashboardSessionScheduled
+                        : l10n.parentDashboardSessionsScheduled,
                     onTasksTap: _onTasksCardTap,
                     onSessionsTap: _onSessionsCardTap,
                   ),
@@ -613,135 +631,146 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
               ],
               SizedBox(height: context.dashSpacing * 0.65),
               if (state.isLoadingChild)
-                const DashboardLoadingCard(message: 'Updating child insights...')
+                DashboardLoadingCard(
+                  message: l10n.parentDashboardUpdatingInsights,
+                )
               else ...[
                 DashboardSectionHeader(
-                  title: "Today's Tasks",
+                  title: l10n.parentDashboardTodaysTasks,
                   linkColor: DashboardColors.brandCyan,
-                  onActionTap: () => _pushAndRefresh(AppRoutes.parentDailyTasks),
+                  onActionTap: () =>
+                      _pushAndRefresh(AppRoutes.parentDailyTasks),
                 ),
                 SizedBox(height: context.dashSpacing * 0.45),
-              if (state.dailyTasks.isEmpty)
-                DashboardEmptyCard(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.dashSpacing * 0.9,
-                    vertical: context.dashSpacing * 1.1,
-                  ),
-                  message: state.children.isEmpty
-                      ? 'Daily tasks will appear after the child profile is created and a specialist assigns exercises.'
-                      : selectedChild == null
-                      ? 'Select a child to view today\'s tasks.'
-                      : 'No tasks assigned for ${selectedChild.name} today.',
-                )
-              else
-                ...state.dailyTasks.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final task = entry.value;
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                    child: DashboardSurfaceCard(
-                      onTap: () => _openExercise(task),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(context.dashSpacing * 0.45),
-                            decoration: BoxDecoration(
-                              color: _taskColor(index).withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(12),
+                if (state.dailyTasks.isEmpty)
+                  DashboardEmptyCard(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.dashSpacing * 0.9,
+                      vertical: context.dashSpacing * 1.1,
+                    ),
+                    message: state.children.isEmpty
+                        ? l10n.parentDashboardTasksEmptyAwaitingProfile
+                        : selectedChild == null
+                        ? l10n.parentDashboardTasksEmptySelectChild
+                        : l10n.parentDashboardTasksEmptyForChild(
+                            selectedChild.name,
+                          ),
+                  )
+                else
+                  ...state.dailyTasks.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final task = entry.value;
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        bottom: context.dashSpacing * 0.6,
+                      ),
+                      child: DashboardSurfaceCard(
+                        onTap: () => _openExercise(task),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(
+                                context.dashSpacing * 0.45,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _taskColor(
+                                  index,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                task.isCompleted
+                                    ? Icons.check_circle_outline_rounded
+                                    : _taskIcon(task.title),
+                                color: _taskColor(index),
+                                size: context.dashSpacing * 0.55,
+                              ),
                             ),
-                            child: Icon(
-                              task.isCompleted
-                                  ? Icons.check_circle_outline_rounded
-                                  : _taskIcon(task.title),
-                              color: _taskColor(index),
+                            SizedBox(width: context.dashSpacing * 0.65),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    task.title,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: DashboardColors.textPrimary,
+                                    ),
+                                  ),
+                                  SizedBox(height: context.dashSpacing * 0.15),
+                                  Text(
+                                    [
+                                      if (selectedChild != null)
+                                        selectedChild.name,
+                                      if (task.dueTime != null) task.dueTime,
+                                    ].join(' • '),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: DashboardColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.chevron_right_rounded,
+                              color: DashboardColors.textMuted,
                               size: context.dashSpacing * 0.55,
                             ),
-                          ),
-                          SizedBox(width: context.dashSpacing * 0.65),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  task.title,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: DashboardColors.textPrimary,
-                                  ),
-                                ),
-                                SizedBox(height: context.dashSpacing * 0.15),
-                                Text(
-                                  [
-                                    if (selectedChild != null)
-                                      selectedChild.name,
-                                    if (task.dueTime != null) task.dueTime,
-                                  ].join(' • '),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: DashboardColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(
-                            Icons.chevron_right_rounded,
-                            color: DashboardColors.textMuted,
-                            size: context.dashSpacing * 0.55,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              SizedBox(height: context.dashSpacing * 0.75),
-              DashboardSectionHeader(
-                title: 'Child Progress',
-                linkColor: DashboardColors.brandCyan,
-                onActionTap: _openProgress,
-              ),
-              SizedBox(height: context.dashSpacing * 0.45),
-              if (selectedChild == null)
-                const DashboardEmptyCard(
-                  message: 'Select a child to view progress.',
-                )
-              else
-                ParentChildProgressCard(
-                  child: selectedChild,
-                  progress: _childProgressValue(state, selectedChild.id),
-                  color: _progressColor(0),
-                ),
-              SizedBox(height: context.dashSpacing),
-              ParentAiAssistantCard(onTap: _openAiChat),
-              SizedBox(height: context.dashSpacing),
-              DashboardSectionHeader(
-                title: 'Latest Updates',
-                linkColor: DashboardColors.brandCyan,
-                onActionTap: () => _pushAndRefresh(AppRoutes.parentReports),
-              ),
-              SizedBox(height: context.dashSpacing * 0.45),
-              ParentLatestUpdatesSection(
-                reportTitle: state.reports.isNotEmpty
-                    ? state.reports.first.title
-                    : _latestReportTitle(state),
-                reportSubtitle: state.reports.isNotEmpty
-                    ? [
-                        if (state.reports.first.summary != null)
-                          state.reports.first.summary,
-                        _formatDate(state.reports.first.date),
-                      ].whereType<String>().join(' • ')
-                    : null,
-                onReportTap: () => _onLatestReportCardTap(state),
-                feedback: state.latestFeedback,
-                onFeedbackTap: state.latestFeedback == null
-                    ? null
-                    : () => _handleNextAction(
-                        const ParentNextAction(
-                          label: 'Review Specialist Feedback',
-                          type: ParentNextActionType.reviewFeedback,
+                          ],
                         ),
                       ),
-              ),
-              SizedBox(height: context.dashSpacing),
+                    );
+                  }),
+                SizedBox(height: context.dashSpacing * 0.75),
+                DashboardSectionHeader(
+                  title: '${l10n.entityChild} ${l10n.clinicalProgress}',
+                  linkColor: DashboardColors.brandCyan,
+                  onActionTap: _openProgress,
+                ),
+                SizedBox(height: context.dashSpacing * 0.45),
+                if (selectedChild == null)
+                  DashboardEmptyCard(
+                    message: l10n.parentDashboardSelectChildForProgress,
+                  )
+                else
+                  ParentChildProgressCard(
+                    child: selectedChild,
+                    progress: _childProgressValue(state, selectedChild.id),
+                    color: _progressColor(0),
+                  ),
+                SizedBox(height: context.dashSpacing),
+                ParentAiAssistantCard(onTap: _openAiChat),
+                SizedBox(height: context.dashSpacing),
+                DashboardSectionHeader(
+                  title: l10n.parentDashboardLatestUpdates,
+                  linkColor: DashboardColors.brandCyan,
+                  onActionTap: () => _pushAndRefresh(AppRoutes.parentReports),
+                ),
+                SizedBox(height: context.dashSpacing * 0.45),
+                ParentLatestUpdatesSection(
+                  reportTitle: state.reports.isNotEmpty
+                      ? state.reports.first.title
+                      : _latestReportTitle(state),
+                  reportSubtitle: state.reports.isNotEmpty
+                      ? [
+                          if (state.reports.first.summary != null)
+                            state.reports.first.summary,
+                          _formatDate(state.reports.first.date, l10n),
+                        ].whereType<String>().join(' • ')
+                      : null,
+                  onReportTap: () => _onLatestReportCardTap(state),
+                  feedback: state.latestFeedback,
+                  onFeedbackTap: state.latestFeedback == null
+                      ? null
+                      : () => _handleNextAction(
+                          const ParentNextAction(
+                            label: 'Review Specialist Feedback',
+                            type: ParentNextActionType.reviewFeedback,
+                          ),
+                        ),
+                ),
+                SizedBox(height: context.dashSpacing),
               ],
             ],
           ),

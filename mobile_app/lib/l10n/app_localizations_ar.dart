@@ -523,4 +523,281 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loginHidePassword => 'إخفاء كلمة المرور';
+
+  @override
+  String parentDashboardWelcomeBack(String userName) {
+    return 'مرحباً بعودتك، $userName';
+  }
+
+  @override
+  String get parentDashboardSeeAll => 'عرض الكل';
+
+  @override
+  String get parentDashboardTodaysTasks => 'مهام اليوم';
+
+  @override
+  String get parentDashboardLatestUpdates => 'آخر المستجدات';
+
+  @override
+  String get parentDashboardSelectChild => 'اختر الطفل';
+
+  @override
+  String parentDashboardSelectChildSemantics(String childName) {
+    return 'اختر الطفل، المحدد حالياً $childName';
+  }
+
+  @override
+  String get parentDashboardOverallProgress => 'التقدم الإجمالي';
+
+  @override
+  String get parentDashboardKeepGoing => 'واصل التقدم!';
+
+  @override
+  String get parentDashboardNextSession => 'الجلسة القادمة';
+
+  @override
+  String get parentDashboardViewDetailsArrow => 'عرض التفاصيل ←';
+
+  @override
+  String get parentDashboardTodaysSummary => 'ملخص اليوم';
+
+  @override
+  String get parentDashboardTasksLabel => 'المهام';
+
+  @override
+  String get parentDashboardNoRecentUpdates =>
+      'لا توجد تقارير أو ملاحظات من الأخصائي بعد.';
+
+  @override
+  String get parentDashboardWeeklyProgressReport => 'تقرير التقدم الأسبوعي';
+
+  @override
+  String get parentDashboardLatestSpecialistFeedback => 'آخر ملاحظات الأخصائي';
+
+  @override
+  String get parentDashboardAiDailyInsight => 'رؤية يومية بالذكاء الاصطناعي';
+
+  @override
+  String get parentDashboardAiAssistantHelp =>
+      'هل تحتاج مساعدة في فهم تقدم طفلك؟';
+
+  @override
+  String get parentDashboardAiAssistantHint =>
+      'اسأل عن التمارين أو التقارير أو الإرشادات اليومية.';
+
+  @override
+  String get parentDashboardAskAi => 'اسأل الذكاء الاصطناعي';
+
+  @override
+  String parentDashboardLastPronunciationScore(int score) {
+    return 'آخر درجة نطق: $score%';
+  }
+
+  @override
+  String parentDashboardDeltaFromPrevious(String delta) {
+    return '$delta عن المحاولة السابقة';
+  }
+
+  @override
+  String get parentDashboardPronunciation => 'النطق';
+
+  @override
+  String get parentDashboardFluency => 'الطلاقة';
+
+  @override
+  String get parentDashboardOverall => 'الإجمالي';
+
+  @override
+  String get parentDashboardLoading => 'جارٍ تحميل لوحة التحكم...';
+
+  @override
+  String get parentDashboardUpdatingInsights => 'جارٍ تحديث بيانات الطفل...';
+
+  @override
+  String get parentDashboardRetryRequired => 'يلزم إعادة المحاولة';
+
+  @override
+  String get parentDashboardViewDetails => 'عرض التفاصيل';
+
+  @override
+  String get parentDashboardAssignedForToday => 'مُسندة لليوم';
+
+  @override
+  String parentDashboardCompletedCount(int completed, int total) {
+    return '$completed من $total مكتملة';
+  }
+
+  @override
+  String get parentDashboardSessionScheduled => 'جلسة مجدولة';
+
+  @override
+  String get parentDashboardSessionsScheduled => 'جلسات مجدولة';
+
+  @override
+  String parentDashboardRehabStreak(int days) {
+    return 'سلسلة تأهيل $days أيام';
+  }
+
+  @override
+  String get parentDashboardSelectChildForProgress => 'اختر طفلاً لعرض التقدم.';
+
+  @override
+  String get parentDashboardSelectChildForDetails =>
+      'اختر طفلاً لعرض التفاصيل.';
+
+  @override
+  String get parentDashboardNoExercisesToday => 'لا توجد تمارين مُسندة لليوم.';
+
+  @override
+  String get parentDashboardNoReportsYet => 'لا توجد تقارير متاحة بعد.';
+
+  @override
+  String get parentDashboardConversationUnavailable =>
+      'المحادثة غير متاحة بعد.';
+
+  @override
+  String get parentDashboardTasksEmptyAwaitingProfile =>
+      'ستظهر المهام اليومية بعد إنشاء ملف الطفل وتعيين تمارين من الأخصائي.';
+
+  @override
+  String get parentDashboardTasksEmptySelectChild =>
+      'اختر طفلاً لعرض مهام اليوم.';
+
+  @override
+  String parentDashboardTasksEmptyForChild(String childName) {
+    return 'لا توجد مهام مُسندة لـ$childName اليوم.';
+  }
+
+  @override
+  String get parentDashboardRehabilitationFollowUp => 'متابعة التأهيل';
+
+  @override
+  String parentDashboardImprovementFromPrevious(String delta) {
+    return 'تحسّن $delta عن المحاولة السابقة';
+  }
+
+  @override
+  String get parentDashboardRecently => 'مؤخراً';
+
+  @override
+  String get parentSessionNoUpcoming => 'لا توجد جلسة قادمة';
+
+  @override
+  String get parentSessionInOneDay => 'خلال يوم واحد';
+
+  @override
+  String parentSessionInDays(int count) {
+    return 'خلال $count أيام';
+  }
+
+  @override
+  String get parentSessionInOneMinute => 'خلال دقيقة واحدة';
+
+  @override
+  String parentSessionInMinutes(int count) {
+    return 'خلال $count دقائق';
+  }
+
+  @override
+  String get parentSessionInOneHour => 'خلال ساعة واحدة';
+
+  @override
+  String parentSessionInHours(int count) {
+    return 'خلال $count ساعات';
+  }
+
+  @override
+  String get parentTreatmentJourneyTitle => 'رحلة العلاج';
+
+  @override
+  String get parentTreatmentJourneySubtitle => 'التقدم خلال فترة العلاج';
+
+  @override
+  String get parentTreatmentJourneyViewDetails => 'عرض التفاصيل';
+
+  @override
+  String get parentTreatmentJourneyLoadError => 'تعذر تحميل تقدم العلاج.';
+
+  @override
+  String get parentTreatmentJourneyEmpty => 'سيظهر التقدم بعد مراجعة التمارين.';
+
+  @override
+  String parentTreatmentJourneyScoreChangePositive(int points) {
+    return '+$points نقطة';
+  }
+
+  @override
+  String parentTreatmentJourneyScoreChangeNegative(int points) {
+    return '$points نقطة';
+  }
+
+  @override
+  String get parentTreatmentJourneyScoreChangeZero => '0 نقطة';
+
+  @override
+  String get parentTreatmentJourneySemanticsLoading =>
+      'رحلة العلاج، جارٍ تحميل التقدم';
+
+  @override
+  String get parentTreatmentJourneySemanticsError =>
+      'رحلة العلاج، تعذر تحميل تقدم العلاج';
+
+  @override
+  String get parentTreatmentJourneySemanticsEmpty =>
+      'رحلة العلاج، سيظهر التقدم بعد مراجعة التمارين';
+
+  @override
+  String parentTreatmentJourneySemanticsLoaded(int score, String trend) {
+    return 'رحلة العلاج، التقدم الحالي $score بالمئة، $trend';
+  }
+
+  @override
+  String get parentDashboardCaseIntakeLoading => 'جارٍ تحميل طلبات الحالة...';
+
+  @override
+  String get parentDashboardCaseIntakeTitle => 'ابدأ رحلة متابعة طفلك';
+
+  @override
+  String get parentDashboardCaseIntakeDescription =>
+      'أخبرنا عن الحالة الملاحظة. سيراجع فريق الإدارة الطلب ويعيّن أخصائياً مناسباً.';
+
+  @override
+  String get parentDashboardCaseIntakeDisclaimer =>
+      'الفئة المختارة أولية ولا تمثل تشخيصاً طبياً.';
+
+  @override
+  String get parentDashboardCaseIntakeSubmitNew => 'تقديم طلب حالة جديد';
+
+  @override
+  String get parentDashboardCaseIntakeViewRequests => 'عرض طلبات الحالة';
+
+  @override
+  String get parentDashboardCaseRequest => 'طلب الحالة';
+
+  @override
+  String get parentDashboardCaseConversationPending =>
+      'تصبح المحادثة متاحة بعد تعيين الأخصائي.';
+
+  @override
+  String get parentDashboardCaseViewRequest => 'عرض الطلب';
+
+  @override
+  String get parentDashboardCaseOpenConversation => 'فتح المحادثة';
+
+  @override
+  String get parentDashboardCaseViewAllRequests => 'عرض جميع الطلبات';
+
+  @override
+  String get parentDashboardCaseUpdateTitle => 'تحديث طلب الحالة';
+
+  @override
+  String get parentDashboardCaseSubmitAnother => 'تقديم طلب آخر';
+
+  @override
+  String get parentDashboardCaseNoRejectionReason => 'لم يُذكر سبب الرفض.';
+
+  @override
+  String parentDashboardCaseSubmittedOn(String date) {
+    return 'تم التقديم $date';
+  }
 }

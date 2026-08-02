@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../models/parent_dashboard_models.dart';
@@ -17,6 +18,41 @@ String treatmentJourneyTrendLabel(String trend) {
     default:
       return 'Stable';
   }
+}
+
+/// Localized version of [treatmentJourneyTrendLabel].
+String localizedTreatmentJourneyTrendLabel(
+  AppLocalizations l10n,
+  String trend,
+) {
+  switch (trend.trim().toLowerCase()) {
+    case 'improving':
+      return l10n.clinicalTrendImproving;
+    case 'declining':
+      return l10n.clinicalTrendNeedsAttention;
+    case 'stable':
+    default:
+      return l10n.clinicalTrendStable;
+  }
+}
+
+/// Localized version of [formatTreatmentJourneyScoreChange].
+String localizedFormatTreatmentJourneyScoreChange(
+  AppLocalizations l10n,
+  double? scoreChange,
+) {
+  if (scoreChange == null) {
+    return '—';
+  }
+
+  final rounded = scoreChange.round();
+  if (rounded > 0) {
+    return l10n.parentTreatmentJourneyScoreChangePositive(rounded);
+  }
+  if (rounded < 0) {
+    return l10n.parentTreatmentJourneyScoreChangeNegative(rounded);
+  }
+  return l10n.parentTreatmentJourneyScoreChangeZero;
 }
 
 Color treatmentJourneyTrendColor(String trend) {
@@ -118,10 +154,7 @@ double clampTreatmentJourneyScore(double score) {
   return score.clamp(0, 100).toDouble();
 }
 
-List<int> calculateXAxisLabelIndices(
-  int pointCount, {
-  int maxLabels = 4,
-}) {
+List<int> calculateXAxisLabelIndices(int pointCount, {int maxLabels = 4}) {
   if (pointCount <= 0) {
     return const [];
   }
@@ -154,7 +187,10 @@ Rect treatmentJourneyChartPlotRect(Size size) {
   return Rect.fromLTWH(
     leftAxisWidth,
     treatmentJourneyChartPadding.top,
-    math.max(size.width - leftAxisWidth - treatmentJourneyChartPadding.right, 1),
+    math.max(
+      size.width - leftAxisWidth - treatmentJourneyChartPadding.right,
+      1,
+    ),
     math.max(
       size.height - treatmentJourneyChartPadding.top - bottomAxisHeight,
       1,
