@@ -129,6 +129,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonLogout => 'Logout';
 
   @override
+  String get commonLanguage => 'Language';
+
+  @override
   String get navDashboard => 'Dashboard';
 
   @override
@@ -433,6 +436,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldFullName => 'Full Name';
+
+  @override
+  String get fieldAddress => 'Address';
+
+  @override
+  String get fieldRole => 'Role';
 
   @override
   String get fieldGenderMale => 'Male';
@@ -807,4 +816,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String parentDashboardCaseSubmittedOn(String date) {
     return 'Submitted $date';
   }
+
+  @override
+  String get parentProfileEditProfile => 'Edit Profile';
+
+  @override
+  String get parentProfilePersonalSection => 'Personal Information';
+
+  @override
+  String get parentProfileParentDetails => 'Parent Details';
+
+  @override
+  String get parentProfileRelationshipNotes => 'Relationship Notes';
+
+  @override
+  String get parentProfileSaveChanges => 'Save Changes';
+
+  @override
+  String get parentProfileNotAvailable => 'Profile not available.';
+
+  @override
+  String get parentProfileLoading => 'Loading profile...';
+
+  @override
+  String get parentProfileUpdatedSuccess => 'Profile updated successfully';
+
+  @override
+  String get parentProfileNotSignedIn => 'Not signed in';
+
+  @override
+  String get parentProfileFullNameRequired => 'Full name is required';
+
+  @override
+  String parentProfileLoadFailed(String error) {
+    return 'Failed to load profile: $error';
+  }
+
+  @override
+  String parentProfileSaveFailed(String error) {
+    return 'Failed to save profile: $error';
+  }
+
+  @override
+  String parentProfileImageUploadFailed(String error) {
+    return 'Profile details were saved, but the image upload failed: $error';
+  }
+
+  @override
+  String parentProfileRefreshAfterSaveFailed(String error) {
+    return 'Profile saved, but refresh failed: $error';
+  }
+
+  @override
+  String get parentProfilePhotoTake => 'Take Photo';
+
+  @override
+  String get parentProfilePhotoChooseGallery => 'Choose from Gallery';
+
+  @override
+  String get parentProfileImageUploadError => 'Failed to upload profile image.';
+
+  @override
+  String get parentNotificationsMarkAllRead => 'Mark all as read';
+
+  @override
+  String get parentNotificationsEmpty => 'No notifications yet.';
+
+  @override
+  String get parentNotificationsLoading => 'Loading notifications...';
+
+  @override
+  String get parentNotificationsSignInRequired =>
+      'Please sign in to view notifications.';
+
+  @override
+  String parentNotificationsLoadFailed(String error) {
+    return 'Failed to load notifications: $error';
+  }
+
+  @override
+  String get notificationTypeUpdate => 'Update';
 }

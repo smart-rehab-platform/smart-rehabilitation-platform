@@ -129,6 +129,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonLogout => 'تسجيل الخروج';
 
   @override
+  String get commonLanguage => 'اللغة';
+
+  @override
   String get navDashboard => 'لوحة التحكم';
 
   @override
@@ -433,6 +436,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fieldFullName => 'الاسم الكامل';
+
+  @override
+  String get fieldAddress => 'العنوان';
+
+  @override
+  String get fieldRole => 'الدور';
 
   @override
   String get fieldGenderMale => 'ذكر';
@@ -800,4 +809,84 @@ class AppLocalizationsAr extends AppLocalizations {
   String parentDashboardCaseSubmittedOn(String date) {
     return 'تم التقديم $date';
   }
+
+  @override
+  String get parentProfileEditProfile => 'تعديل الملف الشخصي';
+
+  @override
+  String get parentProfilePersonalSection => 'المعلومات الشخصية';
+
+  @override
+  String get parentProfileParentDetails => 'تفاصيل ولي الأمر';
+
+  @override
+  String get parentProfileRelationshipNotes => 'ملاحظات العلاقة';
+
+  @override
+  String get parentProfileSaveChanges => 'حفظ التغييرات';
+
+  @override
+  String get parentProfileNotAvailable => 'الملف الشخصي غير متاح.';
+
+  @override
+  String get parentProfileLoading => 'جارٍ تحميل الملف الشخصي...';
+
+  @override
+  String get parentProfileUpdatedSuccess => 'تم تحديث الملف الشخصي بنجاح';
+
+  @override
+  String get parentProfileNotSignedIn => 'لم يتم تسجيل الدخول';
+
+  @override
+  String get parentProfileFullNameRequired => 'الاسم الكامل مطلوب';
+
+  @override
+  String parentProfileLoadFailed(String error) {
+    return 'فشل تحميل الملف الشخصي: $error';
+  }
+
+  @override
+  String parentProfileSaveFailed(String error) {
+    return 'فشل حفظ الملف الشخصي: $error';
+  }
+
+  @override
+  String parentProfileImageUploadFailed(String error) {
+    return 'تم حفظ تفاصيل الملف الشخصي، لكن فشل رفع الصورة: $error';
+  }
+
+  @override
+  String parentProfileRefreshAfterSaveFailed(String error) {
+    return 'تم حفظ الملف الشخصي، لكن فشل التحديث: $error';
+  }
+
+  @override
+  String get parentProfilePhotoTake => 'التقاط صورة';
+
+  @override
+  String get parentProfilePhotoChooseGallery => 'اختيار من المعرض';
+
+  @override
+  String get parentProfileImageUploadError => 'فشل رفع صورة الملف الشخصي.';
+
+  @override
+  String get parentNotificationsMarkAllRead => 'تحديد الكل كمقروء';
+
+  @override
+  String get parentNotificationsEmpty => 'لا توجد إشعارات بعد.';
+
+  @override
+  String get parentNotificationsLoading => 'جارٍ تحميل الإشعارات...';
+
+  @override
+  String get parentNotificationsSignInRequired =>
+      'يرجى تسجيل الدخول لعرض الإشعارات.';
+
+  @override
+  String parentNotificationsLoadFailed(String error) {
+    return 'فشل تحميل الإشعارات: $error';
+  }
+
+  @override
+  String get notificationTypeUpdate => 'تحديث';
 }

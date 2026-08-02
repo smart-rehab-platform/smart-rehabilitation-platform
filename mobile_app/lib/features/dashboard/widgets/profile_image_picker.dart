@@ -5,12 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../auth/providers/auth_provider.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ProfileImagePickerResult {
-  const ProfileImagePickerResult({
-    required this.bytes,
-    required this.filename,
-  });
+  const ProfileImagePickerResult({required this.bytes, required this.filename});
 
   final Uint8List bytes;
   final String filename;
@@ -24,7 +22,10 @@ class ProfileImagePicker {
 
   final ImagePicker _picker;
 
-  Future<ProfileImagePickerResult?> showSourceSheet(BuildContext context) async {
+  Future<ProfileImagePickerResult?> showSourceSheet(
+    BuildContext context,
+  ) async {
+    final l10n = AppLocalizations.of(context);
     final action = await showModalBottomSheet<_ProfileImagePickAction>(
       context: context,
       builder: (sheetContext) => SafeArea(
@@ -32,17 +33,21 @@ class ProfileImagePicker {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take Photo'),
-              onTap: () => Navigator.pop(sheetContext, _ProfileImagePickAction.camera),
+              title: Text(l10n?.parentProfilePhotoTake ?? 'Take Photo'),
+              onTap: () =>
+                  Navigator.pop(sheetContext, _ProfileImagePickAction.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from Gallery'),
-              onTap: () => Navigator.pop(sheetContext, _ProfileImagePickAction.gallery),
+              title: Text(
+                l10n?.parentProfilePhotoChooseGallery ?? 'Choose from Gallery',
+              ),
+              onTap: () =>
+                  Navigator.pop(sheetContext, _ProfileImagePickAction.gallery),
             ),
             ListTile(
               leading: const Icon(Icons.close_rounded),
-              title: const Text('Cancel'),
+              title: Text(l10n?.commonCancel ?? 'Cancel'),
               onTap: () => Navigator.pop(sheetContext),
             ),
           ],
@@ -61,9 +66,7 @@ class ProfileImagePicker {
     );
   }
 
-  Future<ProfileImagePickerResult?> pick({
-    required ImageSource source,
-  }) async {
+  Future<ProfileImagePickerResult?> pick({required ImageSource source}) async {
     try {
       final picked = await _picker.pickImage(
         source: source,
@@ -109,14 +112,14 @@ Future<void> uploadPendingProfileImage({
     return;
   }
 
-  final success = await ref.read(authProvider.notifier).uploadProfileImage(
-        pendingImageBytes,
-        pendingImageFilename,
-      );
+  final success = await ref
+      .read(authProvider.notifier)
+      .uploadProfileImage(pendingImageBytes, pendingImageFilename);
 
   if (!success) {
     final message =
-        ref.read(authProvider).errorMessage ?? 'Failed to upload profile image.';
+        ref.read(authProvider).errorMessage ??
+        'Failed to upload profile image.';
     throw Exception(message);
   }
 }

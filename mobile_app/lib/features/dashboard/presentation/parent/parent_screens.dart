@@ -22,6 +22,8 @@ import '../../widgets/parent_navigation.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import 'parent_ui_helpers.dart';
 import '../../../../core/locale/language_selector.dart';
+import '../../../../l10n/app_localizations.dart';
+import 'parent_scoped_localization_utils.dart';
 
 export 'parent_sessions_screen.dart';
 
@@ -366,9 +368,13 @@ class _ParentNotificationsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(parentNotificationsProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final mappedError = state.errorMessage == null
+        ? null
+        : mapParentNotificationsError(l10n, state.errorMessage!);
 
     return ParentPageScaffold(
-      title: 'Notifications',
+      title: l10n.navNotifications,
       showBackButton: true,
       actions: [
         if (state.unreadCount > 0)
@@ -378,70 +384,83 @@ class _ParentNotificationsScreenState
                 : () => ref
                       .read(parentNotificationsProvider.notifier)
                       .markAllAsRead(),
-            child: const Text('Mark all as read'),
+            child: Text(l10n.parentNotificationsMarkAllRead),
           ),
       ],
-      body: ParentAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () => ref.read(parentNotificationsProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
-        emptyMessage: 'No notifications yet.',
-        child: Column(
-          children: state.items
-              .map(
-                (item) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
-                    onTap: () => _onNotificationTap(item),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          item.isRead
-                              ? Icons.notifications_none_rounded
-                              : Icons.notifications_active_rounded,
-                          color: item.isRead
-                              ? DashboardColors.textMuted
-                              : DashboardColors.brandCyan,
+      body: state.isLoading
+          ? Center(
+              child: DashboardLoadingCard(
+                message: l10n.parentNotificationsLoading,
+              ),
+            )
+          : ParentAsyncBody(
+              isLoading: false,
+              errorMessage: mappedError,
+              onRetry: () =>
+                  ref.read(parentNotificationsProvider.notifier).refresh(),
+              isEmpty: state.items.isEmpty,
+              emptyMessage: l10n.parentNotificationsEmpty,
+              child: Column(
+                children: state.items
+                    .map(
+                      (item) => Padding(
+                        padding: EdgeInsets.only(
+                          bottom: context.dashSpacing * 0.6,
                         ),
-                        SizedBox(width: context.dashSpacing * 0.65),
-                        Expanded(
-                          child: Column(
+                        child: DashboardSurfaceCard(
+                          onTap: () => _onNotificationTap(item),
+                          child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                item.title,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: item.isRead
-                                      ? FontWeight.w500
-                                      : FontWeight.w700,
-                                ),
+                              Icon(
+                                item.isRead
+                                    ? Icons.notifications_none_rounded
+                                    : Icons.notifications_active_rounded,
+                                color: item.isRead
+                                    ? DashboardColors.textMuted
+                                    : DashboardColors.brandCyan,
                               ),
-                              if (item.message != null)
-                                Text(
-                                  item.message!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: DashboardColors.textSecondary,
-                                  ),
-                                ),
-                              Text(
-                                '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: DashboardColors.textMuted,
+                              SizedBox(width: context.dashSpacing * 0.65),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.title,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: item.isRead
+                                                ? FontWeight.w500
+                                                : FontWeight.w700,
+                                          ),
+                                    ),
+                                    if (item.message != null)
+                                      Text(
+                                        item.message!,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color:
+                                                  DashboardColors.textSecondary,
+                                            ),
+                                      ),
+                                    Text(
+                                      '${item.type ?? l10n.notificationTypeUpdate} • ${_formatDate(item.createdAt)}',
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: DashboardColors.textMuted,
+                                          ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
     );
   }
 }
@@ -463,18 +482,24 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
     });
   }
 
-  List<DashboardProfileFieldEntry> _profileFields(ParentProfileBundle bundle) {
-    final fields = buildRequiredProfileFields(
-      fullName: bundle.fullName,
-      email: bundle.email,
-      role: 'parent',
-    );
+  List<DashboardProfileFieldEntry> _profileFields(
+    ParentProfileBundle bundle,
+    AppLocalizations l10n,
+  ) {
+    final fields = <DashboardProfileFieldEntry>[
+      DashboardProfileFieldEntry(
+        label: l10n.fieldFullName,
+        value: bundle.fullName,
+      ),
+      DashboardProfileFieldEntry(label: l10n.fieldEmail, value: bundle.email),
+      DashboardProfileFieldEntry(label: l10n.fieldRole, value: l10n.roleParent),
+    ];
 
-    appendOptionalProfileField(fields, 'Phone', bundle.phone);
-    appendOptionalProfileField(fields, 'Address', bundle.address);
+    appendOptionalProfileField(fields, l10n.fieldPhone, bundle.phone);
+    appendOptionalProfileField(fields, l10n.fieldAddress, bundle.address);
     appendOptionalProfileField(
       fields,
-      'Relationship Notes',
+      l10n.parentProfileRelationshipNotes,
       bundle.relationshipNotes,
       multiline: true,
     );
@@ -486,22 +511,25 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(parentProfileProvider);
     final bundle = state.bundle;
+    final l10n = AppLocalizations.of(context)!;
 
     Widget body;
     if (state.isLoading) {
-      body = const Center(child: DashboardLoadingCard());
+      body = Center(
+        child: DashboardLoadingCard(message: l10n.parentProfileLoading),
+      );
     } else if (state.errorMessage != null && bundle == null) {
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: mapParentProfileError(l10n, state.errorMessage!),
           onRetry: () => ref.read(parentProfileProvider.notifier).refresh(),
         ),
       );
     } else if (bundle == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(message: 'Profile not available.'),
+        child: DashboardEmptyCard(message: l10n.parentProfileNotAvailable),
       );
     } else {
       body = RefreshIndicator(
@@ -520,11 +548,13 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
                 initials: bundle.fullName,
                 initialsFallback: 'PR',
                 imageUrl: bundle.profileImageUrl,
-                fields: _profileFields(bundle),
+                fields: _profileFields(bundle, l10n),
                 presenceUserId: bundle.userId,
                 accentColor: DashboardColors.brandCyan,
                 cardTint: DashboardColors.brandCyan,
                 useBrandLogoutGradient: true,
+                editProfileLabel: l10n.parentProfileEditProfile,
+                logoutLabel: l10n.commonLogout,
                 onEditPressed: () => context.push(AppRoutes.parentEditProfile),
                 onLogout: () => ParentNavigation.logout(context, ref),
               ),
@@ -535,7 +565,7 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
     }
 
     return ParentPageScaffold(
-      title: 'Profile',
+      title: l10n.navProfile,
       showBackButton: true,
       body: body,
     );
@@ -564,9 +594,10 @@ class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
     final activeCaseRequestCount = countActiveParentCaseRequests(
       caseIntakeState.requests,
     );
+    final l10n = AppLocalizations.of(context)!;
 
     return ParentPageScaffold(
-      title: 'More',
+      title: l10n.commonMore,
       currentNav: DashboardNavItem.more,
       body: ListView(
         padding: context.dashPadding,
@@ -576,28 +607,28 @@ class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
           ),
           _MoreTile(
             icon: Icons.assignment_outlined,
-            label: 'Case Requests',
+            label: l10n.navCaseRequests,
             badgeCount: activeCaseRequestCount,
             onTap: () => context.push(AppRoutes.parentCaseRequests),
           ),
           _MoreTile(
             icon: Icons.chat_bubble_outline_rounded,
-            label: 'Messages',
+            label: l10n.navMessages,
             onTap: () => context.push(AppRoutes.parentMessages),
           ),
           _MoreTile(
             icon: Icons.person_outline_rounded,
-            label: 'Profile',
+            label: l10n.navProfile,
             onTap: () => context.push(AppRoutes.parentProfile),
           ),
           _MoreTile(
             icon: Icons.notifications_none_rounded,
-            label: 'Notifications',
+            label: l10n.navNotifications,
             onTap: () => context.push(AppRoutes.parentNotifications),
           ),
           _MoreTile(
             icon: Icons.logout_rounded,
-            label: 'Logout',
+            label: l10n.commonLogout,
             onTap: () => ParentNavigation.logout(context, ref),
           ),
         ],

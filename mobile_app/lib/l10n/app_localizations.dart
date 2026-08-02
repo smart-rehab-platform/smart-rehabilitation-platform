@@ -338,6 +338,12 @@ abstract class AppLocalizations {
   /// **'Logout'**
   String get commonLogout;
 
+  /// Language preference setting label.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get commonLanguage;
+
   /// Main dashboard destination.
   ///
   /// In en, this message translates to:
@@ -949,6 +955,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Full Name'**
   String get fieldFullName;
+
+  /// Postal or home address field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get fieldAddress;
+
+  /// User role field label on profile screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get fieldRole;
 
   /// Male gender option.
   ///
@@ -1591,6 +1609,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submitted {date}'**
   String parentDashboardCaseSubmittedOn(String date);
+
+  /// Button to open the parent profile editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get parentProfileEditProfile;
+
+  /// Section heading for personal fields on the edit profile form.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get parentProfilePersonalSection;
+
+  /// Section heading for parent-specific profile fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Details'**
+  String get parentProfileParentDetails;
+
+  /// Optional notes about the parent-child relationship.
+  ///
+  /// In en, this message translates to:
+  /// **'Relationship Notes'**
+  String get parentProfileRelationshipNotes;
+
+  /// Primary action to persist profile edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get parentProfileSaveChanges;
+
+  /// Empty state when the parent profile cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile not available.'**
+  String get parentProfileNotAvailable;
+
+  /// Loading state for the parent profile screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading profile...'**
+  String get parentProfileLoading;
+
+  /// Snack bar after a successful profile save.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get parentProfileUpdatedSuccess;
+
+  /// Error when profile actions require authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in'**
+  String get parentProfileNotSignedIn;
+
+  /// Validation when the full name field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name is required'**
+  String get parentProfileFullNameRequired;
+
+  /// Error when the parent profile request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load profile: {error}'**
+  String parentProfileLoadFailed(String error);
+
+  /// Error when saving the parent profile fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save profile: {error}'**
+  String parentProfileSaveFailed(String error);
+
+  /// Partial success when profile saves but photo upload fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile details were saved, but the image upload failed: {error}'**
+  String parentProfileImageUploadFailed(String error);
+
+  /// Profile saved but post-save refresh failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved, but refresh failed: {error}'**
+  String parentProfileRefreshAfterSaveFailed(String error);
+
+  /// Action to capture a profile photo with the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get parentProfilePhotoTake;
+
+  /// Action to pick a profile photo from the gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get parentProfilePhotoChooseGallery;
+
+  /// Generic profile image upload failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload profile image.'**
+  String get parentProfileImageUploadError;
+
+  /// Action to mark every notification as read.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get parentNotificationsMarkAllRead;
+
+  /// Empty state when the notification list has no items.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet.'**
+  String get parentNotificationsEmpty;
+
+  /// Loading state for the parent notifications screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading notifications...'**
+  String get parentNotificationsLoading;
+
+  /// Error when notifications require authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view notifications.'**
+  String get parentNotificationsSignInRequired;
+
+  /// Error when the notifications request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load notifications: {error}'**
+  String parentNotificationsLoadFailed(String error);
+
+  /// Fallback label for a notification type when none is provided.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get notificationTypeUpdate;
 }
 
 class _AppLocalizationsDelegate

@@ -41,6 +41,7 @@
   "commonSignIn": "تسجيل الدخول",
   "commonSignOut": "تسجيل الخروج",
   "commonLogout": "تسجيل الخروج",
+  "commonLanguage": "اللغة",
 
   "navDashboard": "لوحة التحكم",
   "navHome": "الرئيسية",
@@ -152,6 +153,8 @@
   "fieldPhone": "الهاتف",
   "fieldName": "الاسم",
   "fieldFullName": "الاسم الكامل",
+  "fieldAddress": "العنوان",
+  "fieldRole": "الدور",
   "fieldGenderMale": "ذكر",
   "fieldGenderFemale": "أنثى",
 
@@ -262,5 +265,29 @@
   "parentDashboardCaseUpdateTitle": "تحديث طلب الحالة",
   "parentDashboardCaseSubmitAnother": "تقديم طلب آخر",
   "parentDashboardCaseNoRejectionReason": "لم يُذكر سبب الرفض.",
-  "parentDashboardCaseSubmittedOn": "تم التقديم {date}"
+  "parentDashboardCaseSubmittedOn": "تم التقديم {date}",
+
+  "parentProfileEditProfile": "تعديل الملف الشخصي",
+  "parentProfilePersonalSection": "المعلومات الشخصية",
+  "parentProfileParentDetails": "تفاصيل ولي الأمر",
+  "parentProfileRelationshipNotes": "ملاحظات العلاقة",
+  "parentProfileSaveChanges": "حفظ التغييرات",
+  "parentProfileNotAvailable": "الملف الشخصي غير متاح.",
+  "parentProfileLoading": "جارٍ تحميل الملف الشخصي...",
+  "parentProfileUpdatedSuccess": "تم تحديث الملف الشخصي بنجاح",
+  "parentProfileNotSignedIn": "لم يتم تسجيل الدخول",
+  "parentProfileFullNameRequired": "الاسم الكامل مطلوب",
+  "parentProfileLoadFailed": "فشل تحميل الملف الشخصي: {error}",
+  "parentProfileSaveFailed": "فشل حفظ الملف الشخصي: {error}",
+  "parentProfileImageUploadFailed": "تم حفظ تفاصيل الملف الشخصي، لكن فشل رفع الصورة: {error}",
+  "parentProfileRefreshAfterSaveFailed": "تم حفظ الملف الشخصي، لكن فشل التحديث: {error}",
+  "parentProfilePhotoTake": "التقاط صورة",
+  "parentProfilePhotoChooseGallery": "اختيار من المعرض",
+  "parentProfileImageUploadError": "فشل رفع صورة الملف الشخصي.",
+  "parentNotificationsMarkAllRead": "تحديد الكل كمقروء",
+  "parentNotificationsEmpty": "لا توجد إشعارات بعد.",
+  "parentNotificationsLoading": "جارٍ تحميل الإشعارات...",
+  "parentNotificationsSignInRequired": "يرجى تسجيل الدخول لعرض الإشعارات.",
+  "parentNotificationsLoadFailed": "فشل تحميل الإشعارات: {error}",
+  "notificationTypeUpdate": "تحديث"
 }

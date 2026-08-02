@@ -83,6 +83,8 @@
   "@commonSignOut": { "description": "Authentication action to log out." },
   "commonLogout": "Logout",
   "@commonLogout": { "description": "End the current session from navigation menus." },
+  "commonLanguage": "Language",
+  "@commonLanguage": { "description": "Language preference setting label." },
 
   "navDashboard": "Dashboard",
   "@navDashboard": { "description": "Main dashboard destination." },
@@ -296,6 +298,10 @@
   "@fieldName": { "description": "Generic name field label." },
   "fieldFullName": "Full Name",
   "@fieldFullName": { "description": "Full name field label." },
+  "fieldAddress": "Address",
+  "@fieldAddress": { "description": "Postal or home address field label." },
+  "fieldRole": "Role",
+  "@fieldRole": { "description": "User role field label on profile screens." },
   "fieldGenderMale": "Male",
   "@fieldGenderMale": { "description": "Male gender option." },
   "fieldGenderFemale": "Female",
@@ -590,5 +596,78 @@
     "placeholders": {
       "date": { "type": "String", "example": "Aug 2, 2026" }
     }
-  }
+  },
+
+  "parentProfileEditProfile": "Edit Profile",
+  "@parentProfileEditProfile": { "description": "Button to open the parent profile editor." },
+  "parentProfilePersonalSection": "Personal Information",
+  "@parentProfilePersonalSection": { "description": "Section heading for personal fields on the edit profile form." },
+  "parentProfileParentDetails": "Parent Details",
+  "@parentProfileParentDetails": { "description": "Section heading for parent-specific profile fields." },
+  "parentProfileRelationshipNotes": "Relationship Notes",
+  "@parentProfileRelationshipNotes": { "description": "Optional notes about the parent-child relationship." },
+  "parentProfileSaveChanges": "Save Changes",
+  "@parentProfileSaveChanges": { "description": "Primary action to persist profile edits." },
+  "parentProfileNotAvailable": "Profile not available.",
+  "@parentProfileNotAvailable": { "description": "Empty state when the parent profile cannot be loaded." },
+  "parentProfileLoading": "Loading profile...",
+  "@parentProfileLoading": { "description": "Loading state for the parent profile screen." },
+  "parentProfileUpdatedSuccess": "Profile updated successfully",
+  "@parentProfileUpdatedSuccess": { "description": "Snack bar after a successful profile save." },
+  "parentProfileNotSignedIn": "Not signed in",
+  "@parentProfileNotSignedIn": { "description": "Error when profile actions require authentication." },
+  "parentProfileFullNameRequired": "Full name is required",
+  "@parentProfileFullNameRequired": { "description": "Validation when the full name field is empty." },
+  "parentProfileLoadFailed": "Failed to load profile: {error}",
+  "@parentProfileLoadFailed": {
+    "description": "Error when the parent profile request fails.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+  "parentProfileSaveFailed": "Failed to save profile: {error}",
+  "@parentProfileSaveFailed": {
+    "description": "Error when saving the parent profile fails.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+  "parentProfileImageUploadFailed": "Profile details were saved, but the image upload failed: {error}",
+  "@parentProfileImageUploadFailed": {
+    "description": "Partial success when profile saves but photo upload fails.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+  "parentProfileRefreshAfterSaveFailed": "Profile saved, but refresh failed: {error}",
+  "@parentProfileRefreshAfterSaveFailed": {
+    "description": "Profile saved but post-save refresh failed.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+  "parentProfilePhotoTake": "Take Photo",
+  "@parentProfilePhotoTake": { "description": "Action to capture a profile photo with the camera." },
+  "parentProfilePhotoChooseGallery": "Choose from Gallery",
+  "@parentProfilePhotoChooseGallery": { "description": "Action to pick a profile photo from the gallery." },
+  "parentProfileImageUploadError": "Failed to upload profile image.",
+  "@parentProfileImageUploadError": { "description": "Generic profile image upload failure." },
+
+  "parentNotificationsMarkAllRead": "Mark all as read",
+  "@parentNotificationsMarkAllRead": { "description": "Action to mark every notification as read." },
+  "parentNotificationsEmpty": "No notifications yet.",
+  "@parentNotificationsEmpty": { "description": "Empty state when the notification list has no items." },
+  "parentNotificationsLoading": "Loading notifications...",
+  "@parentNotificationsLoading": { "description": "Loading state for the parent notifications screen." },
+  "parentNotificationsSignInRequired": "Please sign in to view notifications.",
+  "@parentNotificationsSignInRequired": { "description": "Error when notifications require authentication." },
+  "parentNotificationsLoadFailed": "Failed to load notifications: {error}",
+  "@parentNotificationsLoadFailed": {
+    "description": "Error when the notifications request fails.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+  "notificationTypeUpdate": "Update",
+  "@notificationTypeUpdate": { "description": "Fallback label for a notification type when none is provided." }
 }

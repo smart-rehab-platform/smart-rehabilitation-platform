@@ -6,6 +6,7 @@ import '../constants/app_colors.dart';
 import '../constants/dashboard_colors.dart';
 import '../../features/dashboard/widgets/dashboard_layout.dart';
 import '../../features/dashboard/widgets/dashboard_surface_card.dart';
+import '../../l10n/app_localizations.dart';
 import 'locale_provider.dart';
 
 enum LanguageSelectorPresentation { authCompact, settingsTile }
@@ -63,13 +64,15 @@ class LanguageSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
     final currentLabel = languageLabelForLocale(locale);
+    final l10n = AppLocalizations.of(context)!;
+    final languageLabel = l10n.commonLanguage;
 
     if (presentation == LanguageSelectorPresentation.settingsTile) {
       return Padding(
         padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
         child: DashboardSurfaceCard(
           child: PopupMenuButton<String>(
-            tooltip: 'Language',
+            tooltip: languageLabel,
             onSelected: (code) => _selectLanguage(ref, code),
             itemBuilder: (context) => _buildMenuItems(locale),
             child: Row(
@@ -81,7 +84,7 @@ class LanguageSelector extends ConsumerWidget {
                 SizedBox(width: context.dashSpacing * 0.65),
                 Expanded(
                   child: Text(
-                    'Language',
+                    languageLabel,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -107,7 +110,7 @@ class LanguageSelector extends ConsumerWidget {
     }
 
     return PopupMenuButton<String>(
-      tooltip: 'Language',
+      tooltip: languageLabel,
       offset: const Offset(0, 42),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: AppColors.darkBlue.withValues(alpha: 0.96),
