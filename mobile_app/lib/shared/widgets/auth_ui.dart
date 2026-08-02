@@ -6,6 +6,18 @@ import 'package:video_player/video_player.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../features/auth/utils/password_strength.dart';
+import '../../l10n/app_localizations.dart';
+
+String _localizedPasswordRuleLabel(AppLocalizations l10n, int index) {
+  return switch (index) {
+    0 => l10n.authPasswordRuleMinLength,
+    1 => l10n.authPasswordRuleUppercase,
+    2 => l10n.authPasswordRuleLowercase,
+    3 => l10n.authPasswordRuleNumber,
+    4 => l10n.authPasswordRuleSpecialCharacter,
+    _ => '',
+  };
+}
 
 const _authBackgroundVideoAsset = 'assets/videos/auth-bg.mp4';
 const _authBackgroundVideoStartSeconds = 4;
@@ -302,10 +314,26 @@ class _AuthBackgroundVideoLayer extends StatelessWidget {
               transform: Matrix4.identity()..scaleByDouble(-1.0, 1.0, 1.0, 1.0),
               child: ColorFiltered(
                 colorFilter: const ColorFilter.matrix(<double>[
-                  0.86, 0, 0, 0, 0,
-                  0, 0.88, 0, 0, 0,
-                  0, 0, 1.04, 0, 0,
-                  0, 0, 0, 1, 0,
+                  0.86,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0.88,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1.04,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
                 ]),
                 child: VideoPlayer(controller),
               ),
@@ -473,12 +501,21 @@ class AuthBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _RoundGlassButton(
-      onPressed: onPressed,
-      child: const Icon(
-        Icons.arrow_back_ios_new_rounded,
-        size: 15,
-        color: AppColors.lightBlue,
+    final l10n = AppLocalizations.of(context)!;
+
+    return Semantics(
+      button: true,
+      label: l10n.commonBack,
+      child: Tooltip(
+        message: l10n.commonBack,
+        child: _RoundGlassButton(
+          onPressed: onPressed,
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 15,
+            color: AppColors.lightBlue,
+          ),
+        ),
       ),
     );
   }
@@ -518,10 +555,7 @@ class AuthTopLogo extends StatelessWidget {
       logoChild = AuthLogoMark(size: logoSize);
     }
 
-    return _RoundGlassButton(
-      onPressed: null,
-      child: logoChild,
-    );
+    return _RoundGlassButton(onPressed: null, child: logoChild);
   }
 }
 
@@ -537,7 +571,8 @@ class AuthTabSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const labels = ['Sign In', 'Create Account'];
+    final l10n = AppLocalizations.of(context)!;
+    final labels = [l10n.commonSignIn, l10n.authCommonCreateAccount];
 
     return Container(
       padding: const EdgeInsets.all(4),
@@ -860,6 +895,7 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final result = evaluateAuthPasswordStrength(password);
     final strengthColor = switch (result.level) {
       AuthPasswordStrengthLevel.weak => AppColors.danger,
@@ -867,9 +903,9 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
       AuthPasswordStrengthLevel.strong => AppColors.success,
     };
     final strengthLabel = switch (result.level) {
-      AuthPasswordStrengthLevel.weak => 'Weak',
-      AuthPasswordStrengthLevel.medium => 'Medium',
-      AuthPasswordStrengthLevel.strong => 'Strong',
+      AuthPasswordStrengthLevel.weak => l10n.authPasswordStrengthWeak,
+      AuthPasswordStrengthLevel.medium => l10n.authPasswordStrengthMedium,
+      AuthPasswordStrengthLevel.strong => l10n.authPasswordStrengthStrong,
     };
 
     return Container(
@@ -885,7 +921,7 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Password strength',
+                l10n.authPasswordStrengthTitle,
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
@@ -928,28 +964,28 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
             }),
           ),
           const SizedBox(height: 12),
-          for (final rule in result.rules) ...[
+          for (var index = 0; index < result.rules.length; index++) ...[
             Row(
               children: [
                 Icon(
-                  rule.isSatisfied
+                  result.rules[index].isSatisfied
                       ? Icons.check_circle_rounded
                       : Icons.radio_button_unchecked_rounded,
                   size: 14,
-                  color: rule.isSatisfied
+                  color: result.rules[index].isSatisfied
                       ? AppColors.success
                       : AppColors.lightBlue.withValues(alpha: 0.48),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    rule.label,
+                    _localizedPasswordRuleLabel(l10n, index),
                     style: GoogleFonts.inter(
                       fontSize: 10.5,
-                      fontWeight: rule.isSatisfied
+                      fontWeight: result.rules[index].isSatisfied
                           ? FontWeight.w600
                           : FontWeight.w500,
-                      color: rule.isSatisfied
+                      color: result.rules[index].isSatisfied
                           ? AppColors.success
                           : AppColors.lightBlue.withValues(alpha: 0.8),
                     ),
@@ -957,7 +993,7 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
                 ),
               ],
             ),
-            if (rule != result.rules.last) const SizedBox(height: 7),
+            if (index != result.rules.length - 1) const SizedBox(height: 7),
           ],
         ],
       ),

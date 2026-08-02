@@ -961,6 +961,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Female'**
   String get fieldGenderFemale;
+
+  /// Shared auth tab label for account registration.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get authCommonCreateAccount;
+
+  /// Heading for the shared password strength indicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Password strength'**
+  String get authPasswordStrengthTitle;
+
+  /// Weak password strength level label.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak'**
+  String get authPasswordStrengthWeak;
+
+  /// Medium password strength level label.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get authPasswordStrengthMedium;
+
+  /// Strong password strength level label.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get authPasswordStrengthStrong;
+
+  /// Password rule requiring minimum length.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters'**
+  String get authPasswordRuleMinLength;
+
+  /// Password rule requiring an uppercase letter.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains uppercase letter'**
+  String get authPasswordRuleUppercase;
+
+  /// Password rule requiring a lowercase letter.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains lowercase letter'**
+  String get authPasswordRuleLowercase;
+
+  /// Password rule requiring a digit.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains number'**
+  String get authPasswordRuleNumber;
+
+  /// Password rule requiring a special character.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains special character'**
+  String get authPasswordRuleSpecialCharacter;
 }
 
 class _AppLocalizationsDelegate

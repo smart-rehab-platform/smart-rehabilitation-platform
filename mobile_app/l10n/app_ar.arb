@@ -153,5 +153,16 @@
   "fieldName": "الاسم",
   "fieldFullName": "الاسم الكامل",
   "fieldGenderMale": "ذكر",
-  "fieldGenderFemale": "أنثى"
+  "fieldGenderFemale": "أنثى",
+
+  "authCommonCreateAccount": "إنشاء حساب",
+  "authPasswordStrengthTitle": "قوة كلمة المرور",
+  "authPasswordStrengthWeak": "ضعيفة",
+  "authPasswordStrengthMedium": "متوسطة",
+  "authPasswordStrengthStrong": "قوية",
+  "authPasswordRuleMinLength": "8 أحرف على الأقل",
+  "authPasswordRuleUppercase": "تحتوي على حرف كبير",
+  "authPasswordRuleLowercase": "تحتوي على حرف صغير",
+  "authPasswordRuleNumber": "تحتوي على رقم",
+  "authPasswordRuleSpecialCharacter": "تحتوي على رمز خاص"
 }

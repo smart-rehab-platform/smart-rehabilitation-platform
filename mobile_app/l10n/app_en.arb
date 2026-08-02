@@ -299,5 +299,26 @@
   "fieldGenderMale": "Male",
   "@fieldGenderMale": { "description": "Male gender option." },
   "fieldGenderFemale": "Female",
-  "@fieldGenderFemale": { "description": "Female gender option." }
+  "@fieldGenderFemale": { "description": "Female gender option." },
+
+  "authCommonCreateAccount": "Create Account",
+  "@authCommonCreateAccount": { "description": "Shared auth tab label for account registration." },
+  "authPasswordStrengthTitle": "Password strength",
+  "@authPasswordStrengthTitle": { "description": "Heading for the shared password strength indicator." },
+  "authPasswordStrengthWeak": "Weak",
+  "@authPasswordStrengthWeak": { "description": "Weak password strength level label." },
+  "authPasswordStrengthMedium": "Medium",
+  "@authPasswordStrengthMedium": { "description": "Medium password strength level label." },
+  "authPasswordStrengthStrong": "Strong",
+  "@authPasswordStrengthStrong": { "description": "Strong password strength level label." },
+  "authPasswordRuleMinLength": "At least 8 characters",
+  "@authPasswordRuleMinLength": { "description": "Password rule requiring minimum length." },
+  "authPasswordRuleUppercase": "Contains uppercase letter",
+  "@authPasswordRuleUppercase": { "description": "Password rule requiring an uppercase letter." },
+  "authPasswordRuleLowercase": "Contains lowercase letter",
+  "@authPasswordRuleLowercase": { "description": "Password rule requiring a lowercase letter." },
+  "authPasswordRuleNumber": "Contains number",
+  "@authPasswordRuleNumber": { "description": "Password rule requiring a digit." },
+  "authPasswordRuleSpecialCharacter": "Contains special character",
+  "@authPasswordRuleSpecialCharacter": { "description": "Password rule requiring a special character." }
 }

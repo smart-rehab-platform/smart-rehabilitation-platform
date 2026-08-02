@@ -439,4 +439,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldGenderFemale => 'Female';
+
+  @override
+  String get authCommonCreateAccount => 'Create Account';
+
+  @override
+  String get authPasswordStrengthTitle => 'Password strength';
+
+  @override
+  String get authPasswordStrengthWeak => 'Weak';
+
+  @override
+  String get authPasswordStrengthMedium => 'Medium';
+
+  @override
+  String get authPasswordStrengthStrong => 'Strong';
+
+  @override
+  String get authPasswordRuleMinLength => 'At least 8 characters';
+
+  @override
+  String get authPasswordRuleUppercase => 'Contains uppercase letter';
+
+  @override
+  String get authPasswordRuleLowercase => 'Contains lowercase letter';
+
+  @override
+  String get authPasswordRuleNumber => 'Contains number';
+
+  @override
+  String get authPasswordRuleSpecialCharacter => 'Contains special character';
 }

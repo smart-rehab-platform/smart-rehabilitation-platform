@@ -439,4 +439,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fieldGenderFemale => 'أنثى';
+
+  @override
+  String get authCommonCreateAccount => 'إنشاء حساب';
+
+  @override
+  String get authPasswordStrengthTitle => 'قوة كلمة المرور';
+
+  @override
+  String get authPasswordStrengthWeak => 'ضعيفة';
+
+  @override
+  String get authPasswordStrengthMedium => 'متوسطة';
+
+  @override
+  String get authPasswordStrengthStrong => 'قوية';
+
+  @override
+  String get authPasswordRuleMinLength => '8 أحرف على الأقل';
+
+  @override
+  String get authPasswordRuleUppercase => 'تحتوي على حرف كبير';
+
+  @override
+  String get authPasswordRuleLowercase => 'تحتوي على حرف صغير';
+
+  @override
+  String get authPasswordRuleNumber => 'تحتوي على رقم';
+
+  @override
+  String get authPasswordRuleSpecialCharacter => 'تحتوي على رمز خاص';
 }
