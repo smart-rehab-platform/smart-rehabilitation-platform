@@ -6,6 +6,8 @@ class TokenStorage {
   static const String _tokenKey = 'auth_token';
   static const String _rememberMeKey = 'remember_me';
   static const String _savedEmailKey = 'saved_email';
+  static const String _localeLanguageCodeKey = 'app_locale_language_code';
+  static const Set<String> _supportedLocaleLanguageCodes = {'en', 'ar'};
 
   Future<void> saveToken(String token) async {
     final preferences = await SharedPreferences.getInstance();
@@ -59,5 +61,27 @@ class TokenStorage {
     await preferences.remove(_tokenKey);
     await preferences.remove(_rememberMeKey);
     await preferences.remove(_savedEmailKey);
+  }
+
+  Future<void> saveLocaleLanguageCode(String languageCode) async {
+    final normalized = languageCode.trim().toLowerCase();
+    if (!_supportedLocaleLanguageCodes.contains(normalized)) {
+      return;
+    }
+
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_localeLanguageCodeKey, normalized);
+  }
+
+  Future<String> getLocaleLanguageCode() async {
+    final preferences = await SharedPreferences.getInstance();
+    final saved = preferences
+        .getString(_localeLanguageCodeKey)
+        ?.trim()
+        .toLowerCase();
+    if (saved != null && _supportedLocaleLanguageCodes.contains(saved)) {
+      return saved;
+    }
+    return 'en';
   }
 }

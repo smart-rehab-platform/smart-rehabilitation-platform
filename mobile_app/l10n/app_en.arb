@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "Smart Rehabilitation Platform",
+  "@appTitle": {
+    "description": "Application title shown in the system task switcher."
+  }
+}
