@@ -1,4 +1,5 @@
-import { Menu, MessageSquare, Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 import { ProfileMenu } from "../components/ProfileMenu";
 import { NotificationPopover } from "../components/NotificationPopover";
 
@@ -47,7 +48,7 @@ export function ParentTopHeader({
           aria-label={`Messages${messageBadge ? `, ${messageBadge} unread` : ""}`}
           onClick={onMessages}
         >
-          <MessageSquare size={18} aria-hidden="true" />
+          <PlatformMaterialIcon icon="messageSquare" size={18} />
           {messageBadge ? (
             <span className="pd-icon-badge" aria-hidden="true">
               {messageBadge}

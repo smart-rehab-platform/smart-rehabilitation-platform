@@ -1,4 +1,5 @@
 import api from "./api";
+import { mapTreatmentJourneyResponse } from "../features/parent-dashboard-preview/utils/parentTreatmentJourneyUtils";
 
 /**
  * Extracts the primary payload from standard API success responses.
@@ -256,6 +257,30 @@ export async function getPatientImprovement(patientId) {
     return extractMap(response);
   } catch (error) {
     throwServiceError(error, "Failed to load patient improvement percentage.");
+  }
+}
+
+/**
+ * Loads treatment journey progress for a single patient.
+ * @param {string} patientId Selected child/patient id.
+ * @param {"weekly"|"monthly"|"full"} [period="weekly"]
+ */
+export async function getTreatmentJourney(patientId, period = "weekly") {
+  const id = requireId(patientId, "Patient id");
+  const normalizedPeriod = String(period || "weekly").trim().toLowerCase();
+
+  try {
+    const response = await api.get(
+      `/patients/${encodeURIComponent(id)}/treatment-journey`,
+      { params: { period: normalizedPeriod } },
+    );
+    return mapTreatmentJourneyResponse(extractMap(response));
+  } catch (error) {
+    if (error?.response) {
+      throw error;
+    }
+
+    throwServiceError(error, "Failed to load treatment journey.");
   }
 }
 
@@ -676,6 +701,7 @@ const parentDashboardService = {
   getMySessionRequests,
   getPatientProgress,
   getPatientImprovement,
+  getTreatmentJourney,
   getPatientProgressDaily,
   getPatientProgressWeekly,
   getPatientProgressMonthly,

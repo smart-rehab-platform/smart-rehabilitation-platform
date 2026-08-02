@@ -40,6 +40,20 @@ exports.getSystemAnalytics = async (req, res, next) => {
   }
 };
 
+exports.getWeeklySystemActivity = async (req, res, next) => {
+  try {
+    const weekOffset = req.query.week_offset ?? req.query.weekOffset ?? 0;
+    const data = await dashboardService.getWeeklySystemActivity(weekOffset);
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getAdminPatients = async (req, res, next) => {
   try {
     const data = await dashboardService.getAdminPatients();

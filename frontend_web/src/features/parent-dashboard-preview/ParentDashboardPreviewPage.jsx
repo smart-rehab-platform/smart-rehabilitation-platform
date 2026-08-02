@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { buildParentProgressPath } from "../../routes/parentDashboardRoutes";
 import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { GreetingAndActions } from "./sections/GreetingAndActions";
@@ -11,9 +12,11 @@ import { MiniCalendarCard } from "./sections/MiniCalendarCard";
 import { UpcomingSessionCard } from "./sections/UpcomingSessionCard";
 import { LatestUpdatesSection } from "./sections/LatestUpdatesSection";
 import { AiAssistantCard } from "./sections/AiAssistantCard";
+import { TreatmentJourneyCard } from "./components/treatment-journey/TreatmentJourneyCard";
 import { useParentDashboardFoundation } from "./hooks/useParentDashboardFoundation";
 import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
+import { useParentTreatmentJourney } from "./hooks/useParentTreatmentJourney";
 import {
   buildAiDashboardGuidance,
   buildCalendarMarkersForMonth,
@@ -95,6 +98,7 @@ function HeroCardState({ message, isError = false }) {
 
 export default function ParentDashboardPreviewPage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const restoredChildIdRef = useRef(null);
   const { user, isInitializing } = useAuth();
   const notificationUserId = isInitializing ? null : user?.id ?? null;
@@ -139,6 +143,13 @@ export default function ParentDashboardPreviewPage() {
     notificationsError,
     markNotificationRead,
   } = useParentNotifications(notificationUserId);
+
+  const {
+    journey: treatmentJourney,
+    isLoading: isTreatmentJourneyLoading,
+    error: treatmentJourneyError,
+    retry: retryTreatmentJourney,
+  } = useParentTreatmentJourney(selectedChildId);
 
   const showToast = useCallback((message) => {
     setToast(message);
@@ -202,6 +213,30 @@ export default function ParentDashboardPreviewPage() {
   ]);
 
   const parentFirstName = parent.fullName.split(" ")[0];
+
+  const handleOpenTreatmentJourney = useCallback(() => {
+    if (!selectedChildId) {
+      return;
+    }
+
+    navigate(buildParentProgressPath(selectedChildId));
+  }, [navigate, selectedChildId]);
+
+  const renderTreatmentJourneyCard = () => {
+    if (isLoadingChildren || foundationError || !selectedChildId) {
+      return null;
+    }
+
+    return (
+      <TreatmentJourneyCard
+        journey={treatmentJourney}
+        isLoading={isTreatmentJourneyLoading}
+        error={treatmentJourneyError}
+        onTap={handleOpenTreatmentJourney}
+        onRetry={retryTreatmentJourney}
+      />
+    );
+  };
 
   const badges = useMemo(() => ({
     notifications:
@@ -536,42 +571,47 @@ export default function ParentDashboardPreviewPage() {
         onViewProfile={navigation.handleViewProfile}
         onMessages={navigation.handleMessages}
       >
-        <GreetingAndActions
-          parentFirstName={parentFirstName}
-          childOptions={children}
-          selectedChildId={selectedChildId}
-          isChildSelectorLoading={isLoadingChildren}
-          childSelectorError={foundationError}
-          summary={summary}
-          onSelectChild={selectChild}
-          onStartExercise={navigation.handleStartExercise}
-        />
+        <div className="pd-dashboard-hero-viewport">
+          <GreetingAndActions
+            parentFirstName={parentFirstName}
+            childOptions={children}
+            selectedChildId={selectedChildId}
+            isChildSelectorLoading={isLoadingChildren}
+            childSelectorError={foundationError}
+            summary={summary}
+            onSelectChild={selectChild}
+            onStartExercise={navigation.handleStartExercise}
+          />
 
-        {renderSummaryStrip()}
+          {renderSummaryStrip()}
 
-        <div className="pd-dashboard-grid">
-          <div className="pd-dashboard-cell pd-cell-progress">
-            {renderHeroCard()}
+          <div className="pd-dashboard-hero-cards">
+            <div className="pd-dashboard-hero-card-slot">
+              {renderHeroCard()}
+            </div>
+            <div className="pd-dashboard-hero-card-slot pd-dashboard-hero-card-slot--schedule">
+              {renderCalendarCard()}
+              {renderUpcomingSessionCard()}
+            </div>
+          </div>
+        </div>
+
+        <div className="pd-dashboard-grid pd-dashboard-grid--body">
+          <div className="pd-dashboard-cell pd-cell-activities">
+            {renderTodaysTasks()}
+            {renderTreatmentJourneyCard()}
+          </div>
+
+          <div className="pd-dashboard-cell pd-cell-updates">
+            {renderLatestUpdates()}
           </div>
 
           <div className="pd-dashboard-cell pd-cell-schedule">
-            {renderCalendarCard()}
-
-            {renderUpcomingSessionCard()}
-
             <AiAssistantCard
               guidanceMessage={aiGuidance.message}
               onAskAi={navigation.handleAskAi}
               onSuggestionClick={navigation.handleAskAi}
             />
-          </div>
-
-          <div className="pd-dashboard-cell pd-cell-activities">
-            {renderTodaysTasks()}
-          </div>
-
-          <div className="pd-dashboard-cell pd-cell-updates">
-            {renderLatestUpdates()}
           </div>
         </div>
       </ParentDashboardShell>

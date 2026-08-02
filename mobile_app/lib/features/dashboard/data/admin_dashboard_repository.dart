@@ -16,6 +16,171 @@ class AdminOverviewData {
   final int newSignupsThisWeek;
 }
 
+class WeeklySystemActivityDay {
+  const WeeklySystemActivityDay({
+    required this.label,
+    required this.fullLabel,
+    required this.activityCount,
+  });
+
+  final String label;
+  final String fullLabel;
+  final int activityCount;
+
+  factory WeeklySystemActivityDay.fromMap(Map<String, dynamic> map) {
+    return WeeklySystemActivityDay(
+      label: ApiResponseParser.readString(map, const ['label']) ?? '—',
+      fullLabel: ApiResponseParser.readString(map, const [
+            'full_label',
+            'fullLabel',
+          ]) ??
+          ApiResponseParser.readString(map, const ['label']) ??
+          '—',
+      activityCount: ApiResponseParser.readInt(map, const [
+            'activity_count',
+            'activityCount',
+          ]) ??
+          0,
+    );
+  }
+}
+
+class WeeklySystemActivityData {
+  const WeeklySystemActivityData({
+    required this.days,
+    this.weekOffset = 0,
+    this.weekStart,
+    this.weekEnd,
+  });
+
+  final List<WeeklySystemActivityDay> days;
+  final int weekOffset;
+  final DateTime? weekStart;
+  final DateTime? weekEnd;
+
+  bool get hasActivity => days.any((day) => day.activityCount > 0);
+
+  String get periodLabel => systemActivityPeriodLabel(
+        weekOffset: weekOffset,
+        weekStart: weekStart,
+        weekEnd: weekEnd,
+      );
+
+  static const _defaultLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  static const _defaultFullLabels = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+
+  static WeeklySystemActivityData get empty => WeeklySystemActivityData(
+        days: List.generate(
+          7,
+          (index) => WeeklySystemActivityDay(
+            label: _defaultLabels[index],
+            fullLabel: _defaultFullLabels[index],
+            activityCount: 0,
+          ),
+        ),
+      );
+
+  factory WeeklySystemActivityData.fromMap(Map<String, dynamic>? map) {
+    if (map == null) {
+      return WeeklySystemActivityData.empty;
+    }
+
+    final rawDays = map['days'];
+    if (rawDays is! List || rawDays.isEmpty) {
+      return WeeklySystemActivityData.empty;
+    }
+
+    final days = rawDays
+        .whereType<Map>()
+        .map(
+          (item) => WeeklySystemActivityDay.fromMap(
+            item.map((key, value) => MapEntry(key.toString(), value)),
+          ),
+        )
+        .toList();
+
+    if (days.length != 7) {
+      return WeeklySystemActivityData.empty;
+    }
+
+    return WeeklySystemActivityData(
+      days: days,
+      weekOffset: ApiResponseParser.readInt(map, const [
+            'week_offset',
+            'weekOffset',
+          ]) ??
+          0,
+      weekStart: _parseDate(map['week_start'] ?? map['weekStart']),
+      weekEnd: _parseDate(map['week_end'] ?? map['weekEnd']),
+    );
+  }
+
+  static DateTime? _parseDate(Object? value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is DateTime) {
+      return value;
+    }
+    return DateTime.tryParse(value.toString());
+  }
+}
+
+const systemActivityPresetOffsets = <String, int>{
+  'This Week': 0,
+  'Last Week': 1,
+  'Last 2 Weeks': 2,
+  'Last Month': 4,
+};
+
+String systemActivityPeriodLabel({
+  required int weekOffset,
+  DateTime? weekStart,
+  DateTime? weekEnd,
+}) {
+  for (final entry in systemActivityPresetOffsets.entries) {
+    if (entry.value == weekOffset) {
+      return entry.key;
+    }
+  }
+
+  if (weekStart != null && weekEnd != null) {
+    return '${_formatChartDate(weekStart)} – ${_formatChartDate(weekEnd)}';
+  }
+
+  if (weekOffset == 1) {
+    return 'Last Week';
+  }
+
+  return '$weekOffset weeks ago';
+}
+
+String _formatChartDate(DateTime date) {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return '${months[date.month - 1]} ${date.day}';
+}
+
 class AdminRecentUser {
   const AdminRecentUser({
     required this.name,
@@ -73,9 +238,15 @@ class AdminDashboardRepository {
 
   final Dio _dio;
 
-  Future<Map<String, dynamic>?> _getMap(String path) async {
+  Future<Map<String, dynamic>?> _getMap(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
     try {
-      final response = await _dio.get(path);
+      final response = await _dio.get(
+        path,
+        queryParameters: queryParameters,
+      );
       return ApiResponseParser.extractMap(response.data);
     } on DioException {
       return null;
@@ -149,6 +320,16 @@ class AdminDashboardRepository {
       totalSpecialists: totalSpecialists,
       newSignupsThisWeek: newSignups,
     );
+  }
+
+  Future<WeeklySystemActivityData> fetchWeeklySystemActivity({
+    int weekOffset = 0,
+  }) async {
+    final map = await _getMap(
+      '/dashboard/admin/weekly-system-activity',
+      queryParameters: {'week_offset': weekOffset},
+    );
+    return WeeklySystemActivityData.fromMap(map);
   }
 
   Future<List<AdminRecentUser>> fetchRecentUsers() async {

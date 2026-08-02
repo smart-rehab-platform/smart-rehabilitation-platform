@@ -89,11 +89,11 @@ const uploadExerciseSubmissionMedia = multer({
     cb(error);
   },
 });
-const uploadCaseRequestChildImage = multer({
+const uploadChildImage = multer({
   storage: createStorage(uploadsRoot, { sanitizeFilename: true }),
-  limits: { fileSize: MAX_CASE_REQUEST_CHILD_IMAGE_BYTES },
+  limits: { fileSize: MAX_PROFILE_IMAGE_BYTES },
   fileFilter: (_req, file, cb) => {
-    if (isAllowedCaseRequestChildImage(file.mimetype, file.originalname)) {
+    if (isAllowedProfileImage(file.mimetype, file.originalname)) {
       cb(null, true);
       return;
     }
@@ -106,17 +106,17 @@ const uploadCaseRequestChildImage = multer({
   },
 });
 
-const uploadChildImage = multer({
+const uploadCaseRequestChildImage = multer({
   storage: createStorage(uploadsRoot, { sanitizeFilename: true }),
-  limits: { fileSize: MAX_PROFILE_IMAGE_BYTES },
+  limits: { fileSize: MAX_CASE_REQUEST_CHILD_IMAGE_BYTES },
   fileFilter: (_req, file, cb) => {
-    if (isAllowedProfileImage(file.mimetype, file.originalname)) {
+    if (isAllowedCaseRequestChildImage(file.mimetype, file.originalname)) {
       cb(null, true);
       return;
     }
 
     const error = new Error(
-      "Unsupported image type. Allowed: JPG, JPEG, PNG, and WEBP."
+      "Unsupported image type. Allowed: JPEG, PNG, and WebP."
     );
     error.statusCode = 400;
     cb(error);
@@ -174,24 +174,6 @@ router.post(
 );
 
 router.post(
-  "/case-request-child-image",
-  authenticate,
-  authorizeRoles("parent"),
-  (req, res, next) => {
-    uploadCaseRequestChildImage.single("child_image")(req, res, (err) => {
-      if (err) {
-        return uploadsController.handleUploadError(res, err, {
-          maxSizeLabel: "5 MB",
-        });
-      }
-
-      next();
-    });
-  },
-  uploadsController.uploadCaseRequestChildImage
-);
-
-router.post(
   "/child-image",
   authenticate,
   authorizeRoles("parent"),
@@ -208,6 +190,24 @@ router.post(
     });
   },
   uploadsController.uploadChildImage
+);
+
+router.post(
+  "/case-request-child-image",
+  authenticate,
+  authorizeRoles("parent"),
+  (req, res, next) => {
+    uploadCaseRequestChildImage.single("child_image")(req, res, (err) => {
+      if (err) {
+        return uploadsController.handleUploadError(res, err, {
+          maxSizeMessage: "Image is too large. Maximum allowed size is 5 MB.",
+        });
+      }
+
+      next();
+    });
+  },
+  uploadsController.uploadCaseRequestChildImage
 );
 
 router.post(

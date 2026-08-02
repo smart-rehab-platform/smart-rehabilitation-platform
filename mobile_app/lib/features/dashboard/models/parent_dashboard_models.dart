@@ -617,6 +617,148 @@ class ParentPerformanceMetrics {
   }
 }
 
+class ParentTreatmentJourneyPoint {
+  const ParentTreatmentJourneyPoint({
+    required this.date,
+    this.periodStart,
+    this.periodEnd,
+    required this.score,
+    this.exercisesCompleted = 0,
+    this.improvementPercentage,
+  });
+
+  final DateTime date;
+  final DateTime? periodStart;
+  final DateTime? periodEnd;
+  final double score;
+  final int exercisesCompleted;
+  final double? improvementPercentage;
+
+  factory ParentTreatmentJourneyPoint.fromMap(Map<String, dynamic> map) {
+    final date = ApiResponseParser.readDate(map['date']);
+    final score = ApiResponseParser.readDouble(map, const ['score']);
+
+    if (date == null || score == null) {
+      throw const FormatException('Invalid treatment journey chart point');
+    }
+
+    return ParentTreatmentJourneyPoint(
+      date: date,
+      periodStart: ApiResponseParser.readDate(
+        map['period_start'] ?? map['periodStart'],
+      ),
+      periodEnd: ApiResponseParser.readDate(
+        map['period_end'] ?? map['periodEnd'],
+      ),
+      score: score,
+      exercisesCompleted:
+          ApiResponseParser.readInt(map, const [
+            'exercises_completed',
+            'exercisesCompleted',
+          ]) ??
+          0,
+      improvementPercentage: ApiResponseParser.readDouble(map, const [
+        'improvement_percentage',
+        'improvementPercentage',
+      ]),
+    );
+  }
+}
+
+class ParentTreatmentJourney {
+  const ParentTreatmentJourney({
+    required this.patientId,
+    required this.period,
+    this.treatmentStart,
+    this.treatmentEnd,
+    this.startingScore,
+    this.currentScore,
+    this.scoreChange,
+    this.overallImprovement,
+    this.trend = 'stable',
+    this.dataSource = '',
+    this.chartPoints = const [],
+  });
+
+  final String patientId;
+  final String period;
+  final DateTime? treatmentStart;
+  final DateTime? treatmentEnd;
+  final double? startingScore;
+  final double? currentScore;
+  final double? scoreChange;
+  final double? overallImprovement;
+  final String trend;
+  final String dataSource;
+  final List<ParentTreatmentJourneyPoint> chartPoints;
+
+  bool get hasData => chartPoints.isNotEmpty;
+
+  factory ParentTreatmentJourney.fromMap(Map<String, dynamic> map) {
+    return ParentTreatmentJourney(
+      patientId:
+          ApiResponseParser.readString(map, const [
+            'patient_id',
+            'patientId',
+          ]) ??
+          '',
+      period: ApiResponseParser.readString(map, const ['period']) ?? 'weekly',
+      treatmentStart: ApiResponseParser.readDate(
+        map['treatment_start'] ?? map['treatmentStart'],
+      ),
+      treatmentEnd: ApiResponseParser.readDate(
+        map['treatment_end'] ?? map['treatmentEnd'],
+      ),
+      startingScore: ApiResponseParser.readDouble(map, const [
+        'starting_score',
+        'startingScore',
+      ]),
+      currentScore: ApiResponseParser.readDouble(map, const [
+        'current_score',
+        'currentScore',
+      ]),
+      scoreChange: ApiResponseParser.readDouble(map, const [
+        'score_change',
+        'scoreChange',
+      ]),
+      overallImprovement: ApiResponseParser.readDouble(map, const [
+        'overall_improvement',
+        'overallImprovement',
+      ]),
+      trend: ApiResponseParser.readString(map, const ['trend']) ?? 'stable',
+      dataSource:
+          ApiResponseParser.readString(map, const [
+            'data_source',
+            'dataSource',
+          ]) ??
+          '',
+      chartPoints: _parseChartPoints(map['chart_points'] ?? map['chartPoints']),
+    );
+  }
+
+  static List<ParentTreatmentJourneyPoint> _parseChartPoints(dynamic raw) {
+    if (raw is! List) {
+      return const [];
+    }
+
+    final points = <ParentTreatmentJourneyPoint>[];
+    for (final item in raw) {
+      final map = ApiResponseParser.asMap(item);
+      if (map == null) {
+        continue;
+      }
+
+      try {
+        points.add(ParentTreatmentJourneyPoint.fromMap(map));
+      } catch (_) {
+        continue;
+      }
+    }
+
+    return points;
+  }
+}
+
 class ParentNotificationItem {
   const ParentNotificationItem({
     required this.id,

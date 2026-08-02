@@ -12,6 +12,7 @@ import '../../widgets/exercise_instruction_media_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import 'parent_exercise_media_picker.dart';
+export 'parent_progress_screen.dart';
 import 'parent_specialist_feedback_section.dart';
 import 'parent_ui_helpers.dart';
 import '../communication/communication_patient_actions.dart';
@@ -162,134 +163,6 @@ class _ParentChildDetailScreenState
           ],
         ),
       ),
-    );
-  }
-}
-
-class ParentProgressScreen extends ConsumerStatefulWidget {
-  const ParentProgressScreen({super.key, required this.childId});
-
-  final String childId;
-
-  @override
-  ConsumerState<ParentProgressScreen> createState() =>
-      _ParentProgressScreenState();
-}
-
-class _ParentProgressScreenState extends ConsumerState<ParentProgressScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(parentProgressProvider(widget.childId).notifier).initialize();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(parentProgressProvider(widget.childId));
-    final theme = Theme.of(context);
-    final dashboard = ref.watch(parentDashboardProvider);
-    ParentChild? child;
-    for (final item in dashboard.children) {
-      if (item.id == widget.childId) {
-        child = item;
-        break;
-      }
-    }
-
-    return ParentPageScaffold(
-      title: 'Child Progress',
-      showBackButton: true,
-      body: ParentAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () =>
-            ref.read(parentProgressProvider(widget.childId).notifier).refresh(),
-        isEmpty:
-            state.snapshots.isEmpty &&
-            state.daily.isEmpty &&
-            state.weekly.isEmpty &&
-            state.monthly.isEmpty &&
-            state.improvementPercentage == null,
-        emptyMessage: 'Progress data will appear once exercises are tracked.',
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (child != null)
-              Text(
-                child.name,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            SizedBox(height: context.dashSpacing * 0.75),
-            if (state.improvementPercentage != null)
-              DashboardSurfaceCard(
-                child: Text(
-                  'Improvement: ${state.improvementPercentage!.round()}%',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: DashboardColors.brandCyan,
-                  ),
-                ),
-              ),
-            if (state.metrics.totalExercisesCompleted != null) ...[
-              SizedBox(height: context.dashSpacing * 0.5),
-              DashboardSurfaceCard(
-                child: Text(
-                  'Completed exercises: ${state.metrics.totalExercisesCompleted}',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
-            ],
-            SizedBox(height: context.dashSpacing),
-            _ProgressSection(title: 'Weekly', items: state.weekly),
-            _ProgressSection(title: 'Daily', items: state.daily),
-            _ProgressSection(title: 'Monthly', items: state.monthly),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ProgressSection extends StatelessWidget {
-  const _ProgressSection({required this.title, required this.items});
-
-  final String title;
-  final List<ParentProgressSnapshot> items;
-
-  @override
-  Widget build(BuildContext context) {
-    if (items.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.titleSmall),
-        SizedBox(height: context.dashSpacing * 0.35),
-        ...items.map(
-          (item) => Padding(
-            padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-            child: DashboardSurfaceCard(
-              child: Text(
-                [
-                  if (item.exercisesCompleted != null)
-                    '${item.exercisesCompleted} completed',
-                  if (item.improvementPercentage != null)
-                    '${item.improvementPercentage!.round()}% improvement',
-                  if (item.averagePerformance != null)
-                    '${item.averagePerformance!.round()}% performance',
-                ].join(' • '),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(height: context.dashSpacing),
-      ],
     );
   }
 }

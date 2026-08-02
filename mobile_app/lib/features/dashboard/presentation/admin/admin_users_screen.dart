@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../data/admin_users_repository.dart';
 import '../../providers/admin_dashboard_provider.dart';
@@ -79,7 +79,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     (messenger ?? ScaffoldMessenger.of(context)).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? AdminDashboardColors.danger : null,
+        backgroundColor: isError ? DashboardColors.highPriority : null,
       ),
     );
   }
@@ -183,7 +183,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: AdminDashboardColors.danger),
+            style: FilledButton.styleFrom(backgroundColor: DashboardColors.highPriority),
             child: const Text('Delete'),
           ),
         ],
@@ -214,7 +214,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       showBackButton: true,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openUserForm(),
-        backgroundColor: AdminDashboardColors.primary,
+        backgroundColor: DashboardColors.primary,
         child: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white),
       ),
       body: _isLoading
@@ -229,10 +229,10 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                       hintText: 'Search by name, email, or role',
                       prefixIcon: const Icon(Icons.search_rounded),
                       filled: true,
-                      fillColor: AdminDashboardColors.surface,
+                      fillColor: DashboardColors.surface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: AdminDashboardColors.border),
+                        borderSide: BorderSide(color: DashboardColors.border),
                       ),
                     ),
                     onChanged: (value) => setState(() => _searchQuery = value),
@@ -338,15 +338,15 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                                     maxLines: 1,
                                                     overflow: TextOverflow.ellipsis,
                                                     style: theme.textTheme.bodySmall?.copyWith(
-                                                      color: AdminDashboardColors.textSecondary,
+                                                      color: DashboardColors.textSecondary,
                                                     ),
                                                   ),
                                                   Text(
                                                     '${_formatRoleLabel(user.role)} • ${user.isActive ? 'Active' : 'Inactive'}',
                                                     style: theme.textTheme.labelSmall?.copyWith(
                                                       color: user.isActive
-                                                          ? AdminDashboardColors.primary
-                                                          : AdminDashboardColors.textMuted,
+                                                          ? DashboardColors.primary
+                                                          : DashboardColors.textMuted,
                                                     ),
                                                   ),
                                                   PresenceStatusLabel(userId: user.id),
@@ -437,7 +437,7 @@ class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
       widget.messenger.showSnackBar(
         SnackBar(
           content: Text(widget.readErrorMessage(error)),
-          backgroundColor: AdminDashboardColors.danger,
+          backgroundColor: DashboardColors.highPriority,
         ),
       );
     } catch (error) {
@@ -446,7 +446,7 @@ class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
       widget.messenger.showSnackBar(
         SnackBar(
           content: Text('Failed to update user status: $error'),
-          backgroundColor: AdminDashboardColors.danger,
+          backgroundColor: DashboardColors.highPriority,
         ),
       );
     }
@@ -478,7 +478,7 @@ class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
           FilledButton(
             onPressed: _submitting ? null : _onConfirmPressed,
             style: willDeactivate
-                ? FilledButton.styleFrom(backgroundColor: AdminDashboardColors.danger)
+                ? FilledButton.styleFrom(backgroundColor: DashboardColors.highPriority)
                 : null,
             child: _submitting
                 ? const SizedBox(
@@ -654,8 +654,8 @@ class _RoleChip extends StatelessWidget {
         label: Text(label),
         selected: selected,
         onSelected: (_) => onTap(),
-        selectedColor: AdminDashboardColors.blueSoft,
-        checkmarkColor: AdminDashboardColors.primary,
+        selectedColor: DashboardColors.blueSoft,
+        checkmarkColor: DashboardColors.primary,
       ),
     );
   }

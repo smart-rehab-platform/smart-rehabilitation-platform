@@ -1,16 +1,8 @@
-import { Bell, CalendarDays, ChevronRight, FileText, MessageCircle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { PlatformNotificationIcon } from "../PlatformNotificationIcon";
 
 function NotificationIcon({ iconType }) {
-  switch (iconType) {
-    case "calendar":
-      return <CalendarDays size={18} aria-hidden="true" />;
-    case "report":
-      return <FileText size={18} aria-hidden="true" />;
-    case "message":
-      return <MessageCircle size={18} aria-hidden="true" />;
-    default:
-      return <Bell size={18} aria-hidden="true" />;
-  }
+  return <PlatformNotificationIcon type={iconType} size={18} />;
 }
 
 export function NotificationCard({ notification, onSelect }) {

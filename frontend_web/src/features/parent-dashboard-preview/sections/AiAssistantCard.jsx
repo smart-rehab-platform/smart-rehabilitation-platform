@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 const SUGGESTIONS = [
   { id: "explain", label: "Explain an exercise" },
@@ -13,7 +13,7 @@ export function AiAssistantCard({ guidanceMessage, onAskAi, onSuggestionClick })
     <section className="pd-card pd-card-pad pd-ai-assistant-card pd-section-enter" aria-label="AI Assistant">
       <div className="pd-ai-assistant-head">
         <span className="pd-ai-assistant-icon" aria-hidden="true">
-          <Sparkles size={20} strokeWidth={1.75} />
+          <PlatformMaterialIcon icon="ai" size={20} />
         </span>
         <div className="pd-ai-assistant-copy">
           <div className="pd-ai-assistant-title-row">
@@ -38,7 +38,7 @@ export function AiAssistantCard({ guidanceMessage, onAskAi, onSuggestionClick })
       </div>
 
       <button type="button" className="pd-btn pd-btn-primary pd-ai-assistant-btn" onClick={onAskAi}>
-        <Sparkles size={15} aria-hidden="true" />
+        <PlatformMaterialIcon icon="ai" size={15} />
         Ask AI
       </button>
     </section>

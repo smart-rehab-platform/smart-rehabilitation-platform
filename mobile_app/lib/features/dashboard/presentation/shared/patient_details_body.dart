@@ -22,6 +22,7 @@ class PatientDetailsBody extends StatefulWidget {
     this.onAssignExercise,
     this.onReportsTap,
     this.onCreateTreatmentPlan,
+    this.familyPatternSection,
   });
 
   final String patientId;
@@ -36,6 +37,9 @@ class PatientDetailsBody extends StatefulWidget {
 
   /// Opens create treatment plan when no active plan exists.
   final VoidCallback? onCreateTreatmentPlan;
+
+  /// Optional supplementary section (e.g. specialist family pattern insight).
+  final Widget? familyPatternSection;
 
   @override
   State<PatientDetailsBody> createState() => _PatientDetailsBodyState();
@@ -140,6 +144,10 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
             ),
             onReportsTap: _onReportsTap,
           ),
+          if (widget.familyPatternSection != null) ...[
+            SizedBox(height: context.dashSpacing * 1.1),
+            widget.familyPatternSection!,
+          ],
           SizedBox(height: context.dashSpacing * 1.1),
           Text(
             'Treatment Plan',
@@ -152,7 +160,8 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
           if (data.treatmentPlan == null)
             PatientDetailsEmptySection(
               message: 'No treatment plan assigned yet.',
-              actionLabel: showSpecialistWorkflowActions &&
+              actionLabel:
+                  showSpecialistWorkflowActions &&
                       widget.onCreateTreatmentPlan != null
                   ? 'Create Treatment Plan'
                   : null,
@@ -183,8 +192,9 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                 else
                   ...data.goals.map(
                     (goal) => Padding(
-                      padding:
-                          EdgeInsets.only(bottom: context.dashSpacing * 0.6),
+                      padding: EdgeInsets.only(
+                        bottom: context.dashSpacing * 0.6,
+                      ),
                       child: PatientGoalCard(goal: goal),
                     ),
                   ),
@@ -252,18 +262,20 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                 else
                   ...data.assignedExercises.map(
                     (exercise) => Padding(
-                      padding:
-                          EdgeInsets.only(bottom: context.dashSpacing * 0.6),
+                      padding: EdgeInsets.only(
+                        bottom: context.dashSpacing * 0.6,
+                      ),
                       child: PatientAssignedExerciseTile(
                         exercise: exercise,
-                        onTap: !showSpecialistWorkflowActions ||
+                        onTap:
+                            !showSpecialistWorkflowActions ||
                                 exercise.id.isEmpty
                             ? null
                             : () => context.push(
-                                  AppRoutes.specialistAssignedExerciseDetails(
-                                    exercise.id,
-                                  ),
+                                AppRoutes.specialistAssignedExerciseDetails(
+                                  exercise.id,
                                 ),
+                              ),
                       ),
                     ),
                   ),
@@ -291,18 +303,20 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                 else
                   ...data.recentSubmissions.map(
                     (submission) => Padding(
-                      padding:
-                          EdgeInsets.only(bottom: context.dashSpacing * 0.6),
+                      padding: EdgeInsets.only(
+                        bottom: context.dashSpacing * 0.6,
+                      ),
                       child: PatientSubmissionTile(
                         submission: submission,
-                        onTap: !showSpecialistWorkflowActions ||
+                        onTap:
+                            !showSpecialistWorkflowActions ||
                                 submission.id.isEmpty
                             ? null
                             : () => context.push(
-                                  AppRoutes.specialistReviewExercise(
-                                    submission.id,
-                                  ),
+                                AppRoutes.specialistReviewExercise(
+                                  submission.id,
                                 ),
+                              ),
                       ),
                     ),
                   ),

@@ -1,4 +1,5 @@
-import { Activity, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 
 export function UpcomingExercisesCard({ exercises = [], onViewAll, onSelect }) {
   if (exercises.length === 0) {
@@ -31,7 +32,7 @@ export function UpcomingExercisesCard({ exercises = [], onViewAll, onSelect }) {
         onClick={() => onSelect?.(primary.title)}
       >
         <span className="pd-exercise-icon" aria-hidden="true">
-          <Activity size={16} />
+          <PlatformMaterialIcon icon="activity" size={16} />
         </span>
         <span className="pd-upcoming-primary-copy">
           <strong title={primary.title}>{primary.title}</strong>

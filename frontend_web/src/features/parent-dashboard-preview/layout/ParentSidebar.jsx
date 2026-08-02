@@ -1,36 +1,10 @@
-import { BRAND_ASSETS } from "../../../styles/brandTokens";
 import {
-  Activity,
-  Bell,
-  Calendar,
-  ClipboardList,
-  FileText,
-  LayoutDashboard,
   LogOut,
-  MessageCircle,
-  MessageSquare,
   PanelLeftClose,
   PanelLeftOpen,
-  Sparkles,
-  TrendingUp,
-  User,
-  Users,
 } from "lucide-react";
-
-const ICONS = {
-  layoutDashboard: LayoutDashboard,
-  users: Users,
-  clipboardList: ClipboardList,
-  activity: Activity,
-  trendingUp: TrendingUp,
-  calendar: Calendar,
-  fileText: FileText,
-  messageCircle: MessageCircle,
-  messageSquare: MessageSquare,
-  sparkles: Sparkles,
-  bell: Bell,
-  user: User,
-};
+import smartRehabIcon from "../../../assets/branding/smart_rehab_icon.png";
+import { ParentNavIcon } from "../components/ParentNavIcon";
 
 export function ParentSidebar({
   collapsed,
@@ -62,7 +36,7 @@ export function ParentSidebar({
           <div className="pd-brand">
             <span className="pd-brand-mark" aria-hidden="true">
               <img
-                src={BRAND_ASSETS.icon}
+                src={smartRehabIcon}
                 alt=""
                 className="pd-brand-mark-img"
               />
@@ -87,7 +61,6 @@ export function ParentSidebar({
 
         <nav className="pd-sidebar-nav">
           {navItems.map((item) => {
-            const Icon = ICONS[item.icon] || LayoutDashboard;
             const badge = item.badgeKey ? badges[item.badgeKey] : null;
             const isActive = item.id === activeId;
 
@@ -105,7 +78,7 @@ export function ParentSidebar({
                 title={collapsed ? item.label : undefined}
                 onClick={() => onNavAction?.(item.id)}
               >
-                <Icon size={18} aria-hidden="true" />
+                <ParentNavIcon navId={item.id} iconKey={item.icon} size={18} />
                 {!collapsed ? <span>{item.label}</span> : null}
                 {!collapsed && badge ? (
                   <span className="pd-nav-badge" aria-label={`${badge} unread`}>

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
 import '../../../dashboard/widgets/admin_ui_components.dart';
@@ -124,7 +124,7 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                         Text(
                           'Review preliminary child case requests and track their current status.',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AdminDashboardColors.textSecondary,
+                            color: DashboardColors.textSecondary,
                           ),
                         ),
                         SizedBox(height: context.dashSpacing),
@@ -264,7 +264,7 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                               state.loadMoreErrorMessage!,
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: AdminDashboardColors.danger,
+                                color: DashboardColors.highPriority,
                               ),
                             ),
                             TextButton(
@@ -316,21 +316,21 @@ class _FilterDropdowns extends StatelessWidget {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: AdminDashboardColors.surface,
+      fillColor: DashboardColors.surface,
       isDense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AdminDashboardColors.border),
+        borderSide: const BorderSide(color: DashboardColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AdminDashboardColors.border),
+        borderSide: const BorderSide(color: DashboardColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
-          color: AdminDashboardColors.primary,
+          color: DashboardColors.brandCyan,
           width: 1.5,
         ),
       ),

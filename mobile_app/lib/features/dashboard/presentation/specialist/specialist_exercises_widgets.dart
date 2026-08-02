@@ -4,6 +4,7 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
+import '../../widgets/parent_dashboard_cards.dart';
 import 'manage_goals_widgets.dart';
 
 const specialistExerciseAllCategoryLabel = 'All';
@@ -74,6 +75,7 @@ List<SpecialistExerciseItem> filterExercises(
       exercise.category,
       exercise.instructions,
       exercise.description,
+      exercise.languageLabel,
     ].whereType<String>().join(' ').toLowerCase();
 
     return searchable.contains(query);
@@ -171,14 +173,15 @@ Widget buildExerciseSearchField({
     controller: controller,
     onChanged: onChanged,
     textInputAction: TextInputAction.search,
-    decoration: goalFieldDecoration(
-      'Search by title, category, or instructions',
-    ).copyWith(
-      prefixIcon: const Icon(
-        Icons.search_rounded,
-        color: DashboardColors.textMuted,
-      ),
-    ),
+    decoration:
+        goalFieldDecoration(
+          'Search by title, category, or instructions',
+        ).copyWith(
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: DashboardColors.textMuted,
+          ),
+        ),
   );
 }
 
@@ -237,11 +240,11 @@ class SpecialistExerciseCategoryChips extends StatelessWidget {
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: isSelected
-                            ? DashboardColors.brandCyan
-                            : DashboardColors.textSecondary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: isSelected
+                        ? DashboardColors.brandCyan
+                        : DashboardColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -275,9 +278,9 @@ class SpecialistExerciseCategoryBadge extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -291,6 +294,7 @@ class SpecialistExerciseCard extends StatelessWidget {
     this.isSelected = false,
     this.showMediaIndicator = false,
     this.showChevron = false,
+    this.trailing,
   });
 
   final SpecialistExerciseItem exercise;
@@ -298,6 +302,7 @@ class SpecialistExerciseCard extends StatelessWidget {
   final bool isSelected;
   final bool showMediaIndicator;
   final bool showChevron;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -351,7 +356,9 @@ class SpecialistExerciseCard extends StatelessWidget {
                       if (category != null && category.isNotEmpty) ...[
                         SizedBox(width: context.dashSpacing * 0.4),
                         Flexible(
-                          child: SpecialistExerciseCategoryBadge(label: category),
+                          child: SpecialistExerciseCategoryBadge(
+                            label: category,
+                          ),
                         ),
                       ],
                     ],
@@ -403,7 +410,9 @@ class SpecialistExerciseCard extends StatelessWidget {
                 ],
               ),
             ),
-            if (showChevron || onTap != null) ...[
+            if (trailing != null)
+              trailing!
+            else if (showChevron || onTap != null) ...[
               SizedBox(width: context.dashSpacing * 0.25),
               Icon(
                 isSelected
@@ -417,6 +426,129 @@ class SpecialistExerciseCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+typedef ExerciseLibraryItemBuilder =
+    Widget Function(BuildContext context, SpecialistExerciseItem exercise);
+
+class ExerciseLibraryBody extends StatelessWidget {
+  const ExerciseLibraryBody({
+    super.key,
+    required this.isLoading,
+    required this.errorMessage,
+    required this.onRetry,
+    required this.items,
+    required this.searchController,
+    required this.selectedCategory,
+    required this.onCategoryChanged,
+    required this.onSearchChanged,
+    required this.itemBuilder,
+    this.headerTitle = 'Exercise Library',
+    this.headerSubtitle = 'Browse therapy exercises by category and search.',
+    this.emptyItemsMessage =
+        'No exercises available yet. New exercises will appear here once added.',
+    this.emptyFilteredMessage = 'No exercises match your filters.',
+    this.headerAction,
+  });
+
+  final bool isLoading;
+  final String? errorMessage;
+  final VoidCallback onRetry;
+  final List<SpecialistExerciseItem> items;
+  final TextEditingController searchController;
+  final String selectedCategory;
+  final ValueChanged<String> onCategoryChanged;
+  final ValueChanged<String> onSearchChanged;
+  final ExerciseLibraryItemBuilder itemBuilder;
+  final String headerTitle;
+  final String headerSubtitle;
+  final String emptyItemsMessage;
+  final String emptyFilteredMessage;
+  final Widget? headerAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final categories = buildExerciseCategoryFilters(items);
+    final visible = filterExercises(
+      items,
+      searchQuery: searchController.text,
+      selectedCategory: selectedCategory,
+    );
+
+    if (isLoading) {
+      return const Center(child: DashboardLoadingCard());
+    }
+
+    if (errorMessage != null && items.isEmpty) {
+      return Padding(
+        padding: context.dashPadding,
+        child: DashboardErrorCard(message: errorMessage!, onRetry: onRetry),
+      );
+    }
+
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: context.dashPadding,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    headerTitle,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: DashboardColors.textPrimary,
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.25),
+                  Text(
+                    headerSubtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: DashboardColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (headerAction != null) ...[
+              SizedBox(width: context.dashSpacing * 0.5),
+              headerAction!,
+            ],
+          ],
+        ),
+        SizedBox(height: context.dashSpacing * 0.75),
+        buildExerciseSearchField(
+          controller: searchController,
+          onChanged: onSearchChanged,
+        ),
+        if (items.isNotEmpty) ...[
+          SizedBox(height: context.dashSpacing * 0.75),
+          SpecialistExerciseCategoryChips(
+            categories: categories,
+            selected: selectedCategory,
+            onChanged: onCategoryChanged,
+          ),
+        ],
+        if (errorMessage != null) ...[
+          SizedBox(height: context.dashSpacing * 0.75),
+          DashboardErrorCard(message: errorMessage!, onRetry: onRetry),
+        ],
+        SizedBox(height: context.dashSpacing * 0.75),
+        if (items.isEmpty)
+          DashboardEmptyCard(message: emptyItemsMessage)
+        else if (visible.isEmpty)
+          DashboardEmptyCard(message: emptyFilteredMessage)
+        else
+          ...visible.map((exercise) => itemBuilder(context, exercise)),
+        SizedBox(height: context.dashSpacing),
+      ],
     );
   }
 }

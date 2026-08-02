@@ -1,30 +1,14 @@
 import { useMemo } from "react";
-import {
-  Accessibility,
-  CheckCircle2,
-  ChevronRight,
-  Dumbbell,
-  Hand,
-  Mic,
-} from "lucide-react";
+import { CheckCircle2, ChevronRight } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 import { exerciseStatusMeta } from "../mock/parentDashboardMock";
 import { StatusBadge } from "../components/StatusBadge";
 import { getDashboardPriorityTasks } from "../utils/parentDashboardMappers";
 
 const TASK_COLORS = ["blue", "teal", "purple", "orange"];
 
-function taskIcon(title) {
-  const lower = title.toLowerCase();
-  if (lower.includes("speech") || lower.includes("pronunciation") || lower.includes("voice") || lower.includes("breathing")) {
-    return Mic;
-  }
-  if (lower.includes("motor") || lower.includes("hand")) {
-    return Hand;
-  }
-  if (lower.includes("balance")) {
-    return Accessibility;
-  }
-  return Dumbbell;
+function taskIconDescriptor() {
+  return { type: "platform", key: "activity" };
 }
 
 function isCompletedStatus(status) {
@@ -95,7 +79,7 @@ export function TodaysExercisesSection({
         <ul className="pd-today-tasks-list">
           {tasks.map((task, index) => {
             const completed = isCompletedStatus(task.status);
-            const Icon = completed ? CheckCircle2 : taskIcon(task.title);
+            const iconDescriptor = completed ? null : taskIconDescriptor();
             const tone = TASK_COLORS[index % TASK_COLORS.length];
             const statusMeta = exerciseStatusMeta[task.status] || exerciseStatusMeta.todo;
             const subtitle = [childName, task.duration, task.category].filter(Boolean).join(" · ");
@@ -109,7 +93,11 @@ export function TodaysExercisesSection({
                   aria-label={`${task.title}. ${statusMeta.label}.`}
                 >
                   <span className={`pd-today-task-icon pd-tone-${tone}${completed ? " is-completed" : ""}`} aria-hidden="true">
-                    <Icon size={16} strokeWidth={1.75} />
+                    {completed ? (
+                      <CheckCircle2 size={16} strokeWidth={1.75} />
+                    ) : (
+                      <PlatformMaterialIcon icon={iconDescriptor.key} size={16} />
+                    )}
                   </span>
                   <span className="pd-today-task-copy">
                     <strong>{task.title}</strong>

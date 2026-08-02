@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { FileText, Image, Mic, Paperclip, Square, Video } from "lucide-react";
+import { Image, Mic, Paperclip, Square, Video } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../../components/platform/PlatformMaterialIcon";
 import {
   formatAttachmentFileSize,
   getMessageAttachmentKind,
@@ -170,7 +171,7 @@ export function MessagesComposer({
                 role="menuitem"
                 onClick={() => runMenuAction(() => fileInputRef.current?.click())}
               >
-                <FileText size={16} aria-hidden="true" />
+                <PlatformMaterialIcon icon="report" size={16} />
                 File
               </button>
             </div>

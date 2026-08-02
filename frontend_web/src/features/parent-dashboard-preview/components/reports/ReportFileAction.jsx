@@ -1,4 +1,4 @@
-import { FileText } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../../components/platform/PlatformMaterialIcon";
 import { openReportFileUrl } from "../../utils/parentReportsUtils";
 
 export function ReportFileAction({
@@ -34,7 +34,7 @@ export function ReportFileAction({
         onClick={handleOpen}
         aria-label={label}
       >
-        <FileText size={16} aria-hidden="true" />
+        <PlatformMaterialIcon icon="report" size={16} />
         Open Report
       </button>
     </div>

@@ -30,6 +30,8 @@ class DashboardScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.navAccentColor = DashboardColors.brandCyan,
+    this.appBarActions,
+    this.showMessagesAction = true,
   });
 
   final Widget body;
@@ -51,6 +53,8 @@ class DashboardScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Color navAccentColor;
+  final List<Widget>? appBarActions;
+  final bool showMessagesAction;
 
   @override
   Widget build(BuildContext context) {
@@ -66,18 +70,20 @@ class DashboardScaffold extends StatelessWidget {
           showMenuButton: showMenuButton,
           messageCount: messageCount,
           notificationCount: notificationCount,
-          onMenuTap: onMenuTap ??
-              (drawer != null ? () => SpecialistNavigation.openDrawer(context) : null),
+          additionalActions: appBarActions,
+          showMessagesAction: showMessagesAction,
+          onMenuTap:
+              onMenuTap ??
+              (drawer != null
+                  ? () => SpecialistNavigation.openDrawer(context)
+                  : null),
           onMessagesTap: onMessagesTap,
           onNotificationsTap: onNotificationsTap,
           onAvatarTap: onAvatarTap,
         ),
         body: SafeArea(
           child: scrollBody
-              ? SingleChildScrollView(
-                  padding: context.dashPadding,
-                  child: body,
-                )
+              ? SingleChildScrollView(padding: context.dashPadding, child: body)
               : body,
         ),
         bottomNavigationBar: showBottomNav

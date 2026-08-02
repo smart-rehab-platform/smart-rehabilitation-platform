@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowRight, CalendarDays, CheckCircle2, TrendingUp } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
 import { DonutChart } from "../components/DonutChart";
 import { StatusBadge } from "../components/StatusBadge";
 import { UserProfileAvatar } from "../components/profile/UserProfileAvatar";
@@ -56,7 +57,7 @@ export function ChildProgressOverview({
 
             <ul className="pd-progress-profile-info">
               <li>
-                <TrendingUp size={15} aria-hidden="true" />
+                <PlatformMaterialIcon icon="trendingUp" size={15} />
                 <span>
                   <strong>Overall Progress</strong>
                   {progress?.overallPercent ?? 0}%
@@ -69,7 +70,7 @@ export function ChildProgressOverview({
                 </li>
               ) : null}
               <li>
-                <CalendarDays size={15} aria-hidden="true" />
+                <PlatformMaterialIcon icon="calendarDays" size={15} />
                 <span>
                   <strong>Next session:</strong> {nextSessionLine}
                   {nextSessionSpecialist ? ` · ${nextSessionSpecialist}` : ""}

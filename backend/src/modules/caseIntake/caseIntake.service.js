@@ -39,11 +39,7 @@ const normalizePayload = (data) => {
   return {
     child_name: data.child_name.trim(),
     date_of_birth: data.date_of_birth.trim(),
-
     gender: normalizeText(data.gender)?.toLowerCase() ?? null,
-    child_image_url: normalizeText(data.child_image_url),
-
-    gender: normalizeText(data.gender),
     child_image_url:
       data.child_image_url === undefined || data.child_image_url === null
         ? null

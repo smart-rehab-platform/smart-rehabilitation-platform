@@ -47,6 +47,56 @@ const validateCreateProgressSnapshot = (req, res, next) => {
   next();
 };
 
+const Joi = require('joi');
+
+const patientIdParamSchema = Joi.object({
+  id: Joi.string().guid({ version: ['uuidv4', 'uuidv5'] }).required().messages({
+    'any.required': 'Patient id is required',
+    'string.empty': 'Patient id is required',
+    'string.guid': 'Patient id must be a valid UUID'
+  })
+});
+
+const treatmentJourneyQuerySchema = Joi.object({
+  period: Joi.string()
+    .valid('weekly', 'monthly', 'full')
+    .default('weekly')
+    .messages({
+      'any.only': 'period must be weekly, monthly, or full'
+    })
+});
+
+const validateGetTreatmentJourney = (req, res, next) => {
+  const paramsResult = patientIdParamSchema.validate(req.params, {
+    abortEarly: true,
+    stripUnknown: true
+  });
+
+  if (paramsResult.error) {
+    return res.status(400).json({
+      success: false,
+      message: paramsResult.error.details[0].message
+    });
+  }
+
+  const queryResult = treatmentJourneyQuerySchema.validate(req.query, {
+    abortEarly: true,
+    stripUnknown: true
+  });
+
+  if (queryResult.error) {
+    return res.status(400).json({
+      success: false,
+      message: queryResult.error.details[0].message
+    });
+  }
+
+  req.params = paramsResult.value;
+  req.query = queryResult.value;
+  next();
+};
+
 module.exports = {
-  validateCreateProgressSnapshot
+  validateCreateProgressSnapshot,
+  validateGetTreatmentJourney
 };

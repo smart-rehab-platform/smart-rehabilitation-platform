@@ -236,9 +236,7 @@ class _SpecialistTreatmentPlansScreenState
 
     if (patients.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No assigned patients available.'),
-        ),
+        const SnackBar(content: Text('No assigned patients available.')),
       );
       return;
     }
@@ -263,8 +261,8 @@ class _SpecialistTreatmentPlansScreenState
                 Text(
                   'Select patient',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 SizedBox(height: context.dashSpacing * 0.65),
                 ConstrainedBox(
@@ -374,8 +372,8 @@ class _SpecialistTreatmentPlansScreenState
                     Text(
                       'No treatment plans found.',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: DashboardColors.textSecondary,
-                          ),
+                        color: DashboardColors.textSecondary,
+                      ),
                     ),
                     SizedBox(height: context.dashSpacing * 0.65),
                     OutlinedButton.icon(
@@ -401,8 +399,8 @@ class _SpecialistTreatmentPlansScreenState
                   onTap: plan.id.isEmpty
                       ? () {}
                       : () => context.push(
-                            AppRoutes.specialistEditTreatmentPlan(plan.id),
-                          ),
+                          AppRoutes.specialistEditTreatmentPlan(plan.id),
+                        ),
                 ),
               ),
             SizedBox(height: context.dashSpacing),
@@ -513,88 +511,6 @@ class _SpecialistExercisesScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(specialistExercisesProvider);
     final notifier = ref.read(specialistExercisesProvider.notifier);
-    final theme = Theme.of(context);
-    final categories = buildExerciseCategoryFilters(state.items);
-    final visible = filterExercises(
-      state.items,
-      searchQuery: _searchController.text,
-      selectedCategory: _selectedCategory,
-    );
-
-    Widget body;
-    if (state.isLoading) {
-      body = const Center(child: DashboardLoadingCard());
-    } else if (state.errorMessage != null && state.items.isEmpty) {
-      body = Padding(
-        padding: context.dashPadding,
-        child: DashboardErrorCard(
-          message: state.errorMessage!,
-          onRetry: notifier.refresh,
-        ),
-      );
-    } else {
-      body = ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: context.dashPadding,
-        children: [
-          Text(
-            'Exercise Library',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: DashboardColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: context.dashSpacing * 0.25),
-          Text(
-            'Browse therapy exercises by category and search.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: DashboardColors.textSecondary,
-            ),
-          ),
-          SizedBox(height: context.dashSpacing * 0.75),
-          buildExerciseSearchField(
-            controller: _searchController,
-            onChanged: (_) => setState(() {}),
-          ),
-          if (state.items.isNotEmpty) ...[
-            SizedBox(height: context.dashSpacing * 0.75),
-            SpecialistExerciseCategoryChips(
-              categories: categories,
-              selected: _selectedCategory,
-              onChanged: (value) => setState(() => _selectedCategory = value),
-            ),
-          ],
-          if (state.errorMessage != null) ...[
-            SizedBox(height: context.dashSpacing * 0.75),
-            DashboardErrorCard(
-              message: state.errorMessage!,
-              onRetry: notifier.refresh,
-            ),
-          ],
-          SizedBox(height: context.dashSpacing * 0.75),
-          if (state.items.isEmpty)
-            const DashboardEmptyCard(
-              message:
-                  'No exercises available yet. New exercises will appear here once added.',
-            )
-          else if (visible.isEmpty)
-            const DashboardEmptyCard(
-              message: 'No exercises match your filters.',
-            )
-          else
-            ...visible.map(
-              (exercise) => SpecialistExerciseCard(
-                exercise: exercise,
-                showChevron: true,
-                onTap: () => context.push(
-                  AppRoutes.specialistExerciseDetails(exercise.id),
-                ),
-              ),
-            ),
-          SizedBox(height: context.dashSpacing),
-        ],
-      );
-    }
 
     return SpecialistPageScaffold(
       title: 'Exercises',
@@ -613,7 +529,22 @@ class _SpecialistExercisesScreenState
           icon: const Icon(Icons.add_rounded),
         ),
       ],
-      body: body,
+      body: ExerciseLibraryBody(
+        isLoading: state.isLoading,
+        errorMessage: state.errorMessage,
+        onRetry: notifier.refresh,
+        items: state.items,
+        searchController: _searchController,
+        selectedCategory: _selectedCategory,
+        onCategoryChanged: (value) => setState(() => _selectedCategory = value),
+        onSearchChanged: (_) => setState(() {}),
+        itemBuilder: (context, exercise) => SpecialistExerciseCard(
+          exercise: exercise,
+          showChevron: true,
+          onTap: () =>
+              context.push(AppRoutes.specialistExerciseDetails(exercise.id)),
+        ),
+      ),
     );
   }
 }

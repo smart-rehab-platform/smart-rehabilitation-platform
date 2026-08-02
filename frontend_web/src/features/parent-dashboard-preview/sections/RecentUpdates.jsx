@@ -1,16 +1,4 @@
-import { CalendarDays, FileText, MessageCircle } from "lucide-react";
-
-function UpdateIcon({ type }) {
-  switch (type) {
-    case "calendar":
-      return <CalendarDays size={14} />;
-    case "report":
-      return <FileText size={14} />;
-    case "feedback":
-    default:
-      return <MessageCircle size={14} />;
-  }
-}
+import { PlatformNotificationIcon } from "../components/PlatformNotificationIcon";
 
 function toneForIcon(type) {
   switch (type) {
@@ -46,7 +34,10 @@ export function RecentUpdates({ updates = [], onItemAction, onViewAll }) {
                 className={`pd-notif-icon pd-tone-${toneForIcon(item.icon)}`}
                 aria-hidden="true"
               >
-                <UpdateIcon type={item.icon} />
+                <PlatformNotificationIcon
+                  type={item.icon === "feedback" ? "message" : item.icon}
+                  size={14}
+                />
               </span>
               <span className="pd-notif-copy">
                 <strong>{item.title}</strong>

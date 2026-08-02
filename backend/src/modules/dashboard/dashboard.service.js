@@ -51,6 +51,162 @@ exports.getSystemAnalytics = async () => {
   return result.rows[0];
 };
 
+exports.getWeeklySystemActivity = async (weekOffset = 0) => {
+  const offset = Number.isFinite(Number(weekOffset))
+    ? Math.max(0, Math.min(52, Math.trunc(Number(weekOffset))))
+    : 0;
+
+  const result = await pool.query(
+    `
+    WITH week_bounds AS (
+      SELECT
+        (date_trunc('week', CURRENT_DATE)::date - ($1 * interval '7 days'))::date AS week_start,
+        (date_trunc('week', CURRENT_DATE)::date - ($1 * interval '7 days') + interval '6 days')::date AS week_end
+    ),
+    days AS (
+      SELECT
+        generate_series(
+          (SELECT week_start FROM week_bounds),
+          (SELECT week_end FROM week_bounds),
+          interval '1 day'
+        )::date AS activity_day
+    ),
+    events AS (
+      SELECT u.created_at::date AS activity_day
+      FROM users u
+      WHERE u.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT p.created_at::date AS activity_day
+      FROM patients p
+      WHERE p.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT COALESCE(cir.submitted_at, cir.created_at)::date AS activity_day
+      FROM case_intake_requests cir
+      WHERE COALESCE(cir.submitted_at, cir.created_at)::date
+        BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT tp.created_at::date AS activity_day
+      FROM treatment_plans tp
+      WHERE tp.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT g.created_at::date AS activity_day
+      FROM goals g
+      WHERE g.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT e.created_at::date AS activity_day
+      FROM exercises e
+      WHERE e.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT ae.created_at::date AS activity_day
+      FROM assigned_exercises ae
+      WHERE ae.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT es.submitted_at::date AS activity_day
+      FROM exercise_submissions es
+      WHERE es.submitted_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT r.created_at::date AS activity_day
+      FROM reports r
+      WHERE r.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT COALESCE(ar.generated_at, ar.created_at)::date AS activity_day
+      FROM ai_reports ar
+      WHERE COALESCE(ar.generated_at, ar.created_at)::date
+        BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT COALESCE(rec.generated_at, rec.created_at)::date AS activity_day
+      FROM ai_recommendations rec
+      WHERE COALESCE(rec.generated_at, rec.created_at)::date
+        BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT COALESCE(s.updated_at, s.scheduled_at)::date AS activity_day
+      FROM sessions s
+      WHERE s.status = 'completed'
+        AND COALESCE(s.updated_at, s.scheduled_at)::date
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT COALESCE(ps.period_start, ps.period_end)::date AS activity_day
+      FROM progress_snapshots ps
+      WHERE COALESCE(ps.period_start, ps.period_end)::date
+        BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT gp.recorded_at::date AS activity_day
+      FROM goal_progress gp
+      WHERE gp.recorded_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT sa.analyzed_at::date AS activity_day
+      FROM speech_analyses sa
+      WHERE sa.analyzed_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT n.created_at::date AS activity_day
+      FROM notifications n
+      WHERE n.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT al.created_at::date AS activity_day
+      FROM audit_logs al
+      WHERE al.created_at::date BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+    )
+    SELECT
+      d.activity_day,
+      trim(to_char(d.activity_day, 'Dy')) AS day_label,
+      to_char(d.activity_day, 'FMDay') AS full_day_label,
+      COUNT(e.activity_day)::int AS activity_count
+    FROM days d
+    LEFT JOIN events e ON e.activity_day = d.activity_day
+    GROUP BY d.activity_day
+    ORDER BY d.activity_day
+  `,
+    [offset]
+  );
+
+  const weekStart = result.rows[0]?.activity_day ?? null;
+  const weekEnd = result.rows[result.rows.length - 1]?.activity_day ?? null;
+
+  return {
+    week_offset: offset,
+    week_start: weekStart,
+    week_end: weekEnd,
+    days: result.rows.map((row) => ({
+      date: row.activity_day,
+      label: row.day_label,
+      full_label: row.full_day_label,
+      activity_count: row.activity_count,
+    })),
+  };
+};
+
 // Specialist Dashboard
 exports.getSpecialistOverview = async (specialistId) => {
   const result = await pool.query(
@@ -192,6 +348,7 @@ exports.getAdminPatients = async () => {
       p.full_name,
       p.date_of_birth,
       p.gender,
+      p.profile_image_url,
       p.created_at,
       ld.diagnosis_title AS condition,
       ld.diagnosed_at AS condition_diagnosed_at,
@@ -222,6 +379,7 @@ exports.getAdminPatients = async () => {
     full_name: row.full_name,
     date_of_birth: row.date_of_birth,
     gender: row.gender,
+    profile_image_url: row.profile_image_url,
     created_at: row.created_at,
     condition: row.condition,
     condition_diagnosed_at: row.condition_diagnosed_at,
