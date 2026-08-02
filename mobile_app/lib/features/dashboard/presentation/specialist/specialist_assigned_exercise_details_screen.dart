@@ -72,7 +72,9 @@ class _SpecialistAssignedExerciseDetailsScreenState
     } else if (state.assignment == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(message: 'Assigned exercise not found.'),
+        child: const DashboardEmptyCard(
+          message: 'Assigned exercise not found.',
+        ),
       );
     } else {
       final assignment = state.assignment!;
@@ -162,10 +164,7 @@ class _SpecialistAssignedExerciseDetailsScreenState
                     ),
                   ),
                   SizedBox(height: context.dashSpacing * 0.45),
-                  _MetaRow(
-                    label: 'Status',
-                    value: assignment.statusLabel,
-                  ),
+                  _MetaRow(label: 'Status', value: assignment.statusLabel),
                   _MetaRow(
                     label: 'Frequency',
                     value: assignment.frequency?.trim().isNotEmpty == true
@@ -177,8 +176,8 @@ class _SpecialistAssignedExerciseDetailsScreenState
                     value: assignment.createdAt != null
                         ? dateFmt.format(assignment.createdAt!)
                         : assignment.startDate != null
-                            ? dateFmt.format(assignment.startDate!)
-                            : '—',
+                        ? dateFmt.format(assignment.startDate!)
+                        : '—',
                   ),
                   _MetaRow(
                     label: 'Due date',
@@ -207,10 +206,10 @@ class _SpecialistAssignedExerciseDetailsScreenState
                 onTap: state.latestSubmission!.id.isEmpty
                     ? null
                     : () => context.push(
-                          AppRoutes.specialistReviewExercise(
-                            state.latestSubmission!.id,
-                          ),
+                        AppRoutes.specialistReviewExercise(
+                          state.latestSubmission!.id,
                         ),
+                      ),
                 child: Row(
                   children: [
                     Icon(
@@ -230,9 +229,9 @@ class _SpecialistAssignedExerciseDetailsScreenState
                           ),
                           Text(
                             state.latestSubmission!.submittedAt != null
-                                ? DateFormat('MMM d, yyyy • h:mm a').format(
-                                    state.latestSubmission!.submittedAt!,
-                                  )
+                                ? DateFormat(
+                                    'MMM d, yyyy • h:mm a',
+                                  ).format(state.latestSubmission!.submittedAt!)
                                 : 'Recently submitted',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: DashboardColors.textSecondary,
@@ -382,20 +381,19 @@ class SpecialistAssignedExerciseDetailState {
   }
 }
 
-final specialistAssignedExerciseDetailProvider = StateNotifierProvider.family<
-    SpecialistAssignedExerciseDetailNotifier,
-    SpecialistAssignedExerciseDetailState,
-    String>((ref, assignedExerciseId) {
-  return SpecialistAssignedExerciseDetailNotifier(
-    ref,
-    assignedExerciseId,
-  );
-});
+final specialistAssignedExerciseDetailProvider =
+    StateNotifierProvider.family<
+      SpecialistAssignedExerciseDetailNotifier,
+      SpecialistAssignedExerciseDetailState,
+      String
+    >((ref, assignedExerciseId) {
+      return SpecialistAssignedExerciseDetailNotifier(ref, assignedExerciseId);
+    });
 
 class SpecialistAssignedExerciseDetailNotifier
     extends StateNotifier<SpecialistAssignedExerciseDetailState> {
   SpecialistAssignedExerciseDetailNotifier(this._ref, this._assignedExerciseId)
-      : super(const SpecialistAssignedExerciseDetailState());
+    : super(const SpecialistAssignedExerciseDetailState());
 
   final Ref _ref;
   final String _assignedExerciseId;
@@ -410,10 +408,12 @@ class SpecialistAssignedExerciseDetailNotifier
     final dio = _ref.read(dioProvider);
 
     try {
-      final assignmentResponse =
-          await dio.get('/assigned-exercises/$_assignedExerciseId');
-      final assignmentMap =
-          ApiResponseParser.extractMap(assignmentResponse.data);
+      final assignmentResponse = await dio.get(
+        '/assigned-exercises/$_assignedExerciseId',
+      );
+      final assignmentMap = ApiResponseParser.extractMap(
+        assignmentResponse.data,
+      );
       if (assignmentMap == null || assignmentMap.isEmpty) {
         state = state.copyWith(
           isLoading: false,
@@ -433,9 +433,8 @@ class SpecialistAssignedExerciseDetailNotifier
         final rows = ApiResponseParser.extractList(submissionsResponse.data)
             .whereType<Map>()
             .map(
-              (item) => item.map(
-                (key, value) => MapEntry(key.toString(), value),
-              ),
+              (item) =>
+                  item.map((key, value) => MapEntry(key.toString(), value)),
             )
             .toList();
         if (rows.isNotEmpty) {

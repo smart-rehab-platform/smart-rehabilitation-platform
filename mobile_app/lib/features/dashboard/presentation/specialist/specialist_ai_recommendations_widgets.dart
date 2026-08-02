@@ -9,10 +9,7 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 
 class AiRecommendationsHeaderCard extends StatelessWidget {
-  const AiRecommendationsHeaderCard({
-    super.key,
-    required this.patientName,
-  });
+  const AiRecommendationsHeaderCard({super.key, required this.patientName});
 
   final String patientName;
 
@@ -92,7 +89,8 @@ class AiRecommendationsGenerateCard extends StatelessWidget {
             onPressed: isGenerating ? null : onGenerateExercise,
             icon: _buttonIcon(
               context,
-              isActive: generatingType == AiRecommendationType.exerciseSuggestion,
+              isActive:
+                  generatingType == AiRecommendationType.exerciseSuggestion,
             ),
             label: Text(
               generatingType == AiRecommendationType.exerciseSuggestion
@@ -357,9 +355,9 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       title,
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: DashboardColors.textPrimary,
-          ),
+        fontWeight: FontWeight.w700,
+        color: DashboardColors.textPrimary,
+      ),
     );
   }
 }
@@ -374,9 +372,9 @@ class _SectionBody extends StatelessWidget {
     return Text(
       text,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: DashboardColors.textSecondary,
-            height: 1.4,
-          ),
+        color: DashboardColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 }

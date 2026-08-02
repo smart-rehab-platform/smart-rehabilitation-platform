@@ -482,7 +482,7 @@ class ParentDashboardHeroCard extends StatelessWidget {
               ),
               SizedBox(width: context.dashSpacing * 0.2),
               Text(
-                l10n.parentDashboardNextSession,
+                l10n.dashboardNextSession,
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: DashboardColors.textSecondary,
                   fontWeight: FontWeight.w600,
@@ -1355,7 +1355,7 @@ class DashboardLoadingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final displayMessage = message ?? l10n.parentDashboardLoading;
+    final displayMessage = message ?? l10n.dashboardLoading;
 
     return DashboardSurfaceCard(
       child: Row(

@@ -11,10 +11,7 @@ import 'edit_treatment_plan_widgets.dart';
 import 'patient_details_widgets.dart';
 
 class SpecialistEditTreatmentPlanScreen extends ConsumerStatefulWidget {
-  const SpecialistEditTreatmentPlanScreen({
-    super.key,
-    required this.planId,
-  });
+  const SpecialistEditTreatmentPlanScreen({super.key, required this.planId});
 
   final String planId;
 
@@ -45,8 +42,9 @@ class _SpecialistEditTreatmentPlanScreenState
   }
 
   Future<void> _save() async {
-    final notifier =
-        ref.read(specialistEditTreatmentPlanProvider(widget.planId).notifier);
+    final notifier = ref.read(
+      specialistEditTreatmentPlanProvider(widget.planId).notifier,
+    );
     final success = await notifier.save();
     if (!mounted) return;
 
@@ -58,25 +56,30 @@ class _SpecialistEditTreatmentPlanScreenState
       return;
     }
 
-    final current =
-        ref.read(specialistEditTreatmentPlanProvider(widget.planId));
+    final current = ref.read(
+      specialistEditTreatmentPlanProvider(widget.planId),
+    );
     final message = current.validationMessage ?? current.errorMessage;
     if (message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistEditTreatmentPlanProvider(widget.planId));
-    final notifier =
-        ref.read(specialistEditTreatmentPlanProvider(widget.planId).notifier);
+    final notifier = ref.read(
+      specialistEditTreatmentPlanProvider(widget.planId).notifier,
+    );
     final bundle = state.bundle;
     final theme = Theme.of(context);
 
-    ref.listen(specialistEditTreatmentPlanProvider(widget.planId), (prev, next) {
+    ref.listen(specialistEditTreatmentPlanProvider(widget.planId), (
+      prev,
+      next,
+    ) {
       if (prev?.isLoading == true &&
           !next.isLoading &&
           next.bundle != null &&
@@ -159,7 +162,9 @@ class _SpecialistEditTreatmentPlanScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             if (bundle.goals.isEmpty)
-              const DashboardEmptyCard(message: 'No goals defined for this plan.')
+              const DashboardEmptyCard(
+                message: 'No goals defined for this plan.',
+              )
             else
               ...bundle.goals.map(
                 (goal) => Padding(
@@ -176,10 +181,7 @@ class _SpecialistEditTreatmentPlanScreenState
             ],
             if (state.errorMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.5),
-              DashboardErrorCard(
-                message: state.errorMessage!,
-                onRetry: _save,
-              ),
+              DashboardErrorCard(message: state.errorMessage!, onRetry: _save),
             ],
             SizedBox(height: context.dashSpacing),
             ElevatedButton(
@@ -187,7 +189,9 @@ class _SpecialistEditTreatmentPlanScreenState
               style: ElevatedButton.styleFrom(
                 backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+                padding: EdgeInsets.symmetric(
+                  vertical: context.dashSpacing * 0.65,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -200,7 +204,9 @@ class _SpecialistEditTreatmentPlanScreenState
               style: OutlinedButton.styleFrom(
                 foregroundColor: DashboardColors.brandCyan,
                 side: const BorderSide(color: DashboardColors.brandCyan),
-                padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+                padding: EdgeInsets.symmetric(
+                  vertical: context.dashSpacing * 0.65,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),

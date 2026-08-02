@@ -83,11 +83,11 @@ class PlanStatusSelector extends StatelessWidget {
             child: Text(
               value.label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: selected
-                        ? DashboardColors.brandCyan
-                        : DashboardColors.textSecondary,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: selected
+                    ? DashboardColors.brandCyan
+                    : DashboardColors.textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         );

@@ -10,10 +10,7 @@ import '../../widgets/specialist_page_scaffold.dart';
 import 'specialist_ai_recommendations_widgets.dart';
 
 class SpecialistAiRecommendationsScreen extends ConsumerStatefulWidget {
-  const SpecialistAiRecommendationsScreen({
-    super.key,
-    required this.patientId,
-  });
+  const SpecialistAiRecommendationsScreen({super.key, required this.patientId});
 
   final String patientId;
 
@@ -56,9 +53,9 @@ class _SpecialistAiRecommendationsScreenState
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Recommendation accepted')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Recommendation accepted')));
     } else {
       _showErrorSnackBar();
     }
@@ -71,29 +68,33 @@ class _SpecialistAiRecommendationsScreenState
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Recommendation rejected')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Recommendation rejected')));
     } else {
       _showErrorSnackBar();
     }
   }
 
   void _showErrorSnackBar() {
-    final message =
-        ref.read(specialistAiRecommendationsProvider(widget.patientId)).errorMessage;
+    final message = ref
+        .read(specialistAiRecommendationsProvider(widget.patientId))
+        .errorMessage;
     if (message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(specialistAiRecommendationsProvider(widget.patientId));
-    final notifier =
-        ref.read(specialistAiRecommendationsProvider(widget.patientId).notifier);
+    final state = ref.watch(
+      specialistAiRecommendationsProvider(widget.patientId),
+    );
+    final notifier = ref.read(
+      specialistAiRecommendationsProvider(widget.patientId).notifier,
+    );
     final bundle = state.bundle;
     final theme = Theme.of(context);
 

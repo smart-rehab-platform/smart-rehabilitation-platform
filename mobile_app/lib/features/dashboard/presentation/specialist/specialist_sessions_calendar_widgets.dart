@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
+import 'specialist_scoped_localization_utils.dart';
 import 'specialist_sessions_widgets.dart';
 
 enum SpecialistSessionsViewMode { calendar, list }
@@ -47,18 +49,22 @@ class SpecialistSessionsViewModeTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: EdgeInsets.all(context.dashSpacing * 0.18),
       decoration: BoxDecoration(
         color: DashboardColors.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.8)),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.8),
+        ),
       ),
       child: Row(
         children: [
           Expanded(
             child: _ViewModeTabButton(
-              label: 'Calendar',
+              label: l10n.filterCalendar,
               icon: Icons.calendar_month_outlined,
               isSelected: selected == SpecialistSessionsViewMode.calendar,
               onTap: () => onChanged(SpecialistSessionsViewMode.calendar),
@@ -67,7 +73,7 @@ class SpecialistSessionsViewModeTabs extends StatelessWidget {
           SizedBox(width: context.dashSpacing * 0.25),
           Expanded(
             child: _ViewModeTabButton(
-              label: 'List',
+              label: l10n.filterList,
               icon: Icons.view_list_rounded,
               isSelected: selected == SpecialistSessionsViewMode.list,
               onTap: () => onChanged(SpecialistSessionsViewMode.list),
@@ -175,10 +181,15 @@ class SpecialistSessionsMonthCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     final today = normalizeCalendarDate(DateTime.now());
     final monthStart = startOfCalendarMonth(visibleMonth);
     final gridStart = calendarGridStart(visibleMonth);
-    const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final weekdayLabels = List.generate(7, (index) {
+      final day = gridStart.add(Duration(days: index));
+      return DateFormat('EEE', localeName).format(day);
+    });
 
     return DashboardSurfaceCard(
       child: Column(
@@ -191,11 +202,11 @@ class SpecialistSessionsMonthCalendar extends StatelessWidget {
                 icon: const Icon(Icons.chevron_left_rounded),
                 color: DashboardColors.brandCyan,
                 visualDensity: VisualDensity.compact,
-                tooltip: 'Previous month',
+                tooltip: l10n.calendarPreviousMonth,
               ),
               Expanded(
                 child: Text(
-                  DateFormat('MMMM yyyy').format(monthStart),
+                  DateFormat('MMMM yyyy', localeName).format(monthStart),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
@@ -208,7 +219,7 @@ class SpecialistSessionsMonthCalendar extends StatelessWidget {
                 icon: const Icon(Icons.chevron_right_rounded),
                 color: DashboardColors.brandCyan,
                 visualDensity: VisualDensity.compact,
-                tooltip: 'Next month',
+                tooltip: l10n.calendarNextMonth,
               ),
             ],
           ),
@@ -270,8 +281,8 @@ class SpecialistSessionsMonthCalendar extends StatelessWidget {
                                     color: isSelected
                                         ? DashboardColors.brandCyan
                                         : isToday
-                                            ? DashboardColors.brandSoft
-                                            : Colors.transparent,
+                                        ? DashboardColors.brandSoft
+                                        : Colors.transparent,
                                     shape: BoxShape.circle,
                                     border: isToday && !isSelected
                                         ? Border.all(
@@ -286,9 +297,9 @@ class SpecialistSessionsMonthCalendar extends StatelessWidget {
                                       color: isSelected
                                           ? Colors.white
                                           : inMonth
-                                              ? DashboardColors.textPrimary
-                                              : DashboardColors.textMuted
-                                                  .withValues(alpha: 0.55),
+                                          ? DashboardColors.textPrimary
+                                          : DashboardColors.textMuted
+                                                .withValues(alpha: 0.55),
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -336,7 +347,12 @@ class SpecialistCalendarDaySessionsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final headerLabel = DateFormat('EEEE, MMMM d').format(selectedDate);
+    final l10n = AppLocalizations.of(context)!;
+    final localeName = Localizations.localeOf(context).toLanguageTag();
+    final headerLabel = DateFormat(
+      'EEEE, MMMM d',
+      localeName,
+    ).format(selectedDate);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -350,9 +366,7 @@ class SpecialistCalendarDaySessionsSection extends StatelessWidget {
         ),
         SizedBox(height: context.dashSpacing * 0.5),
         if (sessions.isEmpty)
-          const DashboardEmptyCard(
-            message: 'No sessions scheduled for this date.',
-          )
+          DashboardEmptyCard(message: l10n.specialistNoSessionsOnDate)
         else
           ...sessions.map(
             (session) => SpecialistCalendarSessionTile(
@@ -378,8 +392,9 @@ class SpecialistCalendarSessionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final duration = session.durationMinutes ?? 45;
-    final modeLabel = calendarSessionModeLabel(session);
+    final modeLabel = localizedCalendarSessionMode(l10n, session);
 
     return Padding(
       padding: EdgeInsets.only(bottom: context.dashSpacing * 0.55),
@@ -435,10 +450,7 @@ class SpecialistCalendarSessionTile extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: DashboardColors.textMuted,
-            ),
+            Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
           ],
         ),
       ),

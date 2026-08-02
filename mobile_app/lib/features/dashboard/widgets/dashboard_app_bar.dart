@@ -149,6 +149,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: onNotificationsTap,
               icon: const Icon(Icons.notifications_none_rounded),
               color: DashboardColors.textPrimary,
+              tooltip: l10n.navNotifications,
             ),
             if (notificationCount > 0)
               PositionedDirectional(

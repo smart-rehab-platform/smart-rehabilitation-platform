@@ -463,14 +463,8 @@ class _SpecialistUpsertExerciseScreenState
             isExpanded: true,
             decoration: goalFieldDecoration('Exercise Language'),
             items: const [
-              DropdownMenuItem(
-                value: 'en',
-                child: Text('English'),
-              ),
-              DropdownMenuItem(
-                value: 'ar',
-                child: Text('Arabic'),
-              ),
+              DropdownMenuItem(value: 'en', child: Text('English')),
+              DropdownMenuItem(value: 'ar', child: Text('Arabic')),
             ],
             onChanged: busy
                 ? null

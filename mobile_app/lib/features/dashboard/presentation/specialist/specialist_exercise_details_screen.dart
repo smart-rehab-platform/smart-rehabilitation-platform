@@ -140,7 +140,9 @@ class _SpecialistExerciseDetailsScreenState
                               color: DashboardColors.textMuted,
                             ),
                           ),
-                          if ((exercise.createdByName ?? '').trim().isNotEmpty) ...[
+                          if ((exercise.createdByName ?? '')
+                              .trim()
+                              .isNotEmpty) ...[
                             SizedBox(height: context.dashSpacing * 0.35),
                             Text(
                               'Created by ${exercise.createdByName}',

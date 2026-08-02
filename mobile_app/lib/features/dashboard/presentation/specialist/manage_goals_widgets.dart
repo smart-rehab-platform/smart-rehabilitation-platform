@@ -92,9 +92,7 @@ class _GoalActionButton extends StatelessWidget {
           horizontal: context.dashSpacing * 0.55,
           vertical: context.dashSpacing * 0.35,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -142,11 +140,11 @@ class GoalTermSelector extends StatelessWidget {
                   value.label,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: selected
-                            ? DashboardColors.brandCyan
-                            : DashboardColors.textSecondary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: selected
+                        ? DashboardColors.brandCyan
+                        : DashboardColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -290,9 +288,9 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
             Text(
               'Goal type',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: DashboardColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                color: DashboardColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.35),
             GoalTermSelector(
@@ -307,7 +305,9 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
               controller: _targetValueController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: goalFieldDecoration('Target value (optional)'),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
@@ -328,8 +328,8 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
               Text(
                 _error!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: DashboardColors.highPriority,
-                    ),
+                  color: DashboardColors.highPriority,
+                ),
               ),
             ],
           ],
@@ -340,10 +340,7 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        FilledButton(
-          onPressed: _submit,
-          child: const Text('Add Goal'),
-        ),
+        FilledButton(onPressed: _submit, child: const Text('Add Goal')),
       ],
     );
   }
@@ -427,7 +424,9 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
               controller: _targetValueController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: goalFieldDecoration('Target value (optional)'),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
@@ -450,8 +449,8 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
               Text(
                 _error!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: DashboardColors.highPriority,
-                    ),
+                  color: DashboardColors.highPriority,
+                ),
               ),
             ],
           ],
@@ -462,10 +461,7 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        FilledButton(
-          onPressed: _submit,
-          child: const Text('Save Changes'),
-        ),
+        FilledButton(onPressed: _submit, child: const Text('Save Changes')),
       ],
     );
   }
@@ -527,14 +523,16 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
           children: [
             Text(
               widget.goal.title,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
               controller: _progressController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: goalFieldDecoration('Completion percentage (0–100)'),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
@@ -548,8 +546,8 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
               Text(
                 _error!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: DashboardColors.highPriority,
-                    ),
+                  color: DashboardColors.highPriority,
+                ),
               ),
             ],
           ],
@@ -560,10 +558,7 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        FilledButton(
-          onPressed: _submit,
-          child: const Text('Save Progress'),
-        ),
+        FilledButton(onPressed: _submit, child: const Text('Save Progress')),
       ],
     );
   }

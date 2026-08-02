@@ -336,7 +336,7 @@ class DashboardSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final resolvedActionLabel = actionLabel ?? l10n.parentDashboardSeeAll;
+    final resolvedActionLabel = actionLabel ?? l10n.commonSeeAll;
 
     return Row(
       children: [

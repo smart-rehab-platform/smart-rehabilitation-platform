@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_reports_models.dart';
 import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -11,6 +12,7 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../specialist/manage_goals_widgets.dart';
+import '../specialist/specialist_scoped_localization_utils.dart';
 
 String reportDateLabel(DateTime? date) {
   if (date == null) {
@@ -31,6 +33,8 @@ class ReportFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: context.dashSpacing * 2.1,
       child: ListView.separated(
@@ -38,8 +42,7 @@ class ReportFilterChips extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
         itemCount: SpecialistReportFilter.values.length,
-        separatorBuilder: (_, __) =>
-            SizedBox(width: context.dashSpacing * 0.4),
+        separatorBuilder: (_, __) => SizedBox(width: context.dashSpacing * 0.4),
         itemBuilder: (context, index) {
           final filter = SpecialistReportFilter.values[index];
           final isSelected = selected == filter;
@@ -64,15 +67,15 @@ class ReportFilterChips extends StatelessWidget {
                 ),
               ),
               child: Text(
-                filter.label,
+                localizedReportFilter(l10n, filter),
                 maxLines: 1,
                 softWrap: false,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: isSelected
-                          ? DashboardColors.brandCyan
-                          : DashboardColors.textSecondary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: isSelected
+                      ? DashboardColors.brandCyan
+                      : DashboardColors.textSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           );
@@ -83,11 +86,7 @@ class ReportFilterChips extends StatelessWidget {
 }
 
 class ReportListCard extends StatelessWidget {
-  const ReportListCard({
-    super.key,
-    required this.report,
-    required this.onTap,
-  });
+  const ReportListCard({super.key, required this.report, required this.onTap});
 
   final SpecialistReportListItem report;
   final VoidCallback onTap;
@@ -95,6 +94,7 @@ class ReportListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final dateLabel = reportDateLabel(report.createdAt);
 
     return Padding(
@@ -122,7 +122,7 @@ class ReportListCard extends StatelessWidget {
                   ),
                   SizedBox(height: context.dashSpacing * 0.15),
                   Text(
-                    report.patientName ?? 'Patient',
+                    report.patientName ?? l10n.entityPatient,
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: DashboardColors.textSecondary,
@@ -136,7 +136,7 @@ class ReportListCard extends StatelessWidget {
                     children: [
                       DashboardPriorityBadge(label: report.typeBadgeLabel),
                       if (report.isAiReport)
-                        const DashboardPriorityBadge(label: 'AI'),
+                        DashboardPriorityBadge(label: l10n.reportTypeAi),
                       if (report.hasPdf)
                         DashboardPriorityBadge(label: report.statusLabel),
                       Text(
@@ -175,13 +175,16 @@ class ReportListCard extends StatelessWidget {
 }
 
 Widget buildSharedReportSearchField({
+  required BuildContext context,
   required TextEditingController controller,
   required ValueChanged<String> onChanged,
 }) {
+  final l10n = AppLocalizations.of(context)!;
+
   return TextField(
     controller: controller,
     onChanged: onChanged,
-    decoration: goalFieldDecoration('Search by patient or title').copyWith(
+    decoration: goalFieldDecoration(l10n.specialistSearchReportsHint).copyWith(
       prefixIcon: const Icon(
         Icons.search_rounded,
         color: DashboardColors.textMuted,
@@ -202,7 +205,7 @@ class ReportsListBody extends ConsumerWidget {
 
   final TextEditingController searchController;
   final void Function(BuildContext context, SpecialistReportListItem report)
-      onReportTap;
+  onReportTap;
   final Color refreshIndicatorColor;
 
   /// When set, only reports for this patient are loaded/shown.
@@ -213,16 +216,20 @@ class ReportsListBody extends ConsumerWidget {
     final state = ref.watch(specialistReportsProvider(patientId));
     final notifier = ref.read(specialistReportsProvider(patientId).notifier);
     final visible = state.visibleReports;
+    final l10n = AppLocalizations.of(context)!;
+    final localizedError = state.errorMessage != null
+        ? mapSpecialistReportsError(l10n, state.errorMessage!)
+        : null;
 
     if (state.isLoading) {
       return const Center(child: DashboardLoadingCard());
     }
 
-    if (state.errorMessage != null && state.reports.isEmpty) {
+    if (localizedError != null && state.reports.isEmpty) {
       return Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: localizedError,
           onRetry: notifier.refresh,
         ),
       );
@@ -236,6 +243,7 @@ class ReportsListBody extends ConsumerWidget {
         padding: context.dashPadding,
         children: [
           buildSharedReportSearchField(
+            context: context,
             controller: searchController,
             onChanged: notifier.setSearchQuery,
           ),
@@ -244,10 +252,10 @@ class ReportsListBody extends ConsumerWidget {
             selected: state.filter,
             onChanged: notifier.setFilter,
           ),
-          if (state.errorMessage != null) ...[
+          if (localizedError != null) ...[
             SizedBox(height: context.dashSpacing * 0.75),
             DashboardErrorCard(
-              message: state.errorMessage!,
+              message: localizedError,
               onRetry: notifier.refresh,
             ),
           ],
@@ -255,13 +263,11 @@ class ReportsListBody extends ConsumerWidget {
           if (state.reports.isEmpty)
             DashboardEmptyCard(
               message: patientId == null
-                  ? 'No reports found.'
-                  : 'No reports found for this patient.',
+                  ? l10n.specialistNoReports
+                  : l10n.specialistNoReportsForPatient,
             )
           else if (visible.isEmpty)
-            const DashboardEmptyCard(
-              message: 'No reports match your search or filter.',
-            )
+            DashboardEmptyCard(message: l10n.specialistNoReportsMatchFilter)
           else
             ...visible.map(
               (report) => ReportListCard(

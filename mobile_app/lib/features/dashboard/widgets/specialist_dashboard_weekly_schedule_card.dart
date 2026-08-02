@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../models/specialist_feature_models.dart';
+import '../presentation/specialist/specialist_dashboard_localization_utils.dart';
 import '../utils/session_classification.dart';
 import 'dashboard_layout.dart';
 import 'dashboard_profile_avatar.dart';
@@ -126,6 +128,8 @@ class _SpecialistDashboardWeeklyScheduleCardState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final localeName = Localizations.localeOf(context).toString();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final weekStart = startOfWeekMonday(today);
@@ -138,7 +142,8 @@ class _SpecialistDashboardWeeklyScheduleCardState
       widget.sessions,
       now: now,
     );
-    final footerLabel = formatTodayRemainingSessionsLabel(
+    final footerLabel = formatLocalizedTodayRemainingSessionsLabel(
+      l10n: l10n,
       todayScheduledCount: todayScheduledCount,
       nextSession: nextSession,
       now: now,
@@ -158,7 +163,7 @@ class _SpecialistDashboardWeeklyScheduleCardState
               ),
               SizedBox(width: context.dashSpacing * 0.35),
               Text(
-                'THIS WEEK',
+                l10n.specialistDashboardThisWeek,
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: DashboardColors.textPrimary,
                   fontWeight: FontWeight.w700,
@@ -180,7 +185,7 @@ class _SpecialistDashboardWeeklyScheduleCardState
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'View Calendar',
+                        l10n.specialistDashboardViewCalendar,
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: DashboardColors.brandCyan,
                           fontWeight: FontWeight.w600,
@@ -216,7 +221,7 @@ class _SpecialistDashboardWeeklyScheduleCardState
                   child: Column(
                     children: [
                       Text(
-                        DateFormat('EEE').format(day),
+                        DateFormat('EEE', localeName).format(day),
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: isSelected || isToday
                               ? DashboardColors.brandCyan
@@ -270,9 +275,14 @@ class _SpecialistDashboardWeeklyScheduleCardState
             ),
           ),
           if (nextSession == null)
-            _EmptyNextSession(theme: theme)
+            _EmptyNextSession(theme: theme, l10n: l10n)
           else
-            _NextSessionRow(session: nextSession, theme: theme),
+            _NextSessionRow(
+              session: nextSession,
+              theme: theme,
+              l10n: l10n,
+              localeName: localeName,
+            ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
             child: Divider(
@@ -318,9 +328,10 @@ class _SpecialistDashboardWeeklyScheduleCardState
 }
 
 class _EmptyNextSession extends StatelessWidget {
-  const _EmptyNextSession({required this.theme});
+  const _EmptyNextSession({required this.theme, required this.l10n});
 
   final ThemeData theme;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -330,7 +341,7 @@ class _EmptyNextSession extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'No upcoming sessions',
+            l10n.specialistDashboardNoUpcomingSessions,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -338,7 +349,7 @@ class _EmptyNextSession extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.2),
           Text(
-            'Your scheduled sessions will appear here.',
+            l10n.specialistDashboardScheduledSessionsHint,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
             ),
@@ -350,10 +361,17 @@ class _EmptyNextSession extends StatelessWidget {
 }
 
 class _NextSessionRow extends StatelessWidget {
-  const _NextSessionRow({required this.session, required this.theme});
+  const _NextSessionRow({
+    required this.session,
+    required this.theme,
+    required this.l10n,
+    required this.localeName,
+  });
 
   final SpecialistSessionDetail session;
   final ThemeData theme;
+  final AppLocalizations l10n;
+  final String localeName;
 
   static const double _avatarRadius = 22;
 
@@ -363,7 +381,7 @@ class _NextSessionRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Next Session',
+          l10n.dashboardNextSession,
           style: theme.textTheme.labelSmall?.copyWith(
             color: DashboardColors.brandCyan,
             fontWeight: FontWeight.w700,
@@ -393,7 +411,11 @@ class _NextSessionRow extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          formatNextSessionScheduleLabel(session),
+          formatLocalizedNextSessionScheduleLabel(
+            l10n: l10n,
+            session: session,
+            localeName: localeName,
+          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.labelSmall?.copyWith(
@@ -418,7 +440,11 @@ class _NextSessionRow extends StatelessWidget {
           radius: _avatarRadius,
         );
         final details = _buildSessionDetails(context);
-        final viewButton = _ViewSessionButton(session: session, theme: theme);
+        final viewButton = _ViewSessionButton(
+          session: session,
+          theme: theme,
+          l10n: l10n,
+        );
 
         if (stackAction) {
           return Column(
@@ -457,10 +483,15 @@ class _NextSessionRow extends StatelessWidget {
 }
 
 class _ViewSessionButton extends StatelessWidget {
-  const _ViewSessionButton({required this.session, required this.theme});
+  const _ViewSessionButton({
+    required this.session,
+    required this.theme,
+    required this.l10n,
+  });
 
   final SpecialistSessionDetail session;
   final ThemeData theme;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -476,7 +507,7 @@ class _ViewSessionButton extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           child: Text(
-            'View Session →',
+            l10n.specialistDashboardViewSession,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.labelSmall?.copyWith(

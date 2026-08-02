@@ -75,6 +75,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonView => 'View';
 
   @override
+  String get commonSeeAll => 'See all';
+
+  @override
   String get commonDetails => 'Details';
 
   @override
@@ -133,6 +136,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navDashboard => 'Dashboard';
+
+  @override
+  String dashboardWelcomeBack(String userName) {
+    return 'Welcome back, $userName';
+  }
+
+  @override
+  String get dashboardNextSession => 'Next Session';
+
+  @override
+  String get dashboardLoading => 'Loading dashboard...';
 
   @override
   String get navHome => 'Home';
@@ -533,14 +547,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginHidePassword => 'Hide password';
 
   @override
-  String parentDashboardWelcomeBack(String userName) {
-    return 'Welcome back, $userName';
-  }
-
-  @override
-  String get parentDashboardSeeAll => 'See all';
-
-  @override
   String get parentDashboardTodaysTasks => 'Today\'s Tasks';
 
   @override
@@ -559,9 +565,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get parentDashboardKeepGoing => 'Keep going!';
-
-  @override
-  String get parentDashboardNextSession => 'Next Session';
 
   @override
   String get parentDashboardViewDetailsArrow => 'View Details →';
@@ -615,9 +618,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get parentDashboardOverall => 'Overall';
-
-  @override
-  String get parentDashboardLoading => 'Loading dashboard...';
 
   @override
   String get parentDashboardUpdatingInsights => 'Updating child insights...';
@@ -896,4 +896,442 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationTypeUpdate => 'Update';
+
+  @override
+  String get parentChildrenNoLinked =>
+      'No linked children yet. Add a child from the specialist portal.';
+
+  @override
+  String parentChildrenAgeYears(int count) {
+    return '$count yrs';
+  }
+
+  @override
+  String parentChildrenProgressPercent(int percent) {
+    return '$percent% progress';
+  }
+
+  @override
+  String get parentChildrenProgressPending =>
+      'Progress will appear once exercises are tracked.';
+
+  @override
+  String get parentReportsLoading => 'Loading reports...';
+
+  @override
+  String get parentReportsSelectChild => 'Select a child to view reports.';
+
+  @override
+  String parentReportsEmptyForChild(String childName) {
+    return 'No reports available for $childName.';
+  }
+
+  @override
+  String get parentReportsOpenReport => 'Open report';
+
+  @override
+  String get reportTypeWeekly => 'Weekly';
+
+  @override
+  String get reportTypeMonthly => 'Monthly';
+
+  @override
+  String get reportTypeDaily => 'Daily';
+
+  @override
+  String get reportTypeProgress => 'Progress';
+
+  @override
+  String parentExercisesForChild(String childName) {
+    return 'Exercises for $childName';
+  }
+
+  @override
+  String get parentExercisesTabAssigned => 'Assigned';
+
+  @override
+  String get parentExercisesLoading => 'Loading exercises...';
+
+  @override
+  String get parentExercisesSelectChild => 'Select a child to view exercises.';
+
+  @override
+  String parentExercisesNoDailyForChild(String childName) {
+    return 'No daily tasks assigned for $childName today.';
+  }
+
+  @override
+  String parentExercisesNoWeeklyForChild(String childName) {
+    return 'No weekly tasks assigned for $childName.';
+  }
+
+  @override
+  String parentExercisesNoAssignedForChild(String childName) {
+    return 'No assigned exercises for $childName yet.';
+  }
+
+  @override
+  String parentExercisesDueDate(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String parentExercisesLoadFailed(String error) {
+    return 'Failed to load exercises: $error';
+  }
+
+  @override
+  String get exerciseFrequencyDaily => 'Daily';
+
+  @override
+  String get exerciseFrequencyWeekly => 'Weekly';
+
+  @override
+  String get exerciseFrequencyMonthly => 'Monthly';
+
+  @override
+  String get statusInProgress => 'In Progress';
+
+  @override
+  String get parentDashboardSignInRequired =>
+      'Please sign in to view the parent dashboard.';
+
+  @override
+  String parentDashboardLoadFailed(String error) {
+    return 'Failed to load dashboard: $error';
+  }
+
+  @override
+  String parentDashboardChildDataLoadFailed(String error) {
+    return 'Failed to load child data: $error';
+  }
+
+  @override
+  String get specialistDashboardOverview => 'Overview';
+
+  @override
+  String get specialistDashboardActiveCases => 'Active Cases';
+
+  @override
+  String get specialistDashboardNoActiveCases =>
+      'No active cases assigned yet.';
+
+  @override
+  String get specialistDashboardNoPendingReviews =>
+      'No pending reviews right now.';
+
+  @override
+  String get specialistDashboardRecentPatientProgress =>
+      'Recent Patient Progress';
+
+  @override
+  String get specialistDashboardNoProgressData =>
+      'No progress data available yet.';
+
+  @override
+  String get specialistDashboardSignInRequired =>
+      'Please sign in as a specialist to view this dashboard.';
+
+  @override
+  String specialistDashboardLoadFailed(String error) {
+    return 'Failed to load specialist dashboard: $error';
+  }
+
+  @override
+  String get specialistDashboardThisWeek => 'THIS WEEK';
+
+  @override
+  String get specialistDashboardViewCalendar => 'View Calendar';
+
+  @override
+  String get specialistDashboardNoUpcomingSessions => 'No upcoming sessions';
+
+  @override
+  String get specialistDashboardScheduledSessionsHint =>
+      'Your scheduled sessions will appear here.';
+
+  @override
+  String get specialistDashboardViewSession => 'View Session →';
+
+  @override
+  String get specialistDashboardNoSessionsToday =>
+      'No sessions scheduled for today';
+
+  @override
+  String get specialistDashboardNoMoreSessionsToday => 'No more sessions today';
+
+  @override
+  String specialistDashboardMoreSessionsToday(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more sessions today',
+      one: '1 more session today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String specialistDashboardNextSessionToday(String time) {
+    return 'Today, $time';
+  }
+
+  @override
+  String specialistDashboardNextSessionTomorrow(String time) {
+    return 'Tomorrow, $time';
+  }
+
+  @override
+  String get specialistDashboardSubmittedRecently => 'Recently submitted';
+
+  @override
+  String specialistDashboardSubmittedMinutesAgo(int minutes) {
+    return 'Submitted ${minutes}m ago';
+  }
+
+  @override
+  String specialistDashboardSubmittedHoursAgo(int hours) {
+    return 'Submitted ${hours}h ago';
+  }
+
+  @override
+  String specialistDashboardSubmittedOnDate(String date) {
+    return 'Submitted $date';
+  }
+
+  @override
+  String get specialistPatientProgress => 'Patient Progress';
+
+  @override
+  String get statusArchived => 'Archived';
+
+  @override
+  String get filterUpcoming => 'Upcoming';
+
+  @override
+  String get filterPast => 'Past';
+
+  @override
+  String get filterRecent => 'Recent';
+
+  @override
+  String get reportTypeAiReports => 'AI Reports';
+
+  @override
+  String get reportTypeAi => 'AI';
+
+  @override
+  String get entitySessionRequests => 'Requests';
+
+  @override
+  String get fieldSpecialization => 'Specialization';
+
+  @override
+  String get fieldLicenseNumber => 'License Number';
+
+  @override
+  String get fieldYearsOfExperience => 'Years of Experience';
+
+  @override
+  String get fieldBio => 'Bio';
+
+  @override
+  String get fieldDate => 'Date';
+
+  @override
+  String get fieldTime => 'Time';
+
+  @override
+  String get fieldLocation => 'Location';
+
+  @override
+  String get commonSelected => 'Selected';
+
+  @override
+  String get commonCopy => 'Copy';
+
+  @override
+  String get commonOpen => 'Open';
+
+  @override
+  String get commonApprove => 'Approve';
+
+  @override
+  String get commonReject => 'Reject';
+
+  @override
+  String get commonProcessing => 'Processing...';
+
+  @override
+  String get calendarPreviousMonth => 'Previous month';
+
+  @override
+  String get calendarNextMonth => 'Next month';
+
+  @override
+  String specialistLoadFailed(String error) {
+    return 'Failed to load data: $error';
+  }
+
+  @override
+  String specialistProgressLoadFailed(String error) {
+    return 'Failed to load progress: $error';
+  }
+
+  @override
+  String specialistReportsLoadFailed(String error) {
+    return 'Failed to load reports: $error';
+  }
+
+  @override
+  String specialistSessionsLoadFailed(String error) {
+    return 'Failed to load sessions: $error';
+  }
+
+  @override
+  String get specialistSessionRequestsSignInRequired =>
+      'Please sign in to view session requests.';
+
+  @override
+  String specialistSessionRequestsLoadFailed(String error) {
+    return 'Failed to load session requests: $error';
+  }
+
+  @override
+  String get specialistAddTreatmentPlan => 'Add Treatment Plan';
+
+  @override
+  String get specialistNoAssignedPatients => 'No assigned patients available.';
+
+  @override
+  String get specialistSelectPatient => 'Select patient';
+
+  @override
+  String get specialistPatientHasActivePlan =>
+      'This patient already has an active treatment plan.';
+
+  @override
+  String get specialistNoActivePlan => 'No active plan';
+
+  @override
+  String get specialistSearchPlansHint => 'Search by plan title or patient';
+
+  @override
+  String get specialistNoTreatmentPlans => 'No treatment plans found.';
+
+  @override
+  String get specialistNoPlansMatchFilter =>
+      'No plans match your search or filter.';
+
+  @override
+  String get specialistAddExercise => 'Add Exercise';
+
+  @override
+  String get specialistExerciseLibrary => 'Exercise Library';
+
+  @override
+  String get specialistExerciseLibrarySubtitle =>
+      'Browse therapy exercises by category and search.';
+
+  @override
+  String get specialistSearchExercisesHint =>
+      'Search by title, category, or instructions';
+
+  @override
+  String get specialistNoExercises =>
+      'No exercises available yet. New exercises will appear here once added.';
+
+  @override
+  String get specialistNoExercisesMatchFilter =>
+      'No exercises match your filters.';
+
+  @override
+  String get specialistExerciseIncludesMedia => 'Includes instruction media';
+
+  @override
+  String get specialistPatientReports => 'Patient Reports';
+
+  @override
+  String get specialistSearchReportsHint => 'Search by patient or title';
+
+  @override
+  String get specialistNoReports => 'No reports found.';
+
+  @override
+  String get specialistNoReportsForPatient =>
+      'No reports found for this patient.';
+
+  @override
+  String get specialistNoReportsMatchFilter =>
+      'No reports match your search or filter.';
+
+  @override
+  String get specialistScheduleSession => 'Schedule Session';
+
+  @override
+  String get specialistNoSessions => 'No sessions found.';
+
+  @override
+  String get specialistNoSessionsMatchFilter =>
+      'No sessions match your search or filter.';
+
+  @override
+  String get specialistSearchSessionsHint => 'Search by patient name';
+
+  @override
+  String get specialistNoSessionsOnDate =>
+      'No sessions scheduled for this date.';
+
+  @override
+  String get specialistNoSessionRequests => 'No session requests yet.';
+
+  @override
+  String get specialistNoPendingSessionRequests =>
+      'No pending session requests.';
+
+  @override
+  String get specialistNoSessionRequestsMatchFilter =>
+      'No session requests match this filter.';
+
+  @override
+  String get specialistSessionRequestPreferredDate => 'Preferred date';
+
+  @override
+  String get specialistSessionRequestPreferredTime => 'Preferred time';
+
+  @override
+  String get specialistSessionRequestRequested => 'Requested';
+
+  @override
+  String specialistSessionScheduledAt(String dateTime) {
+    return 'Scheduled: $dateTime';
+  }
+
+  @override
+  String specialistSessionDurationMinutes(int minutes) {
+    return 'Duration: $minutes min';
+  }
+
+  @override
+  String get specialistSessionRequestRegularFollowUp => 'Regular Follow-up';
+
+  @override
+  String get specialistSessionRequestReplacementCancelled =>
+      'Replacement for Cancelled Session';
+
+  @override
+  String get specialistSessionRequestReplacementMissed =>
+      'Replacement for Missed Session';
+
+  @override
+  String get specialistSessionRequestAdditionalSession => 'Additional Session';
+
+  @override
+  String get specialistSessionRequestConsultation => 'Consultation';
+
+  @override
+  String get specialistSessionRequestOther => 'Other';
+
+  @override
+  String get specialistSessionRequestDefault => 'Session request';
 }

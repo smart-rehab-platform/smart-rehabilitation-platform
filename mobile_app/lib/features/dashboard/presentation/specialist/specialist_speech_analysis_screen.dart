@@ -39,16 +39,17 @@ class _SpecialistSpeechAnalysisScreenState
   SpecialistSpeechAnalysisArgs get _providerArgs => _args;
 
   Future<void> _analyze() async {
-    final notifier =
-        ref.read(specialistSpeechAnalysisProvider(_providerArgs).notifier);
+    final notifier = ref.read(
+      specialistSpeechAnalysisProvider(_providerArgs).notifier,
+    );
     await notifier.analyzeSubmission();
     if (!mounted) return;
 
     final state = ref.read(specialistSpeechAnalysisProvider(_providerArgs));
     if (state.successMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.successMessage!)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(state.successMessage!)));
       notifier.clearMessages();
     }
     // Errors stay on the screen error card only (no duplicate SnackBar).
@@ -75,8 +76,9 @@ class _SpecialistSpeechAnalysisScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistSpeechAnalysisProvider(_providerArgs));
-    final notifier =
-        ref.read(specialistSpeechAnalysisProvider(_providerArgs).notifier);
+    final notifier = ref.read(
+      specialistSpeechAnalysisProvider(_providerArgs).notifier,
+    );
     final theme = Theme.of(context);
     final selected = state.selectedAnalysis;
     final patientName = state.patientName ?? 'Patient';

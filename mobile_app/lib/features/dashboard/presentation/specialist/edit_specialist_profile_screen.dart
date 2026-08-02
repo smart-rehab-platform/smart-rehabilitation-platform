@@ -67,8 +67,9 @@ class _EditSpecialistProfileScreenState
   }
 
   Future<void> _save() async {
-    final success =
-        await ref.read(specialistEditProfileProvider.notifier).save();
+    final success = await ref
+        .read(specialistEditProfileProvider.notifier)
+        .save();
     if (!mounted) return;
 
     if (success) {
@@ -82,9 +83,9 @@ class _EditSpecialistProfileScreenState
     final current = ref.read(specialistEditProfileProvider);
     final message = current.validationMessage ?? current.errorMessage;
     if (message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -121,9 +122,9 @@ class _EditSpecialistProfileScreenState
               isBusy: state.isSaving,
               onImageSelected: notifier.setPendingProfileImage,
               onImageError: (message) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(message)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(message)));
               },
             ),
             SizedBox(height: context.dashSpacing),
@@ -190,10 +191,7 @@ class _EditSpecialistProfileScreenState
             ],
             if (state.errorMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.75),
-              DashboardErrorCard(
-                message: state.errorMessage!,
-                onRetry: _save,
-              ),
+              DashboardErrorCard(message: state.errorMessage!, onRetry: _save),
             ],
             SizedBox(height: context.dashSpacing),
             ElevatedButton(

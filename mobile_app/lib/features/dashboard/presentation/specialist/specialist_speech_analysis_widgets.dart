@@ -216,7 +216,8 @@ class SpeechAnalysisTranscriptCard extends StatelessWidget {
             SizedBox(height: context.dashSpacing * 0.25),
             Text(
               [
-                if (language != null && language!.isNotEmpty) 'Language: $language',
+                if (language != null && language!.isNotEmpty)
+                  'Language: $language',
                 if (durationSeconds != null)
                   'Duration: ${durationSeconds!.toStringAsFixed(1)}s',
               ].join(' • '),
@@ -244,10 +245,7 @@ class SpeechAnalysisTranscriptCard extends StatelessWidget {
 }
 
 class SpeechAnalysisComparisonCard extends StatelessWidget {
-  const SpeechAnalysisComparisonCard({
-    super.key,
-    required this.comparison,
-  });
+  const SpeechAnalysisComparisonCard({super.key, required this.comparison});
 
   final SpeechAnalysisComparison comparison;
 
@@ -289,10 +287,7 @@ class SpeechAnalysisComparisonCard extends StatelessWidget {
             delta: comparison.pronunciationChange,
           ),
           SizedBox(height: context.dashSpacing * 0.35),
-          _ComparisonRow(
-            label: 'Fluency',
-            delta: comparison.fluencyChange,
-          ),
+          _ComparisonRow(label: 'Fluency', delta: comparison.fluencyChange),
           SizedBox(height: context.dashSpacing * 0.35),
           _ComparisonRow(
             label: 'Overall',
@@ -380,19 +375,16 @@ class SpeechTrendBadge extends StatelessWidget {
           _ => trend ?? '—',
         },
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
 }
 
 class SpeechAnalysisFeedbackCard extends StatelessWidget {
-  const SpeechAnalysisFeedbackCard({
-    super.key,
-    required this.feedback,
-  });
+  const SpeechAnalysisFeedbackCard({super.key, required this.feedback});
 
   final SpeechAnalysisAiFeedback feedback;
 
@@ -433,7 +425,9 @@ class SpeechAnalysisFeedbackCard extends StatelessWidget {
           if (feedback.recommendations.isNotEmpty)
             _FeedbackSection(
               title: 'Recommendations',
-              body: feedback.recommendations.map((item) => '• $item').join('\n'),
+              body: feedback.recommendations
+                  .map((item) => '• $item')
+                  .join('\n'),
             ),
           if (feedback.treatmentAnalysis != null &&
               feedback.treatmentAnalysis!.trim().isNotEmpty)
@@ -459,10 +453,7 @@ class SpeechAnalysisFeedbackCard extends StatelessWidget {
 }
 
 class _FeedbackSection extends StatelessWidget {
-  const _FeedbackSection({
-    required this.title,
-    required this.body,
-  });
+  const _FeedbackSection({required this.title, required this.body});
 
   final String title;
   final String body;
@@ -498,10 +489,7 @@ class _FeedbackSection extends StatelessWidget {
 }
 
 class SpeechAnalysisProgressCard extends StatelessWidget {
-  const SpeechAnalysisProgressCard({
-    super.key,
-    required this.progressItems,
-  });
+  const SpeechAnalysisProgressCard({super.key, required this.progressItems});
 
   final List<SpecialistSpeechProgressPoint> progressItems;
 
@@ -534,8 +522,10 @@ class SpeechAnalysisProgressCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: progressItems.map((item) {
-                final heightFactor =
-                    ((item.overallScore ?? 0) / scale).clamp(0.08, 1.0);
+                final heightFactor = ((item.overallScore ?? 0) / scale).clamp(
+                  0.08,
+                  1.0,
+                );
                 final label = item.analyzedAt != null
                     ? DateFormat('M/d').format(item.analyzedAt!)
                     : '—';
@@ -619,7 +609,9 @@ class SpeechAnalysisHistoryTile extends StatelessWidget {
               ),
               child: Icon(
                 Icons.graphic_eq_rounded,
-                color: isSelected ? DashboardColors.brandCyan : DashboardColors.textMuted,
+                color: isSelected
+                    ? DashboardColors.brandCyan
+                    : DashboardColors.textMuted,
                 size: context.dashSpacing * 0.55,
               ),
             ),
@@ -713,7 +705,9 @@ class SpeechAnalysisAnalyzeCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: DashboardColors.brandCyan,
               foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+              padding: EdgeInsets.symmetric(
+                vertical: context.dashSpacing * 0.65,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/specialist_page_scaffold.dart';
@@ -20,7 +21,8 @@ class SpecialistReportsScreen extends ConsumerStatefulWidget {
       _SpecialistReportsScreenState();
 }
 
-class _SpecialistReportsScreenState extends ConsumerState<SpecialistReportsScreen> {
+class _SpecialistReportsScreenState
+    extends ConsumerState<SpecialistReportsScreen> {
   late final TextEditingController _searchController;
 
   @override
@@ -43,9 +45,10 @@ class _SpecialistReportsScreenState extends ConsumerState<SpecialistReportsScree
   @override
   Widget build(BuildContext context) {
     final scoped = widget.patientId != null && widget.patientId!.isNotEmpty;
+    final l10n = AppLocalizations.of(context)!;
 
     return SpecialistPageScaffold(
-      title: scoped ? 'Patient Reports' : 'Reports',
+      title: scoped ? l10n.specialistPatientReports : l10n.navReports,
       showBackButton: scoped,
       currentNav: scoped ? null : DashboardNavItem.reports,
       body: ReportsListBody(

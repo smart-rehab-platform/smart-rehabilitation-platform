@@ -11,10 +11,7 @@ import 'edit_treatment_plan_widgets.dart';
 import 'manage_goals_widgets.dart';
 
 class SpecialistManageGoalsScreen extends ConsumerStatefulWidget {
-  const SpecialistManageGoalsScreen({
-    super.key,
-    required this.patientId,
-  });
+  const SpecialistManageGoalsScreen({super.key, required this.patientId});
 
   final String patientId;
 
@@ -97,9 +94,9 @@ class _SpecialistManageGoalsScreenState
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Goal marked as achieved')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Goal marked as achieved')));
     } else {
       _showErrorSnackBar();
     }
@@ -109,17 +106,18 @@ class _SpecialistManageGoalsScreenState
     final state = ref.read(specialistGoalsProvider(widget.patientId));
     final message = state.validationMessage ?? state.errorMessage;
     if (message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistGoalsProvider(widget.patientId));
-    final notifier =
-        ref.read(specialistGoalsProvider(widget.patientId).notifier);
+    final notifier = ref.read(
+      specialistGoalsProvider(widget.patientId).notifier,
+    );
     final bundle = state.bundle;
     final theme = Theme.of(context);
 
@@ -183,7 +181,9 @@ class _SpecialistManageGoalsScreenState
               else
                 ...bundle.goals.map(
                   (goal) => Padding(
-                    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.75),
+                    padding: EdgeInsets.only(
+                      bottom: context.dashSpacing * 0.75,
+                    ),
                     child: ManageGoalCard(
                       goal: goal,
                       isSaving: state.isSaving,

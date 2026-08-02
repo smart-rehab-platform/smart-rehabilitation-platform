@@ -5,12 +5,14 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/session_requests_models.dart';
 import '../../providers/specialist_session_requests_provider.dart';
 import '../../utils/session_request_display_helpers.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
+import 'specialist_scoped_localization_utils.dart';
 
 class SpecialistSessionRequestsInbox extends ConsumerWidget {
   const SpecialistSessionRequestsInbox({super.key});
@@ -20,6 +22,10 @@ class SpecialistSessionRequestsInbox extends ConsumerWidget {
     final state = ref.watch(specialistSessionRequestsProvider);
     final notifier = ref.read(specialistSessionRequestsProvider.notifier);
     final visible = state.visibleRequests;
+    final l10n = AppLocalizations.of(context)!;
+    final localizedError = state.errorMessage != null
+        ? mapSpecialistSessionRequestsError(l10n, state.errorMessage!)
+        : null;
 
     if (state.isLoading) {
       return const Center(child: DashboardLoadingCard());
@@ -33,21 +39,21 @@ class SpecialistSessionRequestsInbox extends ConsumerWidget {
           selected: state.filter,
           onChanged: notifier.setFilter,
         ),
-        if (state.errorMessage != null) ...[
+        if (localizedError != null) ...[
           SizedBox(height: context.dashSpacing * 0.75),
           DashboardErrorCard(
-            message: state.errorMessage!,
+            message: localizedError,
             onRetry: notifier.refresh,
           ),
         ],
         SizedBox(height: context.dashSpacing * 0.75),
         if (state.requests.isEmpty)
-          const DashboardEmptyCard(message: 'No session requests yet.')
+          DashboardEmptyCard(message: l10n.specialistNoSessionRequests)
         else if (visible.isEmpty)
           DashboardEmptyCard(
             message: state.filter == SessionRequestInboxFilter.pending
-                ? 'No pending session requests.'
-                : 'No session requests match this filter.',
+                ? l10n.specialistNoPendingSessionRequests
+                : l10n.specialistNoSessionRequestsMatchFilter,
           )
         else
           ...visible.map(
@@ -76,6 +82,8 @@ class SessionRequestInboxFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -103,13 +111,13 @@ class SessionRequestInboxFilterChips extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  filter.label,
+                  localizedSessionRequestInboxFilter(l10n, filter),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: isSelected
-                            ? DashboardColors.brandCyan
-                            : DashboardColors.textSecondary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: isSelected
+                        ? DashboardColors.brandCyan
+                        : DashboardColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -158,6 +166,7 @@ class SpecialistSessionRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final statusVisual = sessionRequestStatusVisual(request.status);
     final approvedSession = request.approvedSession;
     final isPending = request.status == SessionRequestStatus.pending;
@@ -178,14 +187,14 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        request.patientName ?? 'Patient',
+                        request.patientName ?? l10n.entityPatient,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       SizedBox(height: context.dashSpacing * 0.15),
                       Text(
-                        request.parentName ?? 'Parent',
+                        request.parentName ?? l10n.roleParent,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: DashboardColors.textSecondary,
                           fontWeight: FontWeight.w600,
@@ -194,12 +203,15 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                SessionRequestStatusChip(visual: statusVisual),
+                SessionRequestStatusChip(
+                  visual: statusVisual,
+                  label: localizedSessionRequestStatus(l10n, request.status),
+                ),
               ],
             ),
             SizedBox(height: context.dashSpacing * 0.45),
             Text(
-              sessionRequestReasonDisplayLabel(request),
+              localizedSessionRequestReason(l10n, request),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -219,19 +231,19 @@ class SpecialistSessionRequestCard extends StatelessWidget {
             SizedBox(height: context.dashSpacing * 0.45),
             _RequestInfoRow(
               icon: Icons.calendar_today_outlined,
-              label: 'Preferred date',
+              label: l10n.specialistSessionRequestPreferredDate,
               value: _formatDate(request.preferredDate),
             ),
             SizedBox(height: context.dashSpacing * 0.2),
             _RequestInfoRow(
               icon: Icons.wb_twilight_outlined,
-              label: 'Preferred time',
+              label: l10n.specialistSessionRequestPreferredTime,
               value: request.preferredTimePeriod?.label ?? '—',
             ),
             SizedBox(height: context.dashSpacing * 0.2),
             _RequestInfoRow(
               icon: Icons.schedule_rounded,
-              label: 'Requested',
+              label: l10n.specialistSessionRequestRequested,
               value: _formatCreatedDate(request.createdAt),
             ),
             if (request.notes != null && request.notes!.trim().isNotEmpty) ...[
@@ -285,7 +297,9 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Scheduled: ${_formatDateTime(approvedSession.scheduledAt)}',
+                      l10n.specialistSessionScheduledAt(
+                        _formatDateTime(approvedSession.scheduledAt),
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: const Color(0xFF2E7D32),
                         fontWeight: FontWeight.w700,
@@ -294,7 +308,9 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                     if (approvedSession.durationMinutes != null) ...[
                       SizedBox(height: context.dashSpacing * 0.2),
                       Text(
-                        'Duration: ${approvedSession.durationMinutes} min',
+                        l10n.specialistSessionDurationMinutes(
+                          approvedSession.durationMinutes!,
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: const Color(0xFF2E7D32),
                           fontWeight: FontWeight.w600,
@@ -319,12 +335,15 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                             OutlinedButton.icon(
                               onPressed: () => _copyLink(context, location),
                               icon: const Icon(Icons.copy_rounded, size: 16),
-                              label: const Text('Copy'),
+                              label: Text(l10n.commonCopy),
                             ),
                             ElevatedButton.icon(
                               onPressed: () => _openLink(context, location),
-                              icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                              label: const Text('Open'),
+                              icon: const Icon(
+                                Icons.open_in_new_rounded,
+                                size: 16,
+                              ),
+                              label: Text(l10n.commonOpen),
                             ),
                           ],
                         ),
@@ -344,7 +363,9 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: DashboardColors.highPriority,
                         side: BorderSide(
-                          color: DashboardColors.highPriority.withValues(alpha: 0.35),
+                          color: DashboardColors.highPriority.withValues(
+                            alpha: 0.35,
+                          ),
                         ),
                         padding: EdgeInsets.symmetric(
                           vertical: context.dashSpacing * 0.5,
@@ -353,7 +374,7 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: const Text('Reject'),
+                      child: Text(l10n.commonReject),
                     ),
                   ),
                   SizedBox(width: context.dashSpacing * 0.45),
@@ -370,7 +391,11 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: Text(isProcessing ? 'Processing...' : 'Approve'),
+                      child: Text(
+                        isProcessing
+                            ? l10n.commonProcessing
+                            : l10n.commonApprove,
+                      ),
                     ),
                   ),
                 ],
@@ -384,9 +409,10 @@ class SpecialistSessionRequestCard extends StatelessWidget {
 }
 
 class SessionRequestStatusChip extends StatelessWidget {
-  const SessionRequestStatusChip({super.key, required this.visual});
+  const SessionRequestStatusChip({super.key, required this.visual, this.label});
 
   final SessionRequestStatusVisual visual;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -403,11 +429,11 @@ class SessionRequestStatusChip extends StatelessWidget {
           Icon(visual.icon, size: 14, color: visual.foreground),
           const SizedBox(width: 4),
           Text(
-            visual.label,
+            label ?? visual.label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: visual.foreground,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: visual.foreground,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -437,9 +463,9 @@ class _RequestInfoRow extends StatelessWidget {
           child: RichText(
             text: TextSpan(
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: DashboardColors.textSecondary,
-                    height: 1.35,
-                  ),
+                color: DashboardColors.textSecondary,
+                height: 1.35,
+              ),
               children: [
                 TextSpan(
                   text: '$label: ',
@@ -491,7 +517,8 @@ class _ApproveSessionRequestSheetState
     final preferred = widget.request.preferredDate ?? DateTime.now();
     final now = DateTime.now();
     final baseDate = DateTime(preferred.year, preferred.month, preferred.day);
-    final initialDate = baseDate.isBefore(DateTime(now.year, now.month, now.day))
+    final initialDate =
+        baseDate.isBefore(DateTime(now.year, now.month, now.day))
         ? DateTime(now.year, now.month, now.day)
         : baseDate;
     _scheduledDate = initialDate;
@@ -506,12 +533,12 @@ class _ApproveSessionRequestSheetState
   }
 
   DateTime get _scheduledDateTime => DateTime(
-        _scheduledDate.year,
-        _scheduledDate.month,
-        _scheduledDate.day,
-        _scheduledTime.hour,
-        _scheduledTime.minute,
-      );
+    _scheduledDate.year,
+    _scheduledDate.month,
+    _scheduledDate.day,
+    _scheduledTime.hour,
+    _scheduledTime.minute,
+  );
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
@@ -574,7 +601,9 @@ class _ApproveSessionRequestSheetState
     }
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
 
@@ -591,7 +620,7 @@ class _ApproveSessionRequestSheetState
     final theme = Theme.of(context);
     final isProcessing =
         ref.watch(specialistSessionRequestsProvider).processingRequestId ==
-            widget.request.id;
+        widget.request.id;
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Container(
@@ -642,7 +671,9 @@ class _ApproveSessionRequestSheetState
               _ReadOnlyField(
                 label: 'Preferred date',
                 value: widget.request.preferredDate != null
-                    ? DateFormat('MMM d, yyyy').format(widget.request.preferredDate!)
+                    ? DateFormat(
+                        'MMM d, yyyy',
+                      ).format(widget.request.preferredDate!)
                     : '—',
               ),
               SizedBox(height: context.dashSpacing * 0.55),
@@ -732,7 +763,9 @@ class _ApproveSessionRequestSheetState
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text(isProcessing ? 'Approving...' : 'Approve & Create Session'),
+                child: Text(
+                  isProcessing ? 'Approving...' : 'Approve & Create Session',
+                ),
               ),
             ],
           ),
@@ -795,14 +828,16 @@ class _RejectSessionRequestSheetState
     }
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
 
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Session request rejected.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Session request rejected.')));
   }
 
   @override
@@ -810,7 +845,7 @@ class _RejectSessionRequestSheetState
     final theme = Theme.of(context);
     final isProcessing =
         ref.watch(specialistSessionRequestsProvider).processingRequestId ==
-            widget.request.id;
+        widget.request.id;
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Container(
@@ -996,7 +1031,10 @@ Uri? _extractValidUrl(String? locationOrLink) {
     return direct;
   }
 
-  final match = RegExp(r'https?://[^\s]+', caseSensitive: false).firstMatch(raw);
+  final match = RegExp(
+    r'https?://[^\s]+',
+    caseSensitive: false,
+  ).firstMatch(raw);
   if (match != null) {
     return Uri.tryParse(match.group(0)!);
   }
@@ -1007,9 +1045,9 @@ Uri? _extractValidUrl(String? locationOrLink) {
 Future<void> _copyLink(BuildContext context, String link) async {
   await Clipboard.setData(ClipboardData(text: link));
   if (context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Link copied')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Link copied')));
   }
 }
 
@@ -1017,9 +1055,9 @@ Future<void> _openLink(BuildContext context, String link) async {
   final uri = _extractValidUrl(link);
   if (uri == null) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No valid link available')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No valid link available')));
     }
     return;
   }
@@ -1027,15 +1065,15 @@ Future<void> _openLink(BuildContext context, String link) async {
   try {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open link')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open link')));
     }
   } catch (_) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open link')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open link')));
     }
   }
 }

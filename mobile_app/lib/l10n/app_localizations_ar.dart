@@ -75,6 +75,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonView => 'عرض';
 
   @override
+  String get commonSeeAll => 'عرض الكل';
+
+  @override
   String get commonDetails => 'التفاصيل';
 
   @override
@@ -135,6 +138,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navDashboard => 'لوحة التحكم';
 
   @override
+  String dashboardWelcomeBack(String userName) {
+    return 'مرحباً بعودتك، $userName';
+  }
+
+  @override
+  String get dashboardNextSession => 'الجلسة القادمة';
+
+  @override
+  String get dashboardLoading => 'جارٍ تحميل لوحة التحكم...';
+
+  @override
   String get navHome => 'الرئيسية';
 
   @override
@@ -180,13 +194,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navTreatmentPlans => 'الخطط العلاجية';
 
   @override
-  String get navPendingReviews => 'المراجعات المعلقة';
+  String get navPendingReviews => 'بانتظار المراجعة';
 
   @override
   String get navTodaysSessions => 'جلسات اليوم';
 
   @override
-  String get navAssignedCaseRequests => 'طلبات الحالة المُسندة';
+  String get navAssignedCaseRequests => 'طلبات الحالات المكلّف بها';
 
   @override
   String get navDailyTasks => 'المهام اليومية';
@@ -534,14 +548,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loginHidePassword => 'إخفاء كلمة المرور';
 
   @override
-  String parentDashboardWelcomeBack(String userName) {
-    return 'مرحباً بعودتك، $userName';
-  }
-
-  @override
-  String get parentDashboardSeeAll => 'عرض الكل';
-
-  @override
   String get parentDashboardTodaysTasks => 'مهام اليوم';
 
   @override
@@ -560,9 +566,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get parentDashboardKeepGoing => 'واصل التقدم!';
-
-  @override
-  String get parentDashboardNextSession => 'الجلسة القادمة';
 
   @override
   String get parentDashboardViewDetailsArrow => 'عرض التفاصيل ←';
@@ -615,9 +618,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get parentDashboardOverall => 'الإجمالي';
-
-  @override
-  String get parentDashboardLoading => 'جارٍ تحميل لوحة التحكم...';
 
   @override
   String get parentDashboardUpdatingInsights => 'جارٍ تحديث بيانات الطفل...';
@@ -889,4 +889,438 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notificationTypeUpdate => 'تحديث';
+
+  @override
+  String get parentChildrenNoLinked =>
+      'لا يوجد أطفال مرتبطون بعد. أضف طفلاً من بوابة الأخصائي.';
+
+  @override
+  String parentChildrenAgeYears(int count) {
+    return '$count سنوات';
+  }
+
+  @override
+  String parentChildrenProgressPercent(int percent) {
+    return '$percent% تقدم';
+  }
+
+  @override
+  String get parentChildrenProgressPending =>
+      'سيظهر التقدم بعد بدء تتبع التمارين.';
+
+  @override
+  String get parentReportsLoading => 'جارٍ تحميل التقارير...';
+
+  @override
+  String get parentReportsSelectChild => 'اختر طفلاً لعرض التقارير.';
+
+  @override
+  String parentReportsEmptyForChild(String childName) {
+    return 'لا توجد تقارير متاحة لـ $childName.';
+  }
+
+  @override
+  String get parentReportsOpenReport => 'فتح التقرير';
+
+  @override
+  String get reportTypeWeekly => 'أسبوعي';
+
+  @override
+  String get reportTypeMonthly => 'شهري';
+
+  @override
+  String get reportTypeDaily => 'يومي';
+
+  @override
+  String get reportTypeProgress => 'التقدم';
+
+  @override
+  String parentExercisesForChild(String childName) {
+    return 'تمارين $childName';
+  }
+
+  @override
+  String get parentExercisesTabAssigned => 'التمارين المعيّنة';
+
+  @override
+  String get parentExercisesLoading => 'جارٍ تحميل التمارين...';
+
+  @override
+  String get parentExercisesSelectChild => 'اختر طفلاً لعرض التمارين.';
+
+  @override
+  String parentExercisesNoDailyForChild(String childName) {
+    return 'لا توجد مهام يومية معيّنة لـ $childName اليوم.';
+  }
+
+  @override
+  String parentExercisesNoWeeklyForChild(String childName) {
+    return 'لا توجد مهام أسبوعية معيّنة لـ $childName.';
+  }
+
+  @override
+  String parentExercisesNoAssignedForChild(String childName) {
+    return 'لا توجد تمارين معيّنة لـ $childName بعد.';
+  }
+
+  @override
+  String parentExercisesDueDate(String date) {
+    return 'مستحق $date';
+  }
+
+  @override
+  String parentExercisesLoadFailed(String error) {
+    return 'فشل تحميل التمارين: $error';
+  }
+
+  @override
+  String get exerciseFrequencyDaily => 'يومي';
+
+  @override
+  String get exerciseFrequencyWeekly => 'أسبوعي';
+
+  @override
+  String get exerciseFrequencyMonthly => 'شهري';
+
+  @override
+  String get statusInProgress => 'قيد التنفيذ';
+
+  @override
+  String get parentDashboardSignInRequired =>
+      'يرجى تسجيل الدخول لعرض لوحة ولي الأمر.';
+
+  @override
+  String parentDashboardLoadFailed(String error) {
+    return 'فشل تحميل لوحة ولي الأمر: $error';
+  }
+
+  @override
+  String parentDashboardChildDataLoadFailed(String error) {
+    return 'فشل تحميل بيانات الطفل: $error';
+  }
+
+  @override
+  String get specialistDashboardOverview => 'نظرة عامة';
+
+  @override
+  String get specialistDashboardActiveCases => 'الحالات النشطة';
+
+  @override
+  String get specialistDashboardNoActiveCases =>
+      'لا توجد حالات نشطة معيّنة بعد.';
+
+  @override
+  String get specialistDashboardNoPendingReviews =>
+      'لا توجد مراجعات معلّقة حالياً.';
+
+  @override
+  String get specialistDashboardRecentPatientProgress => 'تقدم المرضى الأخير';
+
+  @override
+  String get specialistDashboardNoProgressData => 'لا تتوفر بيانات تقدم بعد.';
+
+  @override
+  String get specialistDashboardSignInRequired =>
+      'يرجى تسجيل الدخول كأخصائي لعرض لوحة التحكم.';
+
+  @override
+  String specialistDashboardLoadFailed(String error) {
+    return 'فشل تحميل لوحة الأخصائي: $error';
+  }
+
+  @override
+  String get specialistDashboardThisWeek => 'هذا الأسبوع';
+
+  @override
+  String get specialistDashboardViewCalendar => 'عرض التقويم';
+
+  @override
+  String get specialistDashboardNoUpcomingSessions => 'لا توجد جلسات قادمة';
+
+  @override
+  String get specialistDashboardScheduledSessionsHint =>
+      'ستظهر جلساتك المجدولة هنا.';
+
+  @override
+  String get specialistDashboardViewSession => 'عرض الجلسة ←';
+
+  @override
+  String get specialistDashboardNoSessionsToday => 'لا توجد جلسات مجدولة لليوم';
+
+  @override
+  String get specialistDashboardNoMoreSessionsToday =>
+      'لا مزيد من الجلسات اليوم';
+
+  @override
+  String specialistDashboardMoreSessionsToday(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count جلسات أخرى اليوم',
+      one: 'جلسة واحدة أخرى اليوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String specialistDashboardNextSessionToday(String time) {
+    return 'اليوم، $time';
+  }
+
+  @override
+  String specialistDashboardNextSessionTomorrow(String time) {
+    return 'غداً، $time';
+  }
+
+  @override
+  String get specialistDashboardSubmittedRecently => 'تم التقديم مؤخراً';
+
+  @override
+  String specialistDashboardSubmittedMinutesAgo(int minutes) {
+    return 'تم التقديم منذ $minutes د';
+  }
+
+  @override
+  String specialistDashboardSubmittedHoursAgo(int hours) {
+    return 'تم التقديم منذ $hours س';
+  }
+
+  @override
+  String specialistDashboardSubmittedOnDate(String date) {
+    return 'تم التقديم $date';
+  }
+
+  @override
+  String get specialistPatientProgress => 'تقدم المريض';
+
+  @override
+  String get statusArchived => 'مؤرشف';
+
+  @override
+  String get filterUpcoming => 'القادمة';
+
+  @override
+  String get filterPast => 'السابقة';
+
+  @override
+  String get filterRecent => 'الأحدث';
+
+  @override
+  String get reportTypeAiReports => 'تقارير الذكاء الاصطناعي';
+
+  @override
+  String get reportTypeAi => 'ذكاء اصطناعي';
+
+  @override
+  String get entitySessionRequests => 'الطلبات';
+
+  @override
+  String get fieldSpecialization => 'التخصص';
+
+  @override
+  String get fieldLicenseNumber => 'رقم الترخيص';
+
+  @override
+  String get fieldYearsOfExperience => 'سنوات الخبرة';
+
+  @override
+  String get fieldBio => 'نبذة';
+
+  @override
+  String get fieldDate => 'التاريخ';
+
+  @override
+  String get fieldTime => 'الوقت';
+
+  @override
+  String get fieldLocation => 'الموقع';
+
+  @override
+  String get commonSelected => 'محدّد';
+
+  @override
+  String get commonCopy => 'نسخ';
+
+  @override
+  String get commonOpen => 'فتح';
+
+  @override
+  String get commonApprove => 'موافقة';
+
+  @override
+  String get commonReject => 'رفض';
+
+  @override
+  String get commonProcessing => 'جارٍ المعالجة...';
+
+  @override
+  String get calendarPreviousMonth => 'الشهر السابق';
+
+  @override
+  String get calendarNextMonth => 'الشهر التالي';
+
+  @override
+  String specialistLoadFailed(String error) {
+    return 'فشل تحميل البيانات: $error';
+  }
+
+  @override
+  String specialistProgressLoadFailed(String error) {
+    return 'فشل تحميل التقدم: $error';
+  }
+
+  @override
+  String specialistReportsLoadFailed(String error) {
+    return 'فشل تحميل التقارير: $error';
+  }
+
+  @override
+  String specialistSessionsLoadFailed(String error) {
+    return 'فشل تحميل الجلسات: $error';
+  }
+
+  @override
+  String get specialistSessionRequestsSignInRequired =>
+      'يرجى تسجيل الدخول لعرض طلبات الجلسات.';
+
+  @override
+  String specialistSessionRequestsLoadFailed(String error) {
+    return 'فشل تحميل طلبات الجلسات: $error';
+  }
+
+  @override
+  String get specialistAddTreatmentPlan => 'إضافة خطة علاجية';
+
+  @override
+  String get specialistNoAssignedPatients => 'لا يوجد مرضى معيّنون.';
+
+  @override
+  String get specialistSelectPatient => 'اختر مريضاً';
+
+  @override
+  String get specialistPatientHasActivePlan =>
+      'لدى هذا المريض خطة علاجية نشطة بالفعل.';
+
+  @override
+  String get specialistNoActivePlan => 'لا توجد خطة نشطة';
+
+  @override
+  String get specialistSearchPlansHint => 'ابحث بعنوان الخطة أو اسم المريض';
+
+  @override
+  String get specialistNoTreatmentPlans => 'لم يتم العثور على خطط علاجية.';
+
+  @override
+  String get specialistNoPlansMatchFilter =>
+      'لا توجد خطط تطابق البحث أو التصفية.';
+
+  @override
+  String get specialistAddExercise => 'إضافة تمرين';
+
+  @override
+  String get specialistExerciseLibrary => 'مكتبة التمارين';
+
+  @override
+  String get specialistExerciseLibrarySubtitle =>
+      'تصفّح تمارين العلاج حسب الفئة والبحث.';
+
+  @override
+  String get specialistSearchExercisesHint =>
+      'ابحث بالعنوان أو الفئة أو التعليمات';
+
+  @override
+  String get specialistNoExercises =>
+      'لا تتوفر تمارين بعد. ستظهر التمارين الجديدة هنا عند إضافتها.';
+
+  @override
+  String get specialistNoExercisesMatchFilter =>
+      'لا توجد تمارين تطابق عوامل التصفية.';
+
+  @override
+  String get specialistExerciseIncludesMedia => 'يتضمن وسائط تعليمية';
+
+  @override
+  String get specialistPatientReports => 'تقارير المريض';
+
+  @override
+  String get specialistSearchReportsHint => 'ابحث باسم المريض أو العنوان';
+
+  @override
+  String get specialistNoReports => 'لم يتم العثور على تقارير.';
+
+  @override
+  String get specialistNoReportsForPatient =>
+      'لم يتم العثور على تقارير لهذا المريض.';
+
+  @override
+  String get specialistNoReportsMatchFilter =>
+      'لا توجد تقارير تطابق البحث أو التصفية.';
+
+  @override
+  String get specialistScheduleSession => 'جدولة جلسة';
+
+  @override
+  String get specialistNoSessions => 'لم يتم العثور على جلسات.';
+
+  @override
+  String get specialistNoSessionsMatchFilter =>
+      'لا توجد جلسات تطابق البحث أو التصفية.';
+
+  @override
+  String get specialistSearchSessionsHint => 'ابحث باسم المريض';
+
+  @override
+  String get specialistNoSessionsOnDate =>
+      'لا توجد جلسات مجدولة في هذا التاريخ.';
+
+  @override
+  String get specialistNoSessionRequests => 'لا توجد طلبات جلسات بعد.';
+
+  @override
+  String get specialistNoPendingSessionRequests =>
+      'لا توجد طلبات جلسات معلّقة.';
+
+  @override
+  String get specialistNoSessionRequestsMatchFilter =>
+      'لا توجد طلبات جلسات تطابق هذا التصفية.';
+
+  @override
+  String get specialistSessionRequestPreferredDate => 'التاريخ المفضل';
+
+  @override
+  String get specialistSessionRequestPreferredTime => 'الوقت المفضل';
+
+  @override
+  String get specialistSessionRequestRequested => 'تاريخ الطلب';
+
+  @override
+  String specialistSessionScheduledAt(String dateTime) {
+    return 'مجدولة: $dateTime';
+  }
+
+  @override
+  String specialistSessionDurationMinutes(int minutes) {
+    return 'المدة: $minutes د';
+  }
+
+  @override
+  String get specialistSessionRequestRegularFollowUp => 'متابعة دورية';
+
+  @override
+  String get specialistSessionRequestReplacementCancelled => 'بديل لجلسة ملغاة';
+
+  @override
+  String get specialistSessionRequestReplacementMissed => 'بديل لجلسة فائتة';
+
+  @override
+  String get specialistSessionRequestAdditionalSession => 'جلسة إضافية';
+
+  @override
+  String get specialistSessionRequestConsultation => 'استشارة';
+
+  @override
+  String get specialistSessionRequestOther => 'أخرى';
+
+  @override
+  String get specialistSessionRequestDefault => 'طلب جلسة';
 }

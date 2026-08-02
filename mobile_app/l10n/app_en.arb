@@ -47,6 +47,8 @@
   "@commonRemove": { "description": "Remove an association or attachment." },
   "commonView": "View",
   "@commonView": { "description": "Open a read-only detail view." },
+  "commonSeeAll": "See all",
+  "@commonSeeAll": { "description": "Link to view all items in a dashboard section." },
   "commonDetails": "Details",
   "@commonDetails": { "description": "Section or screen title for detail information." },
   "commonDownload": "Download",
@@ -88,6 +90,17 @@
 
   "navDashboard": "Dashboard",
   "@navDashboard": { "description": "Main dashboard destination." },
+  "dashboardWelcomeBack": "Welcome back, {userName}",
+  "@dashboardWelcomeBack": {
+    "description": "Shared dashboard greeting with the signed-in user name.",
+    "placeholders": {
+      "userName": { "type": "String", "example": "Sarah" }
+    }
+  },
+  "dashboardNextSession": "Next Session",
+  "@dashboardNextSession": { "description": "Label for the upcoming therapy session." },
+  "dashboardLoading": "Loading dashboard...",
+  "@dashboardLoading": { "description": "Default loading state for role dashboards." },
   "navHome": "Home",
   "@navHome": { "description": "Home tab in bottom navigation." },
   "navPatients": "Patients",
@@ -364,15 +377,6 @@
   "loginHidePassword": "Hide password",
   "@loginHidePassword": { "description": "Accessibility label for concealing the login password." },
 
-  "parentDashboardWelcomeBack": "Welcome back, {userName}",
-  "@parentDashboardWelcomeBack": {
-    "description": "Greeting on the parent dashboard home screen.",
-    "placeholders": {
-      "userName": { "type": "String", "example": "Sarah" }
-    }
-  },
-  "parentDashboardSeeAll": "See all",
-  "@parentDashboardSeeAll": { "description": "Link to view all items in a dashboard section." },
   "parentDashboardTodaysTasks": "Today's Tasks",
   "@parentDashboardTodaysTasks": { "description": "Section header for daily assigned exercises." },
   "parentDashboardLatestUpdates": "Latest Updates",
@@ -390,8 +394,6 @@
   "@parentDashboardOverallProgress": { "description": "Label for aggregate treatment progress on the hero card." },
   "parentDashboardKeepGoing": "Keep going!",
   "@parentDashboardKeepGoing": { "description": "Encouragement shown below the progress bar." },
-  "parentDashboardNextSession": "Next Session",
-  "@parentDashboardNextSession": { "description": "Label for the upcoming therapy session countdown." },
   "parentDashboardViewDetailsArrow": "View Details →",
   "@parentDashboardViewDetailsArrow": { "description": "Link to open child detail from the hero card." },
   "parentDashboardTodaysSummary": "Today's Summary",
@@ -432,8 +434,6 @@
   "@parentDashboardFluency": { "description": "Speech analysis metric label." },
   "parentDashboardOverall": "Overall",
   "@parentDashboardOverall": { "description": "Overall speech score chip label." },
-  "parentDashboardLoading": "Loading dashboard...",
-  "@parentDashboardLoading": { "description": "Loading state for the parent dashboard." },
   "parentDashboardUpdatingInsights": "Updating child insights...",
   "@parentDashboardUpdatingInsights": { "description": "Loading state while refreshing selected child data." },
   "parentDashboardRetryRequired": "Retry required",
@@ -669,5 +669,363 @@
     }
   },
   "notificationTypeUpdate": "Update",
-  "@notificationTypeUpdate": { "description": "Fallback label for a notification type when none is provided." }
+  "@notificationTypeUpdate": { "description": "Fallback label for a notification type when none is provided." },
+
+  "parentChildrenNoLinked": "No linked children yet. Add a child from the specialist portal.",
+  "@parentChildrenNoLinked": { "description": "Empty state when the parent has no linked children." },
+  "parentChildrenAgeYears": "{count} yrs",
+  "@parentChildrenAgeYears": {
+    "description": "Child age label on the children list.",
+    "placeholders": {
+      "count": { "type": "int", "example": "7" }
+    }
+  },
+  "parentChildrenProgressPercent": "{percent}% progress",
+  "@parentChildrenProgressPercent": {
+    "description": "Inline progress percentage on a child card.",
+    "placeholders": {
+      "percent": { "type": "int", "example": "72" }
+    }
+  },
+  "parentChildrenProgressPending": "Progress will appear once exercises are tracked.",
+  "@parentChildrenProgressPending": { "description": "Placeholder when child progress is not yet available." },
+
+  "parentReportsLoading": "Loading reports...",
+  "@parentReportsLoading": { "description": "Loading state while child reports are fetched." },
+  "parentReportsSelectChild": "Select a child to view reports.",
+  "@parentReportsSelectChild": { "description": "Empty state when no child is selected on the reports tab." },
+  "parentReportsEmptyForChild": "No reports available for {childName}.",
+  "@parentReportsEmptyForChild": {
+    "description": "Empty state when a selected child has no reports.",
+    "placeholders": {
+      "childName": { "type": "String", "example": "Omar" }
+    }
+  },
+  "parentReportsOpenReport": "Open report",
+  "@parentReportsOpenReport": { "description": "Accessibility tooltip for opening a report PDF." },
+
+  "reportTypeWeekly": "Weekly",
+  "@reportTypeWeekly": { "description": "Weekly report type label." },
+  "reportTypeMonthly": "Monthly",
+  "@reportTypeMonthly": { "description": "Monthly report type label." },
+  "reportTypeDaily": "Daily",
+  "@reportTypeDaily": { "description": "Daily report type label." },
+  "reportTypeProgress": "Progress",
+  "@reportTypeProgress": { "description": "Progress report type label." },
+
+  "parentExercisesForChild": "Exercises for {childName}",
+  "@parentExercisesForChild": {
+    "description": "Subtitle on the exercises tab for the selected child.",
+    "placeholders": {
+      "childName": { "type": "String", "example": "Omar" }
+    }
+  },
+  "parentExercisesTabAssigned": "Assigned",
+  "@parentExercisesTabAssigned": { "description": "Assigned exercises tab label." },
+  "parentExercisesLoading": "Loading exercises...",
+  "@parentExercisesLoading": { "description": "Loading state for the exercises tab." },
+  "parentExercisesSelectChild": "Select a child to view exercises.",
+  "@parentExercisesSelectChild": { "description": "Empty state when no child is selected on the exercises tab." },
+  "parentExercisesNoDailyForChild": "No daily tasks assigned for {childName} today.",
+  "@parentExercisesNoDailyForChild": {
+    "description": "Empty daily tasks state for a selected child.",
+    "placeholders": {
+      "childName": { "type": "String", "example": "Omar" }
+    }
+  },
+  "parentExercisesNoWeeklyForChild": "No weekly tasks assigned for {childName}.",
+  "@parentExercisesNoWeeklyForChild": {
+    "description": "Empty weekly tasks state for a selected child.",
+    "placeholders": {
+      "childName": { "type": "String", "example": "Omar" }
+    }
+  },
+  "parentExercisesNoAssignedForChild": "No assigned exercises for {childName} yet.",
+  "@parentExercisesNoAssignedForChild": {
+    "description": "Empty assigned exercises state for a selected child.",
+    "placeholders": {
+      "childName": { "type": "String", "example": "Omar" }
+    }
+  },
+  "parentExercisesDueDate": "Due {date}",
+  "@parentExercisesDueDate": {
+    "description": "Due date label on an exercise task.",
+    "placeholders": {
+      "date": { "type": "String", "example": "Aug 2, 2026" }
+    }
+  },
+  "parentExercisesLoadFailed": "Failed to load exercises: {error}",
+  "@parentExercisesLoadFailed": {
+    "description": "Error when the exercises request fails.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+
+  "exerciseFrequencyDaily": "Daily",
+  "@exerciseFrequencyDaily": { "description": "Daily exercise frequency label." },
+  "exerciseFrequencyWeekly": "Weekly",
+  "@exerciseFrequencyWeekly": { "description": "Weekly exercise frequency label." },
+  "exerciseFrequencyMonthly": "Monthly",
+  "@exerciseFrequencyMonthly": { "description": "Monthly exercise frequency label." },
+
+  "statusInProgress": "In Progress",
+  "@statusInProgress": { "description": "Task or exercise currently underway." },
+
+  "parentDashboardSignInRequired": "Please sign in to view the parent dashboard.",
+  "@parentDashboardSignInRequired": { "description": "Error when the parent dashboard requires authentication." },
+  "parentDashboardLoadFailed": "Failed to load dashboard: {error}",
+  "@parentDashboardLoadFailed": {
+    "description": "Error when the parent dashboard request fails.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+  "parentDashboardChildDataLoadFailed": "Failed to load child data: {error}",
+  "@parentDashboardChildDataLoadFailed": {
+    "description": "Error when selected child data fails to load.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+
+  "specialistDashboardOverview": "Overview",
+  "@specialistDashboardOverview": { "description": "Overview section heading on the specialist dashboard." },
+  "specialistDashboardActiveCases": "Active Cases",
+  "@specialistDashboardActiveCases": { "description": "Summary card for active patient cases." },
+  "specialistDashboardNoActiveCases": "No active cases assigned yet.",
+  "@specialistDashboardNoActiveCases": { "description": "Empty state when no cases are assigned." },
+  "specialistDashboardNoPendingReviews": "No pending reviews right now.",
+  "@specialistDashboardNoPendingReviews": { "description": "Empty state for the pending reviews section." },
+  "specialistDashboardRecentPatientProgress": "Recent Patient Progress",
+  "@specialistDashboardRecentPatientProgress": { "description": "Section heading for patient progress list." },
+  "specialistDashboardNoProgressData": "No progress data available yet.",
+  "@specialistDashboardNoProgressData": { "description": "Empty state when no progress snapshots exist." },
+  "specialistDashboardSignInRequired": "Please sign in as a specialist to view this dashboard.",
+  "@specialistDashboardSignInRequired": { "description": "Error when the specialist dashboard requires authentication." },
+  "specialistDashboardLoadFailed": "Failed to load specialist dashboard: {error}",
+  "@specialistDashboardLoadFailed": {
+    "description": "Error when the specialist dashboard request fails.",
+    "placeholders": {
+      "error": { "type": "String", "example": "Network error" }
+    }
+  },
+  "specialistDashboardThisWeek": "THIS WEEK",
+  "@specialistDashboardThisWeek": { "description": "Weekly schedule card heading." },
+  "specialistDashboardViewCalendar": "View Calendar",
+  "@specialistDashboardViewCalendar": { "description": "Link to open the sessions calendar view." },
+  "specialistDashboardNoUpcomingSessions": "No upcoming sessions",
+  "@specialistDashboardNoUpcomingSessions": { "description": "Heading when no next session is scheduled." },
+  "specialistDashboardScheduledSessionsHint": "Your scheduled sessions will appear here.",
+  "@specialistDashboardScheduledSessionsHint": { "description": "Hint below the no upcoming sessions heading." },
+  "specialistDashboardViewSession": "View Session →",
+  "@specialistDashboardViewSession": { "description": "Button to open the next session details." },
+  "specialistDashboardNoSessionsToday": "No sessions scheduled for today",
+  "@specialistDashboardNoSessionsToday": { "description": "Footer when no sessions remain today." },
+  "specialistDashboardNoMoreSessionsToday": "No more sessions today",
+  "@specialistDashboardNoMoreSessionsToday": { "description": "Footer when today's sessions are complete." },
+  "specialistDashboardMoreSessionsToday": "{count, plural, =1{1 more session today} other{{count} more sessions today}}",
+  "@specialistDashboardMoreSessionsToday": {
+    "description": "Footer showing remaining sessions today.",
+    "placeholders": {
+      "count": { "type": "int", "example": "2" }
+    }
+  },
+  "specialistDashboardNextSessionToday": "Today, {time}",
+  "@specialistDashboardNextSessionToday": {
+    "description": "Next session schedule when it is today.",
+    "placeholders": {
+      "time": { "type": "String", "example": "2:30 PM" }
+    }
+  },
+  "specialistDashboardNextSessionTomorrow": "Tomorrow, {time}",
+  "@specialistDashboardNextSessionTomorrow": {
+    "description": "Next session schedule when it is tomorrow.",
+    "placeholders": {
+      "time": { "type": "String", "example": "10:00 AM" }
+    }
+  },
+  "specialistDashboardSubmittedRecently": "Recently submitted",
+  "@specialistDashboardSubmittedRecently": { "description": "Fallback when review submission time is unknown." },
+  "specialistDashboardSubmittedMinutesAgo": "Submitted {minutes}m ago",
+  "@specialistDashboardSubmittedMinutesAgo": {
+    "description": "Review submitted within the last hour.",
+    "placeholders": {
+      "minutes": { "type": "int", "example": "12" }
+    }
+  },
+  "specialistDashboardSubmittedHoursAgo": "Submitted {hours}h ago",
+  "@specialistDashboardSubmittedHoursAgo": {
+    "description": "Review submitted within the last day.",
+    "placeholders": {
+      "hours": { "type": "int", "example": "4" }
+    }
+  },
+  "specialistDashboardSubmittedOnDate": "Submitted {date}",
+  "@specialistDashboardSubmittedOnDate": {
+    "description": "Review submitted on a specific date.",
+    "placeholders": {
+      "date": { "type": "String", "example": "Aug 2" }
+    }
+  },
+
+  "specialistPatientProgress": "Patient Progress",
+  "@specialistPatientProgress": { "description": "Screen title for the specialist patient progress list." },
+  "statusArchived": "Archived",
+  "@statusArchived": { "description": "Archived record status filter label." },
+  "filterUpcoming": "Upcoming",
+  "@filterUpcoming": { "description": "Filter for upcoming items." },
+  "filterPast": "Past",
+  "@filterPast": { "description": "Filter for past items." },
+  "filterRecent": "Recent",
+  "@filterRecent": { "description": "Filter for recently updated items." },
+  "reportTypeAiReports": "AI Reports",
+  "@reportTypeAiReports": { "description": "Filter for AI-generated reports." },
+  "reportTypeAi": "AI",
+  "@reportTypeAi": { "description": "Short badge label for AI-generated reports." },
+  "entitySessionRequests": "Requests",
+  "@entitySessionRequests": { "description": "Session requests tab label." },
+  "fieldSpecialization": "Specialization",
+  "@fieldSpecialization": { "description": "Specialist specialization field label." },
+  "fieldLicenseNumber": "License Number",
+  "@fieldLicenseNumber": { "description": "Professional license number field label." },
+  "fieldYearsOfExperience": "Years of Experience",
+  "@fieldYearsOfExperience": { "description": "Years of professional experience field label." },
+  "fieldBio": "Bio",
+  "@fieldBio": { "description": "Profile biography field label." },
+  "fieldDate": "Date",
+  "@fieldDate": { "description": "Date field label." },
+  "fieldTime": "Time",
+  "@fieldTime": { "description": "Time field label." },
+  "fieldLocation": "Location",
+  "@fieldLocation": { "description": "Location field label." },
+  "commonSelected": "Selected",
+  "@commonSelected": { "description": "Indicates an item is selected." },
+  "commonCopy": "Copy",
+  "@commonCopy": { "description": "Copy text or link to clipboard." },
+  "commonOpen": "Open",
+  "@commonOpen": { "description": "Open a link or file." },
+  "commonApprove": "Approve",
+  "@commonApprove": { "description": "Approve a pending request." },
+  "commonReject": "Reject",
+  "@commonReject": { "description": "Reject a pending request." },
+  "commonProcessing": "Processing...",
+  "@commonProcessing": { "description": "Action is being processed." },
+  "calendarPreviousMonth": "Previous month",
+  "@calendarPreviousMonth": { "description": "Calendar navigation tooltip." },
+  "calendarNextMonth": "Next month",
+  "@calendarNextMonth": { "description": "Calendar navigation tooltip." },
+  "specialistLoadFailed": "Failed to load data: {error}",
+  "@specialistLoadFailed": {
+    "description": "Generic specialist list load failure.",
+    "placeholders": { "error": { "type": "String", "example": "Network error" } }
+  },
+  "specialistProgressLoadFailed": "Failed to load progress: {error}",
+  "@specialistProgressLoadFailed": {
+    "description": "Error when patient progress fails to load.",
+    "placeholders": { "error": { "type": "String", "example": "Network error" } }
+  },
+  "specialistReportsLoadFailed": "Failed to load reports: {error}",
+  "@specialistReportsLoadFailed": {
+    "description": "Error when specialist reports fail to load.",
+    "placeholders": { "error": { "type": "String", "example": "Network error" } }
+  },
+  "specialistSessionsLoadFailed": "Failed to load sessions: {error}",
+  "@specialistSessionsLoadFailed": {
+    "description": "Error when specialist sessions fail to load.",
+    "placeholders": { "error": { "type": "String", "example": "Network error" } }
+  },
+  "specialistSessionRequestsSignInRequired": "Please sign in to view session requests.",
+  "@specialistSessionRequestsSignInRequired": { "description": "Error when session requests require authentication." },
+  "specialistSessionRequestsLoadFailed": "Failed to load session requests: {error}",
+  "@specialistSessionRequestsLoadFailed": {
+    "description": "Error when session requests fail to load.",
+    "placeholders": { "error": { "type": "String", "example": "Network error" } }
+  },
+  "specialistAddTreatmentPlan": "Add Treatment Plan",
+  "@specialistAddTreatmentPlan": { "description": "Action to create a new treatment plan." },
+  "specialistNoAssignedPatients": "No assigned patients available.",
+  "@specialistNoAssignedPatients": { "description": "Snack bar when no patients are available for plan creation." },
+  "specialistSelectPatient": "Select patient",
+  "@specialistSelectPatient": { "description": "Bottom sheet title for choosing a patient." },
+  "specialistPatientHasActivePlan": "This patient already has an active treatment plan.",
+  "@specialistPatientHasActivePlan": { "description": "Patient picker subtitle when a plan already exists." },
+  "specialistNoActivePlan": "No active plan",
+  "@specialistNoActivePlan": { "description": "Patient picker subtitle when no active plan exists." },
+  "specialistSearchPlansHint": "Search by plan title or patient",
+  "@specialistSearchPlansHint": { "description": "Search hint on the treatment plans screen." },
+  "specialistNoTreatmentPlans": "No treatment plans found.",
+  "@specialistNoTreatmentPlans": { "description": "Empty state when no treatment plans exist." },
+  "specialistNoPlansMatchFilter": "No plans match your search or filter.",
+  "@specialistNoPlansMatchFilter": { "description": "Empty state when filters hide all treatment plans." },
+  "specialistAddExercise": "Add Exercise",
+  "@specialistAddExercise": { "description": "Action to create a new exercise." },
+  "specialistExerciseLibrary": "Exercise Library",
+  "@specialistExerciseLibrary": { "description": "Heading on the specialist exercises screen." },
+  "specialistExerciseLibrarySubtitle": "Browse therapy exercises by category and search.",
+  "@specialistExerciseLibrarySubtitle": { "description": "Subtitle on the specialist exercises screen." },
+  "specialistSearchExercisesHint": "Search by title, category, or instructions",
+  "@specialistSearchExercisesHint": { "description": "Search hint on the exercises screen." },
+  "specialistNoExercises": "No exercises available yet. New exercises will appear here once added.",
+  "@specialistNoExercises": { "description": "Empty state when the exercise library is empty." },
+  "specialistNoExercisesMatchFilter": "No exercises match your filters.",
+  "@specialistNoExercisesMatchFilter": { "description": "Empty state when exercise filters hide all items." },
+  "specialistExerciseIncludesMedia": "Includes instruction media",
+  "@specialistExerciseIncludesMedia": { "description": "Indicator that an exercise includes media." },
+  "specialistPatientReports": "Patient Reports",
+  "@specialistPatientReports": { "description": "Reports screen title when scoped to one patient." },
+  "specialistSearchReportsHint": "Search by patient or title",
+  "@specialistSearchReportsHint": { "description": "Search hint on the reports screen." },
+  "specialistNoReports": "No reports found.",
+  "@specialistNoReports": { "description": "Empty state when no reports exist." },
+  "specialistNoReportsForPatient": "No reports found for this patient.",
+  "@specialistNoReportsForPatient": { "description": "Empty state when a patient has no reports." },
+  "specialistNoReportsMatchFilter": "No reports match your search or filter.",
+  "@specialistNoReportsMatchFilter": { "description": "Empty state when report filters hide all items." },
+  "specialistScheduleSession": "Schedule Session",
+  "@specialistScheduleSession": { "description": "FAB label to create a new session." },
+  "specialistNoSessions": "No sessions found.",
+  "@specialistNoSessions": { "description": "Empty state when no sessions exist." },
+  "specialistNoSessionsMatchFilter": "No sessions match your search or filter.",
+  "@specialistNoSessionsMatchFilter": { "description": "Empty state when session filters hide all items." },
+  "specialistSearchSessionsHint": "Search by patient name",
+  "@specialistSearchSessionsHint": { "description": "Search hint on the sessions screen." },
+  "specialistNoSessionsOnDate": "No sessions scheduled for this date.",
+  "@specialistNoSessionsOnDate": { "description": "Empty state for a calendar day without sessions." },
+  "specialistNoSessionRequests": "No session requests yet.",
+  "@specialistNoSessionRequests": { "description": "Empty state when no session requests exist." },
+  "specialistNoPendingSessionRequests": "No pending session requests.",
+  "@specialistNoPendingSessionRequests": { "description": "Empty state when no pending session requests exist." },
+  "specialistNoSessionRequestsMatchFilter": "No session requests match this filter.",
+  "@specialistNoSessionRequestsMatchFilter": { "description": "Empty state when session request filters hide all items." },
+  "specialistSessionRequestPreferredDate": "Preferred date",
+  "@specialistSessionRequestPreferredDate": { "description": "Label for preferred session date on a request card." },
+  "specialistSessionRequestPreferredTime": "Preferred time",
+  "@specialistSessionRequestPreferredTime": { "description": "Label for preferred session time on a request card." },
+  "specialistSessionRequestRequested": "Requested",
+  "@specialistSessionRequestRequested": { "description": "Label for when a session request was submitted." },
+  "specialistSessionScheduledAt": "Scheduled: {dateTime}",
+  "@specialistSessionScheduledAt": {
+    "description": "Approved session schedule summary on a request card.",
+    "placeholders": { "dateTime": { "type": "String", "example": "Aug 2, 2026 • 2:30 PM" } }
+  },
+  "specialistSessionDurationMinutes": "Duration: {minutes} min",
+  "@specialistSessionDurationMinutes": {
+    "description": "Approved session duration on a request card.",
+    "placeholders": { "minutes": { "type": "int", "example": "45" } }
+  },
+  "specialistSessionRequestRegularFollowUp": "Regular Follow-up",
+  "@specialistSessionRequestRegularFollowUp": { "description": "Session request reason label." },
+  "specialistSessionRequestReplacementCancelled": "Replacement for Cancelled Session",
+  "@specialistSessionRequestReplacementCancelled": { "description": "Session request reason label." },
+  "specialistSessionRequestReplacementMissed": "Replacement for Missed Session",
+  "@specialistSessionRequestReplacementMissed": { "description": "Session request reason label." },
+  "specialistSessionRequestAdditionalSession": "Additional Session",
+  "@specialistSessionRequestAdditionalSession": { "description": "Session request reason label." },
+  "specialistSessionRequestConsultation": "Consultation",
+  "@specialistSessionRequestConsultation": { "description": "Session request reason label." },
+  "specialistSessionRequestOther": "Other",
+  "@specialistSessionRequestOther": { "description": "Session request reason label for custom reasons." },
+  "specialistSessionRequestDefault": "Session request",
+  "@specialistSessionRequestDefault": { "description": "Fallback session request reason label." }
 }

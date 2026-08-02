@@ -183,8 +183,7 @@ class _SpecialistSessionDetailsScreenState
   Future<void> _markCompleted() {
     return _runStatusAction(
       title: 'Mark as Completed',
-      message:
-          'Mark this session as completed? This cannot be undone.',
+      message: 'Mark this session as completed? This cannot be undone.',
       confirmLabel: 'Mark Completed',
       successMessage: 'Session marked as completed.',
       action: () => ref
@@ -196,8 +195,7 @@ class _SpecialistSessionDetailsScreenState
   Future<void> _markNoShow() {
     return _runStatusAction(
       title: 'Mark as No Show',
-      message:
-          'Mark this session as no show? This cannot be undone.',
+      message: 'Mark this session as no show? This cannot be undone.',
       confirmLabel: 'Mark No Show',
       isDestructive: true,
       successMessage: 'Session marked as no show.',
@@ -221,9 +219,7 @@ class _SpecialistSessionDetailsScreenState
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Cancel this session? This cannot be undone.',
-              ),
+              const Text('Cancel this session? This cannot be undone.'),
               const SizedBox(height: 12),
               TextField(
                 controller: reasonController,
@@ -306,9 +302,9 @@ class _SpecialistSessionDetailsScreenState
 
     await Clipboard.setData(ClipboardData(text: uri.toString()));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Meeting link copied.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Meeting link copied.')));
   }
 
   Future<void> _openMeeting(String? locationOrLink) async {
@@ -322,8 +318,10 @@ class _SpecialistSessionDetailsScreenState
     }
 
     try {
-      final launched =
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
       if (!launched && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -352,228 +350,209 @@ class _SpecialistSessionDetailsScreenState
       body: _isLoading
           ? const Center(child: DashboardLoadingCard())
           : _errorMessage != null && session == null
-              ? Padding(
-                  padding: context.dashPadding,
-                  child: DashboardErrorCard(
-                    message: _errorMessage!,
-                    onRetry: _load,
-                  ),
-                )
-              : session == null
-                  ? Padding(
-                      padding: context.dashPadding,
-                      child: const DashboardEmptyCard(
-                        message: 'Session not found.',
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      color: DashboardColors.primary,
-                      child: ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: context.dashPadding,
-                        children: [
-                          DashboardSurfaceCard(
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 28,
-                                  backgroundColor: DashboardColors.blueSoft,
-                                  child: Text(
-                                    dashboardAvatarLetter(session.patientName),
-                                    style: const TextStyle(
-                                      color: Color(0xFF3B82F6),
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: context.dashSpacing * 0.7),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        session.patientName,
-                                        style: theme.textTheme.titleMedium
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.w800,
-                                          color: DashboardColors.textPrimary,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: context.dashSpacing * 0.2,
-                                      ),
-                                      Text(
-                                        session.sessionType,
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                          color: DashboardColors.textSecondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SessionStatusBadge(
-                                  status: session.displayStatus,
-                                ),
-                              ],
+          ? Padding(
+              padding: context.dashPadding,
+              child: DashboardErrorCard(
+                message: _errorMessage!,
+                onRetry: _load,
+              ),
+            )
+          : session == null
+          ? Padding(
+              padding: context.dashPadding,
+              child: const DashboardEmptyCard(message: 'Session not found.'),
+            )
+          : RefreshIndicator(
+              onRefresh: _load,
+              color: DashboardColors.primary,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: context.dashPadding,
+                children: [
+                  DashboardSurfaceCard(
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundColor: DashboardColors.blueSoft,
+                          child: Text(
+                            dashboardAvatarLetter(session.patientName),
+                            style: const TextStyle(
+                              color: Color(0xFF3B82F6),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
                             ),
                           ),
-                          SizedBox(height: context.dashSpacing * 0.75),
-                          DashboardSurfaceCard(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _DetailRow(
-                                  icon: Icons.calendar_today_outlined,
-                                  label: 'Date',
-                                  value: session.scheduledAt != null
-                                      ? DateFormat('EEEE, MMM d, yyyy')
-                                          .format(session.scheduledAt!)
-                                      : '—',
-                                ),
-                                SizedBox(height: context.dashSpacing * 0.55),
-                                _DetailRow(
-                                  icon: Icons.schedule_rounded,
-                                  label: 'Start time',
-                                  value: session.timeLabel,
-                                ),
-                                SizedBox(height: context.dashSpacing * 0.55),
-                                _DetailRow(
-                                  icon: Icons.timelapse_outlined,
-                                  label: 'End time',
-                                  value: session.endTimeLabel,
-                                ),
-                                SizedBox(height: context.dashSpacing * 0.55),
-                                _DetailRow(
-                                  icon: Icons.timer_outlined,
-                                  label: 'Duration',
-                                  value:
-                                      '${session.durationMinutes ?? 45} minutes',
-                                ),
-                                SizedBox(height: context.dashSpacing * 0.55),
-                                _DetailRow(
-                                  icon: session.hasOnlineMeetingLink
-                                      ? Icons.videocam_outlined
-                                      : Icons.location_on_outlined,
-                                  label: session.hasOnlineMeetingLink
-                                      ? 'Meeting Link'
-                                      : 'Location',
-                                  value: (session.location?.trim().isNotEmpty ==
-                                          true)
-                                      ? session.location!.trim()
-                                      : 'Not provided',
-                                ),
-                                if (session.hasOnlineMeetingLink) ...[
-                                  SizedBox(height: context.dashSpacing * 0.65),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: OutlinedButton.icon(
-                                          onPressed: () =>
-                                              _openMeeting(session.location),
-                                          icon: const Icon(
-                                            Icons.open_in_new_rounded,
-                                          ),
-                                          label: const Text('Open Meeting'),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: context.dashSpacing * 0.45,
-                                      ),
-                                      Expanded(
-                                        child: OutlinedButton.icon(
-                                          onPressed: () => _copyMeetingLink(
-                                            session.location,
-                                          ),
-                                          icon: const Icon(Icons.copy_rounded),
-                                          label: const Text('Copy Link'),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                                if (session.cancellationReason
-                                        ?.trim()
-                                        .isNotEmpty ==
-                                    true) ...[
-                                  SizedBox(height: context.dashSpacing * 0.55),
-                                  _DetailRow(
-                                    icon: Icons.notes_outlined,
-                                    label: 'Cancellation reason',
-                                    value: session.cancellationReason!.trim(),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: context.dashSpacing * 0.85),
-                          FilledButton.tonalIcon(
-                            onPressed: _openPatientProfile,
-                            icon: const Icon(Icons.person_outline_rounded),
-                            label: const Text('View Patient Profile'),
-                          ),
-                          if (session.canModify) ...[
-                            SizedBox(height: context.dashSpacing * 0.85),
-                            Text(
-                              'Actions',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.45),
-                            FilledButton.icon(
-                              onPressed: _isActing ? null : _editSession,
-                              icon: const Icon(Icons.edit_outlined),
-                              label: const Text('Edit Session'),
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.4),
-                            OutlinedButton.icon(
-                              onPressed: _isActing ? null : _markCompleted,
-                              icon: const Icon(Icons.check_circle_outline),
-                              label: const Text('Mark as Completed'),
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.4),
-                            OutlinedButton.icon(
-                              onPressed: _isActing ? null : _markNoShow,
-                              icon: const Icon(Icons.person_off_outlined),
-                              label: const Text('Mark as No Show'),
-                            ),
-                            SizedBox(height: context.dashSpacing * 0.4),
-                            OutlinedButton.icon(
-                              onPressed: _isActing ? null : _cancelSession,
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: DashboardColors.highPriority,
-                                side: const BorderSide(
-                                  color: DashboardColors.highPriority,
+                        ),
+                        SizedBox(width: context.dashSpacing * 0.7),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                session.patientName,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: DashboardColors.textPrimary,
                                 ),
                               ),
-                              icon: const Icon(Icons.cancel_outlined),
-                              label: const Text('Cancel Session'),
-                            ),
-                          ] else ...[
-                            SizedBox(height: context.dashSpacing * 0.75),
-                            DashboardSurfaceCard(
-                              child: Text(
-                                'This session is ${session.displayStatus.label.toLowerCase()} and can no longer be edited.',
+                              SizedBox(height: context.dashSpacing * 0.2),
+                              Text(
+                                session.sessionType,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: DashboardColors.textSecondary,
                                 ),
                               ),
-                            ),
-                          ],
-                          if (_isActing) ...[
-                            SizedBox(height: context.dashSpacing * 0.75),
-                            const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          ],
-                          SizedBox(height: context.dashSpacing),
+                            ],
+                          ),
+                        ),
+                        SessionStatusBadge(status: session.displayStatus),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.75),
+                  DashboardSurfaceCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _DetailRow(
+                          icon: Icons.calendar_today_outlined,
+                          label: 'Date',
+                          value: session.scheduledAt != null
+                              ? DateFormat(
+                                  'EEEE, MMM d, yyyy',
+                                ).format(session.scheduledAt!)
+                              : '—',
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.55),
+                        _DetailRow(
+                          icon: Icons.schedule_rounded,
+                          label: 'Start time',
+                          value: session.timeLabel,
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.55),
+                        _DetailRow(
+                          icon: Icons.timelapse_outlined,
+                          label: 'End time',
+                          value: session.endTimeLabel,
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.55),
+                        _DetailRow(
+                          icon: Icons.timer_outlined,
+                          label: 'Duration',
+                          value: '${session.durationMinutes ?? 45} minutes',
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.55),
+                        _DetailRow(
+                          icon: session.hasOnlineMeetingLink
+                              ? Icons.videocam_outlined
+                              : Icons.location_on_outlined,
+                          label: session.hasOnlineMeetingLink
+                              ? 'Meeting Link'
+                              : 'Location',
+                          value: (session.location?.trim().isNotEmpty == true)
+                              ? session.location!.trim()
+                              : 'Not provided',
+                        ),
+                        if (session.hasOnlineMeetingLink) ...[
+                          SizedBox(height: context.dashSpacing * 0.65),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () =>
+                                      _openMeeting(session.location),
+                                  icon: const Icon(Icons.open_in_new_rounded),
+                                  label: const Text('Open Meeting'),
+                                ),
+                              ),
+                              SizedBox(width: context.dashSpacing * 0.45),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () =>
+                                      _copyMeetingLink(session.location),
+                                  icon: const Icon(Icons.copy_rounded),
+                                  label: const Text('Copy Link'),
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
+                        if (session.cancellationReason?.trim().isNotEmpty ==
+                            true) ...[
+                          SizedBox(height: context.dashSpacing * 0.55),
+                          _DetailRow(
+                            icon: Icons.notes_outlined,
+                            label: 'Cancellation reason',
+                            value: session.cancellationReason!.trim(),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: context.dashSpacing * 0.85),
+                  FilledButton.tonalIcon(
+                    onPressed: _openPatientProfile,
+                    icon: const Icon(Icons.person_outline_rounded),
+                    label: const Text('View Patient Profile'),
+                  ),
+                  if (session.canModify) ...[
+                    SizedBox(height: context.dashSpacing * 0.85),
+                    Text(
+                      'Actions',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
+                    SizedBox(height: context.dashSpacing * 0.45),
+                    FilledButton.icon(
+                      onPressed: _isActing ? null : _editSession,
+                      icon: const Icon(Icons.edit_outlined),
+                      label: const Text('Edit Session'),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.4),
+                    OutlinedButton.icon(
+                      onPressed: _isActing ? null : _markCompleted,
+                      icon: const Icon(Icons.check_circle_outline),
+                      label: const Text('Mark as Completed'),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.4),
+                    OutlinedButton.icon(
+                      onPressed: _isActing ? null : _markNoShow,
+                      icon: const Icon(Icons.person_off_outlined),
+                      label: const Text('Mark as No Show'),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.4),
+                    OutlinedButton.icon(
+                      onPressed: _isActing ? null : _cancelSession,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: DashboardColors.highPriority,
+                        side: const BorderSide(
+                          color: DashboardColors.highPriority,
+                        ),
+                      ),
+                      icon: const Icon(Icons.cancel_outlined),
+                      label: const Text('Cancel Session'),
+                    ),
+                  ] else ...[
+                    SizedBox(height: context.dashSpacing * 0.75),
+                    DashboardSurfaceCard(
+                      child: Text(
+                        'This session is ${session.displayStatus.label.toLowerCase()} and can no longer be edited.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: DashboardColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (_isActing) ...[
+                    SizedBox(height: context.dashSpacing * 0.75),
+                    const Center(child: CircularProgressIndicator()),
+                  ],
+                  SizedBox(height: context.dashSpacing),
+                ],
+              ),
+            ),
     );
   }
 }
@@ -603,18 +582,18 @@ class _DetailRow extends StatelessWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: DashboardColors.textMuted,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: DashboardColors.textMuted,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               SizedBox(height: context.dashSpacing * 0.15),
               Text(
                 value,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: DashboardColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      height: 1.35,
-                    ),
+                  color: DashboardColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                  height: 1.35,
+                ),
               ),
             ],
           ),

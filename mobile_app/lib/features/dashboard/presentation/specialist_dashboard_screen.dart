@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/specialist_dashboard_provider.dart';
 import '../providers/specialist_features_provider.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -16,6 +17,7 @@ import '../widgets/dashboard_visuals.dart';
 import '../widgets/parent_dashboard_cards.dart';
 import '../widgets/specialist_dashboard_weekly_schedule_card.dart';
 import '../widgets/specialist_navigation.dart';
+import 'specialist/specialist_dashboard_localization_utils.dart';
 
 class SpecialistDashboardScreen extends ConsumerStatefulWidget {
   const SpecialistDashboardScreen({super.key});
@@ -59,11 +61,15 @@ class _SpecialistDashboardScreenState
     final profileImageUrl = auth.user?.profileImageUrl;
     final displayName = auth.user?.fullName ?? state.userName;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final greetingName = dashboardDisplayName(
       displayName,
-      fallback: 'Specialist',
+      fallback: l10n.roleSpecialist,
     );
     final avatarInitials = dashboardInitials(displayName, fallback: 'SP');
+    final mappedError = state.errorMessage == null
+        ? null
+        : mapSpecialistDashboardError(l10n, state.errorMessage!);
 
     if (state.isLoading) {
       return DashboardScaffold(
@@ -97,25 +103,25 @@ class _SpecialistDashboardScreenState
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          DashboardGreeting(message: 'Welcome back, $greetingName'),
+          DashboardGreeting(message: l10n.dashboardWelcomeBack(greetingName)),
           SizedBox(height: context.dashSpacing * 0.75),
           SpecialistDashboardWeeklyScheduleCard(sessions: state.sessions),
           if (!state.hasAssignedPatients &&
               state.overview.activeCases == 0) ...[
             SizedBox(height: context.dashSpacing * 0.75),
-            const DashboardEmptyCard(message: 'No active cases assigned yet.'),
+            DashboardEmptyCard(message: l10n.specialistDashboardNoActiveCases),
           ],
-          if (state.errorMessage != null) ...[
+          if (mappedError != null) ...[
             SizedBox(height: context.dashSpacing * 0.75),
             DashboardErrorCard(
-              message: state.errorMessage!,
+              message: mappedError,
               onRetry: () =>
                   ref.read(specialistDashboardProvider.notifier).refresh(),
             ),
           ],
           SizedBox(height: context.dashSpacing),
           Text(
-            'Overview',
+            l10n.specialistDashboardOverview,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -125,7 +131,7 @@ class _SpecialistDashboardScreenState
           DashboardSummaryGrid(
             cards: [
               DashboardSummaryCard(
-                label: 'Active Cases',
+                label: l10n.specialistDashboardActiveCases,
                 value: '${state.overview.activeCases}',
                 icon: Icons.folder_open_outlined,
                 backgroundColor: const Color(0xFFEEF7FF),
@@ -140,7 +146,7 @@ class _SpecialistDashboardScreenState
                 onTap: () => context.push(AppRoutes.specialistPatients),
               ),
               DashboardSummaryCard(
-                label: 'Pending Reviews',
+                label: l10n.navPendingReviews,
                 value: '${state.overview.pendingReviews}',
                 icon: Icons.rate_review_outlined,
                 backgroundColor: const Color(0xFFF5F1FF),
@@ -155,7 +161,7 @@ class _SpecialistDashboardScreenState
                 onTap: () => context.push(AppRoutes.specialistPendingReviews),
               ),
               DashboardSummaryCard(
-                label: "Today's Sessions",
+                label: l10n.navTodaysSessions,
                 value: '${state.overview.upcomingSessions}',
                 icon: Icons.calendar_today_outlined,
                 backgroundColor: const Color(0xFFEEFDF6),
@@ -170,7 +176,7 @@ class _SpecialistDashboardScreenState
                 onTap: () => context.push(AppRoutes.specialistSessions),
               ),
               DashboardSummaryCard(
-                label: 'Treatment Plans',
+                label: l10n.navTreatmentPlans,
                 value: '${state.overview.treatmentPlans}',
                 icon: Icons.assignment_outlined,
                 backgroundColor: const Color(0xFFFFF8EA),
@@ -188,12 +194,14 @@ class _SpecialistDashboardScreenState
           ),
           SizedBox(height: context.dashSpacing * 1.2),
           DashboardSectionHeader(
-            title: 'Pending Reviews',
+            title: l10n.navPendingReviews,
             onActionTap: () => context.push(AppRoutes.specialistPendingReviews),
           ),
           SizedBox(height: context.dashSpacing * 0.5),
           if (state.pendingReviews.isEmpty)
-            const DashboardEmptyCard(message: 'No pending reviews right now.')
+            DashboardEmptyCard(
+              message: l10n.specialistDashboardNoPendingReviews,
+            )
           else
             ...state.pendingReviews.map(
               (review) => Padding(
@@ -232,7 +240,7 @@ class _SpecialistDashboardScreenState
                             ),
                             SizedBox(height: context.dashSpacing * 0.15),
                             Text(
-                              '${review.exerciseTitle} • ${formatSubmittedAgo(review.submittedAt)}',
+                              '${review.exerciseTitle} • ${formatLocalizedSubmittedAgo(l10n, review.submittedAt)}',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: DashboardColors.textSecondary,
                               ),
@@ -248,13 +256,13 @@ class _SpecialistDashboardScreenState
             ),
           SizedBox(height: context.dashSpacing * 0.6),
           DashboardSectionHeader(
-            title: 'Recent Patient Progress',
+            title: l10n.specialistDashboardRecentPatientProgress,
             onActionTap: () =>
                 context.push(AppRoutes.specialistPatientProgress),
           ),
           SizedBox(height: context.dashSpacing * 0.5),
           if (state.progress.isEmpty)
-            const DashboardEmptyCard(message: 'No progress data available yet.')
+            DashboardEmptyCard(message: l10n.specialistDashboardNoProgressData)
           else
             DashboardSurfaceCard(
               onTap: () => context.push(AppRoutes.specialistPatientProgress),

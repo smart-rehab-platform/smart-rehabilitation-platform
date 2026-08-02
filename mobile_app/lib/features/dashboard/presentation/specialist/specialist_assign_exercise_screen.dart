@@ -95,7 +95,9 @@ class _SpecialistAssignExerciseScreenState
       return;
     }
 
-    final success = await ref.read(specialistAssignExerciseProvider(_args).notifier).assign(
+    final success = await ref
+        .read(specialistAssignExerciseProvider(_args).notifier)
+        .assign(
           exerciseId: exercise.id,
           frequency: _frequency,
           startDate: _startDate,
@@ -114,8 +116,9 @@ class _SpecialistAssignExerciseScreenState
       return;
     }
 
-    final error =
-        ref.read(specialistAssignExerciseProvider(_args)).errorMessage;
+    final error = ref
+        .read(specialistAssignExerciseProvider(_args))
+        .errorMessage;
     if (error != null) {
       messenger.showSnackBar(SnackBar(content: Text(error)));
     }
@@ -181,6 +184,7 @@ class _SpecialistAssignExerciseScreenState
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           buildExerciseSearchField(
+            context: context,
             controller: _searchController,
             onChanged: (_) => setState(() {}),
           ),
@@ -228,7 +232,9 @@ class _SpecialistAssignExerciseScreenState
                       color: DashboardColors.textPrimary,
                     ),
                   ),
-                  if ((_selectedExercise!.category ?? '').trim().isNotEmpty) ...[
+                  if ((_selectedExercise!.category ?? '')
+                      .trim()
+                      .isNotEmpty) ...[
                     SizedBox(height: context.dashSpacing * 0.25),
                     SpecialistExerciseCategoryBadge(
                       label: _selectedExercise!.category!.trim(),
@@ -367,10 +373,7 @@ class _SpecialistAssignExerciseScreenState
     return SpecialistPageScaffold(
       title: 'Assign Exercise',
       showBackButton: true,
-      body: PopScope(
-        canPop: !assignState.isSubmitting,
-        child: body,
-      ),
+      body: PopScope(canPop: !assignState.isSubmitting, child: body),
     );
   }
 }

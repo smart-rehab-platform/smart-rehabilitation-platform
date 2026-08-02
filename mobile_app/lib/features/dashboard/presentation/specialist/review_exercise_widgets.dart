@@ -137,31 +137,31 @@ class _MediaPreview extends StatelessWidget {
 
     return switch (media.mediaType.toLowerCase()) {
       'image' => ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: CachedNetworkImage(
-            imageUrl: url,
+        borderRadius: BorderRadius.circular(12),
+        child: CachedNetworkImage(
+          imageUrl: url,
+          height: context.dashboardSize.height * 0.22,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          placeholder: (_, __) => Container(
             height: context.dashboardSize.height * 0.22,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            placeholder: (_, __) => Container(
-              height: context.dashboardSize.height * 0.22,
-              color: DashboardColors.border,
-              alignment: Alignment.center,
-              child: const CircularProgressIndicator(),
-            ),
-            errorWidget: (_, __, ___) => Container(
-              height: context.dashboardSize.height * 0.22,
-              color: DashboardColors.border,
-              alignment: Alignment.center,
-              child: const Icon(Icons.broken_image_outlined),
-            ),
+            color: DashboardColors.border,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          ),
+          errorWidget: (_, __, ___) => Container(
+            height: context.dashboardSize.height * 0.22,
+            color: DashboardColors.border,
+            alignment: Alignment.center,
+            child: const Icon(Icons.broken_image_outlined),
           ),
         ),
+      ),
       'video' => _NetworkVideoPlayer(url: url),
       'audio' => _NetworkAudioPlayer(url: url),
       _ => const DashboardEmptyCard(
-          message: 'Unsupported media type for preview.',
-        ),
+        message: 'Unsupported media type for preview.',
+      ),
     };
   }
 }
@@ -184,13 +184,15 @@ class _NetworkVideoPlayerState extends State<_NetworkVideoPlayer> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url))
-      ..initialize().then((_) {
-        if (!mounted) return;
-        setState(() => _initialized = true);
-      }).catchError((_) {
-        if (!mounted) return;
-        setState(() => _hasError = true);
-      });
+      ..initialize()
+          .then((_) {
+            if (!mounted) return;
+            setState(() => _initialized = true);
+          })
+          .catchError((_) {
+            if (!mounted) return;
+            setState(() => _hasError = true);
+          });
   }
 
   @override
@@ -262,13 +264,15 @@ class _NetworkAudioPlayerState extends State<_NetworkAudioPlayer> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url))
-      ..initialize().then((_) {
-        if (!mounted) return;
-        setState(() => _initialized = true);
-      }).catchError((_) {
-        if (!mounted) return;
-        setState(() => _hasError = true);
-      });
+      ..initialize()
+          .then((_) {
+            if (!mounted) return;
+            setState(() => _initialized = true);
+          })
+          .catchError((_) {
+            if (!mounted) return;
+            setState(() => _hasError = true);
+          });
   }
 
   @override
@@ -329,8 +333,8 @@ class _NetworkAudioPlayerState extends State<_NetworkAudioPlayer> {
           Text(
             '${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: DashboardColors.textSecondary,
-                ),
+              color: DashboardColors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -358,7 +362,9 @@ class ReviewStarRating extends StatelessWidget {
           onPressed: () => onChanged(star),
           icon: Icon(
             isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
-            color: isSelected ? DashboardColors.warning : DashboardColors.textMuted,
+            color: isSelected
+                ? DashboardColors.warning
+                : DashboardColors.textMuted,
           ),
         );
       }),
@@ -422,18 +428,20 @@ class _DecisionChip extends StatelessWidget {
           color: selected ? DashboardColors.brandSoft : DashboardColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? DashboardColors.brandCyan : DashboardColors.border,
+            color: selected
+                ? DashboardColors.brandCyan
+                : DashboardColors.border,
           ),
         ),
         alignment: Alignment.center,
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: selected
-                    ? DashboardColors.brandCyan
-                    : DashboardColors.textSecondary,
-                fontWeight: FontWeight.w700,
-              ),
+            color: selected
+                ? DashboardColors.brandCyan
+                : DashboardColors.textSecondary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );

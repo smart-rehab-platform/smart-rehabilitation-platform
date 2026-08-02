@@ -59,17 +59,20 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(parentDashboardProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final mappedError = state.errorMessage == null
+        ? null
+        : mapParentDashboardError(l10n, state.errorMessage!);
 
     return ParentPageScaffold(
-      title: 'Children',
+      title: l10n.entityChildren,
       currentNav: DashboardNavItem.patients,
       body: ParentAsyncBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: mappedError,
         onRetry: () => ref.read(parentDashboardProvider.notifier).refresh(),
         isEmpty: state.children.isEmpty,
-        emptyMessage:
-            'No linked children yet. Add a child from the specialist portal.',
+        emptyMessage: l10n.parentChildrenNoLinked,
         child: Column(
           children: state.children.map((child) {
             final progressChild = _progressFor(
@@ -78,13 +81,14 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
             );
             final progress =
                 progressChild?.progressPercent ?? child.progressPercent;
-            final metaParts = <String>[
-              if (child.age != null) '${child.age} yrs',
-              if (child.dateOfBirth != null)
-                parentFormatDate(child.dateOfBirth),
-              if (child.gender != null && child.gender!.isNotEmpty)
-                child.gender!,
-            ];
+            final metaParts = buildChildMetaParts(
+              l10n: l10n,
+              child: child,
+              formatDate: parentFormatDate,
+            );
+            final progressPercent = progress == null
+                ? null
+                : normalizeProgressPercent(progress);
 
             return Padding(
               padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
@@ -126,16 +130,18 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
                                 color: DashboardColors.textMuted,
                               ),
                             ),
-                          if (progress != null)
+                          if (progressPercent != null)
                             Text(
-                              '${progress <= 1 ? (progress * 100).round() : progress.round()}% progress',
+                              l10n.parentChildrenProgressPercent(
+                                progressPercent,
+                              ),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: DashboardColors.textSecondary,
                               ),
                             )
                           else
                             Text(
-                              'Progress will appear once exercises are tracked.',
+                              l10n.parentChildrenProgressPending,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: DashboardColors.textSecondary,
                               ),
@@ -143,9 +149,9 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
                         ],
                       ),
                     ),
-                    if (progress != null)
+                    if (progressPercent != null)
                       Text(
-                        '${progress <= 1 ? (progress * 100).round() : progress.round()}%',
+                        '$progressPercent%',
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: DashboardColors.brandCyan,
                           fontWeight: FontWeight.w800,
@@ -190,20 +196,26 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
     final state = ref.watch(parentDashboardProvider);
     final theme = Theme.of(context);
     final selectedChild = state.selectedChild;
+    final l10n = AppLocalizations.of(context)!;
+    final mappedError = state.errorMessage == null
+        ? null
+        : mapParentDashboardError(l10n, state.errorMessage!);
 
     return ParentPageScaffold(
-      title: 'Reports',
+      title: l10n.navReports,
       currentNav: DashboardNavItem.reports,
       body: state.isLoading
-          ? const Center(child: DashboardLoadingCard())
+          ? Center(
+              child: DashboardLoadingCard(message: l10n.parentReportsLoading),
+            )
           : SingleChildScrollView(
               padding: context.dashPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (state.errorMessage != null)
+                  if (mappedError != null)
                     DashboardErrorCard(
-                      message: state.errorMessage!,
+                      message: mappedError,
                       onRetry: () =>
                           ref.read(parentDashboardProvider.notifier).refresh(),
                     ),
@@ -218,15 +230,14 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                   ),
                   SizedBox(height: context.dashSpacing),
                   if (state.isLoadingChild)
-                    const DashboardLoadingCard(message: 'Loading reports...')
+                    DashboardLoadingCard(message: l10n.parentReportsLoading)
                   else if (selectedChild == null)
-                    const DashboardEmptyCard(
-                      message: 'Select a child to view reports.',
-                    )
+                    DashboardEmptyCard(message: l10n.parentReportsSelectChild)
                   else if (state.reports.isEmpty)
                     DashboardEmptyCard(
-                      message:
-                          'No reports available for ${selectedChild.name}.',
+                      message: l10n.parentReportsEmptyForChild(
+                        selectedChild.name,
+                      ),
                     )
                   else
                     ...state.reports.map(
@@ -282,7 +293,10 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                                     Text(
                                       [
                                         if (report.reportType != null)
-                                          report.reportType,
+                                          localizedReportType(
+                                            l10n,
+                                            report.reportType!,
+                                          ),
                                         selectedChild.name,
                                         if (report.summary != null)
                                           report.summary,
@@ -304,7 +318,7 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                                     context,
                                     report.pdfUrl,
                                   ),
-                                  tooltip: 'Open report',
+                                  tooltip: l10n.parentReportsOpenReport,
                                   icon: Icon(
                                     Icons.open_in_new_outlined,
                                     color: DashboardColors.brandCyan,

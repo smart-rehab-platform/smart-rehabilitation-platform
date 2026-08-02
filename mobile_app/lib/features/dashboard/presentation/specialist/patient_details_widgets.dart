@@ -163,9 +163,7 @@ class PatientTreatmentPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              DashboardPriorityBadge(
-                label: _formatPlanStatus(plan.status),
-              ),
+              DashboardPriorityBadge(label: _formatPlanStatus(plan.status)),
             ],
           ),
           SizedBox(height: context.dashSpacing * 0.35),
@@ -178,8 +176,9 @@ class PatientTreatmentPlanCard extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.2),
           _InfoRow(
             label: 'End date',
-            value:
-                plan.endDate != null ? dateFormat.format(plan.endDate!) : '—',
+            value: plan.endDate != null
+                ? dateFormat.format(plan.endDate!)
+                : '—',
           ),
         ],
       ),
@@ -200,7 +199,9 @@ class PatientGoalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final progress = goal.isAchieved ? 1.0 : goal.completionPercentage.clamp(0, 1);
+    final progress = goal.isAchieved
+        ? 1.0
+        : goal.completionPercentage.clamp(0, 1);
     final dateFormat = DateFormat('MMM d, yyyy');
 
     return DashboardSurfaceCard(
@@ -219,7 +220,9 @@ class PatientGoalCard extends StatelessWidget {
               ),
               if (goal.isAchieved)
                 Padding(
-                  padding: EdgeInsetsDirectional.only(end: context.dashSpacing * 0.35),
+                  padding: EdgeInsetsDirectional.only(
+                    end: context.dashSpacing * 0.35,
+                  ),
                   child: DashboardPriorityBadge(label: 'Achieved'),
                 ),
               Text(
@@ -397,10 +400,7 @@ class PatientSubmissionTile extends StatelessWidget {
           DashboardPriorityBadge(label: submission.reviewStatus),
           if (onTap != null) ...[
             SizedBox(width: context.dashSpacing * 0.25),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: DashboardColors.textMuted,
-            ),
+            Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
           ],
         ],
       ),
@@ -490,8 +490,8 @@ class PatientDetailsEmptySection extends StatelessWidget {
           Text(
             message,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: DashboardColors.textSecondary,
-                ),
+              color: DashboardColors.textSecondary,
+            ),
           ),
           SizedBox(height: context.dashSpacing * 0.65),
           OutlinedButton.icon(
@@ -522,17 +522,17 @@ class _InfoRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: DashboardColors.textMuted,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: DashboardColors.textMuted),
           ),
         ),
         Text(
           value,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: DashboardColors.textPrimary,
-              ),
+            fontWeight: FontWeight.w600,
+            color: DashboardColors.textPrimary,
+          ),
         ),
       ],
     );

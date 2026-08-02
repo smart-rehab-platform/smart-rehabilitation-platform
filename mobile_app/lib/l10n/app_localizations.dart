@@ -230,6 +230,12 @@ abstract class AppLocalizations {
   /// **'View'**
   String get commonView;
 
+  /// Link to view all items in a dashboard section.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get commonSeeAll;
+
   /// Section or screen title for detail information.
   ///
   /// In en, this message translates to:
@@ -349,6 +355,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dashboard'**
   String get navDashboard;
+
+  /// Shared dashboard greeting with the signed-in user name.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back, {userName}'**
+  String dashboardWelcomeBack(String userName);
+
+  /// Label for the upcoming therapy session.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Session'**
+  String get dashboardNextSession;
+
+  /// Default loading state for role dashboards.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading dashboard...'**
+  String get dashboardLoading;
 
   /// Home tab in bottom navigation.
   ///
@@ -1142,18 +1166,6 @@ abstract class AppLocalizations {
   /// **'Hide password'**
   String get loginHidePassword;
 
-  /// Greeting on the parent dashboard home screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome back, {userName}'**
-  String parentDashboardWelcomeBack(String userName);
-
-  /// Link to view all items in a dashboard section.
-  ///
-  /// In en, this message translates to:
-  /// **'See all'**
-  String get parentDashboardSeeAll;
-
   /// Section header for daily assigned exercises.
   ///
   /// In en, this message translates to:
@@ -1189,12 +1201,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keep going!'**
   String get parentDashboardKeepGoing;
-
-  /// Label for the upcoming therapy session countdown.
-  ///
-  /// In en, this message translates to:
-  /// **'Next Session'**
-  String get parentDashboardNextSession;
 
   /// Link to open child detail from the hero card.
   ///
@@ -1285,12 +1291,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Overall'**
   String get parentDashboardOverall;
-
-  /// Loading state for the parent dashboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading dashboard...'**
-  String get parentDashboardLoading;
 
   /// Loading state while refreshing selected child data.
   ///
@@ -1747,6 +1747,720 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update'**
   String get notificationTypeUpdate;
+
+  /// Empty state when the parent has no linked children.
+  ///
+  /// In en, this message translates to:
+  /// **'No linked children yet. Add a child from the specialist portal.'**
+  String get parentChildrenNoLinked;
+
+  /// Child age label on the children list.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} yrs'**
+  String parentChildrenAgeYears(int count);
+
+  /// Inline progress percentage on a child card.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% progress'**
+  String parentChildrenProgressPercent(int percent);
+
+  /// Placeholder when child progress is not yet available.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress will appear once exercises are tracked.'**
+  String get parentChildrenProgressPending;
+
+  /// Loading state while child reports are fetched.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading reports...'**
+  String get parentReportsLoading;
+
+  /// Empty state when no child is selected on the reports tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a child to view reports.'**
+  String get parentReportsSelectChild;
+
+  /// Empty state when a selected child has no reports.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports available for {childName}.'**
+  String parentReportsEmptyForChild(String childName);
+
+  /// Accessibility tooltip for opening a report PDF.
+  ///
+  /// In en, this message translates to:
+  /// **'Open report'**
+  String get parentReportsOpenReport;
+
+  /// Weekly report type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get reportTypeWeekly;
+
+  /// Monthly report type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get reportTypeMonthly;
+
+  /// Daily report type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get reportTypeDaily;
+
+  /// Progress report type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get reportTypeProgress;
+
+  /// Subtitle on the exercises tab for the selected child.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises for {childName}'**
+  String parentExercisesForChild(String childName);
+
+  /// Assigned exercises tab label.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get parentExercisesTabAssigned;
+
+  /// Loading state for the exercises tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading exercises...'**
+  String get parentExercisesLoading;
+
+  /// Empty state when no child is selected on the exercises tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a child to view exercises.'**
+  String get parentExercisesSelectChild;
+
+  /// Empty daily tasks state for a selected child.
+  ///
+  /// In en, this message translates to:
+  /// **'No daily tasks assigned for {childName} today.'**
+  String parentExercisesNoDailyForChild(String childName);
+
+  /// Empty weekly tasks state for a selected child.
+  ///
+  /// In en, this message translates to:
+  /// **'No weekly tasks assigned for {childName}.'**
+  String parentExercisesNoWeeklyForChild(String childName);
+
+  /// Empty assigned exercises state for a selected child.
+  ///
+  /// In en, this message translates to:
+  /// **'No assigned exercises for {childName} yet.'**
+  String parentExercisesNoAssignedForChild(String childName);
+
+  /// Due date label on an exercise task.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String parentExercisesDueDate(String date);
+
+  /// Error when the exercises request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load exercises: {error}'**
+  String parentExercisesLoadFailed(String error);
+
+  /// Daily exercise frequency label.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get exerciseFrequencyDaily;
+
+  /// Weekly exercise frequency label.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get exerciseFrequencyWeekly;
+
+  /// Monthly exercise frequency label.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get exerciseFrequencyMonthly;
+
+  /// Task or exercise currently underway.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get statusInProgress;
+
+  /// Error when the parent dashboard requires authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view the parent dashboard.'**
+  String get parentDashboardSignInRequired;
+
+  /// Error when the parent dashboard request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load dashboard: {error}'**
+  String parentDashboardLoadFailed(String error);
+
+  /// Error when selected child data fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load child data: {error}'**
+  String parentDashboardChildDataLoadFailed(String error);
+
+  /// Overview section heading on the specialist dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get specialistDashboardOverview;
+
+  /// Summary card for active patient cases.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Cases'**
+  String get specialistDashboardActiveCases;
+
+  /// Empty state when no cases are assigned.
+  ///
+  /// In en, this message translates to:
+  /// **'No active cases assigned yet.'**
+  String get specialistDashboardNoActiveCases;
+
+  /// Empty state for the pending reviews section.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending reviews right now.'**
+  String get specialistDashboardNoPendingReviews;
+
+  /// Section heading for patient progress list.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Patient Progress'**
+  String get specialistDashboardRecentPatientProgress;
+
+  /// Empty state when no progress snapshots exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No progress data available yet.'**
+  String get specialistDashboardNoProgressData;
+
+  /// Error when the specialist dashboard requires authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in as a specialist to view this dashboard.'**
+  String get specialistDashboardSignInRequired;
+
+  /// Error when the specialist dashboard request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load specialist dashboard: {error}'**
+  String specialistDashboardLoadFailed(String error);
+
+  /// Weekly schedule card heading.
+  ///
+  /// In en, this message translates to:
+  /// **'THIS WEEK'**
+  String get specialistDashboardThisWeek;
+
+  /// Link to open the sessions calendar view.
+  ///
+  /// In en, this message translates to:
+  /// **'View Calendar'**
+  String get specialistDashboardViewCalendar;
+
+  /// Heading when no next session is scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming sessions'**
+  String get specialistDashboardNoUpcomingSessions;
+
+  /// Hint below the no upcoming sessions heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Your scheduled sessions will appear here.'**
+  String get specialistDashboardScheduledSessionsHint;
+
+  /// Button to open the next session details.
+  ///
+  /// In en, this message translates to:
+  /// **'View Session →'**
+  String get specialistDashboardViewSession;
+
+  /// Footer when no sessions remain today.
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions scheduled for today'**
+  String get specialistDashboardNoSessionsToday;
+
+  /// Footer when today's sessions are complete.
+  ///
+  /// In en, this message translates to:
+  /// **'No more sessions today'**
+  String get specialistDashboardNoMoreSessionsToday;
+
+  /// Footer showing remaining sessions today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 more session today} other{{count} more sessions today}}'**
+  String specialistDashboardMoreSessionsToday(int count);
+
+  /// Next session schedule when it is today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today, {time}'**
+  String specialistDashboardNextSessionToday(String time);
+
+  /// Next session schedule when it is tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow, {time}'**
+  String specialistDashboardNextSessionTomorrow(String time);
+
+  /// Fallback when review submission time is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently submitted'**
+  String get specialistDashboardSubmittedRecently;
+
+  /// Review submitted within the last hour.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted {minutes}m ago'**
+  String specialistDashboardSubmittedMinutesAgo(int minutes);
+
+  /// Review submitted within the last day.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted {hours}h ago'**
+  String specialistDashboardSubmittedHoursAgo(int hours);
+
+  /// Review submitted on a specific date.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted {date}'**
+  String specialistDashboardSubmittedOnDate(String date);
+
+  /// Screen title for the specialist patient progress list.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Progress'**
+  String get specialistPatientProgress;
+
+  /// Archived record status filter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get statusArchived;
+
+  /// Filter for upcoming items.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get filterUpcoming;
+
+  /// Filter for past items.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get filterPast;
+
+  /// Filter for recently updated items.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get filterRecent;
+
+  /// Filter for AI-generated reports.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Reports'**
+  String get reportTypeAiReports;
+
+  /// Short badge label for AI-generated reports.
+  ///
+  /// In en, this message translates to:
+  /// **'AI'**
+  String get reportTypeAi;
+
+  /// Session requests tab label.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get entitySessionRequests;
+
+  /// Specialist specialization field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialization'**
+  String get fieldSpecialization;
+
+  /// Professional license number field label.
+  ///
+  /// In en, this message translates to:
+  /// **'License Number'**
+  String get fieldLicenseNumber;
+
+  /// Years of professional experience field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Years of Experience'**
+  String get fieldYearsOfExperience;
+
+  /// Profile biography field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get fieldBio;
+
+  /// Date field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get fieldDate;
+
+  /// Time field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get fieldTime;
+
+  /// Location field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get fieldLocation;
+
+  /// Indicates an item is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get commonSelected;
+
+  /// Copy text or link to clipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get commonCopy;
+
+  /// Open a link or file.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get commonOpen;
+
+  /// Approve a pending request.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get commonApprove;
+
+  /// Reject a pending request.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get commonReject;
+
+  /// Action is being processed.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get commonProcessing;
+
+  /// Calendar navigation tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get calendarPreviousMonth;
+
+  /// Calendar navigation tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get calendarNextMonth;
+
+  /// Generic specialist list load failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load data: {error}'**
+  String specialistLoadFailed(String error);
+
+  /// Error when patient progress fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load progress: {error}'**
+  String specialistProgressLoadFailed(String error);
+
+  /// Error when specialist reports fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load reports: {error}'**
+  String specialistReportsLoadFailed(String error);
+
+  /// Error when specialist sessions fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load sessions: {error}'**
+  String specialistSessionsLoadFailed(String error);
+
+  /// Error when session requests require authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view session requests.'**
+  String get specialistSessionRequestsSignInRequired;
+
+  /// Error when session requests fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load session requests: {error}'**
+  String specialistSessionRequestsLoadFailed(String error);
+
+  /// Action to create a new treatment plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Treatment Plan'**
+  String get specialistAddTreatmentPlan;
+
+  /// Snack bar when no patients are available for plan creation.
+  ///
+  /// In en, this message translates to:
+  /// **'No assigned patients available.'**
+  String get specialistNoAssignedPatients;
+
+  /// Bottom sheet title for choosing a patient.
+  ///
+  /// In en, this message translates to:
+  /// **'Select patient'**
+  String get specialistSelectPatient;
+
+  /// Patient picker subtitle when a plan already exists.
+  ///
+  /// In en, this message translates to:
+  /// **'This patient already has an active treatment plan.'**
+  String get specialistPatientHasActivePlan;
+
+  /// Patient picker subtitle when no active plan exists.
+  ///
+  /// In en, this message translates to:
+  /// **'No active plan'**
+  String get specialistNoActivePlan;
+
+  /// Search hint on the treatment plans screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by plan title or patient'**
+  String get specialistSearchPlansHint;
+
+  /// Empty state when no treatment plans exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No treatment plans found.'**
+  String get specialistNoTreatmentPlans;
+
+  /// Empty state when filters hide all treatment plans.
+  ///
+  /// In en, this message translates to:
+  /// **'No plans match your search or filter.'**
+  String get specialistNoPlansMatchFilter;
+
+  /// Action to create a new exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Exercise'**
+  String get specialistAddExercise;
+
+  /// Heading on the specialist exercises screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Library'**
+  String get specialistExerciseLibrary;
+
+  /// Subtitle on the specialist exercises screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse therapy exercises by category and search.'**
+  String get specialistExerciseLibrarySubtitle;
+
+  /// Search hint on the exercises screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by title, category, or instructions'**
+  String get specialistSearchExercisesHint;
+
+  /// Empty state when the exercise library is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises available yet. New exercises will appear here once added.'**
+  String get specialistNoExercises;
+
+  /// Empty state when exercise filters hide all items.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises match your filters.'**
+  String get specialistNoExercisesMatchFilter;
+
+  /// Indicator that an exercise includes media.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes instruction media'**
+  String get specialistExerciseIncludesMedia;
+
+  /// Reports screen title when scoped to one patient.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Reports'**
+  String get specialistPatientReports;
+
+  /// Search hint on the reports screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by patient or title'**
+  String get specialistSearchReportsHint;
+
+  /// Empty state when no reports exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports found.'**
+  String get specialistNoReports;
+
+  /// Empty state when a patient has no reports.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports found for this patient.'**
+  String get specialistNoReportsForPatient;
+
+  /// Empty state when report filters hide all items.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports match your search or filter.'**
+  String get specialistNoReportsMatchFilter;
+
+  /// FAB label to create a new session.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule Session'**
+  String get specialistScheduleSession;
+
+  /// Empty state when no sessions exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions found.'**
+  String get specialistNoSessions;
+
+  /// Empty state when session filters hide all items.
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions match your search or filter.'**
+  String get specialistNoSessionsMatchFilter;
+
+  /// Search hint on the sessions screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by patient name'**
+  String get specialistSearchSessionsHint;
+
+  /// Empty state for a calendar day without sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions scheduled for this date.'**
+  String get specialistNoSessionsOnDate;
+
+  /// Empty state when no session requests exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No session requests yet.'**
+  String get specialistNoSessionRequests;
+
+  /// Empty state when no pending session requests exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending session requests.'**
+  String get specialistNoPendingSessionRequests;
+
+  /// Empty state when session request filters hide all items.
+  ///
+  /// In en, this message translates to:
+  /// **'No session requests match this filter.'**
+  String get specialistNoSessionRequestsMatchFilter;
+
+  /// Label for preferred session date on a request card.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred date'**
+  String get specialistSessionRequestPreferredDate;
+
+  /// Label for preferred session time on a request card.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred time'**
+  String get specialistSessionRequestPreferredTime;
+
+  /// Label for when a session request was submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get specialistSessionRequestRequested;
+
+  /// Approved session schedule summary on a request card.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled: {dateTime}'**
+  String specialistSessionScheduledAt(String dateTime);
+
+  /// Approved session duration on a request card.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {minutes} min'**
+  String specialistSessionDurationMinutes(int minutes);
+
+  /// Session request reason label.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular Follow-up'**
+  String get specialistSessionRequestRegularFollowUp;
+
+  /// Session request reason label.
+  ///
+  /// In en, this message translates to:
+  /// **'Replacement for Cancelled Session'**
+  String get specialistSessionRequestReplacementCancelled;
+
+  /// Session request reason label.
+  ///
+  /// In en, this message translates to:
+  /// **'Replacement for Missed Session'**
+  String get specialistSessionRequestReplacementMissed;
+
+  /// Session request reason label.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Session'**
+  String get specialistSessionRequestAdditionalSession;
+
+  /// Session request reason label.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultation'**
+  String get specialistSessionRequestConsultation;
+
+  /// Session request reason label for custom reasons.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get specialistSessionRequestOther;
+
+  /// Fallback session request reason label.
+  ///
+  /// In en, this message translates to:
+  /// **'Session request'**
+  String get specialistSessionRequestDefault;
 }
 
 class _AppLocalizationsDelegate

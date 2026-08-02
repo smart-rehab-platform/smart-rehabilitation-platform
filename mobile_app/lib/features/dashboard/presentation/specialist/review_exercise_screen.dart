@@ -11,10 +11,7 @@ import '../../widgets/specialist_page_scaffold.dart';
 import 'review_exercise_widgets.dart';
 
 class SpecialistReviewExerciseScreen extends ConsumerStatefulWidget {
-  const SpecialistReviewExerciseScreen({
-    super.key,
-    required this.submissionId,
-  });
+  const SpecialistReviewExerciseScreen({super.key, required this.submissionId});
 
   final String submissionId;
 
@@ -45,8 +42,9 @@ class _SpecialistReviewExerciseScreenState
   }
 
   Future<void> _submitReview() async {
-    final notifier =
-        ref.read(specialistExerciseReviewProvider(widget.submissionId).notifier);
+    final notifier = ref.read(
+      specialistExerciseReviewProvider(widget.submissionId).notifier,
+    );
     final success = await notifier.submitReview();
     if (!mounted) return;
 
@@ -58,29 +56,37 @@ class _SpecialistReviewExerciseScreenState
       return;
     }
 
-    final error =
-        ref.read(specialistExerciseReviewProvider(widget.submissionId)).errorMessage;
+    final error = ref
+        .read(specialistExerciseReviewProvider(widget.submissionId))
+        .errorMessage;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(specialistExerciseReviewProvider(widget.submissionId));
+    final state = ref.watch(
+      specialistExerciseReviewProvider(widget.submissionId),
+    );
     final bundle = state.bundle;
     final theme = Theme.of(context);
-    final hasAudioMedia = bundle?.media.any(
+    final hasAudioMedia =
+        bundle?.media.any(
           (media) => media.mediaType.toLowerCase() == 'audio',
         ) ??
         false;
-    final canOpenSpeechAnalysis = bundle != null &&
+    final canOpenSpeechAnalysis =
+        bundle != null &&
         bundle.submission.patientId.isNotEmpty &&
         hasAudioMedia;
 
-    ref.listen(specialistExerciseReviewProvider(widget.submissionId), (previous, next) {
+    ref.listen(specialistExerciseReviewProvider(widget.submissionId), (
+      previous,
+      next,
+    ) {
       if (previous?.isLoading == true &&
           !next.isLoading &&
           next.bundle != null &&
@@ -99,7 +105,9 @@ class _SpecialistReviewExerciseScreenState
         child: DashboardErrorCard(
           message: state.errorMessage!,
           onRetry: () => ref
-              .read(specialistExerciseReviewProvider(widget.submissionId).notifier)
+              .read(
+                specialistExerciseReviewProvider(widget.submissionId).notifier,
+              )
               .initialize(),
         ),
       );
@@ -125,7 +133,9 @@ class _SpecialistReviewExerciseScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             if (bundle.media.isEmpty)
-              const DashboardEmptyCard(message: 'No media uploaded for this submission.')
+              const DashboardEmptyCard(
+                message: 'No media uploaded for this submission.',
+              )
             else
               ...bundle.media.map(
                 (media) => Padding(
@@ -152,7 +162,11 @@ class _SpecialistReviewExerciseScreenState
             ReviewStarRating(
               rating: state.starRating,
               onChanged: ref
-                  .read(specialistExerciseReviewProvider(widget.submissionId).notifier)
+                  .read(
+                    specialistExerciseReviewProvider(
+                      widget.submissionId,
+                    ).notifier,
+                  )
                   .setStarRating,
             ),
             SizedBox(height: context.dashSpacing * 0.35),
@@ -168,7 +182,11 @@ class _SpecialistReviewExerciseScreenState
               controller: _feedbackController,
               maxLines: 4,
               onChanged: ref
-                  .read(specialistExerciseReviewProvider(widget.submissionId).notifier)
+                  .read(
+                    specialistExerciseReviewProvider(
+                      widget.submissionId,
+                    ).notifier,
+                  )
                   .setFeedback,
               decoration: InputDecoration(
                 hintText: 'Write feedback for the parent and patient...',
@@ -184,7 +202,9 @@ class _SpecialistReviewExerciseScreenState
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: DashboardColors.brandCyan),
+                  borderSide: const BorderSide(
+                    color: DashboardColors.brandCyan,
+                  ),
                 ),
               ),
             ),
@@ -200,7 +220,11 @@ class _SpecialistReviewExerciseScreenState
             ReviewDecisionSelector(
               decision: state.decision,
               onChanged: ref
-                  .read(specialistExerciseReviewProvider(widget.submissionId).notifier)
+                  .read(
+                    specialistExerciseReviewProvider(
+                      widget.submissionId,
+                    ).notifier,
+                  )
                   .setDecision,
             ),
             if (state.errorMessage != null) ...[
@@ -224,8 +248,9 @@ class _SpecialistReviewExerciseScreenState
                 style: OutlinedButton.styleFrom(
                   foregroundColor: DashboardColors.brandCyan,
                   side: const BorderSide(color: DashboardColors.brandCyan),
-                  padding:
-                      EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dashSpacing * 0.65,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -238,7 +263,9 @@ class _SpecialistReviewExerciseScreenState
               style: ElevatedButton.styleFrom(
                 backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+                padding: EdgeInsets.symmetric(
+                  vertical: context.dashSpacing * 0.65,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -247,8 +274,8 @@ class _SpecialistReviewExerciseScreenState
                 state.isSubmitting
                     ? 'Submitting...'
                     : bundle.existingReview != null
-                        ? 'Update Review'
-                        : 'Submit Review',
+                    ? 'Update Review'
+                    : 'Submit Review',
               ),
             ),
             SizedBox(height: context.dashSpacing),

@@ -498,9 +498,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (state.children.isEmpty) ...[
-                DashboardGreeting(
-                  message: l10n.parentDashboardWelcomeBack(userName),
-                ),
+                DashboardGreeting(message: l10n.dashboardWelcomeBack(userName)),
                 SizedBox(height: context.dashSpacing * 0.75),
                 ParentDashboardCaseIntakeSection(
                   caseIntakeState: caseIntakeState,
@@ -523,7 +521,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                   children: [
                     Expanded(
                       child: DashboardGreeting(
-                        message: l10n.parentDashboardWelcomeBack(userName),
+                        message: l10n.dashboardWelcomeBack(userName),
                       ),
                     ),
                     const SizedBox(width: 12),

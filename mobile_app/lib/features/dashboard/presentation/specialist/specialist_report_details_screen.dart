@@ -97,9 +97,9 @@ class _SpecialistReportDetailsScreenState
 
     final error = ref.read(specialistReportDetailProvider(_args)).errorMessage;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
