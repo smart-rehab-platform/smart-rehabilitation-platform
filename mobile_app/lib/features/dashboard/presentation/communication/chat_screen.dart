@@ -10,6 +10,7 @@ import '../../models/communication_models.dart';
 import '../../providers/communication_thread_provider.dart';
 import '../../providers/conversation_notification_read.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/dashboard_components.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import 'communication_attachment_picker.dart';
 import 'communication_attachment_widgets.dart';
@@ -19,10 +20,12 @@ class CommunicationChatScreen extends ConsumerStatefulWidget {
     super.key,
     required this.conversationId,
     this.initialConversation,
+    this.initialDraftMessage,
   });
 
   final String conversationId;
   final CommunicationConversation? initialConversation;
+  final String? initialDraftMessage;
 
   @override
   ConsumerState<CommunicationChatScreen> createState() =>
@@ -41,6 +44,10 @@ class _CommunicationChatScreenState
   @override
   void initState() {
     super.initState();
+    final draft = widget.initialDraftMessage?.trim();
+    if (draft != null && draft.isNotEmpty) {
+      _inputController.text = draft;
+    }
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref
@@ -300,7 +307,7 @@ class _CommunicationChatScreenState
         floatingActionButton: _showScrollToLatest
             ? FloatingActionButton.small(
                 onPressed: () => _scrollToLatest(force: true),
-                backgroundColor: DashboardColors.primary,
+                backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
                 child: const Icon(Icons.arrow_downward_rounded),
               )
@@ -497,7 +504,7 @@ class _CommunicationChatScreenState
                       ? null
                       : _pickAttachment,
                   icon: const Icon(Icons.attach_file_rounded),
-                  color: DashboardColors.primary,
+                  color: DashboardColors.brandCyan,
                 ),
                 Expanded(
                   child: TextField(
@@ -529,30 +536,11 @@ class _CommunicationChatScreenState
                   ),
                 ),
                 SizedBox(width: context.dashSpacing * 0.5),
-                IconButton.filled(
-                  onPressed: canSend
-                      ? () {
-                          debugPrint('[CHAT_ATTACH] BUTTON PRESSED');
-                          _send();
-                        }
-                      : null,
-                  style: IconButton.styleFrom(
-                    backgroundColor: DashboardColors.primary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: DashboardColors.primary.withValues(
-                      alpha: 0.35,
-                    ),
-                  ),
-                  icon: state.isSending || state.isUploadingAttachment
-                      ? SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white.withValues(alpha: 0.9),
-                          ),
-                        )
-                      : const Icon(Icons.send_rounded),
+                BrandGradientIconButton(
+                  onPressed: canSend ? _send : null,
+                  enabled: canSend,
+                  isLoading: state.isSending || state.isUploadingAttachment,
+                  icon: Icons.send_rounded,
                 ),
               ],
             ),
@@ -615,9 +603,6 @@ class CommunicationMessageBubble extends StatelessWidget {
         ? null
         : DateFormat('h:mm a').format(message.sentAt!.toLocal());
 
-    final bubbleColor = isMine
-        ? DashboardColors.primary
-        : DashboardColors.surface;
     final textColor = isMine ? Colors.white : DashboardColors.textPrimary;
     final border = isMine
         ? null
@@ -638,7 +623,8 @@ class CommunicationMessageBubble extends StatelessWidget {
           ),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: bubbleColor,
+              gradient: isMine ? DashboardColors.brandPrimaryGradient : null,
+              color: isMine ? null : DashboardColors.surface,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(16),
                 topRight: const Radius.circular(16),

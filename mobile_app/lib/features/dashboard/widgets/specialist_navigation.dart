@@ -6,6 +6,7 @@ import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../widgets/dashboard_bottom_nav.dart';
+import '../widgets/dashboard_profile_avatar.dart';
 
 class SpecialistNavigation {
   SpecialistNavigation._();
@@ -60,17 +61,7 @@ class SpecialistDrawer extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: DashboardColors.purpleSoft,
-                    child: Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : 'S',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: DashboardColors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
+                  CurrentUserAvatar(radius: 28, initialsFallback: 'SP'),
                   const SizedBox(height: 12),
                   Text(
                     name,
@@ -119,11 +110,6 @@ class SpecialistDrawer extends ConsumerWidget {
                     label: 'Treatment Plans',
                     onTap: () =>
                         _go(context, AppRoutes.specialistTreatmentPlans),
-                  ),
-                  _DrawerTile(
-                    icon: Icons.link_rounded,
-                    label: 'Manage Parent Links',
-                    onTap: () => _go(context, AppRoutes.manageParentLinks),
                   ),
                   _DrawerTile(
                     icon: Icons.assignment_ind_outlined,
@@ -195,7 +181,7 @@ class _DrawerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: DashboardColors.primary),
+      leading: Icon(icon, color: DashboardColors.brandCyan),
       title: Text(label),
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

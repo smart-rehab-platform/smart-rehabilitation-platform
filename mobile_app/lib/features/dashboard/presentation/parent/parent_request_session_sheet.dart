@@ -286,8 +286,8 @@ class _ParentRequestSessionSheetState
                     SizedBox(height: context.dashSpacing * 0.5),
                     const LinearProgressIndicator(
                       minHeight: 2,
-                      color: DashboardColors.primary,
-                      backgroundColor: DashboardColors.purpleSoft,
+                      color: DashboardColors.brandCyan,
+                      backgroundColor: DashboardColors.brandSoft,
                     ),
                   ] else if (_specialists.isEmpty) ...[
                     SizedBox(height: context.dashSpacing * 0.5),
@@ -355,7 +355,7 @@ class _ParentRequestSessionSheetState
                         ),
                         const Icon(
                           Icons.calendar_today_outlined,
-                          color: DashboardColors.primary,
+                          color: DashboardColors.brandCyan,
                           size: 20,
                         ),
                       ],
@@ -393,10 +393,10 @@ class _ParentRequestSessionSheetState
                           : const Icon(Icons.send_rounded, size: 18),
                       label: Text(isSubmitting ? 'Sending...' : 'Send Request'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DashboardColors.primary,
+                        backgroundColor: DashboardColors.brandCyan,
                         foregroundColor: Colors.white,
                         disabledBackgroundColor:
-                            DashboardColors.primary.withValues(alpha: 0.55),
+                            DashboardColors.brandCyan.withValues(alpha: 0.55),
                         padding: EdgeInsets.symmetric(
                           vertical: context.dashSpacing * 0.62,
                         ),

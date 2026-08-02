@@ -185,7 +185,7 @@ class _SpecialistEditTreatmentPlanScreenState
             ElevatedButton(
               onPressed: state.isSaving ? null : _save,
               style: ElevatedButton.styleFrom(
-                backgroundColor: DashboardColors.primary,
+                backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
                 shape: RoundedRectangleBorder(
@@ -198,8 +198,8 @@ class _SpecialistEditTreatmentPlanScreenState
             OutlinedButton(
               onPressed: state.isSaving ? null : () => context.pop(),
               style: OutlinedButton.styleFrom(
-                foregroundColor: DashboardColors.primary,
-                side: const BorderSide(color: DashboardColors.primary),
+                foregroundColor: DashboardColors.brandCyan,
+                side: const BorderSide(color: DashboardColors.brandCyan),
                 padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),

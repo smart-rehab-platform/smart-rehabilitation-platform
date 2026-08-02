@@ -7,6 +7,7 @@ import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/dashboard_theme.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/specialist_features_provider.dart';
+import 'dashboard_app_bar.dart';
 import 'dashboard_bottom_nav.dart';
 import 'dashboard_layout.dart';
 import 'parent_dashboard_cards.dart';
@@ -22,6 +23,8 @@ class SpecialistPageScaffold extends ConsumerWidget {
     this.actions,
     this.floatingActionButton,
     this.onBackPressed,
+    this.appBarShowBrandTitle = true,
+    this.appBarShowMessagesAction = true,
   });
 
   final String title;
@@ -31,133 +34,56 @@ class SpecialistPageScaffold extends ConsumerWidget {
   final List<Widget>? actions;
   final Widget? floatingActionButton;
   final VoidCallback? onBackPressed;
+  final bool appBarShowBrandTitle;
+  final bool appBarShowMessagesAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authProvider);
-    final userName = auth.user?.fullName;
-    final unread = ref.watch(specialistNotificationsProvider).unreadCount;
+    final notifications = ref.watch(specialistNotificationsProvider);
+    final displayName = auth.user?.fullName ?? '';
+    final avatarInitials = dashboardInitials(displayName, fallback: 'SP');
 
-    return Theme(
-      data: DashboardTheme.light,
-      child: Scaffold(
-        backgroundColor: DashboardColors.background,
-        drawer: const SpecialistDrawer(),
-        appBar: AppBar(
-          backgroundColor: DashboardColors.background,
-          surfaceTintColor: Colors.transparent,
-          leading: showBackButton
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded),
-                  onPressed: onBackPressed ?? () => context.pop(),
-                )
-              : IconButton(
-                  icon: const Icon(Icons.menu_rounded),
-                  onPressed: () => SpecialistNavigation.openDrawer(context),
-                ),
-          title: Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          actions: [
-            ...?actions,
-            _NotificationAction(
-              count: unread,
-              onTap: () => context.push(AppRoutes.specialistNotifications),
-            ),
-            _AvatarAction(
-              initials: dashboardInitials(userName, fallback: 'SP'),
-              onTap: () => context.push(AppRoutes.specialistProfile),
-            ),
-            SizedBox(width: context.dashSpacing * 0.35),
-          ],
-        ),
-        body: SafeArea(child: body),
-        floatingActionButton: floatingActionButton,
-        bottomNavigationBar: currentNav == null
-            ? null
-            : DashboardBottomNav(
-                currentIndex: currentNav!,
-                onTap: (item) => SpecialistNavigation.onNavTap(context, item),
-              ),
+    final scaffold = Scaffold(
+      backgroundColor: DashboardColors.background,
+      appBar: DashboardAppBar(
+        showMenuButton: false,
+        showBrandTitle: appBarShowBrandTitle,
+        showMessagesAction: appBarShowMessagesAction,
+        avatarInitials: avatarInitials,
+        avatarImageUrl: auth.user?.profileImageUrl,
+        messageCount: notifications.unreadMessageCount,
+        notificationCount: notifications.unreadCount,
+        additionalActions: actions,
+        onMessagesTap: () => context.push(AppRoutes.specialistMessages),
+        onNotificationsTap: () => context.push(AppRoutes.specialistNotifications),
+        onAvatarTap: () => context.push(AppRoutes.specialistProfile),
       ),
-    );
-  }
-}
-
-class _NotificationAction extends StatelessWidget {
-  const _NotificationAction({required this.count, required this.onTap});
-
-  final int count;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        IconButton(
-          onPressed: onTap,
-          icon: const Icon(Icons.notifications_none_rounded),
-          color: DashboardColors.textPrimary,
-        ),
-        if (count > 0)
-          Positioned(
-            top: 10,
-            right: 10,
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(
-                color: DashboardColors.highPriority,
-                shape: BoxShape.circle,
-              ),
-              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-              child: Text(
-                '$count',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 9,
-                ),
-              ),
+      body: SafeArea(child: body),
+      floatingActionButton: floatingActionButton,
+      bottomNavigationBar: currentNav == null
+          ? null
+          : DashboardBottomNav(
+              currentIndex: currentNav!,
+              onTap: (item) => SpecialistNavigation.onNavTap(context, item),
+              accentColor: DashboardColors.brandCyan,
             ),
-          ),
-      ],
     );
-  }
-}
 
-class _AvatarAction extends StatelessWidget {
-  const _AvatarAction({required this.initials, required this.onTap});
+    Widget child = scaffold;
+    if (showBackButton && onBackPressed != null) {
+      child = PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) {
+            onBackPressed!();
+          }
+        },
+        child: scaffold,
+      );
+    }
 
-  final String initials;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: Padding(
-        padding: EdgeInsets.only(right: context.dashSpacing * 0.35),
-        child: CircleAvatar(
-          radius: context.dashSpacing * 0.55,
-          backgroundColor: DashboardColors.purpleSoft,
-          child: Text(
-            initials,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: DashboardColors.primary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ),
-    );
+    return Theme(data: DashboardTheme.light, child: child);
   }
 }
 

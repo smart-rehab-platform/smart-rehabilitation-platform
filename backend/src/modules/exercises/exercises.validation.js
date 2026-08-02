@@ -4,6 +4,25 @@ const UUID_RE =
 const TITLE_MAX = 200;
 const TEXT_MAX = 10000;
 const MEDIA_URL_MAX = 1000;
+const ALLOWED_EXERCISE_LANGUAGES = new Set(["en", "ar"]);
+const DEFAULT_EXERCISE_LANGUAGE = "en";
+
+const parseExerciseLanguage = (value) => {
+  if (value === undefined) {
+    return DEFAULT_EXERCISE_LANGUAGE;
+  }
+
+  if (value === null) {
+    return null;
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+
+  return ALLOWED_EXERCISE_LANGUAGES.has(normalized) ? normalized : null;
+};
 
 const isValidUuid = (value) => UUID_RE.test(String(value || "").trim());
 
@@ -77,12 +96,24 @@ const validateCreateExercise = (req, res, next) => {
     });
   }
 
+  const language = Object.prototype.hasOwnProperty.call(body, "language")
+    ? parseExerciseLanguage(body.language)
+    : DEFAULT_EXERCISE_LANGUAGE;
+
+  if (language === null) {
+    return res.status(400).json({
+      success: false,
+      message: "language must be 'en' or 'ar'.",
+    });
+  }
+
   req.body = {
     category_id: categoryId,
     title,
     description,
     instructions,
     instruction_media_url: mediaUrl,
+    language,
   };
 
   next();
@@ -107,6 +138,7 @@ const validateUpdateExercise = (req, res, next) => {
     "description",
     "instructions",
     "instruction_media_url",
+    "language",
   ];
   const provided = Object.keys(body).filter((key) =>
     allowedFields.includes(key)
@@ -194,6 +226,17 @@ const validateUpdateExercise = (req, res, next) => {
         : mediaUrl ?? "";
   }
 
+  if (Object.prototype.hasOwnProperty.call(body, "language")) {
+    const language = parseExerciseLanguage(body.language);
+    if (language === null) {
+      return res.status(400).json({
+        success: false,
+        message: "language must be 'en' or 'ar'.",
+      });
+    }
+    nextBody.language = language;
+  }
+
   // Drop undefined keys so service can detect which fields were provided.
   Object.keys(nextBody).forEach((key) => {
     if (nextBody[key] === undefined) {
@@ -215,4 +258,7 @@ const validateUpdateExercise = (req, res, next) => {
 module.exports = {
   validateCreateExercise,
   validateUpdateExercise,
+  ALLOWED_EXERCISE_LANGUAGES,
+  DEFAULT_EXERCISE_LANGUAGE,
+  parseExerciseLanguage,
 };

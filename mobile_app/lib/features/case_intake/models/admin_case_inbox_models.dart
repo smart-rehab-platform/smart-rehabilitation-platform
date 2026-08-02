@@ -45,6 +45,7 @@ class AdminCaseInboxItem {
     required this.childName,
     this.dateOfBirth,
     this.gender,
+    this.childImageUrl,
     this.status,
     this.submittedAt,
     this.assignedAt,
@@ -59,6 +60,7 @@ class AdminCaseInboxItem {
   final String childName;
   final DateTime? dateOfBirth;
   final String? gender;
+  final String? childImageUrl;
   final CaseIntakeStatus? status;
   final DateTime? submittedAt;
   final DateTime? assignedAt;
@@ -87,6 +89,10 @@ class AdminCaseInboxItem {
         map['date_of_birth'] ?? map['dateOfBirth'],
       ),
       gender: ApiResponseParser.readString(map, const ['gender']),
+      childImageUrl: ApiResponseParser.readString(map, const [
+        'child_image_url',
+        'childImageUrl',
+      ]),
       status: CaseIntakeStatus.fromApi(
         ApiResponseParser.readString(map, const ['status']),
       ),

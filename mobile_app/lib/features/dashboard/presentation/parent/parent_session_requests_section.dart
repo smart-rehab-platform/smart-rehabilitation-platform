@@ -33,13 +33,13 @@ class ParentSessionRequestsSection extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: DashboardColors.purpleSoft,
+                color: DashboardColors.brandSoft,
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
                 '${state.requests.length}',
                 style: theme.textTheme.labelMedium?.copyWith(
-                  color: DashboardColors.primary,
+                  color: DashboardColors.brandCyan,
                   fontWeight: FontWeight.w800,
                 ),
               ),

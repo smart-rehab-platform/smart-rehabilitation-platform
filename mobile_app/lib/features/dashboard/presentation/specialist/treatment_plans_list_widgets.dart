@@ -34,7 +34,7 @@ Color treatmentPlanStatusColor(String? status) {
   return switch (status?.trim().toLowerCase()) {
     'completed' => DashboardColors.accent,
     'archived' => DashboardColors.textMuted,
-    _ => DashboardColors.primary,
+    _ => DashboardColors.brandCyan,
   };
 }
 
@@ -155,12 +155,12 @@ class TreatmentPlanFilterChips extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? DashboardColors.purpleSoft
+                    ? DashboardColors.brandSoft
                     : DashboardColors.surface,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: isSelected
-                      ? DashboardColors.primary
+                      ? DashboardColors.brandCyan
                       : DashboardColors.border,
                 ),
               ),
@@ -168,7 +168,7 @@ class TreatmentPlanFilterChips extends StatelessWidget {
                 filter.label,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: isSelected
-                          ? DashboardColors.primary
+                          ? DashboardColors.brandCyan
                           : DashboardColors.textSecondary,
                       fontWeight: FontWeight.w700,
                     ),

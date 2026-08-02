@@ -7,6 +7,7 @@ import '../../auth/models/auth_user.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/parent_dashboard_repository.dart';
 import '../models/parent_dashboard_models.dart';
+import 'parent_features_provider.dart';
 
 final parentDashboardRepositoryProvider = Provider<ParentDashboardRepository>((
   ref,
@@ -30,7 +31,7 @@ class ParentDashboardState {
     this.user,
     this.overview = const ParentOverviewData(),
     this.children = const [],
-    this.selectedChildId,
+    this.selectedPatientId,
     this.unreadNotifications = 0,
     this.dailyTasks = const [],
     this.submissions = const [],
@@ -49,6 +50,7 @@ class ParentDashboardState {
       totalToday: 0,
       streakDays: 0,
     ),
+    this.sessions = const [],
   });
 
   final bool isLoading;
@@ -57,7 +59,7 @@ class ParentDashboardState {
   final AuthUser? user;
   final ParentOverviewData overview;
   final List<ParentChild> children;
-  final String? selectedChildId;
+  final String? selectedPatientId;
   final int unreadNotifications;
   final List<ParentDailyTask> dailyTasks;
   final List<ParentSubmissionItem> submissions;
@@ -69,13 +71,14 @@ class ParentDashboardState {
   final ParentAttentionAlert? attentionAlert;
   final ParentNextAction nextAction;
   final ParentStreakInfo streakInfo;
+  final List<ParentSessionItem> sessions;
 
   ParentChild? get selectedChild {
-    if (selectedChildId == null) {
+    if (selectedPatientId == null) {
       return null;
     }
     for (final child in children) {
-      if (child.id == selectedChildId) {
+      if (child.id == selectedPatientId) {
         return child;
       }
     }
@@ -91,7 +94,7 @@ class ParentDashboardState {
     Object? user = _sentinel,
     ParentOverviewData? overview,
     List<ParentChild>? children,
-    Object? selectedChildId = _sentinel,
+    Object? selectedPatientId = _sentinel,
     int? unreadNotifications,
     List<ParentDailyTask>? dailyTasks,
     List<ParentSubmissionItem>? submissions,
@@ -103,6 +106,7 @@ class ParentDashboardState {
     Object? attentionAlert = _sentinel,
     ParentNextAction? nextAction,
     ParentStreakInfo? streakInfo,
+    List<ParentSessionItem>? sessions,
   }) {
     return ParentDashboardState(
       isLoading: isLoading ?? this.isLoading,
@@ -113,9 +117,9 @@ class ParentDashboardState {
       user: identical(user, _sentinel) ? this.user : user as AuthUser?,
       overview: overview ?? this.overview,
       children: children ?? this.children,
-      selectedChildId: identical(selectedChildId, _sentinel)
-          ? this.selectedChildId
-          : selectedChildId as String?,
+      selectedPatientId: identical(selectedPatientId, _sentinel)
+          ? this.selectedPatientId
+          : selectedPatientId as String?,
       unreadNotifications: unreadNotifications ?? this.unreadNotifications,
       dailyTasks: dailyTasks ?? this.dailyTasks,
       submissions: submissions ?? this.submissions,
@@ -135,6 +139,7 @@ class ParentDashboardState {
           : attentionAlert as ParentAttentionAlert?,
       nextAction: nextAction ?? this.nextAction,
       streakInfo: streakInfo ?? this.streakInfo,
+      sessions: sessions ?? this.sessions,
     );
   }
 }
@@ -167,12 +172,13 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
     state = state.copyWith(isLoading: true, errorMessage: null, user: user);
 
     try {
+      final previousSelectedId = state.selectedPatientId;
+
       final results = await Future.wait([
         _repository.fetchOverview(),
         _repository.fetchChildren(user.id!),
         _repository.fetchChildrenProgress(),
         _repository.fetchUnreadNotificationCount(user.id!),
-        _repository.fetchParentReports(),
         _repository.fetchParentSessions(user.id!),
       ]);
 
@@ -180,61 +186,52 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
       var children = results[1] as List<ParentChild>;
       final progressChildren = results[2] as List<ParentChild>;
       final unread = results[3] as int;
-      final parentReports = results[4] as List<ParentReportItem>;
-      final sessions = results[5] as List<ParentSessionItem>;
+      final sessions = results[4] as List<ParentSessionItem>;
 
       if (children.isEmpty && progressChildren.isNotEmpty) {
         children = progressChildren;
       }
 
       final mergedChildren = _mergeChildren(children, progressChildren);
-      final selectedId = mergedChildren.isNotEmpty
-          ? mergedChildren.first.id
-          : null;
-      final upcomingSessionsCount = sessions
-          .where((session) => session.isUpcoming)
-          .length;
-
-      final latestReportLabel = parentReports.isNotEmpty
-          ? parentReports.first.title
-          : (overview.latestReportLabel == 'No report yet'
-                ? 'No report yet'
-                : overview.latestReportLabel);
+      final selectedId = _resolveSelectedPatientId(
+        mergedChildren,
+        previousSelectedId,
+      );
 
       state = state.copyWith(
         isLoading: false,
         overview: ParentOverviewData(
           childrenCount: mergedChildren.length,
           todaysTasksCount: overview.todaysTasksCount,
-          upcomingSessionsCount: upcomingSessionsCount,
-          latestReportLabel: latestReportLabel,
+          upcomingSessionsCount: _upcomingSessionsCountForPatient(
+            sessions,
+            selectedId,
+          ),
+          latestReportLabel: 'No report yet',
         ),
         children: mergedChildren,
         childrenProgress: progressChildren.isNotEmpty
             ? progressChildren
             : mergedChildren,
-        selectedChildId: selectedId,
+        selectedPatientId: selectedId,
         unreadNotifications: unread,
-        reports: parentReports,
+        reports: const [],
+        sessions: sessions,
+        dailyTasks: const [],
+        submissions: const [],
+        aiInsight: null,
+        latestFeedback: null,
+        speechSummary: null,
+        attentionAlert: null,
+        streakInfo: const ParentStreakInfo(
+          completedToday: 0,
+          totalToday: 0,
+          streakDays: 0,
+        ),
       );
 
       if (selectedId != null) {
         await loadSelectedChildData(selectedId, showLoader: false);
-      } else {
-        state = state.copyWith(
-          dailyTasks: const [],
-          submissions: const [],
-          reports: parentReports,
-          aiInsight: null,
-          latestFeedback: null,
-          speechSummary: null,
-          attentionAlert: null,
-          streakInfo: const ParentStreakInfo(
-            completedToday: 0,
-            totalToday: 0,
-            streakDays: 0,
-          ),
-        );
       }
     } catch (error) {
       state = state.copyWith(
@@ -250,12 +247,12 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
   /// refreshed children list, selects that child and loads its dashboard data.
   ///
   /// If [preferOnlyIfNoPriorSelection] is true, selection only changes when the
-  /// previous [ParentDashboardState.selectedChildId] was null/empty.
+  /// previous [ParentDashboardState.selectedPatientId] was null/empty.
   Future<void> refreshAndPreferChild(
     String? preferredPatientId, {
     bool preferOnlyIfNoPriorSelection = false,
   }) async {
-    final previousSelectedId = state.selectedChildId;
+    final previousSelectedId = state.selectedPatientId;
     final previouslyHadNoChildren = state.children.isEmpty;
 
     await initialize();
@@ -277,11 +274,11 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
       return;
     }
 
-    if (state.selectedChildId == preferred) {
+    if (state.selectedPatientId == preferred) {
       return;
     }
 
-    await selectChild(preferred);
+    await selectPatient(preferred);
   }
 
   void syncUserFromAuth() {
@@ -304,21 +301,55 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
     } catch (_) {}
   }
 
-  Future<void> selectChild(String childId) async {
-    if (childId == state.selectedChildId) {
+  Future<void> selectPatient(String patientId) async {
+    if (patientId == state.selectedPatientId) {
       return;
     }
-    state = state.copyWith(selectedChildId: childId);
-    await loadSelectedChildData(childId);
+
+    state = state.copyWith(
+      selectedPatientId: patientId,
+      isLoadingChild: true,
+      errorMessage: null,
+      dailyTasks: const [],
+      submissions: const [],
+      reports: const [],
+      aiInsight: null,
+      latestFeedback: null,
+      speechSummary: null,
+      attentionAlert: null,
+      streakInfo: const ParentStreakInfo(
+        completedToday: 0,
+        totalToday: 0,
+        streakDays: 0,
+      ),
+      nextAction: const ParentNextAction(
+        label: 'Start Today\'s Exercise',
+        type: ParentNextActionType.startExercise,
+      ),
+      overview: state.overview.copyWithCounts(
+        todaysTasksCount: 0,
+        upcomingSessionsCount: _upcomingSessionsCountForPatient(
+          state.sessions,
+          patientId,
+        ),
+        latestReportLabel: 'No report yet',
+      ),
+    );
+
+    await loadSelectedChildData(patientId, showLoader: false);
   }
 
   Future<void> loadSelectedChildData(
-    String childId, {
+    String patientId, {
     bool showLoader = true,
   }) async {
+    if (state.selectedPatientId != patientId) {
+      state = state.copyWith(selectedPatientId: patientId);
+    }
+
     final child = state.children.firstWhere(
-      (item) => item.id == childId,
-      orElse: () => ParentChild(id: childId, name: 'Child'),
+      (item) => item.id == patientId,
+      orElse: () => ParentChild(id: patientId, name: 'Child'),
     );
 
     if (showLoader) {
@@ -327,19 +358,23 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
 
     try {
       final results = await Future.wait([
-        _repository.fetchDailyTasks(childId),
-        _repository.fetchSubmissions(childId),
-        _repository.fetchPatientReports(childId),
-        _repository.fetchAiInsight(childId, child.name),
-        _repository.fetchLatestFeedback(childId),
-        _repository.fetchSpeechSummary(childId),
-        _repository.fetchImprovementPercentage(childId),
-        _repository.fetchWeeklyProgress(childId),
+        _repository.fetchDailyTasks(patientId),
+        _repository.fetchSubmissions(patientId),
+        _repository.fetchPatientReports(patientId),
+        _repository.fetchAiInsight(patientId, child.name),
+        _repository.fetchLatestFeedback(patientId),
+        _repository.fetchSpeechSummary(patientId),
+        _repository.fetchImprovementPercentage(patientId),
+        _repository.fetchWeeklyProgress(patientId),
         if (state.user?.id != null)
           _repository.fetchNotifications(state.user!.id!)
         else
           Future<List<ParentNotificationItem>>.value(const []),
       ]);
+
+      if (state.selectedPatientId != patientId) {
+        return;
+      }
 
       final dailyTasks = _applySubmissionStatus(
         results[0] as List<ParentDailyTask>,
@@ -370,13 +405,11 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
         reports: reports,
       );
 
-      final resolvedReports = reports.isNotEmpty ? reports : state.reports;
-
       state = state.copyWith(
         isLoadingChild: false,
         dailyTasks: dailyTasks,
         submissions: submissions,
-        reports: resolvedReports,
+        reports: reports,
         aiInsight: aiInsight,
         latestFeedback: feedback,
         speechSummary: speech,
@@ -384,20 +417,59 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
         nextAction: nextAction,
         streakInfo: streakInfo,
         overview: state.overview.copyWithCounts(
-          todaysTasksCount: dailyTasks.isNotEmpty
-              ? dailyTasks.length
-              : state.overview.todaysTasksCount,
-          latestReportLabel: resolvedReports.isNotEmpty
-              ? resolvedReports.first.title
-              : state.overview.latestReportLabel,
+          todaysTasksCount: dailyTasks.length,
+          upcomingSessionsCount: _upcomingSessionsCountForPatient(
+            state.sessions,
+            patientId,
+          ),
+          latestReportLabel: reports.isNotEmpty
+              ? reports.first.title
+              : 'No report yet',
         ),
       );
+
+      _ensureTreatmentJourneyLoaded(patientId);
     } catch (error) {
+      if (state.selectedPatientId != patientId) {
+        return;
+      }
       state = state.copyWith(
         isLoadingChild: false,
         errorMessage: 'Failed to load child data: $error',
       );
     }
+  }
+
+  String? _resolveSelectedPatientId(
+    List<ParentChild> children,
+    String? previousSelectedId,
+  ) {
+    if (children.isEmpty) {
+      return null;
+    }
+
+    final previous = previousSelectedId?.trim();
+    if (previous != null &&
+        previous.isNotEmpty &&
+        children.any((child) => child.id == previous)) {
+      return previous;
+    }
+
+    return children.first.id;
+  }
+
+  int _upcomingSessionsCountForPatient(
+    List<ParentSessionItem> sessions,
+    String? patientId,
+  ) {
+    final id = patientId?.trim();
+    if (id == null || id.isEmpty) {
+      return 0;
+    }
+
+    return sessions.where((session) {
+      return session.patientId == id && session.isUpcoming;
+    }).length;
   }
 
   List<ParentChild> _mergeChildren(
@@ -422,6 +494,7 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
         progressPercent: child.progressPercent ?? existing?.progressPercent,
         dateOfBirth: existing?.dateOfBirth ?? child.dateOfBirth,
         gender: existing?.gender ?? child.gender,
+        profileImageUrl: existing?.profileImageUrl ?? child.profileImageUrl,
       );
     }
     return map.values.toList();
@@ -611,6 +684,16 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
       label: 'View Latest Report',
       type: ParentNextActionType.viewReport,
     );
+  }
+
+  void _ensureTreatmentJourneyLoaded(String patientId) {
+    if (patientId.trim().isEmpty) {
+      return;
+    }
+
+    _ref
+        .read(parentProgressProvider(patientId).notifier)
+        .changeJourneyPeriod(patientId, 'weekly');
   }
 }
 

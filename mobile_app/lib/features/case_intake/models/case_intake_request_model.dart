@@ -21,8 +21,7 @@ bool? _readBool(Map<String, dynamic> map, List<String> keys) {
 
 enum CaseIntakeGender {
   male('male', 'Male'),
-  female('female', 'Female'),
-  other('other', 'Other');
+  female('female', 'Female');
 
   const CaseIntakeGender(this.apiValue, this.label);
 
@@ -83,11 +82,11 @@ enum CaseIntakeStatus {
     CaseIntakeStatus.underAssessment =>
       'The assigned specialist is assessing the case.',
     CaseIntakeStatus.accepted =>
-      'The specialist accepted the case. A patient profile may be created soon.',
+      'The case was accepted. Patient profile creation is in progress.',
     CaseIntakeStatus.rejected =>
       'This request was not accepted. See the reason below.',
     CaseIntakeStatus.convertedToPatient =>
-      'The child profile is active and ready for follow-up.',
+      'The case was accepted and the patient profile was created.',
   };
 
   bool get isTerminal =>
@@ -165,6 +164,7 @@ class CaseIntakeRequest {
     required this.childName,
     this.dateOfBirth,
     this.gender,
+    this.childImageUrl,
     this.categoryId,
     this.caseDescription,
     this.observedDifficulties,
@@ -195,6 +195,7 @@ class CaseIntakeRequest {
   final String childName;
   final DateTime? dateOfBirth;
   final String? gender;
+  final String? childImageUrl;
   final String? categoryId;
   final String? caseDescription;
   final String? observedDifficulties;
@@ -260,6 +261,10 @@ class CaseIntakeRequest {
         map['date_of_birth'] ?? map['dateOfBirth'],
       ),
       gender: ApiResponseParser.readString(map, const ['gender']),
+      childImageUrl: ApiResponseParser.readString(map, const [
+        'child_image_url',
+        'childImageUrl',
+      ]),
       categoryId: ApiResponseParser.readString(map, const [
         'category_id',
         'categoryId',
@@ -367,6 +372,7 @@ class CaseIntakeRequest {
       childName: childName,
       dateOfBirth: dateOfBirth,
       gender: gender,
+      childImageUrl: childImageUrl,
       categoryId: categoryId,
       caseDescription: caseDescription,
       observedDifficulties: observedDifficulties,
@@ -407,6 +413,8 @@ class CaseIntakeRequestInput {
     required this.isCurrentlyReceivingTreatment,
     this.currentTreatmentDetails,
     required this.preferredContactPeriod,
+    this.childImageUrl,
+    this.clearChildImageUrl = false,
   });
 
   final String childName;
@@ -420,12 +428,19 @@ class CaseIntakeRequestInput {
   final bool isCurrentlyReceivingTreatment;
   final String? currentTreatmentDetails;
   final PreferredTimePeriod preferredContactPeriod;
+  final String? childImageUrl;
+  final bool clearChildImageUrl;
 
   Map<String, dynamic> toJson() {
     return {
       'child_name': childName.trim(),
       'date_of_birth': dateOfBirth,
       if (gender != null && gender!.trim().isNotEmpty) 'gender': gender!.trim(),
+      if (clearChildImageUrl) 'child_image_url': null,
+      if (!clearChildImageUrl &&
+          childImageUrl != null &&
+          childImageUrl!.trim().isNotEmpty)
+        'child_image_url': childImageUrl!.trim(),
       'category_id': categoryId,
       'case_description': caseDescription.trim(),
       if (observedDifficulties != null &&

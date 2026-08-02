@@ -98,8 +98,8 @@ class PatientQuickStatsGrid extends StatelessWidget {
           label: 'Active Goals',
           value: '${stats.activeGoals}',
           icon: Icons.flag_outlined,
-          iconBackground: DashboardColors.purpleSoft,
-          iconColor: DashboardColors.primary,
+          iconBackground: DashboardColors.brandSoft,
+          iconColor: DashboardColors.brandCyan,
           onTap: onActiveGoalsTap,
         ),
         DashboardSummaryCard(
@@ -225,7 +225,7 @@ class PatientGoalCard extends StatelessWidget {
               Text(
                 goal.termLabel,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: DashboardColors.primary,
+                  color: DashboardColors.brandCyan,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -372,7 +372,7 @@ class PatientSubmissionTile extends StatelessWidget {
         children: [
           Icon(
             _mediaIcon(submission.mediaTypeLabel),
-            color: DashboardColors.primary,
+            color: DashboardColors.brandCyan,
           ),
           SizedBox(width: context.dashSpacing * 0.65),
           Expanded(
@@ -499,8 +499,8 @@ class PatientDetailsEmptySection extends StatelessWidget {
             icon: const Icon(Icons.add_rounded),
             label: Text(actionLabel!),
             style: OutlinedButton.styleFrom(
-              foregroundColor: DashboardColors.primary,
-              side: const BorderSide(color: DashboardColors.primary),
+              foregroundColor: DashboardColors.brandCyan,
+              side: const BorderSide(color: DashboardColors.brandCyan),
             ),
           ),
         ],

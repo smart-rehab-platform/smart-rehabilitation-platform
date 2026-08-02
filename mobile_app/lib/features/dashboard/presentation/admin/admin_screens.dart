@@ -276,6 +276,7 @@ class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
       onNotificationsTap: () => context.push(AppRoutes.adminNotifications),
       onAvatarTap: () => context.push(AppRoutes.adminProfile),
       scrollBody: false,
+      showMessagesAction: false,
       appBarActions: [
         IconButton(
           tooltip: 'Add Exercise',
@@ -314,7 +315,7 @@ class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
                     onPressed: () => _openEditExercise(exercise.id),
                     icon: const Icon(
                       Icons.edit_outlined,
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                       size: 20,
                     ),
                   )

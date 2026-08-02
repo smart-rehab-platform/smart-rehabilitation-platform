@@ -36,12 +36,12 @@ class SessionFilterChips extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? DashboardColors.purpleSoft
+                      ? DashboardColors.brandSoft
                       : DashboardColors.surface,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isSelected
-                        ? DashboardColors.primary
+                        ? DashboardColors.brandCyan
                         : DashboardColors.border,
                   ),
                 ),
@@ -49,7 +49,7 @@ class SessionFilterChips extends StatelessWidget {
                   filter.label,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: isSelected
-                            ? DashboardColors.primary
+                            ? DashboardColors.brandCyan
                             : DashboardColors.textSecondary,
                         fontWeight: FontWeight.w700,
                       ),

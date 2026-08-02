@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
 import '../../../core/utils/api_response_parser.dart';
+import '../models/family_pattern_details_models.dart';
+import '../models/family_pattern_insight_models.dart';
 import '../models/specialist_patient_details_models.dart';
 
 /// Aggregates patient detail data from existing backend endpoints.
@@ -17,7 +19,8 @@ import '../models/specialist_patient_details_models.dart';
 /// - GET /exercise-submissions/:id/media
 /// - GET /patients/:id/reports
 /// - GET /patients/:id/notes
-/// - POST /patients/:id/notes
+/// - GET /patients/:id/family-patterns
+/// - GET /patients/:id/family-patterns/details
 ///
 /// Note: category_name is joined from exercise_categories when available.
 class SpecialistPatientDetailsRepository {
@@ -29,7 +32,9 @@ class SpecialistPatientDetailsRepository {
     final response = await _dio.get(path);
     return ApiResponseParser.extractList(response.data)
         .whereType<Map>()
-        .map((item) => item.map((key, value) => MapEntry(key.toString(), value)))
+        .map(
+          (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+        )
         .toList();
   }
 
@@ -95,8 +100,9 @@ class SpecialistPatientDetailsRepository {
         .length;
 
     final activeGoals = goals.where((goal) => !goal.isAchieved).length;
-    final activeAssigned =
-        assignedExercises.where((item) => item.statusLabel == 'Active').length;
+    final activeAssigned = assignedExercises
+        .where((item) => item.statusLabel == 'Active')
+        .length;
 
     return SpecialistPatientDetailsBundle(
       patient: PatientProfile.fromMap(patientMap),
@@ -118,6 +124,28 @@ class SpecialistPatientDetailsRepository {
 
   Future<void> addSpecialistNote(String patientId, String note) async {
     await _dio.post('/patients/$patientId/notes', data: {'note': note});
+  }
+
+  /// Supplementary family-pattern insight for specialist decision support.
+  Future<FamilyPatternInsight> fetchFamilyPatternInsight(
+    String patientId,
+  ) async {
+    final map = await _getMap('/patients/$patientId/family-patterns');
+    if (map == null) {
+      throw Exception('Family pattern insight not found');
+    }
+    return FamilyPatternInsight.fromMap(map);
+  }
+
+  /// Specialist-only matched children breakdown for review workflow.
+  Future<FamilyPatternDetails> fetchFamilyPatternDetails(
+    String patientId,
+  ) async {
+    final map = await _getMap('/patients/$patientId/family-patterns/details');
+    if (map == null) {
+      throw Exception('Family pattern details not found');
+    }
+    return FamilyPatternDetails.fromMap(map);
   }
 
   /// Updates patient profile fields supported by PUT /patients/:id.
@@ -161,7 +189,8 @@ class SpecialistPatientDetailsRepository {
     if (map == null) {
       return 0;
     }
-    final value = ApiResponseParser.readDouble(map, const [
+    final value =
+        ApiResponseParser.readDouble(map, const [
           'improvement_percentage',
           'improvementPercentage',
           'percentage',
@@ -189,10 +218,10 @@ class SpecialistPatientDetailsRepository {
             : await _getList('/goals/goals/$goalId/progress');
         final latest = progressRows.isNotEmpty
             ? ApiResponseParser.readDouble(progressRows.first, const [
-                  'completion_percentage',
-                  'completionPercentage',
-                ]) ??
-                0
+                    'completion_percentage',
+                    'completionPercentage',
+                  ]) ??
+                  0
             : 0.0;
 
         return PatientGoalItem.fromMap(
@@ -219,13 +248,14 @@ class SpecialistPatientDetailsRepository {
             ApiResponseParser.readString(row, const ['id', '_id']) ?? '';
         var mediaLabel = '—';
         if (submissionId.isNotEmpty) {
-          final mediaRows =
-              await _getList('/exercise-submissions/$submissionId/media');
+          final mediaRows = await _getList(
+            '/exercise-submissions/$submissionId/media',
+          );
           if (mediaRows.isNotEmpty) {
-            final raw = ApiResponseParser.readString(
-              mediaRows.first,
-              const ['media_type', 'mediaType'],
-            );
+            final raw = ApiResponseParser.readString(mediaRows.first, const [
+              'media_type',
+              'mediaType',
+            ]);
             mediaLabel = PatientSubmissionItem.mediaTypeFromRaw(raw);
           }
         }

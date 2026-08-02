@@ -5,12 +5,14 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../core/theme/dashboard_theme.dart';
 import '../../models/specialist_dashboard_models.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_dashboard_provider.dart';
 import '../../providers/specialist_features_provider.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/specialist_navigation.dart';
@@ -323,7 +325,7 @@ class _SpecialistTreatmentPlansScreenState
       body = RefreshIndicator(
         onRefresh: () =>
             ref.read(specialistTreatmentPlansProvider.notifier).refresh(),
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
@@ -379,8 +381,8 @@ class _SpecialistTreatmentPlansScreenState
                       icon: const Icon(Icons.add_rounded),
                       label: const Text('Add Treatment Plan'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: DashboardColors.primary,
-                        side: const BorderSide(color: DashboardColors.primary),
+                        foregroundColor: DashboardColors.brandCyan,
+                        side: const BorderSide(color: DashboardColors.brandCyan),
                       ),
                     ),
                   ],
@@ -570,84 +572,162 @@ class _SpecialistNotificationsScreenState
     final state = ref.watch(specialistNotificationsProvider);
     final theme = Theme.of(context);
 
-    return SpecialistPageScaffold(
-      title: 'Notifications',
-      showBackButton: true,
-      actions: [
-        if (state.unreadCount > 0)
-          TextButton(
-            onPressed: state.isUpdating
-                ? null
-                : () => ref
-                      .read(specialistNotificationsProvider.notifier)
-                      .markAllAsRead(),
-            child: const Text('Mark all as read'),
+    return Theme(
+      data: DashboardTheme.light,
+      child: Scaffold(
+        backgroundColor: DashboardColors.background,
+        appBar: AppBar(
+          backgroundColor: DashboardColors.background,
+          surfaceTintColor: Colors.transparent,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded),
+            onPressed: () => context.pop(),
           ),
-      ],
-      body: SpecialistAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () =>
-            ref.read(specialistNotificationsProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
-        emptyMessage: 'No notifications yet.',
-        child: Column(
-          children: state.items
-              .map(
-                (item) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
-                    onTap: () => ref
-                        .read(specialistNotificationsProvider.notifier)
-                        .markAsRead(item.id),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          item.isRead
-                              ? Icons.notifications_none_rounded
-                              : Icons.notifications_active_rounded,
-                          color: item.isRead
-                              ? DashboardColors.textMuted
-                              : DashboardColors.primary,
-                        ),
-                        SizedBox(width: context.dashSpacing * 0.65),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.title,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: item.isRead
-                                      ? FontWeight.w500
-                                      : FontWeight.w700,
-                                ),
-                              ),
-                              if (item.body != null)
+          automaticallyImplyLeading: true,
+          title: Text(
+            'Notifications',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          actions: [
+            _SpecialistNotificationBellAction(
+              count: state.unreadCount,
+              onTap: () => context.push(AppRoutes.specialistNotifications),
+            ),
+            CurrentUserAvatar(
+              radius: 18,
+              initialsFallback: 'SP',
+              onTap: () => context.push(AppRoutes.specialistProfile),
+            ),
+            SizedBox(width: context.dashSpacing * 0.35),
+          ],
+        ),
+        body: SafeArea(
+          child: SpecialistAsyncBody(
+            isLoading: state.isLoading,
+            errorMessage: state.errorMessage,
+            onRetry: () =>
+                ref.read(specialistNotificationsProvider.notifier).refresh(),
+            isEmpty: state.items.isEmpty,
+            emptyMessage: 'No notifications yet.',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (state.unreadCount > 0)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: state.isUpdating
+                          ? null
+                          : () => ref
+                                .read(specialistNotificationsProvider.notifier)
+                                .markAllAsRead(),
+                      child: const Text('Mark all as read'),
+                    ),
+                  ),
+                ...state.items.map(
+                  (item) => Padding(
+                    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
+                    child: DashboardSurfaceCard(
+                      onTap: () => ref
+                          .read(specialistNotificationsProvider.notifier)
+                          .markAsRead(item.id),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            item.isRead
+                                ? Icons.notifications_none_rounded
+                                : Icons.notifications_active_rounded,
+                            color: item.isRead
+                                ? DashboardColors.textMuted
+                                : DashboardColors.brandCyan,
+                          ),
+                          SizedBox(width: context.dashSpacing * 0.65),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  item.body!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: DashboardColors.textSecondary,
+                                  item.title,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: item.isRead
+                                        ? FontWeight.w500
+                                        : FontWeight.w700,
                                   ),
                                 ),
-                              Text(
-                                '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: DashboardColors.textMuted,
+                                if (item.body != null)
+                                  Text(
+                                    item.body!,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: DashboardColors.textSecondary,
+                                    ),
+                                  ),
+                                Text(
+                                  '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: DashboardColors.textMuted,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              )
-              .toList(),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _SpecialistNotificationBellAction extends StatelessWidget {
+  const _SpecialistNotificationBellAction({
+    required this.count,
+    required this.onTap,
+  });
+
+  final int count;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        IconButton(
+          onPressed: onTap,
+          icon: const Icon(Icons.notifications_none_rounded),
+        ),
+        if (count > 0)
+          Positioned(
+            right: 6,
+            top: 6,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: DashboardColors.warning,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+              child: Text(
+                count > 9 ? '9+' : '$count',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
@@ -677,11 +757,6 @@ class SpecialistMoreScreen extends ConsumerWidget {
             icon: Icons.person_outline_rounded,
             label: 'Profile',
             onTap: () => context.push(AppRoutes.specialistProfile),
-          ),
-          _MoreTile(
-            icon: Icons.link_rounded,
-            label: 'Manage Parent Links',
-            onTap: () => context.push(AppRoutes.manageParentLinks),
           ),
           _MoreTile(
             icon: Icons.notifications_none_rounded,
@@ -728,11 +803,11 @@ Widget _buildReviewCard(
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: DashboardColors.primary.withValues(alpha: 0.15),
+            backgroundColor: DashboardColors.brandCyan.withValues(alpha: 0.15),
             child: Text(
               dashboardAvatarLetter(review.patientName),
               style: TextStyle(
-                color: DashboardColors.primary,
+                color: DashboardColors.brandCyan,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -768,7 +843,7 @@ Widget _buildReviewCard(
 
 Color _progressColor(int index) {
   const colors = [
-    DashboardColors.primary,
+    DashboardColors.brandCyan,
     DashboardColors.accent,
     Color(0xFF3B82F6),
     DashboardColors.warning,
@@ -802,7 +877,7 @@ class _MoreTile extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
-            Icon(icon, color: DashboardColors.primary),
+            Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
               child: Text(

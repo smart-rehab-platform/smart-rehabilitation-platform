@@ -17,7 +17,6 @@ import '../../features/case_intake/presentation/admin/admin_case_request_details
 import '../../features/case_intake/presentation/admin/admin_matching_specialists_screen.dart';
 import '../../features/case_intake/presentation/specialist/specialist_assigned_cases_screen.dart';
 import '../../features/case_intake/presentation/specialist/specialist_case_request_details_screen.dart';
-import '../../features/case_intake/presentation/specialist/specialist_convert_patient_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_screens.dart';
 import '../../features/dashboard/presentation/admin/admin_ai_center_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_audit_logs_screen.dart';
@@ -27,7 +26,6 @@ import '../../features/dashboard/presentation/admin/admin_sessions_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_users_screen.dart';
 import '../../features/dashboard/presentation/admin/patient_assignments_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
-import '../../features/dashboard/presentation/manage_parent_links_screen.dart';
 import '../../features/dashboard/presentation/parent/edit_parent_profile_screen.dart';
 import '../../features/dashboard/presentation/communication/chat_screen.dart';
 import '../../features/dashboard/presentation/communication/conversations_list_screen.dart';
@@ -50,6 +48,7 @@ import '../../features/dashboard/presentation/specialist/specialist_upsert_exerc
 import '../../features/dashboard/presentation/specialist/specialist_profile_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_report_details_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_reports_screen.dart';
+import '../../features/dashboard/presentation/specialist/specialist_sessions_calendar_widgets.dart';
 import '../../features/dashboard/presentation/specialist/specialist_sessions_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_session_details_screen.dart';
 import '../../features/dashboard/presentation/specialist/specialist_upsert_session_screen.dart';
@@ -301,12 +300,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'parentChat',
         builder: (context, state) {
           final conversationId = state.pathParameters['conversationId'] ?? '';
-          final conversation = state.extra is CommunicationConversation
-              ? state.extra as CommunicationConversation
-              : null;
+          final extra = state.extra;
+          CommunicationConversation? conversation;
+          String? initialDraftMessage;
+          if (extra is CommunicationChatRouteArgs) {
+            conversation = extra.conversation;
+            initialDraftMessage = extra.initialDraftMessage;
+          } else if (extra is CommunicationConversation) {
+            conversation = extra;
+          }
           return CommunicationChatScreen(
             conversationId: conversationId,
             initialConversation: conversation,
+            initialDraftMessage: initialDraftMessage,
           );
         },
       ),
@@ -325,11 +331,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.specialistDashboard,
         name: 'specialistDashboard',
         builder: (context, state) => const SpecialistDashboardScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.manageParentLinks,
-        name: 'manageParentLinks',
-        builder: (context, state) => const ManageParentLinksScreen(),
       ),
       GoRoute(
         path: AppRoutes.specialistPatients,
@@ -387,14 +388,26 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.specialistSessions,
         name: 'specialistSessions',
-        builder: (context, state) => const SpecialistSessionsScreen(),
+        builder: (context, state) {
+          final view = state.uri.queryParameters['view'];
+          final initialViewMode = view == 'calendar'
+              ? SpecialistSessionsViewMode.calendar
+              : SpecialistSessionsViewMode.list;
+          return SpecialistSessionsScreen(initialViewMode: initialViewMode);
+        },
       ),
       GoRoute(
         path: AppRoutes.specialistCreateSession,
         name: 'specialistCreateSession',
-        builder: (context, state) => SpecialistUpsertSessionScreen(
-          initialPatientId: state.uri.queryParameters['patientId'],
-        ),
+        builder: (context, state) {
+          final initialNotes = state.extra is String
+              ? state.extra as String
+              : null;
+          return SpecialistUpsertSessionScreen(
+            initialPatientId: state.uri.queryParameters['patientId'],
+            initialSessionNotes: initialNotes,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.specialistEditSessionPath,
@@ -518,12 +531,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'specialistChat',
         builder: (context, state) {
           final conversationId = state.pathParameters['conversationId'] ?? '';
-          final conversation = state.extra is CommunicationConversation
-              ? state.extra as CommunicationConversation
-              : null;
+          final extra = state.extra;
+          CommunicationConversation? conversation;
+          String? initialDraftMessage;
+          if (extra is CommunicationChatRouteArgs) {
+            conversation = extra.conversation;
+            initialDraftMessage = extra.initialDraftMessage;
+          } else if (extra is CommunicationConversation) {
+            conversation = extra;
+          }
           return CommunicationChatScreen(
             conversationId: conversationId,
             initialConversation: conversation,
+            initialDraftMessage: initialDraftMessage,
           );
         },
       ),
@@ -541,13 +561,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.specialistCaseRequestDetailPath,
         name: 'specialistCaseRequestDetail',
         builder: (context, state) => SpecialistCaseRequestDetailsScreen(
-          requestId: state.pathParameters['requestId']!,
-        ),
-      ),
-      GoRoute(
-        path: AppRoutes.specialistConvertPatientPath,
-        name: 'specialistConvertPatient',
-        builder: (context, state) => SpecialistConvertPatientScreen(
           requestId: state.pathParameters['requestId']!,
         ),
       ),

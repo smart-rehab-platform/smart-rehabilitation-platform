@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/api_constants.dart';
 import '../../../core/constants/dashboard_colors.dart';
+import '../../auth/providers/auth_provider.dart';
+import 'dashboard_layout.dart';
 
 class DashboardProfileAvatar extends StatefulWidget {
   const DashboardProfileAvatar({
@@ -64,7 +67,7 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
     if (widget.initials.trim().isEmpty) {
       return Icon(
         Icons.person_outline_rounded,
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         size: widget.radius * 0.9,
       );
     }
@@ -72,7 +75,7 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
     return Text(
       widget.initials,
       style: theme.textTheme.labelLarge?.copyWith(
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         fontWeight: FontWeight.w700,
         fontSize: widget.radius * 0.72,
       ),
@@ -82,14 +85,14 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
   Widget _initialsAvatar(ThemeData theme, {bool showLoading = false}) {
     return CircleAvatar(
       radius: widget.radius,
-      backgroundColor: DashboardColors.purpleSoft,
+      backgroundColor: DashboardColors.brandSoft,
       child: showLoading || widget.isLoading
           ? SizedBox(
               width: widget.radius,
               height: widget.radius,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: DashboardColors.primary,
+                color: DashboardColors.brandCyan,
               ),
             )
           : _initialsContent(theme),
@@ -99,7 +102,7 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
   Widget _previewAvatar() {
     return CircleAvatar(
       radius: widget.radius,
-      backgroundColor: DashboardColors.purpleSoft,
+      backgroundColor: DashboardColors.brandSoft,
       backgroundImage: MemoryImage(widget.previewBytes!),
     );
   }
@@ -121,14 +124,14 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
             width: widget.radius * 2,
             height: widget.radius * 2,
             child: ColoredBox(
-              color: DashboardColors.purpleSoft,
+              color: DashboardColors.brandSoft,
               child: Center(
                 child: SizedBox(
                   width: widget.radius,
                   height: widget.radius,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: DashboardColors.primary,
+                    color: DashboardColors.brandCyan,
                     value: loadingProgress.expectedTotalBytes != null
                         ? loadingProgress.cumulativeBytesLoaded /
                               loadingProgress.expectedTotalBytes!
@@ -150,7 +153,7 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
             width: widget.radius * 2,
             height: widget.radius * 2,
             child: ColoredBox(
-              color: DashboardColors.purpleSoft,
+              color: DashboardColors.brandSoft,
               child: Center(child: _initialsContent(theme)),
             ),
           );
@@ -182,6 +185,36 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
       onTap: widget.isLoading ? null : widget.onTap,
       customBorder: const CircleBorder(),
       child: avatar,
+    );
+  }
+}
+
+/// Authenticated user's avatar sourced from [authProvider].
+class CurrentUserAvatar extends ConsumerWidget {
+  const CurrentUserAvatar({
+    super.key,
+    this.radius = 18,
+    this.initialsFallback = 'PR',
+    this.onTap,
+    this.imageCacheBustMs,
+  });
+
+  final double radius;
+  final String initialsFallback;
+  final VoidCallback? onTap;
+  final int? imageCacheBustMs;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authProvider);
+    final fullName = auth.user?.fullName;
+
+    return DashboardProfileAvatar(
+      initials: dashboardInitials(fullName, fallback: initialsFallback),
+      imageUrl: auth.user?.profileImageUrl,
+      radius: radius,
+      onTap: onTap,
+      imageCacheBustMs: imageCacheBustMs,
     );
   }
 }
@@ -231,7 +264,7 @@ class EditableProfileAvatar extends StatelessWidget {
               right: 0,
               bottom: 0,
               child: Material(
-                color: DashboardColors.primary,
+                color: DashboardColors.brandCyan,
                 shape: const CircleBorder(),
                 elevation: 2,
                 child: InkWell(

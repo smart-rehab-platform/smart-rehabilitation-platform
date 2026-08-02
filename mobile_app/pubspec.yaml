@@ -74,6 +74,18 @@ flutter:
 
   assets:
     - assets/videos/auth-bg.mp4
+    - assets/branding/smart_rehab_horizontal_logo.png
+    - assets/branding/smart_rehab_icon.png
+    - assets/icons/family_pattern/stethoscope.png
+    - assets/icons/family_pattern/clipboard_list.png
+    - assets/icons/family_pattern/eye_search.png
+    - assets/icons/family_pattern/history.png
+    - assets/icons/family_pattern/brain.png
+    - assets/icons/treatment_journey/chart_area_line.png
+    - assets/icons/treatment_journey/current_location.png
+    - assets/icons/treatment_journey/target.png
+    - assets/icons/treatment_journey/trending_up.png
+    - assets/icons/treatment_journey/calendar_event.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

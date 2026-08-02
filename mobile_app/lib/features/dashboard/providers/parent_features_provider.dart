@@ -366,12 +366,12 @@ class ParentExercisesNotifier extends StateNotifier<ParentExercisesState> {
         );
       }
       state = state.copyWith(isSubmitting: false);
-      final childId = _ref.read(parentDashboardProvider).selectedChildId;
-      if (childId != null) {
-        await loadForChild(childId);
+      final patientId = _ref.read(parentDashboardProvider).selectedPatientId;
+      if (patientId != null) {
+        await loadForChild(patientId);
         await _ref
             .read(parentDashboardProvider.notifier)
-            .loadSelectedChildData(childId, showLoader: false);
+            .loadSelectedChildData(patientId, showLoader: false);
       }
       return null;
     } catch (error, stackTrace) {
@@ -555,6 +555,10 @@ class ParentProgressState {
     this.monthly = const [],
     this.improvementPercentage,
     this.metrics = const ParentPerformanceMetrics(),
+    this.treatmentJourney,
+    this.selectedJourneyPeriod = 'weekly',
+    this.isJourneyLoading = false,
+    this.journeyError,
   });
 
   final bool isLoading;
@@ -565,6 +569,10 @@ class ParentProgressState {
   final List<ParentProgressSnapshot> monthly;
   final double? improvementPercentage;
   final ParentPerformanceMetrics metrics;
+  final ParentTreatmentJourney? treatmentJourney;
+  final String selectedJourneyPeriod;
+  final bool isJourneyLoading;
+  final String? journeyError;
 
   ParentProgressState copyWith({
     bool? isLoading,
@@ -575,6 +583,10 @@ class ParentProgressState {
     List<ParentProgressSnapshot>? monthly,
     double? improvementPercentage,
     ParentPerformanceMetrics? metrics,
+    Object? treatmentJourney = _sentinel,
+    String? selectedJourneyPeriod,
+    bool? isJourneyLoading,
+    Object? journeyError = _sentinel,
   }) {
     return ParentProgressState(
       isLoading: isLoading ?? this.isLoading,
@@ -588,6 +600,15 @@ class ParentProgressState {
       improvementPercentage:
           improvementPercentage ?? this.improvementPercentage,
       metrics: metrics ?? this.metrics,
+      treatmentJourney: identical(treatmentJourney, _sentinel)
+          ? this.treatmentJourney
+          : treatmentJourney as ParentTreatmentJourney?,
+      selectedJourneyPeriod:
+          selectedJourneyPeriod ?? this.selectedJourneyPeriod,
+      isJourneyLoading: isJourneyLoading ?? this.isJourneyLoading,
+      journeyError: identical(journeyError, _sentinel)
+          ? this.journeyError
+          : journeyError as String?,
     );
   }
 }
@@ -610,9 +631,12 @@ class ParentProgressNotifier extends StateNotifier<ParentProgressState> {
 
   final ParentDashboardRepository _repository;
   final String _childId;
+  int _journeyRequestId = 0;
 
   Future<void> initialize() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
+    final journeyLoad = loadTreatmentJourney(_childId, period: 'weekly');
+
     try {
       final results = await Future.wait([
         _repository.fetchProgress(_childId),
@@ -639,6 +663,75 @@ class ParentProgressNotifier extends StateNotifier<ParentProgressState> {
         errorMessage: 'Failed to load progress: $error',
       );
     }
+
+    await journeyLoad;
+  }
+
+  Future<void> loadTreatmentJourney(
+    String patientId, {
+    String? period,
+  }) async {
+    if (patientId != _childId) {
+      return;
+    }
+
+    final requestId = ++_journeyRequestId;
+    final periodToLoad = ParentDashboardRepository.normalizeJourneyPeriod(
+      period ?? state.selectedJourneyPeriod,
+    );
+
+    state = state.copyWith(
+      isJourneyLoading: true,
+      journeyError: null,
+      selectedJourneyPeriod: periodToLoad,
+    );
+
+    try {
+      final journey = await _repository.fetchTreatmentJourney(
+        patientId,
+        period: periodToLoad,
+      );
+
+      if (requestId != _journeyRequestId) {
+        return;
+      }
+
+      state = state.copyWith(
+        isJourneyLoading: false,
+        treatmentJourney: journey,
+        selectedJourneyPeriod: journey.period,
+        journeyError: null,
+      );
+    } catch (error) {
+      if (requestId != _journeyRequestId) {
+        return;
+      }
+
+      state = state.copyWith(
+        isJourneyLoading: false,
+        journeyError: error.toString().replaceFirst(RegExp(r'^Exception:\s*'), ''),
+      );
+    }
+  }
+
+  Future<void> changeJourneyPeriod(String patientId, String period) async {
+    if (patientId != _childId) {
+      return;
+    }
+
+    if (!ParentDashboardRepository.isValidJourneyPeriod(period)) {
+      return;
+    }
+
+    final normalizedPeriod = period.trim().toLowerCase();
+
+    if (state.selectedJourneyPeriod == normalizedPeriod &&
+        state.treatmentJourney != null &&
+        !state.isJourneyLoading) {
+      return;
+    }
+
+    await loadTreatmentJourney(patientId, period: normalizedPeriod);
   }
 
   Future<void> refresh() => initialize();

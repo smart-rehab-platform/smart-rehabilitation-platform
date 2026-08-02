@@ -10,7 +10,6 @@ class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String parentDashboard = '/dashboard/parent';
   static const String specialistDashboard = '/dashboard/specialist';
-  static const String manageParentLinks = '/dashboard/specialist/parent-links';
   static const String specialistPatients = '/dashboard/specialist/patients';
   static const String specialistPatientDetailsPath =
       '/dashboard/specialist/patient/:patientId';
@@ -56,9 +55,24 @@ class AppRoutes {
     return base;
   }
 
+ 
   static const String specialistPendingReviews =
       '/dashboard/specialist/pending-reviews';
-  static const String specialistSessions = '/dashboard/specialist/sessions';
+
+  static const String specialistSessions =
+      '/dashboard/specialist/sessions';
+
+  /// Opens Specialist Sessions in calendar or list mode via `?view=`.
+  static String specialistSessionsWithView({String view = 'list'}) {
+    if (view == 'calendar') {
+      return Uri(
+        path: specialistSessions,
+        queryParameters: const {'view': 'calendar'},
+      ).toString();
+    }
+    return specialistSessions;
+  }
+
   static const String specialistSessionDetailsPath =
       '/dashboard/specialist/sessions/:sessionId';
 
@@ -156,12 +170,6 @@ class AppRoutes {
 
   static String specialistCaseRequestDetail(String requestId) =>
       '/dashboard/specialist/case-requests/$requestId';
-
-  static const String specialistConvertPatientPath =
-      '/dashboard/specialist/case-requests/:requestId/convert';
-
-  static String specialistConvertPatient(String requestId) =>
-      '/dashboard/specialist/case-requests/$requestId/convert';
 
   static const String adminDashboard = '/dashboard/admin';
   static const String adminPatients = '/dashboard/admin/patients';

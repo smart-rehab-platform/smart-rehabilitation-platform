@@ -1,11 +1,21 @@
+const fs = require("fs");
+
 const uploadsService = require("./uploads.service");
 
-const handleUploadError = (res, err, options = {}) => {
+const cleanupUploadedFile = (file) => {
+  if (!file?.path) {
+    return;
+  }
+
+  fs.unlink(file.path, () => {});
+};
+
+const handleUploadError = (res, err, { maxSizeMessage = null } = {}) => {
   if (err && err.code === "LIMIT_FILE_SIZE") {
-    const maxLabel = options.maxSizeLabel || "50 MB";
     return res.status(400).json({
       success: false,
-      message: `File is too large. Maximum allowed size is ${maxLabel}.`,
+      message:
+        maxSizeMessage || "File is too large. Maximum allowed size is 50 MB.",
     });
   }
 
@@ -20,29 +30,52 @@ const handleUpload = (req, res) => {
   if (!req.file) {
     return res.status(400).json({
       success: false,
-      message: "No file uploaded"
+      message: "No file uploaded",
     });
   }
 
   res.status(201).json({
     success: true,
     message: "File uploaded successfully",
-    data: uploadsService.uploadFile(req.file)
+    data: uploadsService.uploadFile(req.file),
   });
+};
+
+const handleChildImageUpload = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: "No image uploaded",
+    });
+  }
+
+  try {
+    return res.status(201).json({
+      success: true,
+      message: "Child image uploaded successfully",
+      data: uploadsService.uploadFile(req.file),
+    });
+  } catch (error) {
+    cleanupUploadedFile(req.file);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || "Child image upload failed.",
+    });
+  }
 };
 
 const handleReportUpload = (req, res) => {
   if (!req.file) {
     return res.status(400).json({
       success: false,
-      message: "No file uploaded"
+      message: "No file uploaded",
     });
   }
 
   res.status(201).json({
     success: true,
     message: "Report file uploaded successfully",
-    data: uploadsService.uploadReportFile(req.file)
+    data: uploadsService.uploadReportFile(req.file),
   });
 };
 
@@ -60,6 +93,7 @@ module.exports = {
   uploadExerciseSubmissionMedia: handleUpload,
   uploadCaseRequestChildImage: handleUpload,
   uploadMessageAttachment: handleMessageAttachmentUpload,
+  uploadChildImage: handleChildImageUpload,
   uploadResource: handleUpload,
   uploadReport: handleReportUpload,
   handleUploadError,

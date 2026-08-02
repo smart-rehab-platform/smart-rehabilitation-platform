@@ -71,12 +71,12 @@ class PlanStatusSelector extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: selected
-                  ? DashboardColors.purpleSoft
+                  ? DashboardColors.brandSoft
                   : DashboardColors.surface,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: selected
-                    ? DashboardColors.primary
+                    ? DashboardColors.brandCyan
                     : DashboardColors.border,
               ),
             ),
@@ -84,7 +84,7 @@ class PlanStatusSelector extends StatelessWidget {
               value.label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: selected
-                        ? DashboardColors.primary
+                        ? DashboardColors.brandCyan
                         : DashboardColors.textSecondary,
                     fontWeight: FontWeight.w700,
                   ),
@@ -161,7 +161,7 @@ class PlanDatePickerField extends StatelessWidget {
             ),
           Icon(
             Icons.calendar_today_outlined,
-            color: DashboardColors.primary,
+            color: DashboardColors.brandCyan,
             size: context.dashSpacing * 0.55,
           ),
         ],
@@ -185,7 +185,7 @@ InputDecoration _planFieldDecoration(String hint) {
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(color: DashboardColors.primary),
+      borderSide: const BorderSide(color: DashboardColors.brandCyan),
     ),
   );
 }

@@ -83,7 +83,7 @@ class _SpecialistAssignedExerciseDetailsScreenState
 
       body = RefreshIndicator(
         onRefresh: notifier.refresh,
-        color: DashboardColors.primary,
+        color: DashboardColors.brandCyan,
         child: ListView(
           padding: context.dashPadding,
           children: [
@@ -215,7 +215,7 @@ class _SpecialistAssignedExerciseDetailsScreenState
                   children: [
                     Icon(
                       Icons.rate_review_outlined,
-                      color: DashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                     ),
                     SizedBox(width: context.dashSpacing * 0.65),
                     Expanded(
@@ -258,8 +258,8 @@ class _SpecialistAssignedExerciseDetailsScreenState
                 icon: const Icon(Icons.menu_book_outlined),
                 label: const Text('Open library exercise'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: DashboardColors.primary,
-                  side: const BorderSide(color: DashboardColors.primary),
+                  foregroundColor: DashboardColors.brandCyan,
+                  side: const BorderSide(color: DashboardColors.brandCyan),
                 ),
               ),
             ],

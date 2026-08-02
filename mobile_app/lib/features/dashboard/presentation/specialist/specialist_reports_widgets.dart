@@ -263,7 +263,7 @@ class SpecialistReportAttachmentCard extends StatelessWidget {
         children: [
           Icon(
             Icons.picture_as_pdf_outlined,
-            color: DashboardColors.primary,
+            color: DashboardColors.brandCyan,
             size: context.dashSpacing * 0.65,
           ),
           SizedBox(width: context.dashSpacing * 0.5),
@@ -291,14 +291,14 @@ class _MetaChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: DashboardColors.purpleSoft,
+        color: DashboardColors.brandSoft,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: DashboardColors.border),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: DashboardColors.primary,
+              color: DashboardColors.brandCyan,
               fontWeight: FontWeight.w700,
             ),
       ),

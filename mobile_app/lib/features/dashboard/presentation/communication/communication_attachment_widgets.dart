@@ -215,7 +215,7 @@ class _CommunicationAudioAttachmentState
                 onPressed: _isReady ? _togglePlayback : null,
                 icon: Icon(
                   playing ? Icons.pause_circle_filled : Icons.play_circle_fill,
-                  color: DashboardColors.primary,
+                  color: DashboardColors.brandCyan,
                 ),
               ),
               Expanded(
@@ -350,7 +350,7 @@ class CommunicationFileAttachment extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: DashboardColors.primary),
+            Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.5),
             Expanded(
               child: Column(
@@ -444,7 +444,7 @@ class CommunicationPendingAttachmentPreview extends StatelessWidget {
     return DashboardSurfaceCard(
       child: Row(
         children: [
-          Icon(selection.icon, color: DashboardColors.primary),
+          Icon(selection.icon, color: DashboardColors.brandCyan),
           SizedBox(width: context.dashSpacing * 0.55),
           Expanded(
             child: Column(
