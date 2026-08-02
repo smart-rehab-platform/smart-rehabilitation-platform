@@ -32,12 +32,12 @@ export function PasswordStrength({ password }) {
     <div
       className="rounded-xl p-3 border"
       style={{
-        background: C.inputBg,
+        background: "rgba(255, 255, 255, 0.65)",
         borderColor: `${style.color}40`,
       }}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-semibold" style={{ color: C.light }}>
+        <p className="text-xs font-semibold" style={{ color: "#4A6580" }}>
           Password strength
         </p>
         <p className="text-xs font-semibold" style={{ color: style.color }}>

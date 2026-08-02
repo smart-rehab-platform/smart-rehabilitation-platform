@@ -12,6 +12,8 @@ class DashboardSummaryCard extends StatelessWidget {
     required this.icon,
     required this.iconBackground,
     required this.iconColor,
+    this.backgroundColor,
+    this.circularIcon = false,
     this.onTap,
     this.valueMaxLines = 1,
     this.valueStyle,
@@ -25,6 +27,8 @@ class DashboardSummaryCard extends StatelessWidget {
   final IconData icon;
   final Color iconBackground;
   final Color iconColor;
+  final Color? backgroundColor;
+  final bool circularIcon;
   final VoidCallback? onTap;
   final int valueMaxLines;
   final TextStyle? valueStyle;
@@ -41,42 +45,133 @@ class DashboardSummaryCard extends StatelessWidget {
       return _buildCompactHorizontalCard(context, theme, spacing);
     }
 
-    return _buildStandardCard(context, theme, spacing);
-  }
-
-  Widget _buildStandardCard(
-    BuildContext context,
-    ThemeData theme,
-    double spacing,
-  ) {
-    final cardPadding = spacing * 0.75;
-    final iconPadding = spacing * 0.45;
     final iconSize = spacing * 0.55;
-    final gapAfterIcon = spacing * 0.65;
-    final gapAfterValue = spacing * 0.15;
-    final gapAfterLabel = spacing * 0.15;
+
+    Widget iconWidget = Icon(
+      icon,
+      size: iconSize,
+      color: iconColor,
+    );
+
+    if (circularIcon) {
+      iconWidget = Container(
+        width: iconSize * 2.35,
+        height: iconSize * 2.35,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: iconBackground,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          size: iconSize,
+          color: iconColor,
+        ),
+      );
+    } else {
+      iconWidget = Container(
+        padding: EdgeInsets.all(spacing * 0.45),
+        decoration: BoxDecoration(
+          color: iconBackground,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: iconWidget,
+      );
+    }
+
+    final cardDecoration = backgroundColor != null
+        ? BoxDecoration(
+            color: backgroundColor,
+            borderRadius: DashboardDecorations.cardRadius,
+            border: Border.all(
+              color: iconBackground.withValues(alpha: 0.65),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: iconColor.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          )
+        : null;
+
+    final valueText = Text(
+      value,
+      maxLines: valueMaxLines,
+      overflow: TextOverflow.ellipsis,
+      style: valueStyle ??
+          theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: DashboardColors.textPrimary,
+            height: 1.2,
+          ),
+    );
+
+    final labelText = Text(
+      label,
+      maxLines: labelMaxLines,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: DashboardColors.textSecondary,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+
+    final subtitleWidget = subtitle == null
+        ? null
+        : Text(
+            subtitle!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
+              fontWeight: FontWeight.w500,
+            ),
+          );
+
+    final cardContent = circularIcon
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  iconWidget,
+                  const SizedBox(width: 14),
+                  Expanded(child: valueText),
+                ],
+              ),
+              SizedBox(height: spacing * 0.25),
+              labelText,
+              if (subtitleWidget != null) ...[
+                SizedBox(height: spacing * 0.15),
+                subtitleWidget,
+              ],
+            ],
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              iconWidget,
+              SizedBox(height: spacing * 0.65),
+              valueText,
+              SizedBox(height: spacing * 0.15),
+              labelText,
+              if (subtitleWidget != null) ...[
+                SizedBox(height: spacing * 0.15),
+                subtitleWidget,
+              ],
+            ],
+          );
 
     return DashboardSurfaceCard(
       onTap: onTap,
-      padding: EdgeInsets.all(cardPadding),
-      child: Align(
-        alignment: Alignment.topLeft,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildIconBadge(iconPadding: iconPadding, iconSize: iconSize),
-            SizedBox(height: gapAfterIcon),
-            ..._buildTextBlock(
-              theme: theme,
-              valueHeight: 1.2,
-              labelHeight: 1.25,
-              gapAfterValue: gapAfterValue,
-              gapAfterLabel: gapAfterLabel,
-            ),
-          ],
-        ),
-      ),
+      padding: EdgeInsets.all(spacing * 0.75),
+      backgroundColor: backgroundColor ?? DashboardColors.surface,
+      tint: iconColor,
+      decoration: cardDecoration,
+      child: cardContent,
     );
   }
 

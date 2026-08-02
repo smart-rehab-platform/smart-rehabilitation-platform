@@ -49,3 +49,21 @@ export function readAuthApiMessage(error, fallbackMessage) {
 
   return fallbackMessage;
 }
+
+export function resolveUploadUrl(url) {
+  if (!url) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
+  const origin = apiBase.replace(/\/api\/v1\/?$/, "");
+  return `${origin}${url.startsWith("/") ? url : `/${url}`}`;
+}
+
+export function resolveUploadedImageUrl(url) {
+  return resolveUploadUrl(url);
+}

@@ -1,23 +1,20 @@
 import { useId } from "react";
-import { CheckCircle, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { C, G } from "./tokens";
 
-export function AuthInput({
+export function AuthTextarea({
   label,
-  icon,
-  type = "text",
   placeholder,
   value,
   onChange,
   state = "idle",
   message,
-  rightSlot,
   onBlur,
-  inputRef,
-  describedBy,
+  maxLength = 500,
+  rows = 3,
+  showCounter = false,
 }) {
-  const inputId = useId();
-  const messageId = `${inputId}-message`;
+  const textareaId = useId();
   const hasValue = String(value ?? "").length > 0;
 
   const borderColor =
@@ -35,23 +32,14 @@ export function AuthInput({
   return (
     <div className="flex flex-col gap-2">
       <div className="auth-input-shell group relative">
-        <span
-          className="auth-input-icon absolute left-4 top-1/2 z-10 -translate-y-1/2 pointer-events-none transition-colors duration-200"
-          style={{ color: C.iconInteractive, opacity: 0.75 }}
-        >
-          {icon}
-        </span>
-
-        <input
-          ref={inputRef}
-          id={inputId}
-          type={type}
+        <textarea
+          id={textareaId}
           placeholder=" "
+          rows={rows}
+          maxLength={maxLength}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          aria-invalid={state === "error"}
-          aria-describedby={message ? describedBy ?? messageId : undefined}
-          className="auth-input peer w-full rounded-2xl pl-11 pr-11 pt-6 pb-2 text-sm leading-5 outline-none transition-all duration-200"
+          className="auth-textarea peer w-full resize-none rounded-2xl px-4 pb-2 pt-6 text-sm leading-5 outline-none transition-all duration-200"
           style={{
             background: G.inputGlass,
             border: `1px solid ${borderColor}`,
@@ -72,8 +60,8 @@ export function AuthInput({
         />
 
         <label
-          htmlFor={inputId}
-          className={`auth-input-label pointer-events-none absolute left-11 z-10 origin-left transition-all duration-200 ${
+          htmlFor={textareaId}
+          className={`auth-input-label auth-textarea-label pointer-events-none absolute left-4 z-10 origin-left transition-all duration-200 ${
             hasValue ? "auth-input-label-floating" : ""
           }`}
           style={{ color: C.textLight }}
@@ -81,27 +69,29 @@ export function AuthInput({
           {label}
         </label>
 
-        {rightSlot && (
-          <span className="absolute right-3.5 top-1/2 z-10 -translate-y-1/2">{rightSlot}</span>
-        )}
-        {!rightSlot && state === "success" && (
-          <CheckCircle size={16} className="absolute right-3.5 top-1/2 z-10 -translate-y-1/2" color={G.success} />
-        )}
-        {!rightSlot && state === "error" && (
-          <AlertCircle size={16} className="absolute right-3.5 top-1/2 z-10 -translate-y-1/2" color="#ef4444" />
+        {state === "error" && (
+          <AlertCircle
+            size={16}
+            className="absolute right-3.5 top-4 z-10"
+            color="#ef4444"
+          />
         )}
       </div>
 
-      {message && (
-        <p
-          id={messageId}
-          role={state === "error" ? "alert" : undefined}
-          className="text-xs pl-1"
-          style={{ color: state === "error" ? "#ef4444" : G.success }}
-        >
-          {message}
-        </p>
-      )}
+      <div className="flex items-start justify-between gap-3 pl-1">
+        {message ? (
+          <p className="text-xs" style={{ color: state === "error" ? "#ef4444" : G.success }}>
+            {message}
+          </p>
+        ) : (
+          <span />
+        )}
+        {showCounter && (
+          <p className="text-[11px] font-medium" style={{ color: "#5A7390" }}>
+            {String(value ?? "").length} / {maxLength}
+          </p>
+        )}
+      </div>
 
       <span className="sr-only">{placeholder}</span>
     </div>

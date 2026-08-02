@@ -1,17 +1,27 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronRight, Mail } from "lucide-react";
 import { AuthStatusCard } from "../../components/auth/AuthStatusCard";
 import { AuthInput } from "../../components/auth/AuthInput";
 import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { Toast } from "../../components/auth/Toast";
-import { C } from "../../components/auth/tokens";
+import {
+  authPageHeadingClassName,
+  authPageHeadingStyle,
+  authPageSubtitleClassName,
+  authPageSubtitleStyle,
+} from "../../components/auth/authPageStyles";
 import { readAuthApiMessage } from "../../components/auth/authHelpers";
 import api from "../../services/api";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const location = useLocation();
+  const prefilledEmail = location.state?.email?.trim() || "";
+  const emailInputRef = useRef(null);
+  const didFocusEmailRef = useRef(false);
+
+  const [email, setEmail] = useState(prefilledEmail);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -27,6 +37,27 @@ export default function ForgotPassword() {
     setToast(true);
     setTimeout(() => setToast(false), 3000);
   };
+
+  useEffect(() => {
+    if (success || didFocusEmailRef.current) {
+      return;
+    }
+
+    didFocusEmailRef.current = true;
+
+    requestAnimationFrame(() => {
+      const input = emailInputRef.current;
+      if (!input) {
+        return;
+      }
+
+      input.focus();
+
+      if (email) {
+        input.select();
+      }
+    });
+  }, [success, email]);
 
   const handleSubmit = async () => {
     if (!email.trim()) {
@@ -56,6 +87,12 @@ export default function ForgotPassword() {
     }
   };
 
+  const handleBackToSignIn = () => {
+    navigate("/login", {
+      state: email.trim() ? { email: email.trim() } : undefined,
+    });
+  };
+
   return (
     <>
       <Toast message={toastMessage} visible={toast} variant={toastVariant} />
@@ -64,16 +101,16 @@ export default function ForgotPassword() {
           title="Reset Email Sent"
           message="If an account exists with this email, a password reset link has been sent."
           actionLabel="Back to Sign In"
-          onAction={() => navigate("/login")}
+          onAction={handleBackToSignIn}
         />
       ) : (
         <>
-          <div className="flex flex-col gap-1 mb-6">
-            <h2 className="text-2xl font-bold" style={{ fontFamily: "'Syne', sans-serif", color: C.white }}>
-              Forgot Password
+          <div className="mb-6 flex flex-col gap-2">
+            <h2 className={authPageHeadingClassName} style={authPageHeadingStyle}>
+              Reset Password
             </h2>
-            <p className="text-sm" style={{ color: C.light }}>
-              Enter your email and we will send you a password reset link.
+            <p className={authPageSubtitleClassName} style={authPageSubtitleStyle}>
+              Enter your email address and we&apos;ll send you a secure password reset link.
             </p>
           </div>
 
@@ -87,6 +124,7 @@ export default function ForgotPassword() {
               onChange={setEmail}
               state={emailState}
               message={emailState === "error" ? "Invalid email address" : ""}
+              inputRef={emailInputRef}
             />
 
             <PrimaryButton loading={loading} onClick={handleSubmit}>
@@ -95,17 +133,17 @@ export default function ForgotPassword() {
               ) : (
                 <>
                   <span>Send Reset Link</span>
-                  <ChevronRight size={16} />
+                  <ChevronRight size={16} className="auth-btn-arrow" />
                 </>
               )}
             </PrimaryButton>
 
-            <p className="text-center text-xs" style={{ color: C.light }}>
+            <p className="auth-footer-text text-center text-[13px] font-medium leading-relaxed">
               Remembered your password?{" "}
               <button
-                onClick={() => navigate("/login")}
-                className="font-semibold transition-colors hover:text-white"
-                style={{ color: C.primary }}
+                type="button"
+                onClick={handleBackToSignIn}
+                className="auth-footer-link font-semibold transition-colors"
               >
                 Back to Sign In
               </button>

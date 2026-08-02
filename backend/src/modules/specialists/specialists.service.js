@@ -1,6 +1,6 @@
 const pool = require("../../database/db");
 
-const createSpecialistProfile = async (userId, data) => {
+const insertSpecialistProfile = async (userId, data, client = pool) => {
   const {
     specialization,
     license_number,
@@ -8,7 +8,7 @@ const createSpecialistProfile = async (userId, data) => {
     years_of_experience,
   } = data;
 
-  const result = await pool.query(
+  const result = await client.query(
     `INSERT INTO specialist_profiles
     (user_id, specialization, license_number, bio, years_of_experience)
     VALUES ($1, $2, $3, $4, $5)
@@ -23,6 +23,10 @@ const createSpecialistProfile = async (userId, data) => {
   );
 
   return result.rows[0];
+};
+
+const createSpecialistProfile = async (userId, data) => {
+  return insertSpecialistProfile(userId, data);
 };
 
 const getAllSpecialists = async () => {
@@ -105,6 +109,7 @@ const getSpecialistPatients = async (specialistId) => {
 };
 
 module.exports = {
+  insertSpecialistProfile,
   createSpecialistProfile,
   getAllSpecialists,
   getSpecialistById,

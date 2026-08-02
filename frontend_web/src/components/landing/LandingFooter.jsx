@@ -96,10 +96,7 @@ export function LandingFooter() {
           className="mt-10 border-t pt-6 text-center text-[12px] leading-relaxed md:text-[13px]"
           style={{ borderColor: L.border, color: L.textLight }}
         >
-          © 2026 Smart Rehabilitation Platform.
-          <br className="sm:hidden" />
-          <span className="hidden sm:inline"> </span>
-          Graduation Project — All Rights Reserved.
+          © 2026 Smart Rehabilitation Platform. All Rights Reserved.
         </div>
       </div>
     </footer>

@@ -281,7 +281,7 @@ export function AuthProvider({ children }) {
         } catch {
           // Local logout must still succeed.
         } finally {
-          clearAuthSession(options);
+          clearAuthSession({ clearRememberedLogin: true, ...options });
           setAuthState({
             token: null,
             user: null,

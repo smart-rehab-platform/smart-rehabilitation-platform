@@ -9,6 +9,7 @@ const {
   sendPasswordResetEmail,
   sendEmailVerificationEmail
 } = require("./auth.email");
+const { insertSpecialistProfile } = require("../specialists/specialists.service");
 
 const PASSWORD_RESET_WINDOW_HOURS = 1;
 const EMAIL_VERIFICATION_WINDOW_HOURS = 24;
@@ -88,7 +89,15 @@ const sendVerificationEmailForUser = async (user) => {
 };
 
 const registerUser = async (data) => {
-  const { full_name, email, password, phone, role, profile_image_url } = data;
+  const {
+    full_name,
+    email,
+    password,
+    phone,
+    role,
+    profile_image_url,
+    specialist_profile,
+  } = data;
 
   if (role === "admin") {
     throw createHttpError(
@@ -96,33 +105,50 @@ const registerUser = async (data) => {
     );
   }
 
-  const existingUser = await pool.query(
-    "SELECT id FROM users WHERE email = $1",
-    [email]
-  );
-
-  if (existingUser.rows.length > 0) {
-    throw new Error("Email already exists");
-  }
-
   const passwordHash = await bcrypt.hash(password, 10);
+  const client = await pool.connect();
 
-  const result = await pool.query(
-    `INSERT INTO users (full_name, email, password_hash, phone, role, profile_image_url)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, full_name, email, phone, role, profile_image_url, is_email_verified, created_at`,
-    [full_name, email, passwordHash, phone, role, profile_image_url || null]
-  );
+  try {
+    await client.query("BEGIN");
 
-  const user = result.rows[0];
-  sendVerificationEmailForUser(user).catch((error) => {
-    console.error(
-      "[auth.email] Background verification email failed:",
-      error.message
+    const existingUser = await client.query(
+      "SELECT id FROM users WHERE email = $1",
+      [email]
     );
-  });
 
-  return user;
+    if (existingUser.rows.length > 0) {
+      throw new Error("Email already exists");
+    }
+
+    const result = await client.query(
+      `INSERT INTO users (full_name, email, password_hash, phone, role, profile_image_url)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, full_name, email, phone, role, profile_image_url, is_email_verified, created_at`,
+      [full_name, email, passwordHash, phone, role, profile_image_url || null]
+    );
+
+    const user = result.rows[0];
+
+    if (role === "specialist" && specialist_profile) {
+      await insertSpecialistProfile(user.id, specialist_profile, client);
+    }
+
+    await client.query("COMMIT");
+
+    sendVerificationEmailForUser(user).catch((error) => {
+      console.error(
+        "[auth.email] Background verification email failed:",
+        error.message
+      );
+    });
+
+    return user;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 const loginUser = async (email, password) => {

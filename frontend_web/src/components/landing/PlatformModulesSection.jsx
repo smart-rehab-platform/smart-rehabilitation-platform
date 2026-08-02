@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import calendarMonthIcon from "../../assets/icons/calendar-month.svg";
 import chartBarIcon from "../../assets/icons/chart-bar.svg";
 import clipboardCheckMultipleIcon from "../../assets/icons/clipboard-check-multiple.svg";
@@ -110,7 +110,7 @@ function ModuleIcon({ src }) {
   );
 }
 
-function ModuleCard({ module, isActive }) {
+function ModuleCard({ module }) {
   return (
     <article
       className="module-carousel-card flex h-full flex-col rounded-3xl border p-8"
@@ -142,7 +142,7 @@ function ModuleCard({ module, isActive }) {
         {module.description}
       </p>
 
-      <ul className="mb-6 flex flex-1 flex-col gap-2">
+      <ul className="flex flex-1 flex-col gap-2">
         {module.features.map((feature) => (
           <li
             key={feature}
@@ -156,21 +156,6 @@ function ModuleCard({ module, isActive }) {
           </li>
         ))}
       </ul>
-
-      <button
-        type="button"
-        className="module-carousel-cta inline-flex items-center gap-2 self-start rounded-xl px-4 py-2.5 text-[14px] font-semibold transition-all duration-300"
-        style={{
-          color: L.primary,
-          background: "transparent",
-          border: `1px solid ${L.modulesCardBorder}`,
-          fontFamily: "'Inter', sans-serif",
-        }}
-        tabIndex={isActive ? 0 : -1}
-      >
-        Explore Module
-        <ArrowRight size={16} />
-      </button>
     </article>
   );
 }
@@ -357,7 +342,7 @@ export function PlatformModulesSection() {
                   }}
                   aria-hidden={!isActive}
                 >
-                  <ModuleCard module={module} isActive={isActive} />
+                  <ModuleCard module={module} />
                 </div>
               );
             })}
@@ -374,7 +359,7 @@ export function PlatformModulesSection() {
               style={{
                 width: index === activeIndex ? "24px" : "8px",
                 height: "8px",
-                background: index === activeIndex ? L.primary : "rgba(42, 164, 201, 0.25)",
+                background: index === activeIndex ? L.primary : "rgba(79, 166, 248, 0.25)",
               }}
               aria-label={`Go to ${module.title}`}
               aria-current={index === activeIndex ? "true" : undefined}
@@ -397,11 +382,6 @@ export function PlatformModulesSection() {
 
           .module-carousel-nav:not(:disabled):hover {
             background-color: ${L.modulesHoverBg};
-          }
-
-          .module-carousel-cta:hover {
-            background-color: ${L.modulesHoverBg};
-            border-color: rgba(42, 164, 201, 0.18);
           }
         }
 

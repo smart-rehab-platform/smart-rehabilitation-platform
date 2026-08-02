@@ -1,5 +1,6 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../../components/auth/AuthLayout";
+import { SignupWizardProvider } from "../../context/SignupWizardContext";
 
 export default function AuthLayoutRoute() {
   const location = useLocation();
@@ -7,12 +8,13 @@ export default function AuthLayoutRoute() {
   const activeTab = location.pathname === "/signup" ? "signup" : "signin";
 
   return (
-    <AuthLayout
-      activeTab={activeTab}
-      onTabChange={(tab) => navigate(tab === "signup" ? "/signup" : "/login")}
-      scrollable={activeTab === "signup"}
-    >
-      <Outlet />
-    </AuthLayout>
+    <SignupWizardProvider>
+      <AuthLayout
+        activeTab={activeTab}
+        onTabChange={(tab) => navigate(tab === "signup" ? "/signup" : "/login")}
+      >
+        <Outlet />
+      </AuthLayout>
+    </SignupWizardProvider>
   );
 }

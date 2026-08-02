@@ -1,5 +1,6 @@
 import { Navbar } from "../components/landing/Navbar";
 import { Hero } from "../components/landing/Hero";
+import { LandingHeroBackground } from "../components/landing/LandingHeroBackground";
 import { ArtificialIntelligenceSection } from "../components/landing/ArtificialIntelligenceSection";
 import { HeroCards } from "../components/landing/HeroCards";
 import { JourneySection } from "../components/landing/JourneySection";
@@ -19,15 +20,14 @@ export default function LandingPage() {
       className="landing-page min-h-screen"
       style={{ background: L.bg, color: L.text }}
     >
-      <Navbar />
       <main>
-        <div
-          style={{
-            background: `linear-gradient(180deg, ${L.bg} 0%, ${L.bgSecondary} 100%)`,
-          }}
-        >
-          <Hero />
-          <WaveDivider />
+        <div className="landing-hero-shell relative overflow-hidden">
+          <LandingHeroBackground />
+          <div className="relative z-10">
+            <Navbar />
+            <Hero />
+            <WaveDivider />
+          </div>
         </div>
         <ValueStrip />
         <ProblemSolutionSection />

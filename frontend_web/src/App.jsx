@@ -27,6 +27,7 @@ import ParentCaseRequestFormPage from "./features/parent-dashboard-preview/Paren
 import ParentMessagesPage from "./features/parent-dashboard-preview/ParentMessagesPage";
 import { useAuth } from "./context/useAuth";
 import { canAccessRoute, dashboardForRole } from "./routes/roleRouting";
+import { isAuthRouteAllowingAuthenticatedSession } from "./routes/publicAuthRoutes";
 
 function AppLoadingScreen() {
   return (
@@ -63,6 +64,7 @@ function LandingRoute() {
 }
 
 function PublicAuthRoute({ children }) {
+  const location = useLocation();
   const { isInitializing, isAuthenticated, isVerified, user } = useAuth();
 
   if (isInitializing) {
@@ -70,6 +72,10 @@ function PublicAuthRoute({ children }) {
   }
 
   if (!isAuthenticated) {
+    return children;
+  }
+
+  if (isAuthRouteAllowingAuthenticatedSession(location.pathname)) {
     return children;
   }
 
@@ -82,14 +88,10 @@ function PublicAuthRoute({ children }) {
 }
 
 function VerifyEmailRoute({ children }) {
-  const { isInitializing, isAuthenticated, isVerified, user } = useAuth();
+  const { isInitializing } = useAuth();
 
   if (isInitializing) {
     return <AppLoadingScreen />;
-  }
-
-  if (isAuthenticated && isVerified) {
-    return <Navigate to={dashboardForRole(user?.role) || "/login"} replace />;
   }
 
   return children;

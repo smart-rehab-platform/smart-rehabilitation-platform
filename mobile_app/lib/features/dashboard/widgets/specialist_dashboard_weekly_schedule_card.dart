@@ -88,23 +88,6 @@ String formatNextSessionScheduleLabel(SpecialistSessionDetail session) {
   return '${DateFormat('EEE, MMM d').format(scheduledAt)} • ${session.timeLabel}';
 }
 
-String sessionModeLabel(SpecialistSessionDetail session) {
-  if (session.hasOnlineMeetingLink) {
-    return 'Online';
-  }
-
-  final location = session.location?.trim();
-  if (location != null && location.isNotEmpty) {
-    return location;
-  }
-
-  return 'In person';
-}
-
-String formatNextSessionMetadataRow(SpecialistSessionDetail session) {
-  return '${formatNextSessionScheduleLabel(session)} • ${sessionModeLabel(session)}';
-}
-
 DateTime startOfWeekMonday(DateTime date) {
   final normalized = DateTime(date.year, date.month, date.day);
   return normalized.subtract(Duration(days: normalized.weekday - DateTime.monday));
@@ -409,7 +392,7 @@ class _NextSessionRow extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          formatNextSessionMetadataRow(session),
+          formatNextSessionScheduleLabel(session),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.labelSmall?.copyWith(
