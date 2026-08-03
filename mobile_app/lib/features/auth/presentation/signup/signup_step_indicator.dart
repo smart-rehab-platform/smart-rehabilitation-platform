@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../utils/signup_wizard_helpers.dart';
@@ -16,6 +17,8 @@ class SignupStepIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         Row(
@@ -44,15 +47,12 @@ class SignupStepIndicator extends StatelessWidget {
             final isCompleted = stepNumber < currentStep;
             final isCurrent = stepNumber == currentStep;
 
-            return _StepDot(
-              isCompleted: isCompleted,
-              isCurrent: isCurrent,
-            );
+            return _StepDot(isCompleted: isCompleted, isCurrent: isCurrent);
           }),
         ),
         const SizedBox(height: 8),
         Text(
-          'Step $currentStep of $totalSteps',
+          l10n.signupStepProgress(currentStep, totalSteps),
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -65,10 +65,7 @@ class SignupStepIndicator extends StatelessWidget {
 }
 
 class _StepDot extends StatelessWidget {
-  const _StepDot({
-    required this.isCompleted,
-    required this.isCurrent,
-  });
+  const _StepDot({required this.isCompleted, required this.isCurrent});
 
   final bool isCompleted;
   final bool isCurrent;
@@ -85,9 +82,7 @@ class _StepDot extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isCompleted || isCurrent
-            ? activeColor
-            : Colors.transparent,
+        color: isCompleted || isCurrent ? activeColor : Colors.transparent,
         border: Border.all(
           color: isCompleted || isCurrent
               ? activeColor

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 
@@ -12,7 +13,7 @@ Future<SignupProfilePhotoSource?> showSignupProfilePhotoSourceSheet(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    builder: (sheetContext) => const SignupProfilePhotoSourceSheet(),
+    builder: (sheetContext) => SignupProfilePhotoSourceSheet(),
   );
 }
 
@@ -21,6 +22,8 @@ class SignupProfilePhotoSourceSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -50,7 +53,7 @@ class SignupProfilePhotoSourceSheet extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
                 child: Text(
-                  'Choose Profile Photo',
+                  l10n.signupChooseProfilePhoto,
                   style: GoogleFonts.syne(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -58,19 +61,14 @@ class SignupProfilePhotoSourceSheet extends StatelessWidget {
                   ),
                 ),
               ),
-              Divider(
-                height: 1,
-                color: AppColors.cyan.withValues(alpha: 0.14),
-              ),
+              Divider(height: 1, color: AppColors.cyan.withValues(alpha: 0.14)),
               _SignupPhotoSourceOption(
                 icon: Icons.photo_camera_outlined,
-                title: 'Take a Photo',
-                subtitle: 'Use your camera to capture a new photo.',
-                semanticLabel: 'Take a photo with camera',
-                onTap: () => Navigator.pop(
-                  context,
-                  SignupProfilePhotoSource.camera,
-                ),
+                title: l10n.signupTakePhoto,
+                subtitle: l10n.signupTakePhotoSubtitle,
+                semanticLabel: l10n.signupTakePhotoSemantic,
+                onTap: () =>
+                    Navigator.pop(context, SignupProfilePhotoSource.camera),
               ),
               Divider(
                 height: 1,
@@ -80,19 +78,17 @@ class SignupProfilePhotoSourceSheet extends StatelessWidget {
               ),
               _SignupPhotoSourceOption(
                 icon: Icons.photo_library_outlined,
-                title: 'Choose from Gallery',
-                subtitle: 'Select an existing photo from your device.',
-                semanticLabel: 'Choose a photo from gallery',
-                onTap: () => Navigator.pop(
-                  context,
-                  SignupProfilePhotoSource.gallery,
-                ),
+                title: l10n.signupChooseFromGallery,
+                subtitle: l10n.signupChooseFromGallerySubtitle,
+                semanticLabel: l10n.signupChooseFromGallerySemantic,
+                onTap: () =>
+                    Navigator.pop(context, SignupProfilePhotoSource.gallery),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
                 child: Semantics(
                   button: true,
-                  label: 'Cancel profile photo selection',
+                  label: l10n.signupCancelPhotoSelection,
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
@@ -106,7 +102,7 @@ class SignupProfilePhotoSourceSheet extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Cancel',
+                      l10n.commonCancel,
                       style: GoogleFonts.inter(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,

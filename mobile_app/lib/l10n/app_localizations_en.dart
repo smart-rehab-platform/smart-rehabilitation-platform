@@ -4886,4 +4886,469 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auditEntityAiReport => 'AI Report';
+
+  @override
+  String get authPasswordRequirementsDescription =>
+      'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.';
+
+  @override
+  String get authAlreadyHaveAccount => 'Already have an account? ';
+
+  @override
+  String get authCompleteRequiredFields =>
+      'Please complete all required fields';
+
+  @override
+  String get authPasswordsDoNotMatch => 'Passwords do not match.';
+
+  @override
+  String get authRegisterUnableToCreate =>
+      'Unable to create your account right now. Please try again.';
+
+  @override
+  String get authUploadProfileFailed =>
+      'Unable to upload your profile photo right now.';
+
+  @override
+  String get authUploadProfileRetry =>
+      'Unable to upload your profile photo. Please try again.';
+
+  @override
+  String get authSendResetLinkUnable =>
+      'Unable to send the reset link right now. Please try again.';
+
+  @override
+  String get authResetPasswordUnable =>
+      'Unable to reset your password right now. Please try again.';
+
+  @override
+  String get authVerifyEmailUnable =>
+      'Unable to verify your email right now. Please try again later.';
+
+  @override
+  String get authVerifyEmailResendUnable =>
+      'Unable to send the verification email right now. Please try again.';
+
+  @override
+  String get authRegistrationFailed => 'Registration failed. Please try again.';
+
+  @override
+  String get signupCreateYourAccount => 'Create Your Account';
+
+  @override
+  String get signupStepSubtitleRole =>
+      'Choose how you\'ll use Smart Rehabilitation.';
+
+  @override
+  String get signupStepSubtitlePersonal => 'Tell us a little about yourself.';
+
+  @override
+  String get signupStepSubtitleProfessional =>
+      'Tell us about your professional background.';
+
+  @override
+  String get signupStepSubtitleSecurity =>
+      'Secure your account with a strong password.';
+
+  @override
+  String get signupStepSubtitleReview =>
+      'Review your details before creating your account.';
+
+  @override
+  String get signupCompletePersonalFields =>
+      'Please complete all required personal fields';
+
+  @override
+  String get signupCompleteProfessionalFields =>
+      'Please complete all required professional fields';
+
+  @override
+  String get signupTermsRequired =>
+      'You must accept the Terms of Service and Privacy Policy.';
+
+  @override
+  String get signupSelectRoleRequired => 'Please select your role';
+
+  @override
+  String get signupPhotoSelectFailed =>
+      'Unable to select your profile photo right now.';
+
+  @override
+  String get signupCameraPermissionDenied =>
+      'Camera access is required to take a photo. Enable camera permission in your device settings if it was denied.';
+
+  @override
+  String get signupCameraUnavailable =>
+      'Camera is unavailable on this device right now.';
+
+  @override
+  String get signupCameraOpenFailed =>
+      'Unable to open the camera. Please try again or choose from gallery.';
+
+  @override
+  String get signupGalleryPermissionDenied =>
+      'Photo library access is required to choose a photo. Enable photo permissions in your device settings if they were denied.';
+
+  @override
+  String get signupGalleryOpenFailed =>
+      'Unable to open the photo library. Please try again.';
+
+  @override
+  String get signupRoleParentDescription =>
+      'Monitor your child\'s progress, communicate with specialists, and complete home exercises.';
+
+  @override
+  String get signupRoleSpecialistDescription =>
+      'Manage patients, create treatment plans, review progress, and provide professional guidance.';
+
+  @override
+  String signupStepProgress(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get signupProfilePhoto => 'Profile Photo';
+
+  @override
+  String get signupProfilePhotoTapChange => 'Tap to change photo';
+
+  @override
+  String get signupProfilePhotoTapUpload => 'Click to upload';
+
+  @override
+  String get signupProfilePhotoSemanticChange => 'Profile photo, tap to change';
+
+  @override
+  String get signupProfilePhotoSemanticUpload => 'Profile photo, tap to upload';
+
+  @override
+  String get signupChooseProfilePhoto => 'Choose Profile Photo';
+
+  @override
+  String get signupTakePhoto => 'Take a Photo';
+
+  @override
+  String get signupTakePhotoSubtitle =>
+      'Use your camera to capture a new photo.';
+
+  @override
+  String get signupTakePhotoSemantic => 'Take a photo with camera';
+
+  @override
+  String get signupChooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get signupChooseFromGallerySubtitle =>
+      'Select an existing photo from your device.';
+
+  @override
+  String get signupChooseFromGallerySemantic => 'Choose a photo from gallery';
+
+  @override
+  String get signupCancelPhotoSelection => 'Cancel profile photo selection';
+
+  @override
+  String get signupFullNameHint => 'Dr. Sarah Johnson';
+
+  @override
+  String get signupEmailAddress => 'Email Address';
+
+  @override
+  String get signupPhoneNumber => 'Phone Number';
+
+  @override
+  String get signupPhoneHint => '+970 59 000 0000';
+
+  @override
+  String get signupSpecializationHint => 'Speech Therapy';
+
+  @override
+  String get signupBioHint => 'Brief professional bio';
+
+  @override
+  String signupBioCounter(int length) {
+    return '$length / 500';
+  }
+
+  @override
+  String get signupPasswordHint => 'Min. 8 characters';
+
+  @override
+  String get signupConfirmPassword => 'Confirm Password';
+
+  @override
+  String get signupConfirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get signupTermsAgreement =>
+      'I agree to the Terms of Service and Privacy Policy.';
+
+  @override
+  String get signupAccountType => 'Account Type';
+
+  @override
+  String get signupPersonalDetails => 'Personal Details';
+
+  @override
+  String get signupProfessionalDetails => 'Professional Details';
+
+  @override
+  String get signupSecuritySection => 'Security';
+
+  @override
+  String get signupExperience => 'Experience';
+
+  @override
+  String get signupEdit => 'Edit';
+
+  @override
+  String get signupPasswordCreatedSecurely => 'Password created securely';
+
+  @override
+  String get signupReviewConfirmAccuracy =>
+      'By creating this account, you confirm that the information above is accurate.';
+
+  @override
+  String get signupCreatingAccount => 'Creating Account...';
+
+  @override
+  String signupExperienceYears(int count) {
+    return '$count years';
+  }
+
+  @override
+  String get signupExperienceOneYear => '1 year';
+
+  @override
+  String get signupValidationSpecializationRequired =>
+      'Specialization is required.';
+
+  @override
+  String get signupValidationSpecializationMax =>
+      'Specialization must not exceed 150 characters.';
+
+  @override
+  String get signupValidationLicenseRequired => 'License number is required.';
+
+  @override
+  String get signupValidationLicenseMax =>
+      'License number must not exceed 100 characters.';
+
+  @override
+  String get signupValidationExperienceRequired =>
+      'Years of experience is required.';
+
+  @override
+  String get signupValidationExperienceMin =>
+      'Years of experience must be at least 0.';
+
+  @override
+  String get signupValidationBioMax => 'Bio must not exceed 500 characters.';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot Password';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Enter your email address and we will send you a password reset link.';
+
+  @override
+  String get forgotPasswordEnterEmail => 'Please enter your email address';
+
+  @override
+  String get forgotPasswordEnterValidEmail =>
+      'Please enter a valid email address';
+
+  @override
+  String get forgotPasswordSending => 'Sending Reset Link...';
+
+  @override
+  String get forgotPasswordSendLink => 'Send Reset Link';
+
+  @override
+  String get forgotPasswordResetEmailSentTitle => 'Reset Email Sent';
+
+  @override
+  String get forgotPasswordResetEmailSentMessage =>
+      'If an account exists with this email, a password reset link has been sent.';
+
+  @override
+  String get forgotPasswordFailedSend => 'Failed to send reset link.';
+
+  @override
+  String get forgotPasswordBackToSignIn => 'Back to Sign In';
+
+  @override
+  String get resetPasswordTitle => 'Reset Password';
+
+  @override
+  String get resetPasswordSubtitle => 'Enter your new password below.';
+
+  @override
+  String get resetPasswordNewPassword => 'New Password';
+
+  @override
+  String get resetPasswordNewPasswordHint => 'Enter your new password';
+
+  @override
+  String get resetPasswordConfirmPassword => 'Confirm New Password';
+
+  @override
+  String get resetPasswordConfirmHint => 'Re-enter your new password';
+
+  @override
+  String get resetPasswordResetting => 'Resetting Password...';
+
+  @override
+  String get resetPasswordCompleteTitle => 'Password Reset Complete';
+
+  @override
+  String get resetPasswordCompleteMessage =>
+      'Your password has been changed successfully.';
+
+  @override
+  String get resetPasswordFailed => 'Failed to reset password.';
+
+  @override
+  String get resetPasswordBackToSignIn => 'Back to Sign In';
+
+  @override
+  String get verifyEmailPendingMessage =>
+      'Please check your email and open the verification link on this device.';
+
+  @override
+  String get verifyEmailCheckTitle => 'Check Your Email';
+
+  @override
+  String get verifyEmailCheckMessage =>
+      'We sent a verification link to your email address. Open the link on this device to activate your account.';
+
+  @override
+  String get verifyEmailVerifyingTitle => 'Verifying Email';
+
+  @override
+  String get verifyEmailVerifyingMessage => 'We are verifying your email now.';
+
+  @override
+  String get verifyEmailSuccessTitle => 'Email Verified';
+
+  @override
+  String get verifyEmailSuccessMessage =>
+      'Your email has been verified successfully. You can now sign in.';
+
+  @override
+  String get verifyEmailGoToLogin => 'Go to Login';
+
+  @override
+  String get verifyEmailFailedTitle => 'Verification Failed';
+
+  @override
+  String get verifyEmailFailedDefault =>
+      'Unable to verify your email right now.';
+
+  @override
+  String get verifyEmailResending => 'Sending...';
+
+  @override
+  String get verifyEmailResend => 'Resend Verification Email';
+
+  @override
+  String get verifyEmailHideManual => 'Hide manual verification';
+
+  @override
+  String get verifyEmailShowManual => 'Already have a verification link?';
+
+  @override
+  String get verifyEmailTokenLabel => 'Verification link or token';
+
+  @override
+  String get verifyEmailTokenHint => 'Paste the link or token from your email';
+
+  @override
+  String get verifyEmailVerifyButton => 'Verify Email';
+
+  @override
+  String get verifyEmailEnterToken =>
+      'Enter the verification token or paste the full verification link.';
+
+  @override
+  String get verifyEmailEmailMissing =>
+      'Email address is missing. Please sign up again or contact support.';
+
+  @override
+  String get verifyEmailResendFailed =>
+      'Unable to resend the verification email right now.';
+
+  @override
+  String get verifyEmailBackToSignIn => 'Back to Sign In';
+
+  @override
+  String get splashTitleLine1 => '';
+
+  @override
+  String get splashTitleSmart => 'Smart';
+
+  @override
+  String get splashTitleRehabilitation => 'Rehabilitation';
+
+  @override
+  String get splashSubtitle =>
+      'Empowering rehabilitation through smart daily follow-up';
+
+  @override
+  String get splashFeatureAiProgress => 'AI Progress Tracking';
+
+  @override
+  String get splashFeatureExerciseGuidance => 'Smart Exercise Guidance';
+
+  @override
+  String get splashFeatureSpeechMotion => 'Speech & Motion Analysis';
+
+  @override
+  String get splashGetStarted => 'Get Started';
+
+  @override
+  String get splashCopyright => '© Smart Rehabilitation Platform';
+
+  @override
+  String parentAiAssistantForChild(String childName) {
+    return 'For $childName';
+  }
+
+  @override
+  String get parentAiAssistantDisclaimer =>
+      'AI guidance is for support only. Always follow your specialist\'s instructions.';
+
+  @override
+  String get parentAiAssistantIntro =>
+      'Ask me anything about your child\'s exercises, reports, or progress.';
+
+  @override
+  String get parentAiAssistantPromptExplainExercise =>
+      'Explain today\'s exercise';
+
+  @override
+  String get parentAiAssistantPromptSummarizeProgress =>
+      'Summarize my child\'s progress';
+
+  @override
+  String get parentAiAssistantPromptFocusToday =>
+      'What should I focus on today?';
+
+  @override
+  String get parentAiAssistantPromptExplainReport =>
+      'Explain the latest report';
+
+  @override
+  String get parentAiAssistantInputHint =>
+      'Ask about exercises, reports, or progress...';
+
+  @override
+  String get parentAiAssistantThinking => 'AI is thinking...';
+
+  @override
+  String get parentAiAssistantSending => 'Sending...';
+
+  @override
+  String get parentAiAssistantFailedToSend => 'Failed to send';
 }

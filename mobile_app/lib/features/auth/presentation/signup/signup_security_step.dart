@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/auth_ui.dart';
-import '../../utils/password_strength.dart';
+import '../../utils/auth_localization_utils.dart';
 import 'signup_navigation_buttons.dart';
 
 class SignupSecurityStep extends StatelessWidget {
@@ -40,23 +41,28 @@ class SignupSecurityStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AuthInputField(
           controller: passwordController,
-          label: 'Password',
-          hintText: 'Min. 8 characters',
+          label: l10n.fieldPassword,
+          hintText: l10n.signupPasswordHint,
           icon: Icons.lock_outline_rounded,
           textInputAction: TextInputAction.next,
           obscureText: !showPassword,
           autofillHints: const [AutofillHints.newPassword],
           state: passwordState,
           message: passwordState == AuthFieldState.error
-              ? authStrongPasswordMessage
+              ? localizedAuthStrongPasswordMessage(l10n)
               : null,
           suffix: IconButton(
             onPressed: onTogglePassword,
+            tooltip: showPassword
+                ? l10n.loginHidePassword
+                : l10n.loginShowPassword,
             icon: Icon(
               showPassword
                   ? Icons.visibility_off_outlined
@@ -70,17 +76,20 @@ class SignupSecurityStep extends StatelessWidget {
         const SizedBox(height: 12),
         AuthInputField(
           controller: confirmPasswordController,
-          label: 'Confirm New Password',
-          hintText: 'Re-enter your new password',
+          label: l10n.signupConfirmPassword,
+          hintText: l10n.signupConfirmPasswordHint,
           icon: Icons.lock_outline_rounded,
           textInputAction: TextInputAction.done,
           obscureText: !showConfirmPassword,
           state: confirmPasswordState,
           message: confirmPasswordState == AuthFieldState.error
-              ? 'Passwords do not match.'
+              ? l10n.authPasswordsDoNotMatch
               : null,
           suffix: IconButton(
             onPressed: onToggleConfirmPassword,
+            tooltip: showConfirmPassword
+                ? l10n.loginHidePassword
+                : l10n.loginShowPassword,
             icon: Icon(
               showConfirmPassword
                   ? Icons.visibility_off_outlined
@@ -114,7 +123,7 @@ class SignupSecurityStep extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'I agree to the Terms of Service and Privacy Policy.',
+                  l10n.signupTermsAgreement,
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     height: 1.45,
@@ -130,7 +139,7 @@ class SignupSecurityStep extends StatelessWidget {
           onBack: onBack,
           onContinue: onContinue,
           continueEnabled: canContinue,
-          continueLabel: 'Continue',
+          continueLabel: l10n.commonContinue,
         ),
       ],
     );

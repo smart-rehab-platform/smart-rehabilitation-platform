@@ -4,24 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
+import '../utils/auth_localization_utils.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/routes/role_routing.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/auth_ui.dart';
 import '../../../core/locale/language_selector.dart';
-
-String _localizedLoginErrorMessage(AppLocalizations l10n, String message) {
-  final normalized = message.trim();
-  switch (normalized) {
-    case 'Unable to sign in right now. Please try again.':
-      return l10n.loginUnableToSignIn;
-    case 'Login failed. Please try again.':
-      return l10n.loginFailed;
-    default:
-      return message;
-  }
-}
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -130,7 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     showAuthSnackBar(
       context,
-      _localizedLoginErrorMessage(l10n, rawErrorMessage),
+      mapAuthProviderError(l10n, rawErrorMessage),
       type: AuthSnackBarType.error,
     );
   }

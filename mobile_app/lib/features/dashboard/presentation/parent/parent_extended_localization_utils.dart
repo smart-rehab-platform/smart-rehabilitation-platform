@@ -74,3 +74,12 @@ String formatParentExerciseMediaAttachedLabel(
     localizedExerciseMediaTypeLabel(l10n, mediaType),
   );
 }
+
+List<String> localizedParentAiQuickPrompts(AppLocalizations l10n) {
+  return [
+    l10n.parentAiAssistantPromptExplainExercise,
+    l10n.parentAiAssistantPromptSummarizeProgress,
+    l10n.parentAiAssistantPromptFocusToday,
+    l10n.parentAiAssistantPromptExplainReport,
+  ];
+}

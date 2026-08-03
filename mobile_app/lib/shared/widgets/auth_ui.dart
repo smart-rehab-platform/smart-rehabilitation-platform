@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -116,6 +118,7 @@ class AuthBackground extends StatefulWidget {
 class _AuthBackgroundState extends State<AuthBackground> {
   VideoPlayerController? _videoController;
   bool _isVideoReady = false;
+  int _videoInitGeneration = 0;
 
   @override
   void initState() {
@@ -136,45 +139,180 @@ class _AuthBackgroundState extends State<AuthBackground> {
 
     if (!widget.showBackgroundVideo && oldWidget.showBackgroundVideo) {
       _disposeBackgroundVideo();
+      return;
+    }
+
+    if (widget.showBackgroundVideo &&
+        oldWidget.showBackgroundVideo &&
+        oldWidget.playbackSpeed != widget.playbackSpeed &&
+        _isVideoReady &&
+        _videoController != null) {
+      unawaited(_applyPlaybackSpeed(_videoController!));
+    }
+  }
+
+  void _debugLogBackgroundVideo(
+    String stage, {
+    Object? error,
+    StackTrace? stackTrace,
+    VideoPlayerController? controller,
+  }) {
+    if (!kDebugMode) {
+      return;
+    }
+
+    final value = controller?.value;
+    debugPrint('[AuthBackgroundVideo] $stage');
+    debugPrint('[AuthBackgroundVideo] assetPath=$_authBackgroundVideoAsset');
+    debugPrint(
+      '[AuthBackgroundVideo] controller=${controller != null}, '
+      'isVideoReady=$_isVideoReady, '
+      'initialized=${value?.isInitialized ?? false}, '
+      'hasError=${value?.hasError ?? false}, '
+      'isPlaying=${value?.isPlaying ?? false}, '
+      'duration=${value?.duration}, '
+      'size=${value?.size}, '
+      'position=${value?.position}, '
+      'playbackSpeed=${widget.playbackSpeed}, '
+      'videoUpperPortionOnly=${widget.videoUpperPortionOnly}',
+    );
+    if (value?.hasError ?? false) {
+      debugPrint(
+        '[AuthBackgroundVideo] errorDescription=${value?.errorDescription}',
+      );
+    }
+    if (error != null) {
+      debugPrint('[AuthBackgroundVideo] exception=$error');
+    }
+    if (stackTrace != null) {
+      debugPrint('[AuthBackgroundVideo] stackTrace=$stackTrace');
+    }
+  }
+
+  Future<void> _applyPlaybackSpeed(VideoPlayerController controller) async {
+    if (widget.playbackSpeed <= 0 || widget.playbackSpeed == 1.0) {
+      return;
+    }
+
+    try {
+      await controller.setPlaybackSpeed(widget.playbackSpeed);
+      _debugLogBackgroundVideo('playbackSpeedApplied', controller: controller);
+    } catch (error, stackTrace) {
+      _debugLogBackgroundVideo(
+        'playbackSpeedFailed',
+        error: error,
+        stackTrace: stackTrace,
+        controller: controller,
+      );
     }
   }
 
   Future<void> _initializeBackgroundVideo() async {
-    final controller = VideoPlayerController.asset(_authBackgroundVideoAsset);
+    if (!widget.showBackgroundVideo) {
+      return;
+    }
+
+    final initGeneration = ++_videoInitGeneration;
+    _debugLogBackgroundVideo('initializeStart');
+
+    final previousController = _videoController;
+    if (previousController != null) {
+      previousController.removeListener(_handleVideoProgress);
+      previousController.removeListener(_handleVideoControllerUpdate);
+      _videoController = null;
+      _isVideoReady = false;
+      await previousController.dispose();
+      if (!mounted || initGeneration != _videoInitGeneration) {
+        return;
+      }
+    }
+
+    final controller = VideoPlayerController.asset(
+      _authBackgroundVideoAsset,
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    );
     _videoController = controller;
 
     try {
       await controller.initialize();
-      if (!mounted || _videoController != controller) {
+      if (!mounted ||
+          _videoController != controller ||
+          initGeneration != _videoInitGeneration) {
         await controller.dispose();
         return;
       }
 
+      _debugLogBackgroundVideo('initialized', controller: controller);
+
       await controller.setVolume(0);
       await controller.setLooping(false);
-      if (widget.playbackSpeed > 0 && widget.playbackSpeed != 1.0) {
-        await controller.setPlaybackSpeed(widget.playbackSpeed);
-      }
 
       final startPosition = Duration(seconds: _authBackgroundVideoStartSeconds);
       if (controller.value.duration > startPosition) {
         await controller.seekTo(startPosition);
       }
 
-      controller.addListener(_handleVideoProgress);
-      await controller.play();
+      controller
+        ..removeListener(_handleVideoProgress)
+        ..removeListener(_handleVideoControllerUpdate)
+        ..addListener(_handleVideoProgress)
+        ..addListener(_handleVideoControllerUpdate);
 
-      if (!mounted || _videoController != controller) {
+      await controller.play();
+      await _applyPlaybackSpeed(controller);
+
+      if (!mounted ||
+          _videoController != controller ||
+          initGeneration != _videoInitGeneration) {
+        await controller.dispose();
         return;
       }
 
+      if (!controller.value.isInitialized ||
+          controller.value.size.width <= 0 ||
+          controller.value.size.height <= 0) {
+        throw StateError(
+          'Video initialized without a valid frame size: ${controller.value.size}',
+        );
+      }
+
       setState(() => _isVideoReady = true);
-    } catch (_) {
+      _debugLogBackgroundVideo('ready', controller: controller);
+    } catch (error, stackTrace) {
+      _debugLogBackgroundVideo(
+        'initializeFailed',
+        error: error,
+        stackTrace: stackTrace,
+        controller: controller,
+      );
+
+      controller.removeListener(_handleVideoProgress);
+      controller.removeListener(_handleVideoControllerUpdate);
+
       if (_videoController == controller) {
-        await controller.dispose();
         _videoController = null;
+        _isVideoReady = false;
+      }
+
+      await controller.dispose();
+
+      if (mounted && initGeneration == _videoInitGeneration) {
+        setState(() {});
       }
     }
+  }
+
+  void _handleVideoControllerUpdate() {
+    final controller = _videoController;
+    if (controller == null || !controller.value.hasError) {
+      return;
+    }
+
+    _debugLogBackgroundVideo(
+      'playbackError',
+      error: StateError(controller.value.errorDescription ?? 'Unknown error'),
+      controller: controller,
+    );
   }
 
   void _handleVideoProgress() {
@@ -201,12 +339,14 @@ class _AuthBackgroundState extends State<AuthBackground> {
   }
 
   Future<void> _disposeBackgroundVideo() async {
+    _videoInitGeneration++;
     final controller = _videoController;
     _videoController = null;
     _isVideoReady = false;
 
     if (controller != null) {
       controller.removeListener(_handleVideoProgress);
+      controller.removeListener(_handleVideoControllerUpdate);
       await controller.dispose();
     }
 
@@ -217,9 +357,11 @@ class _AuthBackgroundState extends State<AuthBackground> {
 
   @override
   void dispose() {
+    _videoInitGeneration++;
     final controller = _videoController;
     if (controller != null) {
       controller.removeListener(_handleVideoProgress);
+      controller.removeListener(_handleVideoControllerUpdate);
       controller.dispose();
     }
     super.dispose();
@@ -304,11 +446,30 @@ class _AuthBackgroundState extends State<AuthBackground> {
           ],
           Positioned.fill(
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.primaryNavy.withValues(
-                  alpha: widget.overlayOpacity,
-                ),
-              ),
+              decoration: showVideo
+                  ? BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.primaryNavy.withValues(
+                            alpha: widget.overlayOpacity * 0.42,
+                          ),
+                          AppColors.primaryNavy.withValues(
+                            alpha: widget.overlayOpacity * 0.58,
+                          ),
+                          AppColors.primaryNavy.withValues(
+                            alpha: widget.overlayOpacity * 0.78,
+                          ),
+                        ],
+                        stops: const [0, 0.55, 1],
+                      ),
+                    )
+                  : BoxDecoration(
+                      color: AppColors.primaryNavy.withValues(
+                        alpha: widget.overlayOpacity,
+                      ),
+                    ),
             ),
           ),
           if (widget.bottomFade && !widget.showBackgroundVideo)
@@ -341,47 +502,62 @@ class _AuthBackgroundVideoLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: AppColors.primaryNavy,
-      child: SizedBox.expand(
-        child: FittedBox(
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
-          child: SizedBox(
-            width: controller.value.size.width,
-            height: controller.value.size.height,
-            child: Transform(
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        if (!controller.value.isInitialized) {
+          return const ColoredBox(color: AppColors.primaryNavy);
+        }
+
+        final size = controller.value.size;
+        if (size.width <= 0 || size.height <= 0) {
+          return const ColoredBox(color: AppColors.primaryNavy);
+        }
+
+        return ColoredBox(
+          color: AppColors.primaryNavy,
+          child: SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.cover,
               alignment: Alignment.center,
-              transform: Matrix4.identity()..scaleByDouble(-1.0, 1.0, 1.0, 1.0),
-              child: ColorFiltered(
-                colorFilter: const ColorFilter.matrix(<double>[
-                  0.86,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0.88,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  1.04,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  1,
-                  0,
-                ]),
-                child: VideoPlayer(controller),
+              child: SizedBox(
+                width: size.width,
+                height: size.height,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..scaleByDouble(-1.0, 1.0, 1.0, 1.0),
+                  child: ColorFiltered(
+                    colorFilter: const ColorFilter.matrix(<double>[
+                      0.86,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0.88,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1.04,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                    ]),
+                    child: VideoPlayer(controller),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

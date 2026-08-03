@@ -34,12 +34,7 @@ class AuthResponse {
       return null;
     }
 
-    const tokenKeys = <String>[
-      'token',
-      'accessToken',
-      'access_token',
-      'jwt',
-    ];
+    const tokenKeys = <String>['token', 'accessToken', 'access_token', 'jwt'];
 
     for (final key in tokenKeys) {
       final value = map[key];

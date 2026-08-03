@@ -9,16 +9,7 @@ import '../../providers/parent_ai_chat_provider.dart';
 import '../../providers/parent_dashboard_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
-
-const _quickPrompts = [
-  'Explain today\'s exercise',
-  'Summarize my child\'s progress',
-  'What should I focus on today?',
-  'Explain the latest report',
-];
-
-const _safetyNotice =
-    'AI guidance is for support only. Always follow your specialist\'s instructions.';
+import 'parent_extended_localization_utils.dart';
 
 class ParentAiChatScreen extends ConsumerStatefulWidget {
   const ParentAiChatScreen({super.key});
@@ -47,10 +38,9 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
   void _bootstrap() {
     final dashboard = ref.read(parentDashboardProvider);
     final child = dashboard.selectedChild;
-    ref.read(parentAiChatProvider.notifier).initialize(
-          patientId: child?.id,
-          patientName: child?.name,
-        );
+    ref
+        .read(parentAiChatProvider.notifier)
+        .initialize(patientId: child?.id, patientName: child?.name);
   }
 
   void _scrollToBottom() {
@@ -76,15 +66,14 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
       _inputController.clear();
     }
 
-    final error = await ref.read(parentAiChatProvider.notifier).sendMessage(text);
+    final error = await ref
+        .read(parentAiChatProvider.notifier)
+        .sendMessage(text);
     _scrollToBottom();
 
     if (error != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          duration: const Duration(seconds: 6),
-        ),
+        SnackBar(content: Text(error), duration: const Duration(seconds: 6)),
       );
     }
   }
@@ -116,14 +105,14 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'AI Assistant',
+                l10n.clinicalAiAssistant,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               if (state.patientName != null && state.patientName!.isNotEmpty)
                 Text(
-                  'For ${state.patientName}',
+                  l10n.parentAiAssistantForChild(state.patientName!),
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
@@ -154,7 +143,7 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
                       SizedBox(width: context.dashSpacing * 0.5),
                       Expanded(
                         child: Text(
-                          _safetyNotice,
+                          l10n.parentAiAssistantDisclaimer,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: DashboardColors.textSecondary,
                           ),
@@ -214,16 +203,12 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
                           ),
                           itemCount: state.messages.length,
                           itemBuilder: (context, index) {
-                            return _ChatBubble(
-                              message: state.messages[index],
-                            );
+                            return _ChatBubble(message: state.messages[index]);
                           },
                         ),
                 ),
               if (!state.isLoading && state.messages.isNotEmpty)
-                _QuickPromptRow(
-                  onPromptTap: state.isSending ? null : _send,
-                ),
+                _QuickPromptRow(onPromptTap: state.isSending ? null : _send),
               if (state.isSending)
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -242,7 +227,7 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
                       ),
                       SizedBox(width: context.dashSpacing * 0.45),
                       Text(
-                        'AI is thinking...',
+                        l10n.parentAiAssistantThinking,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: DashboardColors.textSecondary,
                         ),
@@ -264,17 +249,16 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
 }
 
 class _EmptyChatState extends StatelessWidget {
-  const _EmptyChatState({
-    required this.onPromptTap,
-    required this.isSending,
-  });
+  const _EmptyChatState({required this.onPromptTap, required this.isSending});
 
   final ValueChanged<String> onPromptTap;
   final bool isSending;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final quickPrompts = localizedParentAiQuickPrompts(l10n);
 
     return SingleChildScrollView(
       padding: context.dashPadding,
@@ -295,7 +279,7 @@ class _EmptyChatState extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing),
           Text(
-            'Ask me anything about your child\'s exercises, reports, or progress.',
+            l10n.parentAiAssistantIntro,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,
@@ -306,7 +290,7 @@ class _EmptyChatState extends StatelessWidget {
             spacing: context.dashSpacing * 0.4,
             runSpacing: context.dashSpacing * 0.4,
             alignment: WrapAlignment.center,
-            children: _quickPrompts
+            children: quickPrompts
                 .map(
                   (prompt) => ActionChip(
                     label: Text(prompt),
@@ -334,24 +318,28 @@ class _QuickPromptRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final quickPrompts = localizedParentAiQuickPrompts(l10n);
+
     return SizedBox(
       height: context.dashSpacing * 2.1,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: context.dashSpacing * 0.75),
-        itemCount: _quickPrompts.length,
-        separatorBuilder: (_, __) => SizedBox(width: context.dashSpacing * 0.35),
+        itemCount: quickPrompts.length,
+        separatorBuilder: (_, __) =>
+            SizedBox(width: context.dashSpacing * 0.35),
         itemBuilder: (context, index) {
-          final prompt = _quickPrompts[index];
+          final prompt = quickPrompts[index];
           return ActionChip(
             label: Text(prompt),
             onPressed: onPromptTap == null ? null : () => onPromptTap!(prompt),
             backgroundColor: DashboardColors.surface,
             side: BorderSide(color: DashboardColors.border),
             labelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: DashboardColors.brandCyan,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: DashboardColors.brandCyan,
+              fontWeight: FontWeight.w600,
+            ),
           );
         },
       ),
@@ -366,6 +354,7 @@ class _ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isUser = message.isUser;
     final alignment = isUser
@@ -399,7 +388,9 @@ class _ChatBubble extends StatelessWidget {
           ),
           border: isUser
               ? null
-              : Border.all(color: DashboardColors.border.withValues(alpha: 0.8)),
+              : Border.all(
+                  color: DashboardColors.border.withValues(alpha: 0.8),
+                ),
           boxShadow: isUser
               ? [
                   BoxShadow(
@@ -411,8 +402,9 @@ class _ChatBubble extends StatelessWidget {
               : null,
         ),
         child: Column(
-          crossAxisAlignment:
-              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isUser
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             if (!isUser) ...[
               Row(
@@ -425,7 +417,7 @@ class _ChatBubble extends StatelessWidget {
                   ),
                   SizedBox(width: context.dashSpacing * 0.2),
                   Text(
-                    'AI Assistant',
+                    l10n.clinicalAiAssistant,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: DashboardColors.brandCyan,
                       fontWeight: FontWeight.w700,
@@ -447,7 +439,9 @@ class _ChatBubble extends StatelessWidget {
             if (message.isPending || message.hasFailed) ...[
               SizedBox(height: context.dashSpacing * 0.2),
               Text(
-                message.hasFailed ? 'Failed to send' : 'Sending...',
+                message.hasFailed
+                    ? l10n.parentAiAssistantFailedToSend
+                    : l10n.parentAiAssistantSending,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: message.hasFailed
                       ? DashboardColors.warning
@@ -475,6 +469,8 @@ class _ChatInputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         context.dashSpacing * 0.75,
@@ -499,7 +495,7 @@ class _ChatInputBar extends StatelessWidget {
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => onSend(),
               decoration: InputDecoration(
-                hintText: 'Ask about exercises, reports, or progress…',
+                hintText: l10n.parentAiAssistantInputHint,
                 filled: true,
                 fillColor: DashboardColors.background,
                 border: OutlineInputBorder(
@@ -512,7 +508,9 @@ class _ChatInputBar extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: DashboardColors.brandCyan),
+                  borderSide: const BorderSide(
+                    color: DashboardColors.brandCyan,
+                  ),
                 ),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: context.dashSpacing * 0.75,

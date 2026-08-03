@@ -4,9 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
+import '../utils/auth_localization_utils.dart';
 import '../utils/password_strength.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/locale/language_selector.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/auth_ui.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
@@ -64,6 +67,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final token = _tokenController.text.trim();
     final newPassword = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
@@ -71,7 +75,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     if (token.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
       showAuthSnackBar(
         context,
-        'Please complete all required fields',
+        l10n.authCompleteRequiredFields,
         type: AuthSnackBarType.error,
       );
       return;
@@ -80,7 +84,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     if (_passwordState == AuthFieldState.error) {
       showAuthSnackBar(
         context,
-        authStrongPasswordMessage,
+        localizedAuthStrongPasswordMessage(l10n),
         type: AuthSnackBarType.error,
       );
       return;
@@ -89,7 +93,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     if (_confirmPasswordState == AuthFieldState.error) {
       showAuthSnackBar(
         context,
-        'Passwords do not match.',
+        l10n.authPasswordsDoNotMatch,
         type: AuthSnackBarType.error,
       );
       return;
@@ -111,14 +115,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       return;
     }
 
-    final errorMessage =
-        ref.read(authProvider).errorMessage ?? 'Failed to reset password.';
+    final errorMessage = mapAuthProviderError(
+      l10n,
+      ref.read(authProvider).errorMessage ?? l10n.resetPasswordFailed,
+    );
     showAuthSnackBar(context, errorMessage, type: AuthSnackBarType.error);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authProvider);
+    final passwordRequirements = localizedAuthStrongPasswordMessage(l10n);
 
     return Scaffold(
       body: AuthBackground(
@@ -146,6 +154,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                             logoSize: 26,
                             logoColor: Color(0xFF2AA4C9),
                           ),
+                          const Spacer(),
+                          const LanguageSelector(),
                         ],
                       ),
                       SizedBox(height: topGap.toDouble()),
@@ -154,10 +164,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         child: AuthGlassCard(
                           child: _successMessage != null
                               ? AuthStatusCard(
-                                  title: 'Password Reset Complete',
-                                  message:
-                                      'Your password has been changed successfully.',
-                                  buttonLabel: 'Sign In',
+                                  title: l10n.resetPasswordCompleteTitle,
+                                  message: l10n.resetPasswordCompleteMessage,
+                                  buttonLabel: l10n.commonSignIn,
                                   onPressed: () => context.go(AppRoutes.login),
                                 )
                               : Column(
@@ -165,7 +174,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                       CrossAxisAlignment.stretch,
                                   children: [
                                     Text(
-                                      'Reset Password',
+                                      l10n.resetPasswordTitle,
                                       style: GoogleFonts.syne(
                                         fontSize: 24,
                                         fontWeight: FontWeight.w700,
@@ -174,7 +183,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Enter your new password below.',
+                                      l10n.resetPasswordSubtitle,
                                       style: GoogleFonts.inter(
                                         fontSize: 12.5,
                                         height: 1.5,
@@ -186,8 +195,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                     const SizedBox(height: 18),
                                     AuthInputField(
                                       controller: _passwordController,
-                                      label: 'New Password',
-                                      hintText: 'Enter your new password',
+                                      label: l10n.resetPasswordNewPassword,
+                                      hintText:
+                                          l10n.resetPasswordNewPasswordHint,
                                       icon: Icons.lock_outline_rounded,
                                       textInputAction: TextInputAction.next,
                                       obscureText: !_showPassword,
@@ -195,7 +205,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                       state: _passwordState,
                                       message:
                                           _passwordState == AuthFieldState.error
-                                          ? authStrongPasswordMessage
+                                          ? passwordRequirements
                                           : null,
                                       suffix: IconButton(
                                         onPressed: () {
@@ -204,6 +214,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                                 _showPassword = !_showPassword,
                                           );
                                         },
+                                        tooltip: _showPassword
+                                            ? l10n.loginHidePassword
+                                            : l10n.loginShowPassword,
                                         icon: Icon(
                                           _showPassword
                                               ? Icons.visibility_off_outlined
@@ -221,8 +234,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                     const SizedBox(height: 12),
                                     AuthInputField(
                                       controller: _confirmPasswordController,
-                                      label: 'Confirm New Password',
-                                      hintText: 'Re-enter your new password',
+                                      label: l10n.resetPasswordConfirmPassword,
+                                      hintText: l10n.resetPasswordConfirmHint,
                                       icon: Icons.lock_outline_rounded,
                                       textInputAction: TextInputAction.done,
                                       obscureText: !_showConfirmPassword,
@@ -231,7 +244,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                       message:
                                           _confirmPasswordState ==
                                               AuthFieldState.error
-                                          ? 'Passwords do not match.'
+                                          ? l10n.authPasswordsDoNotMatch
                                           : null,
                                       suffix: IconButton(
                                         onPressed: () {
@@ -240,6 +253,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                                 !_showConfirmPassword,
                                           );
                                         },
+                                        tooltip: _showConfirmPassword
+                                            ? l10n.loginHidePassword
+                                            : l10n.loginShowPassword,
                                         icon: Icon(
                                           _showConfirmPassword
                                               ? Icons.visibility_off_outlined
@@ -254,8 +270,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                     const SizedBox(height: 18),
                                     AuthGradientButton(
                                       label: authState.isLoading
-                                          ? 'Resetting Password...'
-                                          : 'Reset Password',
+                                          ? l10n.resetPasswordResetting
+                                          : l10n.resetPasswordTitle,
                                       trailingIcon: Icons.chevron_right_rounded,
                                       isLoading: authState.isLoading,
                                       onPressed: authState.isLoading
@@ -267,7 +283,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                       onPressed: () =>
                                           context.go(AppRoutes.login),
                                       child: Text(
-                                        'Back to Sign In',
+                                        l10n.resetPasswordBackToSignIn,
                                         style: GoogleFonts.inter(
                                           fontSize: 11.5,
                                           fontWeight: FontWeight.w700,

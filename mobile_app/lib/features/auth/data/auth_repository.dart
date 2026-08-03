@@ -130,12 +130,12 @@ class AuthRepository {
     _dio.options.headers['Authorization'] = 'Bearer ${token.trim()}';
   }
 
-  Future<String> uploadSignupProfileImage(List<int> bytes, String filename) async {
+  Future<String> uploadSignupProfileImage(
+    List<int> bytes,
+    String filename,
+  ) async {
     final formData = FormData.fromMap({
-      'file': MultipartFile.fromBytes(
-        bytes,
-        filename: filename,
-      ),
+      'file': MultipartFile.fromBytes(bytes, filename: filename),
     });
 
     final response = await _dio.post(
@@ -166,10 +166,7 @@ class AuthRepository {
 
   Future<AuthUser> uploadProfileImage(List<int> bytes, String filename) async {
     final formData = FormData.fromMap({
-      'image': MultipartFile.fromBytes(
-        bytes,
-        filename: filename,
-      ),
+      'image': MultipartFile.fromBytes(bytes, filename: filename),
     });
 
     final response = await _dio.post(

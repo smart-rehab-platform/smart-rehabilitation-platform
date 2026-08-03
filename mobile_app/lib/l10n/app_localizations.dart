@@ -8494,6 +8494,816 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI Report'**
   String get auditEntityAiReport;
+
+  /// Full password requirements message.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.'**
+  String get authPasswordRequirementsDescription;
+
+  /// Prompt before sign in link on signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? '**
+  String get authAlreadyHaveAccount;
+
+  /// Generic required fields validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete all required fields'**
+  String get authCompleteRequiredFields;
+
+  /// Password confirmation mismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get authPasswordsDoNotMatch;
+
+  /// Registration provider error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to create your account right now. Please try again.'**
+  String get authRegisterUnableToCreate;
+
+  /// Profile photo upload failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to upload your profile photo right now.'**
+  String get authUploadProfileFailed;
+
+  /// Profile photo upload retry message.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to upload your profile photo. Please try again.'**
+  String get authUploadProfileRetry;
+
+  /// Forgot password provider error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to send the reset link right now. Please try again.'**
+  String get authSendResetLinkUnable;
+
+  /// Reset password provider error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to reset your password right now. Please try again.'**
+  String get authResetPasswordUnable;
+
+  /// Verify email provider error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to verify your email right now. Please try again later.'**
+  String get authVerifyEmailUnable;
+
+  /// Resend verification provider error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to send the verification email right now. Please try again.'**
+  String get authVerifyEmailResendUnable;
+
+  /// Generic registration failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed. Please try again.'**
+  String get authRegistrationFailed;
+
+  /// Signup wizard first step title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Your Account'**
+  String get signupCreateYourAccount;
+
+  /// Signup role step subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you\'ll use Smart Rehabilitation.'**
+  String get signupStepSubtitleRole;
+
+  /// Signup personal info subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us a little about yourself.'**
+  String get signupStepSubtitlePersonal;
+
+  /// Signup professional info subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about your professional background.'**
+  String get signupStepSubtitleProfessional;
+
+  /// Signup security step subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure your account with a strong password.'**
+  String get signupStepSubtitleSecurity;
+
+  /// Signup review step subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your details before creating your account.'**
+  String get signupStepSubtitleReview;
+
+  /// Personal step validation snackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete all required personal fields'**
+  String get signupCompletePersonalFields;
+
+  /// Professional step validation snackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete all required professional fields'**
+  String get signupCompleteProfessionalFields;
+
+  /// Terms acceptance required.
+  ///
+  /// In en, this message translates to:
+  /// **'You must accept the Terms of Service and Privacy Policy.'**
+  String get signupTermsRequired;
+
+  /// Role selection required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your role'**
+  String get signupSelectRoleRequired;
+
+  /// Photo selection failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to select your profile photo right now.'**
+  String get signupPhotoSelectFailed;
+
+  /// Camera permission denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access is required to take a photo. Enable camera permission in your device settings if it was denied.'**
+  String get signupCameraPermissionDenied;
+
+  /// Camera unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera is unavailable on this device right now.'**
+  String get signupCameraUnavailable;
+
+  /// Camera open failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the camera. Please try again or choose from gallery.'**
+  String get signupCameraOpenFailed;
+
+  /// Gallery permission denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo library access is required to choose a photo. Enable photo permissions in your device settings if they were denied.'**
+  String get signupGalleryPermissionDenied;
+
+  /// Gallery open failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the photo library. Please try again.'**
+  String get signupGalleryOpenFailed;
+
+  /// Parent role card description.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor your child\'s progress, communicate with specialists, and complete home exercises.'**
+  String get signupRoleParentDescription;
+
+  /// Specialist role card description.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage patients, create treatment plans, review progress, and provide professional guidance.'**
+  String get signupRoleSpecialistDescription;
+
+  /// Signup wizard step indicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String signupStepProgress(int current, int total);
+
+  /// Profile photo picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Photo'**
+  String get signupProfilePhoto;
+
+  /// Profile photo change hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change photo'**
+  String get signupProfilePhotoTapChange;
+
+  /// Profile photo upload hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to upload'**
+  String get signupProfilePhotoTapUpload;
+
+  /// Accessibility label when photo exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo, tap to change'**
+  String get signupProfilePhotoSemanticChange;
+
+  /// Accessibility label when no photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo, tap to upload'**
+  String get signupProfilePhotoSemanticUpload;
+
+  /// Photo source sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Profile Photo'**
+  String get signupChooseProfilePhoto;
+
+  /// Camera option title.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a Photo'**
+  String get signupTakePhoto;
+
+  /// Camera option subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your camera to capture a new photo.'**
+  String get signupTakePhotoSubtitle;
+
+  /// Camera option accessibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo with camera'**
+  String get signupTakePhotoSemantic;
+
+  /// Gallery option title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get signupChooseFromGallery;
+
+  /// Gallery option subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an existing photo from your device.'**
+  String get signupChooseFromGallerySubtitle;
+
+  /// Gallery option accessibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a photo from gallery'**
+  String get signupChooseFromGallerySemantic;
+
+  /// Cancel photo sheet accessibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel profile photo selection'**
+  String get signupCancelPhotoSelection;
+
+  /// Full name field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. Sarah Johnson'**
+  String get signupFullNameHint;
+
+  /// Email address field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address'**
+  String get signupEmailAddress;
+
+  /// Phone number field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get signupPhoneNumber;
+
+  /// Phone field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'+970 59 000 0000'**
+  String get signupPhoneHint;
+
+  /// Specialization field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech Therapy'**
+  String get signupSpecializationHint;
+
+  /// Bio field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Brief professional bio'**
+  String get signupBioHint;
+
+  /// Bio character counter.
+  ///
+  /// In en, this message translates to:
+  /// **'{length} / 500'**
+  String signupBioCounter(int length);
+
+  /// Password field hint on signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Min. 8 characters'**
+  String get signupPasswordHint;
+
+  /// Confirm password label on signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get signupConfirmPassword;
+
+  /// Confirm password hint on signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get signupConfirmPasswordHint;
+
+  /// Terms checkbox label.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the Terms of Service and Privacy Policy.'**
+  String get signupTermsAgreement;
+
+  /// Review section account type.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Type'**
+  String get signupAccountType;
+
+  /// Review section personal details.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Details'**
+  String get signupPersonalDetails;
+
+  /// Review section professional details.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Details'**
+  String get signupProfessionalDetails;
+
+  /// Review section security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get signupSecuritySection;
+
+  /// Review experience label.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get signupExperience;
+
+  /// Review section edit button.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get signupEdit;
+
+  /// Review security summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Password created securely'**
+  String get signupPasswordCreatedSecurely;
+
+  /// Review disclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'By creating this account, you confirm that the information above is accurate.'**
+  String get signupReviewConfirmAccuracy;
+
+  /// Create account button loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating Account...'**
+  String get signupCreatingAccount;
+
+  /// Years of experience display.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} years'**
+  String signupExperienceYears(int count);
+
+  /// Single year experience display.
+  ///
+  /// In en, this message translates to:
+  /// **'1 year'**
+  String get signupExperienceOneYear;
+
+  /// Specialization validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialization is required.'**
+  String get signupValidationSpecializationRequired;
+
+  /// Specialization max length.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialization must not exceed 150 characters.'**
+  String get signupValidationSpecializationMax;
+
+  /// License validation.
+  ///
+  /// In en, this message translates to:
+  /// **'License number is required.'**
+  String get signupValidationLicenseRequired;
+
+  /// License max length.
+  ///
+  /// In en, this message translates to:
+  /// **'License number must not exceed 100 characters.'**
+  String get signupValidationLicenseMax;
+
+  /// Experience required.
+  ///
+  /// In en, this message translates to:
+  /// **'Years of experience is required.'**
+  String get signupValidationExperienceRequired;
+
+  /// Experience minimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Years of experience must be at least 0.'**
+  String get signupValidationExperienceMin;
+
+  /// Bio max length.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio must not exceed 500 characters.'**
+  String get signupValidationBioMax;
+
+  /// Forgot password screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password'**
+  String get forgotPasswordTitle;
+
+  /// Forgot password instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address and we will send you a password reset link.'**
+  String get forgotPasswordSubtitle;
+
+  /// Empty email validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email address'**
+  String get forgotPasswordEnterEmail;
+
+  /// Invalid email validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get forgotPasswordEnterValidEmail;
+
+  /// Sending reset link button.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending Reset Link...'**
+  String get forgotPasswordSending;
+
+  /// Send reset link button.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Link'**
+  String get forgotPasswordSendLink;
+
+  /// Success title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Email Sent'**
+  String get forgotPasswordResetEmailSentTitle;
+
+  /// Success message.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account exists with this email, a password reset link has been sent.'**
+  String get forgotPasswordResetEmailSentMessage;
+
+  /// Failed to send reset link.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send reset link.'**
+  String get forgotPasswordFailedSend;
+
+  /// Return to login link.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Sign In'**
+  String get forgotPasswordBackToSignIn;
+
+  /// Reset password screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordTitle;
+
+  /// Reset password instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password below.'**
+  String get resetPasswordSubtitle;
+
+  /// New password label.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get resetPasswordNewPassword;
+
+  /// New password hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password'**
+  String get resetPasswordNewPasswordHint;
+
+  /// Confirm password label.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm New Password'**
+  String get resetPasswordConfirmPassword;
+
+  /// Confirm password hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your new password'**
+  String get resetPasswordConfirmHint;
+
+  /// Reset button loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting Password...'**
+  String get resetPasswordResetting;
+
+  /// Success title.
+  ///
+  /// In en, this message translates to:
+  /// **'Password Reset Complete'**
+  String get resetPasswordCompleteTitle;
+
+  /// Success message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password has been changed successfully.'**
+  String get resetPasswordCompleteMessage;
+
+  /// Reset failure message.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reset password.'**
+  String get resetPasswordFailed;
+
+  /// Return to login.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Sign In'**
+  String get resetPasswordBackToSignIn;
+
+  /// Initial verify email message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your email and open the verification link on this device.'**
+  String get verifyEmailPendingMessage;
+
+  /// Pending verification title.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Your Email'**
+  String get verifyEmailCheckTitle;
+
+  /// Pending verification message.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a verification link to your email address. Open the link on this device to activate your account.'**
+  String get verifyEmailCheckMessage;
+
+  /// Loading verification title.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying Email'**
+  String get verifyEmailVerifyingTitle;
+
+  /// Loading verification message.
+  ///
+  /// In en, this message translates to:
+  /// **'We are verifying your email now.'**
+  String get verifyEmailVerifyingMessage;
+
+  /// Verification success title.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Verified'**
+  String get verifyEmailSuccessTitle;
+
+  /// Verification success message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email has been verified successfully. You can now sign in.'**
+  String get verifyEmailSuccessMessage;
+
+  /// Go to login button.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Login'**
+  String get verifyEmailGoToLogin;
+
+  /// Verification failed title.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Failed'**
+  String get verifyEmailFailedTitle;
+
+  /// Verification failed default.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to verify your email right now.'**
+  String get verifyEmailFailedDefault;
+
+  /// Resend button loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get verifyEmailResending;
+
+  /// Resend verification button.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend Verification Email'**
+  String get verifyEmailResend;
+
+  /// Hide manual token input.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide manual verification'**
+  String get verifyEmailHideManual;
+
+  /// Show manual token input.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have a verification link?'**
+  String get verifyEmailShowManual;
+
+  /// Manual token field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification link or token'**
+  String get verifyEmailTokenLabel;
+
+  /// Manual token field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the link or token from your email'**
+  String get verifyEmailTokenHint;
+
+  /// Verify email button.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Email'**
+  String get verifyEmailVerifyButton;
+
+  /// Empty token validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the verification token or paste the full verification link.'**
+  String get verifyEmailEnterToken;
+
+  /// Missing email for resend.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address is missing. Please sign up again or contact support.'**
+  String get verifyEmailEmailMissing;
+
+  /// Resend failure fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to resend the verification email right now.'**
+  String get verifyEmailResendFailed;
+
+  /// Back to login link.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Sign In'**
+  String get verifyEmailBackToSignIn;
+
+  /// Splash title first line (Arabic only).
+  ///
+  /// In en, this message translates to:
+  /// **''**
+  String get splashTitleLine1;
+
+  /// Splash title leading word or Arabic middle line.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart'**
+  String get splashTitleSmart;
+
+  /// Splash title accent word or Arabic final line.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehabilitation'**
+  String get splashTitleRehabilitation;
+
+  /// Splash subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Empowering rehabilitation through smart daily follow-up'**
+  String get splashSubtitle;
+
+  /// Splash feature pill.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Progress Tracking'**
+  String get splashFeatureAiProgress;
+
+  /// Splash feature pill.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Exercise Guidance'**
+  String get splashFeatureExerciseGuidance;
+
+  /// Splash feature pill.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech & Motion Analysis'**
+  String get splashFeatureSpeechMotion;
+
+  /// Splash CTA button.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get splashGetStarted;
+
+  /// Splash footer copyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© Smart Rehabilitation Platform'**
+  String get splashCopyright;
+
+  /// Parent AI assistant subtitle with child name.
+  ///
+  /// In en, this message translates to:
+  /// **'For {childName}'**
+  String parentAiAssistantForChild(String childName);
+
+  /// Safety disclaimer on the parent AI assistant screen.
+  ///
+  /// In en, this message translates to:
+  /// **'AI guidance is for support only. Always follow your specialist\'s instructions.'**
+  String get parentAiAssistantDisclaimer;
+
+  /// Empty-state intro on the parent AI assistant screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask me anything about your child\'s exercises, reports, or progress.'**
+  String get parentAiAssistantIntro;
+
+  /// Suggested prompt on the parent AI assistant screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain today\'s exercise'**
+  String get parentAiAssistantPromptExplainExercise;
+
+  /// Suggested prompt on the parent AI assistant screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Summarize my child\'s progress'**
+  String get parentAiAssistantPromptSummarizeProgress;
+
+  /// Suggested prompt on the parent AI assistant screen.
+  ///
+  /// In en, this message translates to:
+  /// **'What should I focus on today?'**
+  String get parentAiAssistantPromptFocusToday;
+
+  /// Suggested prompt on the parent AI assistant screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the latest report'**
+  String get parentAiAssistantPromptExplainReport;
+
+  /// Input hint on the parent AI assistant screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about exercises, reports, or progress...'**
+  String get parentAiAssistantInputHint;
+
+  /// Loading indicator while waiting for an AI response.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is thinking...'**
+  String get parentAiAssistantThinking;
+
+  /// Message pending state in the parent AI assistant chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get parentAiAssistantSending;
+
+  /// Message failed state in the parent AI assistant chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send'**
+  String get parentAiAssistantFailedToSend;
 }
 
 class _AppLocalizationsDelegate

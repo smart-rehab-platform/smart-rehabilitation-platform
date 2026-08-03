@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../models/signup_wizard_models.dart';
 import 'signup_navigation_buttons.dart';
@@ -18,23 +19,23 @@ class SignupRoleStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SignupOnboardingRoleCard(
           icon: Icons.groups_2_outlined,
-          title: 'Parent',
-          description:
-              "Monitor your child's progress, communicate with specialists, and complete home exercises.",
+          title: l10n.roleParent,
+          description: l10n.signupRoleParentDescription,
           isSelected: selectedRole == SignupRole.parent,
           onTap: () => onRoleSelected(SignupRole.parent),
         ),
         const SizedBox(height: 10),
         SignupOnboardingRoleCard(
           icon: Icons.medical_services_outlined,
-          title: 'Specialist',
-          description:
-              'Manage patients, create treatment plans, review progress, and provide professional guidance.',
+          title: l10n.roleSpecialist,
+          description: l10n.signupRoleSpecialistDescription,
           isSelected: selectedRole == SignupRole.specialist,
           onTap: () => onRoleSelected(SignupRole.specialist),
         ),
@@ -44,7 +45,7 @@ class SignupRoleStep extends StatelessWidget {
           onBack: () {},
           onContinue: onContinue,
           continueEnabled: selectedRole != null,
-          continueLabel: 'Continue',
+          continueLabel: l10n.commonContinue,
         ),
       ],
     );

@@ -155,8 +155,10 @@ bool isDuplicateEmailError(String? message) {
   if (message == null || message.isEmpty) {
     return false;
   }
-  return RegExp(r'email already exists|already registered', caseSensitive: false)
-      .hasMatch(message);
+  return RegExp(
+    r'email already exists|already registered',
+    caseSensitive: false,
+  ).hasMatch(message);
 }
 
 class SpecialistValidationResult {

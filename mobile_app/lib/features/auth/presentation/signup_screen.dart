@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 
 import '../models/signup_wizard_models.dart';
 import '../providers/auth_provider.dart';
-import '../utils/password_strength.dart';
+import '../utils/auth_localization_utils.dart';
 import '../utils/signup_wizard_helpers.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/locale/language_selector.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/auth_ui.dart';
 import 'signup/signup_personal_info_step.dart';
 import 'signup/signup_professional_info_step.dart';
@@ -106,15 +108,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     bio: _bioController.text,
   );
 
-  String? get _stepSubtitle {
-    return switch (_currentStep) {
-      1 => "Choose how you'll use Smart Rehabilitation.",
-      2 => 'Tell us a little about yourself.',
-      3 => 'Tell us about your professional background.',
-      4 => 'Secure your account with a strong password.',
-      5 => 'Review your details before creating your account.',
-      _ => null,
-    };
+  String? _stepSubtitle(AppLocalizations l10n) {
+    return localizedSignupStepSubtitle(l10n, _currentStep).isEmpty
+        ? null
+        : localizedSignupStepSubtitle(l10n, _currentStep);
   }
 
   @override
@@ -201,10 +198,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   void _handlePersonalContinue() {
+    final l10n = AppLocalizations.of(context)!;
     if (!_canContinuePersonal) {
       showAuthSnackBar(
         context,
-        'Please complete all required personal fields',
+        l10n.signupCompletePersonalFields,
         type: AuthSnackBarType.error,
       );
       return;
@@ -213,10 +211,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   void _handleProfessionalContinue() {
+    final l10n = AppLocalizations.of(context)!;
     if (!_canContinueProfessional) {
       showAuthSnackBar(
         context,
-        'Please complete all required professional fields',
+        l10n.signupCompleteProfessionalFields,
         type: AuthSnackBarType.error,
       );
       return;
@@ -225,11 +224,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   void _handleSecurityContinue() {
+    final l10n = AppLocalizations.of(context)!;
     if (_passwordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
       showAuthSnackBar(
         context,
-        'Please complete all required fields',
+        l10n.authCompleteRequiredFields,
         type: AuthSnackBarType.error,
       );
       return;
@@ -237,7 +237,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (_passwordState == AuthFieldState.error) {
       showAuthSnackBar(
         context,
-        authStrongPasswordMessage,
+        localizedAuthStrongPasswordMessage(l10n),
         type: AuthSnackBarType.error,
       );
       return;
@@ -245,7 +245,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (_confirmPasswordState == AuthFieldState.error) {
       showAuthSnackBar(
         context,
-        'Passwords do not match.',
+        l10n.authPasswordsDoNotMatch,
         type: AuthSnackBarType.error,
       );
       return;
@@ -253,7 +253,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (!_termsAccepted) {
       showAuthSnackBar(
         context,
-        'You must accept the Terms of Service and Privacy Policy.',
+        l10n.signupTermsRequired,
         type: AuthSnackBarType.error,
       );
       return;
@@ -313,6 +313,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       }
 
       if (uploadedUrl == null) {
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
           _profilePhotoBytes = previousBytes;
           _profilePhotoFilename = previousFilename;
@@ -321,8 +322,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         });
         showAuthSnackBar(
           context,
-          ref.read(authProvider).errorMessage ??
-              'Unable to upload your profile photo right now.',
+          mapAuthProviderError(
+            l10n,
+            ref.read(authProvider).errorMessage ?? l10n.authUploadProfileFailed,
+          ),
           type: AuthSnackBarType.error,
         );
         return;
@@ -356,7 +359,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
       showAuthSnackBar(
         context,
-        'Unable to select your profile photo right now.',
+        AppLocalizations.of(context)!.signupPhotoSelectFailed,
         type: AuthSnackBarType.error,
       );
     }
@@ -366,32 +369,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     PlatformException error, {
     required bool fromCamera,
   }) {
-    final code = error.code.toLowerCase();
-    final message = (error.message ?? '').toLowerCase();
-
-    if (fromCamera) {
-      if (code.contains('camera_access_denied') ||
-          code.contains('permission') ||
-          message.contains('permission') ||
-          message.contains('denied')) {
-        return 'Camera access is required to take a photo. Enable camera permission in your device settings if it was denied.';
-      }
-
-      if (code.contains('camera') && message.contains('unavailable')) {
-        return 'Camera is unavailable on this device right now.';
-      }
-
-      return 'Unable to open the camera. Please try again or choose from gallery.';
-    }
-
-    if (code.contains('photo_access_denied') ||
-        code.contains('permission') ||
-        message.contains('permission') ||
-        message.contains('denied')) {
-      return 'Photo library access is required to choose a photo. Enable photo permissions in your device settings if they were denied.';
-    }
-
-    return 'Unable to open the photo library. Please try again.';
+    final l10n = AppLocalizations.of(context)!;
+    return localizedSignupPhotoPickerError(
+      l10n,
+      error.code,
+      error.message ?? '',
+      fromCamera: fromCamera,
+    );
   }
 
   String _normalizeProfileFilename(String name, String path) {
@@ -426,6 +410,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final fullName = _fullNameController.text.trim();
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim();
@@ -434,7 +419,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (_selectedRole == null) {
       showAuthSnackBar(
         context,
-        'Please select your role',
+        l10n.signupSelectRoleRequired,
         type: AuthSnackBarType.error,
       );
       _goToStep(1);
@@ -446,7 +431,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         (_selectedRole == SignupRole.specialist && !_canContinueProfessional)) {
       showAuthSnackBar(
         context,
-        'Please complete all required fields',
+        l10n.authCompleteRequiredFields,
         type: AuthSnackBarType.error,
       );
       return;
@@ -468,8 +453,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       _submitLocked = false;
       showAuthSnackBar(
         context,
-        ref.read(authProvider).errorMessage ??
-            'Unable to upload your profile photo. Please try again.',
+        mapAuthProviderError(
+          l10n,
+          ref.read(authProvider).errorMessage ?? l10n.authUploadProfileRetry,
+        ),
         type: AuthSnackBarType.error,
       );
       return;
@@ -500,15 +487,18 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       return;
     }
 
-    final errorMessage =
-        ref.read(authProvider).errorMessage ??
-        'Registration failed. Please try again.';
+    final rawErrorMessage =
+        ref.read(authProvider).errorMessage ?? l10n.authRegistrationFailed;
 
-    if (isDuplicateEmailError(errorMessage)) {
+    if (isDuplicateEmailError(rawErrorMessage)) {
       _goToStep(2);
     }
 
-    showAuthSnackBar(context, errorMessage, type: AuthSnackBarType.error);
+    showAuthSnackBar(
+      context,
+      mapAuthProviderError(l10n, rawErrorMessage),
+      type: AuthSnackBarType.error,
+    );
   }
 
   Widget _buildStepContent() {
@@ -576,7 +566,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authProvider);
+    final stepSubtitle = _stepSubtitle(l10n);
 
     return PopScope(
       canPop: _currentStep == 1,
@@ -611,6 +603,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         logoSize: 26,
                         logoColor: Color(0xFF2AA4C9),
                       ),
+                      const Spacer(),
+                      const LanguageSelector(),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -632,7 +626,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             const SizedBox(height: 16),
                             if (_currentStep == 1)
                               Text(
-                                'Create Your Account',
+                                l10n.signupCreateYourAccount,
                                 style: GoogleFonts.syne(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w700,
@@ -641,17 +635,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               )
                             else
                               Text(
-                                'Create Account',
+                                l10n.authCommonCreateAccount,
                                 style: GoogleFonts.syne(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.white,
                                 ),
                               ),
-                            if (_stepSubtitle != null) ...[
+                            if (stepSubtitle != null) ...[
                               const SizedBox(height: 4),
                               Text(
-                                _stepSubtitle!,
+                                stepSubtitle,
                                 style: GoogleFonts.inter(
                                   fontSize: 12.5,
                                   height: 1.5,
@@ -686,7 +680,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             const SizedBox(height: 18),
                             Text.rich(
                               TextSpan(
-                                text: 'Already have an account? ',
+                                text: l10n.authAlreadyHaveAccount,
                                 style: GoogleFonts.inter(
                                   fontSize: 11.5,
                                   color: AppColors.lightBlue,
@@ -699,7 +693,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                           ? null
                                           : () => context.go(AppRoutes.login),
                                       child: Text(
-                                        'Sign In',
+                                        l10n.commonSignIn,
                                         style: GoogleFonts.inter(
                                           fontSize: 11.5,
                                           fontWeight: FontWeight.w700,

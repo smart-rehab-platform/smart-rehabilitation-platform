@@ -4809,4 +4809,454 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auditEntityAiReport => 'تقرير الذكاء الاصطناعي';
+
+  @override
+  String get authPasswordRequirementsDescription =>
+      'يجب أن تكون كلمة المرور 8 أحرف على الأقل وتتضمن حرفاً كبيراً وحرفاً صغيراً ورقماً ورمزاً خاصاً.';
+
+  @override
+  String get authAlreadyHaveAccount => 'لديك حساب بالفعل؟ ';
+
+  @override
+  String get authCompleteRequiredFields => 'يرجى إكمال جميع الحقول المطلوبة';
+
+  @override
+  String get authPasswordsDoNotMatch => 'كلمتا المرور غير متطابقتين.';
+
+  @override
+  String get authRegisterUnableToCreate =>
+      'تعذر إنشاء حسابك الآن. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get authUploadProfileFailed => 'تعذر رفع صورة ملفك الشخصي الآن.';
+
+  @override
+  String get authUploadProfileRetry =>
+      'تعذر رفع صورة ملفك الشخصي. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get authSendResetLinkUnable =>
+      'تعذر إرسال رابط إعادة التعيين الآن. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get authResetPasswordUnable =>
+      'تعذر إعادة تعيين كلمة المرور الآن. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get authVerifyEmailUnable =>
+      'تعذر التحقق من بريدك الإلكتروني الآن. يرجى المحاولة لاحقاً.';
+
+  @override
+  String get authVerifyEmailResendUnable =>
+      'تعذر إرسال رسالة التحقق الآن. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get authRegistrationFailed => 'فشل التسجيل. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get signupCreateYourAccount => 'إنشاء حسابك';
+
+  @override
+  String get signupStepSubtitleRole => 'اختر كيف ستستخدم إعادة التأهيل الذكية.';
+
+  @override
+  String get signupStepSubtitlePersonal => 'أخبرنا قليلاً عن نفسك.';
+
+  @override
+  String get signupStepSubtitleProfessional => 'أخبرنا عن خلفيتك المهنية.';
+
+  @override
+  String get signupStepSubtitleSecurity => 'أمّن حسابك بكلمة مرور قوية.';
+
+  @override
+  String get signupStepSubtitleReview => 'راجع تفاصيلك قبل إنشاء حسابك.';
+
+  @override
+  String get signupCompletePersonalFields =>
+      'يرجى إكمال جميع الحقول الشخصية المطلوبة';
+
+  @override
+  String get signupCompleteProfessionalFields =>
+      'يرجى إكمال جميع الحقول المهنية المطلوبة';
+
+  @override
+  String get signupTermsRequired =>
+      'يجب الموافقة على شروط الخدمة وسياسة الخصوصية.';
+
+  @override
+  String get signupSelectRoleRequired => 'يرجى اختيار دورك';
+
+  @override
+  String get signupPhotoSelectFailed => 'تعذر اختيار صورة ملفك الشخصي الآن.';
+
+  @override
+  String get signupCameraPermissionDenied =>
+      'الوصول إلى الكاميرا مطلوب لالتقاط صورة. فعّل إذن الكاميرا في إعدادات الجهاز إذا كان مرفوضاً.';
+
+  @override
+  String get signupCameraUnavailable =>
+      'الكاميرا غير متاحة على هذا الجهاز الآن.';
+
+  @override
+  String get signupCameraOpenFailed =>
+      'تعذر فتح الكاميرا. يرجى المحاولة مرة أخرى أو الاختيار من المعرض.';
+
+  @override
+  String get signupGalleryPermissionDenied =>
+      'الوصول إلى مكتبة الصور مطلوب لاختيار صورة. فعّل أذونات الصور في إعدادات الجهاز إذا كانت مرفوضة.';
+
+  @override
+  String get signupGalleryOpenFailed =>
+      'تعذر فتح مكتبة الصور. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get signupRoleParentDescription =>
+      'تابع تقدم طفلك، تواصل مع الأخصائيين، وأكمل تمارين المنزل.';
+
+  @override
+  String get signupRoleSpecialistDescription =>
+      'أدر المرضى، أنشئ خطط العلاج، راجع التقدم، وقدّم الإرشاد المهني.';
+
+  @override
+  String signupStepProgress(int current, int total) {
+    return 'الخطوة $current من $total';
+  }
+
+  @override
+  String get signupProfilePhoto => 'صورة الملف الشخصي';
+
+  @override
+  String get signupProfilePhotoTapChange => 'اضغط لتغيير الصورة';
+
+  @override
+  String get signupProfilePhotoTapUpload => 'اضغط للرفع';
+
+  @override
+  String get signupProfilePhotoSemanticChange =>
+      'صورة الملف الشخصي، اضغط للتغيير';
+
+  @override
+  String get signupProfilePhotoSemanticUpload =>
+      'صورة الملف الشخصي، اضغط للرفع';
+
+  @override
+  String get signupChooseProfilePhoto => 'اختر صورة الملف الشخصي';
+
+  @override
+  String get signupTakePhoto => 'التقاط صورة';
+
+  @override
+  String get signupTakePhotoSubtitle => 'استخدم الكاميرا لالتقاط صورة جديدة.';
+
+  @override
+  String get signupTakePhotoSemantic => 'التقاط صورة بالكاميرا';
+
+  @override
+  String get signupChooseFromGallery => 'اختيار من المعرض';
+
+  @override
+  String get signupChooseFromGallerySubtitle => 'اختر صورة موجودة من جهازك.';
+
+  @override
+  String get signupChooseFromGallerySemantic => 'اختيار صورة من المعرض';
+
+  @override
+  String get signupCancelPhotoSelection => 'إلغاء اختيار صورة الملف الشخصي';
+
+  @override
+  String get signupFullNameHint => 'د. سارة جونسون';
+
+  @override
+  String get signupEmailAddress => 'عنوان البريد الإلكتروني';
+
+  @override
+  String get signupPhoneNumber => 'رقم الهاتف';
+
+  @override
+  String get signupPhoneHint => '+970 59 000 0000';
+
+  @override
+  String get signupSpecializationHint => 'علاج النطق';
+
+  @override
+  String get signupBioHint => 'نبذة مهنية مختصرة';
+
+  @override
+  String signupBioCounter(int length) {
+    return '$length / 500';
+  }
+
+  @override
+  String get signupPasswordHint => '8 أحرف على الأقل';
+
+  @override
+  String get signupConfirmPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get signupConfirmPasswordHint => 'أعد إدخال كلمة المرور';
+
+  @override
+  String get signupTermsAgreement => 'أوافق على شروط الخدمة وسياسة الخصوصية.';
+
+  @override
+  String get signupAccountType => 'نوع الحساب';
+
+  @override
+  String get signupPersonalDetails => 'التفاصيل الشخصية';
+
+  @override
+  String get signupProfessionalDetails => 'التفاصيل المهنية';
+
+  @override
+  String get signupSecuritySection => 'الأمان';
+
+  @override
+  String get signupExperience => 'الخبرة';
+
+  @override
+  String get signupEdit => 'تعديل';
+
+  @override
+  String get signupPasswordCreatedSecurely => 'تم إنشاء كلمة المرور بأمان';
+
+  @override
+  String get signupReviewConfirmAccuracy =>
+      'بإنشاء هذا الحساب، تؤكد أن المعلومات أعلاه دقيقة.';
+
+  @override
+  String get signupCreatingAccount => 'جارٍ إنشاء الحساب...';
+
+  @override
+  String signupExperienceYears(int count) {
+    return '$count سنوات';
+  }
+
+  @override
+  String get signupExperienceOneYear => 'سنة واحدة';
+
+  @override
+  String get signupValidationSpecializationRequired => 'التخصص مطلوب.';
+
+  @override
+  String get signupValidationSpecializationMax =>
+      'يجب ألا يتجاوز التخصص 150 حرفاً.';
+
+  @override
+  String get signupValidationLicenseRequired => 'رقم الرخصة مطلوب.';
+
+  @override
+  String get signupValidationLicenseMax => 'يجب ألا يتجاوز رقم الرخصة 100 حرف.';
+
+  @override
+  String get signupValidationExperienceRequired => 'سنوات الخبرة مطلوبة.';
+
+  @override
+  String get signupValidationExperienceMin =>
+      'يجب أن تكون سنوات الخبرة 0 على الأقل.';
+
+  @override
+  String get signupValidationBioMax => 'يجب ألا تتجاوز النبذة 500 حرف.';
+
+  @override
+  String get forgotPasswordTitle => 'نسيت كلمة المرور';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'أدخل عنوان بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين كلمة المرور.';
+
+  @override
+  String get forgotPasswordEnterEmail => 'يرجى إدخال عنوان بريدك الإلكتروني';
+
+  @override
+  String get forgotPasswordEnterValidEmail =>
+      'يرجى إدخال عنوان بريد إلكتروني صالح';
+
+  @override
+  String get forgotPasswordSending => 'جارٍ إرسال رابط إعادة التعيين...';
+
+  @override
+  String get forgotPasswordSendLink => 'إرسال رابط إعادة التعيين';
+
+  @override
+  String get forgotPasswordResetEmailSentTitle =>
+      'تم إرسال رسالة إعادة التعيين';
+
+  @override
+  String get forgotPasswordResetEmailSentMessage =>
+      'إذا كان هناك حساب بهذا البريد الإلكتروني، فقد تم إرسال رابط إعادة تعيين كلمة المرور.';
+
+  @override
+  String get forgotPasswordFailedSend => 'فشل إرسال رابط إعادة التعيين.';
+
+  @override
+  String get forgotPasswordBackToSignIn => 'العودة لتسجيل الدخول';
+
+  @override
+  String get resetPasswordTitle => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get resetPasswordSubtitle => 'أدخل كلمة المرور الجديدة أدناه.';
+
+  @override
+  String get resetPasswordNewPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get resetPasswordNewPasswordHint => 'أدخل كلمة المرور الجديدة';
+
+  @override
+  String get resetPasswordConfirmPassword => 'تأكيد كلمة المرور الجديدة';
+
+  @override
+  String get resetPasswordConfirmHint => 'أعد إدخال كلمة المرور الجديدة';
+
+  @override
+  String get resetPasswordResetting => 'جارٍ إعادة التعيين...';
+
+  @override
+  String get resetPasswordCompleteTitle => 'اكتملت إعادة تعيين كلمة المرور';
+
+  @override
+  String get resetPasswordCompleteMessage => 'تم تغيير كلمة المرور بنجاح.';
+
+  @override
+  String get resetPasswordFailed => 'فشل إعادة تعيين كلمة المرور.';
+
+  @override
+  String get resetPasswordBackToSignIn => 'العودة لتسجيل الدخول';
+
+  @override
+  String get verifyEmailPendingMessage =>
+      'يرجى التحقق من بريدك الإلكتروني وفتح رابط التحقق على هذا الجهاز.';
+
+  @override
+  String get verifyEmailCheckTitle => 'تحقق من بريدك الإلكتروني';
+
+  @override
+  String get verifyEmailCheckMessage =>
+      'أرسلنا رابط تحقق إلى عنوان بريدك الإلكتروني. افتح الرابط على هذا الجهاز لتفعيل حسابك.';
+
+  @override
+  String get verifyEmailVerifyingTitle => 'جارٍ التحقق من البريد';
+
+  @override
+  String get verifyEmailVerifyingMessage =>
+      'نحن نتحقق من بريدك الإلكتروني الآن.';
+
+  @override
+  String get verifyEmailSuccessTitle => 'تم التحقق من البريد';
+
+  @override
+  String get verifyEmailSuccessMessage =>
+      'تم التحقق من بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول.';
+
+  @override
+  String get verifyEmailGoToLogin => 'الانتقال لتسجيل الدخول';
+
+  @override
+  String get verifyEmailFailedTitle => 'فشل التحقق';
+
+  @override
+  String get verifyEmailFailedDefault =>
+      'تعذر التحقق من بريدك الإلكتروني الآن.';
+
+  @override
+  String get verifyEmailResending => 'جارٍ الإرسال...';
+
+  @override
+  String get verifyEmailResend => 'إعادة إرسال رسالة التحقق';
+
+  @override
+  String get verifyEmailHideManual => 'إخفاء التحقق اليدوي';
+
+  @override
+  String get verifyEmailShowManual => 'لديك رابط تحقق بالفعل؟';
+
+  @override
+  String get verifyEmailTokenLabel => 'رابط أو رمز التحقق';
+
+  @override
+  String get verifyEmailTokenHint => 'الصق الرابط أو الرمز من بريدك الإلكتروني';
+
+  @override
+  String get verifyEmailVerifyButton => 'التحقق من البريد';
+
+  @override
+  String get verifyEmailEnterToken =>
+      'أدخل رمز التحقق أو الصق رابط التحقق الكامل.';
+
+  @override
+  String get verifyEmailEmailMissing =>
+      'عنوان البريد الإلكتروني مفقود. يرجى التسجيل مرة أخرى أو التواصل مع الدعم.';
+
+  @override
+  String get verifyEmailResendFailed => 'تعذر إعادة إرسال رسالة التحقق الآن.';
+
+  @override
+  String get verifyEmailBackToSignIn => 'العودة لتسجيل الدخول';
+
+  @override
+  String get splashTitleLine1 => 'منصة';
+
+  @override
+  String get splashTitleSmart => 'إعادة التأهيل';
+
+  @override
+  String get splashTitleRehabilitation => 'الذكية';
+
+  @override
+  String get splashSubtitle =>
+      'تمكين إعادة التأهيل من خلال المتابعة اليومية الذكية';
+
+  @override
+  String get splashFeatureAiProgress => 'تتبع التقدم بالذكاء الاصطناعي';
+
+  @override
+  String get splashFeatureExerciseGuidance => 'إرشاد التمارين الذكي';
+
+  @override
+  String get splashFeatureSpeechMotion => 'تحليل الكلام والحركة';
+
+  @override
+  String get splashGetStarted => 'ابدأ';
+
+  @override
+  String get splashCopyright => '© منصة إعادة التأهيل الذكية';
+
+  @override
+  String parentAiAssistantForChild(String childName) {
+    return 'لـ $childName';
+  }
+
+  @override
+  String get parentAiAssistantDisclaimer =>
+      'إرشادات الذكاء الاصطناعي هي للمساعدة فقط. يُرجى دائمًا اتباع تعليمات الأخصائي.';
+
+  @override
+  String get parentAiAssistantIntro =>
+      'اسألني أي شيء عن تمارين طفلك أو تقاريره أو تقدمه.';
+
+  @override
+  String get parentAiAssistantPromptExplainExercise => 'اشرح تمرين اليوم';
+
+  @override
+  String get parentAiAssistantPromptSummarizeProgress => 'لخّص تقدم طفلي';
+
+  @override
+  String get parentAiAssistantPromptFocusToday => 'على ماذا أركز اليوم؟';
+
+  @override
+  String get parentAiAssistantPromptExplainReport => 'اشرح آخر تقرير';
+
+  @override
+  String get parentAiAssistantInputHint =>
+      'اسأل عن التمارين أو التقارير أو التقدم...';
+
+  @override
+  String get parentAiAssistantThinking => 'الذكاء الاصطناعي يفكر...';
+
+  @override
+  String get parentAiAssistantSending => 'جارٍ الإرسال...';
+
+  @override
+  String get parentAiAssistantFailedToSend => 'تعذر الإرسال';
 }
