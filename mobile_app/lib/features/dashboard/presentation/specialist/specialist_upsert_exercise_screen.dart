@@ -6,9 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/theme/dashboard_theme.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_exercise_assignment_provider.dart';
 import '../../providers/specialist_features_provider.dart';
+import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
@@ -19,12 +21,13 @@ class SpecialistUpsertExerciseScreen extends ConsumerStatefulWidget {
   const SpecialistUpsertExerciseScreen({
     super.key,
     this.exerciseId,
+    this.useAdminChrome = false,
   });
 
   final String? exerciseId;
+  final bool useAdminChrome;
 
-  bool get isEditing =>
-      exerciseId != null && exerciseId!.trim().isNotEmpty;
+  bool get isEditing => exerciseId != null && exerciseId!.trim().isNotEmpty;
 
   @override
   ConsumerState<SpecialistUpsertExerciseScreen> createState() =>
@@ -244,9 +247,7 @@ class _SpecialistUpsertExerciseScreenState
     final selectedBytes = bytes;
     final selectedMime = mimeType;
     final selectedName = filename.trim();
-    if (selectedBytes == null ||
-        selectedMime == null ||
-        selectedName.isEmpty) {
+    if (selectedBytes == null || selectedMime == null || selectedName.isEmpty) {
       messenger.showSnackBar(
         const SnackBar(content: Text('Unable to read the selected file.')),
       );
@@ -264,7 +265,9 @@ class _SpecialistUpsertExerciseScreenState
     }
     if (selectedBytes.length > _maxBytes) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('File is too large. Maximum size is 50 MB.')),
+        const SnackBar(
+          content: Text('File is too large. Maximum size is 50 MB.'),
+        ),
       );
       return;
     }
@@ -357,8 +360,11 @@ class _SpecialistUpsertExerciseScreenState
           request: request,
         );
         await ref
-            .read(specialistExerciseDetailProvider(widget.exerciseId!.trim())
-                .notifier)
+            .read(
+              specialistExerciseDetailProvider(
+                widget.exerciseId!.trim(),
+              ).notifier,
+            )
             .refresh();
       } else {
         await repo.createExercise(request);
@@ -610,10 +616,10 @@ class _SpecialistUpsertExerciseScreenState
               _uploading
                   ? 'Uploading media...'
                   : _saving
-                      ? 'Saving...'
-                      : widget.isEditing
-                          ? 'Save Changes'
-                          : 'Create Exercise',
+                  ? 'Saving...'
+                  : widget.isEditing
+                  ? 'Save Changes'
+                  : 'Create Exercise',
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: DashboardColors.brandCyan,
@@ -631,13 +637,21 @@ class _SpecialistUpsertExerciseScreenState
       );
     }
 
+    final wrappedBody = PopScope(canPop: !busy, child: body);
+
+    if (widget.useAdminChrome) {
+      return AdminPageScaffold(
+        title: widget.isEditing ? 'Edit Exercise' : 'Add Exercise',
+        showBackButton: true,
+        showBottomNav: false,
+        body: Theme(data: DashboardTheme.light, child: wrappedBody),
+      );
+    }
+
     return SpecialistPageScaffold(
       title: widget.isEditing ? 'Edit Exercise' : 'Add Exercise',
       showBackButton: true,
-      body: PopScope(
-        canPop: !busy,
-        child: body,
-      ),
+      body: wrappedBody,
     );
   }
 }

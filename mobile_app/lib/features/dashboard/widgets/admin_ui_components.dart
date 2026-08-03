@@ -2,9 +2,15 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/admin_dashboard_colors.dart';
+import '../../../core/constants/dashboard_colors.dart';
+import '../../../core/constants/api_constants.dart';
+import '../data/admin_dashboard_repository.dart';
+import '../presentation/specialist/manage_goals_widgets.dart';
 import 'dashboard_bottom_nav.dart';
+import 'dashboard_components.dart';
 import 'dashboard_layout.dart';
+import 'dashboard_surface_card.dart';
+import 'parent_dashboard_cards.dart';
 
 class AdminSurfaceCard extends StatelessWidget {
   const AdminSurfaceCard({
@@ -12,7 +18,7 @@ class AdminSurfaceCard extends StatelessWidget {
     required this.child,
     this.padding,
     this.onTap,
-    this.tint = AdminDashboardColors.primary,
+    this.tint = DashboardColors.brandCyan,
   });
 
   final Widget child;
@@ -22,35 +28,12 @@ class AdminSurfaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
-      padding: padding ?? const EdgeInsets.all(20),
+    return DashboardSurfaceCard(
+      padding: padding,
+      onTap: onTap,
+      tint: tint,
       child: child,
     );
-
-    final card = DecoratedBox(
-      decoration: BoxDecoration(
-        color: AdminDashboardColors.surface,
-        borderRadius: AdminDecorations.cardRadius,
-        border: Border.all(color: AdminDashboardColors.border),
-        boxShadow: AdminDecorations.cardShadow(tint),
-      ),
-      child: onTap == null
-          ? content
-          : Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onTap,
-                borderRadius: AdminDecorations.cardRadius,
-                splashColor: AdminDashboardColors.primary.withValues(alpha: 0.08),
-                highlightColor: AdminDashboardColors.primary.withValues(alpha: 0.04),
-                child: content,
-              ),
-            ),
-    );
-
-    return card;
   }
 }
 
@@ -61,23 +44,51 @@ class AdminIconCircle extends StatelessWidget {
     required this.color,
     required this.background,
     this.size = 52,
+    this.imageUrl,
   });
 
   final IconData icon;
   final Color color;
   final Color background;
   final double size;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
+    final resolvedUrl = ApiConstants.resolveProfileImageUrl(imageUrl);
+
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: background,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: color, size: size * 0.48),
+      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
+      clipBehavior: Clip.antiAlias,
+      child: resolvedUrl == null
+          ? Icon(icon, color: color, size: size * 0.48)
+          : Image.network(
+              resolvedUrl,
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                }
+
+                return Center(
+                  child: SizedBox(
+                    width: size * 0.35,
+                    height: size * 0.35,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: color,
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(icon, color: color, size: size * 0.48);
+              },
+            ),
     );
   }
 }
@@ -131,7 +142,7 @@ class AdminMetricCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelLarge?.copyWith(
-                      color: AdminDashboardColors.textSecondary,
+                      color: DashboardColors.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -142,7 +153,7 @@ class AdminMetricCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AdminDashboardColors.textPrimary,
+                      color: DashboardColors.textPrimary,
                       height: 1.1,
                     ),
                   ),
@@ -153,7 +164,7 @@ class AdminMetricCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: AdminDashboardColors.textMuted,
+                        color: DashboardColors.textMuted,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -184,12 +195,7 @@ class AdminMetricGrid extends StatelessWidget {
           spacing: spacing,
           runSpacing: spacing,
           children: cards
-              .map(
-                (card) => SizedBox(
-                  width: itemWidth,
-                  child: card,
-                ),
-              )
+              .map((card) => SizedBox(width: itemWidth, child: card))
               .toList(),
         );
       },
@@ -211,42 +217,26 @@ class AdminSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AdminDashboardColors.textPrimary,
-                ),
-          ),
+    if (onActionTap == null) {
+      return Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: DashboardColors.textPrimary,
         ),
-        if (onActionTap != null)
-          TextButton(
-            onPressed: onActionTap,
-            style: TextButton.styleFrom(
-              foregroundColor: AdminDashboardColors.primary,
-            ),
-            child: Text(
-              actionLabel,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AdminDashboardColors.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-          ),
-      ],
+      );
+    }
+
+    return DashboardSectionHeader(
+      title: title,
+      actionLabel: actionLabel,
+      onActionTap: onActionTap,
     );
   }
 }
 
 class AdminPageTitle extends StatelessWidget {
-  const AdminPageTitle({
-    super.key,
-    required this.title,
-    this.subtitle,
-  });
+  const AdminPageTitle({super.key, required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -258,10 +248,11 @@ class AdminPageTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: AdminDashboardColors.textPrimary,
-              ),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: DashboardColors.textPrimary,
+            height: 1.35,
+          ),
         ),
         if (subtitle != null) ...[
           const SizedBox(height: 6),
@@ -269,8 +260,8 @@ class AdminPageTitle extends StatelessWidget {
             subtitle!,
             softWrap: true,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AdminDashboardColors.textSecondary,
-                ),
+              color: DashboardColors.textSecondary,
+            ),
           ),
         ],
       ],
@@ -290,35 +281,7 @@ class AdminErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdminSurfaceCard(
-      tint: AdminDashboardColors.danger,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const AdminIconCircle(
-                icon: Icons.error_outline_rounded,
-                color: AdminDashboardColors.danger,
-                background: AdminDashboardColors.redSoft,
-                size: 40,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  message,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          FilledButton(onPressed: onRetry, child: const Text('Retry')),
-        ],
-      ),
-    );
+    return DashboardErrorCard(message: message, onRetry: onRetry);
   }
 }
 
@@ -329,20 +292,7 @@ class AdminEmptyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdminSurfaceCard(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Text(
-            message,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AdminDashboardColors.textSecondary,
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
+    return DashboardEmptyCard(message: message);
   }
 }
 
@@ -353,35 +303,12 @@ class AdminLoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            if (message != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                message!,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AdminDashboardColors.textSecondary,
-                    ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
+    return DashboardLoadingCard(message: message ?? 'Loading...');
   }
 }
 
 class AdminTableContainer extends StatelessWidget {
-  const AdminTableContainer({
-    super.key,
-    required this.rows,
-    this.onRowTaps,
-  });
+  const AdminTableContainer({super.key, required this.rows, this.onRowTaps});
 
   final List<Widget> rows;
   final List<VoidCallback?>? onRowTaps;
@@ -423,10 +350,10 @@ class AdminTableRow extends StatelessWidget {
     final isAlt = index.isOdd;
 
     return Material(
-      color: isAlt ? AdminDashboardColors.slateSoft : AdminDashboardColors.surface,
+      color: isAlt ? DashboardColors.purpleSoft : DashboardColors.surface,
       child: InkWell(
         onTap: onTap,
-        hoverColor: AdminDashboardColors.blueSoft,
+        hoverColor: DashboardColors.blueSoft,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: child,
@@ -449,10 +376,116 @@ class AdminSearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      decoration: InputDecoration(
-        hintText: hintText,
-        prefixIcon: const Icon(Icons.search_rounded, color: AdminDashboardColors.textMuted),
+      decoration: goalFieldDecoration(hintText).copyWith(
+        prefixIcon: const Icon(
+          Icons.search_rounded,
+          color: DashboardColors.textMuted,
+        ),
       ),
+      onChanged: onChanged,
+    );
+  }
+}
+
+class AdminFilterOption<T> {
+  const AdminFilterOption({required this.value, required this.label});
+
+  final T value;
+  final String label;
+}
+
+class AdminFilterDropdown<T> extends StatelessWidget {
+  const AdminFilterDropdown({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  final String label;
+  final T value;
+  final List<AdminFilterOption<T>> options;
+  final ValueChanged<T?> onChanged;
+
+  InputDecoration _decoration() {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: DashboardColors.surface,
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: DashboardColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: DashboardColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(
+          color: DashboardColors.brandCyan,
+          width: 1.5,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return DropdownButtonFormField<T>(
+      key: ValueKey('$label-$value'),
+      isExpanded: true,
+      initialValue: value,
+      itemHeight: kMinInteractiveDimension,
+      menuMaxHeight: 320,
+      decoration: _decoration(),
+      borderRadius: BorderRadius.circular(14),
+      dropdownColor: DashboardColors.surface,
+      elevation: 8,
+      icon: const Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: DashboardColors.textMuted,
+      ),
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: DashboardColors.textPrimary,
+        fontWeight: FontWeight.w500,
+        fontSize: 14,
+        height: 1.25,
+      ),
+      items: options
+          .map(
+            (option) => DropdownMenuItem<T>(
+              value: option.value,
+              child: Text(
+                option.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: 14,
+                  height: 1.25,
+                  color: DashboardColors.textPrimary,
+                ),
+              ),
+            ),
+          )
+          .toList(),
+      selectedItemBuilder: (context) => options
+          .map(
+            (option) => Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                option.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+          .toList(),
       onChanged: onChanged,
     );
   }
@@ -473,113 +506,362 @@ class AdminFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Text(label),
-        selected: selected,
-        onSelected: (_) => onTap(),
-        selectedColor: AdminDashboardColors.blueSoft,
-        checkmarkColor: AdminDashboardColors.primary,
-        labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+      padding: EdgeInsets.only(right: context.dashSpacing * 0.4),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.dashSpacing * 0.65,
+            vertical: context.dashSpacing * 0.45,
+          ),
+          decoration: BoxDecoration(
+            color: selected
+                ? DashboardColors.brandSoft
+                : DashboardColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
               color: selected
-                  ? AdminDashboardColors.primary
-                  : AdminDashboardColors.textSecondary,
-              fontWeight: FontWeight.w600,
+                  ? DashboardColors.brandCyan
+                  : DashboardColors.border,
             ),
-        side: BorderSide(
-          color: selected ? AdminDashboardColors.primary : AdminDashboardColors.border,
+          ),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: selected
+                  ? DashboardColors.brandCyan
+                  : DashboardColors.textSecondary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class AdminBarChart extends StatelessWidget {
-  const AdminBarChart({
+class AdminSystemAnalyticsPeriodControls extends StatelessWidget {
+  const AdminSystemAnalyticsPeriodControls({
     super.key,
-    required this.labels,
-    required this.usersValues,
-    required this.patientsValues,
+    required this.periodLabel,
+    required this.selectedWeekOffset,
+    required this.canGoForward,
+    required this.isLoading,
+    required this.onPreviousWeek,
+    required this.onNextWeek,
+    required this.onPresetSelected,
   });
 
-  final List<String> labels;
-  final List<double> usersValues;
-  final List<double> patientsValues;
+  final String periodLabel;
+  final int selectedWeekOffset;
+  final bool canGoForward;
+  final bool isLoading;
+  final VoidCallback onPreviousWeek;
+  final VoidCallback onNextWeek;
+  final ValueChanged<int> onPresetSelected;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final maxValue = [
-      ...usersValues,
-      ...patientsValues,
-      1.0,
-    ].reduce(math.max);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _PeriodNavButton(
+          icon: Icons.chevron_left_rounded,
+          tooltip: 'Previous week',
+          onPressed: isLoading ? null : onPreviousWeek,
+        ),
+        PopupMenuButton<int>(
+          tooltip: 'Select period',
+          enabled: !isLoading,
+          offset: const Offset(0, 36),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          onSelected: (offset) {
+            if (offset != selectedWeekOffset) {
+              onPresetSelected(offset);
+            }
+          },
+          itemBuilder: (context) {
+            return systemActivityPresetOffsets.entries
+                .map(
+                  (entry) => PopupMenuItem<int>(
+                    value: entry.value,
+                    child: Text(entry.key),
+                  ),
+                )
+                .toList();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: DashboardColors.surface,
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: DashboardColors.border),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isLoading) ...[
+                  SizedBox(
+                    width: 12,
+                    height: 12,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: DashboardColors.brandCyan,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  periodLabel,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: DashboardColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: 2),
+                Icon(
+                  Icons.expand_more_rounded,
+                  size: 16,
+                  color: DashboardColors.textMuted,
+                ),
+              ],
+            ),
+          ),
+        ),
+        _PeriodNavButton(
+          icon: Icons.chevron_right_rounded,
+          tooltip: 'Next week',
+          onPressed: (!canGoForward || isLoading) ? null : onNextWeek,
+        ),
+      ],
+    );
+  }
+}
+
+class _PeriodNavButton extends StatelessWidget {
+  const _PeriodNavButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onPressed,
+      tooltip: tooltip,
+      visualDensity: VisualDensity.compact,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+      icon: Icon(
+        icon,
+        size: 22,
+        color: onPressed == null
+            ? DashboardColors.textMuted.withValues(alpha: 0.45)
+            : DashboardColors.textSecondary,
+      ),
+    );
+  }
+}
+
+class AdminBarChart extends StatefulWidget {
+  const AdminBarChart({
+    super.key,
+    required this.labels,
+    required this.fullDayLabels,
+    required this.values,
+    this.periodKey = 'current-week',
+    this.isLoading = false,
+  });
+
+  final List<String> labels;
+  final List<String> fullDayLabels;
+  final List<int> values;
+  final String periodKey;
+  final bool isLoading;
+
+  @override
+  State<AdminBarChart> createState() => _AdminBarChartState();
+}
+
+class _AdminBarChartState extends State<AdminBarChart> {
+  int? _selectedIndex;
+
+  @override
+  void didUpdateWidget(covariant AdminBarChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.periodKey != widget.periodKey) {
+      _selectedIndex = null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final spacing = context.dashSpacing;
+    final hasData = widget.values.any((value) => value > 0);
+    final maxValue = hasData
+        ? widget.values.reduce(math.max).toDouble()
+        : 1.0;
+    final chartHeight = math.max(context.dashboardSize.height * 0.16, 136.0);
+    final dayGap = spacing * 0.28;
+    final animationKey = widget.periodKey;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            _LegendDot(color: AdminDashboardColors.primary, label: 'Users'),
-            SizedBox(width: context.dashSpacing),
-            _LegendDot(color: AdminDashboardColors.success, label: 'Patients'),
-          ],
-        ),
-        SizedBox(height: context.dashSpacing),
+        _LegendDot(color: DashboardColors.success, label: 'System Activity'),
+        if (_selectedIndex != null && hasData) ...[
+          SizedBox(height: spacing * 0.45),
+          Text(
+            widget.fullDayLabels[_selectedIndex!],
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: DashboardColors.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          Text(
+            _activityTooltip(widget.values[_selectedIndex!]),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: DashboardColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+        SizedBox(height: spacing * 0.65),
         SizedBox(
-          height: math.max(context.dashboardSize.height * 0.18, 148),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: List.generate(labels.length, (index) {
-              final userHeight = usersValues[index] / maxValue;
-              final patientHeight = patientsValues[index] / maxValue;
+          height: chartHeight,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: List.generate(widget.labels.length, (index) {
+                  final count = widget.values[index];
+                  final heightFactor =
+                      _normalizedHeight(count.toDouble(), maxValue);
 
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: context.dashSpacing * 0.15),
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: dayGap),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final barWidth = constraints.maxWidth * 0.45;
+
+                                return GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: hasData
+                                      ? () {
+                                          setState(() {
+                                            _selectedIndex =
+                                                _selectedIndex == index
+                                                    ? null
+                                                    : index;
+                                          });
+                                        }
+                                      : null,
+                                  child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: _Bar(
+                                      key: ValueKey('$animationKey-$index'),
+                                      width: barWidth,
+                                      heightFactor: heightFactor,
+                                      color: DashboardColors.success,
+                                      isSelected: _selectedIndex == index,
+                                      animate: !widget.isLoading,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: spacing * 0.3),
+                          Text(
+                            widget.labels[index],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: _selectedIndex == index && hasData
+                                  ? DashboardColors.success
+                                  : DashboardColors.textMuted,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              if (!hasData && !widget.isLoading)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: spacing),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: _Bar(
-                                heightFactor: userHeight,
-                                color: AdminDashboardColors.primary,
-                              ),
-                            ),
-                            SizedBox(width: context.dashSpacing * 0.15),
-                            Expanded(
-                              child: _Bar(
-                                heightFactor: patientHeight,
-                                color: AdminDashboardColors.success,
-                              ),
-                            ),
-                          ],
+                      Text(
+                        'No system activity during this period.',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: DashboardColors.textSecondary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: context.dashSpacing * 0.35),
+                      SizedBox(height: spacing * 0.35),
                       Text(
-                        labels[index],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        'Try selecting another week.',
                         textAlign: TextAlign.center,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AdminDashboardColors.textMuted,
-                          fontWeight: FontWeight.w600,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: DashboardColors.textMuted,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
                 ),
-              );
-            }),
+              if (widget.isLoading)
+                Container(
+                  color: DashboardColors.surface.withValues(alpha: 0.72),
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.2,
+                      color: DashboardColors.brandCyan,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ],
     );
+  }
+
+  double _normalizedHeight(double value, double maxValue) {
+    if (value <= 0 || maxValue <= 0) {
+      return 0;
+    }
+
+    return (value / maxValue).clamp(0.12, 1);
+  }
+
+  String _activityTooltip(int count) {
+    final label = count == 1 ? 'event' : 'events';
+    return 'System Activity: $count $label';
   }
 }
 
@@ -592,19 +874,22 @@ class _LegendDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 10,
-          height: 10,
+          width: 8,
+          height: 8,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 8),
         Text(
           label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AdminDashboardColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: DashboardColors.textSecondary,
+            fontWeight: FontWeight.w600,
+            height: 1.2,
+          ),
         ),
       ],
     );
@@ -612,29 +897,52 @@ class _LegendDot extends StatelessWidget {
 }
 
 class _Bar extends StatelessWidget {
-  const _Bar({required this.heightFactor, required this.color});
+  const _Bar({
+    super.key,
+    required this.heightFactor,
+    required this.color,
+    required this.width,
+    this.isSelected = false,
+    this.animate = true,
+  });
 
   final double heightFactor;
   final Color color;
+  final double width;
+  final bool isSelected;
+  final bool animate;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxHeight = constraints.maxHeight.isFinite && constraints.maxHeight > 0
+        final maxHeight =
+            constraints.maxHeight.isFinite && constraints.maxHeight > 0
             ? constraints.maxHeight
             : context.dashSpacing * 4;
-        final barHeight = maxHeight * heightFactor.clamp(0.08, 1);
+        final barHeight = heightFactor <= 0 ? 0.0 : maxHeight * heightFactor;
 
         return Align(
           alignment: Alignment.bottomCenter,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 350),
+            duration: animate ? const Duration(milliseconds: 350) : Duration.zero,
             curve: Curves.easeOutCubic,
+            width: width,
             height: barHeight,
             decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(8),
+              color: isSelected ? color : color.withValues(alpha: 0.88),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(8),
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.25),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
             ),
           ),
         );
@@ -644,128 +952,17 @@ class _Bar extends StatelessWidget {
 }
 
 class AdminBottomNav extends StatelessWidget {
-  const AdminBottomNav({
-    super.key,
-    this.currentIndex,
-    this.onTap,
-  });
+  const AdminBottomNav({super.key, this.currentIndex, this.onTap});
 
   final DashboardNavItem? currentIndex;
   final ValueChanged<DashboardNavItem>? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AdminDashboardColors.surface,
-        border: const Border(top: BorderSide(color: AdminDashboardColors.border)),
-        boxShadow: [
-          BoxShadow(
-            color: AdminDashboardColors.primary.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.dashSpacing * 0.25,
-            vertical: context.dashSpacing * 0.35,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                icon: Icons.home_rounded,
-                label: 'Home',
-                isActive: currentIndex == DashboardNavItem.home,
-                onTap: () => onTap?.call(DashboardNavItem.home),
-                theme: theme,
-              ),
-              _NavItem(
-                icon: Icons.people_outline_rounded,
-                label: 'Patients',
-                isActive: currentIndex == DashboardNavItem.patients,
-                onTap: () => onTap?.call(DashboardNavItem.patients),
-                theme: theme,
-              ),
-              _NavItem(
-                icon: Icons.fitness_center_outlined,
-                label: 'Exercises',
-                isActive: currentIndex == DashboardNavItem.exercises,
-                onTap: () => onTap?.call(DashboardNavItem.exercises),
-                theme: theme,
-              ),
-              _NavItem(
-                icon: Icons.description_outlined,
-                label: 'Reports',
-                isActive: currentIndex == DashboardNavItem.reports,
-                onTap: () => onTap?.call(DashboardNavItem.reports),
-                theme: theme,
-              ),
-              _NavItem(
-                icon: Icons.grid_view_rounded,
-                label: 'More',
-                isActive: currentIndex == DashboardNavItem.more,
-                onTap: () => onTap?.call(DashboardNavItem.more),
-                theme: theme,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-    required this.theme,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool isActive;
-  final VoidCallback? onTap;
-  final ThemeData theme;
-
-  @override
-  Widget build(BuildContext context) {
-    final color =
-        isActive ? AdminDashboardColors.primary : AdminDashboardColors.textMuted;
-
-    return InkWell(
+    return DashboardBottomNav(
+      currentIndex: currentIndex,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.dashSpacing * 0.25,
-          vertical: context.dashSpacing * 0.15,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: context.dashSpacing * 0.55, color: color),
-            SizedBox(height: context.dashSpacing * 0.1),
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: color,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                fontSize: 10,
-              ),
-            ),
-          ],
-        ),
-      ),
+      accentColor: DashboardColors.brandCyan,
     );
   }
 }

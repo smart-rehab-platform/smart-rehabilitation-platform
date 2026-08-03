@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/admin_dashboard_colors.dart';
+import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/services/api_client.dart';
 import '../../auth/data/auth_repository.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -19,14 +19,18 @@ final adminDashboardProvider =
 });
 
 class AdminDashboardState {
-  const AdminDashboardState({
+  AdminDashboardState({
     this.isLoading = false,
     this.errorMessage,
     this.userName,
     this.overview = const AdminOverviewData(),
     this.recentUsers = const [],
     this.unreadNotifications = 0,
-  });
+    WeeklySystemActivityData? weeklySystemActivity,
+    this.systemActivityWeekOffset = 0,
+    this.isSystemActivityLoading = false,
+    this.systemActivityErrorMessage,
+  }) : weeklySystemActivity = weeklySystemActivity ?? WeeklySystemActivityData.empty;
 
   final bool isLoading;
   final String? errorMessage;
@@ -34,6 +38,16 @@ class AdminDashboardState {
   final AdminOverviewData overview;
   final List<AdminRecentUser> recentUsers;
   final int unreadNotifications;
+  final WeeklySystemActivityData weeklySystemActivity;
+  final int systemActivityWeekOffset;
+  final bool isSystemActivityLoading;
+  final String? systemActivityErrorMessage;
+
+  String get selectedSystemActivityPeriodLabel => systemActivityPeriodLabel(
+        weekOffset: systemActivityWeekOffset,
+        weekStart: weeklySystemActivity.weekStart,
+        weekEnd: weeklySystemActivity.weekEnd,
+      );
 
   AdminDashboardState copyWith({
     bool? isLoading,
@@ -42,6 +56,10 @@ class AdminDashboardState {
     AdminOverviewData? overview,
     List<AdminRecentUser>? recentUsers,
     int? unreadNotifications,
+    WeeklySystemActivityData? weeklySystemActivity,
+    int? systemActivityWeekOffset,
+    bool? isSystemActivityLoading,
+    Object? systemActivityErrorMessage = _sentinel,
   }) {
     return AdminDashboardState(
       isLoading: isLoading ?? this.isLoading,
@@ -52,13 +70,21 @@ class AdminDashboardState {
       overview: overview ?? this.overview,
       recentUsers: recentUsers ?? this.recentUsers,
       unreadNotifications: unreadNotifications ?? this.unreadNotifications,
+      weeklySystemActivity: weeklySystemActivity ?? this.weeklySystemActivity,
+      systemActivityWeekOffset:
+          systemActivityWeekOffset ?? this.systemActivityWeekOffset,
+      isSystemActivityLoading:
+          isSystemActivityLoading ?? this.isSystemActivityLoading,
+      systemActivityErrorMessage: identical(systemActivityErrorMessage, _sentinel)
+          ? this.systemActivityErrorMessage
+          : systemActivityErrorMessage as String?,
     );
   }
 }
 
 class AdminDashboardNotifier extends StateNotifier<AdminDashboardState> {
   AdminDashboardNotifier(this._ref, this._repository, this._authRepository)
-      : super(const AdminDashboardState());
+      : super(AdminDashboardState());
 
   final Ref _ref;
   final AdminDashboardRepository _repository;
@@ -90,6 +116,9 @@ class AdminDashboardNotifier extends StateNotifier<AdminDashboardState> {
         _repository.fetchOverview(),
         _repository.fetchRecentUsers(),
         _repository.fetchUnreadNotifications(user.id!),
+        _repository.fetchWeeklySystemActivity(
+          weekOffset: state.systemActivityWeekOffset,
+        ),
       ]);
 
       state = state.copyWith(
@@ -97,6 +126,9 @@ class AdminDashboardNotifier extends StateNotifier<AdminDashboardState> {
         overview: results[0] as AdminOverviewData,
         recentUsers: results[1] as List<AdminRecentUser>,
         unreadNotifications: results[2] as int,
+        weeklySystemActivity: results[3] as WeeklySystemActivityData,
+        systemActivityWeekOffset: state.systemActivityWeekOffset,
+        systemActivityErrorMessage: null,
       );
     } catch (error) {
       state = state.copyWith(
@@ -106,19 +138,75 @@ class AdminDashboardNotifier extends StateNotifier<AdminDashboardState> {
     }
   }
 
+  Future<void> setSystemActivityWeekOffset(int weekOffset) async {
+    final normalizedOffset = weekOffset.clamp(0, 52);
+    if (normalizedOffset == state.systemActivityWeekOffset &&
+        !state.isSystemActivityLoading) {
+      return;
+    }
+
+    state = state.copyWith(
+      systemActivityWeekOffset: normalizedOffset,
+      isSystemActivityLoading: true,
+      systemActivityErrorMessage: null,
+    );
+
+    try {
+      final activity = await _repository.fetchWeeklySystemActivity(
+        weekOffset: normalizedOffset,
+      );
+
+      if (normalizedOffset != state.systemActivityWeekOffset) {
+        return;
+      }
+
+      state = state.copyWith(
+        weeklySystemActivity: WeeklySystemActivityData(
+          days: activity.days,
+          weekOffset: normalizedOffset,
+          weekStart: activity.weekStart,
+          weekEnd: activity.weekEnd,
+        ),
+        systemActivityWeekOffset: normalizedOffset,
+        isSystemActivityLoading: false,
+        systemActivityErrorMessage: null,
+      );
+    } catch (error) {
+      if (normalizedOffset != state.systemActivityWeekOffset) {
+        return;
+      }
+
+      state = state.copyWith(
+        isSystemActivityLoading: false,
+        systemActivityErrorMessage:
+            'Failed to load system activity. Please try again.',
+      );
+    }
+  }
+
+  Future<void> showPreviousSystemActivityWeek() =>
+      setSystemActivityWeekOffset(state.systemActivityWeekOffset + 1);
+
+  Future<void> showNextSystemActivityWeek() {
+    if (state.systemActivityWeekOffset <= 0) {
+      return Future.value();
+    }
+    return setSystemActivityWeekOffset(state.systemActivityWeekOffset - 1);
+  }
+
   Future<void> refresh() => initialize();
 }
 
 Color adminRoleColor(String role) {
   switch (role.toLowerCase()) {
     case 'parent':
-      return AdminDashboardColors.primary;
+      return DashboardColors.brandCyan;
     case 'specialist':
-      return AdminDashboardColors.emerald;
+      return DashboardColors.success;
     case 'admin':
-      return AdminDashboardColors.orange;
+      return DashboardColors.warning;
     default:
-      return AdminDashboardColors.accent;
+      return DashboardColors.accent;
   }
 }
 

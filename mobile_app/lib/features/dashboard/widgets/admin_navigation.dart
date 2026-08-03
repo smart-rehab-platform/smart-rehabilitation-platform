@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/admin_dashboard_colors.dart';
+import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../widgets/dashboard_bottom_nav.dart';
+import '../widgets/dashboard_layout.dart';
+import '../widgets/dashboard_profile_avatar.dart';
 
 class AdminNavigation {
   AdminNavigation._();
@@ -78,49 +80,39 @@ class AdminDrawer extends ConsumerWidget {
     final name = user?.fullName ?? 'Admin';
 
     return Drawer(
-      backgroundColor: AdminDashboardColors.surface,
+      backgroundColor: DashboardColors.surface,
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              width: double.infinity,
+            Padding(
               padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: AdminDashboardColors.appBar,
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
+                  DashboardProfileAvatar(
+                    initials: dashboardInitials(name, fallback: 'AD'),
+                    imageUrl: user?.profileImageUrl,
                     radius: 28,
-                    backgroundColor: Colors.white.withValues(alpha: 0.15),
-                    child: Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : 'A',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     name,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
                     ),
                   ),
                   if (user?.email != null)
                     Text(
                       user!.email,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: DashboardColors.textSecondary,
                       ),
                     ),
                 ],
               ),
             ),
+            const Divider(height: 1),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -189,7 +181,7 @@ class AdminDrawer extends ConsumerWidget {
                 ],
               ),
             ),
-            const Divider(height: 1, color: AdminDashboardColors.border),
+            const Divider(height: 1),
             _AdminDrawerTile(
               icon: Icons.logout_rounded,
               label: 'Logout',
@@ -225,18 +217,18 @@ class _AdminDrawerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: AdminDashboardColors.primary),
+      leading: Icon(icon, color: DashboardColors.brandCyan),
       title: Text(
         label,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w600,
-          color: AdminDashboardColors.textPrimary,
+          color: DashboardColors.textPrimary,
         ),
       ),
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-      hoverColor: AdminDashboardColors.blueSoft,
+      hoverColor: DashboardColors.brandSoft,
     );
   }
 }

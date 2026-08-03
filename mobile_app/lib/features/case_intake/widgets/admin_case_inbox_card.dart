@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/constants/admin_dashboard_colors.dart';
+import '../../../core/constants/dashboard_colors.dart';
 import '../../dashboard/widgets/admin_ui_components.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
 import '../models/admin_case_inbox_models.dart';
@@ -44,7 +44,7 @@ class AdminCaseInboxCard extends StatelessWidget {
                         : 'Unnamed child',
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AdminDashboardColors.textPrimary,
+                      color: DashboardColors.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -64,7 +64,7 @@ class AdminCaseInboxCard extends StatelessWidget {
               Text(
                 parentName,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: AdminDashboardColors.textSecondary,
+                  color: DashboardColors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
                 maxLines: 1,
@@ -76,7 +76,7 @@ class AdminCaseInboxCard extends StatelessWidget {
               Text(
                 categoryName,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: AdminDashboardColors.textMuted,
+                  color: DashboardColors.textMuted,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -107,14 +107,14 @@ class AdminCaseInboxCard extends StatelessWidget {
                   Icon(
                     Icons.medical_services_outlined,
                     size: 16,
-                    color: AdminDashboardColors.primary,
+                    color: DashboardColors.brandCyan,
                   ),
                   SizedBox(width: context.dashSpacing * 0.25),
                   Expanded(
                     child: Text(
                       specialistName,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: AdminDashboardColors.textPrimary,
+                        color: DashboardColors.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                       maxLines: 1,
@@ -142,12 +142,12 @@ class _MetaChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: AdminDashboardColors.textMuted),
+        Icon(icon, size: 14, color: DashboardColors.textMuted),
         const SizedBox(width: 4),
         Text(
           label,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            color: AdminDashboardColors.textSecondary,
+            color: DashboardColors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),

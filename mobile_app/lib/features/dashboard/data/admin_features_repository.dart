@@ -3,11 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../core/utils/api_response_parser.dart';
 
 class AdminPreviousSession {
-  const AdminPreviousSession({
-    required this.id,
-    this.scheduledAt,
-    this.status,
-  });
+  const AdminPreviousSession({required this.id, this.scheduledAt, this.status});
 
   final String id;
   final DateTime? scheduledAt;
@@ -34,6 +30,7 @@ class AdminPatientRecord {
     required this.fullName,
     this.gender,
     this.condition,
+    this.profileImageUrl,
     this.previousSession,
   });
 
@@ -41,6 +38,7 @@ class AdminPatientRecord {
   final String fullName;
   final String? gender;
   final String? condition;
+  final String? profileImageUrl;
   final AdminPreviousSession? previousSession;
 
   factory AdminPatientRecord.fromMap(Map<String, dynamic> map) {
@@ -48,16 +46,20 @@ class AdminPatientRecord {
 
     return AdminPatientRecord(
       id: ApiResponseParser.readString(map, const ['id']) ?? '',
-      fullName: ApiResponseParser.readString(map, const [
-            'full_name',
-            'fullName',
-          ]) ??
+      fullName:
+          ApiResponseParser.readString(map, const ['full_name', 'fullName']) ??
           'Patient',
       gender: ApiResponseParser.readString(map, const ['gender']),
       condition: ApiResponseParser.readString(map, const [
         'condition',
         'diagnosis_title',
         'diagnosisTitle',
+      ]),
+      profileImageUrl: ApiResponseParser.readString(map, const [
+        'profile_image_url',
+        'profileImageUrl',
+        'child_image_url',
+        'childImageUrl',
       ]),
       previousSession: previousRaw != null && previousRaw['id'] != null
           ? AdminPreviousSession.fromMap(previousRaw)
@@ -90,12 +92,14 @@ class AdminSessionRecord {
   factory AdminSessionRecord.fromMap(Map<String, dynamic> map) {
     return AdminSessionRecord(
       id: ApiResponseParser.readString(map, const ['id']) ?? '',
-      patientName: ApiResponseParser.readString(map, const [
+      patientName:
+          ApiResponseParser.readString(map, const [
             'patient_name',
             'patientName',
           ]) ??
           'Patient',
-      specialistName: ApiResponseParser.readString(map, const [
+      specialistName:
+          ApiResponseParser.readString(map, const [
             'specialist_name',
             'specialistName',
           ]) ??
@@ -151,7 +155,9 @@ class AdminAiCenterData {
 
     return AdminAiCenterData(
       speechTotal: ApiResponseParser.readInt(speech, const ['total']) ?? 0,
-      speechAverageScore: _readDouble(speech['average_score'] ?? speech['averageScore']),
+      speechAverageScore: _readDouble(
+        speech['average_score'] ?? speech['averageScore'],
+      ),
       recommendationsTotal:
           ApiResponseParser.readInt(recommendations, const ['total']) ?? 0,
       reportsTotal: ApiResponseParser.readInt(reports, const ['total']) ?? 0,
@@ -159,7 +165,8 @@ class AdminAiCenterData {
       latestRecommendations: _mapList(recommendations['latest']),
       latestReports: _mapList(reports['latest']),
       patientsNeedingAttention: _mapList(map['patients_needing_attention']),
-      usageStatistics: ApiResponseParser.extractMap(map['usage_statistics']) ?? {},
+      usageStatistics:
+          ApiResponseParser.extractMap(map['usage_statistics']) ?? {},
     );
   }
 
@@ -242,7 +249,9 @@ class AdminFeaturesRepository {
     final response = await _dio.get('/dashboard/admin/patients');
     return ApiResponseParser.extractList(response.data)
         .whereType<Map>()
-        .map((item) => item.map((key, value) => MapEntry(key.toString(), value)))
+        .map(
+          (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+        )
         .map(AdminPatientRecord.fromMap)
         .toList();
   }
@@ -251,7 +260,9 @@ class AdminFeaturesRepository {
     final response = await _dio.get('/sessions');
     return ApiResponseParser.extractList(response.data)
         .whereType<Map>()
-        .map((item) => item.map((key, value) => MapEntry(key.toString(), value)))
+        .map(
+          (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+        )
         .map(AdminSessionRecord.fromMap)
         .toList();
   }
@@ -271,7 +282,8 @@ class AdminFeaturesRepository {
         if (durationMinutes != null) 'duration_minutes': durationMinutes,
         if (locationOrLink != null) 'location_or_link': locationOrLink,
         if (status != null) 'status': status,
-        if (cancellationReason != null) 'cancellation_reason': cancellationReason,
+        if (cancellationReason != null)
+          'cancellation_reason': cancellationReason,
       },
     );
 
@@ -323,7 +335,8 @@ class AdminFeaturesRepository {
       queryParameters: {
         if (userId != null && userId.isNotEmpty) 'user_id': userId,
         if (action != null && action.isNotEmpty) 'action': action,
-        if (entityName != null && entityName.isNotEmpty) 'entity_name': entityName,
+        if (entityName != null && entityName.isNotEmpty)
+          'entity_name': entityName,
         if (dateFrom != null && dateFrom.isNotEmpty) 'date_from': dateFrom,
         if (dateTo != null && dateTo.isNotEmpty) 'date_to': dateTo,
       },
@@ -331,7 +344,9 @@ class AdminFeaturesRepository {
 
     return ApiResponseParser.extractList(response.data)
         .whereType<Map>()
-        .map((item) => item.map((key, value) => MapEntry(key.toString(), value)))
+        .map(
+          (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+        )
         .map(AdminAuditLogRecord.fromMap)
         .toList();
   }
@@ -339,8 +354,13 @@ class AdminFeaturesRepository {
   String readErrorMessage(DioException error) {
     final data = error.response?.data;
     if (data is Map) {
-      final normalized = data.map((key, value) => MapEntry(key.toString(), value));
-      final message = ApiResponseParser.readString(normalized, const ['message', 'error']);
+      final normalized = data.map(
+        (key, value) => MapEntry(key.toString(), value),
+      );
+      final message = ApiResponseParser.readString(normalized, const [
+        'message',
+        'error',
+      ]);
       if (message != null) {
         return message;
       }

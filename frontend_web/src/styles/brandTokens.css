@@ -1,0 +1,42 @@
+/**
+ * Flutter-aligned brand tokens (dashboard_colors.dart + app_colors.dart)
+ */
+:root {
+  --brand-navy: #123458;
+  --brand-cyan: #2aa4c9;
+  --brand-secondary-blue: #56b6e9;
+  --brand-light-blue: #8fd3ff;
+  --brand-soft: #e8f6fc;
+  --brand-hero-background: #f2f9fc;
+  --brand-accent: #00cec9;
+  --brand-background: #f6f7fb;
+  --brand-surface: #ffffff;
+  --brand-text-primary: #1e293b;
+  --brand-text-secondary: #64748b;
+  --brand-text-muted: #94a3b8;
+  --brand-border: #e8ecf4;
+  --brand-teal-soft: #e6fffc;
+  --brand-blue-soft: #eff6ff;
+  --brand-amber-soft: #fff7ed;
+  --brand-summary-tasks-bg: #f2fbf6;
+  --brand-summary-sessions-bg: #f2f8ff;
+  --brand-success: #22c55e;
+  --brand-warning: #f59e0b;
+  --brand-error: #ef4444;
+  --brand-gradient-primary: linear-gradient(90deg, #2398bd 0%, #56b6e9 100%);
+  --brand-gradient-progress: linear-gradient(90deg, #2aa4c9 0%, #56b6e9 100%);
+  --brand-cyan-rgb: 42, 164, 201;
+  --brand-navy-rgb: 18, 52, 88;
+  --brand-shadow-card: 0 8px 24px rgba(42, 164, 201, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04);
+  --brand-shadow-hero: 0 8px 24px rgba(42, 164, 201, 0.06), 0 2px 10px rgba(0, 0, 0, 0.03);
+
+  --auth-primary-navy: #07182c;
+  --auth-dark-blue: #0a1b2f;
+  --auth-medium-blue: #5d94be;
+  --auth-light-blue: #a9bdd1;
+  --auth-card-background: #173b5e;
+  --auth-input-background: #081b31;
+  --auth-border: #355d82;
+  --auth-placeholder: #6f859b;
+  --auth-button-highlight: #9ec8e6;
+}

@@ -1,0 +1,299 @@
+{
+  "api": [
+    {
+      "name": "Parent login",
+      "passed": true,
+      "detail": "fatima.parent@test.com"
+    },
+    {
+      "name": "Omar reviews endpoint",
+      "passed": true,
+      "detail": "status 200, count 3"
+    },
+    {
+      "name": "Omar review fields (Balance Line Walk)",
+      "passed": true,
+      "detail": "retry=true, rating=4.5"
+    },
+    {
+      "name": "Omar review fields (R-Sound Isolation)",
+      "passed": true,
+      "detail": "retry=false, rating=6.0"
+    },
+    {
+      "name": "Omar review fields (Breathing & Phonation)",
+      "passed": true,
+      "detail": "retry=false, rating=6.0"
+    },
+    {
+      "name": "Layla reviews endpoint",
+      "passed": true,
+      "detail": "status 200, count 1"
+    },
+    {
+      "name": "Layla review fields (Hhhhh)",
+      "passed": true,
+      "detail": "retry=false, rating=8.5"
+    },
+    {
+      "name": "Requires retry review exists",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Normal reviewed submission exists",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Second child has reviews",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "browser": [
+    {
+      "name": "1. Parent login",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "2. Direct URL /dashboard/parent/feedback",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "4. Refresh reloads data",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "5. Review cards appear",
+      "passed": true,
+      "detail": "count=4"
+    },
+    {
+      "name": "6. Exercise titles present",
+      "passed": true,
+      "detail": "Hhhhh, Balance Line Walk, R-Sound Isolation, Breathing & Phonation"
+    },
+    {
+      "name": "7. Child names present",
+      "passed": true,
+      "detail": "For Layla Al-Rashid | For Omar Hassan | For Omar Hassan | For Omar Hassan"
+    },
+    {
+      "name": "8. Specialist name when returned",
+      "passed": true,
+      "detail": "Review date25 July 2026SpecialistbanbonPerformance rating8.5/10 | Review date25 July 2026SpecialistbanbonPerformance rating4.5/10 | Review date17 July 2026SpecialistbanbonPerformance rating6/10 | Review date3 July 2026SpecialistbanbonPerformance rating6/10"
+    },
+    {
+      "name": "9. Feedback text correct",
+      "passed": true,
+      "detail": "3 quotes"
+    },
+    {
+      "name": "10. Review dates shown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "11. Performance rating only when present",
+      "passed": true,
+      "detail": "8.5/10, 4.5/10, 6/10, 6/10"
+    },
+    {
+      "name": "12. Normal reviewed badge",
+      "passed": true,
+      "detail": "count=3"
+    },
+    {
+      "name": "13. Requires retry badge and styling",
+      "passed": true,
+      "detail": "status=1, pill=1"
+    },
+    {
+      "name": "14. Search by exercise title",
+      "passed": true,
+      "detail": "visible=1"
+    },
+    {
+      "name": "15. Child filter",
+      "passed": true,
+      "detail": "visible=1"
+    },
+    {
+      "name": "16. Status filter (needs retry)",
+      "passed": true,
+      "detail": "visible=1"
+    },
+    {
+      "name": "17. Newest sort",
+      "passed": true,
+      "detail": "Hhhhh"
+    },
+    {
+      "name": "18. Oldest sort",
+      "passed": true,
+      "detail": "Breathing & Phonation"
+    },
+    {
+      "name": "19. Alphabetical sort",
+      "passed": true,
+      "detail": "Balance Line Walk"
+    },
+    {
+      "name": "20. Requires-retry-first sort",
+      "passed": true,
+      "detail": "Balance Line Walk"
+    },
+    {
+      "name": "22. No-match filter state",
+      "passed": true,
+      "detail": "No reviews match your filters."
+    },
+    {
+      "name": "23. Sidebar Feedback navigation",
+      "passed": false,
+      "detail": "active=0"
+    },
+    {
+      "name": "24. Latest Updates → View Feedback",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "25a. Desktop responsive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "25b. Tablet responsive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "25c. Narrow responsive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "28. Review network requests success",
+      "passed": true,
+      "detail": "[{\"url\":\"http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000002/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/5f131fac-280f-449a-b477-e87cb4aba370/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/dfdd4083-ac99-4779-8183-aebf8983358c/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000002/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/5f131fac-280f-449a-b477-e87cb4aba370/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/dfdd4083-ac99-4779-8183-aebf8983358c/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000002/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/5f131fac-280f-449a-b477-e87cb4aba370/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews\",\"status\":200,\"ok\":true},{\"url\":\"http://localhost:5000/api/v1/patients/dfdd4083-ac99-4779-8183-aebf8983358c/reviews\",\"status\":200,\"ok\":true}]"
+    },
+    {
+      "name": "26. No console errors",
+      "passed": true,
+      "detail": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+    },
+    {
+      "name": "27. No React warnings",
+      "passed": true,
+      "detail": "none"
+    }
+  ],
+  "network": [
+    {
+      "url": "http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000002/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/5f131fac-280f-449a-b477-e87cb4aba370/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/dfdd4083-ac99-4779-8183-aebf8983358c/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000002/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/5f131fac-280f-449a-b477-e87cb4aba370/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/dfdd4083-ac99-4779-8183-aebf8983358c/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000002/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/fbb319a1-3cb2-4217-8947-69fb54773adf/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/5f131fac-280f-449a-b477-e87cb4aba370/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/de000002-0001-4001-8001-000000000001/reviews",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "http://localhost:5000/api/v1/patients/dfdd4083-ac99-4779-8183-aebf8983358c/reviews",
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "bugs": [],
+  "testData": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "reactWarnings": []
+}

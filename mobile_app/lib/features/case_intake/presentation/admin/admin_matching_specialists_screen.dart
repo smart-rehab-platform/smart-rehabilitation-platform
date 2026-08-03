@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
 import '../../../dashboard/widgets/admin_ui_components.dart';
@@ -45,7 +45,7 @@ class _AdminMatchingSpecialistsScreenState
           content: Text.rich(
             TextSpan(
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AdminDashboardColors.textSecondary,
+                color: DashboardColors.textSecondary,
               ),
               children: [
                 const TextSpan(text: 'Are you sure you want to assign\n'),
@@ -53,7 +53,7 @@ class _AdminMatchingSpecialistsScreenState
                   text: specialist.displayName,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: AdminDashboardColors.textPrimary,
+                    color: DashboardColors.textPrimary,
                   ),
                 ),
                 const TextSpan(text: '\nto this case?'),
@@ -190,7 +190,7 @@ class _AdminMatchingSpecialistsScreenState
                           'There are currently no active specialists linked to this category.',
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                color: AdminDashboardColors.textSecondary,
+                                color: DashboardColors.textSecondary,
                               ),
                         ),
                         SizedBox(height: context.dashSpacing),
@@ -216,7 +216,7 @@ class _AdminMatchingSpecialistsScreenState
                           'Select the most suitable specialist for this case.',
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                color: AdminDashboardColors.textSecondary,
+                                color: DashboardColors.textSecondary,
                               ),
                         ),
                         SizedBox(height: context.dashSpacing),
@@ -242,7 +242,7 @@ class _AdminMatchingSpecialistsScreenState
                             'The selected specialist will be notified after assignment.',
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
-                                  color: AdminDashboardColors.textMuted,
+                                  color: DashboardColors.textMuted,
                                 ),
                           ),
                           SizedBox(height: context.dashSpacing * 4),
@@ -312,11 +312,11 @@ class _MatchingSpecialistCard extends StatelessWidget {
       specialist.profileImageUrl,
     );
     final borderColor = isSelected
-        ? AdminDashboardColors.primary
-        : AdminDashboardColors.border;
+        ? DashboardColors.brandCyan
+        : DashboardColors.border;
     final background = isSelected
-        ? AdminDashboardColors.blueSoft
-        : AdminDashboardColors.surface;
+        ? DashboardColors.blueSoft
+        : DashboardColors.surface;
 
     final years = specialist.yearsOfExperience;
     final license = specialist.licenseNumber?.trim();
@@ -326,19 +326,19 @@ class _MatchingSpecialistCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: AdminDecorations.cardRadius,
+        borderRadius: DashboardDecorations.cardRadius,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: background,
-            borderRadius: AdminDecorations.cardRadius,
+            borderRadius: DashboardDecorations.cardRadius,
             border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
-            boxShadow: AdminDecorations.cardShadow(
+            boxShadow: DashboardDecorations.cardShadow(
               isSelected
-                  ? AdminDashboardColors.primary
-                  : AdminDashboardColors.border,
+                  ? DashboardColors.brandCyan
+                  : DashboardColors.border,
             ),
           ),
           child: Column(
@@ -349,14 +349,14 @@ class _MatchingSpecialistCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: AdminDashboardColors.slateSoft,
+                    backgroundColor: DashboardColors.purpleSoft,
                     backgroundImage: imageUrl != null
                         ? CachedNetworkImageProvider(imageUrl)
                         : null,
                     child: imageUrl == null
                         ? const Icon(
                             Icons.badge_outlined,
-                            color: AdminDashboardColors.primary,
+                            color: DashboardColors.brandCyan,
                           )
                         : null,
                   ),
@@ -381,7 +381,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AdminDashboardColors.textSecondary,
+                              color: DashboardColors.textSecondary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -392,7 +392,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
                   if (isSelected)
                     const Icon(
                       Icons.check_circle_rounded,
-                      color: AdminDashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                     ),
                 ],
               ),
@@ -433,7 +433,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelMedium?.copyWith(
-                    color: AdminDashboardColors.textMuted,
+                    color: DashboardColors.textMuted,
                   ),
                 ),
               ],
@@ -444,7 +444,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: AdminDashboardColors.textSecondary,
+                    color: DashboardColors.textSecondary,
                   ),
                 ),
               ],
@@ -469,9 +469,9 @@ class _MetricChip extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
       decoration: BoxDecoration(
-        color: AdminDashboardColors.surface,
+        color: DashboardColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AdminDashboardColors.border),
+        border: Border.all(color: DashboardColors.border),
       ),
       child: Text(
         text,
@@ -480,7 +480,7 @@ class _MetricChip extends StatelessWidget {
         textAlign: TextAlign.center,
         style: theme.textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.w800,
-          color: AdminDashboardColors.primary,
+          color: DashboardColors.brandCyan,
           height: 1.2,
         ),
       ),

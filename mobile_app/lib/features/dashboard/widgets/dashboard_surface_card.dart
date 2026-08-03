@@ -13,6 +13,7 @@ class DashboardSurfaceCard extends StatelessWidget {
     this.tint = DashboardColors.brandCyan,
     this.backgroundColor = DashboardColors.surface,
     this.decoration,
+    this.expand = false,
   });
 
   final Widget child;
@@ -22,6 +23,7 @@ class DashboardSurfaceCard extends StatelessWidget {
   final Color tint;
   final Color backgroundColor;
   final BoxDecoration? decoration;
+  final bool expand;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,14 @@ class DashboardSurfaceCard extends StatelessWidget {
             ),
     );
 
-    return card;
+    if (!expand) {
+      return card;
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
+      child: card,
+    );
   }
 }

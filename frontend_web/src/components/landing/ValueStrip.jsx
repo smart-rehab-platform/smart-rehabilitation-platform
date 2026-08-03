@@ -115,7 +115,7 @@ export function ValueStrip() {
         @media (hover: hover) {
           .value-strip-item:hover {
             background-color: #EAF5FC;
-            box-shadow: inset 0 0 0 1px rgba(79, 166, 248, 0.08);
+            box-shadow: inset 0 0 0 1px rgba(42, 164, 201, 0.08);
           }
         }
 

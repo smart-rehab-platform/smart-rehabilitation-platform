@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/constants/admin_dashboard_colors.dart';
+import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
@@ -271,7 +271,7 @@ class _HeaderCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AdminDashboardColors.textPrimary,
+              color: DashboardColors.textPrimary,
             ),
           ),
           if (parentName != null && parentName.isNotEmpty) ...[
@@ -281,7 +281,7 @@ class _HeaderCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AdminDashboardColors.textSecondary,
+                color: DashboardColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -294,7 +294,7 @@ class _HeaderCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AdminDashboardColors.textSecondary,
+                color: DashboardColors.textSecondary,
               ),
             ),
           ],
@@ -308,7 +308,7 @@ class _HeaderCard extends StatelessWidget {
               Text(
                 'Submitted $submittedLabel',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: AdminDashboardColors.textMuted,
+                  color: DashboardColors.textMuted,
                 ),
               ),
             ],
@@ -318,7 +318,7 @@ class _HeaderCard extends StatelessWidget {
             Text(
               'ID: $shortId',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: AdminDashboardColors.textMuted,
+                color: DashboardColors.textMuted,
               ),
             ),
           ],
@@ -346,7 +346,7 @@ class _StatusTimelineCard extends StatelessWidget {
             'Status Timeline',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AdminDashboardColors.textPrimary,
+              color: DashboardColors.textPrimary,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
@@ -562,15 +562,15 @@ class _TimelineStepRow extends StatelessWidget {
     final (icon, color) = switch (step.visual) {
       _TimelineVisual.completed => (
         Icons.check_circle_rounded,
-        AdminDashboardColors.success,
+        DashboardColors.success,
       ),
       _TimelineVisual.current => (
         Icons.radio_button_checked_rounded,
-        AdminDashboardColors.primary,
+        DashboardColors.brandCyan,
       ),
       _TimelineVisual.incomplete => (
         Icons.radio_button_unchecked_rounded,
-        AdminDashboardColors.textMuted,
+        DashboardColors.textMuted,
       ),
     };
     final isActive =
@@ -593,15 +593,15 @@ class _TimelineStepRow extends StatelessWidget {
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                     color: isActive
-                        ? AdminDashboardColors.textPrimary
-                        : AdminDashboardColors.textMuted,
+                        ? DashboardColors.textPrimary
+                        : DashboardColors.textMuted,
                   ),
                 ),
                 if (step.subtitle != null && step.subtitle!.isNotEmpty)
                   Text(
                     step.subtitle!,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: AdminDashboardColors.textMuted,
+                      color: DashboardColors.textMuted,
                     ),
                   ),
               ],
@@ -626,7 +626,7 @@ class _RejectionCard extends StatelessWidget {
         : 'No rejection reason was provided.';
 
     return AdminSurfaceCard(
-      tint: AdminDashboardColors.danger,
+      tint: DashboardColors.highPriority,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -634,7 +634,7 @@ class _RejectionCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.cancel_outlined,
-                color: AdminDashboardColors.danger,
+                color: DashboardColors.highPriority,
                 size: 20,
               ),
               SizedBox(width: context.dashSpacing * 0.35),
@@ -643,7 +643,7 @@ class _RejectionCard extends StatelessWidget {
                   'Request rejected',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: AdminDashboardColors.danger,
+                    color: DashboardColors.highPriority,
                   ),
                 ),
               ),
@@ -653,7 +653,7 @@ class _RejectionCard extends StatelessWidget {
           Text(
             text,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: AdminDashboardColors.textSecondary,
+              color: DashboardColors.textSecondary,
             ),
           ),
         ],
@@ -673,7 +673,7 @@ class _ConversionCard extends StatelessWidget {
     final shortPatientId = _shortId(patientId ?? '');
 
     return AdminSurfaceCard(
-      tint: AdminDashboardColors.success,
+      tint: DashboardColors.success,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -681,7 +681,7 @@ class _ConversionCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.check_circle_outline_rounded,
-                color: AdminDashboardColors.success,
+                color: DashboardColors.success,
                 size: 20,
               ),
               SizedBox(width: context.dashSpacing * 0.35),
@@ -690,7 +690,7 @@ class _ConversionCard extends StatelessWidget {
                   'Patient profile created successfully',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: AdminDashboardColors.textPrimary,
+                    color: DashboardColors.textPrimary,
                   ),
                 ),
               ),
@@ -701,7 +701,7 @@ class _ConversionCard extends StatelessWidget {
             Text(
               'Patient ID: $shortPatientId',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: AdminDashboardColors.textMuted,
+                color: DashboardColors.textMuted,
               ),
             ),
           ],
@@ -877,14 +877,14 @@ class _ParentInformationCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: AdminDashboardColors.blueSoft,
+                backgroundColor: DashboardColors.blueSoft,
                 backgroundImage: imageUrl != null
                     ? CachedNetworkImageProvider(imageUrl)
                     : null,
                 child: imageUrl == null
                     ? const Icon(
                         Icons.person_outline_rounded,
-                        color: AdminDashboardColors.primary,
+                        color: DashboardColors.brandCyan,
                       )
                     : null,
               ),
@@ -953,7 +953,7 @@ class _ContactRow extends StatelessWidget {
               Text(
                 label,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: AdminDashboardColors.textMuted,
+                  color: DashboardColors.textMuted,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -962,7 +962,7 @@ class _ContactRow extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AdminDashboardColors.textSecondary,
+                  color: DashboardColors.textSecondary,
                 ),
               ),
             ],
@@ -1005,7 +1005,7 @@ class _AttachmentsCard extends StatelessWidget {
             Text(
               'No attachments',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AdminDashboardColors.textSecondary,
+                color: DashboardColors.textSecondary,
               ),
             )
           else
@@ -1016,7 +1016,7 @@ class _AttachmentsCard extends StatelessWidget {
                   children: [
                     Icon(
                       _attachmentIcon(attachment),
-                      color: AdminDashboardColors.primary,
+                      color: DashboardColors.brandCyan,
                       size: 20,
                     ),
                     SizedBox(width: context.dashSpacing * 0.35),
@@ -1035,7 +1035,7 @@ class _AttachmentsCard extends StatelessWidget {
                           Text(
                             _attachmentTypeLabel(attachment),
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: AdminDashboardColors.textMuted,
+                              color: DashboardColors.textMuted,
                             ),
                           ),
                         ],
@@ -1087,7 +1087,7 @@ class _SpecialistCard extends StatelessWidget {
                   ? 'No specialist assigned yet.'
                   : 'No specialist assigned.',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AdminDashboardColors.textSecondary,
+                color: DashboardColors.textSecondary,
               ),
             )
           else
@@ -1100,14 +1100,14 @@ class _SpecialistCard extends StatelessWidget {
                     );
                     return CircleAvatar(
                       radius: 24,
-                      backgroundColor: AdminDashboardColors.blueSoft,
+                      backgroundColor: DashboardColors.blueSoft,
                       backgroundImage: imageUrl != null
                           ? CachedNetworkImageProvider(imageUrl)
                           : null,
                       child: imageUrl == null
                           ? const Icon(
                               Icons.badge_outlined,
-                              color: AdminDashboardColors.primary,
+                              color: DashboardColors.brandCyan,
                             )
                           : null,
                     );
@@ -1134,7 +1134,7 @@ class _SpecialistCard extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AdminDashboardColors.textSecondary,
+                            color: DashboardColors.textSecondary,
                           ),
                         ),
                     ],
@@ -1158,7 +1158,7 @@ class _AssessmentNotesCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return AdminSurfaceCard(
-      tint: AdminDashboardColors.warning,
+      tint: DashboardColors.warning,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1172,14 +1172,14 @@ class _AssessmentNotesCard extends StatelessWidget {
           Text(
             'Visible to admin only',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: AdminDashboardColors.textMuted,
+              color: DashboardColors.textMuted,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.5),
           Text(
             notes,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: AdminDashboardColors.textSecondary,
+              color: DashboardColors.textSecondary,
             ),
           ),
         ],
@@ -1207,7 +1207,7 @@ class _ConversationIndicatorCard extends StatelessWidget {
               const Icon(
                 Icons.forum_outlined,
                 size: 20,
-                color: AdminDashboardColors.primary,
+                color: DashboardColors.brandCyan,
               ),
               SizedBox(width: context.dashSpacing * 0.35),
               Expanded(
@@ -1225,7 +1225,7 @@ class _ConversationIndicatorCard extends StatelessWidget {
             Text(
               'Conversation ID: $shortId',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: AdminDashboardColors.textMuted,
+                color: DashboardColors.textMuted,
               ),
             ),
           ],
@@ -1258,7 +1258,7 @@ class _InfoRow extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.labelSmall?.copyWith(
-              color: AdminDashboardColors.textMuted,
+              color: DashboardColors.textMuted,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1268,7 +1268,7 @@ class _InfoRow extends StatelessWidget {
             maxLines: allowWrap ? null : 3,
             overflow: allowWrap ? TextOverflow.visible : TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: AdminDashboardColors.textPrimary,
+              color: DashboardColors.textPrimary,
               fontWeight: FontWeight.w500,
             ),
           ),

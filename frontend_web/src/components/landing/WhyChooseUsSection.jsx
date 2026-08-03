@@ -50,11 +50,11 @@ const TRADITIONAL_ROW = {
 
 const SMART_ROW = {
   background: "#F5FAFE",
-  border: "rgba(79, 166, 248, 0.20)",
+  border: "rgba(42, 164, 201, 0.20)",
   text: "#294A6D",
   iconBg: "rgba(34, 197, 94, 0.10)",
   hoverBg: "#EDF6FD",
-  hoverBorder: "rgba(79, 166, 248, 0.32)",
+  hoverBorder: "rgba(42, 164, 201, 0.32)",
 };
 
 function ColumnHeader({ variant }) {

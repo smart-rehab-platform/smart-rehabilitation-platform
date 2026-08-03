@@ -92,7 +92,15 @@ app.use("/api/v1", aiClinicalProgressRoutes);
 app.use("/api/v1/speech-analyses", speechAnalysesRoutes);
 app.use("/api/v1", dashboardRoutes);
 app.use("/api/v1/uploads", uploadsRoutes);
-app.use("/uploads", express.static(uploadsRoot));
+app.use(
+  "/uploads",
+  express.static(uploadsRoot, {
+    setHeaders(res) {
+      // Public uploaded assets are embedded by the frontend on a different origin in dev.
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    },
+  }),
+);
 app.use("/api/v1", aiReportsRoutes);
 app.use("/api/v1/presence", presenceRoutes);
 app.use("/api/v1/specialist-feedback", specialistFeedbackRoutes);
