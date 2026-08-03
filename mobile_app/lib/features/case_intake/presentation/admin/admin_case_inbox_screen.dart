@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
 import '../../../dashboard/widgets/admin_ui_components.dart';
 import '../../../dashboard/widgets/dashboard_bottom_nav.dart';
@@ -89,14 +90,16 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
       });
     }
 
+    final l10n = AppLocalizations.of(context)!;
+
     return AdminPageScaffold(
-      title: 'Case Requests',
+      title: l10n.navCaseRequests,
       showBackButton: true,
       currentNav: DashboardNavItem.more,
       actions: [
         if (state.hasActiveFilters)
           IconButton(
-            tooltip: 'Clear filters',
+            tooltip: l10n.adminClearFilters,
             onPressed: notifier.clearFilters,
             icon: const Icon(
               Icons.filter_alt_off_outlined,
@@ -104,13 +107,13 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
             ),
           ),
         IconButton(
-          tooltip: 'Refresh',
+          tooltip: l10n.commonRefresh,
           onPressed: state.isInitialLoading ? null : _onRefresh,
           icon: const Icon(Icons.refresh_rounded, color: Colors.white),
         ),
       ],
       body: state.isInitialLoading && state.items.isEmpty
-          ? const AdminLoadingCard(message: 'Loading case requests...')
+          ? AdminLoadingCard(message: l10n.parentDashboardCaseIntakeLoading)
           : RefreshIndicator(
               onRefresh: _onRefresh,
               child: CustomScrollView(
@@ -122,7 +125,7 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
                         Text(
-                          'Review preliminary child case requests and track their current status.',
+                          l10n.adminCaseRequestsDescription,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: DashboardColors.textSecondary,
                           ),
@@ -133,12 +136,12 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                           textInputAction: TextInputAction.search,
                           onChanged: notifier.setSearchText,
                           decoration: InputDecoration(
-                            labelText: 'Search by child name',
-                            hintText: 'Enter child name',
+                            labelText: l10n.adminCaseRequestsSearchLabel,
+                            hintText: l10n.adminCaseRequestsSearchHint,
                             prefixIcon: const Icon(Icons.search_rounded),
                             suffixIcon: state.searchText.isNotEmpty
                                 ? IconButton(
-                                    tooltip: 'Clear search',
+                                    tooltip: l10n.adminCaseRequestsClearSearch,
                                     onPressed: () {
                                       _searchController.clear();
                                       notifier.setSearchText('');
@@ -172,7 +175,7 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                                 Icons.filter_alt_off_outlined,
                                 size: 18,
                               ),
-                              label: const Text('Clear Filters'),
+                              label: Text(l10n.adminCaseRequestsClearFilters),
                             ),
                           ),
                         ],
@@ -203,8 +206,8 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                             state.errorMessage == null)
                           AdminEmptyCard(
                             message: state.hasActiveFilters
-                                ? 'No requests match the selected filters.'
-                                : 'No case requests found.',
+                                ? l10n.adminCaseRequestsNoMatch
+                                : l10n.adminCaseRequestsEmpty,
                           ),
                         if (!state.isInitialLoading &&
                             state.items.isEmpty &&
@@ -212,7 +215,7 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                           SizedBox(height: context.dashSpacing * 0.5),
                           OutlinedButton(
                             onPressed: notifier.clearFilters,
-                            child: const Text('Clear Filters'),
+                            child: Text(l10n.adminCaseRequestsClearFilters),
                           ),
                         ],
                       ]),
@@ -269,7 +272,7 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                             ),
                             TextButton(
                               onPressed: notifier.retryLoadMore,
-                              child: const Text('Retry'),
+                              child: Text(l10n.commonRetry),
                             ),
                           ],
                         ),
@@ -302,15 +305,22 @@ class _FilterDropdowns extends StatelessWidget {
   final ValueChanged<CaseIntakeStatus?> onStatusChanged;
   final ValueChanged<String?> onCategoryChanged;
 
-  static const _statusOptions = <(CaseIntakeStatus?, String)>[
-    (null, 'All Statuses'),
-    (CaseIntakeStatus.pending, 'Pending'),
-    (CaseIntakeStatus.assigned, 'Assigned'),
-    (CaseIntakeStatus.underAssessment, 'Under Assessment'),
-    (CaseIntakeStatus.accepted, 'Accepted'),
-    (CaseIntakeStatus.rejected, 'Rejected'),
-    (CaseIntakeStatus.convertedToPatient, 'Converted to Patient'),
-  ];
+  static List<(CaseIntakeStatus?, String)> _statusOptions(
+    AppLocalizations l10n,
+  ) {
+    return [
+      (null, l10n.adminCaseRequestsAllStatuses),
+      (CaseIntakeStatus.pending, l10n.statusPending),
+      (CaseIntakeStatus.assigned, l10n.statusAssigned),
+      (CaseIntakeStatus.underAssessment, l10n.statusUnderAssessment),
+      (CaseIntakeStatus.accepted, l10n.statusAccepted),
+      (CaseIntakeStatus.rejected, l10n.statusRejected),
+      (
+        CaseIntakeStatus.convertedToPatient,
+        l10n.adminCaseRequestsConvertedToPatient,
+      ),
+    ];
+  }
 
   InputDecoration _decoration(String label) {
     return InputDecoration(
@@ -339,12 +349,14 @@ class _FilterDropdowns extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final statusOptions = _statusOptions(l10n);
     final statusField = DropdownButtonFormField<CaseIntakeStatus?>(
       key: ValueKey('status-${selectedStatus?.apiValue ?? 'all'}'),
       isExpanded: true,
       initialValue: selectedStatus,
-      decoration: _decoration('Status'),
-      items: _statusOptions
+      decoration: _decoration(l10n.adminFieldStatus),
+      items: statusOptions
           .map(
             (option) => DropdownMenuItem<CaseIntakeStatus?>(
               value: option.$1,
@@ -356,7 +368,7 @@ class _FilterDropdowns extends StatelessWidget {
             ),
           )
           .toList(),
-      selectedItemBuilder: (context) => _statusOptions
+      selectedItemBuilder: (context) => statusOptions
           .map(
             (option) => Align(
               alignment: AlignmentDirectional.centerStart,
@@ -380,12 +392,12 @@ class _FilterDropdowns extends StatelessWidget {
             key: ValueKey('category-${selectedCategoryId ?? 'all'}'),
             isExpanded: true,
             initialValue: selectedCategoryId,
-            decoration: _decoration('Category'),
+            decoration: _decoration(l10n.adminFieldCategory),
             items: [
-              const DropdownMenuItem<String?>(
+              DropdownMenuItem<String?>(
                 value: null,
                 child: Text(
-                  'All Categories',
+                  l10n.adminCaseRequestsAllCategories,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -403,7 +415,7 @@ class _FilterDropdowns extends StatelessWidget {
             ],
             selectedItemBuilder: (context) {
               final labels = <String>[
-                'All Categories',
+                l10n.adminCaseRequestsAllCategories,
                 ...categories.map((category) => category.name),
               ];
               return labels

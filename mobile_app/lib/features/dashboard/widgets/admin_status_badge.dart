@@ -1,65 +1,62 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../l10n/app_localizations.dart';
+import '../presentation/admin/admin_scoped_localization_utils.dart';
 
 class AdminStatusBadge extends StatelessWidget {
-  const AdminStatusBadge({
-    super.key,
-    required this.label,
-    required this.color,
-  });
+  const AdminStatusBadge({super.key, required this.label, required this.color});
 
   final String label;
   final Color color;
 
-  factory AdminStatusBadge.sessionStatus(String? status, {bool isPastScheduled = false}) {
+  factory AdminStatusBadge.sessionStatus(
+    BuildContext context,
+    String? status, {
+    bool isPastScheduled = false,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
     final normalized = (status ?? 'unknown').toLowerCase();
+    final label = localizedAdminSessionStatus(
+      l10n,
+      status,
+      isPastScheduled: isPastScheduled,
+    );
+
     switch (normalized) {
       case 'completed':
-        return AdminStatusBadge(
-          label: 'Completed',
-          color: DashboardColors.success,
-        );
+        return AdminStatusBadge(label: label, color: DashboardColors.success);
       case 'cancelled':
         return AdminStatusBadge(
-          label: 'Cancelled',
+          label: label,
           color: DashboardColors.highPriority,
         );
       case 'no_show':
-        return AdminStatusBadge(
-          label: 'No Show',
-          color: DashboardColors.warning,
-        );
+        return AdminStatusBadge(label: label, color: DashboardColors.warning);
       case 'scheduled':
         return AdminStatusBadge(
-          label: isPastScheduled ? 'Not Completed' : 'Scheduled',
+          label: label,
           color: isPastScheduled
               ? DashboardColors.warning
               : DashboardColors.brandCyan,
         );
       case 'pending':
-        return AdminStatusBadge(
-          label: 'Pending',
-          color: DashboardColors.warning,
-        );
+        return AdminStatusBadge(label: label, color: DashboardColors.warning);
       case 'inactive':
       case 'disabled':
-        return AdminStatusBadge(
-          label: 'Inactive',
-          color: DashboardColors.textMuted,
-        );
+        return AdminStatusBadge(label: label, color: DashboardColors.textMuted);
       default:
-        return AdminStatusBadge(
-          label: normalized.replaceAll('_', ' '),
-          color: DashboardColors.textMuted,
-        );
+        return AdminStatusBadge(label: label, color: DashboardColors.textMuted);
     }
   }
 
-  factory AdminStatusBadge.pending() => const AdminStatusBadge(
-        label: 'Pending',
-        color: DashboardColors.warning,
-      );
+  factory AdminStatusBadge.pending(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AdminStatusBadge(
+      label: l10n.statusPending,
+      color: DashboardColors.warning,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,10 +73,10 @@ class AdminStatusBadge extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         softWrap: true,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
-            ),
+          color: color,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+        ),
       ),
     );
   }

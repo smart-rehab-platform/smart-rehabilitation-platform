@@ -179,10 +179,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navSessions => 'الجلسات';
 
   @override
-  String get navCaseRequests => 'طلبات الحالة';
+  String get navCaseRequests => 'طلبات الحالات';
 
   @override
-  String get navPatientAssignments => 'تعيينات المرضى';
+  String get navPatientAssignments => 'إسناد المرضى';
 
   @override
   String get navAuditLogs => 'سجلات التدقيق';
@@ -891,6 +891,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notificationTypeUpdate => 'تحديث';
 
   @override
+  String get parentChildrenScreenTitle => 'المرضى';
+
+  @override
   String get parentChildrenNoLinked =>
       'لا يوجد أطفال مرتبطون بعد. أضف طفلاً من بوابة الأخصائي.';
 
@@ -1323,4 +1326,787 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get specialistSessionRequestDefault => 'طلب جلسة';
+
+  @override
+  String get statusAssigned => 'مُسند';
+
+  @override
+  String adminDashboardWelcome(String userName) {
+    return 'مرحبًا، $userName';
+  }
+
+  @override
+  String get adminDashboardSubtitle => 'أدِر منصة إعادة التأهيل من مكان واحد.';
+
+  @override
+  String get adminDashboardPatientAssignmentsHint =>
+      'عيّن الأخصائيين واربط أولياء الأمور بالمرضى';
+
+  @override
+  String adminDashboardNewSignupsThisWeek(int count) {
+    return '+$count هذا الأسبوع';
+  }
+
+  @override
+  String get adminDashboardThisWeek => 'هذا الأسبوع';
+
+  @override
+  String get adminDashboardSpecialists => 'الأخصائيون';
+
+  @override
+  String get adminDashboardNewSignups => 'تسجيلات جديدة';
+
+  @override
+  String get adminDashboardSystemAnalytics => 'تحليلات النظام';
+
+  @override
+  String get adminDashboardRecentUsers => 'المستخدمون الجدد';
+
+  @override
+  String get adminDashboardNoUsers => 'لم يتم العثور على مستخدمين.';
+
+  @override
+  String get adminDashboardSignInRequired =>
+      'يرجى تسجيل الدخول كمسؤول لعرض لوحة التحكم.';
+
+  @override
+  String adminDashboardLoadFailed(String error) {
+    return 'تعذّر تحميل لوحة تحكم المسؤول: $error';
+  }
+
+  @override
+  String get adminSystemActivity => 'نشاط النظام';
+
+  @override
+  String get adminSystemActivityEmpty => 'لا يوجد نشاط للنظام خلال هذه الفترة.';
+
+  @override
+  String get adminSystemActivityTryAnotherWeek => 'جرّب اختيار أسبوع آخر.';
+
+  @override
+  String get adminSystemActivityPreviousWeek => 'الأسبوع السابق';
+
+  @override
+  String get adminSystemActivityNextWeek => 'الأسبوع التالي';
+
+  @override
+  String get adminSystemActivitySelectPeriod => 'اختيار الفترة';
+
+  @override
+  String get adminSystemActivityLast2Weeks => 'آخر أسبوعين';
+
+  @override
+  String get adminSystemActivityLastMonth => 'الشهر الماضي';
+
+  @override
+  String adminSystemActivityWeeksAgo(int count) {
+    return 'منذ $count أسابيع';
+  }
+
+  @override
+  String get adminSystemActivityEvent => 'حدث';
+
+  @override
+  String get adminSystemActivityEvents => 'أحداث';
+
+  @override
+  String adminSystemActivityTooltip(int count, String label) {
+    return 'نشاط النظام: $count $label';
+  }
+
+  @override
+  String get adminSystemActivityLoadFailed =>
+      'تعذّر تحميل نشاط النظام. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get adminUsersSearchHint =>
+      'ابحث بالاسم أو البريد الإلكتروني أو الدور';
+
+  @override
+  String adminUsersLoadFailed(String error) {
+    return 'تعذّر تحميل المستخدمين: $error';
+  }
+
+  @override
+  String get adminUsersDeactivateTitle => 'إلغاء تفعيل المستخدم';
+
+  @override
+  String get adminUsersActivateTitle => 'تفعيل المستخدم';
+
+  @override
+  String get adminUsersDeactivateConfirm =>
+      'هل أنت متأكد من إلغاء تفعيل هذا المستخدم؟ قد يفقد الوصول إلى المنصة.';
+
+  @override
+  String get adminUsersActivateConfirm => 'هل أنت متأكد من تفعيل هذا المستخدم؟';
+
+  @override
+  String adminUsersUpdateStatusFailed(String error) {
+    return 'تعذّر تحديث حالة المستخدم: $error';
+  }
+
+  @override
+  String get adminUsersDeletedSuccess => 'تم حذف المستخدم بنجاح.';
+
+  @override
+  String adminUsersSaveFailed(String error) {
+    return 'تعذّر حفظ المستخدم: $error';
+  }
+
+  @override
+  String get adminActivate => 'تفعيل';
+
+  @override
+  String get adminDeactivate => 'إلغاء التفعيل';
+
+  @override
+  String get adminPatientsSearchHint => 'ابحث عن المرضى أو الحالة';
+
+  @override
+  String get adminPatientsFilterCondition => 'تصفية حسب الحالة';
+
+  @override
+  String get adminPatientsAllConditions => 'جميع الحالات';
+
+  @override
+  String get adminPatientsNoPatients => 'لم يتم العثور على مرضى.';
+
+  @override
+  String adminPatientsLoadFailed(String error) {
+    return 'تعذّر تحميل المرضى: $error';
+  }
+
+  @override
+  String get adminPatientsEditPatient => 'تعديل المريض';
+
+  @override
+  String get adminPatientsPreviousSession => 'الجلسة السابقة';
+
+  @override
+  String get adminPatientsNoPreviousSession => 'لا توجد جلسة سابقة';
+
+  @override
+  String get adminPatientsUnknownDate => 'تاريخ غير معروف';
+
+  @override
+  String get adminSessionsSearchHint => 'ابحث عن المريض أو الأخصائي';
+
+  @override
+  String get adminSessionsFilterStatus => 'تصفية حسب الحالة';
+
+  @override
+  String get adminSessionsAllStatuses => 'جميع الحالات';
+
+  @override
+  String get adminSessionsNoSessions => 'لم يتم العثور على جلسات.';
+
+  @override
+  String adminSessionsLoadFailed(String error) {
+    return 'تعذّر تحميل الجلسات: $error';
+  }
+
+  @override
+  String adminSessionsSpecialistLabel(String name) {
+    return 'الأخصائي: $name';
+  }
+
+  @override
+  String adminSessionsDurationMinutes(int minutes) {
+    return 'المدة: $minutes د';
+  }
+
+  @override
+  String get adminSessionsCompleteTitle => 'إكمال الجلسة';
+
+  @override
+  String get adminSessionsCompleteMessage =>
+      'هل أنت متأكد من وضع علامة مكتملة على هذه الجلسة؟';
+
+  @override
+  String get adminSessionsCompleteConfirm => 'إكمال';
+
+  @override
+  String get adminSessionsCompleteSuccess => 'تم وضع علامة مكتملة على الجلسة.';
+
+  @override
+  String get adminSessionsCancelTitle => 'إلغاء الجلسة';
+
+  @override
+  String get adminSessionsCancelMessage => 'هل أنت متأكد من إلغاء هذه الجلسة؟';
+
+  @override
+  String get adminSessionsCancelConfirm => 'إلغاء الجلسة';
+
+  @override
+  String get adminSessionsCancelSuccess => 'تم إلغاء الجلسة.';
+
+  @override
+  String get adminSessionsNoShowTitle => 'تسجيل عدم حضور';
+
+  @override
+  String get adminSessionsNoShowMessage =>
+      'هل أنت متأكد من تسجيل عدم حضور لهذه الجلسة؟';
+
+  @override
+  String get adminSessionsNoShowConfirm => 'تسجيل عدم حضور';
+
+  @override
+  String get adminSessionsNoShowSuccess => 'تم تسجيل عدم حضور الجلسة.';
+
+  @override
+  String adminSessionsUpdateFailed(String error) {
+    return 'تعذّر تحديث الجلسة: $error';
+  }
+
+  @override
+  String adminAiLoadFailed(String error) {
+    return 'تعذّر تحميل مركز الذكاء الاصطناعي: $error';
+  }
+
+  @override
+  String get adminAiInsights => 'رؤى الذكاء الاصطناعي';
+
+  @override
+  String get adminAiInsightsSubtitle =>
+      'تحليل الكلام والتوصيات والتقارير السريرية';
+
+  @override
+  String get adminAiSpeechAnalyses => 'تحليلات الكلام';
+
+  @override
+  String adminAiAvgScore(String score) {
+    return 'متوسط النتيجة $score';
+  }
+
+  @override
+  String get adminAiRecommendations => 'توصيات الذكاء الاصطناعي';
+
+  @override
+  String get adminAiNeedsAttention => 'يتطلب اهتمامًا';
+
+  @override
+  String adminAiPendingReviews(int count) {
+    return '$count مراجعات معلّقة';
+  }
+
+  @override
+  String get adminAiPatientsNeedingAttention => 'مرضى يحتاجون إلى اهتمام';
+
+  @override
+  String get adminAiNoPatientsFlagged =>
+      'لا يوجد مرضى مُعلَّمون بدرجات منخفضة.';
+
+  @override
+  String get adminAiLatestSpeechAnalyses => 'أحدث تحليلات الكلام';
+
+  @override
+  String get adminAiLatestRecommendations => 'أحدث توصيات الذكاء الاصطناعي';
+
+  @override
+  String get adminAiLatestReports => 'أحدث تقارير الذكاء الاصطناعي';
+
+  @override
+  String get adminAiNoRecords => 'لا توجد سجلات بعد.';
+
+  @override
+  String adminAiSpeechScore(String score) {
+    return 'الكلام $score';
+  }
+
+  @override
+  String adminAuditLoadFailed(String error) {
+    return 'تعذّر تحميل سجلات التدقيق: $error';
+  }
+
+  @override
+  String get adminAuditFilterByUser => 'تصفية حسب المستخدم';
+
+  @override
+  String get adminAuditAllUsers => 'جميع المستخدمين';
+
+  @override
+  String get adminAuditFilterByAction => 'تصفية حسب الإجراء';
+
+  @override
+  String get adminAuditAllActions => 'جميع الإجراءات';
+
+  @override
+  String get adminAuditFilterByEntity => 'تصفية حسب الكيان';
+
+  @override
+  String get adminAuditAllEntities => 'جميع الكيانات';
+
+  @override
+  String get adminAuditFromDate => 'من تاريخ';
+
+  @override
+  String get adminAuditToDate => 'إلى تاريخ';
+
+  @override
+  String adminAuditFromDateValue(String date) {
+    return 'من $date';
+  }
+
+  @override
+  String adminAuditToDateValue(String date) {
+    return 'إلى $date';
+  }
+
+  @override
+  String get adminAuditNoLogs => 'لم يتم العثور على سجلات تدقيق.';
+
+  @override
+  String get adminAssignmentsUnlinkSpecialist => 'إلغاء ربط الأخصائي';
+
+  @override
+  String get adminAssignmentsUnlinkParent => 'إلغاء ربط ولي الأمر';
+
+  @override
+  String adminAssignmentsUnlinkSpecialistConfirm(String name) {
+    return 'هل أنت متأكد من إلغاء ربط $name بهذا المريض؟';
+  }
+
+  @override
+  String adminAssignmentsUnlinkParentConfirm(String name) {
+    return 'هل أنت متأكد من إلغاء ربط $name بهذا المريض؟';
+  }
+
+  @override
+  String get adminAssignmentsSpecialistUnlinked =>
+      'تم إلغاء ربط الأخصائي بنجاح.';
+
+  @override
+  String get adminAssignmentsParentUnlinked => 'تم إلغاء ربط ولي الأمر بنجاح.';
+
+  @override
+  String get adminAssignmentsAssignSpecialist => 'تعيين أخصائي';
+
+  @override
+  String get adminAssignmentsLinkParent => 'ربط ولي أمر';
+
+  @override
+  String get adminAssignmentsPrimarySpecialist => 'أخصائي رئيسي';
+
+  @override
+  String get adminAssignmentsAssignSpecialistAction => 'تعيين أخصائي للمريض';
+
+  @override
+  String get adminAssignmentsLinkParentAction => 'ربط ولي أمر بالمريض';
+
+  @override
+  String get adminAssignmentsChangeHint =>
+      'لتغيير التعيين، ألغِ ربط الأخصائي أو ولي الأمر الحالي ثم عيّن أو اربط الجديد.';
+
+  @override
+  String get adminAssignmentsAssignedSpecialists => 'الأخصائيون المعيّنون';
+
+  @override
+  String get adminAssignmentsLinkedParents => 'أولياء الأمور المرتبطون';
+
+  @override
+  String get adminAssignmentsLoadingRelationships => 'جارٍ تحميل العلاقات...';
+
+  @override
+  String get adminAssignmentsSelectPatient => 'اختر مريضًا لعرض التعيينات.';
+
+  @override
+  String get adminAssignmentsNoSpecialistsAssigned =>
+      'لم يُعيَّن أي أخصائي لهذا المريض بعد.';
+
+  @override
+  String get adminAssignmentsNoParentsLinked =>
+      'لم يُربَط أي ولي أمر بهذا المريض بعد.';
+
+  @override
+  String get adminAssignmentsNoPatients => 'لا يوجد مرضى متاحون';
+
+  @override
+  String get adminAssignmentsNoSpecialists => 'لا يوجد أخصائيون متاحون';
+
+  @override
+  String get adminAssignmentsNoParents => 'لا توجد حسابات أولياء أمور متاحة';
+
+  @override
+  String get adminAssignmentsRelationship => 'صلة القرابة';
+
+  @override
+  String get adminAssignmentsSelectRelationship => 'اختر صلة القرابة';
+
+  @override
+  String get adminAssignmentsPrimaryContact => 'جهة الاتصال الرئيسية';
+
+  @override
+  String get adminAssignmentsUnlinkSpecialistTooltip => 'إلغاء ربط الأخصائي';
+
+  @override
+  String get adminAssignmentsUnlinkParentTooltip => 'إلغاء ربط ولي الأمر';
+
+  @override
+  String get adminAssignmentsGuardian => 'ولي أمر';
+
+  @override
+  String get adminUnlink => 'إلغاء الربط';
+
+  @override
+  String get adminCaseRequestsDescription =>
+      'راجع طلبات الحالات الأولية للأطفال وتتبّع حالتها الحالية.';
+
+  @override
+  String get adminCaseRequestsSearchLabel => 'البحث باسم الطفل';
+
+  @override
+  String get adminCaseRequestsSearchHint => 'أدخل اسم الطفل';
+
+  @override
+  String get adminCaseRequestsClearSearch => 'مسح البحث';
+
+  @override
+  String get adminCaseRequestsClearFilters => 'مسح عوامل التصفية';
+
+  @override
+  String get adminCaseRequestsNoMatch =>
+      'لا توجد طلبات تطابق عوامل التصفية المحددة.';
+
+  @override
+  String get adminCaseRequestsEmpty => 'لم يتم العثور على طلبات حالات.';
+
+  @override
+  String get adminCaseRequestsAllStatuses => 'جميع الحالات';
+
+  @override
+  String get adminCaseRequestsAllCategories => 'جميع الفئات';
+
+  @override
+  String get adminCaseRequestsConvertedToPatient => 'تم تحويله إلى مريض';
+
+  @override
+  String get adminClearFilters => 'مسح عوامل التصفية';
+
+  @override
+  String get adminFieldStatus => 'الحالة';
+
+  @override
+  String get adminFieldCategory => 'الفئة';
+
+  @override
+  String get adminProfilePhotoUpdated => 'تم تحديث صورة الملف الشخصي بنجاح.';
+
+  @override
+  String get adminRecordFallback => 'سجل';
+
+  @override
+  String get commonOpening => 'جارٍ الفتح...';
+
+  @override
+  String get statusReviewed => 'تمت المراجعة';
+
+  @override
+  String get statusNeedsRetry => 'يحتاج إعادة محاولة';
+
+  @override
+  String get goalTermShortTerm => 'قصير المدى';
+
+  @override
+  String get goalTermLongTerm => 'طويل المدى';
+
+  @override
+  String get mediaTypeAudio => 'صوت';
+
+  @override
+  String get mediaTypeVideo => 'فيديو';
+
+  @override
+  String get mediaTypeImage => 'صورة';
+
+  @override
+  String get specialistPatientDetailsTitle => 'تفاصيل المريض';
+
+  @override
+  String get specialistPatientDetailsNoteSaved => 'تم حفظ الملاحظة';
+
+  @override
+  String get specialistPatientDetailsNoParentLinked =>
+      'لم يُربَط أي ولي أمر بهذا المريض بعد.';
+
+  @override
+  String get specialistPatientDetailsActivePlanRequired =>
+      'يلزم وجود خطة علاج نشطة قبل تعيين تمرين.';
+
+  @override
+  String get specialistPatientDetailsNotFound => 'لم يتم العثور على المريض.';
+
+  @override
+  String get specialistPatientDetailsNoTreatmentPlan =>
+      'لم يتم العثور على خطة علاج لهذا المريض.';
+
+  @override
+  String specialistPatientDetailsLoadFailed(String error) {
+    return 'تعذّر تحميل تفاصيل المريض: $error';
+  }
+
+  @override
+  String specialistPatientDetailsSaveNoteFailed(String error) {
+    return 'تعذّر حفظ الملاحظة: $error';
+  }
+
+  @override
+  String get specialistPatientDetailsSaveNoteFailedGeneric =>
+      'تعذّر حفظ الملاحظة';
+
+  @override
+  String get specialistPatientDetailsUpdateFailed => 'تعذّر تحديث المريض';
+
+  @override
+  String get specialistPatientDetailsQuickStatistics => 'إحصائيات سريعة';
+
+  @override
+  String get specialistPatientDetailsGoalsSectionUnavailable =>
+      'قسم الأهداف غير متاح بعد. اسحب للتحديث ثم حاول مرة أخرى.';
+
+  @override
+  String get specialistPatientDetailsAssignedExercisesSectionUnavailable =>
+      'قسم التمارين المعيّنة غير متاح بعد. اسحب للتحديث ثم حاول مرة أخرى.';
+
+  @override
+  String get specialistPatientDetailsSubmissionsSectionUnavailable =>
+      'قسم التسليمات غير متاح بعد. اسحب للتحديث ثم حاول مرة أخرى.';
+
+  @override
+  String get specialistPatientDetailsReportsUnavailable =>
+      'التقارير غير متاحة حاليًا.';
+
+  @override
+  String get specialistPatientDetailsNoTreatmentPlanYet =>
+      'لم تُعيَّن خطة علاج بعد.';
+
+  @override
+  String get specialistPatientDetailsNoGoals => 'لم تُحدَّد أهداف لهذا المريض.';
+
+  @override
+  String get specialistPatientDetailsNoExercises => 'لم تُعيَّن تمارين بعد.';
+
+  @override
+  String get specialistPatientDetailsRecentSubmissions =>
+      'أحدث تسليمات التمارين';
+
+  @override
+  String get specialistPatientDetailsNoSubmissions =>
+      'لا توجد تسليمات تمارين بعد.';
+
+  @override
+  String get specialistPatientDetailsLatestNotes => 'أحدث ملاحظات الأخصائي';
+
+  @override
+  String get specialistPatientDetailsNoNotes => 'لا توجد ملاحظات أخصائي بعد.';
+
+  @override
+  String get specialistPatientDetailsActiveGoals => 'الأهداف النشطة';
+
+  @override
+  String get specialistPatientDetailsAssignedExercises => 'التمارين المعيّنة';
+
+  @override
+  String specialistPatientDetailsAgeDiagnosis(String age, String diagnosis) {
+    return 'العمر $age • $diagnosis';
+  }
+
+  @override
+  String get specialistPatientDetailsNoDiagnosis => 'لا يوجد تشخيص مسجّل';
+
+  @override
+  String get specialistPatientDetailsStartDate => 'تاريخ البدء';
+
+  @override
+  String get specialistPatientDetailsEndDate => 'تاريخ الانتهاء';
+
+  @override
+  String get specialistPatientDetailsAchieved => 'متحقق';
+
+  @override
+  String specialistPatientDetailsTargetValue(String value) {
+    return 'القيمة المستهدفة: $value';
+  }
+
+  @override
+  String specialistPatientDetailsTargetDate(String date) {
+    return 'التاريخ المستهدف: $date';
+  }
+
+  @override
+  String specialistPatientDetailsPercentComplete(int percent) {
+    return '$percent% مكتمل';
+  }
+
+  @override
+  String get specialistPatientDetailsNoDueDate => 'لا يوجد موعد استحقاق';
+
+  @override
+  String get specialistPatientDetailsEnterClinicalNote =>
+      'أدخل ملاحظة سريرية...';
+
+  @override
+  String get specialistReviewExercises => 'مراجعة التمارين';
+
+  @override
+  String get specialistAddSpecialistNote => 'إضافة ملاحظة أخصائي';
+
+  @override
+  String get specialistViewReports => 'عرض التقارير';
+
+  @override
+  String get specialistEditTreatmentPlan => 'تعديل خطة العلاج';
+
+  @override
+  String get specialistCreateTreatmentPlan => 'إنشاء خطة علاج';
+
+  @override
+  String get specialistManageGoals => 'إدارة الأهداف';
+
+  @override
+  String get specialistAssignExercise => 'تعيين تمرين';
+
+  @override
+  String get specialistMessageParent => 'مراسلة ولي الأمر';
+
+  @override
+  String get specialistFamilyPatternInsightTitle => 'رؤية الأنماط العائلية';
+
+  @override
+  String get specialistFamilyPatternLoading =>
+      'جارٍ تحميل رؤية الأنماط العائلية…';
+
+  @override
+  String get specialistFamilyPatternUnavailable =>
+      'رؤية الأنماط العائلية غير متاحة حاليًا.';
+
+  @override
+  String get specialistFamilyPatternNoPatternsDetected =>
+      'لم تُكتشف خصائص سريرية متكررة في السجلات المتاحة.';
+
+  @override
+  String get specialistFamilyPatternClinicalSummary => 'الملخص السريري';
+
+  @override
+  String get specialistFamilyPatternPatternScore => 'درجة النمط';
+
+  @override
+  String specialistFamilyPatternScoreSemantics(int score, String caption) {
+    return 'درجة النمط $score من 100. $caption';
+  }
+
+  @override
+  String get specialistFamilyPatternScoreCaptionHigh =>
+      'ثقة عالية بناءً على السجلات المتاحة.';
+
+  @override
+  String get specialistFamilyPatternScoreCaptionModerate =>
+      'تم رصد خصائص متكررة بدرجة متوسطة.';
+
+  @override
+  String get specialistFamilyPatternScoreCaptionLow =>
+      'تم رصد خصائص متكررة محدودة.';
+
+  @override
+  String get specialistFamilyPatternEvidenceHigh => 'دليل قوي';
+
+  @override
+  String get specialistFamilyPatternEvidenceModerate => 'دليل متوسط';
+
+  @override
+  String get specialistFamilyPatternEvidenceLow => 'دليل ضعيف';
+
+  @override
+  String get specialistFamilyPatternEvidenceSemanticHigh =>
+      'دليل قوي على خصائص متكررة';
+
+  @override
+  String get specialistFamilyPatternEvidenceSemanticModerate =>
+      'دليل متوسط على خصائص متكررة';
+
+  @override
+  String get specialistFamilyPatternEvidenceSemanticLow =>
+      'دليل ضعيف على خصائص متكررة';
+
+  @override
+  String specialistFamilyPatternMatchedChildrenOne(int count) {
+    return '$count طفل متطابق';
+  }
+
+  @override
+  String specialistFamilyPatternMatchedChildrenMany(int count) {
+    return '$count أطفال متطابقون';
+  }
+
+  @override
+  String get specialistFamilyPatternMatchedAtLeastOne =>
+      'تطابق مع نمط واحد على الأقل.';
+
+  @override
+  String get specialistFamilyPatternShowFewerFindings => 'عرض نتائج أقل';
+
+  @override
+  String get specialistFamilyPatternViewAllFindings => 'عرض جميع النتائج';
+
+  @override
+  String get specialistFamilyPatternReviewMatchedChildren =>
+      'مراجعة الأطفال المتطابقين';
+
+  @override
+  String get specialistFamilyPatternSharedDiagnosis => 'تشخيص مشترك';
+
+  @override
+  String get specialistFamilyPatternSharedCaseCategory => 'فئة حالة مشتركة';
+
+  @override
+  String get specialistFamilyPatternObservedDifficulties => 'صعوبات ملحوظة';
+
+  @override
+  String get specialistFamilyPatternPreviousDiagnosis => 'تشخيص سابق';
+
+  @override
+  String get specialistFamilyPatternFamilyHistory => 'التاريخ العائلي';
+
+  @override
+  String get specialistFamilyPatternRepeatedCharacteristic => 'خاصية متكررة';
+
+  @override
+  String get specialistFamilyPatternDetailsTitle => 'تفاصيل الأنماط العائلية';
+
+  @override
+  String get specialistFamilyPatternDetailsSubtitle =>
+      'راجع الأطفال المرتبطين الذين تطابقوا مع كل نمط مكتشف.';
+
+  @override
+  String get specialistFamilyPatternLoadDetailsFailed =>
+      'تعذّر تحميل تفاصيل الأطفال المتطابقين.';
+
+  @override
+  String get specialistFamilyPatternNoDetailedMatches =>
+      'لا تتوفر تطابقات تفصيلية.';
+
+  @override
+  String get specialistFamilyPatternHiddenMatchesOne =>
+      'بعض الأطفال المتطابقين غير معروضين لأنك غير مُسند إلى سجلاتهم.';
+
+  @override
+  String specialistFamilyPatternHiddenMatchesMany(int count) {
+    return '$count من الأطفال المتطابقين غير معروضين لأنك غير مُسند إلى سجلاتهم.';
+  }
+
+  @override
+  String get specialistFamilyPatternSharedTerms => 'مصطلحات مشتركة:';
+
+  @override
+  String specialistFamilyPatternMatchedValue(String value) {
+    return 'القيمة المتطابقة: $value';
+  }
+
+  @override
+  String get specialistFamilyPatternAddClinicalNote => 'إضافة ملاحظة سريرية';
+
+  @override
+  String get specialistFamilyPatternContactParent => 'التواصل مع ولي الأمر';
+
+  @override
+  String get specialistFamilyPatternScheduleFollowUp => 'جدولة متابعة';
 }

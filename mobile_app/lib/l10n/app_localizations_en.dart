@@ -898,6 +898,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationTypeUpdate => 'Update';
 
   @override
+  String get parentChildrenScreenTitle => 'Children';
+
+  @override
   String get parentChildrenNoLinked =>
       'No linked children yet. Add a child from the specialist portal.';
 
@@ -1334,4 +1337,796 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get specialistSessionRequestDefault => 'Session request';
+
+  @override
+  String get statusAssigned => 'Assigned';
+
+  @override
+  String adminDashboardWelcome(String userName) {
+    return 'Welcome, $userName';
+  }
+
+  @override
+  String get adminDashboardSubtitle =>
+      'Manage your rehabilitation platform from one place.';
+
+  @override
+  String get adminDashboardPatientAssignmentsHint =>
+      'Assign specialists and link parents to patients';
+
+  @override
+  String adminDashboardNewSignupsThisWeek(int count) {
+    return '+$count this week';
+  }
+
+  @override
+  String get adminDashboardThisWeek => 'This week';
+
+  @override
+  String get adminDashboardSpecialists => 'Specialists';
+
+  @override
+  String get adminDashboardNewSignups => 'New Signups';
+
+  @override
+  String get adminDashboardSystemAnalytics => 'System Analytics';
+
+  @override
+  String get adminDashboardRecentUsers => 'Recent Users';
+
+  @override
+  String get adminDashboardNoUsers => 'No users found.';
+
+  @override
+  String get adminDashboardSignInRequired =>
+      'Please sign in as an admin to view this dashboard.';
+
+  @override
+  String adminDashboardLoadFailed(String error) {
+    return 'Failed to load admin dashboard: $error';
+  }
+
+  @override
+  String get adminSystemActivity => 'System Activity';
+
+  @override
+  String get adminSystemActivityEmpty =>
+      'No system activity during this period.';
+
+  @override
+  String get adminSystemActivityTryAnotherWeek => 'Try selecting another week.';
+
+  @override
+  String get adminSystemActivityPreviousWeek => 'Previous week';
+
+  @override
+  String get adminSystemActivityNextWeek => 'Next week';
+
+  @override
+  String get adminSystemActivitySelectPeriod => 'Select period';
+
+  @override
+  String get adminSystemActivityLast2Weeks => 'Last 2 Weeks';
+
+  @override
+  String get adminSystemActivityLastMonth => 'Last Month';
+
+  @override
+  String adminSystemActivityWeeksAgo(int count) {
+    return '$count weeks ago';
+  }
+
+  @override
+  String get adminSystemActivityEvent => 'event';
+
+  @override
+  String get adminSystemActivityEvents => 'events';
+
+  @override
+  String adminSystemActivityTooltip(int count, String label) {
+    return 'System Activity: $count $label';
+  }
+
+  @override
+  String get adminSystemActivityLoadFailed =>
+      'Failed to load system activity. Please try again.';
+
+  @override
+  String get adminUsersSearchHint => 'Search by name, email, or role';
+
+  @override
+  String adminUsersLoadFailed(String error) {
+    return 'Failed to load users: $error';
+  }
+
+  @override
+  String get adminUsersDeactivateTitle => 'Deactivate User';
+
+  @override
+  String get adminUsersActivateTitle => 'Activate User';
+
+  @override
+  String get adminUsersDeactivateConfirm =>
+      'Are you sure you want to deactivate this user? They may lose access to the platform.';
+
+  @override
+  String get adminUsersActivateConfirm =>
+      'Are you sure you want to activate this user?';
+
+  @override
+  String adminUsersUpdateStatusFailed(String error) {
+    return 'Failed to update user status: $error';
+  }
+
+  @override
+  String get adminUsersDeletedSuccess => 'User deleted successfully.';
+
+  @override
+  String adminUsersSaveFailed(String error) {
+    return 'Failed to save user: $error';
+  }
+
+  @override
+  String get adminActivate => 'Activate';
+
+  @override
+  String get adminDeactivate => 'Deactivate';
+
+  @override
+  String get adminPatientsSearchHint => 'Search patients or condition';
+
+  @override
+  String get adminPatientsFilterCondition => 'Filter by condition';
+
+  @override
+  String get adminPatientsAllConditions => 'All conditions';
+
+  @override
+  String get adminPatientsNoPatients => 'No patients found.';
+
+  @override
+  String adminPatientsLoadFailed(String error) {
+    return 'Failed to load patients: $error';
+  }
+
+  @override
+  String get adminPatientsEditPatient => 'Edit Patient';
+
+  @override
+  String get adminPatientsPreviousSession => 'Previous Session';
+
+  @override
+  String get adminPatientsNoPreviousSession => 'No previous session';
+
+  @override
+  String get adminPatientsUnknownDate => 'Unknown date';
+
+  @override
+  String get adminSessionsSearchHint => 'Search patient or specialist';
+
+  @override
+  String get adminSessionsFilterStatus => 'Filter by status';
+
+  @override
+  String get adminSessionsAllStatuses => 'All statuses';
+
+  @override
+  String get adminSessionsNoSessions => 'No sessions found.';
+
+  @override
+  String adminSessionsLoadFailed(String error) {
+    return 'Failed to load sessions: $error';
+  }
+
+  @override
+  String adminSessionsSpecialistLabel(String name) {
+    return 'Specialist: $name';
+  }
+
+  @override
+  String adminSessionsDurationMinutes(int minutes) {
+    return 'Duration: $minutes min';
+  }
+
+  @override
+  String get adminSessionsCompleteTitle => 'Complete Session';
+
+  @override
+  String get adminSessionsCompleteMessage =>
+      'Are you sure you want to mark this session as completed?';
+
+  @override
+  String get adminSessionsCompleteConfirm => 'Complete';
+
+  @override
+  String get adminSessionsCompleteSuccess => 'Session marked as completed.';
+
+  @override
+  String get adminSessionsCancelTitle => 'Cancel Session';
+
+  @override
+  String get adminSessionsCancelMessage =>
+      'Are you sure you want to cancel this session?';
+
+  @override
+  String get adminSessionsCancelConfirm => 'Cancel Session';
+
+  @override
+  String get adminSessionsCancelSuccess => 'Session cancelled.';
+
+  @override
+  String get adminSessionsNoShowTitle => 'Mark as No Show';
+
+  @override
+  String get adminSessionsNoShowMessage =>
+      'Are you sure you want to mark this session as no show?';
+
+  @override
+  String get adminSessionsNoShowConfirm => 'Mark No Show';
+
+  @override
+  String get adminSessionsNoShowSuccess => 'Session marked as no-show.';
+
+  @override
+  String adminSessionsUpdateFailed(String error) {
+    return 'Failed to update session: $error';
+  }
+
+  @override
+  String adminAiLoadFailed(String error) {
+    return 'Failed to load AI Center: $error';
+  }
+
+  @override
+  String get adminAiInsights => 'AI Insights';
+
+  @override
+  String get adminAiInsightsSubtitle =>
+      'Speech analysis, recommendations, and clinical reports';
+
+  @override
+  String get adminAiSpeechAnalyses => 'Speech Analyses';
+
+  @override
+  String adminAiAvgScore(String score) {
+    return 'Avg score $score';
+  }
+
+  @override
+  String get adminAiRecommendations => 'AI Recommendations';
+
+  @override
+  String get adminAiNeedsAttention => 'Needs Attention';
+
+  @override
+  String adminAiPendingReviews(int count) {
+    return '$count pending reviews';
+  }
+
+  @override
+  String get adminAiPatientsNeedingAttention => 'Patients Needing Attention';
+
+  @override
+  String get adminAiNoPatientsFlagged => 'No patients flagged for low scores.';
+
+  @override
+  String get adminAiLatestSpeechAnalyses => 'Latest Speech Analyses';
+
+  @override
+  String get adminAiLatestRecommendations => 'Latest AI Recommendations';
+
+  @override
+  String get adminAiLatestReports => 'Latest AI Reports';
+
+  @override
+  String get adminAiNoRecords => 'No records yet.';
+
+  @override
+  String adminAiSpeechScore(String score) {
+    return 'Speech $score';
+  }
+
+  @override
+  String adminAuditLoadFailed(String error) {
+    return 'Failed to load audit logs: $error';
+  }
+
+  @override
+  String get adminAuditFilterByUser => 'Filter by user';
+
+  @override
+  String get adminAuditAllUsers => 'All users';
+
+  @override
+  String get adminAuditFilterByAction => 'Filter by action';
+
+  @override
+  String get adminAuditAllActions => 'All actions';
+
+  @override
+  String get adminAuditFilterByEntity => 'Filter by entity';
+
+  @override
+  String get adminAuditAllEntities => 'All entities';
+
+  @override
+  String get adminAuditFromDate => 'From date';
+
+  @override
+  String get adminAuditToDate => 'To date';
+
+  @override
+  String adminAuditFromDateValue(String date) {
+    return 'From $date';
+  }
+
+  @override
+  String adminAuditToDateValue(String date) {
+    return 'To $date';
+  }
+
+  @override
+  String get adminAuditNoLogs => 'No audit logs found.';
+
+  @override
+  String get adminAssignmentsUnlinkSpecialist => 'Unlink Specialist';
+
+  @override
+  String get adminAssignmentsUnlinkParent => 'Unlink Parent';
+
+  @override
+  String adminAssignmentsUnlinkSpecialistConfirm(String name) {
+    return 'Are you sure you want to unlink $name from this patient?';
+  }
+
+  @override
+  String adminAssignmentsUnlinkParentConfirm(String name) {
+    return 'Are you sure you want to unlink $name from this patient?';
+  }
+
+  @override
+  String get adminAssignmentsSpecialistUnlinked =>
+      'Specialist unlinked successfully.';
+
+  @override
+  String get adminAssignmentsParentUnlinked => 'Parent unlinked successfully.';
+
+  @override
+  String get adminAssignmentsAssignSpecialist => 'Assign Specialist';
+
+  @override
+  String get adminAssignmentsLinkParent => 'Link Parent';
+
+  @override
+  String get adminAssignmentsPrimarySpecialist => 'Primary specialist';
+
+  @override
+  String get adminAssignmentsAssignSpecialistAction =>
+      'Assign Specialist to Patient';
+
+  @override
+  String get adminAssignmentsLinkParentAction => 'Link Parent to Patient';
+
+  @override
+  String get adminAssignmentsChangeHint =>
+      'To change an assignment, unlink the current specialist or parent, then assign or link the new one.';
+
+  @override
+  String get adminAssignmentsAssignedSpecialists => 'Assigned Specialists';
+
+  @override
+  String get adminAssignmentsLinkedParents => 'Linked Parents';
+
+  @override
+  String get adminAssignmentsLoadingRelationships => 'Loading relationships...';
+
+  @override
+  String get adminAssignmentsSelectPatient =>
+      'Select a patient to view assignments.';
+
+  @override
+  String get adminAssignmentsNoSpecialistsAssigned =>
+      'No specialists assigned to this patient yet.';
+
+  @override
+  String get adminAssignmentsNoParentsLinked =>
+      'No parents linked to this patient yet.';
+
+  @override
+  String get adminAssignmentsNoPatients => 'No patients available';
+
+  @override
+  String get adminAssignmentsNoSpecialists => 'No specialists available';
+
+  @override
+  String get adminAssignmentsNoParents => 'No parent accounts available';
+
+  @override
+  String get adminAssignmentsRelationship => 'Relationship';
+
+  @override
+  String get adminAssignmentsSelectRelationship => 'Select relationship';
+
+  @override
+  String get adminAssignmentsPrimaryContact => 'Primary contact';
+
+  @override
+  String get adminAssignmentsUnlinkSpecialistTooltip => 'Unlink specialist';
+
+  @override
+  String get adminAssignmentsUnlinkParentTooltip => 'Unlink parent';
+
+  @override
+  String get adminAssignmentsGuardian => 'Guardian';
+
+  @override
+  String get adminUnlink => 'Unlink';
+
+  @override
+  String get adminCaseRequestsDescription =>
+      'Review preliminary child case requests and track their current status.';
+
+  @override
+  String get adminCaseRequestsSearchLabel => 'Search by child name';
+
+  @override
+  String get adminCaseRequestsSearchHint => 'Enter child name';
+
+  @override
+  String get adminCaseRequestsClearSearch => 'Clear search';
+
+  @override
+  String get adminCaseRequestsClearFilters => 'Clear Filters';
+
+  @override
+  String get adminCaseRequestsNoMatch =>
+      'No requests match the selected filters.';
+
+  @override
+  String get adminCaseRequestsEmpty => 'No case requests found.';
+
+  @override
+  String get adminCaseRequestsAllStatuses => 'All Statuses';
+
+  @override
+  String get adminCaseRequestsAllCategories => 'All Categories';
+
+  @override
+  String get adminCaseRequestsConvertedToPatient => 'Converted to Patient';
+
+  @override
+  String get adminClearFilters => 'Clear filters';
+
+  @override
+  String get adminFieldStatus => 'Status';
+
+  @override
+  String get adminFieldCategory => 'Category';
+
+  @override
+  String get adminProfilePhotoUpdated => 'Profile photo updated successfully.';
+
+  @override
+  String get adminRecordFallback => 'Record';
+
+  @override
+  String get commonOpening => 'Opening...';
+
+  @override
+  String get statusReviewed => 'Reviewed';
+
+  @override
+  String get statusNeedsRetry => 'Needs retry';
+
+  @override
+  String get goalTermShortTerm => 'Short-term';
+
+  @override
+  String get goalTermLongTerm => 'Long-term';
+
+  @override
+  String get mediaTypeAudio => 'Audio';
+
+  @override
+  String get mediaTypeVideo => 'Video';
+
+  @override
+  String get mediaTypeImage => 'Image';
+
+  @override
+  String get specialistPatientDetailsTitle => 'Patient Details';
+
+  @override
+  String get specialistPatientDetailsNoteSaved => 'Note saved';
+
+  @override
+  String get specialistPatientDetailsNoParentLinked =>
+      'No parent is linked to this patient yet.';
+
+  @override
+  String get specialistPatientDetailsActivePlanRequired =>
+      'An active treatment plan is required before assigning an exercise.';
+
+  @override
+  String get specialistPatientDetailsNotFound => 'Patient not found.';
+
+  @override
+  String get specialistPatientDetailsNoTreatmentPlan =>
+      'No treatment plan found for this patient.';
+
+  @override
+  String specialistPatientDetailsLoadFailed(String error) {
+    return 'Failed to load patient details: $error';
+  }
+
+  @override
+  String specialistPatientDetailsSaveNoteFailed(String error) {
+    return 'Failed to save note: $error';
+  }
+
+  @override
+  String get specialistPatientDetailsSaveNoteFailedGeneric =>
+      'Failed to save note';
+
+  @override
+  String get specialistPatientDetailsUpdateFailed => 'Failed to update patient';
+
+  @override
+  String get specialistPatientDetailsQuickStatistics => 'Quick Statistics';
+
+  @override
+  String get specialistPatientDetailsGoalsSectionUnavailable =>
+      'Goals section is not available yet. Pull to refresh and try again.';
+
+  @override
+  String get specialistPatientDetailsAssignedExercisesSectionUnavailable =>
+      'Assigned Exercises section is not available yet. Pull to refresh and try again.';
+
+  @override
+  String get specialistPatientDetailsSubmissionsSectionUnavailable =>
+      'Submissions section is not available yet. Pull to refresh and try again.';
+
+  @override
+  String get specialistPatientDetailsReportsUnavailable =>
+      'Reports are unavailable right now.';
+
+  @override
+  String get specialistPatientDetailsNoTreatmentPlanYet =>
+      'No treatment plan assigned yet.';
+
+  @override
+  String get specialistPatientDetailsNoGoals =>
+      'No goals defined for this patient.';
+
+  @override
+  String get specialistPatientDetailsNoExercises =>
+      'No exercises assigned yet.';
+
+  @override
+  String get specialistPatientDetailsRecentSubmissions =>
+      'Recent Exercise Submissions';
+
+  @override
+  String get specialistPatientDetailsNoSubmissions =>
+      'No exercise submissions yet.';
+
+  @override
+  String get specialistPatientDetailsLatestNotes => 'Latest Specialist Notes';
+
+  @override
+  String get specialistPatientDetailsNoNotes => 'No specialist notes yet.';
+
+  @override
+  String get specialistPatientDetailsActiveGoals => 'Active Goals';
+
+  @override
+  String get specialistPatientDetailsAssignedExercises => 'Assigned Exercises';
+
+  @override
+  String specialistPatientDetailsAgeDiagnosis(String age, String diagnosis) {
+    return 'Age $age • $diagnosis';
+  }
+
+  @override
+  String get specialistPatientDetailsNoDiagnosis => 'No diagnosis recorded';
+
+  @override
+  String get specialistPatientDetailsStartDate => 'Start date';
+
+  @override
+  String get specialistPatientDetailsEndDate => 'End date';
+
+  @override
+  String get specialistPatientDetailsAchieved => 'Achieved';
+
+  @override
+  String specialistPatientDetailsTargetValue(String value) {
+    return 'Target value: $value';
+  }
+
+  @override
+  String specialistPatientDetailsTargetDate(String date) {
+    return 'Target date: $date';
+  }
+
+  @override
+  String specialistPatientDetailsPercentComplete(int percent) {
+    return '$percent% complete';
+  }
+
+  @override
+  String get specialistPatientDetailsNoDueDate => 'No due date';
+
+  @override
+  String get specialistPatientDetailsEnterClinicalNote =>
+      'Enter clinical note...';
+
+  @override
+  String get specialistReviewExercises => 'Review Exercises';
+
+  @override
+  String get specialistAddSpecialistNote => 'Add Specialist Note';
+
+  @override
+  String get specialistViewReports => 'View Reports';
+
+  @override
+  String get specialistEditTreatmentPlan => 'Edit Treatment Plan';
+
+  @override
+  String get specialistCreateTreatmentPlan => 'Create Treatment Plan';
+
+  @override
+  String get specialistManageGoals => 'Manage Goals';
+
+  @override
+  String get specialistAssignExercise => 'Assign Exercise';
+
+  @override
+  String get specialistMessageParent => 'Message Parent';
+
+  @override
+  String get specialistFamilyPatternInsightTitle => 'Family Pattern Insight';
+
+  @override
+  String get specialistFamilyPatternLoading =>
+      'Loading family pattern insight…';
+
+  @override
+  String get specialistFamilyPatternUnavailable =>
+      'Family pattern insight is unavailable right now.';
+
+  @override
+  String get specialistFamilyPatternNoPatternsDetected =>
+      'No repeated clinical characteristics were detected in the available records.';
+
+  @override
+  String get specialistFamilyPatternClinicalSummary => 'Clinical Summary';
+
+  @override
+  String get specialistFamilyPatternPatternScore => 'Pattern Score';
+
+  @override
+  String specialistFamilyPatternScoreSemantics(int score, String caption) {
+    return 'Pattern score $score out of 100. $caption';
+  }
+
+  @override
+  String get specialistFamilyPatternScoreCaptionHigh =>
+      'High confidence based on available records.';
+
+  @override
+  String get specialistFamilyPatternScoreCaptionModerate =>
+      'Moderate repeated characteristics detected.';
+
+  @override
+  String get specialistFamilyPatternScoreCaptionLow =>
+      'Limited repeated characteristics detected.';
+
+  @override
+  String get specialistFamilyPatternEvidenceHigh => 'High Evidence';
+
+  @override
+  String get specialistFamilyPatternEvidenceModerate => 'Moderate Evidence';
+
+  @override
+  String get specialistFamilyPatternEvidenceLow => 'Low Evidence';
+
+  @override
+  String get specialistFamilyPatternEvidenceSemanticHigh =>
+      'High evidence of repeated characteristics';
+
+  @override
+  String get specialistFamilyPatternEvidenceSemanticModerate =>
+      'Moderate evidence of repeated characteristics';
+
+  @override
+  String get specialistFamilyPatternEvidenceSemanticLow =>
+      'Low evidence of repeated characteristics';
+
+  @override
+  String specialistFamilyPatternMatchedChildrenOne(int count) {
+    return '$count Child Matched';
+  }
+
+  @override
+  String specialistFamilyPatternMatchedChildrenMany(int count) {
+    return '$count Children Matched';
+  }
+
+  @override
+  String get specialistFamilyPatternMatchedAtLeastOne =>
+      'Matched at least one detected pattern.';
+
+  @override
+  String get specialistFamilyPatternShowFewerFindings => 'Show fewer findings';
+
+  @override
+  String get specialistFamilyPatternViewAllFindings => 'View all findings';
+
+  @override
+  String get specialistFamilyPatternReviewMatchedChildren =>
+      'Review Matched Children';
+
+  @override
+  String get specialistFamilyPatternSharedDiagnosis => 'Shared Diagnosis';
+
+  @override
+  String get specialistFamilyPatternSharedCaseCategory =>
+      'Shared Case Category';
+
+  @override
+  String get specialistFamilyPatternObservedDifficulties =>
+      'Observed Difficulties';
+
+  @override
+  String get specialistFamilyPatternPreviousDiagnosis => 'Previous Diagnosis';
+
+  @override
+  String get specialistFamilyPatternFamilyHistory => 'Family History';
+
+  @override
+  String get specialistFamilyPatternRepeatedCharacteristic =>
+      'Repeated Characteristic';
+
+  @override
+  String get specialistFamilyPatternDetailsTitle => 'Family Pattern Details';
+
+  @override
+  String get specialistFamilyPatternDetailsSubtitle =>
+      'Review which linked children matched each detected pattern.';
+
+  @override
+  String get specialistFamilyPatternLoadDetailsFailed =>
+      'Unable to load matched children details.';
+
+  @override
+  String get specialistFamilyPatternNoDetailedMatches =>
+      'No detailed matches are available.';
+
+  @override
+  String get specialistFamilyPatternHiddenMatchesOne =>
+      'Some matched children are not shown because you are not assigned to their records.';
+
+  @override
+  String specialistFamilyPatternHiddenMatchesMany(int count) {
+    return '$count matched children are not shown because you are not assigned to their records.';
+  }
+
+  @override
+  String get specialistFamilyPatternSharedTerms => 'Shared terms:';
+
+  @override
+  String specialistFamilyPatternMatchedValue(String value) {
+    return 'Matched value: $value';
+  }
+
+  @override
+  String get specialistFamilyPatternAddClinicalNote => 'Add Clinical Note';
+
+  @override
+  String get specialistFamilyPatternContactParent => 'Contact Parent';
+
+  @override
+  String get specialistFamilyPatternScheduleFollowUp => 'Schedule Follow-up';
 }

@@ -149,71 +149,69 @@ AuditActionPresentation auditActionPresentation(String rawAction) {
 
   return switch (category) {
     AuditActionCategory.create => AuditActionPresentation(
-        title: title,
-        badgeLabel: 'Create',
-        category: category,
-        icon: Icons.add_circle_outline_rounded,
-        color: DashboardColors.success,
-        background: DashboardColors.tealSoft,
-      ),
+      title: title,
+      badgeLabel: 'Create',
+      category: category,
+      icon: Icons.add_circle_outline_rounded,
+      color: DashboardColors.success,
+      background: DashboardColors.tealSoft,
+    ),
     AuditActionCategory.update => AuditActionPresentation(
-        title: title,
-        badgeLabel: 'Update',
-        category: category,
-        icon: Icons.edit_outlined,
-        color: DashboardColors.brandCyan,
-        background: DashboardColors.blueSoft,
-      ),
+      title: title,
+      badgeLabel: 'Update',
+      category: category,
+      icon: Icons.edit_outlined,
+      color: DashboardColors.brandCyan,
+      background: DashboardColors.blueSoft,
+    ),
     AuditActionCategory.complete => AuditActionPresentation(
-        title: title,
-        badgeLabel: 'Complete',
-        category: category,
-        icon: Icons.check_circle_outline_rounded,
-        color: DashboardColors.warning,
-        background: DashboardColors.amberSoft,
-      ),
+      title: title,
+      badgeLabel: 'Complete',
+      category: category,
+      icon: Icons.check_circle_outline_rounded,
+      color: DashboardColors.warning,
+      background: DashboardColors.amberSoft,
+    ),
     AuditActionCategory.delete => AuditActionPresentation(
-        title: title,
-        badgeLabel: 'Delete',
-        category: category,
-        icon: Icons.delete_outline_rounded,
-        color: DashboardColors.highPriority,
-        background: DashboardColors.amberSoft,
-      ),
+      title: title,
+      badgeLabel: 'Delete',
+      category: category,
+      icon: Icons.delete_outline_rounded,
+      color: DashboardColors.highPriority,
+      background: DashboardColors.amberSoft,
+    ),
     AuditActionCategory.assign => AuditActionPresentation(
-        title: title,
-        badgeLabel: 'Assign',
-        category: category,
-        icon: Icons.person_add_alt_1_outlined,
-        color: _assignPurple,
-        background: _assignPurpleSoft,
-      ),
+      title: title,
+      badgeLabel: 'Assign',
+      category: category,
+      icon: Icons.person_add_alt_1_outlined,
+      color: _assignPurple,
+      background: _assignPurpleSoft,
+    ),
     AuditActionCategory.login => AuditActionPresentation(
-        title: title,
-        badgeLabel: key.contains('logout') ? 'Logout' : 'Login',
-        category: category,
-        icon: key.contains('logout')
-            ? Icons.logout_rounded
-            : Icons.login_rounded,
-        color: DashboardColors.textSecondary,
-        background: DashboardColors.purpleSoft,
-      ),
+      title: title,
+      badgeLabel: key.contains('logout') ? 'Logout' : 'Login',
+      category: category,
+      icon: key.contains('logout') ? Icons.logout_rounded : Icons.login_rounded,
+      color: DashboardColors.textSecondary,
+      background: DashboardColors.purpleSoft,
+    ),
     AuditActionCategory.cancel => AuditActionPresentation(
-        title: title,
-        badgeLabel: 'Cancel',
-        category: category,
-        icon: Icons.cancel_outlined,
-        color: DashboardColors.warning,
-        background: const Color(0xFFFFFBEB),
-      ),
+      title: title,
+      badgeLabel: 'Cancel',
+      category: category,
+      icon: Icons.cancel_outlined,
+      color: DashboardColors.warning,
+      background: const Color(0xFFFFFBEB),
+    ),
     AuditActionCategory.other => AuditActionPresentation(
-        title: title,
-        badgeLabel: 'Activity',
-        category: category,
-        icon: Icons.history_rounded,
-        color: DashboardColors.textSecondary,
-        background: DashboardColors.purpleSoft,
-      ),
+      title: title,
+      badgeLabel: 'Activity',
+      category: category,
+      icon: Icons.history_rounded,
+      color: DashboardColors.textSecondary,
+      background: DashboardColors.purpleSoft,
+    ),
   };
 }
 
@@ -221,13 +219,19 @@ AuditActionCategory _resolveCategory(String key) {
   if (key == 'login' || key == 'logout' || key.endsWith('_login')) {
     return AuditActionCategory.login;
   }
-  if (key.contains('cancel') || key.contains('reject') || key.contains('no_show')) {
+  if (key.contains('cancel') ||
+      key.contains('reject') ||
+      key.contains('no_show')) {
     return AuditActionCategory.cancel;
   }
-  if (key.contains('complete') || key.contains('accept') || key.contains('convert')) {
+  if (key.contains('complete') ||
+      key.contains('accept') ||
+      key.contains('convert')) {
     return AuditActionCategory.complete;
   }
-  if (key.contains('delete') || key.contains('remove') || key.contains('unlink')) {
+  if (key.contains('delete') ||
+      key.contains('remove') ||
+      key.contains('unlink')) {
     return AuditActionCategory.delete;
   }
   if (key.contains('assign') ||
@@ -235,9 +239,7 @@ AuditActionCategory _resolveCategory(String key) {
       key.contains('attach')) {
     return AuditActionCategory.assign;
   }
-  if (key.contains('create') ||
-      key.contains('add') ||
-      key.endsWith('_start')) {
+  if (key.contains('create') || key.contains('add') || key.endsWith('_start')) {
     return AuditActionCategory.create;
   }
   if (key.contains('update') ||
@@ -273,9 +275,8 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
     final entityId = log.entityId?.trim();
     final hasReferenceId =
         entityId != null && entityId.isNotEmpty && looksLikeUuid(entityId);
-    final humanReference = entityId != null &&
-            entityId.isNotEmpty &&
-            !looksLikeUuid(entityId)
+    final humanReference =
+        entityId != null && entityId.isNotEmpty && !looksLikeUuid(entityId)
         ? entityId
         : null;
     final createdAt = log.createdAt?.toLocal();
@@ -377,10 +378,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                   icon: Icons.calendar_today_outlined,
                   label: dateLabel,
                 ),
-                _AuditMetaChip(
-                  icon: Icons.schedule_rounded,
-                  label: timeLabel,
-                ),
+                _AuditMetaChip(icon: Icons.schedule_rounded, label: timeLabel),
               ],
             ),
             if (hasReferenceId) ...[
@@ -462,9 +460,7 @@ class _AuditActionBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: presentation.background,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: presentation.color.withValues(alpha: 0.28),
-        ),
+        border: Border.all(color: presentation.color.withValues(alpha: 0.28)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -474,9 +470,9 @@ class _AuditActionBadge extends StatelessWidget {
           Text(
             presentation.badgeLabel,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: presentation.color,
-                ),
+              fontWeight: FontWeight.w700,
+              color: presentation.color,
+            ),
           ),
         ],
       ),
@@ -505,19 +501,16 @@ class _AuditUserAvatar extends StatelessWidget {
       child: Text(
         initials,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: DashboardColors.brandCyan,
-            ),
+          fontWeight: FontWeight.w700,
+          color: DashboardColors.brandCyan,
+        ),
       ),
     );
   }
 }
 
 class _AuditMetaChip extends StatelessWidget {
-  const _AuditMetaChip({
-    required this.icon,
-    required this.label,
-  });
+  const _AuditMetaChip({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -543,9 +536,9 @@ class _AuditMetaChip extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: DashboardColors.textSecondary,
-                  ),
+                fontWeight: FontWeight.w600,
+                color: DashboardColors.textSecondary,
+              ),
             ),
           ),
         ],

@@ -1748,6 +1748,12 @@ abstract class AppLocalizations {
   /// **'Update'**
   String get notificationTypeUpdate;
 
+  /// App bar title for the parent linked children list screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Children'**
+  String get parentChildrenScreenTitle;
+
   /// Empty state when the parent has no linked children.
   ///
   /// In en, this message translates to:
@@ -2461,6 +2467,1356 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session request'**
   String get specialistSessionRequestDefault;
+
+  /// Assigned status for cases, requests, or resources.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get statusAssigned;
+
+  /// Admin dashboard greeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome, {userName}'**
+  String adminDashboardWelcome(String userName);
+
+  /// Admin dashboard subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your rehabilitation platform from one place.'**
+  String get adminDashboardSubtitle;
+
+  /// Hint on the patient assignments shortcut card.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign specialists and link parents to patients'**
+  String get adminDashboardPatientAssignmentsHint;
+
+  /// Weekly new signup delta on the users KPI card.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} this week'**
+  String adminDashboardNewSignupsThisWeek(int count);
+
+  /// Subtitle for the new signups KPI card.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get adminDashboardThisWeek;
+
+  /// KPI label for specialist count.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialists'**
+  String get adminDashboardSpecialists;
+
+  /// KPI label for new signups this week.
+  ///
+  /// In en, this message translates to:
+  /// **'New Signups'**
+  String get adminDashboardNewSignups;
+
+  /// System analytics section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'System Analytics'**
+  String get adminDashboardSystemAnalytics;
+
+  /// Recent users section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Users'**
+  String get adminDashboardRecentUsers;
+
+  /// Empty state when no users exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found.'**
+  String get adminDashboardNoUsers;
+
+  /// Error when admin dashboard requires authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in as an admin to view this dashboard.'**
+  String get adminDashboardSignInRequired;
+
+  /// Error when the admin dashboard request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load admin dashboard: {error}'**
+  String adminDashboardLoadFailed(String error);
+
+  /// Chart legend label for system activity.
+  ///
+  /// In en, this message translates to:
+  /// **'System Activity'**
+  String get adminSystemActivity;
+
+  /// Empty state when weekly system activity has no events.
+  ///
+  /// In en, this message translates to:
+  /// **'No system activity during this period.'**
+  String get adminSystemActivityEmpty;
+
+  /// Hint below empty system activity chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Try selecting another week.'**
+  String get adminSystemActivityTryAnotherWeek;
+
+  /// Accessibility tooltip for previous week navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous week'**
+  String get adminSystemActivityPreviousWeek;
+
+  /// Accessibility tooltip for next week navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Next week'**
+  String get adminSystemActivityNextWeek;
+
+  /// Accessibility tooltip for period preset menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Select period'**
+  String get adminSystemActivitySelectPeriod;
+
+  /// System activity preset label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 2 Weeks'**
+  String get adminSystemActivityLast2Weeks;
+
+  /// System activity preset label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Month'**
+  String get adminSystemActivityLastMonth;
+
+  /// Custom week offset label for system activity.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} weeks ago'**
+  String adminSystemActivityWeeksAgo(int count);
+
+  /// Singular event count label in chart tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'event'**
+  String get adminSystemActivityEvent;
+
+  /// Plural event count label in chart tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'events'**
+  String get adminSystemActivityEvents;
+
+  /// Selected day activity tooltip on the system activity chart.
+  ///
+  /// In en, this message translates to:
+  /// **'System Activity: {count} {label}'**
+  String adminSystemActivityTooltip(int count, String label);
+
+  /// Error when weekly system activity fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load system activity. Please try again.'**
+  String get adminSystemActivityLoadFailed;
+
+  /// Search hint on the admin users screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, email, or role'**
+  String get adminUsersSearchHint;
+
+  /// Error when the admin users request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load users: {error}'**
+  String adminUsersLoadFailed(String error);
+
+  /// Confirmation dialog title for deactivating a user.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate User'**
+  String get adminUsersDeactivateTitle;
+
+  /// Confirmation dialog title for activating a user.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate User'**
+  String get adminUsersActivateTitle;
+
+  /// Confirmation message for deactivating a user.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to deactivate this user? They may lose access to the platform.'**
+  String get adminUsersDeactivateConfirm;
+
+  /// Confirmation message for activating a user.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to activate this user?'**
+  String get adminUsersActivateConfirm;
+
+  /// Error when toggling user active status fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update user status: {error}'**
+  String adminUsersUpdateStatusFailed(String error);
+
+  /// Snack bar after deleting a user.
+  ///
+  /// In en, this message translates to:
+  /// **'User deleted successfully.'**
+  String get adminUsersDeletedSuccess;
+
+  /// Error when saving a user fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save user: {error}'**
+  String adminUsersSaveFailed(String error);
+
+  /// Activate a user or resource.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get adminActivate;
+
+  /// Deactivate a user or resource.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get adminDeactivate;
+
+  /// Search hint on the admin patients screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search patients or condition'**
+  String get adminPatientsSearchHint;
+
+  /// Condition filter label on the admin patients screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by condition'**
+  String get adminPatientsFilterCondition;
+
+  /// Condition filter option for all conditions.
+  ///
+  /// In en, this message translates to:
+  /// **'All conditions'**
+  String get adminPatientsAllConditions;
+
+  /// Empty state when no patients exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No patients found.'**
+  String get adminPatientsNoPatients;
+
+  /// Error when the admin patients request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load patients: {error}'**
+  String adminPatientsLoadFailed(String error);
+
+  /// Tooltip for editing a patient from the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Patient'**
+  String get adminPatientsEditPatient;
+
+  /// Label for the previous session section on a patient card.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Session'**
+  String get adminPatientsPreviousSession;
+
+  /// Empty previous session label on a patient card.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous session'**
+  String get adminPatientsNoPreviousSession;
+
+  /// Fallback when a session date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown date'**
+  String get adminPatientsUnknownDate;
+
+  /// Search hint on the admin sessions screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search patient or specialist'**
+  String get adminSessionsSearchHint;
+
+  /// Status filter label on the admin sessions screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by status'**
+  String get adminSessionsFilterStatus;
+
+  /// Status filter option for all session statuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All statuses'**
+  String get adminSessionsAllStatuses;
+
+  /// Empty state when no sessions exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions found.'**
+  String get adminSessionsNoSessions;
+
+  /// Error when the admin sessions request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load sessions: {error}'**
+  String adminSessionsLoadFailed(String error);
+
+  /// Specialist name label on a session card.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist: {name}'**
+  String adminSessionsSpecialistLabel(String name);
+
+  /// Session duration label on a session card.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {minutes} min'**
+  String adminSessionsDurationMinutes(int minutes);
+
+  /// Dialog title for completing a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Session'**
+  String get adminSessionsCompleteTitle;
+
+  /// Dialog message for completing a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to mark this session as completed?'**
+  String get adminSessionsCompleteMessage;
+
+  /// Confirm button for completing a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get adminSessionsCompleteConfirm;
+
+  /// Snack bar after completing a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Session marked as completed.'**
+  String get adminSessionsCompleteSuccess;
+
+  /// Dialog title for cancelling a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Session'**
+  String get adminSessionsCancelTitle;
+
+  /// Dialog message for cancelling a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this session?'**
+  String get adminSessionsCancelMessage;
+
+  /// Confirm button for cancelling a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Session'**
+  String get adminSessionsCancelConfirm;
+
+  /// Snack bar after cancelling a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Session cancelled.'**
+  String get adminSessionsCancelSuccess;
+
+  /// Dialog title for marking a session as no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as No Show'**
+  String get adminSessionsNoShowTitle;
+
+  /// Dialog message for marking a session as no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to mark this session as no show?'**
+  String get adminSessionsNoShowMessage;
+
+  /// Confirm button for marking a session as no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark No Show'**
+  String get adminSessionsNoShowConfirm;
+
+  /// Snack bar after marking a session as no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Session marked as no-show.'**
+  String get adminSessionsNoShowSuccess;
+
+  /// Error when updating a session fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update session: {error}'**
+  String adminSessionsUpdateFailed(String error);
+
+  /// Error when the AI Center request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load AI Center: {error}'**
+  String adminAiLoadFailed(String error);
+
+  /// AI Center insights section title.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Insights'**
+  String get adminAiInsights;
+
+  /// AI Center insights section subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech analysis, recommendations, and clinical reports'**
+  String get adminAiInsightsSubtitle;
+
+  /// Metric label for speech analyses count.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech Analyses'**
+  String get adminAiSpeechAnalyses;
+
+  /// Average speech score subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg score {score}'**
+  String adminAiAvgScore(String score);
+
+  /// Metric label for AI recommendations count.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Recommendations'**
+  String get adminAiRecommendations;
+
+  /// Metric label for patients needing attention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Attention'**
+  String get adminAiNeedsAttention;
+
+  /// Pending reviews subtitle on the needs attention metric.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending reviews'**
+  String adminAiPendingReviews(int count);
+
+  /// Section heading for patients flagged with low scores.
+  ///
+  /// In en, this message translates to:
+  /// **'Patients Needing Attention'**
+  String get adminAiPatientsNeedingAttention;
+
+  /// Empty state when no patients need attention.
+  ///
+  /// In en, this message translates to:
+  /// **'No patients flagged for low scores.'**
+  String get adminAiNoPatientsFlagged;
+
+  /// Section heading for latest speech analyses.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Speech Analyses'**
+  String get adminAiLatestSpeechAnalyses;
+
+  /// Section heading for latest AI recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest AI Recommendations'**
+  String get adminAiLatestRecommendations;
+
+  /// Section heading for latest AI reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest AI Reports'**
+  String get adminAiLatestReports;
+
+  /// Empty state for AI Center record lists.
+  ///
+  /// In en, this message translates to:
+  /// **'No records yet.'**
+  String get adminAiNoRecords;
+
+  /// Speech score label on a patient attention card.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech {score}'**
+  String adminAiSpeechScore(String score);
+
+  /// Error when audit logs fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load audit logs: {error}'**
+  String adminAuditLoadFailed(String error);
+
+  /// Audit log user filter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by user'**
+  String get adminAuditFilterByUser;
+
+  /// Audit log filter option for all users.
+  ///
+  /// In en, this message translates to:
+  /// **'All users'**
+  String get adminAuditAllUsers;
+
+  /// Audit log action filter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by action'**
+  String get adminAuditFilterByAction;
+
+  /// Audit log filter option for all actions.
+  ///
+  /// In en, this message translates to:
+  /// **'All actions'**
+  String get adminAuditAllActions;
+
+  /// Audit log entity filter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by entity'**
+  String get adminAuditFilterByEntity;
+
+  /// Audit log filter option for all entities.
+  ///
+  /// In en, this message translates to:
+  /// **'All entities'**
+  String get adminAuditAllEntities;
+
+  /// Date range start button label.
+  ///
+  /// In en, this message translates to:
+  /// **'From date'**
+  String get adminAuditFromDate;
+
+  /// Date range end button label.
+  ///
+  /// In en, this message translates to:
+  /// **'To date'**
+  String get adminAuditToDate;
+
+  /// Selected start date button label.
+  ///
+  /// In en, this message translates to:
+  /// **'From {date}'**
+  String adminAuditFromDateValue(String date);
+
+  /// Selected end date button label.
+  ///
+  /// In en, this message translates to:
+  /// **'To {date}'**
+  String adminAuditToDateValue(String date);
+
+  /// Empty state when no audit logs match filters.
+  ///
+  /// In en, this message translates to:
+  /// **'No audit logs found.'**
+  String get adminAuditNoLogs;
+
+  /// Dialog title for unlinking a specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink Specialist'**
+  String get adminAssignmentsUnlinkSpecialist;
+
+  /// Dialog title for unlinking a parent.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink Parent'**
+  String get adminAssignmentsUnlinkParent;
+
+  /// Confirmation message for unlinking a specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to unlink {name} from this patient?'**
+  String adminAssignmentsUnlinkSpecialistConfirm(String name);
+
+  /// Confirmation message for unlinking a parent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to unlink {name} from this patient?'**
+  String adminAssignmentsUnlinkParentConfirm(String name);
+
+  /// Snack bar after unlinking a specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist unlinked successfully.'**
+  String get adminAssignmentsSpecialistUnlinked;
+
+  /// Snack bar after unlinking a parent.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent unlinked successfully.'**
+  String get adminAssignmentsParentUnlinked;
+
+  /// Section heading for assigning a specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Specialist'**
+  String get adminAssignmentsAssignSpecialist;
+
+  /// Section heading for linking a parent.
+  ///
+  /// In en, this message translates to:
+  /// **'Link Parent'**
+  String get adminAssignmentsLinkParent;
+
+  /// Checkbox label for primary specialist assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary specialist'**
+  String get adminAssignmentsPrimarySpecialist;
+
+  /// Submit button for specialist assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Specialist to Patient'**
+  String get adminAssignmentsAssignSpecialistAction;
+
+  /// Submit button for parent linking.
+  ///
+  /// In en, this message translates to:
+  /// **'Link Parent to Patient'**
+  String get adminAssignmentsLinkParentAction;
+
+  /// Hint explaining how to change assignments.
+  ///
+  /// In en, this message translates to:
+  /// **'To change an assignment, unlink the current specialist or parent, then assign or link the new one.'**
+  String get adminAssignmentsChangeHint;
+
+  /// Section heading for assigned specialists list.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Specialists'**
+  String get adminAssignmentsAssignedSpecialists;
+
+  /// Section heading for linked parents list.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked Parents'**
+  String get adminAssignmentsLinkedParents;
+
+  /// Loading state for assignment relationships.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading relationships...'**
+  String get adminAssignmentsLoadingRelationships;
+
+  /// Empty state when no patient is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a patient to view assignments.'**
+  String get adminAssignmentsSelectPatient;
+
+  /// Empty state when a patient has no assigned specialists.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialists assigned to this patient yet.'**
+  String get adminAssignmentsNoSpecialistsAssigned;
+
+  /// Empty state when a patient has no linked parents.
+  ///
+  /// In en, this message translates to:
+  /// **'No parents linked to this patient yet.'**
+  String get adminAssignmentsNoParentsLinked;
+
+  /// Empty dropdown hint when no patients exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No patients available'**
+  String get adminAssignmentsNoPatients;
+
+  /// Empty dropdown hint when no specialists exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialists available'**
+  String get adminAssignmentsNoSpecialists;
+
+  /// Empty dropdown hint when no parent accounts exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No parent accounts available'**
+  String get adminAssignmentsNoParents;
+
+  /// Relationship dropdown label.
+  ///
+  /// In en, this message translates to:
+  /// **'Relationship'**
+  String get adminAssignmentsRelationship;
+
+  /// Empty relationship dropdown hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select relationship'**
+  String get adminAssignmentsSelectRelationship;
+
+  /// Checkbox label for primary parent contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary contact'**
+  String get adminAssignmentsPrimaryContact;
+
+  /// Tooltip for unlinking a specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink specialist'**
+  String get adminAssignmentsUnlinkSpecialistTooltip;
+
+  /// Tooltip for unlinking a parent.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink parent'**
+  String get adminAssignmentsUnlinkParentTooltip;
+
+  /// Fallback relationship label.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian'**
+  String get adminAssignmentsGuardian;
+
+  /// Unlink action button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink'**
+  String get adminUnlink;
+
+  /// Intro text on the admin case requests inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Review preliminary child case requests and track their current status.'**
+  String get adminCaseRequestsDescription;
+
+  /// Search field label on the case requests inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by child name'**
+  String get adminCaseRequestsSearchLabel;
+
+  /// Search field hint on the case requests inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter child name'**
+  String get adminCaseRequestsSearchHint;
+
+  /// Tooltip for clearing case request search.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get adminCaseRequestsClearSearch;
+
+  /// Button to clear case request filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get adminCaseRequestsClearFilters;
+
+  /// Empty state when filters hide all case requests.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests match the selected filters.'**
+  String get adminCaseRequestsNoMatch;
+
+  /// Empty state when no case requests exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No case requests found.'**
+  String get adminCaseRequestsEmpty;
+
+  /// Status filter option for all case request statuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get adminCaseRequestsAllStatuses;
+
+  /// Category filter option for all case categories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get adminCaseRequestsAllCategories;
+
+  /// Case request status when converted to a patient profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Converted to Patient'**
+  String get adminCaseRequestsConvertedToPatient;
+
+  /// Tooltip for clearing active filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get adminClearFilters;
+
+  /// Generic status field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get adminFieldStatus;
+
+  /// Generic category field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get adminFieldCategory;
+
+  /// Snack bar after a successful profile photo upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo updated successfully.'**
+  String get adminProfilePhotoUpdated;
+
+  /// Fallback title for an AI Center list item.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get adminRecordFallback;
+
+  /// Shown while opening a conversation or linked screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening...'**
+  String get commonOpening;
+
+  /// Exercise submission has been reviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed'**
+  String get statusReviewed;
+
+  /// Exercise submission needs another attempt.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs retry'**
+  String get statusNeedsRetry;
+
+  /// Short-term treatment goal label.
+  ///
+  /// In en, this message translates to:
+  /// **'Short-term'**
+  String get goalTermShortTerm;
+
+  /// Long-term treatment goal label.
+  ///
+  /// In en, this message translates to:
+  /// **'Long-term'**
+  String get goalTermLongTerm;
+
+  /// Audio media type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get mediaTypeAudio;
+
+  /// Video media type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get mediaTypeVideo;
+
+  /// Image media type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get mediaTypeImage;
+
+  /// Fallback app bar title on the specialist patient details screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Details'**
+  String get specialistPatientDetailsTitle;
+
+  /// Snack bar after saving a specialist note.
+  ///
+  /// In en, this message translates to:
+  /// **'Note saved'**
+  String get specialistPatientDetailsNoteSaved;
+
+  /// Snack bar when messaging a parent without a linked account.
+  ///
+  /// In en, this message translates to:
+  /// **'No parent is linked to this patient yet.'**
+  String get specialistPatientDetailsNoParentLinked;
+
+  /// Snack bar when assign exercise is blocked without an active plan.
+  ///
+  /// In en, this message translates to:
+  /// **'An active treatment plan is required before assigning an exercise.'**
+  String get specialistPatientDetailsActivePlanRequired;
+
+  /// Empty state when patient details cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient not found.'**
+  String get specialistPatientDetailsNotFound;
+
+  /// Snack bar when edit treatment plan is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No treatment plan found for this patient.'**
+  String get specialistPatientDetailsNoTreatmentPlan;
+
+  /// Error when patient details fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load patient details: {error}'**
+  String specialistPatientDetailsLoadFailed(String error);
+
+  /// Error when saving a specialist note fails with details.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save note: {error}'**
+  String specialistPatientDetailsSaveNoteFailed(String error);
+
+  /// Generic error when saving a specialist note fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save note'**
+  String get specialistPatientDetailsSaveNoteFailedGeneric;
+
+  /// Error when updating patient profile fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update patient'**
+  String get specialistPatientDetailsUpdateFailed;
+
+  /// Section heading for patient quick stats grid.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Statistics'**
+  String get specialistPatientDetailsQuickStatistics;
+
+  /// Snack bar when goals section scroll target is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals section is not available yet. Pull to refresh and try again.'**
+  String get specialistPatientDetailsGoalsSectionUnavailable;
+
+  /// Snack bar when assigned exercises section scroll target is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Exercises section is not available yet. Pull to refresh and try again.'**
+  String get specialistPatientDetailsAssignedExercisesSectionUnavailable;
+
+  /// Snack bar when submissions section scroll target is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Submissions section is not available yet. Pull to refresh and try again.'**
+  String get specialistPatientDetailsSubmissionsSectionUnavailable;
+
+  /// Snack bar when reports navigation is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports are unavailable right now.'**
+  String get specialistPatientDetailsReportsUnavailable;
+
+  /// Empty state when patient has no treatment plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No treatment plan assigned yet.'**
+  String get specialistPatientDetailsNoTreatmentPlanYet;
+
+  /// Empty state when patient has no goals.
+  ///
+  /// In en, this message translates to:
+  /// **'No goals defined for this patient.'**
+  String get specialistPatientDetailsNoGoals;
+
+  /// Empty state when patient has no assigned exercises.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises assigned yet.'**
+  String get specialistPatientDetailsNoExercises;
+
+  /// Section heading for recent exercise submissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Exercise Submissions'**
+  String get specialistPatientDetailsRecentSubmissions;
+
+  /// Empty state when patient has no submissions.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercise submissions yet.'**
+  String get specialistPatientDetailsNoSubmissions;
+
+  /// Section heading for specialist notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Specialist Notes'**
+  String get specialistPatientDetailsLatestNotes;
+
+  /// Empty state when patient has no specialist notes.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialist notes yet.'**
+  String get specialistPatientDetailsNoNotes;
+
+  /// Quick stat label for active goals count.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Goals'**
+  String get specialistPatientDetailsActiveGoals;
+
+  /// Section heading and quick stat label for assigned exercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Exercises'**
+  String get specialistPatientDetailsAssignedExercises;
+
+  /// Patient header subtitle with age and diagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Age {age} • {diagnosis}'**
+  String specialistPatientDetailsAgeDiagnosis(String age, String diagnosis);
+
+  /// Fallback when patient has no recorded diagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'No diagnosis recorded'**
+  String get specialistPatientDetailsNoDiagnosis;
+
+  /// Treatment plan start date label.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get specialistPatientDetailsStartDate;
+
+  /// Treatment plan end date label.
+  ///
+  /// In en, this message translates to:
+  /// **'End date'**
+  String get specialistPatientDetailsEndDate;
+
+  /// Badge when a treatment goal is achieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Achieved'**
+  String get specialistPatientDetailsAchieved;
+
+  /// Goal target value label.
+  ///
+  /// In en, this message translates to:
+  /// **'Target value: {value}'**
+  String specialistPatientDetailsTargetValue(String value);
+
+  /// Goal target date label.
+  ///
+  /// In en, this message translates to:
+  /// **'Target date: {date}'**
+  String specialistPatientDetailsTargetDate(String date);
+
+  /// Goal completion percentage label.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% complete'**
+  String specialistPatientDetailsPercentComplete(int percent);
+
+  /// Fallback when an assigned exercise has no due date.
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get specialistPatientDetailsNoDueDate;
+
+  /// Hint text in the add specialist note dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter clinical note...'**
+  String get specialistPatientDetailsEnterClinicalNote;
+
+  /// Action to review patient exercise submissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Exercises'**
+  String get specialistReviewExercises;
+
+  /// Action and dialog title to add a specialist note.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Specialist Note'**
+  String get specialistAddSpecialistNote;
+
+  /// Action to open patient reports.
+  ///
+  /// In en, this message translates to:
+  /// **'View Reports'**
+  String get specialistViewReports;
+
+  /// Action to edit an existing treatment plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Treatment Plan'**
+  String get specialistEditTreatmentPlan;
+
+  /// Action to create a new treatment plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Treatment Plan'**
+  String get specialistCreateTreatmentPlan;
+
+  /// Action to manage patient treatment goals.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Goals'**
+  String get specialistManageGoals;
+
+  /// Action to assign an exercise to a patient.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Exercise'**
+  String get specialistAssignExercise;
+
+  /// Action to open a conversation with the patient's parent.
+  ///
+  /// In en, this message translates to:
+  /// **'Message Parent'**
+  String get specialistMessageParent;
+
+  /// Title for the family pattern insight card.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Pattern Insight'**
+  String get specialistFamilyPatternInsightTitle;
+
+  /// Loading state for family pattern insight.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading family pattern insight…'**
+  String get specialistFamilyPatternLoading;
+
+  /// Retry card message when family pattern insight fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Family pattern insight is unavailable right now.'**
+  String get specialistFamilyPatternUnavailable;
+
+  /// Neutral message when no family patterns are found.
+  ///
+  /// In en, this message translates to:
+  /// **'No repeated clinical characteristics were detected in the available records.'**
+  String get specialistFamilyPatternNoPatternsDetected;
+
+  /// Heading above the AI-generated family pattern summary box.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Summary'**
+  String get specialistFamilyPatternClinicalSummary;
+
+  /// Label for the family pattern score meter.
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern Score'**
+  String get specialistFamilyPatternPatternScore;
+
+  /// Accessibility label for the family pattern score meter.
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern score {score} out of 100. {caption}'**
+  String specialistFamilyPatternScoreSemantics(int score, String caption);
+
+  /// Caption for high family pattern evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'High confidence based on available records.'**
+  String get specialistFamilyPatternScoreCaptionHigh;
+
+  /// Caption for moderate family pattern evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate repeated characteristics detected.'**
+  String get specialistFamilyPatternScoreCaptionModerate;
+
+  /// Caption for low family pattern evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited repeated characteristics detected.'**
+  String get specialistFamilyPatternScoreCaptionLow;
+
+  /// Badge for high family pattern evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'High Evidence'**
+  String get specialistFamilyPatternEvidenceHigh;
+
+  /// Badge for moderate family pattern evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate Evidence'**
+  String get specialistFamilyPatternEvidenceModerate;
+
+  /// Badge for low family pattern evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Evidence'**
+  String get specialistFamilyPatternEvidenceLow;
+
+  /// Accessibility label for high evidence badge.
+  ///
+  /// In en, this message translates to:
+  /// **'High evidence of repeated characteristics'**
+  String get specialistFamilyPatternEvidenceSemanticHigh;
+
+  /// Accessibility label for moderate evidence badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate evidence of repeated characteristics'**
+  String get specialistFamilyPatternEvidenceSemanticModerate;
+
+  /// Accessibility label for low evidence badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Low evidence of repeated characteristics'**
+  String get specialistFamilyPatternEvidenceSemanticLow;
+
+  /// Badge when one linked child matched a pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Child Matched'**
+  String specialistFamilyPatternMatchedChildrenOne(int count);
+
+  /// Badge when multiple linked children matched a pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Children Matched'**
+  String specialistFamilyPatternMatchedChildrenMany(int count);
+
+  /// Helper text under matched children badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Matched at least one detected pattern.'**
+  String get specialistFamilyPatternMatchedAtLeastOne;
+
+  /// Collapse expanded family pattern findings.
+  ///
+  /// In en, this message translates to:
+  /// **'Show fewer findings'**
+  String get specialistFamilyPatternShowFewerFindings;
+
+  /// Expand hidden family pattern findings.
+  ///
+  /// In en, this message translates to:
+  /// **'View all findings'**
+  String get specialistFamilyPatternViewAllFindings;
+
+  /// Action to open family pattern details sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Matched Children'**
+  String get specialistFamilyPatternReviewMatchedChildren;
+
+  /// Family pattern type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Diagnosis'**
+  String get specialistFamilyPatternSharedDiagnosis;
+
+  /// Family pattern type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Case Category'**
+  String get specialistFamilyPatternSharedCaseCategory;
+
+  /// Family pattern type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed Difficulties'**
+  String get specialistFamilyPatternObservedDifficulties;
+
+  /// Family pattern type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Diagnosis'**
+  String get specialistFamilyPatternPreviousDiagnosis;
+
+  /// Family pattern type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Family History'**
+  String get specialistFamilyPatternFamilyHistory;
+
+  /// Fallback family pattern type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated Characteristic'**
+  String get specialistFamilyPatternRepeatedCharacteristic;
+
+  /// Title for the family pattern details bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Pattern Details'**
+  String get specialistFamilyPatternDetailsTitle;
+
+  /// Subtitle for the family pattern details bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Review which linked children matched each detected pattern.'**
+  String get specialistFamilyPatternDetailsSubtitle;
+
+  /// Error when family pattern details fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load matched children details.'**
+  String get specialistFamilyPatternLoadDetailsFailed;
+
+  /// Empty state in family pattern details sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'No detailed matches are available.'**
+  String get specialistFamilyPatternNoDetailedMatches;
+
+  /// Notice when one matched child is hidden due to access.
+  ///
+  /// In en, this message translates to:
+  /// **'Some matched children are not shown because you are not assigned to their records.'**
+  String get specialistFamilyPatternHiddenMatchesOne;
+
+  /// Notice when multiple matched children are hidden due to access.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} matched children are not shown because you are not assigned to their records.'**
+  String specialistFamilyPatternHiddenMatchesMany(int count);
+
+  /// Label above overlapping keyword chips.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared terms:'**
+  String get specialistFamilyPatternSharedTerms;
+
+  /// Label for a matched value on a child row.
+  ///
+  /// In en, this message translates to:
+  /// **'Matched value: {value}'**
+  String specialistFamilyPatternMatchedValue(String value);
+
+  /// Action to add a clinical note from family pattern details.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Clinical Note'**
+  String get specialistFamilyPatternAddClinicalNote;
+
+  /// Action to message the parent from family pattern details.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Parent'**
+  String get specialistFamilyPatternContactParent;
+
+  /// Action to schedule a follow-up session from family pattern details.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule Follow-up'**
+  String get specialistFamilyPatternScheduleFollowUp;
 }
 
 class _AppLocalizationsDelegate

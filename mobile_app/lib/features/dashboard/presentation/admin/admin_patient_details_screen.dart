@@ -48,19 +48,22 @@ class _AdminPatientDetailsScreenState
       builder: (_) => _EditPatientDialog(
         patient: patient,
         messenger: messenger,
-        onSave: ({
-          required String fullName,
-          DateTime? dateOfBirth,
-          String? gender,
-        }) {
-          return ref
-              .read(specialistPatientDetailsProvider(widget.patientId).notifier)
-              .updatePatient(
-                fullName: fullName,
-                dateOfBirth: dateOfBirth,
-                gender: gender,
-              );
-        },
+        onSave:
+            ({
+              required String fullName,
+              DateTime? dateOfBirth,
+              String? gender,
+            }) {
+              return ref
+                  .read(
+                    specialistPatientDetailsProvider(widget.patientId).notifier,
+                  )
+                  .updatePatient(
+                    fullName: fullName,
+                    dateOfBirth: dateOfBirth,
+                    gender: gender,
+                  );
+            },
       ),
     );
 
@@ -177,7 +180,8 @@ class _EditPatientDialog extends StatefulWidget {
     required String fullName,
     DateTime? dateOfBirth,
     String? gender,
-  }) onSave;
+  })
+  onSave;
 
   @override
   State<_EditPatientDialog> createState() => _EditPatientDialogState();

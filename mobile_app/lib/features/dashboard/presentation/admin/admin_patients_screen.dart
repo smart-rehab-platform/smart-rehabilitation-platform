@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../case_intake/models/case_category_model.dart';
 import '../../../case_intake/providers/case_categories_provider.dart';
 import '../../data/admin_features_repository.dart';
@@ -14,6 +15,7 @@ import '../../widgets/admin_status_badge.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
+import 'admin_scoped_localization_utils.dart';
 
 class AdminPatientsScreen extends ConsumerStatefulWidget {
   const AdminPatientsScreen({super.key});
@@ -103,6 +105,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final categoriesState = ref.watch(caseCategoriesProvider);
     final conditionOptions = _buildConditionFilterOptions(
       categoriesState.categories,
@@ -114,11 +117,11 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
     final filteredPatients = _filteredPatients(effectiveConditionFilter);
 
     return AdminPageScaffold(
-      title: 'Patients',
+      title: l10n.navPatients,
       currentNav: DashboardNavItem.patients,
       actions: [
         IconButton(
-          tooltip: 'Patient Assignments',
+          tooltip: l10n.navPatientAssignments,
           onPressed: () => context.push(AppRoutes.adminPatientAssignments),
           icon: const Icon(Icons.assignment_ind_outlined, color: Colors.white),
         ),
@@ -131,9 +134,12 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (_error != null)
-                    AdminErrorCard(message: _error!, onRetry: _load),
+                    AdminErrorCard(
+                      message: mapAdminPatientsError(l10n, _error!),
+                      onRetry: _load,
+                    ),
                   AdminSearchField(
-                    hintText: 'Search patients or condition',
+                    hintText: l10n.adminPatientsSearchHint,
                     onChanged: (value) => setState(() => _searchQuery = value),
                   ),
                   SizedBox(height: context.dashSpacing * 0.75),
@@ -144,12 +150,12 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                     )
                   else
                     AdminFilterDropdown<String?>(
-                      label: 'Filter by condition',
+                      label: l10n.adminPatientsFilterCondition,
                       value: effectiveConditionFilter,
                       options: [
-                        const AdminFilterOption<String?>(
+                        AdminFilterOption<String?>(
                           value: null,
-                          label: 'All conditions',
+                          label: l10n.adminPatientsAllConditions,
                         ),
                         ...conditionOptions.map(
                           (condition) => AdminFilterOption<String?>(
@@ -163,7 +169,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                     ),
                   SizedBox(height: context.dashSpacing),
                   if (filteredPatients.isEmpty)
-                    const AdminEmptyCard(message: 'No patients found.')
+                    AdminEmptyCard(message: l10n.adminPatientsNoPatients)
                   else
                     ...filteredPatients.map(
                       (patient) => Padding(
@@ -239,7 +245,10 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                                       ),
                                                 ),
                                                 Text(
-                                                  patient.gender!,
+                                                  localizedAdminGender(
+                                                    l10n,
+                                                    patient.gender,
+                                                  ),
                                                   style: theme
                                                       .textTheme
                                                       .labelSmall
@@ -264,7 +273,10 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                             )
                                           else
                                             Text(
-                                              patient.gender!,
+                                              localizedAdminGender(
+                                                l10n,
+                                                patient.gender,
+                                              ),
                                               style: theme.textTheme.labelSmall
                                                   ?.copyWith(
                                                     color: DashboardColors
@@ -277,7 +289,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                     ),
                                   ),
                                   IconButton(
-                                    tooltip: 'Edit Patient',
+                                    tooltip: l10n.adminPatientsEditPatient,
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(
                                       minWidth: 36,
@@ -301,7 +313,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                               ),
                               SizedBox(height: context.dashSpacing * 0.25),
                               Text(
-                                'Previous Session',
+                                l10n.adminPatientsPreviousSession,
                                 style: theme.textTheme.labelMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: DashboardColors.textPrimary,
@@ -311,7 +323,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                               if (patient.previousSession == null ||
                                   patient.previousSession!.id.isEmpty)
                                 Text(
-                                  'No previous session',
+                                  l10n.adminPatientsNoPreviousSession,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: DashboardColors.textMuted,
                                   ),
@@ -331,6 +343,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
                                 Align(
                                   alignment: AlignmentDirectional.centerStart,
                                   child: AdminStatusBadge.sessionStatus(
+                                    context,
                                     patient.previousSession!.status,
                                     isPastScheduled:
                                         _isPastScheduledNotCompleted(
@@ -371,7 +384,7 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
 
   String _formatDateTime(DateTime? date) {
     if (date == null) {
-      return 'Unknown date';
+      return AppLocalizations.of(context)!.adminPatientsUnknownDate;
     }
 
     final local = date.toLocal();

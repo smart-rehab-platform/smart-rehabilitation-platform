@@ -3,18 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_status_badge.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/admin_ui_components.dart';
+import 'admin_scoped_localization_utils.dart';
 
 class AdminSessionsScreen extends ConsumerStatefulWidget {
   const AdminSessionsScreen({super.key});
 
   @override
-  ConsumerState<AdminSessionsScreen> createState() => _AdminSessionsScreenState();
+  ConsumerState<AdminSessionsScreen> createState() =>
+      _AdminSessionsScreenState();
 }
 
 class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
@@ -58,10 +61,12 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
   List<AdminSessionRecord> get _filteredSessions {
     final query = _searchQuery.trim().toLowerCase();
     return _sessions.where((session) {
-      final matchesSearch = query.isEmpty ||
+      final matchesSearch =
+          query.isEmpty ||
           session.patientName.toLowerCase().contains(query) ||
           session.specialistName.toLowerCase().contains(query);
-      final matchesStatus = _statusFilter == null ||
+      final matchesStatus =
+          _statusFilter == null ||
           _statusFilter!.isEmpty ||
           (session.status ?? '').toLowerCase() == _statusFilter!.toLowerCase();
       return matchesSearch && matchesStatus;
@@ -144,7 +149,9 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                       if (isScheduled) ...[
                         DropdownButtonFormField<String>(
                           initialValue: selectedStatus,
-                          decoration: const InputDecoration(labelText: 'Status'),
+                          decoration: const InputDecoration(
+                            labelText: 'Status',
+                          ),
                           items: const [
                             DropdownMenuItem(
                               value: 'scheduled',
@@ -178,15 +185,16 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                           ),
                       ] else ...[
                         InputDecorator(
-                          decoration: const InputDecoration(labelText: 'Status'),
+                          decoration: const InputDecoration(
+                            labelText: 'Status',
+                          ),
                           child: Text(_formatStatusLabel(session.status)),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Status is final and cannot be changed.',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: DashboardColors.textSecondary,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: DashboardColors.textSecondary),
                         ),
                       ],
                     ],
@@ -212,9 +220,16 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
         return;
       }
 
-      final scheduledAt = _parseDateTime(dateController.text, timeController.text);
+      final scheduledAt = _parseDateTime(
+        dateController.text,
+        timeController.text,
+      );
       if (scheduledAt == null) {
-        _showSnack('Invalid date or time.', isError: true, messenger: messenger);
+        _showSnack(
+          'Invalid date or time.',
+          isError: true,
+          messenger: messenger,
+        );
         return;
       }
 
@@ -298,10 +313,10 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final repo = ref.read(adminFeaturesRepositoryProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return AdminPageScaffold(
-      title: 'Sessions',
+      title: l10n.navSessions,
       showBackButton: true,
       showBottomNav: false,
       body: _isLoading
@@ -312,31 +327,53 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (_error != null)
-                    AdminErrorCard(message: _error!, onRetry: _load),
+                    AdminErrorCard(
+                      message: mapAdminSessionsError(l10n, _error!),
+                      onRetry: _load,
+                    ),
                   AdminSearchField(
-                    hintText: 'Search patient or specialist',
+                    hintText: l10n.adminSessionsSearchHint,
                     onChanged: (value) => setState(() => _searchQuery = value),
                   ),
                   SizedBox(height: context.dashSpacing * 0.75),
                   DropdownButtonFormField<String?>(
                     initialValue: _statusFilter,
-                    decoration: const InputDecoration(labelText: 'Filter by status'),
-                    items: const [
-                      DropdownMenuItem<String?>(value: null, child: Text('All statuses')),
-                      DropdownMenuItem(value: 'scheduled', child: Text('Scheduled')),
-                      DropdownMenuItem(value: 'completed', child: Text('Completed')),
-                      DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
-                      DropdownMenuItem(value: 'no_show', child: Text('No Show')),
+                    decoration: InputDecoration(
+                      labelText: l10n.adminSessionsFilterStatus,
+                    ),
+                    items: [
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text(l10n.adminSessionsAllStatuses),
+                      ),
+                      DropdownMenuItem(
+                        value: 'scheduled',
+                        child: Text(l10n.statusScheduled),
+                      ),
+                      DropdownMenuItem(
+                        value: 'completed',
+                        child: Text(l10n.statusCompleted),
+                      ),
+                      DropdownMenuItem(
+                        value: 'cancelled',
+                        child: Text(l10n.statusCancelled),
+                      ),
+                      DropdownMenuItem(
+                        value: 'no_show',
+                        child: Text(l10n.statusNoShow),
+                      ),
                     ],
                     onChanged: (value) => setState(() => _statusFilter = value),
                   ),
                   SizedBox(height: context.dashSpacing),
                   if (_filteredSessions.isEmpty)
-                    const AdminEmptyCard(message: 'No sessions found.')
+                    AdminEmptyCard(message: l10n.adminSessionsNoSessions)
                   else
                     ..._filteredSessions.map(
                       (session) => Padding(
-                        padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
+                        padding: EdgeInsets.only(
+                          bottom: context.dashSpacing * 0.6,
+                        ),
                         child: AdminSurfaceCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,23 +386,28 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                                       session.patientName,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Flexible(
                                     child: AdminStatusBadge.sessionStatus(
+                                      context,
                                       session.status,
-                                      isPastScheduled: _isPastScheduledNotCompleted(session),
+                                      isPastScheduled:
+                                          _isPastScheduledNotCompleted(session),
                                     ),
                                   ),
                                 ],
                               ),
                               SizedBox(height: context.dashSpacing * 0.25),
                               Text(
-                                'Specialist: ${session.specialistName}',
+                                l10n.adminSessionsSpecialistLabel(
+                                  session.specialistName,
+                                ),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: DashboardColors.textSecondary,
                                 ),
@@ -376,7 +418,9 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                               ),
                               if (session.durationMinutes != null)
                                 Text(
-                                  'Duration: ${session.durationMinutes} min',
+                                  l10n.adminSessionsDurationMinutes(
+                                    session.durationMinutes!,
+                                  ),
                                   style: theme.textTheme.bodySmall,
                                 ),
                               if (session.locationOrLink != null &&
@@ -396,49 +440,67 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                                 children: [
                                   OutlinedButton.icon(
                                     onPressed: () => _openEditDialog(session),
-                                    icon: const Icon(Icons.edit_outlined, size: 18),
-                                    label: const Text('Edit'),
+                                    icon: const Icon(
+                                      Icons.edit_outlined,
+                                      size: 18,
+                                    ),
+                                    label: Text(l10n.commonEdit),
                                   ),
                                   if (_isScheduledStatus(session.status)) ...[
                                     TextButton(
                                       onPressed: () => _quickAction(
-                                        action: () =>
-                                            repo.completeSession(session.id),
+                                        action: () => ref
+                                            .read(
+                                              adminFeaturesRepositoryProvider,
+                                            )
+                                            .completeSession(session.id),
                                         successMessage:
-                                            'Session marked as completed.',
-                                        title: 'Complete Session',
+                                            l10n.adminSessionsCompleteSuccess,
+                                        title: l10n.adminSessionsCompleteTitle,
                                         message:
-                                            'Are you sure you want to mark this session as completed?',
-                                        confirmLabel: 'Complete',
+                                            l10n.adminSessionsCompleteMessage,
+                                        confirmLabel:
+                                            l10n.adminSessionsCompleteConfirm,
                                       ),
-                                      child: const Text('Complete'),
+                                      child: Text(
+                                        l10n.adminSessionsCompleteConfirm,
+                                      ),
                                     ),
                                     TextButton(
                                       onPressed: () => _quickAction(
-                                        action: () =>
-                                            repo.cancelSession(session.id),
-                                        successMessage: 'Session cancelled.',
-                                        title: 'Cancel Session',
+                                        action: () => ref
+                                            .read(
+                                              adminFeaturesRepositoryProvider,
+                                            )
+                                            .cancelSession(session.id),
+                                        successMessage:
+                                            l10n.adminSessionsCancelSuccess,
+                                        title: l10n.adminSessionsCancelTitle,
                                         message:
-                                            'Are you sure you want to cancel this session?',
-                                        confirmLabel: 'Cancel Session',
+                                            l10n.adminSessionsCancelMessage,
+                                        confirmLabel:
+                                            l10n.adminSessionsCancelConfirm,
                                         isDestructive: true,
                                       ),
-                                      child: const Text('Cancel'),
+                                      child: Text(l10n.commonCancel),
                                     ),
                                     TextButton(
                                       onPressed: () => _quickAction(
-                                        action: () =>
-                                            repo.markNoShow(session.id),
+                                        action: () => ref
+                                            .read(
+                                              adminFeaturesRepositoryProvider,
+                                            )
+                                            .markNoShow(session.id),
                                         successMessage:
-                                            'Session marked as no-show.',
-                                        title: 'Mark as No Show',
+                                            l10n.adminSessionsNoShowSuccess,
+                                        title: l10n.adminSessionsNoShowTitle,
                                         message:
-                                            'Are you sure you want to mark this session as no show?',
-                                        confirmLabel: 'Mark No Show',
+                                            l10n.adminSessionsNoShowMessage,
+                                        confirmLabel:
+                                            l10n.adminSessionsNoShowConfirm,
                                         isDestructive: true,
                                       ),
-                                      child: const Text('No Show'),
+                                      child: Text(l10n.statusNoShow),
                                     ),
                                   ],
                                 ],
@@ -600,6 +662,8 @@ class _SessionStatusConfirmDialogState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return PopScope(
       canPop: !_submitting,
       child: AlertDialog(
@@ -608,7 +672,7 @@ class _SessionStatusConfirmDialogState
         actions: [
           TextButton(
             onPressed: _submitting ? null : _onCancelPressed,
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: _submitting ? null : _onConfirmPressed,

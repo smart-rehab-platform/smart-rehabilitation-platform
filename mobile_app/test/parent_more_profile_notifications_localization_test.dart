@@ -189,7 +189,7 @@ void main() {
 
     expect(find.text('المزيد'), findsWidgets);
     expect(find.text('اللغة'), findsOneWidget);
-    expect(find.text('طلبات الحالة'), findsOneWidget);
+    expect(find.text('طلبات الحالات'), findsOneWidget);
     expect(find.text('الرسائل'), findsOneWidget);
     expect(find.text('الملف الشخصي'), findsOneWidget);
     expect(find.text('الإشعارات'), findsOneWidget);

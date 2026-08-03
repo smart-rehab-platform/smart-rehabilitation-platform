@@ -65,7 +65,7 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
         : mapParentDashboardError(l10n, state.errorMessage!);
 
     return ParentPageScaffold(
-      title: l10n.entityChildren,
+      title: l10n.parentChildrenScreenTitle,
       currentNav: DashboardNavItem.patients,
       body: ParentAsyncBody(
         isLoading: state.isLoading,
