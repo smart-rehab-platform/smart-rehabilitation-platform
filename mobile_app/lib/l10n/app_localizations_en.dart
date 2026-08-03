@@ -4231,4 +4231,468 @@ class AppLocalizationsEn extends AppLocalizations {
   String adminMatchingSpecialistsLicense(String number) {
     return 'License: $number';
   }
+
+  @override
+  String get parentSessionsTabUpcoming => 'Upcoming';
+
+  @override
+  String get parentSessionsTabPast => 'Past';
+
+  @override
+  String get parentSessionsSummaryStayOnTrack => 'Stay on track!';
+
+  @override
+  String get parentSessionsSummaryNoUpcoming => 'No upcoming sessions';
+
+  @override
+  String get parentSessionsSummaryOneUpcoming => 'You have 1 upcoming session.';
+
+  @override
+  String parentSessionsSummaryUpcomingCount(int count) {
+    return 'You have $count upcoming sessions.';
+  }
+
+  @override
+  String get parentSessionsSummaryPastAvailable =>
+      'Past sessions are still available below.';
+
+  @override
+  String get parentSessionsSectionUpcoming => 'Upcoming Session';
+
+  @override
+  String get parentSessionsSectionPast => 'Past Sessions';
+
+  @override
+  String get parentSessionsEmptyUpcomingTitle => 'No upcoming sessions';
+
+  @override
+  String get parentSessionsEmptyUpcomingMessage =>
+      'You do not have any scheduled sessions right now.';
+
+  @override
+  String get parentSessionsEmptyPastTitle => 'No past sessions yet';
+
+  @override
+  String get parentSessionsEmptyPastMessage =>
+      'Completed sessions will appear here.';
+
+  @override
+  String get parentSessionsRequestCardTitle => 'Need to schedule a session?';
+
+  @override
+  String get parentSessionsRequestCardMessage =>
+      'Request a new session with your specialist at a time that suits you.';
+
+  @override
+  String get parentSessionsRequestNewSession => 'Request New Session';
+
+  @override
+  String get parentSessionsDetailsTitle => 'Session Details';
+
+  @override
+  String get parentSessionsOnlineSession => 'Online session';
+
+  @override
+  String get parentSessionsCopyMeetingLink => 'Copy Meeting Link';
+
+  @override
+  String get parentSessionsOpenMeetingLink => 'Open Meeting Link';
+
+  @override
+  String get parentSessionsLinkCopied => 'Session link copied';
+
+  @override
+  String get parentSessionsNoLinkAvailable => 'No session link available';
+
+  @override
+  String get parentSessionsNoValidLink => 'No valid session link available';
+
+  @override
+  String get parentSessionsLocationPending => 'Location pending';
+
+  @override
+  String get parentSessionsOnlineGoogleMeet => 'Online • Google Meet';
+
+  @override
+  String get parentSessionsOnlineVideoSession => 'Online • Video Session';
+
+  @override
+  String get parentSessionsSignInRequired => 'Please sign in to view sessions.';
+
+  @override
+  String parentSessionsLoadFailed(String error) {
+    return 'Failed to load sessions: $error';
+  }
+
+  @override
+  String get parentSessionsMyRequests => 'My Session Requests';
+
+  @override
+  String get parentSessionsNoRequestsTitle => 'No session requests yet.';
+
+  @override
+  String get parentSessionsNoRequestsMessage =>
+      'Use Request New Session above when you need an appointment.';
+
+  @override
+  String parentSessionsRequestedOn(String date) {
+    return 'Requested $date';
+  }
+
+  @override
+  String parentSessionsScheduledAt(String date, String time) {
+    return 'Scheduled: $date at $time';
+  }
+
+  @override
+  String get parentSessionRequestTitle => 'Request New Session';
+
+  @override
+  String get parentSessionRequestIntro =>
+      'Submit a session request for your specialist to review.';
+
+  @override
+  String parentSessionRequestLoadChildrenFailed(String error) {
+    return 'Failed to load children: $error';
+  }
+
+  @override
+  String get parentSessionRequestNoChildren =>
+      'No linked children found. Please contact your clinic administrator.';
+
+  @override
+  String get parentSessionRequestChild => 'Child';
+
+  @override
+  String get parentSessionRequestSpecialist => 'Specialist';
+
+  @override
+  String get parentSessionRequestReason => 'Reason';
+
+  @override
+  String get parentSessionRequestOtherReason => 'Other Reason';
+
+  @override
+  String get parentSessionRequestPreferredDate => 'Preferred Date';
+
+  @override
+  String get parentSessionRequestSelectDate => 'Select date';
+
+  @override
+  String get parentSessionRequestPreferredTime => 'Preferred Time';
+
+  @override
+  String get parentSessionRequestNotesOptional => 'Notes (optional)';
+
+  @override
+  String get parentSessionRequestSending => 'Sending...';
+
+  @override
+  String get parentSessionRequestSendRequest => 'Send Request';
+
+  @override
+  String parentSessionRequestSelectHint(String label) {
+    return 'Select $label';
+  }
+
+  @override
+  String get parentSessionRequestNoSpecialistAssigned =>
+      'No specialist is assigned to this child yet.';
+
+  @override
+  String get parentSessionRequestNoSpecialistForSubmit =>
+      'No specialist is assigned to this child.';
+
+  @override
+  String get parentSessionRequestSubmittedSuccess =>
+      'Session request submitted successfully.';
+
+  @override
+  String get parentSessionRequestSignInRequired =>
+      'Please sign in to view session requests.';
+
+  @override
+  String parentSessionRequestLoadFailed(String error) {
+    return 'Failed to load session requests: $error';
+  }
+
+  @override
+  String parentSessionRequestSubmitFailed(String error) {
+    return 'Failed to submit session request: $error';
+  }
+
+  @override
+  String get parentSessionRequestSubmitInProgress =>
+      'A submission is already in progress.';
+
+  @override
+  String get parentSessionRequestSelectChild => 'Please select a child.';
+
+  @override
+  String get parentSessionRequestSelectReason => 'Please select a reason.';
+
+  @override
+  String get parentSessionRequestEnterOtherReason =>
+      'Please enter the other reason.';
+
+  @override
+  String get parentSessionRequestSelectPreferredDate =>
+      'Please select a preferred date.';
+
+  @override
+  String get parentSessionRequestSelectPreferredTime =>
+      'Please select a preferred time.';
+
+  @override
+  String get parentExerciseChildDetailsTitle => 'Child Details';
+
+  @override
+  String get parentExerciseChildNotFound => 'Child not found.';
+
+  @override
+  String parentExerciseChildDetailsLoadFailed(String error) {
+    return 'Failed to load child details: $error';
+  }
+
+  @override
+  String parentExerciseAgeLabel(int age) {
+    return 'Age: $age';
+  }
+
+  @override
+  String parentExerciseDateOfBirthLabel(String date) {
+    return 'Date of birth: $date';
+  }
+
+  @override
+  String parentExerciseGenderLabel(String gender) {
+    return 'Gender: $gender';
+  }
+
+  @override
+  String parentExerciseProgressLabel(int percent) {
+    return 'Progress: $percent%';
+  }
+
+  @override
+  String get parentExerciseAssignedExercisesTitle => 'Assigned Exercises';
+
+  @override
+  String get parentExerciseNoAssignedYet => 'No assigned exercises yet.';
+
+  @override
+  String get parentExerciseNoReportsYet => 'No reports yet.';
+
+  @override
+  String get parentExerciseNoSessionsScheduled => 'No sessions scheduled.';
+
+  @override
+  String parentExerciseSessionSummary(
+    String specialist,
+    String date,
+    String status,
+  ) {
+    return '$specialist • $date • $status';
+  }
+
+  @override
+  String parentExerciseForChild(String childName) {
+    return 'For $childName';
+  }
+
+  @override
+  String get parentExerciseInformation => 'Exercise information';
+
+  @override
+  String get parentExerciseInstructions => 'Instructions';
+
+  @override
+  String get parentExerciseInstructionsFallback =>
+      'Follow the specialist instructions for this exercise.';
+
+  @override
+  String parentExerciseFrequencyLabel(String frequency) {
+    return 'Frequency: $frequency';
+  }
+
+  @override
+  String get parentExerciseAlreadySubmitted => 'Already submitted';
+
+  @override
+  String get parentExerciseYourSubmission => 'Your Submission';
+
+  @override
+  String get parentExerciseNotesForSpecialist =>
+      'Notes for specialist (optional)';
+
+  @override
+  String get parentExerciseSubmitting => 'Submitting...';
+
+  @override
+  String get parentExerciseSubmit => 'Submit Exercise';
+
+  @override
+  String get parentExerciseSubmitSuccess => 'Exercise submitted successfully';
+
+  @override
+  String get parentExerciseSubmitFailed =>
+      'Failed to submit exercise. Please try again.';
+
+  @override
+  String get parentExerciseUploadPermissionDenied =>
+      'You do not have permission to upload this file.';
+
+  @override
+  String get parentExerciseUploadUnsupportedType =>
+      'This file type is not supported.';
+
+  @override
+  String get parentExerciseUploadFileTooLarge =>
+      'The selected file is too large.';
+
+  @override
+  String get parentExerciseUploadFailed =>
+      'Failed to upload media. Please try again.';
+
+  @override
+  String get parentExerciseUploadSignInRequired =>
+      'Please sign in to upload this file.';
+
+  @override
+  String get parentExerciseInstructionMedia => 'Instructional Media';
+
+  @override
+  String get parentFeedbackTitle => 'Specialist Feedback';
+
+  @override
+  String get parentFeedbackNoneYet => 'No specialist feedback available yet.';
+
+  @override
+  String parentFeedbackRating(int rating) {
+    return 'Rating: $rating/5';
+  }
+
+  @override
+  String get parentFeedbackPlanStatusActive => 'Active';
+
+  @override
+  String get parentFeedbackPlanStatusArchived => 'Archived';
+
+  @override
+  String parentFeedbackSpecialistLabel(String name) {
+    return 'Specialist: $name';
+  }
+
+  @override
+  String parentFeedbackPlanStart(String date) {
+    return 'Start: $date';
+  }
+
+  @override
+  String parentFeedbackPlanEnd(String date) {
+    return 'End: $date';
+  }
+
+  @override
+  String get parentFeedbackTreatmentCompleted => 'Treatment Completed';
+
+  @override
+  String get parentFeedbackPlanCompletedMessage =>
+      'Your child\'s rehabilitation plan has been completed.';
+
+  @override
+  String get parentFeedbackExperiencePrompt =>
+      'We\'d love to hear about your experience with your specialist.';
+
+  @override
+  String get parentFeedbackCommentOptional => 'Comment (optional)';
+
+  @override
+  String get parentFeedbackCommentHint =>
+      'Share your experience with the specialist...';
+
+  @override
+  String get parentFeedbackSubmit => 'Submit Feedback';
+
+  @override
+  String get parentFeedbackThankYou => 'Thank You!';
+
+  @override
+  String get parentFeedbackThankYouMessage =>
+      'Thank you for sharing your feedback.';
+
+  @override
+  String get parentFeedbackYouRated => 'You rated';
+
+  @override
+  String get parentFeedbackYourSpecialist => 'your specialist';
+
+  @override
+  String parentFeedbackRatingOutOfFive(int rating) {
+    return '$rating / 5';
+  }
+
+  @override
+  String get parentFeedbackImproveServices =>
+      'Your opinion helps us improve our rehabilitation services\nand support more families.';
+
+  @override
+  String get parentFeedbackRecordedSuccess =>
+      'Your feedback has been recorded successfully.';
+
+  @override
+  String get parentMediaAdd => 'Add media';
+
+  @override
+  String get parentMediaAddDescription =>
+      'Optional photo, video, or audio for the specialist.';
+
+  @override
+  String get parentMediaChooseFromGallery => 'Choose from gallery / files';
+
+  @override
+  String get parentMediaRecordVideo => 'Record video';
+
+  @override
+  String get parentMediaRecordAudio => 'Record audio';
+
+  @override
+  String get parentMediaTakePhoto => 'Take photo';
+
+  @override
+  String get parentMediaPhoto => 'Photo';
+
+  @override
+  String get parentMediaPermissionRequired =>
+      'Permission is required to add media.';
+
+  @override
+  String get parentMediaRecordingInProgress => 'Recording in progress...';
+
+  @override
+  String get parentMediaTapStartStop => 'Tap start, then stop when finished.';
+
+  @override
+  String get parentMediaRecordingAudio => 'Recording audio';
+
+  @override
+  String get parentMediaReadyToRecord => 'Ready to record';
+
+  @override
+  String get parentMediaStartRecording => 'Start Recording';
+
+  @override
+  String get parentMediaStopRecording => 'Stop Recording';
+
+  @override
+  String get parentMediaRecordFailed =>
+      'Could not record audio. Please try again.';
+
+  @override
+  String parentMediaAttached(String type) {
+    return '$type attached';
+  }
+
+  @override
+  String get parentMediaRemoveTooltip => 'Remove media';
 }

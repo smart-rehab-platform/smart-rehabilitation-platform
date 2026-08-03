@@ -7344,6 +7344,778 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'License: {number}'**
   String adminMatchingSpecialistsLicense(String number);
+
+  /// Parent sessions tab for upcoming sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get parentSessionsTabUpcoming;
+
+  /// Parent sessions tab for past sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get parentSessionsTabPast;
+
+  /// Summary card heading when upcoming sessions exist.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay on track!'**
+  String get parentSessionsSummaryStayOnTrack;
+
+  /// Summary card heading when no upcoming sessions exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming sessions'**
+  String get parentSessionsSummaryNoUpcoming;
+
+  /// Summary card message for one upcoming session.
+  ///
+  /// In en, this message translates to:
+  /// **'You have 1 upcoming session.'**
+  String get parentSessionsSummaryOneUpcoming;
+
+  /// Summary card message for multiple upcoming sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} upcoming sessions.'**
+  String parentSessionsSummaryUpcomingCount(int count);
+
+  /// Summary card message when no upcoming sessions exist.
+  ///
+  /// In en, this message translates to:
+  /// **'Past sessions are still available below.'**
+  String get parentSessionsSummaryPastAvailable;
+
+  /// Section heading for upcoming sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Session'**
+  String get parentSessionsSectionUpcoming;
+
+  /// Section heading for past sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Sessions'**
+  String get parentSessionsSectionPast;
+
+  /// Empty state title for upcoming sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming sessions'**
+  String get parentSessionsEmptyUpcomingTitle;
+
+  /// Empty state message for upcoming sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have any scheduled sessions right now.'**
+  String get parentSessionsEmptyUpcomingMessage;
+
+  /// Empty state title for past sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'No past sessions yet'**
+  String get parentSessionsEmptyPastTitle;
+
+  /// Empty state message for past sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed sessions will appear here.'**
+  String get parentSessionsEmptyPastMessage;
+
+  /// Call-to-action card title for requesting a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Need to schedule a session?'**
+  String get parentSessionsRequestCardTitle;
+
+  /// Call-to-action card message for requesting a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a new session with your specialist at a time that suits you.'**
+  String get parentSessionsRequestCardMessage;
+
+  /// Button to open the request session sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Request New Session'**
+  String get parentSessionsRequestNewSession;
+
+  /// Bottom sheet title for session details.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Details'**
+  String get parentSessionsDetailsTitle;
+
+  /// Label for online session location row.
+  ///
+  /// In en, this message translates to:
+  /// **'Online session'**
+  String get parentSessionsOnlineSession;
+
+  /// Button to copy an online session link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Meeting Link'**
+  String get parentSessionsCopyMeetingLink;
+
+  /// Button to open an online session link.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Meeting Link'**
+  String get parentSessionsOpenMeetingLink;
+
+  /// Snack bar after copying a session link.
+  ///
+  /// In en, this message translates to:
+  /// **'Session link copied'**
+  String get parentSessionsLinkCopied;
+
+  /// Snack bar when no session link exists to copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No session link available'**
+  String get parentSessionsNoLinkAvailable;
+
+  /// Snack bar when a session link cannot be opened.
+  ///
+  /// In en, this message translates to:
+  /// **'No valid session link available'**
+  String get parentSessionsNoValidLink;
+
+  /// Fallback when session location is not set.
+  ///
+  /// In en, this message translates to:
+  /// **'Location pending'**
+  String get parentSessionsLocationPending;
+
+  /// Online session label for Google Meet links.
+  ///
+  /// In en, this message translates to:
+  /// **'Online • Google Meet'**
+  String get parentSessionsOnlineGoogleMeet;
+
+  /// Generic online video session label.
+  ///
+  /// In en, this message translates to:
+  /// **'Online • Video Session'**
+  String get parentSessionsOnlineVideoSession;
+
+  /// Error when parent sessions require authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view sessions.'**
+  String get parentSessionsSignInRequired;
+
+  /// Error when parent sessions fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load sessions: {error}'**
+  String parentSessionsLoadFailed(String error);
+
+  /// Section heading for submitted session requests.
+  ///
+  /// In en, this message translates to:
+  /// **'My Session Requests'**
+  String get parentSessionsMyRequests;
+
+  /// Empty state title for session requests.
+  ///
+  /// In en, this message translates to:
+  /// **'No session requests yet.'**
+  String get parentSessionsNoRequestsTitle;
+
+  /// Empty state message for session requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Request New Session above when you need an appointment.'**
+  String get parentSessionsNoRequestsMessage;
+
+  /// Label showing when a session request was submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested {date}'**
+  String parentSessionsRequestedOn(String date);
+
+  /// Approved session schedule summary on a request card.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled: {date} at {time}'**
+  String parentSessionsScheduledAt(String date, String time);
+
+  /// Title for the request session bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Request New Session'**
+  String get parentSessionRequestTitle;
+
+  /// Intro text on the request session sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit a session request for your specialist to review.'**
+  String get parentSessionRequestIntro;
+
+  /// Error when linked children fail to load for session request.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load children: {error}'**
+  String parentSessionRequestLoadChildrenFailed(String error);
+
+  /// Empty state when no children are linked to the parent account.
+  ///
+  /// In en, this message translates to:
+  /// **'No linked children found. Please contact your clinic administrator.'**
+  String get parentSessionRequestNoChildren;
+
+  /// Child dropdown label on request session sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get parentSessionRequestChild;
+
+  /// Specialist dropdown label on request session sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist'**
+  String get parentSessionRequestSpecialist;
+
+  /// Reason dropdown label on request session sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get parentSessionRequestReason;
+
+  /// Text field label for custom session request reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Reason'**
+  String get parentSessionRequestOtherReason;
+
+  /// Preferred date field label on request session sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Date'**
+  String get parentSessionRequestPreferredDate;
+
+  /// Placeholder when no preferred date is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get parentSessionRequestSelectDate;
+
+  /// Preferred time dropdown label on request session sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Time'**
+  String get parentSessionRequestPreferredTime;
+
+  /// Optional notes field label on request session sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get parentSessionRequestNotesOptional;
+
+  /// Submit button label while request is submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get parentSessionRequestSending;
+
+  /// Submit button label for session request.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Request'**
+  String get parentSessionRequestSendRequest;
+
+  /// Dropdown hint for selecting a request session field value.
+  ///
+  /// In en, this message translates to:
+  /// **'Select {label}'**
+  String parentSessionRequestSelectHint(String label);
+
+  /// Inline warning when selected child has no specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialist is assigned to this child yet.'**
+  String get parentSessionRequestNoSpecialistAssigned;
+
+  /// Validation error when submitting without an assigned specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialist is assigned to this child.'**
+  String get parentSessionRequestNoSpecialistForSubmit;
+
+  /// Snack bar after successful session request submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Session request submitted successfully.'**
+  String get parentSessionRequestSubmittedSuccess;
+
+  /// Error when session requests require authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view session requests.'**
+  String get parentSessionRequestSignInRequired;
+
+  /// Error when session requests fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load session requests: {error}'**
+  String parentSessionRequestLoadFailed(String error);
+
+  /// Error when session request submission fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit session request: {error}'**
+  String parentSessionRequestSubmitFailed(String error);
+
+  /// Error when a session request is already submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'A submission is already in progress.'**
+  String get parentSessionRequestSubmitInProgress;
+
+  /// Validation error when child is not selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a child.'**
+  String get parentSessionRequestSelectChild;
+
+  /// Validation error when reason is not selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a reason.'**
+  String get parentSessionRequestSelectReason;
+
+  /// Validation error when other reason is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the other reason.'**
+  String get parentSessionRequestEnterOtherReason;
+
+  /// Validation error when preferred date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a preferred date.'**
+  String get parentSessionRequestSelectPreferredDate;
+
+  /// Validation error when preferred time is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a preferred time.'**
+  String get parentSessionRequestSelectPreferredTime;
+
+  /// Title for parent child detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Child Details'**
+  String get parentExerciseChildDetailsTitle;
+
+  /// Empty state when child detail is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Child not found.'**
+  String get parentExerciseChildNotFound;
+
+  /// Error when child details fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load child details: {error}'**
+  String parentExerciseChildDetailsLoadFailed(String error);
+
+  /// Child age label on detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Age: {age}'**
+  String parentExerciseAgeLabel(int age);
+
+  /// Child date of birth label.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth: {date}'**
+  String parentExerciseDateOfBirthLabel(String date);
+
+  /// Child gender label.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender: {gender}'**
+  String parentExerciseGenderLabel(String gender);
+
+  /// Child progress percentage label.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress: {percent}%'**
+  String parentExerciseProgressLabel(int percent);
+
+  /// Section title for assigned exercises on child detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Exercises'**
+  String get parentExerciseAssignedExercisesTitle;
+
+  /// Empty state for assigned exercises on child detail.
+  ///
+  /// In en, this message translates to:
+  /// **'No assigned exercises yet.'**
+  String get parentExerciseNoAssignedYet;
+
+  /// Empty state for reports on child detail.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports yet.'**
+  String get parentExerciseNoReportsYet;
+
+  /// Empty state for sessions on child detail.
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions scheduled.'**
+  String get parentExerciseNoSessionsScheduled;
+
+  /// Session row on child detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'{specialist} • {date} • {status}'**
+  String parentExerciseSessionSummary(
+    String specialist,
+    String date,
+    String status,
+  );
+
+  /// Exercise detail subtitle showing selected child.
+  ///
+  /// In en, this message translates to:
+  /// **'For {childName}'**
+  String parentExerciseForChild(String childName);
+
+  /// Section title on exercise detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise information'**
+  String get parentExerciseInformation;
+
+  /// Instructions section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions'**
+  String get parentExerciseInstructions;
+
+  /// Fallback when exercise has no instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the specialist instructions for this exercise.'**
+  String get parentExerciseInstructionsFallback;
+
+  /// Exercise frequency label.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency: {frequency}'**
+  String parentExerciseFrequencyLabel(String frequency);
+
+  /// Label when exercise was already submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Already submitted'**
+  String get parentExerciseAlreadySubmitted;
+
+  /// Submission section title on exercise detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Submission'**
+  String get parentExerciseYourSubmission;
+
+  /// Notes field label on exercise submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for specialist (optional)'**
+  String get parentExerciseNotesForSpecialist;
+
+  /// Submit button label while submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get parentExerciseSubmitting;
+
+  /// Submit exercise button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Exercise'**
+  String get parentExerciseSubmit;
+
+  /// Snack bar after successful exercise submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise submitted successfully'**
+  String get parentExerciseSubmitSuccess;
+
+  /// Generic exercise submission failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit exercise. Please try again.'**
+  String get parentExerciseSubmitFailed;
+
+  /// Upload permission error.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to upload this file.'**
+  String get parentExerciseUploadPermissionDenied;
+
+  /// Unsupported media type error.
+  ///
+  /// In en, this message translates to:
+  /// **'This file type is not supported.'**
+  String get parentExerciseUploadUnsupportedType;
+
+  /// File size upload error.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected file is too large.'**
+  String get parentExerciseUploadFileTooLarge;
+
+  /// Media upload failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload media. Please try again.'**
+  String get parentExerciseUploadFailed;
+
+  /// Sign-in required for upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to upload this file.'**
+  String get parentExerciseUploadSignInRequired;
+
+  /// Title for instructional media card on parent exercise detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructional Media'**
+  String get parentExerciseInstructionMedia;
+
+  /// Parent feedback screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist Feedback'**
+  String get parentFeedbackTitle;
+
+  /// Empty state on parent feedback screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialist feedback available yet.'**
+  String get parentFeedbackNoneYet;
+
+  /// Specialist feedback rating label.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating: {rating}/5'**
+  String parentFeedbackRating(int rating);
+
+  /// Active treatment plan status.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get parentFeedbackPlanStatusActive;
+
+  /// Archived treatment plan status.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get parentFeedbackPlanStatusArchived;
+
+  /// Treatment plan specialist label.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist: {name}'**
+  String parentFeedbackSpecialistLabel(String name);
+
+  /// Treatment plan start date label.
+  ///
+  /// In en, this message translates to:
+  /// **'Start: {date}'**
+  String parentFeedbackPlanStart(String date);
+
+  /// Treatment plan end date label.
+  ///
+  /// In en, this message translates to:
+  /// **'End: {date}'**
+  String parentFeedbackPlanEnd(String date);
+
+  /// Heading when treatment plan is completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment Completed'**
+  String get parentFeedbackTreatmentCompleted;
+
+  /// Message when treatment plan is completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your child\'s rehabilitation plan has been completed.'**
+  String get parentFeedbackPlanCompletedMessage;
+
+  /// Prompt to rate specialist after treatment.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'d love to hear about your experience with your specialist.'**
+  String get parentFeedbackExperiencePrompt;
+
+  /// Optional comment field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment (optional)'**
+  String get parentFeedbackCommentOptional;
+
+  /// Hint for specialist feedback comment field.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your experience with the specialist...'**
+  String get parentFeedbackCommentHint;
+
+  /// Submit specialist feedback button.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Feedback'**
+  String get parentFeedbackSubmit;
+
+  /// Thank you heading after feedback submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank You!'**
+  String get parentFeedbackThankYou;
+
+  /// Thank you message after feedback submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for sharing your feedback.'**
+  String get parentFeedbackThankYouMessage;
+
+  /// Label before specialist name in thank you card.
+  ///
+  /// In en, this message translates to:
+  /// **'You rated'**
+  String get parentFeedbackYouRated;
+
+  /// Fallback specialist name in thank you card.
+  ///
+  /// In en, this message translates to:
+  /// **'your specialist'**
+  String get parentFeedbackYourSpecialist;
+
+  /// Rating display out of five.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} / 5'**
+  String parentFeedbackRatingOutOfFive(int rating);
+
+  /// Footer message on thank you card.
+  ///
+  /// In en, this message translates to:
+  /// **'Your opinion helps us improve our rehabilitation services\nand support more families.'**
+  String get parentFeedbackImproveServices;
+
+  /// Success banner on thank you card.
+  ///
+  /// In en, this message translates to:
+  /// **'Your feedback has been recorded successfully.'**
+  String get parentFeedbackRecordedSuccess;
+
+  /// Add media button and sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add media'**
+  String get parentMediaAdd;
+
+  /// Description on add media sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional photo, video, or audio for the specialist.'**
+  String get parentMediaAddDescription;
+
+  /// Pick media from gallery or files.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery / files'**
+  String get parentMediaChooseFromGallery;
+
+  /// Record video option.
+  ///
+  /// In en, this message translates to:
+  /// **'Record video'**
+  String get parentMediaRecordVideo;
+
+  /// Record audio option and sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Record audio'**
+  String get parentMediaRecordAudio;
+
+  /// Capture photo option.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get parentMediaTakePhoto;
+
+  /// Photo media type label.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get parentMediaPhoto;
+
+  /// Snack bar when media permission denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission is required to add media.'**
+  String get parentMediaPermissionRequired;
+
+  /// Audio recorder status while recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording in progress...'**
+  String get parentMediaRecordingInProgress;
+
+  /// Audio recorder instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap start, then stop when finished.'**
+  String get parentMediaTapStartStop;
+
+  /// Audio recorder active state label.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording audio'**
+  String get parentMediaRecordingAudio;
+
+  /// Audio recorder idle state label.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to record'**
+  String get parentMediaReadyToRecord;
+
+  /// Start audio recording button.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Recording'**
+  String get parentMediaStartRecording;
+
+  /// Stop audio recording button.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Recording'**
+  String get parentMediaStopRecording;
+
+  /// Audio recording failure message.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not record audio. Please try again.'**
+  String get parentMediaRecordFailed;
+
+  /// Selected media attachment summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{type} attached'**
+  String parentMediaAttached(String type);
+
+  /// Tooltip for remove media button.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove media'**
+  String get parentMediaRemoveTooltip;
 }
 
 class _AppLocalizationsDelegate

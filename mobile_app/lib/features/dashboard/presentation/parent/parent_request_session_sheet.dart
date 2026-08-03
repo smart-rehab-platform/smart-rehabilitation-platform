@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/admin_assignments_models.dart';
 import '../../models/parent_dashboard_models.dart';
 import '../../models/session_requests_models.dart';
@@ -10,6 +11,7 @@ import '../../providers/session_requests_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
+import 'parent_sessions_localization_utils.dart';
 
 Future<void> showParentRequestSessionSheet(BuildContext context) {
   return showModalBottomSheet<void>(
@@ -66,7 +68,9 @@ class _ParentRequestSessionSheetState
     });
 
     try {
-      final children = await ref.read(sessionRequestsProvider.notifier).resolveChildren();
+      final children = await ref
+          .read(sessionRequestsProvider.notifier)
+          .resolveChildren();
       if (!mounted) {
         return;
       }
@@ -138,39 +142,42 @@ class _ParentRequestSessionSheetState
     }
   }
 
-  String? _validateForm() {
+  String? _validateForm(AppLocalizations l10n) {
     if (_selectedChild == null) {
-      return 'Please select a child.';
+      return l10n.parentSessionRequestSelectChild;
     }
     if (_selectedSpecialist == null) {
-      return 'No specialist is assigned to this child.';
+      return l10n.parentSessionRequestNoSpecialistForSubmit;
     }
     if (_selectedReason == null) {
-      return 'Please select a reason.';
+      return l10n.parentSessionRequestSelectReason;
     }
     if (_selectedReason == SessionRequestReason.other &&
         _otherReasonController.text.trim().isEmpty) {
-      return 'Please enter the other reason.';
+      return l10n.parentSessionRequestEnterOtherReason;
     }
     if (_selectedDate == null) {
-      return 'Please select a preferred date.';
+      return l10n.parentSessionRequestSelectPreferredDate;
     }
     if (_selectedTimePeriod == null) {
-      return 'Please select a preferred time.';
+      return l10n.parentSessionRequestSelectPreferredTime;
     }
     return null;
   }
 
   Future<void> _submit() async {
-    final validationError = _validateForm();
+    final l10n = AppLocalizations.of(context)!;
+    final validationError = _validateForm(l10n);
     if (validationError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(validationError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(validationError)));
       return;
     }
 
-    final error = await ref.read(sessionRequestsProvider.notifier).submitRequest(
+    final error = await ref
+        .read(sessionRequestsProvider.notifier)
+        .submitRequest(
           CreateSessionRequestInput(
             patientId: _selectedChild!.id,
             specialistId: _selectedSpecialist!.specialistId,
@@ -192,19 +199,22 @@ class _ParentRequestSessionSheetState
 
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
+        SnackBar(
+          content: Text(mapParentSessionRequestSubmitError(l10n, error)),
+        ),
       );
       return;
     }
 
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Session request submitted successfully.')),
+      SnackBar(content: Text(l10n.parentSessionRequestSubmittedSuccess)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isSubmitting = ref.watch(sessionRequestsProvider).isSubmitting;
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
@@ -239,14 +249,14 @@ class _ParentRequestSessionSheetState
                 ),
                 SizedBox(height: context.dashSpacing * 0.85),
                 Text(
-                  'Request New Session',
+                  l10n.parentSessionRequestTitle,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 SizedBox(height: context.dashSpacing * 0.25),
                 Text(
-                  'Submit a session request for your specialist to review.',
+                  l10n.parentSessionRequestIntro,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: DashboardColors.textSecondary,
                     height: 1.45,
@@ -257,13 +267,16 @@ class _ParentRequestSessionSheetState
                   const Center(child: DashboardLoadingCard())
                 else if (_loadError != null) ...[
                   DashboardErrorCard(
-                    message: _loadError!,
+                    message: mapParentSessionRequestLoadChildrenError(
+                      l10n,
+                      _loadError!,
+                    ),
                     onRetry: _loadChildren,
                   ),
                 ] else if (_children.isEmpty) ...[
                   DashboardSurfaceCard(
                     child: Text(
-                      'No linked children found. Please contact your clinic administrator.',
+                      l10n.parentSessionRequestNoChildren,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: DashboardColors.textSecondary,
                       ),
@@ -271,7 +284,7 @@ class _ParentRequestSessionSheetState
                   ),
                 ] else ...[
                   _RequestDropdownField<ParentChild>(
-                    label: 'Child',
+                    label: l10n.parentSessionRequestChild,
                     value: _selectedChild,
                     items: _children,
                     itemLabel: (child) => child.name,
@@ -292,7 +305,7 @@ class _ParentRequestSessionSheetState
                   ] else if (_specialists.isEmpty) ...[
                     SizedBox(height: context.dashSpacing * 0.5),
                     Text(
-                      'No specialist is assigned to this child yet.',
+                      l10n.parentSessionRequestNoSpecialistAssigned,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: DashboardColors.highPriority,
                       ),
@@ -300,7 +313,7 @@ class _ParentRequestSessionSheetState
                   ] else if (_specialists.length > 1) ...[
                     SizedBox(height: context.dashSpacing * 0.65),
                     _RequestDropdownField<PatientSpecialistLink>(
-                      label: 'Specialist',
+                      label: l10n.parentSessionRequestSpecialist,
                       value: _selectedSpecialist,
                       items: _specialists,
                       itemLabel: (specialist) => specialist.specialistName,
@@ -311,16 +324,18 @@ class _ParentRequestSessionSheetState
                   ],
                   SizedBox(height: context.dashSpacing * 0.65),
                   _RequestDropdownField<SessionRequestReason>(
-                    label: 'Reason',
+                    label: l10n.parentSessionRequestReason,
                     value: _selectedReason,
                     items: SessionRequestReason.values,
-                    itemLabel: (reason) => reason.label,
-                    onChanged: (reason) => setState(() => _selectedReason = reason),
+                    itemLabel: (reason) =>
+                        localizedSessionRequestReasonValue(l10n, reason),
+                    onChanged: (reason) =>
+                        setState(() => _selectedReason = reason),
                   ),
                   if (_selectedReason == SessionRequestReason.other) ...[
                     SizedBox(height: context.dashSpacing * 0.65),
                     _RequestTextField(
-                      label: 'Other Reason',
+                      label: l10n.parentSessionRequestOtherReason,
                       controller: _otherReasonController,
                       maxLines: 2,
                     ),
@@ -335,7 +350,7 @@ class _ParentRequestSessionSheetState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Preferred Date',
+                                l10n.parentSessionRequestPreferredDate,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: DashboardColors.textMuted,
                                   fontWeight: FontWeight.w600,
@@ -344,8 +359,10 @@ class _ParentRequestSessionSheetState
                               SizedBox(height: context.dashSpacing * 0.2),
                               Text(
                                 _selectedDate != null
-                                    ? DateFormat('MMM d, yyyy').format(_selectedDate!)
-                                    : 'Select date',
+                                    ? DateFormat(
+                                        'MMM d, yyyy',
+                                      ).format(_selectedDate!)
+                                    : l10n.parentSessionRequestSelectDate,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -363,16 +380,17 @@ class _ParentRequestSessionSheetState
                   ),
                   SizedBox(height: context.dashSpacing * 0.65),
                   _RequestDropdownField<PreferredTimePeriod>(
-                    label: 'Preferred Time',
+                    label: l10n.parentSessionRequestPreferredTime,
                     value: _selectedTimePeriod,
                     items: PreferredTimePeriod.values,
-                    itemLabel: (period) => period.label,
+                    itemLabel: (period) =>
+                        localizedPreferredTimePeriod(l10n, period),
                     onChanged: (period) =>
                         setState(() => _selectedTimePeriod = period),
                   ),
                   SizedBox(height: context.dashSpacing * 0.65),
                   _RequestTextField(
-                    label: 'Notes (optional)',
+                    label: l10n.parentSessionRequestNotesOptional,
                     controller: _notesController,
                     maxLines: 4,
                   ),
@@ -391,12 +409,16 @@ class _ParentRequestSessionSheetState
                               ),
                             )
                           : const Icon(Icons.send_rounded, size: 18),
-                      label: Text(isSubmitting ? 'Sending...' : 'Send Request'),
+                      label: Text(
+                        isSubmitting
+                            ? l10n.parentSessionRequestSending
+                            : l10n.parentSessionRequestSendRequest,
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: DashboardColors.brandCyan,
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor:
-                            DashboardColors.brandCyan.withValues(alpha: 0.55),
+                        disabledBackgroundColor: DashboardColors.brandCyan
+                            .withValues(alpha: 0.55),
                         padding: EdgeInsets.symmetric(
                           vertical: context.dashSpacing * 0.62,
                         ),
@@ -433,6 +455,7 @@ class _RequestDropdownField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -451,7 +474,7 @@ class _RequestDropdownField<T> extends StatelessWidget {
             child: DropdownButton<T>(
               isExpanded: true,
               value: value,
-              hint: Text('Select $label'),
+              hint: Text(l10n.parentSessionRequestSelectHint(label)),
               items: items
                   .map(
                     (item) => DropdownMenuItem<T>(

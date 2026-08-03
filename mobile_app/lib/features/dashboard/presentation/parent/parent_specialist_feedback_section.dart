@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/parent_feedback_models.dart';
 import '../../providers/parent_feedback_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
+import 'parent_extended_localization_utils.dart';
 import 'parent_ui_helpers.dart';
 
 class ParentTreatmentPlanSection extends StatelessWidget {
@@ -27,13 +29,14 @@ class ParentTreatmentPlanSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final statusLabel = (plan.status ?? 'active').replaceAll('_', ' ');
+    final statusLabel = localizedTreatmentPlanStatus(l10n, plan.status);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Treatment Plan', style: theme.textTheme.titleSmall),
+        Text(l10n.entityTreatmentPlan, style: theme.textTheme.titleSmall),
         SizedBox(height: context.dashSpacing * 0.5),
         DashboardSurfaceCard(
           child: Column(
@@ -47,13 +50,16 @@ class ParentTreatmentPlanSection extends StatelessWidget {
               ),
               SizedBox(height: context.dashSpacing * 0.35),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: _statusColor(plan.status).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  statusLabel[0].toUpperCase() + statusLabel.substring(1),
+                  statusLabel,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: _statusColor(plan.status),
                     fontWeight: FontWeight.w700,
@@ -64,7 +70,7 @@ class ParentTreatmentPlanSection extends StatelessWidget {
                   plan.specialistName!.isNotEmpty) ...[
                 SizedBox(height: context.dashSpacing * 0.45),
                 Text(
-                  'Specialist: ${plan.specialistName}',
+                  l10n.parentFeedbackSpecialistLabel(plan.specialistName!),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
@@ -75,9 +81,13 @@ class ParentTreatmentPlanSection extends StatelessWidget {
                 Text(
                   [
                     if (plan.startDate != null)
-                      'Start: ${parentFormatDate(plan.startDate)}',
+                      l10n.parentFeedbackPlanStart(
+                        parentFormatDate(plan.startDate),
+                      ),
                     if (plan.endDate != null)
-                      'End: ${parentFormatDate(plan.endDate)}',
+                      l10n.parentFeedbackPlanEnd(
+                        parentFormatDate(plan.endDate),
+                      ),
                   ].join(' • '),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: DashboardColors.textSecondary,
@@ -116,7 +126,9 @@ class _ParentSpecialistFeedbackSectionState
       duration: const Duration(milliseconds: 450),
     )..forward();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(parentSpecialistRatingProvider(widget.childId).notifier).initialize();
+      ref
+          .read(parentSpecialistRatingProvider(widget.childId).notifier)
+          .initialize();
     });
   }
 
@@ -163,15 +175,13 @@ class _ParentSpecialistFeedbackSectionState
         curve: Curves.easeOutCubic,
       ),
       child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 0.04),
-          end: Offset.zero,
-        ).animate(
-          CurvedAnimation(
-            parent: _appearController,
-            curve: Curves.easeOutCubic,
-          ),
-        ),
+        position: Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero)
+            .animate(
+              CurvedAnimation(
+                parent: _appearController,
+                curve: Curves.easeOutCubic,
+              ),
+            ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -196,8 +206,9 @@ class _ParentSpecialistFeedbackSectionState
                         commentController: _commentController,
                         onRatingChanged: (rating) => ref
                             .read(
-                              parentSpecialistRatingProvider(widget.childId)
-                                  .notifier,
+                              parentSpecialistRatingProvider(
+                                widget.childId,
+                              ).notifier,
                             )
                             .setRating(rating),
                         onSubmit: _submit,
@@ -229,6 +240,7 @@ class _FeedbackFormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -246,14 +258,14 @@ class _FeedbackFormCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Treatment Completed',
+                      l10n.parentFeedbackTreatmentCompleted,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     SizedBox(height: context.dashSpacing * 0.25),
                     Text(
-                      "Your child's rehabilitation plan has been completed.",
+                      l10n.parentFeedbackPlanCompletedMessage,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: DashboardColors.textSecondary,
                         height: 1.45,
@@ -266,20 +278,17 @@ class _FeedbackFormCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           Text(
-            "We'd love to hear about your experience with your specialist.",
+            l10n.parentFeedbackExperiencePrompt,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textPrimary,
               height: 1.45,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
-          _StarRatingRow(
-            rating: rating,
-            onRatingChanged: onRatingChanged,
-          ),
+          _StarRatingRow(rating: rating, onRatingChanged: onRatingChanged),
           SizedBox(height: context.dashSpacing * 0.75),
           Text(
-            'Comment (optional)',
+            l10n.parentFeedbackCommentOptional,
             style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -291,7 +300,7 @@ class _FeedbackFormCard extends StatelessWidget {
             maxLines: 4,
             maxLength: 500,
             decoration: InputDecoration(
-              hintText: 'Share your experience with the specialist...',
+              hintText: l10n.parentFeedbackCommentHint,
               filled: true,
               fillColor: DashboardColors.background,
               border: OutlineInputBorder(
@@ -335,8 +344,8 @@ class _FeedbackFormCard extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: DashboardColors.brandCyan,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor:
-                          DashboardColors.brandCyan.withValues(alpha: 0.35),
+                      disabledBackgroundColor: DashboardColors.brandCyan
+                          .withValues(alpha: 0.35),
                       disabledForegroundColor: Colors.white70,
                       padding: EdgeInsets.symmetric(
                         vertical: context.dashSpacing * 0.7,
@@ -346,7 +355,7 @@ class _FeedbackFormCard extends StatelessWidget {
                       ),
                       elevation: rating > 0 ? 2 : 0,
                     ),
-                    child: const Text('Submit Feedback'),
+                    child: Text(l10n.parentFeedbackSubmit),
                   ),
           ),
         ],
@@ -356,21 +365,19 @@ class _FeedbackFormCard extends StatelessWidget {
 }
 
 class _ThankYouCard extends StatelessWidget {
-  const _ThankYouCard({
-    super.key,
-    required this.rating,
-    this.specialistName,
-  });
+  const _ThankYouCard({super.key, required this.rating, this.specialistName});
 
   final int rating;
   final String? specialistName;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final specialistLabel = (specialistName != null && specialistName!.trim().isNotEmpty)
+    final specialistLabel =
+        (specialistName != null && specialistName!.trim().isNotEmpty)
         ? specialistName!.trim()
-        : 'your specialist';
+        : l10n.parentFeedbackYourSpecialist;
     final showRating = rating >= 1 && rating <= 5;
 
     return DashboardSurfaceCard(
@@ -393,7 +400,7 @@ class _ThankYouCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           Text(
-            'Thank You!',
+            l10n.parentFeedbackThankYou,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w800,
@@ -402,7 +409,7 @@ class _ThankYouCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.4),
           Text(
-            'Thank you for sharing your feedback.',
+            l10n.parentFeedbackThankYouMessage,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: DashboardColors.textSecondary,
@@ -414,7 +421,7 @@ class _ThankYouCard extends StatelessWidget {
             _ReadOnlyStarRow(rating: rating),
             SizedBox(height: context.dashSpacing * 0.65),
             Text(
-              'You rated',
+              l10n.parentFeedbackYouRated,
               textAlign: TextAlign.center,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: DashboardColors.textSecondary,
@@ -433,7 +440,7 @@ class _ThankYouCard extends StatelessWidget {
             ),
             SizedBox(height: context.dashSpacing * 0.2),
             Text(
-              '$rating / 5',
+              l10n.parentFeedbackRatingOutOfFive(rating),
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w800,
@@ -443,7 +450,7 @@ class _ThankYouCard extends StatelessWidget {
           ],
           SizedBox(height: context.dashSpacing * 0.85),
           Text(
-            'Your opinion helps us improve our rehabilitation services\nand support more families.',
+            l10n.parentFeedbackImproveServices,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,
@@ -475,7 +482,7 @@ class _ThankYouCard extends StatelessWidget {
                 SizedBox(width: context.dashSpacing * 0.35),
                 Flexible(
                   child: Text(
-                    'Your feedback has been recorded successfully.',
+                    l10n.parentFeedbackRecordedSuccess,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: DashboardColors.success,
@@ -522,10 +529,7 @@ class _ReadOnlyStarRow extends StatelessWidget {
 }
 
 class _StarRatingRow extends StatelessWidget {
-  const _StarRatingRow({
-    required this.rating,
-    required this.onRatingChanged,
-  });
+  const _StarRatingRow({required this.rating, required this.onRatingChanged});
 
   final int rating;
   final ValueChanged<int> onRatingChanged;
@@ -572,9 +576,10 @@ class _AnimatedStarState extends State<_AnimatedStar>
       vsync: this,
       duration: const Duration(milliseconds: 180),
     );
-    _scale = Tween<double>(begin: 1, end: 1.18).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scale = Tween<double>(
+      begin: 1,
+      end: 1.18,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
   }
 
   @override

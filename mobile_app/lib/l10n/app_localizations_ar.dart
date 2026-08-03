@@ -4163,4 +4163,459 @@ class AppLocalizationsAr extends AppLocalizations {
   String adminMatchingSpecialistsLicense(String number) {
     return 'الترخيص: $number';
   }
+
+  @override
+  String get parentSessionsTabUpcoming => 'القادمة';
+
+  @override
+  String get parentSessionsTabPast => 'السابقة';
+
+  @override
+  String get parentSessionsSummaryStayOnTrack => 'واصل التقدم!';
+
+  @override
+  String get parentSessionsSummaryNoUpcoming => 'لا توجد جلسات قادمة';
+
+  @override
+  String get parentSessionsSummaryOneUpcoming => 'لديك جلسة قادمة واحدة.';
+
+  @override
+  String parentSessionsSummaryUpcomingCount(int count) {
+    return 'لديك $count جلسات قادمة.';
+  }
+
+  @override
+  String get parentSessionsSummaryPastAvailable =>
+      'لا تزال الجلسات السابقة متاحة أدناه.';
+
+  @override
+  String get parentSessionsSectionUpcoming => 'الجلسة القادمة';
+
+  @override
+  String get parentSessionsSectionPast => 'الجلسات السابقة';
+
+  @override
+  String get parentSessionsEmptyUpcomingTitle => 'لا توجد جلسات قادمة';
+
+  @override
+  String get parentSessionsEmptyUpcomingMessage =>
+      'ليس لديك أي جلسات مجدولة حالياً.';
+
+  @override
+  String get parentSessionsEmptyPastTitle => 'لا توجد جلسات سابقة بعد';
+
+  @override
+  String get parentSessionsEmptyPastMessage => 'ستظهر الجلسات المكتملة هنا.';
+
+  @override
+  String get parentSessionsRequestCardTitle => 'هل تحتاج إلى جدولة جلسة؟';
+
+  @override
+  String get parentSessionsRequestCardMessage =>
+      'اطلب جلسة جديدة مع أخصائيك في وقت يناسبك.';
+
+  @override
+  String get parentSessionsRequestNewSession => 'طلب جلسة جديدة';
+
+  @override
+  String get parentSessionsDetailsTitle => 'تفاصيل الجلسة';
+
+  @override
+  String get parentSessionsOnlineSession => 'جلسة عبر الإنترنت';
+
+  @override
+  String get parentSessionsCopyMeetingLink => 'نسخ رابط الاجتماع';
+
+  @override
+  String get parentSessionsOpenMeetingLink => 'فتح رابط الاجتماع';
+
+  @override
+  String get parentSessionsLinkCopied => 'تم نسخ رابط الجلسة';
+
+  @override
+  String get parentSessionsNoLinkAvailable => 'لا يوجد رابط جلسة متاح';
+
+  @override
+  String get parentSessionsNoValidLink => 'لا يوجد رابط جلسة صالح';
+
+  @override
+  String get parentSessionsLocationPending => 'الموقع قيد الانتظار';
+
+  @override
+  String get parentSessionsOnlineGoogleMeet => 'عبر الإنترنت • Google Meet';
+
+  @override
+  String get parentSessionsOnlineVideoSession => 'عبر الإنترنت • جلسة فيديو';
+
+  @override
+  String get parentSessionsSignInRequired => 'يرجى تسجيل الدخول لعرض الجلسات.';
+
+  @override
+  String parentSessionsLoadFailed(String error) {
+    return 'فشل تحميل الجلسات: $error';
+  }
+
+  @override
+  String get parentSessionsMyRequests => 'طلبات الجلسات الخاصة بي';
+
+  @override
+  String get parentSessionsNoRequestsTitle => 'لا توجد طلبات جلسات بعد.';
+
+  @override
+  String get parentSessionsNoRequestsMessage =>
+      'استخدم طلب جلسة جديدة أعلاه عندما تحتاج إلى موعد.';
+
+  @override
+  String parentSessionsRequestedOn(String date) {
+    return 'تم الطلب $date';
+  }
+
+  @override
+  String parentSessionsScheduledAt(String date, String time) {
+    return 'مجدولة: $date الساعة $time';
+  }
+
+  @override
+  String get parentSessionRequestTitle => 'طلب جلسة جديدة';
+
+  @override
+  String get parentSessionRequestIntro =>
+      'قدّم طلب جلسة لمراجعته من قبل أخصائيك.';
+
+  @override
+  String parentSessionRequestLoadChildrenFailed(String error) {
+    return 'فشل تحميل الأطفال: $error';
+  }
+
+  @override
+  String get parentSessionRequestNoChildren =>
+      'لم يتم العثور على أطفال مرتبطين. يرجى التواصل مع مسؤول العيادة.';
+
+  @override
+  String get parentSessionRequestChild => 'الطفل';
+
+  @override
+  String get parentSessionRequestSpecialist => 'الأخصائي';
+
+  @override
+  String get parentSessionRequestReason => 'السبب';
+
+  @override
+  String get parentSessionRequestOtherReason => 'سبب آخر';
+
+  @override
+  String get parentSessionRequestPreferredDate => 'التاريخ المفضل';
+
+  @override
+  String get parentSessionRequestSelectDate => 'اختر التاريخ';
+
+  @override
+  String get parentSessionRequestPreferredTime => 'الوقت المفضل';
+
+  @override
+  String get parentSessionRequestNotesOptional => 'ملاحظات (اختياري)';
+
+  @override
+  String get parentSessionRequestSending => 'جارٍ الإرسال...';
+
+  @override
+  String get parentSessionRequestSendRequest => 'إرسال الطلب';
+
+  @override
+  String parentSessionRequestSelectHint(String label) {
+    return 'اختر $label';
+  }
+
+  @override
+  String get parentSessionRequestNoSpecialistAssigned =>
+      'لم يتم تعيين أخصائي لهذا الطفل بعد.';
+
+  @override
+  String get parentSessionRequestNoSpecialistForSubmit =>
+      'لم يتم تعيين أخصائي لهذا الطفل.';
+
+  @override
+  String get parentSessionRequestSubmittedSuccess =>
+      'تم إرسال طلب الجلسة بنجاح.';
+
+  @override
+  String get parentSessionRequestSignInRequired =>
+      'يرجى تسجيل الدخول لعرض طلبات الجلسات.';
+
+  @override
+  String parentSessionRequestLoadFailed(String error) {
+    return 'فشل تحميل طلبات الجلسات: $error';
+  }
+
+  @override
+  String parentSessionRequestSubmitFailed(String error) {
+    return 'فشل إرسال طلب الجلسة: $error';
+  }
+
+  @override
+  String get parentSessionRequestSubmitInProgress =>
+      'يوجد إرسال قيد التنفيذ بالفعل.';
+
+  @override
+  String get parentSessionRequestSelectChild => 'يرجى اختيار طفل.';
+
+  @override
+  String get parentSessionRequestSelectReason => 'يرجى اختيار سبب.';
+
+  @override
+  String get parentSessionRequestEnterOtherReason => 'يرجى إدخال السبب الآخر.';
+
+  @override
+  String get parentSessionRequestSelectPreferredDate =>
+      'يرجى اختيار التاريخ المفضل.';
+
+  @override
+  String get parentSessionRequestSelectPreferredTime =>
+      'يرجى اختيار الوقت المفضل.';
+
+  @override
+  String get parentExerciseChildDetailsTitle => 'تفاصيل الطفل';
+
+  @override
+  String get parentExerciseChildNotFound => 'لم يتم العثور على الطفل.';
+
+  @override
+  String parentExerciseChildDetailsLoadFailed(String error) {
+    return 'فشل تحميل تفاصيل الطفل: $error';
+  }
+
+  @override
+  String parentExerciseAgeLabel(int age) {
+    return 'العمر: $age';
+  }
+
+  @override
+  String parentExerciseDateOfBirthLabel(String date) {
+    return 'تاريخ الميلاد: $date';
+  }
+
+  @override
+  String parentExerciseGenderLabel(String gender) {
+    return 'الجنس: $gender';
+  }
+
+  @override
+  String parentExerciseProgressLabel(int percent) {
+    return 'التقدم: $percent%';
+  }
+
+  @override
+  String get parentExerciseAssignedExercisesTitle => 'التمارين المعينة';
+
+  @override
+  String get parentExerciseNoAssignedYet => 'لا توجد تمارين معينة بعد.';
+
+  @override
+  String get parentExerciseNoReportsYet => 'لا توجد تقارير بعد.';
+
+  @override
+  String get parentExerciseNoSessionsScheduled => 'لا توجد جلسات مجدولة.';
+
+  @override
+  String parentExerciseSessionSummary(
+    String specialist,
+    String date,
+    String status,
+  ) {
+    return '$specialist • $date • $status';
+  }
+
+  @override
+  String parentExerciseForChild(String childName) {
+    return 'لـ $childName';
+  }
+
+  @override
+  String get parentExerciseInformation => 'معلومات التمرين';
+
+  @override
+  String get parentExerciseInstructions => 'التعليمات';
+
+  @override
+  String get parentExerciseInstructionsFallback =>
+      'اتبع تعليمات الأخصائي لهذا التمرين.';
+
+  @override
+  String parentExerciseFrequencyLabel(String frequency) {
+    return 'التكرار: $frequency';
+  }
+
+  @override
+  String get parentExerciseAlreadySubmitted => 'تم الإرسال بالفعل';
+
+  @override
+  String get parentExerciseYourSubmission => 'إرسالك';
+
+  @override
+  String get parentExerciseNotesForSpecialist => 'ملاحظات للأخصائي (اختياري)';
+
+  @override
+  String get parentExerciseSubmitting => 'جارٍ الإرسال...';
+
+  @override
+  String get parentExerciseSubmit => 'إرسال التمرين';
+
+  @override
+  String get parentExerciseSubmitSuccess => 'تم إرسال التمرين بنجاح';
+
+  @override
+  String get parentExerciseSubmitFailed =>
+      'فشل إرسال التمرين. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get parentExerciseUploadPermissionDenied =>
+      'ليس لديك إذن لرفع هذا الملف.';
+
+  @override
+  String get parentExerciseUploadUnsupportedType => 'نوع الملف هذا غير مدعوم.';
+
+  @override
+  String get parentExerciseUploadFileTooLarge => 'الملف المحدد كبير جداً.';
+
+  @override
+  String get parentExerciseUploadFailed =>
+      'فشل رفع الوسائط. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get parentExerciseUploadSignInRequired =>
+      'يرجى تسجيل الدخول لرفع هذا الملف.';
+
+  @override
+  String get parentExerciseInstructionMedia => 'وسائط تعليمية';
+
+  @override
+  String get parentFeedbackTitle => 'ملاحظات الأخصائي';
+
+  @override
+  String get parentFeedbackNoneYet => 'لا تتوفر ملاحظات من الأخصائي بعد.';
+
+  @override
+  String parentFeedbackRating(int rating) {
+    return 'التقييم: $rating/5';
+  }
+
+  @override
+  String get parentFeedbackPlanStatusActive => 'نشط';
+
+  @override
+  String get parentFeedbackPlanStatusArchived => 'مؤرشف';
+
+  @override
+  String parentFeedbackSpecialistLabel(String name) {
+    return 'الأخصائي: $name';
+  }
+
+  @override
+  String parentFeedbackPlanStart(String date) {
+    return 'البداية: $date';
+  }
+
+  @override
+  String parentFeedbackPlanEnd(String date) {
+    return 'النهاية: $date';
+  }
+
+  @override
+  String get parentFeedbackTreatmentCompleted => 'اكتمل العلاج';
+
+  @override
+  String get parentFeedbackPlanCompletedMessage =>
+      'اكتملت خطة إعادة التأهيل لطفلك.';
+
+  @override
+  String get parentFeedbackExperiencePrompt =>
+      'نود أن نسمع عن تجربتك مع الأخصائي.';
+
+  @override
+  String get parentFeedbackCommentOptional => 'تعليق (اختياري)';
+
+  @override
+  String get parentFeedbackCommentHint => 'شارك تجربتك مع الأخصائي...';
+
+  @override
+  String get parentFeedbackSubmit => 'إرسال الملاحظات';
+
+  @override
+  String get parentFeedbackThankYou => 'شكراً لك!';
+
+  @override
+  String get parentFeedbackThankYouMessage => 'شكراً لمشاركة ملاحظاتك.';
+
+  @override
+  String get parentFeedbackYouRated => 'لقد قيّمت';
+
+  @override
+  String get parentFeedbackYourSpecialist => 'أخصائيك';
+
+  @override
+  String parentFeedbackRatingOutOfFive(int rating) {
+    return '$rating / 5';
+  }
+
+  @override
+  String get parentFeedbackImproveServices =>
+      'رأيك يساعدنا على تحسين خدمات إعادة التأهيل\nودعم المزيد من العائلات.';
+
+  @override
+  String get parentFeedbackRecordedSuccess => 'تم تسجيل ملاحظاتك بنجاح.';
+
+  @override
+  String get parentMediaAdd => 'إضافة وسائط';
+
+  @override
+  String get parentMediaAddDescription =>
+      'صورة أو فيديو أو صوت اختياري للأخصائي.';
+
+  @override
+  String get parentMediaChooseFromGallery => 'اختيار من المعرض / الملفات';
+
+  @override
+  String get parentMediaRecordVideo => 'تسجيل فيديو';
+
+  @override
+  String get parentMediaRecordAudio => 'تسجيل صوت';
+
+  @override
+  String get parentMediaTakePhoto => 'التقاط صورة';
+
+  @override
+  String get parentMediaPhoto => 'صورة';
+
+  @override
+  String get parentMediaPermissionRequired => 'الإذن مطلوب لإضافة الوسائط.';
+
+  @override
+  String get parentMediaRecordingInProgress => 'جارٍ التسجيل...';
+
+  @override
+  String get parentMediaTapStartStop => 'اضغط بدء، ثم توقف عند الانتهاء.';
+
+  @override
+  String get parentMediaRecordingAudio => 'جارٍ تسجيل الصوت';
+
+  @override
+  String get parentMediaReadyToRecord => 'جاهز للتسجيل';
+
+  @override
+  String get parentMediaStartRecording => 'بدء التسجيل';
+
+  @override
+  String get parentMediaStopRecording => 'إيقاف التسجيل';
+
+  @override
+  String get parentMediaRecordFailed =>
+      'تعذر تسجيل الصوت. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String parentMediaAttached(String type) {
+    return 'تم إرفاق $type';
+  }
+
+  @override
+  String get parentMediaRemoveTooltip => 'إزالة الوسائط';
 }
