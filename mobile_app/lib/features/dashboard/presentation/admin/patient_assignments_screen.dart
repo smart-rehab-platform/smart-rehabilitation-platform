@@ -5,6 +5,7 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../models/admin_assignments_models.dart';
 import '../../models/parent_links_models.dart';
 import '../../providers/admin_patient_assignments_provider.dart';
+import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
@@ -76,8 +77,11 @@ class _PatientAssignmentsScreenState extends ConsumerState<PatientAssignmentsScr
 
     return AdminPageScaffold(
       title: 'Patient Assignments',
-      showBackButton: true,
-      currentNav: DashboardNavItem.patients,
+      currentNav: AdminNavigation.listScreenNav(
+        context,
+        tabItem: DashboardNavItem.patients,
+      ),
+      enableModuleListBack: true,
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

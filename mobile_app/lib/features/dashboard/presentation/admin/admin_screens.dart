@@ -96,11 +96,14 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user;
+    final fromMore = AdminNavigation.isFromMore(context);
 
     return AdminPageScaffold(
       title: 'Profile',
-      showBackButton: true,
-      showBottomNav: false,
+      showBackButton: !fromMore && context.canPop(),
+      currentNav: fromMore ? DashboardNavItem.more : null,
+      showBottomNav: fromMore,
+      enableModuleListBack: fromMore,
       body: SingleChildScrollView(
         padding: context.dashPadding,
         child: DashboardSurfaceCard(
@@ -158,47 +161,59 @@ class AdminMoreScreen extends ConsumerWidget {
           _MoreTile(
             icon: Icons.groups_outlined,
             label: 'Users',
-            onTap: () => context.go(AppRoutes.adminUsers),
+            onTap: () => AdminNavigation.openFromMore(context, AppRoutes.adminUsers),
           ),
           _MoreTile(
             icon: Icons.people_outline_rounded,
             label: 'Patients',
-            onTap: () => context.go(AppRoutes.adminPatients),
+            onTap: () =>
+                AdminNavigation.openFromMore(context, AppRoutes.adminPatients),
           ),
           _MoreTile(
             icon: Icons.assignment_ind_outlined,
             label: 'Patient Assignments',
-            onTap: () => context.go(AppRoutes.adminPatientAssignments),
+            onTap: () => AdminNavigation.openFromMore(
+              context,
+              AppRoutes.adminPatientAssignments,
+            ),
           ),
           _MoreTile(
             icon: Icons.inbox_outlined,
             label: 'Case Requests',
-            onTap: () => context.go(AppRoutes.adminCaseRequests),
+            onTap: () =>
+                AdminNavigation.openFromMore(context, AppRoutes.adminCaseRequests),
           ),
           _MoreTile(
             icon: Icons.event_note_outlined,
             label: 'Sessions',
-            onTap: () => context.go(AppRoutes.adminSessions),
+            onTap: () =>
+                AdminNavigation.openFromMore(context, AppRoutes.adminSessions),
           ),
           _MoreTile(
             icon: Icons.psychology_outlined,
             label: 'AI Center',
-            onTap: () => context.go(AppRoutes.adminAiCenter),
+            onTap: () =>
+                AdminNavigation.openFromMore(context, AppRoutes.adminAiCenter),
           ),
           _MoreTile(
             icon: Icons.history_rounded,
             label: 'Audit Logs',
-            onTap: () => context.go(AppRoutes.adminAuditLogs),
+            onTap: () =>
+                AdminNavigation.openFromMore(context, AppRoutes.adminAuditLogs),
           ),
           _MoreTile(
             icon: Icons.notifications_none_rounded,
             label: 'Notifications',
-            onTap: () => context.go(AppRoutes.adminNotifications),
+            onTap: () => AdminNavigation.openFromMore(
+              context,
+              AppRoutes.adminNotifications,
+            ),
           ),
           _MoreTile(
             icon: Icons.person_outline_rounded,
             label: 'Profile',
-            onTap: () => context.push(AppRoutes.adminProfile),
+            onTap: () =>
+                AdminNavigation.openFromMore(context, AppRoutes.adminProfile),
           ),
           _MoreTile(
             icon: Icons.logout_rounded,
@@ -381,11 +396,14 @@ class _AdminNotificationsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(specialistNotificationsProvider);
     final theme = Theme.of(context);
+    final fromMore = AdminNavigation.isFromMore(context);
 
     return AdminPageScaffold(
       title: 'Notifications',
-      showBackButton: true,
-      showBottomNav: false,
+      showBackButton: !fromMore && context.canPop(),
+      currentNav: fromMore ? DashboardNavItem.more : null,
+      showBottomNav: fromMore,
+      enableModuleListBack: fromMore,
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
         errorMessage: state.errorMessage,

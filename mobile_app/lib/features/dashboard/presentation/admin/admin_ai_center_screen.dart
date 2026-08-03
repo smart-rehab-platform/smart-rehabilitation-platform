@@ -6,6 +6,7 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
+import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_status_badge.dart';
 import '../../widgets/admin_ui_components.dart';
@@ -106,8 +107,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
   Widget build(BuildContext context) {
     return AdminPageScaffold(
       title: 'AI Center',
-      showBackButton: true,
-      showBottomNav: false,
+      currentNav: AdminNavigation.listScreenNav(context),
+      enableModuleListBack: true,
       body: _isLoading
           ? const AdminLoadingCard()
           : RefreshIndicator(

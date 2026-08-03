@@ -21,6 +21,8 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.additionalActions,
     this.showBrandTitle = true,
     this.showMessagesAction = true,
+    this.showBackButton = false,
+    this.onBackPressed,
   });
 
   final int messageCount;
@@ -36,6 +38,8 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? additionalActions;
   final bool showBrandTitle;
   final bool showMessagesAction;
+  final bool showBackButton;
+  final VoidCallback? onBackPressed;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -49,9 +53,17 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
       centerTitle: false,
-      leadingWidth: showMenuButton ? null : 0,
-      titleSpacing: showMenuButton ? null : 16,
-      leading: showMenuButton
+      leadingWidth: showBackButton
+          ? 56
+          : (showMenuButton ? null : 0),
+      titleSpacing: showBackButton ? 0 : (showMenuButton ? null : 16),
+      leading: showBackButton
+          ? IconButton(
+              onPressed: onBackPressed,
+              icon: const Icon(Icons.arrow_back_rounded),
+              color: DashboardColors.textPrimary,
+            )
+          : showMenuButton
           ? IconButton(
               onPressed: onMenuTap,
               icon: const Icon(Icons.menu_rounded),

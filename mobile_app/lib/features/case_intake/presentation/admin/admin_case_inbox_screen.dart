@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../dashboard/widgets/admin_navigation.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
 import '../../../dashboard/widgets/admin_ui_components.dart';
-import '../../../dashboard/widgets/dashboard_bottom_nav.dart';
 import '../../../dashboard/widgets/dashboard_layout.dart';
 import '../../models/case_category_model.dart';
 import '../../models/case_intake_request_model.dart';
@@ -91,8 +91,8 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
 
     return AdminPageScaffold(
       title: 'Case Requests',
-      showBackButton: true,
-      currentNav: DashboardNavItem.more,
+      currentNav: AdminNavigation.listScreenNav(context),
+      enableModuleListBack: true,
       actions: [
         if (state.hasActiveFilters)
           IconButton(

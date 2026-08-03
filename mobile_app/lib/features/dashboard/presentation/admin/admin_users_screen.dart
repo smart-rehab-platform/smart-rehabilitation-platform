@@ -7,6 +7,7 @@ import '../../../auth/providers/auth_provider.dart';
 import '../../data/admin_users_repository.dart';
 import '../../providers/admin_dashboard_provider.dart';
 import '../../providers/admin_users_provider.dart';
+import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../../presence/widgets/online_status_dot.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -211,7 +212,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
 
     return AdminPageScaffold(
       title: 'Users',
-      showBackButton: true,
+      currentNav: AdminNavigation.listScreenNav(context),
+      enableModuleListBack: true,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openUserForm(),
         backgroundColor: DashboardColors.primary,
