@@ -4695,4 +4695,195 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get parentMediaRemoveTooltip => 'Remove media';
+
+  @override
+  String get adminAuditUnknownDate => 'Unknown date';
+
+  @override
+  String get adminAuditReferenceId => 'Reference ID';
+
+  @override
+  String get adminAuditSystemUser => 'System';
+
+  @override
+  String get adminAuditSystemEntity => 'System';
+
+  @override
+  String get adminAuditSystemUserInitials => 'SY';
+
+  @override
+  String get auditActionActivity => 'Activity';
+
+  @override
+  String get auditActionCreate => 'Create';
+
+  @override
+  String get auditActionUpdate => 'Update';
+
+  @override
+  String get auditActionComplete => 'Complete';
+
+  @override
+  String get auditActionDelete => 'Delete';
+
+  @override
+  String get auditActionAssign => 'Assign';
+
+  @override
+  String get auditActionLogin => 'Login';
+
+  @override
+  String get auditActionLogout => 'Logout';
+
+  @override
+  String get auditActionCancel => 'Cancel';
+
+  @override
+  String get auditActionActivate => 'Activate';
+
+  @override
+  String get auditActionDeactivate => 'Deactivate';
+
+  @override
+  String get auditActionUnassign => 'Unassign';
+
+  @override
+  String get auditActionApprove => 'Approve';
+
+  @override
+  String get auditActionReject => 'Reject';
+
+  @override
+  String get auditActionAccept => 'Accept';
+
+  @override
+  String get auditActionArchive => 'Archive';
+
+  @override
+  String get auditActionUpload => 'Upload';
+
+  @override
+  String get auditActionGenerate => 'Generate';
+
+  @override
+  String get auditActionReview => 'Review';
+
+  @override
+  String get auditActionMarkRead => 'Mark read';
+
+  @override
+  String get auditActionReadAll => 'Read all';
+
+  @override
+  String get auditActionSessionComplete => 'Session Completed';
+
+  @override
+  String get auditActionSessionCancel => 'Session Cancelled';
+
+  @override
+  String get auditActionSessionCreate => 'Session Created';
+
+  @override
+  String get auditActionSessionUpdate => 'Session Updated';
+
+  @override
+  String get auditActionSessionDelete => 'Session Deleted';
+
+  @override
+  String get auditActionSessionNoShow => 'Session Marked No Show';
+
+  @override
+  String get auditActionPatientCreate => 'Patient Created';
+
+  @override
+  String get auditActionPatientUpdate => 'Patient Updated';
+
+  @override
+  String get auditActionPatientDelete => 'Patient Deleted';
+
+  @override
+  String get auditActionTreatmentPlanCreate => 'Treatment Plan Created';
+
+  @override
+  String get auditActionGoalAdd => 'Goal Added';
+
+  @override
+  String get auditActionExerciseAssign => 'Exercise Assigned';
+
+  @override
+  String get auditActionParentLink => 'Parent Linked';
+
+  @override
+  String get auditActionSpecialistAssign => 'Specialist Assigned';
+
+  @override
+  String get auditActionUserCreate => 'User Created';
+
+  @override
+  String get auditActionUserUpdate => 'User Updated';
+
+  @override
+  String get auditActionUserDelete => 'User Deleted';
+
+  @override
+  String get auditActionCaseCategoryCreate => 'Case Category Created';
+
+  @override
+  String get auditActionCaseCategoryUpdate => 'Case Category Updated';
+
+  @override
+  String get auditActionSpecialistCaseCategoriesUpdate =>
+      'Specialist Categories Updated';
+
+  @override
+  String get auditActionCaseIntakeRequestCreate => 'Case Request Created';
+
+  @override
+  String get auditActionCaseIntakeRequestUpdate => 'Case Request Updated';
+
+  @override
+  String get auditActionCaseIntakeAttachmentAdd => 'Attachment Added';
+
+  @override
+  String get auditActionCaseIntakeAttachmentDelete => 'Attachment Deleted';
+
+  @override
+  String get auditActionCaseIntakeRequestAssign => 'Case Request Assigned';
+
+  @override
+  String get auditActionCaseIntakeAssessmentStart => 'Assessment Started';
+
+  @override
+  String get auditActionCaseIntakeAssessmentNotesUpdate =>
+      'Assessment Notes Updated';
+
+  @override
+  String get auditActionCaseIntakeRequestAccept => 'Case Request Accepted';
+
+  @override
+  String get auditActionCaseIntakeRequestReject => 'Case Request Rejected';
+
+  @override
+  String get auditActionCaseIntakeRequestConvert => 'Case Converted to Patient';
+
+  @override
+  String get auditEntityCaseCategory => 'Case Category';
+
+  @override
+  String get auditEntityAssignedExercise => 'Assigned Exercise';
+
+  @override
+  String get auditEntitySubmission => 'Submission';
+
+  @override
+  String get auditEntityReview => 'Review';
+
+  @override
+  String get auditEntitySpeechAnalysis => 'Speech Analysis';
+
+  @override
+  String get auditEntityAiRecommendation => 'AI Recommendation';
+
+  @override
+  String get auditEntityAiReport => 'AI Report';
 }

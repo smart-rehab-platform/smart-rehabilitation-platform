@@ -4618,4 +4618,195 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get parentMediaRemoveTooltip => 'إزالة الوسائط';
+
+  @override
+  String get adminAuditUnknownDate => 'تاريخ غير معروف';
+
+  @override
+  String get adminAuditReferenceId => 'معرّف المرجع';
+
+  @override
+  String get adminAuditSystemUser => 'النظام';
+
+  @override
+  String get adminAuditSystemEntity => 'النظام';
+
+  @override
+  String get adminAuditSystemUserInitials => 'نظ';
+
+  @override
+  String get auditActionActivity => 'نشاط';
+
+  @override
+  String get auditActionCreate => 'إنشاء';
+
+  @override
+  String get auditActionUpdate => 'تحديث';
+
+  @override
+  String get auditActionComplete => 'إكمال';
+
+  @override
+  String get auditActionDelete => 'حذف';
+
+  @override
+  String get auditActionAssign => 'تعيين';
+
+  @override
+  String get auditActionLogin => 'تسجيل الدخول';
+
+  @override
+  String get auditActionLogout => 'تسجيل الخروج';
+
+  @override
+  String get auditActionCancel => 'إلغاء';
+
+  @override
+  String get auditActionActivate => 'تفعيل';
+
+  @override
+  String get auditActionDeactivate => 'إلغاء التفعيل';
+
+  @override
+  String get auditActionUnassign => 'إلغاء التعيين';
+
+  @override
+  String get auditActionApprove => 'موافقة';
+
+  @override
+  String get auditActionReject => 'رفض';
+
+  @override
+  String get auditActionAccept => 'قبول';
+
+  @override
+  String get auditActionArchive => 'أرشفة';
+
+  @override
+  String get auditActionUpload => 'رفع';
+
+  @override
+  String get auditActionGenerate => 'إنشاء';
+
+  @override
+  String get auditActionReview => 'مراجعة';
+
+  @override
+  String get auditActionMarkRead => 'تعليم كمقروء';
+
+  @override
+  String get auditActionReadAll => 'قراءة الكل';
+
+  @override
+  String get auditActionSessionComplete => 'اكتملت الجلسة';
+
+  @override
+  String get auditActionSessionCancel => 'أُلغيت الجلسة';
+
+  @override
+  String get auditActionSessionCreate => 'تم إنشاء الجلسة';
+
+  @override
+  String get auditActionSessionUpdate => 'تم تحديث الجلسة';
+
+  @override
+  String get auditActionSessionDelete => 'تم حذف الجلسة';
+
+  @override
+  String get auditActionSessionNoShow => 'تم تعليم الجلسة كغياب';
+
+  @override
+  String get auditActionPatientCreate => 'تم إنشاء المريض';
+
+  @override
+  String get auditActionPatientUpdate => 'تم تحديث المريض';
+
+  @override
+  String get auditActionPatientDelete => 'تم حذف المريض';
+
+  @override
+  String get auditActionTreatmentPlanCreate => 'تم إنشاء خطة العلاج';
+
+  @override
+  String get auditActionGoalAdd => 'تمت إضافة الهدف';
+
+  @override
+  String get auditActionExerciseAssign => 'تم تعيين التمرين';
+
+  @override
+  String get auditActionParentLink => 'تم ربط ولي الأمر';
+
+  @override
+  String get auditActionSpecialistAssign => 'تم تعيين الأخصائي';
+
+  @override
+  String get auditActionUserCreate => 'تم إنشاء المستخدم';
+
+  @override
+  String get auditActionUserUpdate => 'تم تحديث المستخدم';
+
+  @override
+  String get auditActionUserDelete => 'تم حذف المستخدم';
+
+  @override
+  String get auditActionCaseCategoryCreate => 'تم إنشاء فئة الحالة';
+
+  @override
+  String get auditActionCaseCategoryUpdate => 'تم تحديث فئة الحالة';
+
+  @override
+  String get auditActionSpecialistCaseCategoriesUpdate =>
+      'تم تحديث فئات الأخصائي';
+
+  @override
+  String get auditActionCaseIntakeRequestCreate => 'تم إنشاء طلب الحالة';
+
+  @override
+  String get auditActionCaseIntakeRequestUpdate => 'تم تحديث طلب الحالة';
+
+  @override
+  String get auditActionCaseIntakeAttachmentAdd => 'تمت إضافة مرفق';
+
+  @override
+  String get auditActionCaseIntakeAttachmentDelete => 'تم حذف المرفق';
+
+  @override
+  String get auditActionCaseIntakeRequestAssign => 'تم تعيين طلب الحالة';
+
+  @override
+  String get auditActionCaseIntakeAssessmentStart => 'بدأ التقييم';
+
+  @override
+  String get auditActionCaseIntakeAssessmentNotesUpdate =>
+      'تم تحديث ملاحظات التقييم';
+
+  @override
+  String get auditActionCaseIntakeRequestAccept => 'تم قبول طلب الحالة';
+
+  @override
+  String get auditActionCaseIntakeRequestReject => 'تم رفض طلب الحالة';
+
+  @override
+  String get auditActionCaseIntakeRequestConvert => 'تم تحويل الحالة إلى مريض';
+
+  @override
+  String get auditEntityCaseCategory => 'فئة الحالة';
+
+  @override
+  String get auditEntityAssignedExercise => 'تمرين معيّن';
+
+  @override
+  String get auditEntitySubmission => 'إرسال';
+
+  @override
+  String get auditEntityReview => 'مراجعة';
+
+  @override
+  String get auditEntitySpeechAnalysis => 'تحليل الكلام';
+
+  @override
+  String get auditEntityAiRecommendation => 'توصية الذكاء الاصطناعي';
+
+  @override
+  String get auditEntityAiReport => 'تقرير الذكاء الاصطناعي';
 }

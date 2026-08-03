@@ -2,21 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/admin_features_repository.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_layout.dart';
-
-/// Semantic category used for badge color and icon.
-enum AuditActionCategory {
-  create,
-  update,
-  complete,
-  delete,
-  assign,
-  login,
-  cancel,
-  other,
-}
+import 'admin_audit_localization_utils.dart';
 
 class AuditActionPresentation {
   const AuditActionPresentation({
@@ -39,97 +29,81 @@ class AuditActionPresentation {
 const _assignPurple = Color(0xFF7C3AED);
 const _assignPurpleSoft = Color(0xFFF5F3FF);
 
-/// Known action → friendly title. Filters still use raw backend values.
-const Map<String, String> _auditActionTitles = {
-  'session_complete': 'Session Completed',
-  'session_cancel': 'Session Cancelled',
-  'session_create': 'Session Created',
-  'session_update': 'Session Updated',
-  'session_delete': 'Session Deleted',
-  'session_no_show': 'Session Marked No Show',
-  'patient_create': 'Patient Created',
-  'patient_update': 'Patient Updated',
-  'patient_delete': 'Patient Deleted',
-  'treatment_plan_create': 'Treatment Plan Created',
-  'treatment_plan_created': 'Treatment Plan Created',
-  'goal_add': 'Goal Added',
-  'goal_added': 'Goal Added',
-  'goal_create': 'Goal Added',
-  'exercise_assign': 'Exercise Assigned',
-  'exercise_assigned': 'Exercise Assigned',
-  'parent_link': 'Parent Linked',
-  'parent_linked': 'Parent Linked',
-  'specialist_assign': 'Specialist Assigned',
-  'specialist_assigned': 'Specialist Assigned',
-  'login': 'Login',
-  'logout': 'Logout',
-  'user_create': 'User Created',
-  'user_update': 'User Updated',
-  'user_delete': 'User Deleted',
-  'case_category_create': 'Case Category Created',
-  'case_category_update': 'Case Category Updated',
-  'specialist_case_categories_update': 'Specialist Categories Updated',
-  'case_intake_request_create': 'Case Request Created',
-  'case_intake_request_update': 'Case Request Updated',
-  'case_intake_attachment_add': 'Attachment Added',
-  'case_intake_attachment_delete': 'Attachment Deleted',
-  'case_intake_request_assign': 'Case Request Assigned',
-  'case_intake_assessment_start': 'Assessment Started',
-  'case_intake_assessment_notes_update': 'Assessment Notes Updated',
-  'case_intake_request_accept': 'Case Request Accepted',
-  'case_intake_request_reject': 'Case Request Rejected',
-  'case_intake_request_convert': 'Case Converted to Patient',
-};
-
-const Map<String, String> _entityLabels = {
-  'session': 'Session',
-  'sessions': 'Session',
-  'patient': 'Patient',
-  'patients': 'Patient',
-  'user': 'User',
-  'users': 'User',
-  'goal': 'Goal',
-  'goals': 'Goal',
-  'exercise': 'Exercise',
-  'exercises': 'Exercise',
-  'treatment_plan': 'Treatment Plan',
-  'report': 'Report',
-  'reports': 'Report',
-  'case_intake_request': 'Case Request',
-  'case_category': 'Case Category',
-  'parent': 'Parent',
-  'specialist': 'Specialist',
-};
-
-String formatAuditActionTitle(String rawAction) {
+AuditActionPresentation auditActionPresentation(
+  AppLocalizations l10n,
+  String rawAction,
+) {
   final key = rawAction.trim().toLowerCase();
-  if (key.isEmpty) {
-    return 'Activity';
-  }
+  final title = localizedAuditActionTitle(l10n, rawAction);
+  final category = resolveAuditActionCategory(key);
+  final badgeLabel = localizedAuditActionBadgeLabel(l10n, category, rawAction);
 
-  final mapped = _auditActionTitles[key];
-  if (mapped != null) {
-    return mapped;
-  }
-
-  return key
-      .split(RegExp(r'[_\s-]+'))
-      .where((part) => part.isNotEmpty)
-      .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
-      .join(' ');
-}
-
-String formatAuditEntityLabel(String? entityName) {
-  final key = entityName?.trim().toLowerCase() ?? '';
-  if (key.isEmpty) {
-    return 'System';
-  }
-  return _entityLabels[key] ??
-      key
-          .split(RegExp(r'[_\s-]+'))
-          .where((part) => part.isNotEmpty)
-          .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
-          .join(' ');
+  return switch (category) {
+    AuditActionCategory.create => AuditActionPresentation(
+      title: title,
+      badgeLabel: badgeLabel,
+      category: category,
+      icon: Icons.add_circle_outline_rounded,
+      color: DashboardColors.success,
+      background: DashboardColors.tealSoft,
+    ),
+    AuditActionCategory.update => AuditActionPresentation(
+      title: title,
+      badgeLabel: badgeLabel,
+      category: category,
+      icon: Icons.edit_outlined,
+      color: DashboardColors.brandCyan,
+      background: DashboardColors.blueSoft,
+    ),
+    AuditActionCategory.complete => AuditActionPresentation(
+      title: title,
+      badgeLabel: badgeLabel,
+      category: category,
+      icon: Icons.check_circle_outline_rounded,
+      color: DashboardColors.warning,
+      background: DashboardColors.amberSoft,
+    ),
+    AuditActionCategory.delete => AuditActionPresentation(
+      title: title,
+      badgeLabel: badgeLabel,
+      category: category,
+      icon: Icons.delete_outline_rounded,
+      color: DashboardColors.highPriority,
+      background: DashboardColors.amberSoft,
+    ),
+    AuditActionCategory.assign => AuditActionPresentation(
+      title: title,
+      badgeLabel: badgeLabel,
+      category: category,
+      icon: Icons.person_add_alt_1_outlined,
+      color: _assignPurple,
+      background: _assignPurpleSoft,
+    ),
+    AuditActionCategory.login => AuditActionPresentation(
+      title: title,
+      badgeLabel: badgeLabel,
+      category: category,
+      icon: key.contains('logout') ? Icons.logout_rounded : Icons.login_rounded,
+      color: DashboardColors.textSecondary,
+      background: DashboardColors.purpleSoft,
+    ),
+    AuditActionCategory.cancel => AuditActionPresentation(
+      title: title,
+      badgeLabel: badgeLabel,
+      category: category,
+      icon: Icons.cancel_outlined,
+      color: DashboardColors.warning,
+      background: const Color(0xFFFFFBEB),
+    ),
+    AuditActionCategory.other => AuditActionPresentation(
+      title: title,
+      badgeLabel: badgeLabel,
+      category: category,
+      icon: Icons.history_rounded,
+      color: DashboardColors.textSecondary,
+      background: DashboardColors.purpleSoft,
+    ),
+  };
 }
 
 bool looksLikeUuid(String? value) {
@@ -140,114 +114,6 @@ bool looksLikeUuid(String? value) {
   return RegExp(
     r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
   ).hasMatch(trimmed);
-}
-
-AuditActionPresentation auditActionPresentation(String rawAction) {
-  final key = rawAction.trim().toLowerCase();
-  final title = formatAuditActionTitle(rawAction);
-  final category = _resolveCategory(key);
-
-  return switch (category) {
-    AuditActionCategory.create => AuditActionPresentation(
-      title: title,
-      badgeLabel: 'Create',
-      category: category,
-      icon: Icons.add_circle_outline_rounded,
-      color: DashboardColors.success,
-      background: DashboardColors.tealSoft,
-    ),
-    AuditActionCategory.update => AuditActionPresentation(
-      title: title,
-      badgeLabel: 'Update',
-      category: category,
-      icon: Icons.edit_outlined,
-      color: DashboardColors.brandCyan,
-      background: DashboardColors.blueSoft,
-    ),
-    AuditActionCategory.complete => AuditActionPresentation(
-      title: title,
-      badgeLabel: 'Complete',
-      category: category,
-      icon: Icons.check_circle_outline_rounded,
-      color: DashboardColors.warning,
-      background: DashboardColors.amberSoft,
-    ),
-    AuditActionCategory.delete => AuditActionPresentation(
-      title: title,
-      badgeLabel: 'Delete',
-      category: category,
-      icon: Icons.delete_outline_rounded,
-      color: DashboardColors.highPriority,
-      background: DashboardColors.amberSoft,
-    ),
-    AuditActionCategory.assign => AuditActionPresentation(
-      title: title,
-      badgeLabel: 'Assign',
-      category: category,
-      icon: Icons.person_add_alt_1_outlined,
-      color: _assignPurple,
-      background: _assignPurpleSoft,
-    ),
-    AuditActionCategory.login => AuditActionPresentation(
-      title: title,
-      badgeLabel: key.contains('logout') ? 'Logout' : 'Login',
-      category: category,
-      icon: key.contains('logout') ? Icons.logout_rounded : Icons.login_rounded,
-      color: DashboardColors.textSecondary,
-      background: DashboardColors.purpleSoft,
-    ),
-    AuditActionCategory.cancel => AuditActionPresentation(
-      title: title,
-      badgeLabel: 'Cancel',
-      category: category,
-      icon: Icons.cancel_outlined,
-      color: DashboardColors.warning,
-      background: const Color(0xFFFFFBEB),
-    ),
-    AuditActionCategory.other => AuditActionPresentation(
-      title: title,
-      badgeLabel: 'Activity',
-      category: category,
-      icon: Icons.history_rounded,
-      color: DashboardColors.textSecondary,
-      background: DashboardColors.purpleSoft,
-    ),
-  };
-}
-
-AuditActionCategory _resolveCategory(String key) {
-  if (key == 'login' || key == 'logout' || key.endsWith('_login')) {
-    return AuditActionCategory.login;
-  }
-  if (key.contains('cancel') ||
-      key.contains('reject') ||
-      key.contains('no_show')) {
-    return AuditActionCategory.cancel;
-  }
-  if (key.contains('complete') ||
-      key.contains('accept') ||
-      key.contains('convert')) {
-    return AuditActionCategory.complete;
-  }
-  if (key.contains('delete') ||
-      key.contains('remove') ||
-      key.contains('unlink')) {
-    return AuditActionCategory.delete;
-  }
-  if (key.contains('assign') ||
-      key.contains('link') ||
-      key.contains('attach')) {
-    return AuditActionCategory.assign;
-  }
-  if (key.contains('create') || key.contains('add') || key.endsWith('_start')) {
-    return AuditActionCategory.create;
-  }
-  if (key.contains('update') ||
-      key.contains('edit') ||
-      key.contains('change')) {
-    return AuditActionCategory.update;
-  }
-  return AuditActionCategory.other;
 }
 
 class AdminAuditLogCard extends StatefulWidget {
@@ -264,14 +130,15 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final log = widget.log;
-    final presentation = auditActionPresentation(log.action);
+    final presentation = auditActionPresentation(l10n, log.action);
     final userName = (log.userName?.trim().isNotEmpty ?? false)
         ? log.userName!.trim()
-        : 'System';
+        : l10n.adminAuditSystemUser;
     final userEmail = log.userEmail?.trim();
-    final entityLabel = formatAuditEntityLabel(log.entityName);
+    final entityLabel = localizedAuditEntityLabel(l10n, log.entityName);
     final entityId = log.entityId?.trim();
     final hasReferenceId =
         entityId != null && entityId.isNotEmpty && looksLikeUuid(entityId);
@@ -281,7 +148,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
         : null;
     final createdAt = log.createdAt?.toLocal();
     final dateLabel = createdAt == null
-        ? 'Unknown date'
+        ? l10n.adminAuditUnknownDate
         : DateFormat('MMM d, yyyy').format(createdAt);
     final timeLabel = createdAt == null
         ? '—'
@@ -393,7 +260,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                     setState(() => _detailsExpanded = expanded);
                   },
                   title: Text(
-                    'Details',
+                    l10n.commonDetails,
                     style: theme.textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: DashboardColors.brandCyan,
@@ -418,7 +285,7 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Reference ID',
+                            l10n.adminAuditReferenceId,
                             style: theme.textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: DashboardColors.textMuted,
@@ -487,7 +354,11 @@ class _AuditUserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initials = dashboardInitials(name, fallback: 'SY');
+    final l10n = AppLocalizations.of(context)!;
+    final initials = dashboardInitials(
+      name,
+      fallback: l10n.adminAuditSystemUserInitials,
+    );
 
     return Container(
       width: 40,

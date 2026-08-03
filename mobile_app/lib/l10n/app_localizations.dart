@@ -8116,6 +8116,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove media'**
   String get parentMediaRemoveTooltip;
+
+  /// Fallback when audit log timestamp is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown date'**
+  String get adminAuditUnknownDate;
+
+  /// Label for audit log entity reference UUID.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference ID'**
+  String get adminAuditReferenceId;
+
+  /// Display name when audit log has no user.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get adminAuditSystemUser;
+
+  /// Entity label when audit log has no entity name.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get adminAuditSystemEntity;
+
+  /// Avatar initials fallback for system user.
+  ///
+  /// In en, this message translates to:
+  /// **'SY'**
+  String get adminAuditSystemUserInitials;
+
+  /// Generic audit action label.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get auditActionActivity;
+
+  /// Audit action badge for create operations.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get auditActionCreate;
+
+  /// Audit action badge for update operations.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get auditActionUpdate;
+
+  /// Audit action badge for complete operations.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get auditActionComplete;
+
+  /// Audit action badge for delete operations.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get auditActionDelete;
+
+  /// Audit action badge for assign operations.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign'**
+  String get auditActionAssign;
+
+  /// Audit action for login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get auditActionLogin;
+
+  /// Audit action for logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get auditActionLogout;
+
+  /// Audit action badge for cancel operations.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get auditActionCancel;
+
+  /// Audit action for activate.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get auditActionActivate;
+
+  /// Audit action for deactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get auditActionDeactivate;
+
+  /// Audit action for unassign.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassign'**
+  String get auditActionUnassign;
+
+  /// Audit action for approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get auditActionApprove;
+
+  /// Audit action for reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get auditActionReject;
+
+  /// Audit action for accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get auditActionAccept;
+
+  /// Audit action for archive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get auditActionArchive;
+
+  /// Audit action for upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get auditActionUpload;
+
+  /// Audit action for generate.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate'**
+  String get auditActionGenerate;
+
+  /// Audit action for review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get auditActionReview;
+
+  /// Audit action for mark_read.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark read'**
+  String get auditActionMarkRead;
+
+  /// Audit action for read_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Read all'**
+  String get auditActionReadAll;
+
+  /// Audit title for session_complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Completed'**
+  String get auditActionSessionComplete;
+
+  /// Audit title for session_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Cancelled'**
+  String get auditActionSessionCancel;
+
+  /// Audit title for session_create.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Created'**
+  String get auditActionSessionCreate;
+
+  /// Audit title for session_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Updated'**
+  String get auditActionSessionUpdate;
+
+  /// Audit title for session_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Deleted'**
+  String get auditActionSessionDelete;
+
+  /// Audit title for session_no_show.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Marked No Show'**
+  String get auditActionSessionNoShow;
+
+  /// Audit title for patient_create.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Created'**
+  String get auditActionPatientCreate;
+
+  /// Audit title for patient_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Updated'**
+  String get auditActionPatientUpdate;
+
+  /// Audit title for patient_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Deleted'**
+  String get auditActionPatientDelete;
+
+  /// Audit title for treatment plan create.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment Plan Created'**
+  String get auditActionTreatmentPlanCreate;
+
+  /// Audit title for goal add/create.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal Added'**
+  String get auditActionGoalAdd;
+
+  /// Audit title for exercise assign.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Assigned'**
+  String get auditActionExerciseAssign;
+
+  /// Audit title for parent link.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Linked'**
+  String get auditActionParentLink;
+
+  /// Audit title for specialist assign.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist Assigned'**
+  String get auditActionSpecialistAssign;
+
+  /// Audit title for user_create.
+  ///
+  /// In en, this message translates to:
+  /// **'User Created'**
+  String get auditActionUserCreate;
+
+  /// Audit title for user_update.
+  ///
+  /// In en, this message translates to:
+  /// **'User Updated'**
+  String get auditActionUserUpdate;
+
+  /// Audit title for user_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'User Deleted'**
+  String get auditActionUserDelete;
+
+  /// Audit title for case_category_create.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Category Created'**
+  String get auditActionCaseCategoryCreate;
+
+  /// Audit title for case_category_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Category Updated'**
+  String get auditActionCaseCategoryUpdate;
+
+  /// Audit title for specialist_case_categories_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist Categories Updated'**
+  String get auditActionSpecialistCaseCategoriesUpdate;
+
+  /// Audit title for case_intake_request_create.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Request Created'**
+  String get auditActionCaseIntakeRequestCreate;
+
+  /// Audit title for case_intake_request_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Request Updated'**
+  String get auditActionCaseIntakeRequestUpdate;
+
+  /// Audit title for case_intake_attachment_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment Added'**
+  String get auditActionCaseIntakeAttachmentAdd;
+
+  /// Audit title for case_intake_attachment_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment Deleted'**
+  String get auditActionCaseIntakeAttachmentDelete;
+
+  /// Audit title for case_intake_request_assign.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Request Assigned'**
+  String get auditActionCaseIntakeRequestAssign;
+
+  /// Audit title for case_intake_assessment_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment Started'**
+  String get auditActionCaseIntakeAssessmentStart;
+
+  /// Audit title for case_intake_assessment_notes_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment Notes Updated'**
+  String get auditActionCaseIntakeAssessmentNotesUpdate;
+
+  /// Audit title for case_intake_request_accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Request Accepted'**
+  String get auditActionCaseIntakeRequestAccept;
+
+  /// Audit title for case_intake_request_reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Request Rejected'**
+  String get auditActionCaseIntakeRequestReject;
+
+  /// Audit title for case_intake_request_convert.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Converted to Patient'**
+  String get auditActionCaseIntakeRequestConvert;
+
+  /// Audit entity type case_category.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Category'**
+  String get auditEntityCaseCategory;
+
+  /// Audit entity type assigned_exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Exercise'**
+  String get auditEntityAssignedExercise;
+
+  /// Audit entity type submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission'**
+  String get auditEntitySubmission;
+
+  /// Audit entity type review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get auditEntityReview;
+
+  /// Audit entity type speech_analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech Analysis'**
+  String get auditEntitySpeechAnalysis;
+
+  /// Audit entity type ai_recommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Recommendation'**
+  String get auditEntityAiRecommendation;
+
+  /// Audit entity type ai_report.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Report'**
+  String get auditEntityAiReport;
 }
 
 class _AppLocalizationsDelegate

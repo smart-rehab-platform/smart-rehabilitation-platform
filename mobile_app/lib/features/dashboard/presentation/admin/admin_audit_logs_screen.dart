@@ -10,6 +10,7 @@ import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/admin_ui_components.dart';
 import 'admin_audit_log_widgets.dart';
+import 'admin_audit_localization_utils.dart';
 import 'admin_scoped_localization_utils.dart';
 
 class AdminAuditLogsScreen extends ConsumerStatefulWidget {
@@ -175,7 +176,7 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                             ..._actions.map(
                               (action) => _AuditFilterOption<String?>(
                                 value: action,
-                                label: action,
+                                label: localizedAuditActionTitle(l10n, action),
                               ),
                             ),
                           ],
@@ -196,7 +197,7 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                             ..._entities.map(
                               (entity) => _AuditFilterOption<String?>(
                                 value: entity,
-                                label: entity,
+                                label: localizedAuditEntityLabel(l10n, entity),
                               ),
                             ),
                           ],
