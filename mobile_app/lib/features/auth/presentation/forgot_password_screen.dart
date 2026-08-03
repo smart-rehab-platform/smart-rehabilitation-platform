@@ -9,7 +9,9 @@ import '../../../core/routes/app_routes.dart';
 import '../../../shared/widgets/auth_ui.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
-  const ForgotPasswordScreen({super.key});
+  const ForgotPasswordScreen({super.key, this.initialEmail});
+
+  final String? initialEmail;
 
   @override
   ConsumerState<ForgotPasswordScreen> createState() =>
@@ -17,7 +19,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
-  final _emailController = TextEditingController();
+  late final TextEditingController _emailController;
+  late final FocusNode _emailFocusNode;
   String? _successMessage;
 
   bool get _isEmailValid {
@@ -30,8 +33,33 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController(
+      text: widget.initialEmail?.trim() ?? '',
+    );
+    _emailFocusNode = FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      _emailFocusNode.requestFocus();
+
+      if (_emailController.text.isNotEmpty) {
+        _emailController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _emailController.text.length,
+        );
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
+    _emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -101,8 +129,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           AuthBackButton(
                             onPressed: () => context.go(AppRoutes.login),
                           ),
-                          const SizedBox(width: 10),
-                          const AuthTopLogo(),
+                          const SizedBox(width: 6),
+                          const AuthTopLogo(
+                            logoAsset: AuthTopLogo.brandingAsset,
+                            logoSize: 26,
+                            logoColor: Color(0xFF2AA4C9),
+                          ),
                         ],
                       ),
                       SizedBox(height: topGap.toDouble()),
@@ -143,6 +175,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                     const SizedBox(height: 18),
                                     AuthInputField(
                                       controller: _emailController,
+                                      focusNode: _emailFocusNode,
                                       label: 'Email Address',
                                       hintText: 'name@example.com',
                                       icon: Icons.mail_outline_rounded,

@@ -171,7 +171,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.forgotPassword,
         name: 'forgotPassword',
-        builder: (context, state) => const ForgotPasswordScreen(),
+        builder: (context, state) {
+          final initialEmail =
+              state.extra is String ? state.extra as String : null;
+          return ForgotPasswordScreen(initialEmail: initialEmail);
+        },
       ),
       GoRoute(
         path: AppRoutes.resetPassword,
