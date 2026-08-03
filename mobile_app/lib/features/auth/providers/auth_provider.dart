@@ -152,6 +152,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String phone,
     required String role,
     String? profileImageUrl,
+    Map<String, dynamic>? specialistProfile,
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
@@ -163,6 +164,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         phone: phone,
         role: role,
         profileImageUrl: profileImageUrl,
+        specialistProfile: specialistProfile,
       );
 
       state = state.copyWith(isLoading: false, errorMessage: null);
@@ -302,6 +304,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         errorMessage: 'Unable to load your account details right now.',
       );
+    }
+  }
+
+  Future<String?> uploadSignupProfileImage(List<int> bytes, String filename) async {
+    try {
+      return await _repository.uploadSignupProfileImage(bytes, filename);
+    } on DioException catch (error) {
+      state = state.copyWith(errorMessage: _readDioErrorMessage(error));
+      return null;
+    } catch (error) {
+      state = state.copyWith(
+        errorMessage: 'Failed to upload profile image: $error',
+      );
+      return null;
     }
   }
 

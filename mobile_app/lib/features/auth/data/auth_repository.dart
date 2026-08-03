@@ -27,6 +27,7 @@ class AuthRepository {
     required String phone,
     required String role,
     String? profileImageUrl,
+    Map<String, dynamic>? specialistProfile,
   }) async {
     final payload = <String, dynamic>{
       'full_name': fullName,
@@ -36,6 +37,7 @@ class AuthRepository {
       'role': role,
       if (profileImageUrl != null && profileImageUrl.trim().isNotEmpty)
         'profile_image_url': profileImageUrl.trim(),
+      if (specialistProfile != null) 'specialist_profile': specialistProfile,
     };
 
     final response = await _dio.post('/auth/register', data: payload);
@@ -126,6 +128,40 @@ class AuthRepository {
     }
 
     _dio.options.headers['Authorization'] = 'Bearer ${token.trim()}';
+  }
+
+  Future<String> uploadSignupProfileImage(List<int> bytes, String filename) async {
+    final formData = FormData.fromMap({
+      'file': MultipartFile.fromBytes(
+        bytes,
+        filename: filename,
+      ),
+    });
+
+    final response = await _dio.post(
+      '/uploads/profile-image',
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+
+    final map = _normalizeMap(response.data);
+    if (map == null) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        message: 'Invalid upload response.',
+      );
+    }
+
+    final dataMap = AuthUser.normalizeMap(map['data']);
+    final url = dataMap?['url'];
+    if (url is! String || url.trim().isEmpty) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        message: 'Profile image was uploaded but no URL was returned.',
+      );
+    }
+
+    return url.trim();
   }
 
   Future<AuthUser> uploadProfileImage(List<int> bytes, String filename) async {

@@ -89,6 +89,8 @@ flutter:
     - assets/icons/treatment_journey/target.png
     - assets/icons/treatment_journey/trending_up.png
     - assets/icons/treatment_journey/calendar_event.png
+    - assets/icons/onboarding/neurology.svg
+    - assets/icons/onboarding/chart-bar.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

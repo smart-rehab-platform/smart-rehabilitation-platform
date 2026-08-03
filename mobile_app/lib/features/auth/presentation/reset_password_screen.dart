@@ -140,8 +140,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                           AuthBackButton(
                             onPressed: () => context.go(AppRoutes.login),
                           ),
-                          const SizedBox(width: 10),
-                          const AuthTopLogo(),
+                          const SizedBox(width: 6),
+                          const AuthTopLogo(
+                            logoAsset: AuthTopLogo.brandingAsset,
+                            logoSize: 26,
+                            logoColor: Color(0xFF2AA4C9),
+                          ),
                         ],
                       ),
                       SizedBox(height: topGap.toDouble()),
@@ -170,7 +174,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Enter your reset token and choose a strong new password.',
+                                      'Enter your new password below.',
                                       style: GoogleFonts.inter(
                                         fontSize: 12.5,
                                         height: 1.5,
@@ -180,15 +184,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                       ),
                                     ),
                                     const SizedBox(height: 18),
-                                    AuthInputField(
-                                      controller: _tokenController,
-                                      label: 'Reset Token',
-                                      hintText: 'Paste your reset token',
-                                      icon: Icons.key_rounded,
-                                      textInputAction: TextInputAction.next,
-                                      onChanged: (_) => setState(() {}),
-                                    ),
-                                    const SizedBox(height: 12),
                                     AuthInputField(
                                       controller: _passwordController,
                                       label: 'New Password',

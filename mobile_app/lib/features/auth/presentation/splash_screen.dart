@@ -20,7 +20,11 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AuthBackground(
+        showBackgroundVideo: true,
+        playbackSpeed: 0.5,
+        videoUpperPortionOnly: true,
         overlayOpacity: 0.65,
+        bottomFade: false,
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
@@ -82,13 +86,13 @@ class SplashScreen extends StatelessWidget {
                 const Column(
                   children: [
                     AuthFeaturePill(
-                      icon: Icons.psychology_alt_outlined,
+                      iconAsset: 'assets/icons/onboarding/neurology.svg',
                       text: 'AI Progress Tracking',
                       iconSize: 16,
                     ),
                     SizedBox(height: 10),
                     AuthFeaturePill(
-                      icon: Icons.monitor_heart_outlined,
+                      iconAsset: 'assets/icons/onboarding/chart-bar.svg',
                       text: 'Smart Exercise Guidance',
                       iconSize: 16,
                     ),

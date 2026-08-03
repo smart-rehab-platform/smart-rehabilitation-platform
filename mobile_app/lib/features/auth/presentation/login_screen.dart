@@ -310,8 +310,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   ),
                                   const Spacer(),
                                   TextButton(
-                                    onPressed: () =>
-                                        context.go(AppRoutes.forgotPassword),
+                                    onPressed: () => context.go(
+                                      AppRoutes.forgotPassword,
+                                      extra: _emailController.text.trim(),
+                                    ),
                                     style: TextButton.styleFrom(
                                       foregroundColor: AppColors.cyan,
                                       padding: EdgeInsets.zero,

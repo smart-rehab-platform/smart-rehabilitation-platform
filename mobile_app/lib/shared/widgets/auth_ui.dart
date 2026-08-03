@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 
@@ -97,12 +98,16 @@ class AuthBackground extends StatefulWidget {
     this.overlayOpacity = 0.80,
     this.bottomFade = true,
     this.showBackgroundVideo = false,
+    this.playbackSpeed = 1.0,
+    this.videoUpperPortionOnly = false,
   });
 
   final Widget child;
   final double overlayOpacity;
   final bool bottomFade;
   final bool showBackgroundVideo;
+  final double playbackSpeed;
+  final bool videoUpperPortionOnly;
 
   @override
   State<AuthBackground> createState() => _AuthBackgroundState();
@@ -147,6 +152,9 @@ class _AuthBackgroundState extends State<AuthBackground> {
 
       await controller.setVolume(0);
       await controller.setLooping(false);
+      if (widget.playbackSpeed > 0 && widget.playbackSpeed != 1.0) {
+        await controller.setPlaybackSpeed(widget.playbackSpeed);
+      }
 
       final startPosition = Duration(seconds: _authBackgroundVideoStartSeconds);
       if (controller.value.duration > startPosition) {
@@ -221,13 +229,46 @@ class _AuthBackgroundState extends State<AuthBackground> {
   Widget build(BuildContext context) {
     final showVideo =
         widget.showBackgroundVideo && _isVideoReady && _videoController != null;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final upperVideoHeight = screenHeight * 0.5;
 
     return DecoratedBox(
       decoration: const BoxDecoration(color: AppColors.primaryNavy),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (showVideo)
+          if (showVideo && widget.videoUpperPortionOnly)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: upperVideoHeight,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  RepaintBoundary(
+                    child: _AuthBackgroundVideoLayer(
+                      controller: _videoController!,
+                    ),
+                  ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          AppColors.primaryNavy.withValues(alpha: 0.35),
+                          AppColors.primaryNavy,
+                        ],
+                        stops: const [0.45, 0.78, 1],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else if (showVideo)
             RepaintBoundary(
               child: _AuthBackgroundVideoLayer(controller: _videoController!),
             )
@@ -457,12 +498,14 @@ class AuthGradientHeadline extends StatelessWidget {
 class AuthFeaturePill extends StatelessWidget {
   const AuthFeaturePill({
     super.key,
-    required this.icon,
+    this.icon,
+    this.iconAsset,
     required this.text,
     this.iconSize = 14,
-  });
+  }) : assert(icon != null || iconAsset != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final String? iconAsset;
   final String text;
   final double iconSize;
 
@@ -477,7 +520,18 @@ class AuthFeaturePill extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: iconSize, color: AppColors.mediumBlue),
+          if (iconAsset != null)
+            SvgPicture.asset(
+              iconAsset!,
+              width: iconSize,
+              height: iconSize,
+              colorFilter: const ColorFilter.mode(
+                AppColors.mediumBlue,
+                BlendMode.srcIn,
+              ),
+            )
+          else
+            Icon(icon, size: iconSize, color: AppColors.mediumBlue),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -636,6 +690,7 @@ class AuthInputField extends StatelessWidget {
     required this.label,
     required this.hintText,
     required this.icon,
+    this.focusNode,
     this.keyboardType,
     this.textInputAction,
     this.autofillHints,
@@ -649,6 +704,7 @@ class AuthInputField extends StatelessWidget {
   });
 
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final String label;
   final String hintText;
   final IconData icon;
@@ -699,6 +755,7 @@ class AuthInputField extends StatelessWidget {
         const SizedBox(height: 6),
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
           keyboardType: keyboardType,
           textInputAction: textInputAction,
           autofillHints: autofillHints,
