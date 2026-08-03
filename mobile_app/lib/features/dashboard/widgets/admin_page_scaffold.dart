@@ -20,6 +20,7 @@ class AdminPageScaffold extends ConsumerWidget {
     this.currentNav,
     this.showBackButton = false,
     this.showBottomNav = true,
+    this.enableModuleListBack = false,
     this.actions,
     this.floatingActionButton,
     this.wrapBodyInScrollView = false,
@@ -33,6 +34,7 @@ class AdminPageScaffold extends ConsumerWidget {
   final DashboardNavItem? currentNav;
   final bool showBackButton;
   final bool showBottomNav;
+  final bool enableModuleListBack;
   final List<Widget>? actions;
   final Widget? floatingActionButton;
   final bool wrapBodyInScrollView;
@@ -47,6 +49,14 @@ class AdminPageScaffold extends ConsumerWidget {
     final displayName = auth.user?.fullName ?? '';
     final avatarInitials = dashboardInitials(displayName, fallback: 'AD');
 
+    final detailBackHandler = showBackButton
+        ? (onBackPressed ?? () => AdminNavigation.handleDetailBack(context))
+        : null;
+    final listBackHandler = enableModuleListBack
+        ? () => AdminNavigation.handleModuleListBack(context)
+        : null;
+    final popHandler = detailBackHandler ?? listBackHandler;
+
     final bodyContent = wrapBodyInScrollView
         ? SingleChildScrollView(padding: context.dashPadding, child: body)
         : body;
@@ -58,6 +68,8 @@ class AdminPageScaffold extends ConsumerWidget {
         showMenuButton: false,
         showBrandTitle: appBarShowBrandTitle,
         showMessagesAction: appBarShowMessagesAction,
+        showBackButton: showBackButton,
+        onBackPressed: detailBackHandler,
         avatarInitials: avatarInitials,
         avatarImageUrl: auth.user?.profileImageUrl,
         messageCount: notifications.unreadMessageCount,
@@ -79,12 +91,12 @@ class AdminPageScaffold extends ConsumerWidget {
     );
 
     Widget child = scaffold;
-    if (showBackButton && onBackPressed != null) {
+    if (popHandler != null) {
       child = PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, _) {
           if (!didPop) {
-            onBackPressed!();
+            popHandler();
           }
         },
         child: scaffold,

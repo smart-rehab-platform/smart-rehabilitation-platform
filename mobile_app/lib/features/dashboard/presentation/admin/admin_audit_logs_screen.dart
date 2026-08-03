@@ -5,6 +5,7 @@ import '../../data/admin_features_repository.dart';
 import '../../data/admin_users_repository.dart';
 import '../../providers/admin_features_provider.dart';
 import '../../providers/admin_users_provider.dart';
+import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/admin_ui_components.dart';
@@ -119,8 +120,8 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
   Widget build(BuildContext context) {
     return AdminPageScaffold(
       title: 'Audit Logs',
-      showBackButton: true,
-      showBottomNav: false,
+      currentNav: AdminNavigation.listScreenNav(context),
+      enableModuleListBack: true,
       body: _isLoading
           ? const AdminLoadingCard()
           : SingleChildScrollView(

@@ -9,8 +9,60 @@ import '../widgets/dashboard_bottom_nav.dart';
 import '../widgets/dashboard_layout.dart';
 import '../widgets/dashboard_profile_avatar.dart';
 
+/// Route [extra] marker for screens opened from the Admin More menu.
+enum AdminModuleOrigin { more }
+
 class AdminNavigation {
   AdminNavigation._();
+
+  static AdminModuleOrigin? moduleOrigin(BuildContext context) {
+    final extra = GoRouterState.of(context).extra;
+    return extra is AdminModuleOrigin ? extra : null;
+  }
+
+  static bool isFromMore(BuildContext context) =>
+      moduleOrigin(context) == AdminModuleOrigin.more;
+
+  static void openFromMore(BuildContext context, String location) {
+    context.push(location, extra: AdminModuleOrigin.more);
+  }
+
+  /// Bottom-nav highlight for top-level module list screens.
+  static DashboardNavItem? listScreenNav(
+    BuildContext context, {
+    DashboardNavItem? tabItem,
+  }) {
+    if (isFromMore(context)) {
+      return DashboardNavItem.more;
+    }
+    if (tabItem != null) {
+      return tabItem;
+    }
+    if (context.canPop()) {
+      return DashboardNavItem.home;
+    }
+    return null;
+  }
+
+  static void handleModuleListBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    if (isFromMore(context)) {
+      context.go(AppRoutes.adminMore);
+      return;
+    }
+    context.go(AppRoutes.adminDashboard);
+  }
+
+  static void handleDetailBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    popOrGoAdmin(context);
+  }
 
   static void openDrawer(BuildContext context) {
     final scaffold = Scaffold.maybeOf(context);
@@ -41,7 +93,13 @@ class AdminNavigation {
     if (location.startsWith(AppRoutes.adminReports)) {
       return DashboardNavItem.reports;
     }
-    if (location.startsWith(AppRoutes.adminMore)) {
+    if (location.startsWith(AppRoutes.adminMore) ||
+        location.startsWith(AppRoutes.adminUsers) ||
+        location.startsWith(AppRoutes.adminSessions) ||
+        location.startsWith(AppRoutes.adminAuditLogs) ||
+        location.startsWith(AppRoutes.adminAiCenter) ||
+        location.startsWith(AppRoutes.adminCaseRequests) ||
+        location.startsWith(AppRoutes.adminNotifications)) {
       return DashboardNavItem.more;
     }
     return null;
@@ -125,38 +183,41 @@ class AdminDrawer extends ConsumerWidget {
                   _AdminDrawerTile(
                     icon: Icons.groups_outlined,
                     label: 'Users',
-                    onTap: () => _go(context, AppRoutes.adminUsers),
+                    onTap: () => _openFromMore(context, AppRoutes.adminUsers),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.people_outline_rounded,
                     label: 'Patients',
-                    onTap: () => _go(context, AppRoutes.adminPatients),
+                    onTap: () => _openFromMore(context, AppRoutes.adminPatients),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.assignment_ind_outlined,
                     label: 'Patient Assignments',
-                    onTap: () =>
-                        _go(context, AppRoutes.adminPatientAssignments),
+                    onTap: () => _openFromMore(
+                      context,
+                      AppRoutes.adminPatientAssignments,
+                    ),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.inbox_outlined,
                     label: 'Case Requests',
-                    onTap: () => _go(context, AppRoutes.adminCaseRequests),
+                    onTap: () =>
+                        _openFromMore(context, AppRoutes.adminCaseRequests),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.event_note_outlined,
                     label: 'Sessions',
-                    onTap: () => _go(context, AppRoutes.adminSessions),
+                    onTap: () => _openFromMore(context, AppRoutes.adminSessions),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.psychology_outlined,
                     label: 'AI Center',
-                    onTap: () => _go(context, AppRoutes.adminAiCenter),
+                    onTap: () => _openFromMore(context, AppRoutes.adminAiCenter),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.history_rounded,
                     label: 'Audit Logs',
-                    onTap: () => _go(context, AppRoutes.adminAuditLogs),
+                    onTap: () => _openFromMore(context, AppRoutes.adminAuditLogs),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.fitness_center_outlined,
@@ -171,12 +232,13 @@ class AdminDrawer extends ConsumerWidget {
                   _AdminDrawerTile(
                     icon: Icons.notifications_none_rounded,
                     label: 'Notifications',
-                    onTap: () => _go(context, AppRoutes.adminNotifications),
+                    onTap: () =>
+                        _openFromMore(context, AppRoutes.adminNotifications),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.person_outline_rounded,
                     label: 'Profile',
-                    onTap: () => _go(context, AppRoutes.adminProfile),
+                    onTap: () => _openFromMore(context, AppRoutes.adminProfile),
                   ),
                 ],
               ),
@@ -200,6 +262,11 @@ class AdminDrawer extends ConsumerWidget {
   void _go(BuildContext context, String route) {
     Navigator.of(context).pop();
     context.go(route);
+  }
+
+  void _openFromMore(BuildContext context, String route) {
+    Navigator.of(context).pop();
+    AdminNavigation.openFromMore(context, route);
   }
 }
 

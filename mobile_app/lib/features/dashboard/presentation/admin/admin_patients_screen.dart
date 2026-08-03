@@ -9,6 +9,7 @@ import '../../../case_intake/models/case_category_model.dart';
 import '../../../case_intake/providers/case_categories_provider.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
+import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_status_badge.dart';
 import '../../widgets/admin_ui_components.dart';
@@ -115,7 +116,11 @@ class _AdminPatientsScreenState extends ConsumerState<AdminPatientsScreen> {
 
     return AdminPageScaffold(
       title: 'Patients',
-      currentNav: DashboardNavItem.patients,
+      currentNav: AdminNavigation.listScreenNav(
+        context,
+        tabItem: DashboardNavItem.patients,
+      ),
+      enableModuleListBack: AdminNavigation.isFromMore(context),
       actions: [
         IconButton(
           tooltip: 'Patient Assignments',
