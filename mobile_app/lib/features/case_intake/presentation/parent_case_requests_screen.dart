@@ -9,6 +9,7 @@ import '../../dashboard/widgets/dashboard_layout.dart';
 import '../../dashboard/widgets/dashboard_components.dart';
 import '../../dashboard/widgets/parent_dashboard_cards.dart';
 import '../../dashboard/widgets/parent_page_scaffold.dart';
+import '../presentation/parent_case_intake_localization_utils.dart';
 import '../providers/parent_case_intake_provider.dart';
 import '../widgets/case_request_card.dart';
 
@@ -54,14 +55,17 @@ class _ParentCaseRequestsScreenState
           children: [
             if (state.errorMessage != null) ...[
               DashboardErrorCard(
-                message: state.errorMessage!,
+                message: mapParentCaseIntakeProviderError(
+                  l10n,
+                  state.errorMessage!,
+                ),
                 onRetry: () =>
                     ref.read(parentCaseIntakeProvider.notifier).loadRequests(),
               ),
               SizedBox(height: context.dashSpacing * 0.75),
             ],
             Text(
-              'These are preliminary requests, not official diagnoses. The admin team reviews each request and assigns a suitable specialist.',
+              l10n.parentCaseRequestsListDisclaimer,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -109,10 +113,7 @@ class _ParentCaseRequestsScreenState
 }
 
 class _EmptyCaseRequestsCard extends StatelessWidget {
-  const _EmptyCaseRequestsCard({
-    required this.onSubmit,
-    required this.l10n,
-  });
+  const _EmptyCaseRequestsCard({required this.onSubmit, required this.l10n});
 
   final VoidCallback onSubmit;
   final AppLocalizations l10n;
@@ -132,7 +133,7 @@ class _EmptyCaseRequestsCard extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'No case requests yet.',
+            l10n.parentCaseRequestsEmptyTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
@@ -140,7 +141,7 @@ class _EmptyCaseRequestsCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           Text(
-            'Submit a request so the admin team can review the case and assign a suitable specialist.',
+            l10n.parentCaseRequestsEmptyMessage,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,

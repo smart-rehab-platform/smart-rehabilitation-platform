@@ -6002,6 +6002,1348 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dashboard Previews'**
   String get devDashboardPreviewsTitle;
+
+  /// Disclaimer on the parent case requests list screen.
+  ///
+  /// In en, this message translates to:
+  /// **'These are preliminary requests, not official diagnoses. The admin team reviews each request and assigns a suitable specialist.'**
+  String get parentCaseRequestsListDisclaimer;
+
+  /// Empty state title on case requests list.
+  ///
+  /// In en, this message translates to:
+  /// **'No case requests yet.'**
+  String get parentCaseRequestsEmptyTitle;
+
+  /// Empty state message on case requests list.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit a request so the admin team can review the case and assign a suitable specialist.'**
+  String get parentCaseRequestsEmptyMessage;
+
+  /// Fallback when case request submitted date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Date unavailable'**
+  String get parentCaseRequestsDateUnavailable;
+
+  /// Error when parent is not signed in on case requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view case requests.'**
+  String get parentCaseRequestsSignInRequired;
+
+  /// Error when loading case requests fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load case requests: {error}'**
+  String parentCaseRequestsLoadFailed(String error);
+
+  /// Error when refreshing case requests fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to refresh case requests: {error}'**
+  String parentCaseRequestsRefreshFailed(String error);
+
+  /// Title for new case request form.
+  ///
+  /// In en, this message translates to:
+  /// **'New Case Request'**
+  String get parentCaseRequestFormNewTitle;
+
+  /// Title for edit case request form.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Case Request'**
+  String get parentCaseRequestFormEditTitle;
+
+  /// Title for discard changes dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get parentCaseRequestFormDiscardTitle;
+
+  /// Body for discard changes dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Leave this form without saving?'**
+  String get parentCaseRequestFormDiscardMessage;
+
+  /// Stay on form button in discard dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get parentCaseRequestFormStay;
+
+  /// Leave form button in discard dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get parentCaseRequestFormLeave;
+
+  /// Error when edit form cannot load request.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load request for editing.'**
+  String get parentCaseRequestFormLoadFailed;
+
+  /// Error when non-pending request is opened for edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Only pending requests can be edited.'**
+  String get parentCaseRequestFormOnlyPendingEditable;
+
+  /// Snack bar after case request update.
+  ///
+  /// In en, this message translates to:
+  /// **'Case request updated successfully.'**
+  String get parentCaseRequestFormUpdatedSuccess;
+
+  /// Snack bar after case request submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Case request submitted successfully.'**
+  String get parentCaseRequestFormSubmittedSuccess;
+
+  /// Snack bar when child photo selection fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to select image: {error}'**
+  String parentCaseRequestFormImageSelectFailed(String error);
+
+  /// Primary submit button on case request form.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Case Request'**
+  String get parentCaseRequestFormSubmitRequest;
+
+  /// Submit button label while submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get parentCaseRequestFormSubmitting;
+
+  /// Child information section title on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Child Information'**
+  String get parentCaseRequestFormChildInfoSection;
+
+  /// Action to change child photo on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Change child photo'**
+  String get parentCaseRequestFormChangeChildPhoto;
+
+  /// Action to add child photo on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Add child photo'**
+  String get parentCaseRequestFormAddChildPhoto;
+
+  /// Action to remove child photo on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get parentCaseRequestFormRemovePhoto;
+
+  /// Child name field label on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Child name'**
+  String get parentCaseRequestFormChildName;
+
+  /// Guidance text on category selection step.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the category closest to the observed difficulty. The specialist will confirm the case after assessment.'**
+  String get parentCaseRequestFormCategoryGuidance;
+
+  /// Case description section title on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Description'**
+  String get parentCaseRequestFormCaseDescriptionSection;
+
+  /// Case description field label on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Case description'**
+  String get parentCaseRequestFormCaseDescriptionLabel;
+
+  /// Helper text for case description field.
+  ///
+  /// In en, this message translates to:
+  /// **'Required. Up to {max} characters.'**
+  String parentCaseRequestFormCaseDescriptionHelper(int max);
+
+  /// Observed difficulties field label on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed difficulties'**
+  String get parentCaseRequestFormObservedDifficultiesLabel;
+
+  /// Helper text for observed difficulties field.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Up to {max} characters.'**
+  String parentCaseRequestFormObservedDifficultiesHelper(int max);
+
+  /// Toggle label for previous diagnosis on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Has previous diagnosis?'**
+  String get parentCaseRequestFormHasPreviousDiagnosis;
+
+  /// Previous diagnosis details field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous diagnosis details'**
+  String get parentCaseRequestFormPreviousDiagnosisDetails;
+
+  /// Toggle label for current treatment on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently receiving treatment?'**
+  String get parentCaseRequestFormCurrentlyReceivingTreatment;
+
+  /// Current treatment details field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Current treatment details'**
+  String get parentCaseRequestFormCurrentTreatmentDetails;
+
+  /// Helper text on medical history step.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide as much detail as you can to help the specialist prepare.'**
+  String get parentCaseRequestFormHistoryHelper;
+
+  /// Preferred contact period section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Contact Period'**
+  String get parentCaseRequestFormPreferredContactPeriod;
+
+  /// Review step title on case request form.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and Submit'**
+  String get parentCaseRequestFormReviewTitle;
+
+  /// Review row label for child name.
+  ///
+  /// In en, this message translates to:
+  /// **'Child name'**
+  String get parentCaseRequestFormReviewChildName;
+
+  /// Review row label for date of birth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get parentCaseRequestFormReviewDob;
+
+  /// Review row label for gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get parentCaseRequestFormReviewGender;
+
+  /// Review row label for category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get parentCaseRequestFormReviewCategory;
+
+  /// Review row label for case description.
+  ///
+  /// In en, this message translates to:
+  /// **'Case description'**
+  String get parentCaseRequestFormReviewCaseDescription;
+
+  /// Review row label for observed difficulties.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed difficulties'**
+  String get parentCaseRequestFormReviewObservedDifficulties;
+
+  /// Review row label for previous diagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous diagnosis'**
+  String get parentCaseRequestFormReviewPreviousDiagnosis;
+
+  /// Review row label for current treatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Current treatment'**
+  String get parentCaseRequestFormReviewCurrentTreatment;
+
+  /// Review row label for preferred contact period.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred contact'**
+  String get parentCaseRequestFormReviewPreferredContact;
+
+  /// Fallback when no option is selected on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Not selected'**
+  String get parentCaseRequestFormNotSelected;
+
+  /// Fallback when a value is not set on review step.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get parentCaseRequestFormNotSet;
+
+  /// Fallback when gender or similar value is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Not specified'**
+  String get parentCaseRequestFormNotSpecified;
+
+  /// Fallback when optional text field is empty on review.
+  ///
+  /// In en, this message translates to:
+  /// **'None provided'**
+  String get parentCaseRequestFormNoneProvided;
+
+  /// Form step label for child information.
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get parentCaseRequestFormStepChild;
+
+  /// Form step label for category selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get parentCaseRequestFormStepCategory;
+
+  /// Form step label for case description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get parentCaseRequestFormStepDescription;
+
+  /// Form step label for medical history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get parentCaseRequestFormStepHistory;
+
+  /// Form step label for contact preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get parentCaseRequestFormStepContact;
+
+  /// Form step label for review and submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get parentCaseRequestFormStepReview;
+
+  /// Form step progress label.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}: {stepName}'**
+  String parentCaseRequestFormStepProgress(
+    int current,
+    int total,
+    String stepName,
+  );
+
+  /// Validation when child name is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Child name is required.'**
+  String get parentCaseRequestFormValidationChildNameRequired;
+
+  /// Validation when child name is too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Child name must not exceed {max} characters.'**
+  String parentCaseRequestFormValidationChildNameMax(int max);
+
+  /// Validation when date of birth is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth is required.'**
+  String get parentCaseRequestFormValidationDobRequired;
+
+  /// Validation when date of birth is in the future.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth cannot be in the future.'**
+  String get parentCaseRequestFormValidationDobFuture;
+
+  /// Validation when gender is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender is required.'**
+  String get parentCaseRequestFormValidationGenderRequired;
+
+  /// Validation when category is not selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a case category.'**
+  String get parentCaseRequestFormValidationCategoryRequired;
+
+  /// Validation when case description is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Case description is required.'**
+  String get parentCaseRequestFormValidationDescriptionRequired;
+
+  /// Validation when case description is too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Case description must not exceed {max} characters.'**
+  String parentCaseRequestFormValidationDescriptionMax(int max);
+
+  /// Validation when observed difficulties text is too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed difficulties must not exceed {max} characters.'**
+  String parentCaseRequestFormValidationObservedMax(int max);
+
+  /// Validation when previous diagnosis details are too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous diagnosis details must not exceed {max} characters.'**
+  String parentCaseRequestFormValidationPreviousDiagnosisMax(int max);
+
+  /// Validation when current treatment details are too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Current treatment details must not exceed {max} characters.'**
+  String parentCaseRequestFormValidationCurrentTreatmentMax(int max);
+
+  /// Validation when contact period is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a preferred contact period.'**
+  String get parentCaseRequestFormValidationContactPeriodRequired;
+
+  /// Error when case categories fail to load on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load categories: {error}'**
+  String parentCaseRequestFormCategoriesLoadFailed(String error);
+
+  /// Error when case categories fail to refresh on form.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to refresh categories: {error}'**
+  String parentCaseRequestFormCategoriesRefreshFailed(String error);
+
+  /// Title for case request details screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Details'**
+  String get parentCaseRequestDetailsTitle;
+
+  /// Tooltip for edit request action.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit request'**
+  String get parentCaseRequestDetailsEditTooltip;
+
+  /// Error when case request details are missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Case request not found.'**
+  String get parentCaseRequestDetailsNotFound;
+
+  /// Fallback when submitted date is unavailable on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get parentCaseRequestDetailsUnavailable;
+
+  /// Progress section title on request details.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Progress'**
+  String get parentCaseRequestDetailsProgressTitle;
+
+  /// Progress step label for submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get parentCaseRequestDetailsProgressStepSubmitted;
+
+  /// Progress step label for admin review.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Review'**
+  String get parentCaseRequestDetailsProgressStepAdminReview;
+
+  /// Progress step label for specialist assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist Assigned'**
+  String get parentCaseRequestDetailsProgressStepSpecialistAssigned;
+
+  /// Progress step label for assessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment'**
+  String get parentCaseRequestDetailsProgressStepAssessment;
+
+  /// Progress step label for acceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get parentCaseRequestDetailsProgressStepAccepted;
+
+  /// Progress step label for patient profile creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Profile Created'**
+  String get parentCaseRequestDetailsProgressStepPatientProfileCreated;
+
+  /// Title for rejected request card on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Not Accepted'**
+  String get parentCaseRequestDetailsNotAcceptedTitle;
+
+  /// Title when case converted to patient profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Child Profile Active'**
+  String get parentCaseRequestDetailsChildProfileActiveTitle;
+
+  /// Message when case converted to patient profile.
+  ///
+  /// In en, this message translates to:
+  /// **'The child profile is now active and ready for follow-up.'**
+  String get parentCaseRequestDetailsChildProfileActiveMessage;
+
+  /// Button to open child profile after conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Child Profile'**
+  String get parentCaseRequestDetailsOpenChildProfile;
+
+  /// Child information section title on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Child Information'**
+  String get parentCaseRequestDetailsChildInformation;
+
+  /// Case description row label on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Case description'**
+  String get parentCaseRequestDetailsCaseDescription;
+
+  /// Observed difficulties row label on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed difficulties'**
+  String get parentCaseRequestDetailsObservedDifficulties;
+
+  /// Previous diagnosis row label on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous diagnosis'**
+  String get parentCaseRequestDetailsPreviousDiagnosis;
+
+  /// Current treatment row label on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Current treatment'**
+  String get parentCaseRequestDetailsCurrentTreatment;
+
+  /// Preferred contact period row label on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred contact period'**
+  String get parentCaseRequestDetailsPreferredContactPeriod;
+
+  /// Assigned specialist section title on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Specialist'**
+  String get parentCaseRequestDetailsAssignedSpecialist;
+
+  /// Attachments section title on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get parentCaseRequestDetailsAttachments;
+
+  /// Hint for supported attachment types.
+  ///
+  /// In en, this message translates to:
+  /// **'Supported: image, audio, video, PDF'**
+  String get parentCaseRequestDetailsAttachmentsHint;
+
+  /// Empty state for attachments on details.
+  ///
+  /// In en, this message translates to:
+  /// **'No attachments yet.'**
+  String get parentCaseRequestDetailsNoAttachments;
+
+  /// Button to add attachment on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Attachment'**
+  String get parentCaseRequestDetailsAddAttachment;
+
+  /// Snack bar after attachment upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment uploaded successfully'**
+  String get parentCaseRequestDetailsAttachmentUploaded;
+
+  /// Snack bar after attachment deletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment deleted'**
+  String get parentCaseRequestDetailsAttachmentDeleted;
+
+  /// Title for delete attachment dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete attachment?'**
+  String get parentCaseRequestDetailsDeleteAttachmentTitle;
+
+  /// Body for delete attachment dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{name}\" from this request?'**
+  String parentCaseRequestDetailsDeleteAttachmentMessage(String name);
+
+  /// Error when loading case request details fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load case request: {error}'**
+  String parentCaseRequestDetailsLoadFailed(String error);
+
+  /// Error when refreshing case request details fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to refresh case request: {error}'**
+  String parentCaseRequestDetailsRefreshFailed(String error);
+
+  /// Error when submitting case request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit case request: {error}'**
+  String parentCaseRequestDetailsSubmitFailed(String error);
+
+  /// Error when updating case request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update case request: {error}'**
+  String parentCaseRequestDetailsUpdateFailed(String error);
+
+  /// Error when child image upload fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload child image: {error}'**
+  String parentCaseRequestDetailsUploadChildImageFailed(String error);
+
+  /// Error when attachment upload fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload attachment: {error}'**
+  String parentCaseRequestDetailsUploadAttachmentFailed(String error);
+
+  /// Error when attachment deletion fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete attachment: {error}'**
+  String parentCaseRequestDetailsDeleteAttachmentFailed(String error);
+
+  /// Case intake status label for pending review.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get caseIntakeStatusPending;
+
+  /// Case intake status label for assigned specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist Assigned'**
+  String get caseIntakeStatusAssigned;
+
+  /// Case intake status label for under assessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Under Assessment'**
+  String get caseIntakeStatusUnderAssessment;
+
+  /// Case intake status label for accepted case.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get caseIntakeStatusAccepted;
+
+  /// Case intake status label for rejected case.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get caseIntakeStatusRejected;
+
+  /// Case intake status label for converted patient profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Created'**
+  String get caseIntakeStatusConvertedToPatient;
+
+  /// Subtitle for pending case intake status.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request is waiting for admin review.'**
+  String get caseIntakeStatusPendingSubtitle;
+
+  /// Subtitle for assigned case intake status.
+  ///
+  /// In en, this message translates to:
+  /// **'A specialist has been assigned and will begin reviewing the case.'**
+  String get caseIntakeStatusAssignedSubtitle;
+
+  /// Subtitle for under assessment case intake status.
+  ///
+  /// In en, this message translates to:
+  /// **'The assigned specialist is assessing the case.'**
+  String get caseIntakeStatusUnderAssessmentSubtitle;
+
+  /// Subtitle for accepted case intake status.
+  ///
+  /// In en, this message translates to:
+  /// **'The case was accepted. Patient profile creation is in progress.'**
+  String get caseIntakeStatusAcceptedSubtitle;
+
+  /// Subtitle for rejected case intake status.
+  ///
+  /// In en, this message translates to:
+  /// **'This request was not accepted. See the reason below.'**
+  String get caseIntakeStatusRejectedSubtitle;
+
+  /// Subtitle for converted case intake status.
+  ///
+  /// In en, this message translates to:
+  /// **'The case was accepted and the patient profile was created.'**
+  String get caseIntakeStatusConvertedToPatientSubtitle;
+
+  /// Attachment type label for PDF files.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get caseIntakeAttachmentPdf;
+
+  /// Intro text on specialist assigned cases list.
+  ///
+  /// In en, this message translates to:
+  /// **'Review assigned cases and track their assessment status.'**
+  String get specialistCaseRequestsDescription;
+
+  /// Loading state on specialist assigned cases list.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading assigned case requests...'**
+  String get specialistCaseRequestsLoading;
+
+  /// Empty state when specialist has no assigned cases.
+  ///
+  /// In en, this message translates to:
+  /// **'No assigned case requests yet.\nAssigned cases will appear here after an admin selects you for a request.'**
+  String get specialistCaseRequestsEmpty;
+
+  /// Error when loading assigned case requests fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load assigned case requests: {error}'**
+  String specialistCaseRequestsLoadFailed(String error);
+
+  /// Assigned date label on specialist case card.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned {date}'**
+  String specialistCaseRequestsAssignedOn(String date);
+
+  /// Fallback when child name is missing on specialist case card.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed child'**
+  String get specialistCaseRequestsUnnamedChild;
+
+  /// Attachment count label when one attachment exists.
+  ///
+  /// In en, this message translates to:
+  /// **'1 attachment'**
+  String get specialistCaseRequestsOneAttachment;
+
+  /// Attachment count label for multiple attachments.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} attachments'**
+  String specialistCaseRequestsAttachmentCount(int count);
+
+  /// Meta label when conversation is available.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation available'**
+  String get specialistCaseRequestsConversationAvailable;
+
+  /// Title for specialist case request details screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Request'**
+  String get specialistCaseRequestDetailsTitle;
+
+  /// Intro text on specialist case request details.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the submitted information before starting the assessment.'**
+  String get specialistCaseRequestDetailsReviewIntro;
+
+  /// Loading state on specialist case request details.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading case request...'**
+  String get specialistCaseRequestDetailsLoading;
+
+  /// Parent name label on specialist case request header.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent: {name}'**
+  String specialistCaseRequestDetailsParentLabel(String name);
+
+  /// Timeline section title on specialist case details.
+  ///
+  /// In en, this message translates to:
+  /// **'Status Timeline'**
+  String get specialistCaseRequestDetailsStatusTimeline;
+
+  /// Timeline step label for assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get specialistCaseRequestDetailsTimelineAssigned;
+
+  /// Timeline step label for assessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Under Assessment'**
+  String get specialistCaseRequestDetailsTimelineUnderAssessment;
+
+  /// Timeline step label for acceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get specialistCaseRequestDetailsTimelineAccepted;
+
+  /// Timeline step label for patient conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Converted'**
+  String get specialistCaseRequestDetailsTimelineConverted;
+
+  /// Timeline subtitle when step is in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get specialistCaseRequestDetailsTimelineInProgress;
+
+  /// Rejection reason section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get specialistCaseRequestDetailsRejectionReason;
+
+  /// Success message when patient profile was created.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient profile created successfully.'**
+  String get specialistCaseRequestDetailsPatientProfileCreated;
+
+  /// Button to open converted patient profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Patient Profile'**
+  String get specialistCaseRequestDetailsOpenPatientProfile;
+
+  /// Case information section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Case Information'**
+  String get specialistCaseRequestDetailsCaseInformation;
+
+  /// Previous diagnosis and treatment section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Diagnosis & Treatment'**
+  String get specialistCaseRequestDetailsPreviousDiagnosisTreatment;
+
+  /// Previous diagnosis details row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis details'**
+  String get specialistCaseRequestDetailsDiagnosisDetails;
+
+  /// Current treatment details row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment details'**
+  String get specialistCaseRequestDetailsTreatmentDetails;
+
+  /// Row label for current treatment status.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently receiving treatment'**
+  String get specialistCaseRequestDetailsCurrentlyReceivingTreatment;
+
+  /// Parent information section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Information'**
+  String get specialistCaseRequestDetailsParentInformation;
+
+  /// Age row label on child information.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get specialistCaseRequestDetailsAge;
+
+  /// Fallback when age cannot be calculated.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get specialistCaseRequestDetailsAgeUnavailable;
+
+  /// Age label for infants under one month.
+  ///
+  /// In en, this message translates to:
+  /// **'Under 1 month'**
+  String get specialistCaseRequestDetailsAgeUnderOneMonth;
+
+  /// Age label for one month old.
+  ///
+  /// In en, this message translates to:
+  /// **'1 month'**
+  String get specialistCaseRequestDetailsAgeOneMonth;
+
+  /// Age label in months.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} months'**
+  String specialistCaseRequestDetailsAgeMonths(int count);
+
+  /// Age label for one year old.
+  ///
+  /// In en, this message translates to:
+  /// **'1 year'**
+  String get specialistCaseRequestDetailsAgeOneYear;
+
+  /// Age label in years.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} years'**
+  String specialistCaseRequestDetailsAgeYears(int count);
+
+  /// Empty state for attachments on specialist details.
+  ///
+  /// In en, this message translates to:
+  /// **'No attachments'**
+  String get specialistCaseRequestDetailsNoAttachments;
+
+  /// Tooltip for copying a contact field.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy {label}'**
+  String specialistCaseRequestDetailsCopyLabel(String label);
+
+  /// Title for start assessment dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Assessment'**
+  String get specialistCaseAssessmentStartTitle;
+
+  /// Body for start assessment dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact the parent first if you have not already. Start the preliminary assessment for this case?'**
+  String get specialistCaseAssessmentStartMessage;
+
+  /// Confirm button to start assessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Assessment'**
+  String get specialistCaseAssessmentStartAction;
+
+  /// Snack bar after assessment starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment started successfully'**
+  String get specialistCaseAssessmentStartedSuccess;
+
+  /// Assessment notes section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Preliminary Assessment Notes'**
+  String get specialistCaseAssessmentNotesTitle;
+
+  /// Hint for assessment notes field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter preliminary assessment notes'**
+  String get specialistCaseAssessmentNotesHint;
+
+  /// Validation when assessment notes are empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment notes are required.'**
+  String get specialistCaseAssessmentNotesRequired;
+
+  /// Validation when assessment notes are too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment notes must not exceed {max} characters.'**
+  String specialistCaseAssessmentNotesMaxLength(int max);
+
+  /// Snack bar after saving assessment notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment notes updated successfully'**
+  String get specialistCaseAssessmentNotesUpdatedSuccess;
+
+  /// Button to save assessment notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Notes'**
+  String get specialistCaseAssessmentSaveNotes;
+
+  /// Title for accept case dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Case'**
+  String get specialistCaseAssessmentAcceptTitle;
+
+  /// Body for accept case dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept this case for continued rehabilitation follow-up?\n\nThe patient profile will not be created yet.'**
+  String get specialistCaseAssessmentAcceptMessage;
+
+  /// Confirm button to accept case.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Case'**
+  String get specialistCaseAssessmentAcceptAction;
+
+  /// Snack bar when notes are missing before accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Save assessment notes before accepting this case.'**
+  String get specialistCaseAssessmentAcceptNotesRequired;
+
+  /// Snack bar when unsaved notes block accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your assessment notes before accepting.'**
+  String get specialistCaseAssessmentAcceptSaveNotesFirst;
+
+  /// Snack bar after patient profile creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient profile created successfully.'**
+  String get specialistCaseAssessmentPatientProfileCreatedSuccess;
+
+  /// Inline progress while creating patient profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating patient profile...'**
+  String get specialistCaseAssessmentCreatingPatientProfile;
+
+  /// Title for reject case sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Case'**
+  String get specialistCaseAssessmentRejectTitle;
+
+  /// Confirm button to reject case.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Case'**
+  String get specialistCaseAssessmentRejectAction;
+
+  /// Rejection reason field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for rejection'**
+  String get specialistCaseAssessmentRejectReasonLabel;
+
+  /// Helper text for rejection reason field.
+  ///
+  /// In en, this message translates to:
+  /// **'This reason will be visible to the parent.'**
+  String get specialistCaseAssessmentRejectReasonHelper;
+
+  /// Validation when rejection reason is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for rejection is required.'**
+  String get specialistCaseAssessmentRejectReasonRequired;
+
+  /// Validation when rejection reason is too short.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason must be at least {min} characters.'**
+  String specialistCaseAssessmentRejectReasonMinLength(int min);
+
+  /// Validation when rejection reason is too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason must not exceed {max} characters.'**
+  String specialistCaseAssessmentRejectReasonMaxLength(int max);
+
+  /// Snack bar after rejecting case.
+  ///
+  /// In en, this message translates to:
+  /// **'Case request rejected successfully'**
+  String get specialistCaseAssessmentRejectedSuccess;
+
+  /// Inline progress while rejecting case.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejecting...'**
+  String get specialistCaseAssessmentRejecting;
+
+  /// Inline progress while starting assessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting...'**
+  String get specialistCaseAssessmentStarting;
+
+  /// Snack bar when back is blocked while saving notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait while assessment notes are being saved.'**
+  String get specialistCaseAssessmentWaitSavingNotes;
+
+  /// Snack bar when back is blocked while creating profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait while the patient profile is being created.'**
+  String get specialistCaseAssessmentWaitCreatingProfile;
+
+  /// Snack bar when back is blocked while rejecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait while the case is being rejected.'**
+  String get specialistCaseAssessmentWaitRejecting;
+
+  /// Snack bar when back is blocked while starting assessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait while the assessment is starting.'**
+  String get specialistCaseAssessmentWaitStarting;
+
+  /// Error when start assessment is not allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Only assigned case requests can start assessment'**
+  String get specialistCaseAssessmentOnlyAssignedCanStart;
+
+  /// Error when accept is not allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Only case requests under assessment can be accepted'**
+  String get specialistCaseAssessmentOnlyUnderAssessmentCanAccept;
+
+  /// Error when reject is not allowed for status.
+  ///
+  /// In en, this message translates to:
+  /// **'Only assigned or under-assessment requests can be rejected'**
+  String get specialistCaseAssessmentOnlyAssignedOrUnderAssessmentCanReject;
+
+  /// Error when reject is no longer allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'This case request can no longer be rejected'**
+  String get specialistCaseAssessmentCannotRejectAnymore;
+
+  /// Error when starting assessment fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to start assessment. Please try again.'**
+  String get specialistCaseAssessmentStartFailed;
+
+  /// Error when saving assessment notes fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update assessment notes. Please try again.'**
+  String get specialistCaseAssessmentSaveNotesFailed;
+
+  /// Error when accepting case fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to accept case request. Please try again.'**
+  String get specialistCaseAssessmentAcceptFailed;
+
+  /// Error when rejecting case fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reject case request. Please try again.'**
+  String get specialistCaseAssessmentRejectFailed;
+
+  /// Error when admin matching specialists list fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load matching specialists: {error}'**
+  String adminCaseAssignmentLoadFailed(String error);
+
+  /// Error when assign is tapped while already assigning.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment already in progress.'**
+  String get adminCaseAssignmentInProgress;
+
+  /// Error when no specialist is selected for assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a specialist to continue.'**
+  String get adminCaseAssignmentSelectSpecialist;
+
+  /// Generic error when specialist assignment fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to assign specialist. Please try again.'**
+  String get adminCaseAssignmentFailed;
+
+  /// Error when assigning a non-pending case request.
+  ///
+  /// In en, this message translates to:
+  /// **'Only pending case requests can be assigned'**
+  String get adminCaseAssignmentOnlyPending;
+
+  /// Helper text after selecting a specialist for assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected specialist will be notified after assignment.'**
+  String get adminCaseAssignmentNotifySpecialist;
+
+  /// Empty state when no specialists match the case category.
+  ///
+  /// In en, this message translates to:
+  /// **'There are currently no active specialists linked to this category.'**
+  String get adminCaseAssignmentNoActiveSpecialists;
+
+  /// Header subtitle showing who submitted the case request.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted by {name}'**
+  String adminCaseRequestDetailsSubmittedBy(String name);
+
+  /// Short case request identifier label.
+  ///
+  /// In en, this message translates to:
+  /// **'ID: {id}'**
+  String adminCaseRequestDetailsRequestId(String id);
+
+  /// Card title when case request was rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Request rejected'**
+  String get adminCaseRequestDetailsRejectedTitle;
+
+  /// Short patient identifier after conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient ID: {id}'**
+  String adminCaseRequestDetailsPatientId(String id);
+
+  /// Admin-only assessment notes section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal Preliminary Assessment Notes'**
+  String get adminCaseRequestDetailsAssessmentNotesTitle;
+
+  /// Hint that assessment notes are admin-only.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible to admin only'**
+  String get adminCaseRequestDetailsAssessmentNotesHint;
+
+  /// Indicator when a conversation was created for the case.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation created'**
+  String get adminCaseRequestDetailsConversationCreated;
+
+  /// Short conversation identifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation ID: {id}'**
+  String adminCaseRequestDetailsConversationId(String id);
+
+  /// Empty specialist state for pending requests.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialist assigned yet.'**
+  String get adminCaseRequestDetailsNoSpecialistPending;
+
+  /// Empty specialist state for non-pending requests.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialist assigned.'**
+  String get adminCaseRequestDetailsNoSpecialist;
+
+  /// Fallback when specialist years of experience is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'— Years'**
+  String get adminMatchingSpecialistsYearsUnknown;
+
+  /// Specialist experience chip for one year.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Year'**
+  String get adminMatchingSpecialistsOneYear;
+
+  /// Specialist experience chip for multiple years.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Years'**
+  String adminMatchingSpecialistsYears(int count);
+
+  /// Metric chip for one active patient.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Active Patient'**
+  String get adminMatchingSpecialistsOneActivePatient;
+
+  /// Metric chip for multiple active patients.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Active Patients'**
+  String adminMatchingSpecialistsActivePatients(int count);
+
+  /// Metric chip for one current case request.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Current Request'**
+  String get adminMatchingSpecialistsOneCurrentRequest;
+
+  /// Metric chip for multiple current case requests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Current Requests'**
+  String adminMatchingSpecialistsCurrentRequests(int count);
+
+  /// Specialist license number label.
+  ///
+  /// In en, this message translates to:
+  /// **'License: {number}'**
+  String adminMatchingSpecialistsLicense(String number);
 }
 
 class _AppLocalizationsDelegate

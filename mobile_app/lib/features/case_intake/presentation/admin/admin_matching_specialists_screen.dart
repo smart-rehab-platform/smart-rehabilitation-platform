@@ -12,6 +12,7 @@ import '../../../dashboard/widgets/dashboard_bottom_nav.dart';
 import '../../../dashboard/widgets/dashboard_layout.dart';
 import '../../models/matching_specialist_model.dart';
 import '../../providers/admin_matching_specialists_provider.dart';
+import '../admin_case_intake_localization_utils.dart';
 
 class AdminMatchingSpecialistsScreen extends ConsumerStatefulWidget {
   const AdminMatchingSpecialistsScreen({super.key, required this.requestId});
@@ -78,10 +79,11 @@ class _AdminMatchingSpecialistsScreenState
     }
 
     final l10n = AppLocalizations.of(context)!;
-    final message =
-        actionResult.result?.message ??
-        actionResult.errorMessage ??
-        l10n.adminMatchingAssignedSuccess;
+    final rawMessage =
+        actionResult.result?.message ?? actionResult.errorMessage;
+    final message = rawMessage != null
+        ? mapAdminMatchingSpecialistsAssignError(l10n, rawMessage)
+        : l10n.adminMatchingAssignedSuccess;
 
     if (actionResult.outcome == AssignSpecialistOutcome.success) {
       ScaffoldMessenger.of(
@@ -139,7 +141,10 @@ class _AdminMatchingSpecialistsScreenState
                 padding: context.dashPadding,
                 children: [
                   AdminErrorCard(
-                    message: state.errorMessage!,
+                    message: mapAdminMatchingSpecialistsError(
+                      l10n,
+                      state.errorMessage!,
+                    ),
                     onRetry: notifier.retry,
                   ),
                   SizedBox(height: context.dashSpacing),
@@ -165,11 +170,9 @@ class _AdminMatchingSpecialistsScreenState
                         ),
                         SizedBox(height: context.dashSpacing * 0.4),
                         Text(
-                          'There are currently no active specialists linked to this category.',
+                          l10n.adminCaseAssignmentNoActiveSpecialists,
                           style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: DashboardColors.textSecondary,
-                              ),
+                              ?.copyWith(color: DashboardColors.textSecondary),
                         ),
                         SizedBox(height: context.dashSpacing),
                         SizedBox(
@@ -193,9 +196,7 @@ class _AdminMatchingSpecialistsScreenState
                         Text(
                           l10n.adminMatchingSelectSpecialist,
                           style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: DashboardColors.textSecondary,
-                              ),
+                              ?.copyWith(color: DashboardColors.textSecondary),
                         ),
                         SizedBox(height: context.dashSpacing),
                         ...state.specialists.map((specialist) {
@@ -217,11 +218,9 @@ class _AdminMatchingSpecialistsScreenState
                         if (selected != null) ...[
                           SizedBox(height: context.dashSpacing * 0.35),
                           Text(
-                            'The selected specialist will be notified after assignment.',
+                            l10n.adminCaseAssignmentNotifySpecialist,
                             style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: DashboardColors.textMuted,
-                                ),
+                                ?.copyWith(color: DashboardColors.textMuted),
                           ),
                           SizedBox(height: context.dashSpacing * 4),
                         ],
@@ -285,6 +284,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final imageUrl = ApiConstants.resolveProfileImageUrl(
       specialist.profileImageUrl,
@@ -314,9 +314,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
             borderRadius: DashboardDecorations.cardRadius,
             border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
             boxShadow: DashboardDecorations.cardShadow(
-              isSelected
-                  ? DashboardColors.brandCyan
-                  : DashboardColors.border,
+              isSelected ? DashboardColors.brandCyan : DashboardColors.border,
             ),
           ),
           child: Column(
@@ -344,7 +342,9 @@ class _MatchingSpecialistCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          specialist.displayName,
+                          specialist.fullName?.trim().isNotEmpty == true
+                              ? specialist.fullName!.trim()
+                              : l10n.roleSpecialist,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
@@ -379,27 +379,25 @@ class _MatchingSpecialistCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _MetricChip(
-                      text: years == null
-                          ? '— Years'
-                          : years == 1
-                          ? '1 Year'
-                          : '$years Years',
+                      text: formatAdminMatchingSpecialistYears(l10n, years),
                     ),
                   ),
                   SizedBox(width: context.dashSpacing * 0.35),
                   Expanded(
                     child: _MetricChip(
-                      text: specialist.activeCasesCount == 1
-                          ? '1 Active Patient'
-                          : '${specialist.activeCasesCount} Active Patients',
+                      text: formatAdminMatchingSpecialistActivePatients(
+                        l10n,
+                        specialist.activeCasesCount,
+                      ),
                     ),
                   ),
                   SizedBox(width: context.dashSpacing * 0.35),
                   Expanded(
                     child: _MetricChip(
-                      text: specialist.currentCaseRequestsCount == 1
-                          ? '1 Current Request'
-                          : '${specialist.currentCaseRequestsCount} Current Requests',
+                      text: formatAdminMatchingSpecialistCurrentRequests(
+                        l10n,
+                        specialist.currentCaseRequestsCount,
+                      ),
                     ),
                   ),
                 ],
@@ -407,7 +405,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
               if (license != null && license.isNotEmpty) ...[
                 SizedBox(height: context.dashSpacing * 0.55),
                 Text(
-                  'License: $license',
+                  l10n.adminMatchingSpecialistsLicense(license),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelMedium?.copyWith(

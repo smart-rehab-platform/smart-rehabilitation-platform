@@ -13,6 +13,7 @@ import '../../models/case_category_model.dart';
 import '../../models/case_intake_request_model.dart';
 import '../../providers/admin_case_inbox_provider.dart';
 import '../../providers/case_categories_provider.dart';
+import '../../presentation/admin_case_intake_localization_utils.dart';
 import '../../widgets/admin_case_inbox_card.dart';
 
 class AdminCaseInboxScreen extends ConsumerStatefulWidget {
@@ -59,9 +60,10 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
     await ref.read(adminCaseInboxProvider.notifier).refresh();
     final error = ref.read(adminCaseInboxProvider).errorMessage;
     if (error != null && error.isNotEmpty && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(mapAdminCaseInboxError(l10n, error))),
+      );
     }
   }
 
@@ -183,7 +185,10 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                         if (state.errorMessage != null &&
                             state.items.isEmpty) ...[
                           AdminErrorCard(
-                            message: state.errorMessage!,
+                            message: mapAdminCaseInboxError(
+                              l10n,
+                              state.errorMessage!,
+                            ),
                             onRetry: notifier.retry,
                           ),
                           SizedBox(height: context.dashSpacing),
@@ -191,7 +196,10 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                         if (state.errorMessage != null &&
                             state.items.isNotEmpty) ...[
                           AdminErrorCard(
-                            message: state.errorMessage!,
+                            message: mapAdminCaseInboxError(
+                              l10n,
+                              state.errorMessage!,
+                            ),
                             onRetry: notifier.refresh,
                           ),
                           SizedBox(height: context.dashSpacing * 0.75),
@@ -264,7 +272,10 @@ class _AdminCaseInboxScreenState extends ConsumerState<AdminCaseInboxScreen> {
                         child: Column(
                           children: [
                             Text(
-                              state.loadMoreErrorMessage!,
+                              mapAdminCaseInboxError(
+                                l10n,
+                                state.loadMoreErrorMessage!,
+                              ),
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: DashboardColors.highPriority,

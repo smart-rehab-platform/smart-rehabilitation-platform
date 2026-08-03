@@ -7,6 +7,7 @@ import '../../dashboard/widgets/dashboard_layout.dart';
 import '../../dashboard/widgets/dashboard_surface_card.dart';
 import '../../dashboard/widgets/parent_dashboard_cards.dart';
 import '../models/case_intake_request_model.dart';
+import '../presentation/parent_case_intake_localization_utils.dart';
 import '../providers/parent_case_intake_provider.dart';
 import 'case_request_status_chip.dart';
 
@@ -56,7 +57,10 @@ class ParentDashboardCaseIntakeSection extends StatelessWidget {
       return Padding(
         padding: EdgeInsets.only(bottom: context.dashSpacing * 0.75),
         child: DashboardErrorCard(
-          message: caseIntakeState.errorMessage!,
+          message: mapParentCaseIntakeProviderError(
+            AppLocalizations.of(context)!,
+            caseIntakeState.errorMessage!,
+          ),
           onRetry: onRetry,
         ),
       );
@@ -259,7 +263,10 @@ class _RejectedFeaturedCard extends StatelessWidget {
                   ),
                 ),
               ),
-              CaseRequestStatusChip(status: request.status),
+              CaseRequestStatusChip(
+                status: request.status,
+                label: localizedCaseIntakeStatusLabel(l10n, request.status),
+              ),
             ],
           ),
           SizedBox(height: context.dashSpacing * 0.45),
@@ -315,6 +322,8 @@ class _RequestSummary extends StatelessWidget {
         : l10n.parentDashboardRecently;
     final specialistName = request.assignedSpecialist?.fullName?.trim();
 
+    final statusLabel = localizedCaseIntakeStatusLabel(l10n, request.status);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -330,7 +339,7 @@ class _RequestSummary extends StatelessWidget {
                 ),
               ),
             ),
-            CaseRequestStatusChip(status: request.status),
+            CaseRequestStatusChip(status: request.status, label: statusLabel),
           ],
         ),
         if (request.category?.name != null &&
@@ -364,7 +373,7 @@ class _RequestSummary extends StatelessWidget {
         if (request.status != null) ...[
           SizedBox(height: context.dashSpacing * 0.3),
           Text(
-            request.status!.subtitle,
+            localizedCaseIntakeStatusSubtitle(l10n, request.status!),
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textMuted,
             ),

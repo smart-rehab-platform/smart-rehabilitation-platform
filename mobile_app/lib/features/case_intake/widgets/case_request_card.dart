@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
 import '../../dashboard/widgets/dashboard_surface_card.dart';
 import '../models/case_intake_request_model.dart';
+import '../presentation/parent_case_intake_localization_utils.dart';
 import 'case_request_status_chip.dart';
 
 class CaseRequestCard extends StatelessWidget {
@@ -20,10 +22,12 @@ class CaseRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final submittedLabel = request.submittedAt != null
         ? DateFormat('MMM d, yyyy').format(request.submittedAt!)
-        : 'Date unavailable';
+        : l10n.parentCaseRequestsDateUnavailable;
     final specialistName = request.assignedSpecialist?.fullName?.trim();
+    final statusLabel = localizedCaseIntakeStatusLabel(l10n, request.status);
 
     return DashboardSurfaceCard(
       onTap: onTap,
@@ -42,7 +46,7 @@ class CaseRequestCard extends StatelessWidget {
                   ),
                 ),
               ),
-              CaseRequestStatusChip(status: request.status),
+              CaseRequestStatusChip(status: request.status, label: statusLabel),
             ],
           ),
           SizedBox(height: context.dashSpacing * 0.35),
@@ -65,7 +69,7 @@ class CaseRequestCard extends StatelessWidget {
               ),
               SizedBox(width: context.dashSpacing * 0.12),
               Text(
-                'Submitted $submittedLabel',
+                l10n.parentDashboardCaseSubmittedOn(submittedLabel),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: DashboardColors.textSecondary,
                 ),
@@ -97,7 +101,7 @@ class CaseRequestCard extends StatelessWidget {
           if (request.status != null) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
-              request.status!.subtitle,
+              localizedCaseIntakeStatusSubtitle(l10n, request.status!),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),

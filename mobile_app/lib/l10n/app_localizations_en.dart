@@ -3388,4 +3388,847 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get devDashboardPreviewsTitle => 'Dashboard Previews';
+
+  @override
+  String get parentCaseRequestsListDisclaimer =>
+      'These are preliminary requests, not official diagnoses. The admin team reviews each request and assigns a suitable specialist.';
+
+  @override
+  String get parentCaseRequestsEmptyTitle => 'No case requests yet.';
+
+  @override
+  String get parentCaseRequestsEmptyMessage =>
+      'Submit a request so the admin team can review the case and assign a suitable specialist.';
+
+  @override
+  String get parentCaseRequestsDateUnavailable => 'Date unavailable';
+
+  @override
+  String get parentCaseRequestsSignInRequired =>
+      'Please sign in to view case requests.';
+
+  @override
+  String parentCaseRequestsLoadFailed(String error) {
+    return 'Failed to load case requests: $error';
+  }
+
+  @override
+  String parentCaseRequestsRefreshFailed(String error) {
+    return 'Failed to refresh case requests: $error';
+  }
+
+  @override
+  String get parentCaseRequestFormNewTitle => 'New Case Request';
+
+  @override
+  String get parentCaseRequestFormEditTitle => 'Edit Case Request';
+
+  @override
+  String get parentCaseRequestFormDiscardTitle => 'Discard changes?';
+
+  @override
+  String get parentCaseRequestFormDiscardMessage =>
+      'You have unsaved changes. Leave this form without saving?';
+
+  @override
+  String get parentCaseRequestFormStay => 'Stay';
+
+  @override
+  String get parentCaseRequestFormLeave => 'Leave';
+
+  @override
+  String get parentCaseRequestFormLoadFailed =>
+      'Failed to load request for editing.';
+
+  @override
+  String get parentCaseRequestFormOnlyPendingEditable =>
+      'Only pending requests can be edited.';
+
+  @override
+  String get parentCaseRequestFormUpdatedSuccess =>
+      'Case request updated successfully.';
+
+  @override
+  String get parentCaseRequestFormSubmittedSuccess =>
+      'Case request submitted successfully.';
+
+  @override
+  String parentCaseRequestFormImageSelectFailed(String error) {
+    return 'Unable to select image: $error';
+  }
+
+  @override
+  String get parentCaseRequestFormSubmitRequest => 'Submit Case Request';
+
+  @override
+  String get parentCaseRequestFormSubmitting => 'Submitting...';
+
+  @override
+  String get parentCaseRequestFormChildInfoSection => 'Child Information';
+
+  @override
+  String get parentCaseRequestFormChangeChildPhoto => 'Change child photo';
+
+  @override
+  String get parentCaseRequestFormAddChildPhoto => 'Add child photo';
+
+  @override
+  String get parentCaseRequestFormRemovePhoto => 'Remove photo';
+
+  @override
+  String get parentCaseRequestFormChildName => 'Child name';
+
+  @override
+  String get parentCaseRequestFormCategoryGuidance =>
+      'Choose the category closest to the observed difficulty. The specialist will confirm the case after assessment.';
+
+  @override
+  String get parentCaseRequestFormCaseDescriptionSection => 'Case Description';
+
+  @override
+  String get parentCaseRequestFormCaseDescriptionLabel => 'Case description';
+
+  @override
+  String parentCaseRequestFormCaseDescriptionHelper(int max) {
+    return 'Required. Up to $max characters.';
+  }
+
+  @override
+  String get parentCaseRequestFormObservedDifficultiesLabel =>
+      'Observed difficulties';
+
+  @override
+  String parentCaseRequestFormObservedDifficultiesHelper(int max) {
+    return 'Optional. Up to $max characters.';
+  }
+
+  @override
+  String get parentCaseRequestFormHasPreviousDiagnosis =>
+      'Has previous diagnosis?';
+
+  @override
+  String get parentCaseRequestFormPreviousDiagnosisDetails =>
+      'Previous diagnosis details';
+
+  @override
+  String get parentCaseRequestFormCurrentlyReceivingTreatment =>
+      'Currently receiving treatment?';
+
+  @override
+  String get parentCaseRequestFormCurrentTreatmentDetails =>
+      'Current treatment details';
+
+  @override
+  String get parentCaseRequestFormHistoryHelper =>
+      'Provide as much detail as you can to help the specialist prepare.';
+
+  @override
+  String get parentCaseRequestFormPreferredContactPeriod =>
+      'Preferred Contact Period';
+
+  @override
+  String get parentCaseRequestFormReviewTitle => 'Review and Submit';
+
+  @override
+  String get parentCaseRequestFormReviewChildName => 'Child name';
+
+  @override
+  String get parentCaseRequestFormReviewDob => 'Date of birth';
+
+  @override
+  String get parentCaseRequestFormReviewGender => 'Gender';
+
+  @override
+  String get parentCaseRequestFormReviewCategory => 'Category';
+
+  @override
+  String get parentCaseRequestFormReviewCaseDescription => 'Case description';
+
+  @override
+  String get parentCaseRequestFormReviewObservedDifficulties =>
+      'Observed difficulties';
+
+  @override
+  String get parentCaseRequestFormReviewPreviousDiagnosis =>
+      'Previous diagnosis';
+
+  @override
+  String get parentCaseRequestFormReviewCurrentTreatment => 'Current treatment';
+
+  @override
+  String get parentCaseRequestFormReviewPreferredContact => 'Preferred contact';
+
+  @override
+  String get parentCaseRequestFormNotSelected => 'Not selected';
+
+  @override
+  String get parentCaseRequestFormNotSet => 'Not set';
+
+  @override
+  String get parentCaseRequestFormNotSpecified => 'Not specified';
+
+  @override
+  String get parentCaseRequestFormNoneProvided => 'None provided';
+
+  @override
+  String get parentCaseRequestFormStepChild => 'Child';
+
+  @override
+  String get parentCaseRequestFormStepCategory => 'Category';
+
+  @override
+  String get parentCaseRequestFormStepDescription => 'Description';
+
+  @override
+  String get parentCaseRequestFormStepHistory => 'History';
+
+  @override
+  String get parentCaseRequestFormStepContact => 'Contact';
+
+  @override
+  String get parentCaseRequestFormStepReview => 'Review';
+
+  @override
+  String parentCaseRequestFormStepProgress(
+    int current,
+    int total,
+    String stepName,
+  ) {
+    return 'Step $current of $total: $stepName';
+  }
+
+  @override
+  String get parentCaseRequestFormValidationChildNameRequired =>
+      'Child name is required.';
+
+  @override
+  String parentCaseRequestFormValidationChildNameMax(int max) {
+    return 'Child name must not exceed $max characters.';
+  }
+
+  @override
+  String get parentCaseRequestFormValidationDobRequired =>
+      'Date of birth is required.';
+
+  @override
+  String get parentCaseRequestFormValidationDobFuture =>
+      'Date of birth cannot be in the future.';
+
+  @override
+  String get parentCaseRequestFormValidationGenderRequired =>
+      'Gender is required.';
+
+  @override
+  String get parentCaseRequestFormValidationCategoryRequired =>
+      'Please select a case category.';
+
+  @override
+  String get parentCaseRequestFormValidationDescriptionRequired =>
+      'Case description is required.';
+
+  @override
+  String parentCaseRequestFormValidationDescriptionMax(int max) {
+    return 'Case description must not exceed $max characters.';
+  }
+
+  @override
+  String parentCaseRequestFormValidationObservedMax(int max) {
+    return 'Observed difficulties must not exceed $max characters.';
+  }
+
+  @override
+  String parentCaseRequestFormValidationPreviousDiagnosisMax(int max) {
+    return 'Previous diagnosis details must not exceed $max characters.';
+  }
+
+  @override
+  String parentCaseRequestFormValidationCurrentTreatmentMax(int max) {
+    return 'Current treatment details must not exceed $max characters.';
+  }
+
+  @override
+  String get parentCaseRequestFormValidationContactPeriodRequired =>
+      'Please choose a preferred contact period.';
+
+  @override
+  String parentCaseRequestFormCategoriesLoadFailed(String error) {
+    return 'Failed to load categories: $error';
+  }
+
+  @override
+  String parentCaseRequestFormCategoriesRefreshFailed(String error) {
+    return 'Failed to refresh categories: $error';
+  }
+
+  @override
+  String get parentCaseRequestDetailsTitle => 'Request Details';
+
+  @override
+  String get parentCaseRequestDetailsEditTooltip => 'Edit request';
+
+  @override
+  String get parentCaseRequestDetailsNotFound => 'Case request not found.';
+
+  @override
+  String get parentCaseRequestDetailsUnavailable => 'Unavailable';
+
+  @override
+  String get parentCaseRequestDetailsProgressTitle => 'Request Progress';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepSubmitted => 'Submitted';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepAdminReview => 'Admin Review';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepSpecialistAssigned =>
+      'Specialist Assigned';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepAssessment => 'Assessment';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepAccepted => 'Accepted';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepPatientProfileCreated =>
+      'Patient Profile Created';
+
+  @override
+  String get parentCaseRequestDetailsNotAcceptedTitle => 'Request Not Accepted';
+
+  @override
+  String get parentCaseRequestDetailsChildProfileActiveTitle =>
+      'Child Profile Active';
+
+  @override
+  String get parentCaseRequestDetailsChildProfileActiveMessage =>
+      'The child profile is now active and ready for follow-up.';
+
+  @override
+  String get parentCaseRequestDetailsOpenChildProfile => 'Open Child Profile';
+
+  @override
+  String get parentCaseRequestDetailsChildInformation => 'Child Information';
+
+  @override
+  String get parentCaseRequestDetailsCaseDescription => 'Case description';
+
+  @override
+  String get parentCaseRequestDetailsObservedDifficulties =>
+      'Observed difficulties';
+
+  @override
+  String get parentCaseRequestDetailsPreviousDiagnosis => 'Previous diagnosis';
+
+  @override
+  String get parentCaseRequestDetailsCurrentTreatment => 'Current treatment';
+
+  @override
+  String get parentCaseRequestDetailsPreferredContactPeriod =>
+      'Preferred contact period';
+
+  @override
+  String get parentCaseRequestDetailsAssignedSpecialist =>
+      'Assigned Specialist';
+
+  @override
+  String get parentCaseRequestDetailsAttachments => 'Attachments';
+
+  @override
+  String get parentCaseRequestDetailsAttachmentsHint =>
+      'Supported: image, audio, video, PDF';
+
+  @override
+  String get parentCaseRequestDetailsNoAttachments => 'No attachments yet.';
+
+  @override
+  String get parentCaseRequestDetailsAddAttachment => 'Add Attachment';
+
+  @override
+  String get parentCaseRequestDetailsAttachmentUploaded =>
+      'Attachment uploaded successfully';
+
+  @override
+  String get parentCaseRequestDetailsAttachmentDeleted => 'Attachment deleted';
+
+  @override
+  String get parentCaseRequestDetailsDeleteAttachmentTitle =>
+      'Delete attachment?';
+
+  @override
+  String parentCaseRequestDetailsDeleteAttachmentMessage(String name) {
+    return 'Remove \"$name\" from this request?';
+  }
+
+  @override
+  String parentCaseRequestDetailsLoadFailed(String error) {
+    return 'Failed to load case request: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsRefreshFailed(String error) {
+    return 'Failed to refresh case request: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsSubmitFailed(String error) {
+    return 'Failed to submit case request: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsUpdateFailed(String error) {
+    return 'Failed to update case request: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsUploadChildImageFailed(String error) {
+    return 'Failed to upload child image: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsUploadAttachmentFailed(String error) {
+    return 'Failed to upload attachment: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsDeleteAttachmentFailed(String error) {
+    return 'Failed to delete attachment: $error';
+  }
+
+  @override
+  String get caseIntakeStatusPending => 'Pending Review';
+
+  @override
+  String get caseIntakeStatusAssigned => 'Specialist Assigned';
+
+  @override
+  String get caseIntakeStatusUnderAssessment => 'Under Assessment';
+
+  @override
+  String get caseIntakeStatusAccepted => 'Accepted';
+
+  @override
+  String get caseIntakeStatusRejected => 'Rejected';
+
+  @override
+  String get caseIntakeStatusConvertedToPatient => 'Profile Created';
+
+  @override
+  String get caseIntakeStatusPendingSubtitle =>
+      'Your request is waiting for admin review.';
+
+  @override
+  String get caseIntakeStatusAssignedSubtitle =>
+      'A specialist has been assigned and will begin reviewing the case.';
+
+  @override
+  String get caseIntakeStatusUnderAssessmentSubtitle =>
+      'The assigned specialist is assessing the case.';
+
+  @override
+  String get caseIntakeStatusAcceptedSubtitle =>
+      'The case was accepted. Patient profile creation is in progress.';
+
+  @override
+  String get caseIntakeStatusRejectedSubtitle =>
+      'This request was not accepted. See the reason below.';
+
+  @override
+  String get caseIntakeStatusConvertedToPatientSubtitle =>
+      'The case was accepted and the patient profile was created.';
+
+  @override
+  String get caseIntakeAttachmentPdf => 'PDF';
+
+  @override
+  String get specialistCaseRequestsDescription =>
+      'Review assigned cases and track their assessment status.';
+
+  @override
+  String get specialistCaseRequestsLoading =>
+      'Loading assigned case requests...';
+
+  @override
+  String get specialistCaseRequestsEmpty =>
+      'No assigned case requests yet.\nAssigned cases will appear here after an admin selects you for a request.';
+
+  @override
+  String specialistCaseRequestsLoadFailed(String error) {
+    return 'Failed to load assigned case requests: $error';
+  }
+
+  @override
+  String specialistCaseRequestsAssignedOn(String date) {
+    return 'Assigned $date';
+  }
+
+  @override
+  String get specialistCaseRequestsUnnamedChild => 'Unnamed child';
+
+  @override
+  String get specialistCaseRequestsOneAttachment => '1 attachment';
+
+  @override
+  String specialistCaseRequestsAttachmentCount(int count) {
+    return '$count attachments';
+  }
+
+  @override
+  String get specialistCaseRequestsConversationAvailable =>
+      'Conversation available';
+
+  @override
+  String get specialistCaseRequestDetailsTitle => 'Case Request';
+
+  @override
+  String get specialistCaseRequestDetailsReviewIntro =>
+      'Review the submitted information before starting the assessment.';
+
+  @override
+  String get specialistCaseRequestDetailsLoading => 'Loading case request...';
+
+  @override
+  String specialistCaseRequestDetailsParentLabel(String name) {
+    return 'Parent: $name';
+  }
+
+  @override
+  String get specialistCaseRequestDetailsStatusTimeline => 'Status Timeline';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineAssigned => 'Assigned';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineUnderAssessment =>
+      'Under Assessment';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineAccepted => 'Accepted';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineConverted => 'Converted';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineInProgress => 'In progress';
+
+  @override
+  String get specialistCaseRequestDetailsRejectionReason => 'Rejection Reason';
+
+  @override
+  String get specialistCaseRequestDetailsPatientProfileCreated =>
+      'Patient profile created successfully.';
+
+  @override
+  String get specialistCaseRequestDetailsOpenPatientProfile =>
+      'Open Patient Profile';
+
+  @override
+  String get specialistCaseRequestDetailsCaseInformation => 'Case Information';
+
+  @override
+  String get specialistCaseRequestDetailsPreviousDiagnosisTreatment =>
+      'Previous Diagnosis & Treatment';
+
+  @override
+  String get specialistCaseRequestDetailsDiagnosisDetails =>
+      'Diagnosis details';
+
+  @override
+  String get specialistCaseRequestDetailsTreatmentDetails =>
+      'Treatment details';
+
+  @override
+  String get specialistCaseRequestDetailsCurrentlyReceivingTreatment =>
+      'Currently receiving treatment';
+
+  @override
+  String get specialistCaseRequestDetailsParentInformation =>
+      'Parent Information';
+
+  @override
+  String get specialistCaseRequestDetailsAge => 'Age';
+
+  @override
+  String get specialistCaseRequestDetailsAgeUnavailable => 'Unavailable';
+
+  @override
+  String get specialistCaseRequestDetailsAgeUnderOneMonth => 'Under 1 month';
+
+  @override
+  String get specialistCaseRequestDetailsAgeOneMonth => '1 month';
+
+  @override
+  String specialistCaseRequestDetailsAgeMonths(int count) {
+    return '$count months';
+  }
+
+  @override
+  String get specialistCaseRequestDetailsAgeOneYear => '1 year';
+
+  @override
+  String specialistCaseRequestDetailsAgeYears(int count) {
+    return '$count years';
+  }
+
+  @override
+  String get specialistCaseRequestDetailsNoAttachments => 'No attachments';
+
+  @override
+  String specialistCaseRequestDetailsCopyLabel(String label) {
+    return 'Copy $label';
+  }
+
+  @override
+  String get specialistCaseAssessmentStartTitle => 'Start Assessment';
+
+  @override
+  String get specialistCaseAssessmentStartMessage =>
+      'Contact the parent first if you have not already. Start the preliminary assessment for this case?';
+
+  @override
+  String get specialistCaseAssessmentStartAction => 'Start Assessment';
+
+  @override
+  String get specialistCaseAssessmentStartedSuccess =>
+      'Assessment started successfully';
+
+  @override
+  String get specialistCaseAssessmentNotesTitle =>
+      'Preliminary Assessment Notes';
+
+  @override
+  String get specialistCaseAssessmentNotesHint =>
+      'Enter preliminary assessment notes';
+
+  @override
+  String get specialistCaseAssessmentNotesRequired =>
+      'Assessment notes are required.';
+
+  @override
+  String specialistCaseAssessmentNotesMaxLength(int max) {
+    return 'Assessment notes must not exceed $max characters.';
+  }
+
+  @override
+  String get specialistCaseAssessmentNotesUpdatedSuccess =>
+      'Assessment notes updated successfully';
+
+  @override
+  String get specialistCaseAssessmentSaveNotes => 'Save Notes';
+
+  @override
+  String get specialistCaseAssessmentAcceptTitle => 'Accept Case';
+
+  @override
+  String get specialistCaseAssessmentAcceptMessage =>
+      'Accept this case for continued rehabilitation follow-up?\n\nThe patient profile will not be created yet.';
+
+  @override
+  String get specialistCaseAssessmentAcceptAction => 'Accept Case';
+
+  @override
+  String get specialistCaseAssessmentAcceptNotesRequired =>
+      'Save assessment notes before accepting this case.';
+
+  @override
+  String get specialistCaseAssessmentAcceptSaveNotesFirst =>
+      'Save your assessment notes before accepting.';
+
+  @override
+  String get specialistCaseAssessmentPatientProfileCreatedSuccess =>
+      'Patient profile created successfully.';
+
+  @override
+  String get specialistCaseAssessmentCreatingPatientProfile =>
+      'Creating patient profile...';
+
+  @override
+  String get specialistCaseAssessmentRejectTitle => 'Reject Case';
+
+  @override
+  String get specialistCaseAssessmentRejectAction => 'Reject Case';
+
+  @override
+  String get specialistCaseAssessmentRejectReasonLabel =>
+      'Reason for rejection';
+
+  @override
+  String get specialistCaseAssessmentRejectReasonHelper =>
+      'This reason will be visible to the parent.';
+
+  @override
+  String get specialistCaseAssessmentRejectReasonRequired =>
+      'Reason for rejection is required.';
+
+  @override
+  String specialistCaseAssessmentRejectReasonMinLength(int min) {
+    return 'Reason must be at least $min characters.';
+  }
+
+  @override
+  String specialistCaseAssessmentRejectReasonMaxLength(int max) {
+    return 'Reason must not exceed $max characters.';
+  }
+
+  @override
+  String get specialistCaseAssessmentRejectedSuccess =>
+      'Case request rejected successfully';
+
+  @override
+  String get specialistCaseAssessmentRejecting => 'Rejecting...';
+
+  @override
+  String get specialistCaseAssessmentStarting => 'Starting...';
+
+  @override
+  String get specialistCaseAssessmentWaitSavingNotes =>
+      'Please wait while assessment notes are being saved.';
+
+  @override
+  String get specialistCaseAssessmentWaitCreatingProfile =>
+      'Please wait while the patient profile is being created.';
+
+  @override
+  String get specialistCaseAssessmentWaitRejecting =>
+      'Please wait while the case is being rejected.';
+
+  @override
+  String get specialistCaseAssessmentWaitStarting =>
+      'Please wait while the assessment is starting.';
+
+  @override
+  String get specialistCaseAssessmentOnlyAssignedCanStart =>
+      'Only assigned case requests can start assessment';
+
+  @override
+  String get specialistCaseAssessmentOnlyUnderAssessmentCanAccept =>
+      'Only case requests under assessment can be accepted';
+
+  @override
+  String get specialistCaseAssessmentOnlyAssignedOrUnderAssessmentCanReject =>
+      'Only assigned or under-assessment requests can be rejected';
+
+  @override
+  String get specialistCaseAssessmentCannotRejectAnymore =>
+      'This case request can no longer be rejected';
+
+  @override
+  String get specialistCaseAssessmentStartFailed =>
+      'Failed to start assessment. Please try again.';
+
+  @override
+  String get specialistCaseAssessmentSaveNotesFailed =>
+      'Failed to update assessment notes. Please try again.';
+
+  @override
+  String get specialistCaseAssessmentAcceptFailed =>
+      'Failed to accept case request. Please try again.';
+
+  @override
+  String get specialistCaseAssessmentRejectFailed =>
+      'Failed to reject case request. Please try again.';
+
+  @override
+  String adminCaseAssignmentLoadFailed(String error) {
+    return 'Failed to load matching specialists: $error';
+  }
+
+  @override
+  String get adminCaseAssignmentInProgress => 'Assignment already in progress.';
+
+  @override
+  String get adminCaseAssignmentSelectSpecialist =>
+      'Select a specialist to continue.';
+
+  @override
+  String get adminCaseAssignmentFailed =>
+      'Failed to assign specialist. Please try again.';
+
+  @override
+  String get adminCaseAssignmentOnlyPending =>
+      'Only pending case requests can be assigned';
+
+  @override
+  String get adminCaseAssignmentNotifySpecialist =>
+      'The selected specialist will be notified after assignment.';
+
+  @override
+  String get adminCaseAssignmentNoActiveSpecialists =>
+      'There are currently no active specialists linked to this category.';
+
+  @override
+  String adminCaseRequestDetailsSubmittedBy(String name) {
+    return 'Submitted by $name';
+  }
+
+  @override
+  String adminCaseRequestDetailsRequestId(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get adminCaseRequestDetailsRejectedTitle => 'Request rejected';
+
+  @override
+  String adminCaseRequestDetailsPatientId(String id) {
+    return 'Patient ID: $id';
+  }
+
+  @override
+  String get adminCaseRequestDetailsAssessmentNotesTitle =>
+      'Internal Preliminary Assessment Notes';
+
+  @override
+  String get adminCaseRequestDetailsAssessmentNotesHint =>
+      'Visible to admin only';
+
+  @override
+  String get adminCaseRequestDetailsConversationCreated =>
+      'Conversation created';
+
+  @override
+  String adminCaseRequestDetailsConversationId(String id) {
+    return 'Conversation ID: $id';
+  }
+
+  @override
+  String get adminCaseRequestDetailsNoSpecialistPending =>
+      'No specialist assigned yet.';
+
+  @override
+  String get adminCaseRequestDetailsNoSpecialist => 'No specialist assigned.';
+
+  @override
+  String get adminMatchingSpecialistsYearsUnknown => '— Years';
+
+  @override
+  String get adminMatchingSpecialistsOneYear => '1 Year';
+
+  @override
+  String adminMatchingSpecialistsYears(int count) {
+    return '$count Years';
+  }
+
+  @override
+  String get adminMatchingSpecialistsOneActivePatient => '1 Active Patient';
+
+  @override
+  String adminMatchingSpecialistsActivePatients(int count) {
+    return '$count Active Patients';
+  }
+
+  @override
+  String get adminMatchingSpecialistsOneCurrentRequest => '1 Current Request';
+
+  @override
+  String adminMatchingSpecialistsCurrentRequests(int count) {
+    return '$count Current Requests';
+  }
+
+  @override
+  String adminMatchingSpecialistsLicense(String number) {
+    return 'License: $number';
+  }
 }

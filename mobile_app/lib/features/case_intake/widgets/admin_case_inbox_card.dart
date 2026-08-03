@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../dashboard/widgets/admin_ui_components.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
 import '../models/admin_case_inbox_models.dart';
+import '../presentation/admin_case_intake_localization_utils.dart';
 import 'case_request_status_chip.dart';
 
 class AdminCaseInboxCard extends StatelessWidget {
@@ -19,13 +21,14 @@ class AdminCaseInboxCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final parentName = item.parent?.fullName?.trim();
     final categoryName = item.category?.name.trim();
     final specialistName = item.assignedSpecialist?.fullName?.trim();
     final submittedLabel = item.submittedAt != null
         ? DateFormat('MMM d, yyyy').format(item.submittedAt!)
-        : 'Date unavailable';
+        : l10n.parentCaseRequestsDateUnavailable;
 
     return Padding(
       padding: EdgeInsets.only(bottom: context.dashSpacing * 0.65),
@@ -41,7 +44,7 @@ class AdminCaseInboxCard extends StatelessWidget {
                   child: Text(
                     item.childName.isNotEmpty
                         ? item.childName
-                        : 'Unnamed child',
+                        : l10n.specialistCaseRequestsUnnamedChild,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: DashboardColors.textPrimary,
@@ -54,7 +57,10 @@ class AdminCaseInboxCard extends StatelessWidget {
                 Flexible(
                   child: Align(
                     alignment: AlignmentDirectional.topEnd,
-                    child: CaseRequestStatusChip(status: item.status),
+                    child: CaseRequestStatusChip(
+                      status: item.status,
+                      label: localizedCaseIntakeStatusLabel(l10n, item.status),
+                    ),
                   ),
                 ),
               ],
@@ -90,13 +96,14 @@ class AdminCaseInboxCard extends StatelessWidget {
               children: [
                 _MetaChip(
                   icon: Icons.event_outlined,
-                  label: 'Submitted $submittedLabel',
+                  label: l10n.parentDashboardCaseSubmittedOn(submittedLabel),
                 ),
                 _MetaChip(
                   icon: Icons.attach_file_rounded,
-                  label: item.attachmentCount == 1
-                      ? '1 attachment'
-                      : '${item.attachmentCount} attachments',
+                  label: localizedSpecialistCaseAttachmentCountLabel(
+                    l10n,
+                    item.attachmentCount,
+                  ),
                 ),
               ],
             ),

@@ -3337,4 +3337,830 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get devDashboardPreviewsTitle => 'معاينات لوحة التحكم';
+
+  @override
+  String get parentCaseRequestsListDisclaimer =>
+      'هذه طلبات أولية وليست تشخيصات رسمية. يراجع فريق الإدارة كل طلب ويعيّن أخصائياً مناسباً.';
+
+  @override
+  String get parentCaseRequestsEmptyTitle => 'لا توجد طلبات حالة بعد.';
+
+  @override
+  String get parentCaseRequestsEmptyMessage =>
+      'قدّم طلباً ليراجع فريق الإدارة الحالة ويعيّن أخصائياً مناسباً.';
+
+  @override
+  String get parentCaseRequestsDateUnavailable => 'التاريخ غير متاح';
+
+  @override
+  String get parentCaseRequestsSignInRequired =>
+      'يرجى تسجيل الدخول لعرض طلبات الحالة.';
+
+  @override
+  String parentCaseRequestsLoadFailed(String error) {
+    return 'فشل تحميل طلبات الحالة: $error';
+  }
+
+  @override
+  String parentCaseRequestsRefreshFailed(String error) {
+    return 'فشل تحديث طلبات الحالة: $error';
+  }
+
+  @override
+  String get parentCaseRequestFormNewTitle => 'طلب حالة جديد';
+
+  @override
+  String get parentCaseRequestFormEditTitle => 'تعديل طلب الحالة';
+
+  @override
+  String get parentCaseRequestFormDiscardTitle => 'تجاهل التغييرات؟';
+
+  @override
+  String get parentCaseRequestFormDiscardMessage =>
+      'لديك تغييرات غير محفوظة. مغادرة هذا النموذج دون حفظ؟';
+
+  @override
+  String get parentCaseRequestFormStay => 'البقاء';
+
+  @override
+  String get parentCaseRequestFormLeave => 'مغادرة';
+
+  @override
+  String get parentCaseRequestFormLoadFailed => 'فشل تحميل الطلب للتعديل.';
+
+  @override
+  String get parentCaseRequestFormOnlyPendingEditable =>
+      'يمكن تعديل الطلبات المعلقة فقط.';
+
+  @override
+  String get parentCaseRequestFormUpdatedSuccess =>
+      'تم تحديث طلب الحالة بنجاح.';
+
+  @override
+  String get parentCaseRequestFormSubmittedSuccess =>
+      'تم إرسال طلب الحالة بنجاح.';
+
+  @override
+  String parentCaseRequestFormImageSelectFailed(String error) {
+    return 'تعذّر اختيار الصورة: $error';
+  }
+
+  @override
+  String get parentCaseRequestFormSubmitRequest => 'إرسال طلب الحالة';
+
+  @override
+  String get parentCaseRequestFormSubmitting => 'جارٍ الإرسال...';
+
+  @override
+  String get parentCaseRequestFormChildInfoSection => 'معلومات الطفل';
+
+  @override
+  String get parentCaseRequestFormChangeChildPhoto => 'تغيير صورة الطفل';
+
+  @override
+  String get parentCaseRequestFormAddChildPhoto => 'إضافة صورة الطفل';
+
+  @override
+  String get parentCaseRequestFormRemovePhoto => 'إزالة الصورة';
+
+  @override
+  String get parentCaseRequestFormChildName => 'اسم الطفل';
+
+  @override
+  String get parentCaseRequestFormCategoryGuidance =>
+      'اختر الفئة الأقرب إلى الصعوبة الملاحظة. سيؤكد الأخصائي الحالة بعد التقييم.';
+
+  @override
+  String get parentCaseRequestFormCaseDescriptionSection => 'وصف الحالة';
+
+  @override
+  String get parentCaseRequestFormCaseDescriptionLabel => 'وصف الحالة';
+
+  @override
+  String parentCaseRequestFormCaseDescriptionHelper(int max) {
+    return 'مطلوب. حتى $max حرفاً.';
+  }
+
+  @override
+  String get parentCaseRequestFormObservedDifficultiesLabel =>
+      'الصعوبات الملاحظة';
+
+  @override
+  String parentCaseRequestFormObservedDifficultiesHelper(int max) {
+    return 'اختياري. حتى $max حرفاً.';
+  }
+
+  @override
+  String get parentCaseRequestFormHasPreviousDiagnosis => 'هل يوجد تشخيص سابق؟';
+
+  @override
+  String get parentCaseRequestFormPreviousDiagnosisDetails =>
+      'تفاصيل التشخيص السابق';
+
+  @override
+  String get parentCaseRequestFormCurrentlyReceivingTreatment =>
+      'هل يتلقى علاجاً حالياً؟';
+
+  @override
+  String get parentCaseRequestFormCurrentTreatmentDetails =>
+      'تفاصيل العلاج الحالي';
+
+  @override
+  String get parentCaseRequestFormHistoryHelper =>
+      'قدّم أكبر قدر ممكن من التفاصيل لمساعدة الأخصائي على الاستعداد.';
+
+  @override
+  String get parentCaseRequestFormPreferredContactPeriod =>
+      'فترة التواصل المفضلة';
+
+  @override
+  String get parentCaseRequestFormReviewTitle => 'مراجعة وإرسال';
+
+  @override
+  String get parentCaseRequestFormReviewChildName => 'اسم الطفل';
+
+  @override
+  String get parentCaseRequestFormReviewDob => 'تاريخ الميلاد';
+
+  @override
+  String get parentCaseRequestFormReviewGender => 'الجنس';
+
+  @override
+  String get parentCaseRequestFormReviewCategory => 'الفئة';
+
+  @override
+  String get parentCaseRequestFormReviewCaseDescription => 'وصف الحالة';
+
+  @override
+  String get parentCaseRequestFormReviewObservedDifficulties =>
+      'الصعوبات الملاحظة';
+
+  @override
+  String get parentCaseRequestFormReviewPreviousDiagnosis => 'التشخيص السابق';
+
+  @override
+  String get parentCaseRequestFormReviewCurrentTreatment => 'العلاج الحالي';
+
+  @override
+  String get parentCaseRequestFormReviewPreferredContact => 'التواصل المفضل';
+
+  @override
+  String get parentCaseRequestFormNotSelected => 'غير محدد';
+
+  @override
+  String get parentCaseRequestFormNotSet => 'غير مُحدَّد';
+
+  @override
+  String get parentCaseRequestFormNotSpecified => 'غير محدد';
+
+  @override
+  String get parentCaseRequestFormNoneProvided => 'لم يُقدَّم';
+
+  @override
+  String get parentCaseRequestFormStepChild => 'الطفل';
+
+  @override
+  String get parentCaseRequestFormStepCategory => 'الفئة';
+
+  @override
+  String get parentCaseRequestFormStepDescription => 'الوصف';
+
+  @override
+  String get parentCaseRequestFormStepHistory => 'السجل';
+
+  @override
+  String get parentCaseRequestFormStepContact => 'التواصل';
+
+  @override
+  String get parentCaseRequestFormStepReview => 'المراجعة';
+
+  @override
+  String parentCaseRequestFormStepProgress(
+    int current,
+    int total,
+    String stepName,
+  ) {
+    return 'الخطوة $current من $total: $stepName';
+  }
+
+  @override
+  String get parentCaseRequestFormValidationChildNameRequired =>
+      'اسم الطفل مطلوب.';
+
+  @override
+  String parentCaseRequestFormValidationChildNameMax(int max) {
+    return 'يجب ألا يتجاوز اسم الطفل $max حرفاً.';
+  }
+
+  @override
+  String get parentCaseRequestFormValidationDobRequired =>
+      'تاريخ الميلاد مطلوب.';
+
+  @override
+  String get parentCaseRequestFormValidationDobFuture =>
+      'لا يمكن أن يكون تاريخ الميلاد في المستقبل.';
+
+  @override
+  String get parentCaseRequestFormValidationGenderRequired => 'الجنس مطلوب.';
+
+  @override
+  String get parentCaseRequestFormValidationCategoryRequired =>
+      'يرجى اختيار فئة الحالة.';
+
+  @override
+  String get parentCaseRequestFormValidationDescriptionRequired =>
+      'وصف الحالة مطلوب.';
+
+  @override
+  String parentCaseRequestFormValidationDescriptionMax(int max) {
+    return 'يجب ألا يتجاوز وصف الحالة $max حرفاً.';
+  }
+
+  @override
+  String parentCaseRequestFormValidationObservedMax(int max) {
+    return 'يجب ألا تتجاوز الصعوبات الملاحظة $max حرفاً.';
+  }
+
+  @override
+  String parentCaseRequestFormValidationPreviousDiagnosisMax(int max) {
+    return 'يجب ألا تتجاوز تفاصيل التشخيص السابق $max حرفاً.';
+  }
+
+  @override
+  String parentCaseRequestFormValidationCurrentTreatmentMax(int max) {
+    return 'يجب ألا تتجاوز تفاصيل العلاج الحالي $max حرفاً.';
+  }
+
+  @override
+  String get parentCaseRequestFormValidationContactPeriodRequired =>
+      'يرجى اختيار فترة التواصل المفضلة.';
+
+  @override
+  String parentCaseRequestFormCategoriesLoadFailed(String error) {
+    return 'فشل تحميل الفئات: $error';
+  }
+
+  @override
+  String parentCaseRequestFormCategoriesRefreshFailed(String error) {
+    return 'فشل تحديث الفئات: $error';
+  }
+
+  @override
+  String get parentCaseRequestDetailsTitle => 'تفاصيل الطلب';
+
+  @override
+  String get parentCaseRequestDetailsEditTooltip => 'تعديل الطلب';
+
+  @override
+  String get parentCaseRequestDetailsNotFound =>
+      'لم يتم العثور على طلب الحالة.';
+
+  @override
+  String get parentCaseRequestDetailsUnavailable => 'غير متاح';
+
+  @override
+  String get parentCaseRequestDetailsProgressTitle => 'تقدّم الطلب';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepSubmitted => 'مُرسَل';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepAdminReview =>
+      'مراجعة الإدارة';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepSpecialistAssigned =>
+      'تعيين أخصائي';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepAssessment => 'التقييم';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepAccepted => 'مقبول';
+
+  @override
+  String get parentCaseRequestDetailsProgressStepPatientProfileCreated =>
+      'إنشاء ملف المريض';
+
+  @override
+  String get parentCaseRequestDetailsNotAcceptedTitle => 'لم يُقبل الطلب';
+
+  @override
+  String get parentCaseRequestDetailsChildProfileActiveTitle => 'ملف الطفل نشط';
+
+  @override
+  String get parentCaseRequestDetailsChildProfileActiveMessage =>
+      'ملف الطفل نشط الآن وجاهز للمتابعة.';
+
+  @override
+  String get parentCaseRequestDetailsOpenChildProfile => 'فتح ملف الطفل';
+
+  @override
+  String get parentCaseRequestDetailsChildInformation => 'معلومات الطفل';
+
+  @override
+  String get parentCaseRequestDetailsCaseDescription => 'وصف الحالة';
+
+  @override
+  String get parentCaseRequestDetailsObservedDifficulties =>
+      'الصعوبات الملاحظة';
+
+  @override
+  String get parentCaseRequestDetailsPreviousDiagnosis => 'التشخيص السابق';
+
+  @override
+  String get parentCaseRequestDetailsCurrentTreatment => 'العلاج الحالي';
+
+  @override
+  String get parentCaseRequestDetailsPreferredContactPeriod =>
+      'فترة التواصل المفضلة';
+
+  @override
+  String get parentCaseRequestDetailsAssignedSpecialist => 'الأخصائي المعيّن';
+
+  @override
+  String get parentCaseRequestDetailsAttachments => 'المرفقات';
+
+  @override
+  String get parentCaseRequestDetailsAttachmentsHint =>
+      'المدعوم: صورة، صوت، فيديو، PDF';
+
+  @override
+  String get parentCaseRequestDetailsNoAttachments => 'لا توجد مرفقات بعد.';
+
+  @override
+  String get parentCaseRequestDetailsAddAttachment => 'إضافة مرفق';
+
+  @override
+  String get parentCaseRequestDetailsAttachmentUploaded =>
+      'تم رفع المرفق بنجاح';
+
+  @override
+  String get parentCaseRequestDetailsAttachmentDeleted => 'تم حذف المرفق';
+
+  @override
+  String get parentCaseRequestDetailsDeleteAttachmentTitle => 'حذف المرفق؟';
+
+  @override
+  String parentCaseRequestDetailsDeleteAttachmentMessage(String name) {
+    return 'إزالة \"$name\" من هذا الطلب؟';
+  }
+
+  @override
+  String parentCaseRequestDetailsLoadFailed(String error) {
+    return 'فشل تحميل طلب الحالة: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsRefreshFailed(String error) {
+    return 'فشل تحديث طلب الحالة: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsSubmitFailed(String error) {
+    return 'فشل إرسال طلب الحالة: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsUpdateFailed(String error) {
+    return 'فشل تحديث طلب الحالة: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsUploadChildImageFailed(String error) {
+    return 'فشل رفع صورة الطفل: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsUploadAttachmentFailed(String error) {
+    return 'فشل رفع المرفق: $error';
+  }
+
+  @override
+  String parentCaseRequestDetailsDeleteAttachmentFailed(String error) {
+    return 'فشل حذف المرفق: $error';
+  }
+
+  @override
+  String get caseIntakeStatusPending => 'قيد المراجعة';
+
+  @override
+  String get caseIntakeStatusAssigned => 'تم تعيين أخصائي';
+
+  @override
+  String get caseIntakeStatusUnderAssessment => 'قيد التقييم';
+
+  @override
+  String get caseIntakeStatusAccepted => 'مقبول';
+
+  @override
+  String get caseIntakeStatusRejected => 'مرفوض';
+
+  @override
+  String get caseIntakeStatusConvertedToPatient => 'تم إنشاء الملف';
+
+  @override
+  String get caseIntakeStatusPendingSubtitle =>
+      'طلبك في انتظار مراجعة الإدارة.';
+
+  @override
+  String get caseIntakeStatusAssignedSubtitle =>
+      'تم تعيين أخصائي وسيبدأ مراجعة الحالة.';
+
+  @override
+  String get caseIntakeStatusUnderAssessmentSubtitle =>
+      'الأخصائي المعيّن يقيّم الحالة.';
+
+  @override
+  String get caseIntakeStatusAcceptedSubtitle =>
+      'تم قبول الحالة. إنشاء ملف المريض قيد التقدّم.';
+
+  @override
+  String get caseIntakeStatusRejectedSubtitle =>
+      'لم يُقبل هذا الطلب. راجع السبب أدناه.';
+
+  @override
+  String get caseIntakeStatusConvertedToPatientSubtitle =>
+      'تم قبول الحالة وإنشاء ملف المريض.';
+
+  @override
+  String get caseIntakeAttachmentPdf => 'PDF';
+
+  @override
+  String get specialistCaseRequestsDescription =>
+      'راجع الحالات المعيّنة وتابع حالة تقييمها.';
+
+  @override
+  String get specialistCaseRequestsLoading =>
+      'جارٍ تحميل طلبات الحالة المعيّنة...';
+
+  @override
+  String get specialistCaseRequestsEmpty =>
+      'لا توجد طلبات حالة معيّنة بعد.\nستظهر الحالات المعيّنة هنا بعد أن يختارك المسؤول لطلب.';
+
+  @override
+  String specialistCaseRequestsLoadFailed(String error) {
+    return 'فشل تحميل طلبات الحالة المعيّنة: $error';
+  }
+
+  @override
+  String specialistCaseRequestsAssignedOn(String date) {
+    return 'تعيين $date';
+  }
+
+  @override
+  String get specialistCaseRequestsUnnamedChild => 'طفل بدون اسم';
+
+  @override
+  String get specialistCaseRequestsOneAttachment => 'مرفق واحد';
+
+  @override
+  String specialistCaseRequestsAttachmentCount(int count) {
+    return '$count مرفقات';
+  }
+
+  @override
+  String get specialistCaseRequestsConversationAvailable => 'المحادثة متاحة';
+
+  @override
+  String get specialistCaseRequestDetailsTitle => 'طلب الحالة';
+
+  @override
+  String get specialistCaseRequestDetailsReviewIntro =>
+      'راجع المعلومات المقدّمة قبل بدء التقييم.';
+
+  @override
+  String get specialistCaseRequestDetailsLoading => 'جارٍ تحميل طلب الحالة...';
+
+  @override
+  String specialistCaseRequestDetailsParentLabel(String name) {
+    return 'ولي الأمر: $name';
+  }
+
+  @override
+  String get specialistCaseRequestDetailsStatusTimeline =>
+      'الجدول الزمني للحالة';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineAssigned => 'معيّن';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineUnderAssessment =>
+      'قيد التقييم';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineAccepted => 'مقبول';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineConverted => 'تم التحويل';
+
+  @override
+  String get specialistCaseRequestDetailsTimelineInProgress => 'قيد التقدّم';
+
+  @override
+  String get specialistCaseRequestDetailsRejectionReason => 'سبب الرفض';
+
+  @override
+  String get specialistCaseRequestDetailsPatientProfileCreated =>
+      'تم إنشاء ملف المريض بنجاح.';
+
+  @override
+  String get specialistCaseRequestDetailsOpenPatientProfile => 'فتح ملف المريض';
+
+  @override
+  String get specialistCaseRequestDetailsCaseInformation => 'معلومات الحالة';
+
+  @override
+  String get specialistCaseRequestDetailsPreviousDiagnosisTreatment =>
+      'التشخيص السابق والعلاج';
+
+  @override
+  String get specialistCaseRequestDetailsDiagnosisDetails => 'تفاصيل التشخيص';
+
+  @override
+  String get specialistCaseRequestDetailsTreatmentDetails => 'تفاصيل العلاج';
+
+  @override
+  String get specialistCaseRequestDetailsCurrentlyReceivingTreatment =>
+      'يتلقى علاجاً حالياً';
+
+  @override
+  String get specialistCaseRequestDetailsParentInformation =>
+      'معلومات ولي الأمر';
+
+  @override
+  String get specialistCaseRequestDetailsAge => 'العمر';
+
+  @override
+  String get specialistCaseRequestDetailsAgeUnavailable => 'غير متاح';
+
+  @override
+  String get specialistCaseRequestDetailsAgeUnderOneMonth => 'أقل من شهر';
+
+  @override
+  String get specialistCaseRequestDetailsAgeOneMonth => 'شهر واحد';
+
+  @override
+  String specialistCaseRequestDetailsAgeMonths(int count) {
+    return '$count أشهر';
+  }
+
+  @override
+  String get specialistCaseRequestDetailsAgeOneYear => 'سنة واحدة';
+
+  @override
+  String specialistCaseRequestDetailsAgeYears(int count) {
+    return '$count سنوات';
+  }
+
+  @override
+  String get specialistCaseRequestDetailsNoAttachments => 'لا توجد مرفقات';
+
+  @override
+  String specialistCaseRequestDetailsCopyLabel(String label) {
+    return 'نسخ $label';
+  }
+
+  @override
+  String get specialistCaseAssessmentStartTitle => 'بدء التقييم';
+
+  @override
+  String get specialistCaseAssessmentStartMessage =>
+      'تواصل مع ولي الأمر أولاً إن لم تفعل بعد. بدء التقييم الأولي لهذه الحالة؟';
+
+  @override
+  String get specialistCaseAssessmentStartAction => 'بدء التقييم';
+
+  @override
+  String get specialistCaseAssessmentStartedSuccess => 'تم بدء التقييم بنجاح';
+
+  @override
+  String get specialistCaseAssessmentNotesTitle => 'ملاحظات التقييم الأولي';
+
+  @override
+  String get specialistCaseAssessmentNotesHint => 'أدخل ملاحظات التقييم الأولي';
+
+  @override
+  String get specialistCaseAssessmentNotesRequired => 'ملاحظات التقييم مطلوبة.';
+
+  @override
+  String specialistCaseAssessmentNotesMaxLength(int max) {
+    return 'يجب ألا تتجاوز ملاحظات التقييم $max حرفاً.';
+  }
+
+  @override
+  String get specialistCaseAssessmentNotesUpdatedSuccess =>
+      'تم تحديث ملاحظات التقييم بنجاح';
+
+  @override
+  String get specialistCaseAssessmentSaveNotes => 'حفظ الملاحظات';
+
+  @override
+  String get specialistCaseAssessmentAcceptTitle => 'قبول الحالة';
+
+  @override
+  String get specialistCaseAssessmentAcceptMessage =>
+      'قبول هذه الحالة لمتابعة إعادة التأهيل؟\n\nلن يتم إنشاء ملف المريض بعد.';
+
+  @override
+  String get specialistCaseAssessmentAcceptAction => 'قبول الحالة';
+
+  @override
+  String get specialistCaseAssessmentAcceptNotesRequired =>
+      'احفظ ملاحظات التقييم قبل قبول هذه الحالة.';
+
+  @override
+  String get specialistCaseAssessmentAcceptSaveNotesFirst =>
+      'احفظ ملاحظات التقييم قبل القبول.';
+
+  @override
+  String get specialistCaseAssessmentPatientProfileCreatedSuccess =>
+      'تم إنشاء ملف المريض بنجاح.';
+
+  @override
+  String get specialistCaseAssessmentCreatingPatientProfile =>
+      'جارٍ إنشاء ملف المريض...';
+
+  @override
+  String get specialistCaseAssessmentRejectTitle => 'رفض الحالة';
+
+  @override
+  String get specialistCaseAssessmentRejectAction => 'رفض الحالة';
+
+  @override
+  String get specialistCaseAssessmentRejectReasonLabel => 'سبب الرفض';
+
+  @override
+  String get specialistCaseAssessmentRejectReasonHelper =>
+      'سيكون هذا السبب مرئياً لولي الأمر.';
+
+  @override
+  String get specialistCaseAssessmentRejectReasonRequired => 'سبب الرفض مطلوب.';
+
+  @override
+  String specialistCaseAssessmentRejectReasonMinLength(int min) {
+    return 'يجب ألا يقل السبب عن $min حرفاً.';
+  }
+
+  @override
+  String specialistCaseAssessmentRejectReasonMaxLength(int max) {
+    return 'يجب ألا يتجاوز السبب $max حرفاً.';
+  }
+
+  @override
+  String get specialistCaseAssessmentRejectedSuccess =>
+      'تم رفض طلب الحالة بنجاح';
+
+  @override
+  String get specialistCaseAssessmentRejecting => 'جارٍ الرفض...';
+
+  @override
+  String get specialistCaseAssessmentStarting => 'جارٍ البدء...';
+
+  @override
+  String get specialistCaseAssessmentWaitSavingNotes =>
+      'يرجى الانتظار أثناء حفظ ملاحظات التقييم.';
+
+  @override
+  String get specialistCaseAssessmentWaitCreatingProfile =>
+      'يرجى الانتظار أثناء إنشاء ملف المريض.';
+
+  @override
+  String get specialistCaseAssessmentWaitRejecting =>
+      'يرجى الانتظار أثناء رفض الحالة.';
+
+  @override
+  String get specialistCaseAssessmentWaitStarting =>
+      'يرجى الانتظار أثناء بدء التقييم.';
+
+  @override
+  String get specialistCaseAssessmentOnlyAssignedCanStart =>
+      'يمكن بدء التقييم لطلبات الحالة المعيّنة فقط';
+
+  @override
+  String get specialistCaseAssessmentOnlyUnderAssessmentCanAccept =>
+      'يمكن قبول طلبات الحالة قيد التقييم فقط';
+
+  @override
+  String get specialistCaseAssessmentOnlyAssignedOrUnderAssessmentCanReject =>
+      'يمكن رفض الطلبات المعيّنة أو قيد التقييم فقط';
+
+  @override
+  String get specialistCaseAssessmentCannotRejectAnymore =>
+      'لم يعد بإمكان رفض طلب الحالة هذا';
+
+  @override
+  String get specialistCaseAssessmentStartFailed =>
+      'فشل بدء التقييم. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistCaseAssessmentSaveNotesFailed =>
+      'فشل تحديث ملاحظات التقييم. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistCaseAssessmentAcceptFailed =>
+      'فشل قبول طلب الحالة. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistCaseAssessmentRejectFailed =>
+      'فشل رفض طلب الحالة. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String adminCaseAssignmentLoadFailed(String error) {
+    return 'فشل تحميل الأخصائيين المطابقين: $error';
+  }
+
+  @override
+  String get adminCaseAssignmentInProgress => 'التعيين قيد التنفيذ بالفعل.';
+
+  @override
+  String get adminCaseAssignmentSelectSpecialist => 'اختر أخصائياً للمتابعة.';
+
+  @override
+  String get adminCaseAssignmentFailed =>
+      'فشل تعيين الأخصائي. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get adminCaseAssignmentOnlyPending =>
+      'يمكن تعيين طلبات الحالة المعلقة فقط';
+
+  @override
+  String get adminCaseAssignmentNotifySpecialist =>
+      'سيتم إشعار الأخصائي المحدد بعد التعيين.';
+
+  @override
+  String get adminCaseAssignmentNoActiveSpecialists =>
+      'لا يوجد حالياً أخصائيون نشطون مرتبطون بهذه الفئة.';
+
+  @override
+  String adminCaseRequestDetailsSubmittedBy(String name) {
+    return 'قدّمه $name';
+  }
+
+  @override
+  String adminCaseRequestDetailsRequestId(String id) {
+    return 'المعرّف: $id';
+  }
+
+  @override
+  String get adminCaseRequestDetailsRejectedTitle => 'تم رفض الطلب';
+
+  @override
+  String adminCaseRequestDetailsPatientId(String id) {
+    return 'معرّف المريض: $id';
+  }
+
+  @override
+  String get adminCaseRequestDetailsAssessmentNotesTitle =>
+      'ملاحظات التقييم الأولية الداخلية';
+
+  @override
+  String get adminCaseRequestDetailsAssessmentNotesHint => 'مرئية للمسؤول فقط';
+
+  @override
+  String get adminCaseRequestDetailsConversationCreated => 'تم إنشاء محادثة';
+
+  @override
+  String adminCaseRequestDetailsConversationId(String id) {
+    return 'معرّف المحادثة: $id';
+  }
+
+  @override
+  String get adminCaseRequestDetailsNoSpecialistPending =>
+      'لم يتم تعيين أخصائي بعد.';
+
+  @override
+  String get adminCaseRequestDetailsNoSpecialist => 'لم يتم تعيين أخصائي.';
+
+  @override
+  String get adminMatchingSpecialistsYearsUnknown => '— سنوات';
+
+  @override
+  String get adminMatchingSpecialistsOneYear => 'سنة واحدة';
+
+  @override
+  String adminMatchingSpecialistsYears(int count) {
+    return '$count سنوات';
+  }
+
+  @override
+  String get adminMatchingSpecialistsOneActivePatient => 'مريض نشط واحد';
+
+  @override
+  String adminMatchingSpecialistsActivePatients(int count) {
+    return '$count مرضى نشطين';
+  }
+
+  @override
+  String get adminMatchingSpecialistsOneCurrentRequest => 'طلب حالي واحد';
+
+  @override
+  String adminMatchingSpecialistsCurrentRequests(int count) {
+    return '$count طلبات حالية';
+  }
+
+  @override
+  String adminMatchingSpecialistsLicense(String number) {
+    return 'الترخيص: $number';
+  }
 }

@@ -65,13 +65,15 @@ CaseRequestStatusVisual caseRequestStatusVisual(CaseIntakeStatus? status) {
 }
 
 class CaseRequestStatusChip extends StatelessWidget {
-  const CaseRequestStatusChip({super.key, required this.status});
+  const CaseRequestStatusChip({super.key, required this.status, this.label});
 
   final CaseIntakeStatus? status;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
     final visual = caseRequestStatusVisual(status);
+    final displayLabel = label ?? visual.label;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -86,7 +88,7 @@ class CaseRequestStatusChip extends StatelessWidget {
           Icon(visual.icon, size: 14, color: visual.foreground),
           const SizedBox(width: 4),
           Text(
-            visual.label,
+            displayLabel,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: visual.foreground,
               fontWeight: FontWeight.w700,

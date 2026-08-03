@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
 import '../../../dashboard/widgets/admin_ui_components.dart';
 import '../../../dashboard/widgets/dashboard_bottom_nav.dart';
@@ -18,6 +19,7 @@ import '../../models/case_intake_request_model.dart';
 import '../../models/case_request_attachment_model.dart';
 import '../../providers/admin_case_request_detail_provider.dart';
 import '../../widgets/case_request_status_chip.dart';
+import '../admin_case_intake_localization_utils.dart';
 
 class AdminCaseRequestDetailsScreen extends ConsumerStatefulWidget {
   const AdminCaseRequestDetailsScreen({super.key, required this.requestId});
@@ -52,21 +54,23 @@ class _AdminCaseRequestDetailsScreenState
         .read(adminCaseRequestDetailProvider(widget.requestId))
         .errorMessage;
     if (error != null && error.isNotEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(mapAdminCaseRequestDetailError(l10n, error))),
+      );
     }
   }
 
   Future<void> _openAttachment(CaseRequestAttachment attachment) async {
+    final l10n = AppLocalizations.of(context)!;
     final url = ApiConstants.resolveMediaUrl(attachment.fileUrl);
     if (url == null) {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to open this attachment.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.attachmentUnableToOpen)));
       return;
     }
     final uri = Uri.tryParse(url);
@@ -74,9 +78,9 @@ class _AdminCaseRequestDetailsScreenState
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to open this attachment.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.attachmentUnableToOpen)));
       return;
     }
 
@@ -86,17 +90,17 @@ class _AdminCaseRequestDetailsScreenState
         mode: LaunchMode.externalApplication,
       );
       if (!launched && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unable to open this attachment.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.attachmentUnableToOpen)));
       }
     } catch (_) {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to open this attachment.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.attachmentUnableToOpen)));
     }
   }
 
@@ -109,9 +113,10 @@ class _AdminCaseRequestDetailsScreenState
     if (!mounted) {
       return;
     }
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('$label copied')));
+    ).showSnackBar(SnackBar(content: Text(l10n.commonLabelCopied(label))));
   }
 
   Future<void> _onAssignSpecialist() async {
@@ -128,23 +133,27 @@ class _AdminCaseRequestDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(adminCaseRequestDetailProvider(widget.requestId));
     final detail = state.detail;
     final isInitialLoading = state.isLoading && detail == null;
 
     return AdminPageScaffold(
-      title: 'Request Details',
+      title: l10n.parentCaseRequestDetailsTitle,
       showBackButton: true,
       currentNav: DashboardNavItem.more,
       body: isInitialLoading
-          ? const AdminLoadingCard(message: 'Loading request details...')
+          ? AdminLoadingCard(message: l10n.specialistCaseRequestDetailsLoading)
           : detail == null
           ? ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: context.dashPadding,
               children: [
                 AdminErrorCard(
-                  message: state.errorMessage ?? 'Case request not found.',
+                  message: mapAdminCaseRequestDetailError(
+                    l10n,
+                    state.errorMessage ?? 'Case request not found.',
+                  ),
                   onRetry: () => ref
                       .read(
                         adminCaseRequestDetailProvider(
@@ -156,7 +165,7 @@ class _AdminCaseRequestDetailsScreenState
                 SizedBox(height: context.dashSpacing),
                 OutlinedButton(
                   onPressed: () => context.pop(),
-                  child: const Text('Back'),
+                  child: Text(l10n.commonBack),
                 ),
               ],
             )
@@ -175,7 +184,10 @@ class _AdminCaseRequestDetailsScreenState
                       state.errorMessage!.isNotEmpty &&
                       !state.isRefreshing) ...[
                     AdminErrorCard(
-                      message: state.errorMessage!,
+                      message: mapAdminCaseRequestDetailError(
+                        l10n,
+                        state.errorMessage!,
+                      ),
                       onRetry: () => ref
                           .read(
                             adminCaseRequestDetailProvider(
@@ -207,8 +219,10 @@ class _AdminCaseRequestDetailsScreenState
                   SizedBox(height: context.dashSpacing),
                   _ParentInformationCard(
                     detail: detail,
-                    onCopyEmail: () => _copyText('Email', detail.parent?.email),
-                    onCopyPhone: () => _copyText('Phone', detail.parent?.phone),
+                    onCopyEmail: () =>
+                        _copyText(l10n.fieldEmail, detail.parent?.email),
+                    onCopyPhone: () =>
+                        _copyText(l10n.fieldPhone, detail.parent?.phone),
                   ),
                   SizedBox(height: context.dashSpacing),
                   _AttachmentsCard(
@@ -234,7 +248,7 @@ class _AdminCaseRequestDetailsScreenState
                       width: double.infinity,
                       child: FilledButton(
                         onPressed: _onAssignSpecialist,
-                        child: const Text('Assign Specialist'),
+                        child: Text(l10n.adminAssignmentsAssignSpecialist),
                       ),
                     ),
                   ],
@@ -253,12 +267,13 @@ class _HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final request = detail.request;
     final parentName = detail.parent?.fullName?.trim();
     final submittedLabel = request.submittedAt != null
         ? DateFormat('MMM d, yyyy').format(request.submittedAt!)
-        : 'Unavailable';
+        : l10n.parentCaseRequestDetailsUnavailable;
     final shortId = _shortId(request.id);
 
     return AdminSurfaceCard(
@@ -277,7 +292,7 @@ class _HeaderCard extends StatelessWidget {
           if (parentName != null && parentName.isNotEmpty) ...[
             SizedBox(height: context.dashSpacing * 0.25),
             Text(
-              'Submitted by $parentName',
+              l10n.adminCaseRequestDetailsSubmittedBy(parentName),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -304,9 +319,12 @@ class _HeaderCard extends StatelessWidget {
             runSpacing: 8,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              CaseRequestStatusChip(status: request.status),
+              CaseRequestStatusChip(
+                status: request.status,
+                label: localizedCaseIntakeStatusLabel(l10n, request.status),
+              ),
               Text(
-                'Submitted $submittedLabel',
+                l10n.parentDashboardCaseSubmittedOn(submittedLabel),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: DashboardColors.textMuted,
                 ),
@@ -316,7 +334,7 @@ class _HeaderCard extends StatelessWidget {
           if (shortId.isNotEmpty) ...[
             SizedBox(height: context.dashSpacing * 0.45),
             Text(
-              'ID: $shortId',
+              l10n.adminCaseRequestDetailsRequestId(shortId),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
@@ -335,15 +353,16 @@ class _StatusTimelineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final steps = _buildTimelineSteps(request);
+    final steps = _buildTimelineSteps(l10n, request);
 
     return AdminSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Status Timeline',
+            l10n.specialistCaseRequestDetailsStatusTimeline,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
               color: DashboardColors.textPrimary,
@@ -371,7 +390,10 @@ class _TimelineStepData {
   final String? subtitle;
 }
 
-List<_TimelineStepData> _buildTimelineSteps(CaseIntakeRequest request) {
+List<_TimelineStepData> _buildTimelineSteps(
+  AppLocalizations l10n,
+  CaseIntakeRequest request,
+) {
   final status = request.status;
   final submittedSubtitle = request.submittedAt != null
       ? DateFormat('MMM d, yyyy · h:mm a').format(request.submittedAt!)
@@ -390,27 +412,27 @@ List<_TimelineStepData> _buildTimelineSteps(CaseIntakeRequest request) {
     final assigned = request.assignedAt != null;
     return [
       _TimelineStepData(
-        label: 'Submitted',
+        label: adminCaseTimelineStepLabel(l10n, 'submitted'),
         visual: _TimelineVisual.completed,
         subtitle: submittedSubtitle,
       ),
       _TimelineStepData(
-        label: 'Assigned',
+        label: adminCaseTimelineStepLabel(l10n, 'assigned'),
         visual: assigned
             ? _TimelineVisual.completed
             : _TimelineVisual.incomplete,
         subtitle: assigned ? assignedSubtitle : null,
       ),
-      const _TimelineStepData(
-        label: 'Under Assessment',
+      _TimelineStepData(
+        label: adminCaseTimelineStepLabel(l10n, 'underAssessment'),
         visual: _TimelineVisual.incomplete,
       ),
-      const _TimelineStepData(
-        label: 'Accepted',
+      _TimelineStepData(
+        label: adminCaseTimelineStepLabel(l10n, 'accepted'),
         visual: _TimelineVisual.incomplete,
       ),
-      const _TimelineStepData(
-        label: 'Converted',
+      _TimelineStepData(
+        label: adminCaseTimelineStepLabel(l10n, 'converted'),
         visual: _TimelineVisual.incomplete,
       ),
     ];
@@ -420,103 +442,103 @@ List<_TimelineStepData> _buildTimelineSteps(CaseIntakeRequest request) {
     case CaseIntakeStatus.assigned:
       return [
         _TimelineStepData(
-          label: 'Submitted',
+          label: adminCaseTimelineStepLabel(l10n, 'submitted'),
           visual: _TimelineVisual.completed,
           subtitle: submittedSubtitle,
         ),
         _TimelineStepData(
-          label: 'Assigned',
+          label: adminCaseTimelineStepLabel(l10n, 'assigned'),
           visual: _TimelineVisual.current,
           subtitle: assignedSubtitle,
         ),
-        const _TimelineStepData(
-          label: 'Under Assessment',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'underAssessment'),
           visual: _TimelineVisual.incomplete,
         ),
-        const _TimelineStepData(
-          label: 'Accepted',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'accepted'),
           visual: _TimelineVisual.incomplete,
         ),
-        const _TimelineStepData(
-          label: 'Converted',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'converted'),
           visual: _TimelineVisual.incomplete,
         ),
       ];
     case CaseIntakeStatus.underAssessment:
       return [
         _TimelineStepData(
-          label: 'Submitted',
+          label: adminCaseTimelineStepLabel(l10n, 'submitted'),
           visual: _TimelineVisual.completed,
           subtitle: submittedSubtitle,
         ),
         _TimelineStepData(
-          label: 'Assigned',
+          label: adminCaseTimelineStepLabel(l10n, 'assigned'),
           visual: _TimelineVisual.completed,
           subtitle: assignedSubtitle,
         ),
-        const _TimelineStepData(
-          label: 'Under Assessment',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'underAssessment'),
           visual: _TimelineVisual.current,
-          subtitle: 'In progress',
+          subtitle: l10n.specialistCaseRequestDetailsTimelineInProgress,
         ),
-        const _TimelineStepData(
-          label: 'Accepted',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'accepted'),
           visual: _TimelineVisual.incomplete,
         ),
-        const _TimelineStepData(
-          label: 'Converted',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'converted'),
           visual: _TimelineVisual.incomplete,
         ),
       ];
     case CaseIntakeStatus.accepted:
       return [
         _TimelineStepData(
-          label: 'Submitted',
+          label: adminCaseTimelineStepLabel(l10n, 'submitted'),
           visual: _TimelineVisual.completed,
           subtitle: submittedSubtitle,
         ),
         _TimelineStepData(
-          label: 'Assigned',
+          label: adminCaseTimelineStepLabel(l10n, 'assigned'),
           visual: _TimelineVisual.completed,
           subtitle: assignedSubtitle,
         ),
-        const _TimelineStepData(
-          label: 'Under Assessment',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'underAssessment'),
           visual: _TimelineVisual.completed,
         ),
         _TimelineStepData(
-          label: 'Accepted',
+          label: adminCaseTimelineStepLabel(l10n, 'accepted'),
           visual: _TimelineVisual.current,
           subtitle: acceptedSubtitle,
         ),
-        const _TimelineStepData(
-          label: 'Converted',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'converted'),
           visual: _TimelineVisual.incomplete,
         ),
       ];
     case CaseIntakeStatus.convertedToPatient:
       return [
         _TimelineStepData(
-          label: 'Submitted',
+          label: adminCaseTimelineStepLabel(l10n, 'submitted'),
           visual: _TimelineVisual.completed,
           subtitle: submittedSubtitle,
         ),
         _TimelineStepData(
-          label: 'Assigned',
+          label: adminCaseTimelineStepLabel(l10n, 'assigned'),
           visual: _TimelineVisual.completed,
           subtitle: assignedSubtitle,
         ),
-        const _TimelineStepData(
-          label: 'Under Assessment',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'underAssessment'),
           visual: _TimelineVisual.completed,
         ),
         _TimelineStepData(
-          label: 'Accepted',
+          label: adminCaseTimelineStepLabel(l10n, 'accepted'),
           visual: _TimelineVisual.completed,
           subtitle: acceptedSubtitle,
         ),
         _TimelineStepData(
-          label: 'Converted',
+          label: adminCaseTimelineStepLabel(l10n, 'converted'),
           visual: _TimelineVisual.completed,
           subtitle: convertedSubtitle,
         ),
@@ -525,24 +547,24 @@ List<_TimelineStepData> _buildTimelineSteps(CaseIntakeRequest request) {
     case null:
       return [
         _TimelineStepData(
-          label: 'Submitted',
+          label: adminCaseTimelineStepLabel(l10n, 'submitted'),
           visual: _TimelineVisual.current,
           subtitle: submittedSubtitle,
         ),
-        const _TimelineStepData(
-          label: 'Assigned',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'assigned'),
           visual: _TimelineVisual.incomplete,
         ),
-        const _TimelineStepData(
-          label: 'Under Assessment',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'underAssessment'),
           visual: _TimelineVisual.incomplete,
         ),
-        const _TimelineStepData(
-          label: 'Accepted',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'accepted'),
           visual: _TimelineVisual.incomplete,
         ),
-        const _TimelineStepData(
-          label: 'Converted',
+        _TimelineStepData(
+          label: adminCaseTimelineStepLabel(l10n, 'converted'),
           visual: _TimelineVisual.incomplete,
         ),
       ];
@@ -620,10 +642,11 @@ class _RejectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final text = reason?.trim().isNotEmpty == true
         ? reason!.trim()
-        : 'No rejection reason was provided.';
+        : l10n.parentDashboardCaseNoRejectionReason;
 
     return AdminSurfaceCard(
       tint: DashboardColors.highPriority,
@@ -640,7 +663,7 @@ class _RejectionCard extends StatelessWidget {
               SizedBox(width: context.dashSpacing * 0.35),
               Expanded(
                 child: Text(
-                  'Request rejected',
+                  l10n.adminCaseRequestDetailsRejectedTitle,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: DashboardColors.highPriority,
@@ -669,6 +692,7 @@ class _ConversionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final shortPatientId = _shortId(patientId ?? '');
 
@@ -687,7 +711,7 @@ class _ConversionCard extends StatelessWidget {
               SizedBox(width: context.dashSpacing * 0.35),
               Expanded(
                 child: Text(
-                  'Patient profile created successfully',
+                  l10n.specialistCaseRequestDetailsPatientProfileCreated,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: DashboardColors.textPrimary,
@@ -699,7 +723,7 @@ class _ConversionCard extends StatelessWidget {
           if (shortPatientId.isNotEmpty) ...[
             SizedBox(height: context.dashSpacing * 0.4),
             Text(
-              'Patient ID: $shortPatientId',
+              l10n.adminCaseRequestDetailsPatientId(shortPatientId),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
@@ -718,30 +742,30 @@ class _ChildInformationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dobLabel = request.dateOfBirth != null
         ? DateFormat('MMM d, yyyy').format(request.dateOfBirth!)
-        : 'Not provided';
-    final ageLabel = _formatAge(request.dateOfBirth) ?? 'Unavailable';
-    final genderLabel =
-        CaseIntakeGender.fromApi(request.gender)?.label ??
-        (request.gender?.trim().isNotEmpty == true
-            ? request.gender!
-            : 'Not provided');
+        : l10n.specialistSessionNotProvided;
+    final ageLabel = formatSpecialistCaseIntakeAge(l10n, request.dateOfBirth);
+    final genderLabel = localizedCaseIntakeGenderFromApi(l10n, request.gender);
 
     return AdminSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Child Information',
+            l10n.parentCaseRequestDetailsChildInformation,
             style: Theme.of(
               context,
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
-          _InfoRow(label: 'Date of birth', value: dobLabel),
-          _InfoRow(label: 'Age', value: ageLabel),
-          _InfoRow(label: 'Gender', value: genderLabel),
+          _InfoRow(label: l10n.fieldDateOfBirth, value: dobLabel),
+          _InfoRow(
+            label: l10n.specialistCaseRequestDetailsAge,
+            value: ageLabel,
+          ),
+          _InfoRow(label: l10n.fieldGender, value: genderLabel),
         ],
       ),
     );
@@ -755,30 +779,42 @@ class _CaseInformationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final contactPeriodLabel = request.preferredContactPeriod != null
+        ? localizedCaseIntakePreferredContactPeriod(
+            l10n,
+            request.preferredContactPeriod,
+          )
+        : l10n.specialistSessionNotProvided;
+
     return AdminSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Case Information',
+            l10n.specialistCaseRequestDetailsCaseInformation,
             style: Theme.of(
               context,
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           _InfoRow(
-            label: 'Case description',
-            value: _nonEmpty(request.caseDescription) ?? 'Not provided',
+            label: l10n.parentCaseRequestDetailsCaseDescription,
+            value:
+                _nonEmpty(request.caseDescription) ??
+                l10n.specialistSessionNotProvided,
             allowWrap: true,
           ),
           _InfoRow(
-            label: 'Observed difficulties',
-            value: _nonEmpty(request.observedDifficulties) ?? 'Not provided',
+            label: l10n.parentCaseRequestDetailsObservedDifficulties,
+            value:
+                _nonEmpty(request.observedDifficulties) ??
+                l10n.specialistSessionNotProvided,
             allowWrap: true,
           ),
           _InfoRow(
-            label: 'Preferred contact period',
-            value: request.preferredContactPeriod?.label ?? 'Not provided',
+            label: l10n.parentCaseRequestDetailsPreferredContactPeriod,
+            value: contactPeriodLabel,
           ),
         ],
       ),
@@ -793,6 +829,7 @@ class _DiagnosisTreatmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final diagnosisDetails = request.hasPreviousDiagnosis
         ? _nonEmpty(request.previousDiagnosisDetails)
         : null;
@@ -805,29 +842,32 @@ class _DiagnosisTreatmentCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Previous Diagnosis & Treatment',
+            l10n.specialistCaseRequestDetailsPreviousDiagnosisTreatment,
             style: Theme.of(
               context,
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           _InfoRow(
-            label: 'Previous diagnosis',
-            value: request.hasPreviousDiagnosis ? 'Yes' : 'No',
+            label: l10n.parentCaseRequestDetailsPreviousDiagnosis,
+            value: localizedBooleanYesNo(l10n, request.hasPreviousDiagnosis),
           ),
           if (diagnosisDetails != null)
             _InfoRow(
-              label: 'Diagnosis details',
+              label: l10n.specialistCaseRequestDetailsDiagnosisDetails,
               value: diagnosisDetails,
               allowWrap: true,
             ),
           _InfoRow(
-            label: 'Currently receiving treatment',
-            value: request.isCurrentlyReceivingTreatment ? 'Yes' : 'No',
+            label: l10n.specialistCaseRequestDetailsCurrentlyReceivingTreatment,
+            value: localizedBooleanYesNo(
+              l10n,
+              request.isCurrentlyReceivingTreatment,
+            ),
           ),
           if (treatmentDetails != null)
             _InfoRow(
-              label: 'Treatment details',
+              label: l10n.specialistCaseRequestDetailsTreatmentDetails,
               value: treatmentDetails,
               allowWrap: true,
             ),
@@ -850,11 +890,12 @@ class _ParentInformationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final parent = detail.parent;
     final name = parent?.fullName?.trim().isNotEmpty == true
         ? parent!.fullName!.trim()
-        : 'Not provided';
+        : l10n.specialistSessionNotProvided;
     final email = parent?.email?.trim() ?? '';
     final phone = parent?.phone?.trim() ?? '';
     final imageUrl = ApiConstants.resolveProfileImageUrl(
@@ -866,7 +907,7 @@ class _ParentInformationCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Parent Information',
+            l10n.specialistCaseRequestDetailsParentInformation,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -903,15 +944,19 @@ class _ParentInformationCard extends StatelessWidget {
                     ),
                     SizedBox(height: context.dashSpacing * 0.35),
                     _ContactRow(
-                      label: 'Email',
-                      value: email.isNotEmpty ? email : 'Not provided',
+                      label: l10n.fieldEmail,
+                      value: email.isNotEmpty
+                          ? email
+                          : l10n.specialistSessionNotProvided,
                       canCopy: email.isNotEmpty,
                       onCopy: onCopyEmail,
                     ),
                     SizedBox(height: context.dashSpacing * 0.25),
                     _ContactRow(
-                      label: 'Phone',
-                      value: phone.isNotEmpty ? phone : 'Not provided',
+                      label: l10n.fieldPhone,
+                      value: phone.isNotEmpty
+                          ? phone
+                          : l10n.specialistSessionNotProvided,
                       canCopy: phone.isNotEmpty,
                       onCopy: onCopyPhone,
                     ),
@@ -941,6 +986,7 @@ class _ContactRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Row(
@@ -970,7 +1016,7 @@ class _ContactRow extends StatelessWidget {
         ),
         if (canCopy)
           IconButton(
-            tooltip: 'Copy $label',
+            tooltip: l10n.specialistCaseRequestDetailsCopyLabel(label),
             onPressed: onCopy,
             visualDensity: VisualDensity.compact,
             icon: const Icon(Icons.copy_rounded, size: 18),
@@ -988,6 +1034,7 @@ class _AttachmentsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return AdminSurfaceCard(
@@ -995,7 +1042,7 @@ class _AttachmentsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Attachments',
+            l10n.parentCaseRequestDetailsAttachments,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -1003,7 +1050,7 @@ class _AttachmentsCard extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.75),
           if (attachments.isEmpty)
             Text(
-              'No attachments',
+              l10n.specialistCaseRequestDetailsNoAttachments,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -1033,7 +1080,10 @@ class _AttachmentsCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            _attachmentTypeLabel(attachment),
+                            localizedCaseIntakeAttachmentTypeLabel(
+                              l10n,
+                              attachment,
+                            ),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: DashboardColors.textMuted,
                             ),
@@ -1043,7 +1093,7 @@ class _AttachmentsCard extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () => onOpen(attachment),
-                      child: const Text('Open'),
+                      child: Text(l10n.commonOpen),
                     ),
                   ],
                 ),
@@ -1062,6 +1112,7 @@ class _SpecialistCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final specialist = request.assignedSpecialist;
     final hasSpecialist =
@@ -1075,7 +1126,7 @@ class _SpecialistCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Assigned Specialist',
+            l10n.parentCaseRequestDetailsAssignedSpecialist,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -1084,8 +1135,8 @@ class _SpecialistCard extends StatelessWidget {
           if (!hasSpecialist)
             Text(
               isPending
-                  ? 'No specialist assigned yet.'
-                  : 'No specialist assigned.',
+                  ? l10n.adminCaseRequestDetailsNoSpecialistPending
+                  : l10n.adminCaseRequestDetailsNoSpecialist,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -1121,7 +1172,7 @@ class _SpecialistCard extends StatelessWidget {
                       Text(
                         specialist.fullName?.trim().isNotEmpty == true
                             ? specialist.fullName!.trim()
-                            : 'Specialist',
+                            : l10n.roleSpecialist,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyLarge?.copyWith(
@@ -1155,6 +1206,7 @@ class _AssessmentNotesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return AdminSurfaceCard(
@@ -1163,14 +1215,14 @@ class _AssessmentNotesCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Internal Preliminary Assessment Notes',
+            l10n.adminCaseRequestDetailsAssessmentNotesTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.25),
           Text(
-            'Visible to admin only',
+            l10n.adminCaseRequestDetailsAssessmentNotesHint,
             style: theme.textTheme.labelSmall?.copyWith(
               color: DashboardColors.textMuted,
             ),
@@ -1195,6 +1247,7 @@ class _ConversationIndicatorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final shortId = _shortId(conversationId);
 
@@ -1212,7 +1265,7 @@ class _ConversationIndicatorCard extends StatelessWidget {
               SizedBox(width: context.dashSpacing * 0.35),
               Expanded(
                 child: Text(
-                  'Conversation created',
+                  l10n.adminCaseRequestDetailsConversationCreated,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -1223,7 +1276,7 @@ class _ConversationIndicatorCard extends StatelessWidget {
           if (shortId.isNotEmpty) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
-              'Conversation ID: $shortId',
+              l10n.adminCaseRequestDetailsConversationId(shortId),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
@@ -1297,39 +1350,6 @@ String? _nonEmpty(String? value) {
   return trimmed;
 }
 
-String? _formatAge(DateTime? dateOfBirth) {
-  if (dateOfBirth == null) {
-    return null;
-  }
-  final now = DateTime.now();
-  final dob = DateTime(dateOfBirth.year, dateOfBirth.month, dateOfBirth.day);
-  final today = DateTime(now.year, now.month, now.day);
-  if (dob.isAfter(today)) {
-    return null;
-  }
-
-  var years = today.year - dob.year;
-  var months = today.month - dob.month;
-  var days = today.day - dob.day;
-  if (days < 0) {
-    months -= 1;
-  }
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
-  if (years < 0) {
-    return null;
-  }
-  if (years == 0) {
-    if (months <= 0) {
-      return 'Under 1 month';
-    }
-    return months == 1 ? '1 month' : '$months months';
-  }
-  return years == 1 ? '1 year' : '$years years';
-}
-
 IconData _attachmentIcon(CaseRequestAttachment attachment) {
   if (attachment.isImage) {
     return Icons.image_outlined;
@@ -1344,24 +1364,4 @@ IconData _attachmentIcon(CaseRequestAttachment attachment) {
     return Icons.picture_as_pdf_outlined;
   }
   return Icons.attach_file_rounded;
-}
-
-String _attachmentTypeLabel(CaseRequestAttachment attachment) {
-  if (attachment.isImage) {
-    return 'Image';
-  }
-  if (attachment.isAudio) {
-    return 'Audio';
-  }
-  if (attachment.isVideo) {
-    return 'Video';
-  }
-  if (attachment.isPdf) {
-    return 'PDF';
-  }
-  final type = attachment.fileType?.trim();
-  if (type != null && type.isNotEmpty) {
-    return type;
-  }
-  return 'File';
 }

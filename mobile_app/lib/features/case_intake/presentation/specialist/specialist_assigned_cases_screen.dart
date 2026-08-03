@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../dashboard/widgets/dashboard_bottom_nav.dart';
 import '../../../dashboard/widgets/dashboard_layout.dart';
 import '../../../dashboard/widgets/parent_dashboard_cards.dart';
@@ -12,6 +13,7 @@ import '../../models/case_category_model.dart';
 import '../../models/case_intake_request_model.dart';
 import '../../providers/case_categories_provider.dart';
 import '../../providers/specialist_assigned_cases_provider.dart';
+import '../specialist_case_intake_localization_utils.dart';
 import '../../widgets/specialist_assigned_case_card.dart';
 
 class SpecialistAssignedCasesScreen extends ConsumerStatefulWidget {
@@ -59,9 +61,16 @@ class _SpecialistAssignedCasesScreenState
     await ref.read(specialistAssignedCasesProvider.notifier).refresh();
     final error = ref.read(specialistAssignedCasesProvider).errorMessage;
     if (error != null && error.isNotEmpty && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            mapSpecialistAssignedCasesError(
+              AppLocalizations.of(context)!,
+              error,
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -75,6 +84,7 @@ class _SpecialistAssignedCasesScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistAssignedCasesProvider);
     final categoriesState = ref.watch(caseCategoriesProvider);
     final theme = Theme.of(context);
@@ -91,26 +101,24 @@ class _SpecialistAssignedCasesScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Assigned Case Requests',
+      title: l10n.navAssignedCaseRequests,
       showBackButton: true,
       currentNav: DashboardNavItem.more,
       actions: [
         if (state.hasActiveFilters)
           IconButton(
-            tooltip: 'Clear filters',
+            tooltip: l10n.adminClearFilters,
             onPressed: notifier.clearFilters,
             icon: const Icon(Icons.filter_alt_off_outlined),
           ),
         IconButton(
-          tooltip: 'Refresh',
+          tooltip: l10n.commonRefresh,
           onPressed: state.isInitialLoading ? null : _onRefresh,
           icon: const Icon(Icons.refresh_rounded),
         ),
       ],
       body: state.isInitialLoading && state.items.isEmpty
-          ? const DashboardLoadingCard(
-              message: 'Loading assigned case requests...',
-            )
+          ? DashboardLoadingCard(message: l10n.specialistCaseRequestsLoading)
           : RefreshIndicator(
               onRefresh: _onRefresh,
               child: CustomScrollView(
@@ -122,7 +130,7 @@ class _SpecialistAssignedCasesScreenState
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
                         Text(
-                          'Review assigned cases and track their assessment status.',
+                          l10n.specialistCaseRequestsDescription,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: DashboardColors.textSecondary,
                           ),
@@ -133,12 +141,12 @@ class _SpecialistAssignedCasesScreenState
                           textInputAction: TextInputAction.search,
                           onChanged: notifier.setSearchText,
                           decoration: InputDecoration(
-                            labelText: 'Search by child name',
-                            hintText: 'Enter child name',
+                            labelText: l10n.adminCaseRequestsSearchLabel,
+                            hintText: l10n.adminCaseRequestsSearchHint,
                             prefixIcon: const Icon(Icons.search_rounded),
                             suffixIcon: state.searchText.isNotEmpty
                                 ? IconButton(
-                                    tooltip: 'Clear search',
+                                    tooltip: l10n.adminCaseRequestsClearSearch,
                                     onPressed: () {
                                       _searchController.clear();
                                       notifier.setSearchText('');
@@ -172,7 +180,7 @@ class _SpecialistAssignedCasesScreenState
                                 Icons.filter_alt_off_outlined,
                                 size: 18,
                               ),
-                              label: const Text('Clear Filters'),
+                              label: Text(l10n.adminCaseRequestsClearFilters),
                             ),
                           ),
                         ],
@@ -180,7 +188,10 @@ class _SpecialistAssignedCasesScreenState
                         if (state.errorMessage != null &&
                             state.items.isEmpty) ...[
                           DashboardErrorCard(
-                            message: state.errorMessage!,
+                            message: mapSpecialistAssignedCasesError(
+                              l10n,
+                              state.errorMessage!,
+                            ),
                             onRetry: notifier.retry,
                           ),
                           SizedBox(height: context.dashSpacing),
@@ -188,7 +199,10 @@ class _SpecialistAssignedCasesScreenState
                         if (state.errorMessage != null &&
                             state.items.isNotEmpty) ...[
                           DashboardErrorCard(
-                            message: state.errorMessage!,
+                            message: mapSpecialistAssignedCasesError(
+                              l10n,
+                              state.errorMessage!,
+                            ),
                             onRetry: notifier.refresh,
                           ),
                           SizedBox(height: context.dashSpacing * 0.75),
@@ -203,8 +217,8 @@ class _SpecialistAssignedCasesScreenState
                             state.errorMessage == null)
                           DashboardEmptyCard(
                             message: state.hasActiveFilters
-                                ? 'No case requests match the selected filters.'
-                                : 'No assigned case requests yet.\nAssigned cases will appear here after an admin selects you for a request.',
+                                ? l10n.adminCaseRequestsNoMatch
+                                : l10n.specialistCaseRequestsEmpty,
                           ),
                         if (!state.isInitialLoading &&
                             state.items.isEmpty &&
@@ -213,7 +227,7 @@ class _SpecialistAssignedCasesScreenState
                           SizedBox(height: context.dashSpacing * 0.5),
                           OutlinedButton(
                             onPressed: notifier.clearFilters,
-                            child: const Text('Clear Filters'),
+                            child: Text(l10n.adminCaseRequestsClearFilters),
                           ),
                         ],
                       ]),
@@ -262,7 +276,10 @@ class _SpecialistAssignedCasesScreenState
                         child: Column(
                           children: [
                             Text(
-                              state.loadMoreErrorMessage!,
+                              mapSpecialistAssignedCasesError(
+                                l10n,
+                                state.loadMoreErrorMessage!,
+                              ),
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: DashboardColors.highPriority,
@@ -270,7 +287,7 @@ class _SpecialistAssignedCasesScreenState
                             ),
                             TextButton(
                               onPressed: notifier.retryLoadMore,
-                              child: const Text('Retry'),
+                              child: Text(l10n.commonRetry),
                             ),
                           ],
                         ),
@@ -303,13 +320,13 @@ class _FilterDropdowns extends StatelessWidget {
   final ValueChanged<CaseIntakeStatus?> onStatusChanged;
   final ValueChanged<String?> onCategoryChanged;
 
-  static const _statusOptions = <(CaseIntakeStatus?, String)>[
-    (null, 'All Statuses'),
-    (CaseIntakeStatus.assigned, 'Assigned'),
-    (CaseIntakeStatus.underAssessment, 'Under Assessment'),
-    (CaseIntakeStatus.accepted, 'Accepted'),
-    (CaseIntakeStatus.convertedToPatient, 'Converted to Patient'),
-    (CaseIntakeStatus.rejected, 'Rejected'),
+  static const _statusValues = <CaseIntakeStatus?>[
+    null,
+    CaseIntakeStatus.assigned,
+    CaseIntakeStatus.underAssessment,
+    CaseIntakeStatus.accepted,
+    CaseIntakeStatus.convertedToPatient,
+    CaseIntakeStatus.rejected,
   ];
 
   InputDecoration _decoration(String label) {
@@ -339,29 +356,30 @@ class _FilterDropdowns extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final statusField = DropdownButtonFormField<CaseIntakeStatus?>(
       key: ValueKey('status-${selectedStatus?.apiValue ?? 'all'}'),
       isExpanded: true,
       initialValue: selectedStatus,
-      decoration: _decoration('Status'),
-      items: _statusOptions
+      decoration: _decoration(l10n.adminFieldStatus),
+      items: _statusValues
           .map(
-            (option) => DropdownMenuItem<CaseIntakeStatus?>(
-              value: option.$1,
+            (status) => DropdownMenuItem<CaseIntakeStatus?>(
+              value: status,
               child: Text(
-                option.$2,
+                localizedSpecialistCaseIntakeStatusFilterLabel(l10n, status),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           )
           .toList(),
-      selectedItemBuilder: (context) => _statusOptions
+      selectedItemBuilder: (context) => _statusValues
           .map(
-            (option) => Align(
+            (status) => Align(
               alignment: AlignmentDirectional.centerStart,
               child: Text(
-                option.$2,
+                localizedSpecialistCaseIntakeStatusFilterLabel(l10n, status),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -380,12 +398,12 @@ class _FilterDropdowns extends StatelessWidget {
             key: ValueKey('category-${selectedCategoryId ?? 'all'}'),
             isExpanded: true,
             initialValue: selectedCategoryId,
-            decoration: _decoration('Category'),
+            decoration: _decoration(l10n.adminFieldCategory),
             items: [
-              const DropdownMenuItem<String?>(
+              DropdownMenuItem<String?>(
                 value: null,
                 child: Text(
-                  'All Categories',
+                  l10n.adminCaseRequestsAllCategories,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -403,7 +421,7 @@ class _FilterDropdowns extends StatelessWidget {
             ],
             selectedItemBuilder: (context) {
               final labels = <String>[
-                'All Categories',
+                l10n.adminCaseRequestsAllCategories,
                 ...categories.map((category) => category.name),
               ];
               return labels
