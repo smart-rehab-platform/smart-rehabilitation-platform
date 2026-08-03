@@ -90,6 +90,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
 
   Future<void> _openUserForm({AdminUserRecord? user}) async {
     final isEdit = user != null;
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final result = await showDialog<_AdminUserFormResult>(
       context: context,
@@ -110,13 +111,13 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           role: result.role,
         );
         if (!mounted) return;
-        _showSnack('User updated successfully.', messenger: messenger);
+        _showSnack(l10n.adminUsersUpdatedSuccess, messenger: messenger);
       } else {
         if (result.fullName.isEmpty ||
             result.email.isEmpty ||
             result.password.length < 8) {
           _showSnack(
-            'Please provide name, email, and a password of at least 8 characters.',
+            l10n.adminUsersValidationRequired,
             isError: true,
             messenger: messenger,
           );
@@ -131,7 +132,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           role: result.role,
         );
         if (!mounted) return;
-        _showSnack('User created successfully.', messenger: messenger);
+        _showSnack(l10n.adminUsersCreatedSuccess, messenger: messenger);
       }
       await _load();
     } on DioException catch (error) {
@@ -144,7 +145,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     } catch (error) {
       if (!mounted) return;
       _showSnack(
-        'Failed to save user: $error',
+        l10n.adminUsersSaveFailed('$error'),
         isError: true,
         messenger: messenger,
       );
@@ -152,6 +153,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   }
 
   Future<void> _toggleStatus(AdminUserRecord user) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final repo = ref.read(adminUsersRepositoryProvider);
     final willDeactivate = user.isActive;
@@ -170,13 +172,16 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     if (!mounted || success != true) return;
 
     _showSnack(
-      willDeactivate ? 'User deactivated.' : 'User activated.',
+      willDeactivate
+          ? l10n.adminUsersUserDeactivated
+          : l10n.adminUsersUserActivated,
       messenger: messenger,
     );
     await _load();
   }
 
   Future<void> _confirmDelete(AdminUserRecord user) async {
+    final l10n = AppLocalizations.of(context)!;
     final currentUserId = ref.read(authProvider).user?.id;
     final isSelf = currentUserId != null && currentUserId == user.id;
 
@@ -192,14 +197,14 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: DashboardColors.highPriority,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.commonDelete),
           ),
         ],
       ),
@@ -212,7 +217,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     final repo = ref.read(adminUsersRepositoryProvider);
     try {
       await repo.deleteUser(user.id);
-      _showSnack('User deleted successfully.');
+      _showSnack(l10n.adminUsersDeletedSuccess);
       await _load();
     } on DioException catch (error) {
       _showSnack(repo.readErrorMessage(error), isError: true);
@@ -498,9 +503,10 @@ class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
     } catch (error) {
       if (!mounted) return;
       setState(() => _submitting = false);
+      final l10n = AppLocalizations.of(context)!;
       widget.messenger.showSnackBar(
         SnackBar(
-          content: Text('Failed to update user status: $error'),
+          content: Text(l10n.adminUsersUpdateStatusFailed('$error')),
           backgroundColor: DashboardColors.highPriority,
         ),
       );
@@ -641,43 +647,47 @@ class _AdminUserFormDialogState extends State<_AdminUserFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AlertDialog(
-      title: Text(_isEdit ? 'Edit User' : 'Add User'),
+      title: Text(_isEdit ? l10n.adminUsersEditUserTitle : l10n.adminUsersAddUserTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Full Name'),
+              decoration: InputDecoration(labelText: l10n.fieldFullName),
             ),
             TextField(
               controller: _emailController,
               enabled: !_isEdit,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: l10n.fieldEmail),
             ),
             if (!_isEdit) ...[
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(
+                  labelText: l10n.adminUsersPasswordField,
+                ),
               ),
             ],
             TextField(
               controller: _phoneController,
-              decoration: const InputDecoration(labelText: 'Phone (optional)'),
+              decoration: InputDecoration(labelText: l10n.adminUsersPhoneOptional),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _selectedRole,
-              decoration: const InputDecoration(labelText: 'Role'),
-              items: const [
-                DropdownMenuItem(value: 'admin', child: Text('Admin')),
+              decoration: InputDecoration(labelText: l10n.adminUsersRoleField),
+              items: [
+                DropdownMenuItem(value: 'admin', child: Text(l10n.roleAdmin)),
                 DropdownMenuItem(
                   value: 'specialist',
-                  child: Text('Specialist'),
+                  child: Text(l10n.roleSpecialist),
                 ),
-                DropdownMenuItem(value: 'parent', child: Text('Parent')),
+                DropdownMenuItem(value: 'parent', child: Text(l10n.roleParent)),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -689,10 +699,10 @@ class _AdminUserFormDialogState extends State<_AdminUserFormDialog> {
         ),
       ),
       actions: [
-        TextButton(onPressed: _cancel, child: const Text('Cancel')),
+        TextButton(onPressed: _cancel, child: Text(l10n.commonCancel)),
         FilledButton(
           onPressed: _submit,
-          child: Text(_isEdit ? 'Save' : 'Create'),
+          child: Text(_isEdit ? l10n.commonSave : l10n.commonCreate),
         ),
       ],
     );

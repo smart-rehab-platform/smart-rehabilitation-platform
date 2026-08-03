@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/theme/dashboard_theme.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/parent_ai_chat_models.dart';
 import '../../providers/parent_ai_chat_provider.dart';
 import '../../providers/parent_dashboard_provider.dart';
@@ -90,6 +91,7 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(parentAiChatProvider);
     final theme = Theme.of(context);
 
@@ -188,7 +190,7 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
                               backgroundColor: DashboardColors.brandCyan,
                               foregroundColor: Colors.white,
                             ),
-                            child: const Text('Retry'),
+                            child: Text(l10n.commonRetry),
                           ),
                         ],
                       ),

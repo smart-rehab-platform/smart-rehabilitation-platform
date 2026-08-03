@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
 import '../../dashboard/widgets/dashboard_components.dart';
 import '../../dashboard/widgets/parent_dashboard_cards.dart';
@@ -35,6 +36,7 @@ class _ParentCaseRequestsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(parentCaseIntakeProvider);
     final theme = Theme.of(context);
 
@@ -70,7 +72,7 @@ class _ParentCaseRequestsScreenState
               child: BrandGradientButton(
                 onPressed: _openNewRequest,
                 icon: Icons.add_rounded,
-                label: 'Submit New Case Request',
+                label: l10n.parentDashboardCaseIntakeSubmitNew,
               ),
             ),
             SizedBox(height: context.dashSpacing),
@@ -80,7 +82,7 @@ class _ParentCaseRequestsScreenState
                 child: LinearProgressIndicator(),
               ),
             if (state.requests.isEmpty)
-              _EmptyCaseRequestsCard(onSubmit: _openNewRequest)
+              _EmptyCaseRequestsCard(onSubmit: _openNewRequest, l10n: l10n)
             else
               ...state.requests.map(
                 (request) => Padding(
@@ -99,7 +101,7 @@ class _ParentCaseRequestsScreenState
     }
 
     return ParentPageScaffold(
-      title: 'Case Requests',
+      title: l10n.navCaseRequests,
       showBackButton: true,
       body: body,
     );
@@ -107,9 +109,13 @@ class _ParentCaseRequestsScreenState
 }
 
 class _EmptyCaseRequestsCard extends StatelessWidget {
-  const _EmptyCaseRequestsCard({required this.onSubmit});
+  const _EmptyCaseRequestsCard({
+    required this.onSubmit,
+    required this.l10n,
+  });
 
   final VoidCallback onSubmit;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +150,7 @@ class _EmptyCaseRequestsCard extends StatelessWidget {
           OutlinedButton(
             onPressed: onSubmit,
             style: brandOutlinedButtonStyle(),
-            child: const Text('Submit New Case Request'),
+            child: Text(l10n.parentDashboardCaseIntakeSubmitNew),
           ),
         ],
       ),

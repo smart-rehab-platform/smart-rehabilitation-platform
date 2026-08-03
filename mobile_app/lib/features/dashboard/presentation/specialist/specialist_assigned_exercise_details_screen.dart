@@ -7,6 +7,7 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/api_client.dart';
 import '../../../../core/utils/api_response_parser.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../models/specialist_patient_details_models.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -15,7 +16,9 @@ import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/exercise_instruction_media_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import 'specialist_exercises_localization_utils.dart';
 import 'specialist_exercises_widgets.dart';
+import 'specialist_patient_details_localization_utils.dart';
 
 class SpecialistAssignedExerciseDetailsScreen extends ConsumerStatefulWidget {
   const SpecialistAssignedExerciseDetailsScreen({
@@ -48,6 +51,7 @@ class _SpecialistAssignedExerciseDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(
       specialistAssignedExerciseDetailProvider(widget.assignedExerciseId),
     );
@@ -65,15 +69,18 @@ class _SpecialistAssignedExerciseDetailsScreenState
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: mapSpecialistAssignedExerciseError(
+            l10n,
+            state.errorMessage!,
+          ),
           onRetry: notifier.refresh,
         ),
       );
     } else if (state.assignment == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(
-          message: 'Assigned exercise not found.',
+        child: DashboardEmptyCard(
+          message: l10n.specialistAssignedExerciseNotFound,
         ),
       );
     } else {
@@ -123,7 +130,12 @@ class _SpecialistAssignedExerciseDetailsScreenState
                           SpecialistExerciseCategoryBadge(label: category),
                         ],
                         SizedBox(height: context.dashSpacing * 0.4),
-                        DashboardPriorityBadge(label: assignment.statusLabel),
+                        DashboardPriorityBadge(
+                          label: localizedExerciseStatusLabel(
+                            l10n,
+                            assignment.statusLabel,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -132,23 +144,23 @@ class _SpecialistAssignedExerciseDetailsScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.75),
             _SectionCard(
-              title: 'Description',
+              title: l10n.specialistExerciseDescriptionSection,
               body: (description != null && description.isNotEmpty)
                   ? description
-                  : 'No description available.',
+                  : l10n.specialistExerciseNoDescription,
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             _SectionCard(
-              title: 'Instructions',
+              title: l10n.specialistExerciseInstructionsSection,
               body: (instructions != null && instructions.isNotEmpty)
                   ? instructions
-                  : 'No instructions available.',
+                  : l10n.specialistExerciseNoInstructions,
             ),
             if (assignment.hasInstructionMedia) ...[
               SizedBox(height: context.dashSpacing * 0.65),
               ExerciseInstructionMediaCard(
                 mediaUrl: assignment.instructionMediaUrl!,
-                title: 'Instructional Media',
+                title: l10n.specialistAssignedExerciseInstructionalMedia,
               ),
             ],
             SizedBox(height: context.dashSpacing * 0.65),
@@ -157,22 +169,31 @@ class _SpecialistAssignedExerciseDetailsScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Assignment',
+                    l10n.specialistAssignedExerciseAssignmentSection,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: DashboardColors.textPrimary,
                     ),
                   ),
                   SizedBox(height: context.dashSpacing * 0.45),
-                  _MetaRow(label: 'Status', value: assignment.statusLabel),
                   _MetaRow(
-                    label: 'Frequency',
+                    label: l10n.adminFieldStatus,
+                    value: localizedExerciseStatusLabel(
+                      l10n,
+                      assignment.statusLabel,
+                    ),
+                  ),
+                  _MetaRow(
+                    label: l10n.specialistAssignedExerciseFrequency,
                     value: assignment.frequency?.trim().isNotEmpty == true
-                        ? assignment.frequency!
+                        ? localizedExerciseAssignmentFrequencyValue(
+                            l10n,
+                            assignment.frequency,
+                          )
                         : '—',
                   ),
                   _MetaRow(
-                    label: 'Assigned',
+                    label: l10n.specialistAssignedExerciseAssigned,
                     value: assignment.createdAt != null
                         ? dateFmt.format(assignment.createdAt!)
                         : assignment.startDate != null
@@ -180,17 +201,17 @@ class _SpecialistAssignedExerciseDetailsScreenState
                         : '—',
                   ),
                   _MetaRow(
-                    label: 'Due date',
+                    label: l10n.specialistAssignedExerciseDueDate,
                     value: assignment.dueDate != null
                         ? dateFmt.format(assignment.dueDate!)
-                        : 'No due date',
+                        : l10n.specialistPatientDetailsNoDueDate,
                   ),
                 ],
               ),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             Text(
-              'Latest Submission',
+              l10n.specialistAssignedExerciseLatestSubmission,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -198,8 +219,8 @@ class _SpecialistAssignedExerciseDetailsScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.45),
             if (state.latestSubmission == null)
-              const DashboardEmptyCard(
-                message: 'No submissions for this assignment yet.',
+              DashboardEmptyCard(
+                message: l10n.specialistAssignedExerciseNoSubmissions,
               )
             else
               DashboardSurfaceCard(
@@ -222,7 +243,10 @@ class _SpecialistAssignedExerciseDetailsScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            state.latestSubmission!.reviewStatus,
+                            localizedReviewStatus(
+                              l10n,
+                              state.latestSubmission!.reviewStatus,
+                            ),
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -232,7 +256,7 @@ class _SpecialistAssignedExerciseDetailsScreenState
                                 ? DateFormat(
                                     'MMM d, yyyy • h:mm a',
                                   ).format(state.latestSubmission!.submittedAt!)
-                                : 'Recently submitted',
+                                : l10n.specialistAssignedExerciseRecentlySubmitted,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: DashboardColors.textSecondary,
                             ),
@@ -255,7 +279,7 @@ class _SpecialistAssignedExerciseDetailsScreenState
                   AppRoutes.specialistExerciseDetails(assignment.exerciseId!),
                 ),
                 icon: const Icon(Icons.menu_book_outlined),
-                label: const Text('Open library exercise'),
+                label: Text(l10n.specialistAssignedExerciseOpenLibraryExercise),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: DashboardColors.brandCyan,
                   side: const BorderSide(color: DashboardColors.brandCyan),
@@ -269,7 +293,7 @@ class _SpecialistAssignedExerciseDetailsScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Assigned Exercise',
+      title: l10n.specialistAssignedExerciseTitle,
       showBackButton: true,
       body: body,
     );

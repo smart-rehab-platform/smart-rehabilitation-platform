@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/theme/dashboard_theme.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_exercise_assignment_provider.dart';
 import '../../providers/specialist_features_provider.dart';
@@ -16,6 +17,7 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'manage_goals_widgets.dart';
+import 'specialist_exercises_localization_utils.dart';
 
 class SpecialistUpsertExerciseScreen extends ConsumerStatefulWidget {
   const SpecialistUpsertExerciseScreen({
@@ -191,6 +193,7 @@ class _SpecialistUpsertExerciseScreenState
   }
 
   Future<void> _pickMedia() async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final choice = await showModalBottomSheet<String>(
       context: context,
@@ -199,17 +202,17 @@ class _SpecialistUpsertExerciseScreenState
           children: [
             ListTile(
               leading: const Icon(Icons.photo_outlined),
-              title: const Text('Choose image'),
+              title: Text(l10n.specialistExerciseChooseImage),
               onTap: () => Navigator.pop(context, 'image'),
             ),
             ListTile(
               leading: const Icon(Icons.videocam_outlined),
-              title: const Text('Choose video'),
+              title: Text(l10n.specialistExerciseChooseVideo),
               onTap: () => Navigator.pop(context, 'video'),
             ),
             ListTile(
               leading: const Icon(Icons.audiotrack_outlined),
-              title: const Text('Choose audio / file'),
+              title: Text(l10n.specialistExerciseChooseAudioFile),
               onTap: () => Navigator.pop(context, 'file'),
             ),
           ],
@@ -249,25 +252,19 @@ class _SpecialistUpsertExerciseScreenState
     final selectedName = filename.trim();
     if (selectedBytes == null || selectedMime == null || selectedName.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Unable to read the selected file.')),
+        SnackBar(content: Text(l10n.specialistExerciseUnableReadFile)),
       );
       return;
     }
     if (!_allowedMime.contains(selectedMime)) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Unsupported media type. Use image, audio, PDF, or MP4/MOV video.',
-          ),
-        ),
+        SnackBar(content: Text(l10n.specialistExerciseUnsupportedMediaType)),
       );
       return;
     }
     if (selectedBytes.length > _maxBytes) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('File is too large. Maximum size is 50 MB.'),
-        ),
+        SnackBar(content: Text(l10n.specialistExerciseFileTooLarge)),
       );
       return;
     }
@@ -294,19 +291,20 @@ class _SpecialistUpsertExerciseScreenState
 
   Future<void> _save() async {
     if (_saving || _uploading) return;
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
 
     final categoryId = _selectedCategoryId?.trim() ?? '';
     final title = _titleController.text.trim();
     if (categoryId.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Please select a category.')),
+        SnackBar(content: Text(l10n.specialistExerciseSelectCategory)),
       );
       return;
     }
     if (title.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Title is required.')),
+        SnackBar(content: Text(l10n.specialistExerciseTitleRequired)),
       );
       return;
     }
@@ -376,8 +374,8 @@ class _SpecialistUpsertExerciseScreenState
         SnackBar(
           content: Text(
             widget.isEditing
-                ? 'Exercise updated successfully'
-                : 'Exercise created successfully',
+                ? l10n.specialistExerciseUpdatedSuccess
+                : l10n.specialistExerciseCreatedSuccess,
           ),
         ),
       );
@@ -398,8 +396,12 @@ class _SpecialistUpsertExerciseScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final busy = _saving || _uploading || _loadingExercise;
+    final screenTitle = widget.isEditing
+        ? l10n.specialistExerciseEditExercise
+        : l10n.specialistAddExercise;
 
     Widget body;
     if (_loadingExercise && widget.isEditing) {
@@ -409,7 +411,7 @@ class _SpecialistUpsertExerciseScreenState
         padding: context.dashPadding,
         children: [
           Text(
-            widget.isEditing ? 'Edit Exercise' : 'Add Exercise',
+            screenTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w800,
               color: DashboardColors.textPrimary,
@@ -417,7 +419,7 @@ class _SpecialistUpsertExerciseScreenState
           ),
           SizedBox(height: context.dashSpacing * 0.25),
           Text(
-            'Add therapy exercises to the shared library for assignment.',
+            l10n.specialistExerciseFormSubtitle,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
             ),
@@ -427,19 +429,22 @@ class _SpecialistUpsertExerciseScreenState
             const Center(child: CircularProgressIndicator())
           else if (_categoriesError != null)
             DashboardErrorCard(
-              message: _categoriesError!,
+              message: mapSpecialistExerciseUpsertCategoriesError(
+                l10n,
+                _categoriesError!,
+              ),
               onRetry: _loadCategories,
             )
           else if (_categories.isEmpty)
-            const DashboardEmptyCard(
-              message: 'No exercise categories available yet.',
-            )
+            DashboardEmptyCard(message: l10n.specialistExerciseNoCategories)
           else
             DropdownButtonFormField<String>(
               key: ValueKey(_selectedCategoryId),
               initialValue: _selectedCategoryId,
               isExpanded: true,
-              decoration: goalFieldDecoration('Category'),
+              decoration: goalFieldDecoration(
+                l10n.specialistExerciseCategoryField,
+              ),
               items: _categories
                   .map(
                     (category) => DropdownMenuItem(
@@ -461,10 +466,12 @@ class _SpecialistUpsertExerciseScreenState
             key: ValueKey(_selectedLanguage),
             initialValue: _selectedLanguage,
             isExpanded: true,
-            decoration: goalFieldDecoration('Exercise Language'),
-            items: const [
-              DropdownMenuItem(value: 'en', child: Text('English')),
-              DropdownMenuItem(value: 'ar', child: Text('Arabic')),
+            decoration: goalFieldDecoration(
+              l10n.specialistExerciseLanguageField,
+            ),
+            items: [
+              DropdownMenuItem(value: 'en', child: Text(l10n.languageEnglish)),
+              DropdownMenuItem(value: 'ar', child: Text(l10n.languageArabic)),
             ],
             onChanged: busy
                 ? null
@@ -477,7 +484,7 @@ class _SpecialistUpsertExerciseScreenState
           TextField(
             controller: _titleController,
             enabled: !busy,
-            decoration: goalFieldDecoration('Title'),
+            decoration: goalFieldDecoration(l10n.specialistExerciseTitleField),
             textCapitalization: TextCapitalization.sentences,
           ),
           SizedBox(height: context.dashSpacing * 0.75),
@@ -485,18 +492,22 @@ class _SpecialistUpsertExerciseScreenState
             controller: _descriptionController,
             enabled: !busy,
             maxLines: 3,
-            decoration: goalFieldDecoration('Description (optional)'),
+            decoration: goalFieldDecoration(
+              l10n.specialistExerciseDescriptionOptional,
+            ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           TextField(
             controller: _instructionsController,
             enabled: !busy,
             maxLines: 6,
-            decoration: goalFieldDecoration('Detailed instructions'),
+            decoration: goalFieldDecoration(
+              l10n.specialistExerciseInstructionsField,
+            ),
           ),
           SizedBox(height: context.dashSpacing),
           Text(
-            'Instructional media (optional)',
+            l10n.specialistExerciseInstructionMediaSection,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -533,7 +544,7 @@ class _SpecialistUpsertExerciseScreenState
                 ] else if (_existingMediaUrl != null &&
                     _existingMediaUrl!.trim().isNotEmpty) ...[
                   Text(
-                    'Current media attached',
+                    l10n.specialistExerciseCurrentMediaAttached,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -548,7 +559,7 @@ class _SpecialistUpsertExerciseScreenState
                   ),
                 ] else
                   Text(
-                    'No media selected. Images, audio, PDF, and MP4/MOV video are supported (max 50 MB).',
+                    l10n.specialistExerciseNoMediaSelected,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: DashboardColors.textSecondary,
                     ),
@@ -567,8 +578,8 @@ class _SpecialistUpsertExerciseScreenState
                         label: Text(
                           _pendingMedia != null ||
                                   (_existingMediaUrl?.isNotEmpty ?? false)
-                              ? 'Replace media'
-                              : 'Add media',
+                              ? l10n.specialistExerciseReplaceMedia
+                              : l10n.specialistExerciseAddMedia,
                         ),
                       ),
                     ),
@@ -578,7 +589,7 @@ class _SpecialistUpsertExerciseScreenState
                       IconButton(
                         onPressed: busy ? null : _removeMedia,
                         icon: const Icon(Icons.delete_outline_rounded),
-                        tooltip: 'Remove media',
+                        tooltip: l10n.specialistExerciseRemoveMediaTooltip,
                       ),
                     ],
                   ],
@@ -589,7 +600,10 @@ class _SpecialistUpsertExerciseScreenState
           if (_errorMessage != null) ...[
             SizedBox(height: context.dashSpacing * 0.75),
             DashboardErrorCard(
-              message: _errorMessage!,
+              message: mapSpecialistExerciseUpsertError(
+                l10n,
+                mapSpecialistExerciseDetailError(l10n, _errorMessage!),
+              ),
               onRetry: busy ? () {} : _save,
             ),
           ],
@@ -608,12 +622,12 @@ class _SpecialistUpsertExerciseScreenState
                 : const Icon(Icons.save_outlined),
             label: Text(
               _uploading
-                  ? 'Uploading media...'
+                  ? l10n.specialistExerciseUploadingMedia
                   : _saving
-                  ? 'Saving...'
+                  ? l10n.commonSaving
                   : widget.isEditing
-                  ? 'Save Changes'
-                  : 'Create Exercise',
+                  ? l10n.specialistTreatmentPlanSaveChanges
+                  : l10n.specialistExerciseCreateExercise,
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: DashboardColors.brandCyan,
@@ -635,7 +649,7 @@ class _SpecialistUpsertExerciseScreenState
 
     if (widget.useAdminChrome) {
       return AdminPageScaffold(
-        title: widget.isEditing ? 'Edit Exercise' : 'Add Exercise',
+        title: screenTitle,
         showBackButton: true,
         showBottomNav: false,
         body: Theme(data: DashboardTheme.light, child: wrappedBody),
@@ -643,7 +657,7 @@ class _SpecialistUpsertExerciseScreenState
     }
 
     return SpecialistPageScaffold(
-      title: widget.isEditing ? 'Edit Exercise' : 'Add Exercise',
+      title: screenTitle,
       showBackButton: true,
       body: wrappedBody,
     );

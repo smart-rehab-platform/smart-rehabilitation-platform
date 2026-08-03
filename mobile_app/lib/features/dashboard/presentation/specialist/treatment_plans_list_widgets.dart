@@ -6,6 +6,7 @@ import '../../models/specialist_feature_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
+import 'specialist_patient_details_localization_utils.dart';
 import 'specialist_scoped_localization_utils.dart';
 
 enum TreatmentPlanListFilter {
@@ -52,6 +53,7 @@ class TreatmentPlanListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final statusColor = treatmentPlanStatusColor(plan.status);
 
@@ -98,7 +100,12 @@ class TreatmentPlanListCard extends StatelessWidget {
                     runSpacing: 8,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      DashboardPriorityBadge(label: plan.statusLabel),
+                      DashboardPriorityBadge(
+                        label: localizedTreatmentPlanStatus(
+                          l10n,
+                          plan.status ?? 'active',
+                        ),
+                      ),
                       Text(
                         '${formatDashboardDate(plan.startDate)} → ${formatDashboardDate(plan.endDate)}',
                         style: theme.textTheme.labelSmall?.copyWith(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../providers/specialist_edit_profile_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/edit_profile_avatar_section.dart';
@@ -67,6 +68,7 @@ class _EditSpecialistProfileScreenState
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final success = await ref
         .read(specialistEditProfileProvider.notifier)
         .save();
@@ -74,7 +76,7 @@ class _EditSpecialistProfileScreenState
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
+        SnackBar(content: Text(l10n.specialistProfileUpdatedSuccess)),
       );
       context.pop();
       return;
@@ -91,6 +93,7 @@ class _EditSpecialistProfileScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistEditProfileProvider);
     final notifier = ref.read(specialistEditProfileProvider.notifier);
     final theme = Theme.of(context);
@@ -129,7 +132,7 @@ class _EditSpecialistProfileScreenState
             ),
             SizedBox(height: context.dashSpacing),
             Text(
-              'Personal',
+              l10n.specialistProfilePersonalSection,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -139,18 +142,18 @@ class _EditSpecialistProfileScreenState
             TextField(
               controller: _fullNameController,
               onChanged: notifier.setFullName,
-              decoration: goalFieldDecoration('Full name'),
+              decoration: goalFieldDecoration(l10n.fieldFullName),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
               controller: _phoneController,
               onChanged: notifier.setPhone,
               keyboardType: TextInputType.phone,
-              decoration: goalFieldDecoration('Phone'),
+              decoration: goalFieldDecoration(l10n.fieldPhone),
             ),
             SizedBox(height: context.dashSpacing * 1.1),
             Text(
-              'Professional',
+              l10n.specialistProfileProfessionalSection,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -160,27 +163,27 @@ class _EditSpecialistProfileScreenState
             TextField(
               controller: _specializationController,
               onChanged: notifier.setSpecialization,
-              decoration: goalFieldDecoration('Specialization'),
+              decoration: goalFieldDecoration(l10n.fieldSpecialization),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
               controller: _licenseController,
               onChanged: notifier.setLicenseNumber,
-              decoration: goalFieldDecoration('License number'),
+              decoration: goalFieldDecoration(l10n.fieldLicenseNumber),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
               controller: _yearsController,
               onChanged: notifier.setYearsOfExperience,
               keyboardType: TextInputType.number,
-              decoration: goalFieldDecoration('Years of experience'),
+              decoration: goalFieldDecoration(l10n.fieldYearsOfExperience),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
               controller: _bioController,
               onChanged: notifier.setBio,
               maxLines: 4,
-              decoration: goalFieldDecoration('Bio'),
+              decoration: goalFieldDecoration(l10n.fieldBio),
             ),
             if (state.validationMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.75),
@@ -206,7 +209,11 @@ class _EditSpecialistProfileScreenState
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: Text(state.isSaving ? 'Saving...' : 'Save Changes'),
+              child: Text(
+                state.isSaving
+                    ? l10n.commonSaving
+                    : l10n.specialistTreatmentPlanSaveChanges,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             OutlinedButton(
@@ -221,7 +228,7 @@ class _EditSpecialistProfileScreenState
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
             SizedBox(height: context.dashSpacing),
           ],
@@ -230,7 +237,7 @@ class _EditSpecialistProfileScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Edit Profile',
+      title: l10n.parentProfileEditProfile,
       showBackButton: true,
       body: body,
     );

@@ -980,6 +980,18 @@ abstract class AppLocalizations {
   /// **'Full Name'**
   String get fieldFullName;
 
+  /// Date of birth field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get fieldDateOfBirth;
+
+  /// Gender field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get fieldGender;
+
   /// Postal or home address field label.
   ///
   /// In en, this message translates to:
@@ -1880,19 +1892,19 @@ abstract class AppLocalizations {
   /// **'Failed to load exercises: {error}'**
   String parentExercisesLoadFailed(String error);
 
-  /// Daily exercise frequency label.
+  /// Daily exercise assignment frequency.
   ///
   /// In en, this message translates to:
   /// **'Daily'**
   String get exerciseFrequencyDaily;
 
-  /// Weekly exercise frequency label.
+  /// Weekly exercise assignment frequency.
   ///
   /// In en, this message translates to:
   /// **'Weekly'**
   String get exerciseFrequencyWeekly;
 
-  /// Monthly exercise frequency label.
+  /// Monthly exercise assignment frequency when returned by API.
   ///
   /// In en, this message translates to:
   /// **'Monthly'**
@@ -3817,6 +3829,2179 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Schedule Follow-up'**
   String get specialistFamilyPatternScheduleFollowUp;
+
+  /// Shown when an action is already in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait…'**
+  String get commonPleaseWait;
+
+  /// Save button on the edit treatment plan screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get specialistTreatmentPlanSaveChanges;
+
+  /// Snack bar after creating a treatment plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment plan created successfully'**
+  String get specialistTreatmentPlanCreatedSuccess;
+
+  /// Snack bar after updating a treatment plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment plan updated successfully'**
+  String get specialistTreatmentPlanUpdatedSuccess;
+
+  /// Empty state when a treatment plan cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment plan not found.'**
+  String get specialistTreatmentPlanNotFound;
+
+  /// Helper text on the create treatment plan screen.
+  ///
+  /// In en, this message translates to:
+  /// **'New plans are created as Active.'**
+  String get specialistTreatmentPlanNewPlansActiveHelper;
+
+  /// Label for the treatment plan title field.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan title'**
+  String get specialistTreatmentPlanTitleLabel;
+
+  /// Hint for the treatment plan title field.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment plan title'**
+  String get specialistTreatmentPlanTitleHint;
+
+  /// Create button label while saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating...'**
+  String get specialistTreatmentPlanCreating;
+
+  /// Section heading on the edit treatment plan screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Goals'**
+  String get specialistTreatmentPlanCurrentGoals;
+
+  /// Empty goals state on the edit treatment plan screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No goals defined for this plan.'**
+  String get specialistTreatmentPlanNoGoalsForPlan;
+
+  /// Placeholder when no date is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get specialistTreatmentPlanSelectDate;
+
+  /// Validation when patient is missing on create.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient is required'**
+  String get specialistTreatmentPlanPatientRequired;
+
+  /// Validation when plan title is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan title is required'**
+  String get specialistTreatmentPlanTitleRequired;
+
+  /// Validation when start date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date is required'**
+  String get specialistTreatmentPlanStartDateRequired;
+
+  /// Validation when end date precedes start date.
+  ///
+  /// In en, this message translates to:
+  /// **'End date cannot be before start date'**
+  String get specialistTreatmentPlanEndDateBeforeStart;
+
+  /// Generic error when plan creation fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create treatment plan. Please try again.'**
+  String get specialistTreatmentPlanCreateFailed;
+
+  /// Error when edit treatment plan data fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load treatment plan: {error}'**
+  String specialistTreatmentPlanLoadFailed(String error);
+
+  /// Generic error when plan update fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save treatment plan. Please try again.'**
+  String get specialistTreatmentPlanSaveFailed;
+
+  /// Snack bar after creating a goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal created successfully'**
+  String get specialistGoalsCreatedSuccess;
+
+  /// Snack bar after updating a goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal updated successfully'**
+  String get specialistGoalsUpdatedSuccess;
+
+  /// Snack bar after updating goal progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress updated successfully'**
+  String get specialistGoalsProgressUpdatedSuccess;
+
+  /// Snack bar after archiving/achieving a goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal marked as achieved'**
+  String get specialistGoalsMarkedAchievedSuccess;
+
+  /// Empty state when goals bundle is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals could not be loaded.'**
+  String get specialistGoalsCouldNotLoad;
+
+  /// Error when manage goals has no active plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No active treatment plan found for this patient.'**
+  String get specialistGoalsNoActivePlanForPatient;
+
+  /// Empty state on manage goals screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No goals defined for this treatment plan.'**
+  String get specialistGoalsNoGoalsForPlan;
+
+  /// Button to add a goal on manage goals screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Goal'**
+  String get specialistGoalsAddNewGoal;
+
+  /// Action to update goal progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Progress'**
+  String get specialistGoalsUpdateProgress;
+
+  /// Action to edit a goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Goal'**
+  String get specialistGoalsEditGoal;
+
+  /// Action to archive a goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive Goal'**
+  String get specialistGoalsArchiveGoal;
+
+  /// Helper text under an achieved goal card.
+  ///
+  /// In en, this message translates to:
+  /// **'This goal is marked as achieved.'**
+  String get specialistGoalsMarkedAchievedHelper;
+
+  /// Title for the add goal dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Goal'**
+  String get specialistGoalsAddDialogTitle;
+
+  /// Title for the edit goal dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Goal'**
+  String get specialistGoalsEditDialogTitle;
+
+  /// Title for the update progress dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Progress'**
+  String get specialistGoalsUpdateProgressDialogTitle;
+
+  /// Title for the archive goal confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive Goal'**
+  String get specialistGoalsArchiveDialogTitle;
+
+  /// Body for the archive goal confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no dedicated archive endpoint. This will mark the goal as achieved using PATCH /goals/:id/achieve.'**
+  String get specialistGoalsArchiveDialogBody;
+
+  /// Confirm action in archive goal dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Achieved'**
+  String get specialistGoalsMarkAchieved;
+
+  /// Label for short-term/long-term selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal type'**
+  String get specialistGoalsGoalType;
+
+  /// Hint for goal title field.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal title'**
+  String get specialistGoalsTitleHint;
+
+  /// Hint for optional target value field.
+  ///
+  /// In en, this message translates to:
+  /// **'Target value (optional)'**
+  String get specialistGoalsTargetValueOptional;
+
+  /// Label for optional target date picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Target date (optional)'**
+  String get specialistGoalsTargetDateOptional;
+
+  /// Hint for optional goal description field.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get specialistGoalsDescriptionOptional;
+
+  /// Validation when goal title is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal title is required'**
+  String get specialistGoalsTitleRequired;
+
+  /// Validation when target value is not numeric.
+  ///
+  /// In en, this message translates to:
+  /// **'Target value must be a number'**
+  String get specialistGoalsTargetValueMustBeNumber;
+
+  /// Validation in update progress dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a progress value between 0 and 100'**
+  String get specialistGoalsProgressRangeValidation;
+
+  /// Validation from goals provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress must be between 0 and 100'**
+  String get specialistGoalsProgressRangeProvider;
+
+  /// Hint for progress percentage field.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion percentage (0–100)'**
+  String get specialistGoalsCompletionPercentageHint;
+
+  /// Hint for optional progress notes field.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress note (optional)'**
+  String get specialistGoalsProgressNoteOptional;
+
+  /// Save button in update progress dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Progress'**
+  String get specialistGoalsSaveProgress;
+
+  /// Confirm button in add goal dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Goal'**
+  String get specialistGoalsAddGoal;
+
+  /// Switch label in edit goal dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as achieved'**
+  String get specialistGoalsMarkAsAchieved;
+
+  /// Validation when creating a goal without an active plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No active treatment plan found'**
+  String get specialistGoalsNoActivePlan;
+
+  /// Error when goals fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load goals: {error}'**
+  String specialistGoalsLoadFailed(String error);
+
+  /// Error when goals fail to refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to refresh goals: {error}'**
+  String specialistGoalsRefreshFailed(String error);
+
+  /// Error when goal creation fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create goal: {error}'**
+  String specialistGoalsCreateFailed(String error);
+
+  /// Error when goal update fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update goal: {error}'**
+  String specialistGoalsUpdateFailed(String error);
+
+  /// Error when goal progress update fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update progress: {error}'**
+  String specialistGoalsProgressUpdateFailed(String error);
+
+  /// Error when archiving a goal fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to archive goal: {error}'**
+  String specialistGoalsArchiveFailed(String error);
+
+  /// English language label.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// Arabic language label.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get languageArabic;
+
+  /// Clear a selected value.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get commonClear;
+
+  /// One-time exercise assignment frequency.
+  ///
+  /// In en, this message translates to:
+  /// **'One time'**
+  String get exerciseFrequencyOneTime;
+
+  /// Title and action to edit an exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Exercise'**
+  String get specialistExerciseEditExercise;
+
+  /// App bar title for exercise details.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Details'**
+  String get specialistExerciseDetailsTitle;
+
+  /// Subtitle on create/edit exercise form.
+  ///
+  /// In en, this message translates to:
+  /// **'Add therapy exercises to the shared library for assignment.'**
+  String get specialistExerciseFormSubtitle;
+
+  /// Error when exercise categories fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load categories. Please retry.'**
+  String get specialistExerciseCategoriesLoadFailed;
+
+  /// Empty state when no categories exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercise categories available yet.'**
+  String get specialistExerciseNoCategories;
+
+  /// Empty state when exercise cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise not found.'**
+  String get specialistExerciseNotFound;
+
+  /// Generic error when exercise details fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load exercise. Please try again.'**
+  String get specialistExerciseLoadFailed;
+
+  /// Error when loading exercise for edit fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load exercise details.'**
+  String get specialistExerciseDetailsLoadFailed;
+
+  /// Media picker option for images.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose image'**
+  String get specialistExerciseChooseImage;
+
+  /// Media picker option for videos.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose video'**
+  String get specialistExerciseChooseVideo;
+
+  /// Media picker option for audio or files.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose audio / file'**
+  String get specialistExerciseChooseAudioFile;
+
+  /// Snack bar when selected media cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to read the selected file.'**
+  String get specialistExerciseUnableReadFile;
+
+  /// Snack bar for invalid media type.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported media type. Use image, audio, PDF, or MP4/MOV video.'**
+  String get specialistExerciseUnsupportedMediaType;
+
+  /// Snack bar when media exceeds size limit.
+  ///
+  /// In en, this message translates to:
+  /// **'File is too large. Maximum size is 50 MB.'**
+  String get specialistExerciseFileTooLarge;
+
+  /// Validation when category is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category.'**
+  String get specialistExerciseSelectCategory;
+
+  /// Validation when exercise title is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required.'**
+  String get specialistExerciseTitleRequired;
+
+  /// Label for exercise language dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Language'**
+  String get specialistExerciseLanguageField;
+
+  /// Label for exercise category dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get specialistExerciseCategoryField;
+
+  /// Label for exercise title field.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get specialistExerciseTitleField;
+
+  /// Hint for optional description field.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get specialistExerciseDescriptionOptional;
+
+  /// Hint for instructions field.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed instructions'**
+  String get specialistExerciseInstructionsField;
+
+  /// Section heading for instructional media.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructional media (optional)'**
+  String get specialistExerciseInstructionMediaSection;
+
+  /// Label when existing media is attached.
+  ///
+  /// In en, this message translates to:
+  /// **'Current media attached'**
+  String get specialistExerciseCurrentMediaAttached;
+
+  /// Helper when no instructional media is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'No media selected. Images, audio, PDF, and MP4/MOV video are supported (max 50 MB).'**
+  String get specialistExerciseNoMediaSelected;
+
+  /// Button to replace instructional media.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace media'**
+  String get specialistExerciseReplaceMedia;
+
+  /// Button to add instructional media.
+  ///
+  /// In en, this message translates to:
+  /// **'Add media'**
+  String get specialistExerciseAddMedia;
+
+  /// Tooltip for removing instructional media.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove media'**
+  String get specialistExerciseRemoveMediaTooltip;
+
+  /// Save button label while uploading media.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading media...'**
+  String get specialistExerciseUploadingMedia;
+
+  /// Create button on add exercise form.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Exercise'**
+  String get specialistExerciseCreateExercise;
+
+  /// Snack bar after creating an exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise created successfully'**
+  String get specialistExerciseCreatedSuccess;
+
+  /// Snack bar after updating an exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise updated successfully'**
+  String get specialistExerciseUpdatedSuccess;
+
+  /// Generic error when saving an exercise fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save exercise. Please try again.'**
+  String get specialistExerciseSaveFailed;
+
+  /// Language label on exercise details.
+  ///
+  /// In en, this message translates to:
+  /// **'Language: {language}'**
+  String specialistExerciseLanguageLine(String language);
+
+  /// Creator label on exercise details.
+  ///
+  /// In en, this message translates to:
+  /// **'Created by {name}'**
+  String specialistExerciseCreatedBy(String name);
+
+  /// Description section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get specialistExerciseDescriptionSection;
+
+  /// Fallback when exercise has no description.
+  ///
+  /// In en, this message translates to:
+  /// **'No description available.'**
+  String get specialistExerciseNoDescription;
+
+  /// Instructions section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions'**
+  String get specialistExerciseInstructionsSection;
+
+  /// Fallback when exercise has no instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'No instructions available.'**
+  String get specialistExerciseNoInstructions;
+
+  /// Title for instruction media card.
+  ///
+  /// In en, this message translates to:
+  /// **'Instruction Media'**
+  String get specialistExerciseInstructionMediaTitle;
+
+  /// Subtitle on assign exercise screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an exercise, then set frequency and dates.'**
+  String get specialistAssignExerciseSubtitle;
+
+  /// Validation when no exercise is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an exercise.'**
+  String get specialistAssignExerciseSelectRequired;
+
+  /// Snack bar after assigning an exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise assigned successfully'**
+  String get specialistAssignExerciseSuccess;
+
+  /// Assign button label while submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigning...'**
+  String get specialistAssignExerciseAssigning;
+
+  /// Empty state on assign exercise picker.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises match your search or filter.'**
+  String get specialistAssignExerciseNoMatchSearch;
+
+  /// Heading for selected exercise summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected exercise'**
+  String get specialistAssignExerciseSelectedExercise;
+
+  /// Frequency section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get specialistAssignExerciseFrequency;
+
+  /// Due date section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date (optional)'**
+  String get specialistAssignExerciseDueDateOptional;
+
+  /// Button to set optional due date.
+  ///
+  /// In en, this message translates to:
+  /// **'Set due date'**
+  String get specialistAssignExerciseSetDueDate;
+
+  /// Generic error when assignment fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to assign exercise. Please try again.'**
+  String get specialistAssignExerciseFailed;
+
+  /// Validation when assignment prerequisites are missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient, treatment plan, and exercise are required to assign.'**
+  String get specialistAssignExerciseRequirementsMissing;
+
+  /// App bar title for assigned exercise details.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Exercise'**
+  String get specialistAssignedExerciseTitle;
+
+  /// Empty state when assigned exercise cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned exercise not found.'**
+  String get specialistAssignedExerciseNotFound;
+
+  /// Error when assigned exercise fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load assigned exercise.'**
+  String get specialistAssignedExerciseLoadFailed;
+
+  /// Assignment metadata section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment'**
+  String get specialistAssignedExerciseAssignmentSection;
+
+  /// Assignment frequency label.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get specialistAssignedExerciseFrequency;
+
+  /// Assignment date label.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get specialistAssignedExerciseAssigned;
+
+  /// Due date label on assigned exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get specialistAssignedExerciseDueDate;
+
+  /// Latest submission section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Submission'**
+  String get specialistAssignedExerciseLatestSubmission;
+
+  /// Empty state when no submissions exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No submissions for this assignment yet.'**
+  String get specialistAssignedExerciseNoSubmissions;
+
+  /// Fallback date for recent submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently submitted'**
+  String get specialistAssignedExerciseRecentlySubmitted;
+
+  /// Link to library exercise from assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Open library exercise'**
+  String get specialistAssignedExerciseOpenLibraryExercise;
+
+  /// Instructional media card title on assigned exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructional Media'**
+  String get specialistAssignedExerciseInstructionalMedia;
+
+  /// High priority badge label.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get priorityHigh;
+
+  /// Medium priority badge label.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get priorityMedium;
+
+  /// App bar title for reviewing an exercise submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Exercise'**
+  String get specialistReviewExerciseTitle;
+
+  /// Section heading for submission media.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded Media'**
+  String get specialistReviewUploadedMedia;
+
+  /// Empty state when submission has no media.
+  ///
+  /// In en, this message translates to:
+  /// **'No media uploaded for this submission.'**
+  String get specialistReviewNoMedia;
+
+  /// Review form section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get specialistReviewSection;
+
+  /// Performance rating label on review form.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get specialistReviewRating;
+
+  /// Feedback field label on review form.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get specialistReviewFeedback;
+
+  /// Hint for specialist feedback text field.
+  ///
+  /// In en, this message translates to:
+  /// **'Write feedback for the parent and patient...'**
+  String get specialistReviewFeedbackHint;
+
+  /// Submit review button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Review'**
+  String get specialistReviewSubmitReview;
+
+  /// Update existing review button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Review'**
+  String get specialistReviewUpdateReview;
+
+  /// Submit review button label while saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get specialistReviewSubmitting;
+
+  /// Snack bar after review is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted successfully'**
+  String get specialistReviewSubmittedSuccess;
+
+  /// Empty state when submission cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission not found.'**
+  String get specialistReviewSubmissionNotFound;
+
+  /// Validation when specialist is not signed in.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to submit a review.'**
+  String get specialistReviewSignInRequired;
+
+  /// Error when submission review data fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load submission: {error}'**
+  String specialistReviewLoadFailed(String error);
+
+  /// Error when saving a review fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit review: {error}'**
+  String specialistReviewSubmitFailed(String error);
+
+  /// Button to open speech analysis for audio submission.
+  ///
+  /// In en, this message translates to:
+  /// **'View Speech Analysis'**
+  String get specialistReviewViewSpeechAnalysis;
+
+  /// Empty state when submission media URL is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Media file unavailable.'**
+  String get specialistSubmissionMediaUnavailable;
+
+  /// Empty state when media cannot be previewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported media type for preview.'**
+  String get specialistSubmissionUnsupportedMediaPreview;
+
+  /// Error when video preview fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load video.'**
+  String get specialistSubmissionUnableLoadVideo;
+
+  /// Error when audio preview fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load audio.'**
+  String get specialistSubmissionUnableLoadAudio;
+
+  /// Fallback when media upload timestamp is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload time unavailable'**
+  String get specialistSubmissionUploadTimeUnavailable;
+
+  /// Generic failed state.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get statusFailed;
+
+  /// Subtitle under patient name on speech analysis screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech analysis results'**
+  String get specialistSpeechAnalysisResultsSubtitle;
+
+  /// Latest analysis timestamp on speech analysis header.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest: {dateTime}'**
+  String specialistSpeechAnalysisLatestLine(String dateTime);
+
+  /// Submission identifier on speech analysis header.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission {id}'**
+  String specialistSpeechAnalysisSubmissionLine(String id);
+
+  /// Scores section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Scores'**
+  String get specialistSpeechAnalysisScores;
+
+  /// Transcript section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcript'**
+  String get specialistSpeechAnalysisTranscript;
+
+  /// Detected language on transcript card.
+  ///
+  /// In en, this message translates to:
+  /// **'Language: {language}'**
+  String specialistSpeechAnalysisLanguageLine(String language);
+
+  /// Recording duration on transcript card.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {seconds}s'**
+  String specialistSpeechAnalysisDurationLine(String seconds);
+
+  /// Empty transcript fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'No transcript available for this analysis.'**
+  String get specialistSpeechAnalysisNoTranscript;
+
+  /// Comparison section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison with Previous'**
+  String get specialistSpeechAnalysisComparisonTitle;
+
+  /// Previous analysis date in comparison card.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous: {date}'**
+  String specialistSpeechAnalysisPreviousLine(String date);
+
+  /// Baseline speech analysis trend badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Baseline'**
+  String get specialistSpeechAnalysisTrendBaseline;
+
+  /// Declining speech analysis trend badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Declining'**
+  String get specialistSpeechAnalysisTrendDeclining;
+
+  /// AI feedback section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Feedback & Recommendations'**
+  String get specialistSpeechAnalysisAiFeedbackTitle;
+
+  /// AI improvement summary subsection heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Improvement Summary'**
+  String get specialistSpeechAnalysisImprovementSummary;
+
+  /// Clinical note subsection heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Note'**
+  String get specialistSpeechAnalysisClinicalNote;
+
+  /// Recommended action subsection heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Action'**
+  String get specialistSpeechAnalysisRecommendedAction;
+
+  /// Recommendations subsection heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendations'**
+  String get specialistSpeechAnalysisRecommendations;
+
+  /// Treatment analysis subsection heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment Analysis'**
+  String get specialistSpeechAnalysisTreatmentAnalysis;
+
+  /// Decision support subsection heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision Support'**
+  String get specialistSpeechAnalysisDecisionSupport;
+
+  /// Suggested action prefix before AI-generated action text.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested: {action}'**
+  String specialistSpeechAnalysisSuggestedLine(String action);
+
+  /// Progress chart heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Score Trend'**
+  String get specialistSpeechAnalysisOverallScoreTrend;
+
+  /// Fallback when analysis date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown date'**
+  String get specialistSpeechAnalysisUnknownDate;
+
+  /// Summary line on speech analysis history tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall {overall} • Pronunciation {pronunciation}'**
+  String specialistSpeechAnalysisHistorySummary(
+    String overall,
+    String pronunciation,
+  );
+
+  /// Analyze card title.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Speech Analysis'**
+  String get specialistSpeechAnalysisRunTitle;
+
+  /// Analyze card subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze the audio from this exercise submission using speech recognition.'**
+  String get specialistSpeechAnalysisRunSubtitle;
+
+  /// Analyze button label while running.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing...'**
+  String get specialistSpeechAnalysisAnalyzing;
+
+  /// Analyze submission button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze Submission'**
+  String get specialistSpeechAnalysisAnalyzeSubmission;
+
+  /// Selected analysis summary section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Analysis Summary'**
+  String get specialistSpeechAnalysisLatestSummary;
+
+  /// Analysis history section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis History'**
+  String get specialistSpeechAnalysisHistory;
+
+  /// Empty state when no analysis exists.
+  ///
+  /// In en, this message translates to:
+  /// **'No speech analysis results yet. Run analysis on an audio submission to get started.'**
+  String get specialistSpeechAnalysisEmptyResults;
+
+  /// Empty state when history list is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous speech analyses recorded.'**
+  String get specialistSpeechAnalysisEmptyHistory;
+
+  /// Validation when analyze is tapped without a submission.
+  ///
+  /// In en, this message translates to:
+  /// **'No submission selected for speech analysis.'**
+  String get specialistSpeechAnalysisNoSubmissionSelected;
+
+  /// Snack bar when cached analysis is shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing speech analysis loaded.'**
+  String get specialistSpeechAnalysisExistingLoaded;
+
+  /// Snack bar after analysis completes.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech analysis completed successfully.'**
+  String get specialistSpeechAnalysisCompletedSuccess;
+
+  /// Generic analyze failure message.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech analysis could not be completed. Please try again.'**
+  String get specialistSpeechAnalysisAnalyzeFailed;
+
+  /// Generic load failure message.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load speech analysis. Please try again.'**
+  String get specialistSpeechAnalysisLoadFailed;
+
+  /// 403 error when analyzing submission.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to analyze this submission.'**
+  String get specialistSpeechAnalysisPermissionDenied;
+
+  /// 404 error when analysis does not exist yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No speech analysis is available for this submission yet.'**
+  String get specialistSpeechAnalysisNotAvailableYet;
+
+  /// 404 error when submission is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'The exercise submission could not be found.'**
+  String get specialistSpeechAnalysisSubmissionNotFound;
+
+  /// Validation when submission has no supported audio.
+  ///
+  /// In en, this message translates to:
+  /// **'This submission does not contain a supported audio recording.'**
+  String get specialistSpeechAnalysisUnsupportedAudio;
+
+  /// 502/503/504 service error.
+  ///
+  /// In en, this message translates to:
+  /// **'The speech analysis service is currently unavailable. Please try again.'**
+  String get specialistSpeechAnalysisServiceUnavailable;
+
+  /// Network/timeout error for speech analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect to the analysis service. Check your connection and try again.'**
+  String get specialistSpeechAnalysisConnectionFailed;
+
+  /// Recording source uploaded file.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded'**
+  String get specialistSpeechAnalysisSourceUploaded;
+
+  /// Recording source in-app recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded'**
+  String get specialistSpeechAnalysisSourceRecorded;
+
+  /// App bar title for session details.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Details'**
+  String get specialistSessionDetailsTitle;
+
+  /// Empty state when session cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Session not found.'**
+  String get specialistSessionNotFound;
+
+  /// Generic error when session details fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load session details.'**
+  String get specialistSessionLoadFailed;
+
+  /// 403 error when managing a session.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to manage this session.'**
+  String get specialistSessionPermissionDenied;
+
+  /// 400 error when session update is blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This session cannot be updated. Check the details and try again.'**
+  String get specialistSessionUpdateBlocked;
+
+  /// Snack bar when patient profile link is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient profile is unavailable.'**
+  String get specialistSessionPatientProfileUnavailable;
+
+  /// Dialog button to dismiss a destructive session action.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Session'**
+  String get specialistSessionKeepSession;
+
+  /// Dialog title for completing a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Completed'**
+  String get specialistSessionMarkCompletedTitle;
+
+  /// Dialog message for completing a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark this session as completed? This cannot be undone.'**
+  String get specialistSessionMarkCompletedMessage;
+
+  /// Confirm button for completing a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Completed'**
+  String get specialistSessionMarkCompletedConfirm;
+
+  /// Snack bar after session is completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Session marked as completed.'**
+  String get specialistSessionMarkedCompleted;
+
+  /// Dialog title for marking no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as No Show'**
+  String get specialistSessionMarkNoShowTitle;
+
+  /// Dialog message for marking no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark this session as no show? This cannot be undone.'**
+  String get specialistSessionMarkNoShowMessage;
+
+  /// Confirm button for marking no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark No Show'**
+  String get specialistSessionMarkNoShowConfirm;
+
+  /// Snack bar after session is marked no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Session marked as no show.'**
+  String get specialistSessionMarkedNoShow;
+
+  /// Dialog title for cancelling a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Session'**
+  String get specialistSessionCancelTitle;
+
+  /// Dialog message for cancelling a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this session? This cannot be undone.'**
+  String get specialistSessionCancelMessage;
+
+  /// Optional cancellation reason field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation reason (optional)'**
+  String get specialistSessionCancelReasonOptional;
+
+  /// Snack bar after session is cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Session cancelled.'**
+  String get specialistSessionCancelled;
+
+  /// Snack bar when meeting link is invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'No valid meeting link available.'**
+  String get specialistSessionNoMeetingLink;
+
+  /// Snack bar after copying meeting link.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting link copied.'**
+  String get specialistSessionMeetingLinkCopied;
+
+  /// Snack bar when meeting link fails to open.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the meeting link. Please try again.'**
+  String get specialistSessionCouldNotOpenMeetingLink;
+
+  /// Session start time label.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get specialistSessionStartTime;
+
+  /// Session end time label.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get specialistSessionEndTime;
+
+  /// Session duration row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get specialistSessionDuration;
+
+  /// Session duration value without label prefix.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String specialistSessionMinutesValue(int minutes);
+
+  /// Online meeting link label.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting Link'**
+  String get specialistSessionMeetingLink;
+
+  /// Fallback when optional session field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get specialistSessionNotProvided;
+
+  /// Button to open online meeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Meeting'**
+  String get specialistSessionOpenMeeting;
+
+  /// Button to copy meeting link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Link'**
+  String get specialistSessionCopyLink;
+
+  /// Button to open patient profile from session.
+  ///
+  /// In en, this message translates to:
+  /// **'View Patient Profile'**
+  String get specialistSessionViewPatientProfile;
+
+  /// Session actions section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get specialistSessionActions;
+
+  /// Button to edit a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Session'**
+  String get specialistSessionEditSession;
+
+  /// Button to mark session completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Completed'**
+  String get specialistSessionMarkAsCompleted;
+
+  /// Button to mark session as no show.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as No Show'**
+  String get specialistSessionMarkAsNoShow;
+
+  /// Cancellation reason label on session details.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation reason'**
+  String get specialistSessionCancellationReason;
+
+  /// Message when session status prevents editing.
+  ///
+  /// In en, this message translates to:
+  /// **'This session is {status} and can no longer be edited.'**
+  String specialistSessionLockedCannotEdit(String status);
+
+  /// Error when completing a session fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to mark session completed.'**
+  String get specialistSessionCompleteFailed;
+
+  /// Error when cancelling a session fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to cancel session.'**
+  String get specialistSessionCancelFailed;
+
+  /// Error when marking no show fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to mark session as no show.'**
+  String get specialistSessionNoShowFailed;
+
+  /// Error when updating a session fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update session.'**
+  String get specialistSessionUpdateFailed;
+
+  /// Error when creating a session fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create session.'**
+  String get specialistSessionCreateFailed;
+
+  /// Title for edit session screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Session'**
+  String get specialistSessionEditTitle;
+
+  /// Subtitle on edit session form.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the session schedule details.'**
+  String get specialistSessionUpdateSubtitle;
+
+  /// Subtitle on create session form.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule a session for one of your assigned patients.'**
+  String get specialistSessionCreateSubtitle;
+
+  /// Session type field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Session type / title'**
+  String get specialistSessionTypeTitle;
+
+  /// Default session type hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Therapy Session'**
+  String get specialistSessionTypeHint;
+
+  /// Patient dropdown hint on create session.
+  ///
+  /// In en, this message translates to:
+  /// **'Select patient'**
+  String get specialistSessionSelectPatient;
+
+  /// Validation when patient is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an assigned patient.'**
+  String get specialistSessionSelectPatientRequired;
+
+  /// Validation when session title is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a session type or title.'**
+  String get specialistSessionTitleRequired;
+
+  /// Validation for session duration range.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration must be between 1 and 480 minutes.'**
+  String get specialistSessionDurationRangeError;
+
+  /// Validation when schedule is not in the future.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled date and time must be in the future.'**
+  String get specialistSessionScheduleFutureRequired;
+
+  /// Empty state when no patients exist for scheduling.
+  ///
+  /// In en, this message translates to:
+  /// **'No assigned patients found. Assign a patient before scheduling.'**
+  String get specialistSessionNoAssignedPatients;
+
+  /// Location or meeting link field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Location or meeting link'**
+  String get specialistSessionLocationOrLink;
+
+  /// Location field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic room or https://…'**
+  String get specialistSessionLocationHint;
+
+  /// Optional notes field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get specialistSessionNotesOptional;
+
+  /// Optional notes field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional details for this session'**
+  String get specialistSessionNotesHint;
+
+  /// Helper text on session form.
+  ///
+  /// In en, this message translates to:
+  /// **'Title and notes are kept for this form. The server stores patient, schedule, duration, and location/link.'**
+  String get specialistSessionFormHelper;
+
+  /// Snack bar after session update.
+  ///
+  /// In en, this message translates to:
+  /// **'Session updated successfully.'**
+  String get specialistSessionUpdatedSuccess;
+
+  /// Snack bar after session creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Session scheduled successfully.'**
+  String get specialistSessionScheduledSuccess;
+
+  /// Error when trying to edit a locked session.
+  ///
+  /// In en, this message translates to:
+  /// **'This session is {status} and cannot be edited.'**
+  String specialistSessionCannotEditStatus(String status);
+
+  /// Title for approve session request sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve Session Request'**
+  String get specialistSessionRequestApproveTitle;
+
+  /// Title for reject session request sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Session Request'**
+  String get specialistSessionRequestRejectTitle;
+
+  /// Subtitle on reject session request sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide a reason so the parent understands why this request was declined.'**
+  String get specialistSessionRequestRejectSubtitle;
+
+  /// Scheduled date picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled Date'**
+  String get specialistSessionRequestScheduledDate;
+
+  /// Scheduled time picker label.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled Time'**
+  String get specialistSessionRequestScheduledTime;
+
+  /// Duration field label on approve sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (minutes)'**
+  String get specialistSessionRequestDurationField;
+
+  /// Meeting link or location field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting Link or Location'**
+  String get specialistSessionRequestMeetingLinkOrLocation;
+
+  /// Approve session request button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve & Create Session'**
+  String get specialistSessionRequestApproveCreate;
+
+  /// Approve button label while submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Approving...'**
+  String get specialistSessionRequestApproving;
+
+  /// Reject button label while submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejecting...'**
+  String get specialistSessionRequestRejecting;
+
+  /// Confirm button for rejecting a session request.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Request'**
+  String get specialistSessionRequestRejectConfirm;
+
+  /// Rejection reason field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get specialistSessionRequestRejectReason;
+
+  /// Rejection reason field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain why this request cannot be approved'**
+  String get specialistSessionRequestRejectReasonHint;
+
+  /// Validation when rejection reason is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection reason is required.'**
+  String get specialistSessionRequestRejectReasonRequired;
+
+  /// Snack bar after approving session request.
+  ///
+  /// In en, this message translates to:
+  /// **'Session request approved and session created.'**
+  String get specialistSessionRequestApprovedSuccess;
+
+  /// Snack bar after rejecting session request.
+  ///
+  /// In en, this message translates to:
+  /// **'Session request rejected.'**
+  String get specialistSessionRequestRejectedSuccess;
+
+  /// Error when approving session request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to approve session request: {error}'**
+  String specialistSessionRequestApproveFailed(String error);
+
+  /// Error when rejecting session request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reject session request: {error}'**
+  String specialistSessionRequestRejectFailed(String error);
+
+  /// Preferred time period morning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get specialistSessionRequestPreferredTimeMorning;
+
+  /// Preferred time period afternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get specialistSessionRequestPreferredTimeAfternoon;
+
+  /// Preferred time period evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get specialistSessionRequestPreferredTimeEvening;
+
+  /// Preferred time period flexible.
+  ///
+  /// In en, this message translates to:
+  /// **'Flexible'**
+  String get specialistSessionRequestPreferredTimeFlexible;
+
+  /// Snack bar after copying a session link.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get specialistSessionLinkCopied;
+
+  /// Snack bar when link is invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'No valid link available'**
+  String get specialistSessionNoValidLink;
+
+  /// Snack bar when opening a link fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open link'**
+  String get specialistSessionCouldNotOpenLink;
+
+  /// Calendar session tile metadata line.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} • {duration} min • {mode}'**
+  String specialistSessionCalendarTileMeta(
+    String time,
+    int duration,
+    String mode,
+  );
+
+  /// Snack bar when parent must sign in to message specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to send messages.'**
+  String get communicationSignInToSendMessages;
+
+  /// Snack bar when child has no assigned specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialist is assigned to this child yet.'**
+  String get communicationNoSpecialistAssigned;
+
+  /// Button to open conversation with child's specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Message Specialist'**
+  String get communicationMessageSpecialist;
+
+  /// Loading state on conversations list.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading conversations...'**
+  String get communicationLoadingConversations;
+
+  /// Empty state on conversations list.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet.'**
+  String get communicationNoConversations;
+
+  /// Conversation list subtitle with start date.
+  ///
+  /// In en, this message translates to:
+  /// **'Started {date}'**
+  String communicationStartedOn(String date);
+
+  /// Snack bar while opening a conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening conversation...'**
+  String get communicationOpeningConversation;
+
+  /// Loading state on chat screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading messages...'**
+  String get communicationLoadingMessages;
+
+  /// Empty state on chat screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Say hello to start the conversation.'**
+  String get communicationNoMessagesYet;
+
+  /// Chat composer hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get communicationTypeMessageHint;
+
+  /// Chat attachment button hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach a file, image, or audio'**
+  String get communicationAttachHint;
+
+  /// Day separator for older chat messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get communicationEarlierMessages;
+
+  /// Snack bar when attachment link is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'File link unavailable.'**
+  String get communicationFileLinkUnavailable;
+
+  /// Snack bar when attachment link is invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid file link.'**
+  String get communicationInvalidFileLink;
+
+  /// Snack bar after copying attachment link.
+  ///
+  /// In en, this message translates to:
+  /// **'File link copied.'**
+  String get communicationFileLinkCopied;
+
+  /// Snack bar when video attachment format is unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported video format.'**
+  String get communicationUnsupportedVideoFormat;
+
+  /// Attachment type label for images.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get communicationAttachmentTypeImage;
+
+  /// Attachment type label for audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get communicationAttachmentTypeAudio;
+
+  /// Attachment type label for video.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get communicationAttachmentTypeVideo;
+
+  /// Attachment type label for generic files.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get communicationAttachmentTypeFile;
+
+  /// Fallback when attachment preview cannot load.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview unavailable'**
+  String get communicationAttachmentPreviewUnavailable;
+
+  /// Loading state for audio attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading audio...'**
+  String get communicationAudioLoading;
+
+  /// Error when audio playback fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to play audio.'**
+  String get communicationAudioPlaybackError;
+
+  /// Snack bar after copying a labeled value.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} copied'**
+  String commonLabelCopied(String label);
+
+  /// Snack bar when attachment cannot be opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open this attachment.'**
+  String get attachmentUnableToOpen;
+
+  /// Snack bar when report has no link.
+  ///
+  /// In en, this message translates to:
+  /// **'No report link to copy.'**
+  String get parentReportNoLinkToCopy;
+
+  /// Snack bar when report file is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'No report file available yet.'**
+  String get parentReportNoFileAvailable;
+
+  /// Snack bar when report link is invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid report link.'**
+  String get parentReportInvalidLink;
+
+  /// Snack bar after copying report link.
+  ///
+  /// In en, this message translates to:
+  /// **'Report link copied to clipboard.'**
+  String get parentReportLinkCopied;
+
+  /// Snack bar when report open fails but link was copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open report. Link copied to clipboard.'**
+  String get parentReportOpenFailedLinkCopied;
+
+  /// Title for admin edit session dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Session'**
+  String get adminSessionsEditTitle;
+
+  /// Patient label in admin edit session dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient: {name}'**
+  String adminSessionsPatientLabel(String name);
+
+  /// Date field label in admin edit session dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Date (YYYY-MM-DD)'**
+  String get adminSessionsDateField;
+
+  /// Time field label in admin edit session dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Time (HH:MM)'**
+  String get adminSessionsTimeField;
+
+  /// Location field label in admin edit session dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Location / Link'**
+  String get adminSessionsLocationField;
+
+  /// Status field label in admin edit session dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get adminSessionsStatusField;
+
+  /// Cancellation reason field in admin edit session dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation reason'**
+  String get adminSessionsCancellationReasonField;
+
+  /// Validation when session status cannot be edited.
+  ///
+  /// In en, this message translates to:
+  /// **'Status is final and cannot be changed.'**
+  String get adminSessionsStatusFinal;
+
+  /// Validation for invalid session date/time.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date or time.'**
+  String get adminSessionsInvalidDateTime;
+
+  /// Snack bar after admin updates a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Session updated successfully.'**
+  String get adminSessionsUpdatedSuccess;
+
+  /// Generic admin session action failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Action failed: {error}'**
+  String adminSessionsActionFailed(String error);
+
+  /// Snack bar after admin updates a patient.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient updated successfully.'**
+  String get adminPatientsUpdatedSuccess;
+
+  /// Empty state when patient is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient not found.'**
+  String get adminPatientsNotFound;
+
+  /// Fallback when optional patient field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Not specified'**
+  String get adminPatientsNotSpecified;
+
+  /// Hint for date of birth picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date of birth'**
+  String get adminPatientsSelectDateOfBirth;
+
+  /// Button to open patient assignments.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Assignments'**
+  String get adminPatientsAssignments;
+
+  /// Snack bar after deactivating a user.
+  ///
+  /// In en, this message translates to:
+  /// **'User deactivated.'**
+  String get adminUsersUserDeactivated;
+
+  /// Snack bar after activating a user.
+  ///
+  /// In en, this message translates to:
+  /// **'User activated.'**
+  String get adminUsersUserActivated;
+
+  /// Title for add user dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Add User'**
+  String get adminUsersAddUserTitle;
+
+  /// Title for edit user dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit User'**
+  String get adminUsersEditUserTitle;
+
+  /// Password field label in user dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get adminUsersPasswordField;
+
+  /// Optional phone field in user dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone (optional)'**
+  String get adminUsersPhoneOptional;
+
+  /// Role dropdown label in user dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get adminUsersRoleField;
+
+  /// Validation when required user fields are missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete all required fields.'**
+  String get adminUsersValidationRequired;
+
+  /// Snack bar after creating a user.
+  ///
+  /// In en, this message translates to:
+  /// **'User created successfully.'**
+  String get adminUsersCreatedSuccess;
+
+  /// Snack bar after updating a user.
+  ///
+  /// In en, this message translates to:
+  /// **'User updated successfully.'**
+  String get adminUsersUpdatedSuccess;
+
+  /// Title for specialist matching screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Specialist'**
+  String get adminMatchingChooseSpecialist;
+
+  /// Loading state on matching screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading matching specialists...'**
+  String get adminMatchingLoadingSpecialists;
+
+  /// Button label while assigning specialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigning...'**
+  String get adminMatchingAssigning;
+
+  /// Empty state when no specialists match.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching specialists found.'**
+  String get adminMatchingNoSpecialists;
+
+  /// Instruction on matching screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a specialist to assign to this case.'**
+  String get adminMatchingSelectSpecialist;
+
+  /// Confirmation dialog body for assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign this specialist to the case request?'**
+  String get adminMatchingConfirmBody;
+
+  /// Snack bar after successful assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist assigned successfully.'**
+  String get adminMatchingAssignedSuccess;
+
+  /// Snack bar while assignment is processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait while the assignment is processed.'**
+  String get adminMatchingWaitForAssignment;
+
+  /// Snack bar after specialist profile update.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully.'**
+  String get specialistProfileUpdatedSuccess;
+
+  /// Personal section heading on the edit specialist profile form.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get specialistProfilePersonalSection;
+
+  /// Professional section heading on the edit specialist profile form.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional'**
+  String get specialistProfileProfessionalSection;
+
+  /// Empty state when report is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Report not found.'**
+  String get specialistReportNotFound;
+
+  /// Title for report details screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Details'**
+  String get specialistReportDetailsTitle;
+
+  /// Attachments section heading on report details.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get specialistReportAttachments;
+
+  /// Button to view report PDF.
+  ///
+  /// In en, this message translates to:
+  /// **'View PDF'**
+  String get specialistReportViewPdf;
+
+  /// Button to copy report PDF link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy PDF Link'**
+  String get specialistReportCopyPdfLink;
+
+  /// Snack bar after copying PDF link.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF link copied to clipboard'**
+  String get specialistReportPdfLinkCopied;
+
+  /// Snack bar after PDF generation.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF generated successfully'**
+  String get specialistReportPdfGeneratedSuccess;
+
+  /// Button label while generating PDF.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating PDF...'**
+  String get specialistReportGeneratingPdf;
+
+  /// Button to generate report PDF.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate PDF'**
+  String get specialistReportGeneratePdf;
+
+  /// Title for AI recommendations screen.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Recommendations'**
+  String get specialistAiRecommendationsTitle;
+
+  /// Snack bar after generating recommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'AI recommendation generated'**
+  String get specialistAiRecommendationGenerated;
+
+  /// Snack bar after accepting recommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation accepted'**
+  String get specialistAiRecommendationAccepted;
+
+  /// Snack bar after rejecting recommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation rejected'**
+  String get specialistAiRecommendationRejected;
+
+  /// Empty state CTA on AI recommendations screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate your first AI recommendation'**
+  String get specialistAiGenerateFirstRecommendation;
+
+  /// Dev-only dashboard preview hub title.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard Previews'**
+  String get devDashboardPreviewsTitle;
 }
 
 class _AppLocalizationsDelegate

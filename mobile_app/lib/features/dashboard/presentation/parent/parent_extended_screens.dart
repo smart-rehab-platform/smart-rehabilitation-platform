@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/parent_dashboard_models.dart';
 import '../../providers/parent_dashboard_provider.dart';
 import '../../providers/parent_features_provider.dart';
@@ -39,6 +40,7 @@ class _ParentChildDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(parentChildDetailProvider(widget.childId));
     final theme = Theme.of(context);
     final child = state.child;
@@ -127,12 +129,13 @@ class _ParentChildDetailScreenState
                       child: DashboardSurfaceCard(
                         onTap:
                             report.pdfUrl != null && report.pdfUrl!.isNotEmpty
-                            ? () => parentOpenReportUrl(context, report.pdfUrl)
+                            ? () => parentOpenReportUrl(context, l10n, report.pdfUrl)
                             : null,
                         onLongPress:
                             report.pdfUrl != null && report.pdfUrl!.isNotEmpty
                             ? () => parentLongPressReportUrl(
                                 context,
+                                l10n,
                                 report.pdfUrl,
                               )
                             : null,

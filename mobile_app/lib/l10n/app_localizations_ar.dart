@@ -452,6 +452,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fieldFullName => 'الاسم الكامل';
 
   @override
+  String get fieldDateOfBirth => 'تاريخ الميلاد';
+
+  @override
+  String get fieldGender => 'الجنس';
+
+  @override
   String get fieldAddress => 'العنوان';
 
   @override
@@ -2109,4 +2115,1226 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get specialistFamilyPatternScheduleFollowUp => 'جدولة متابعة';
+
+  @override
+  String get commonPleaseWait => 'يرجى الانتظار…';
+
+  @override
+  String get specialistTreatmentPlanSaveChanges => 'حفظ التغييرات';
+
+  @override
+  String get specialistTreatmentPlanCreatedSuccess =>
+      'تم إنشاء خطة العلاج بنجاح';
+
+  @override
+  String get specialistTreatmentPlanUpdatedSuccess =>
+      'تم تحديث خطة العلاج بنجاح';
+
+  @override
+  String get specialistTreatmentPlanNotFound => 'لم يتم العثور على خطة العلاج.';
+
+  @override
+  String get specialistTreatmentPlanNewPlansActiveHelper =>
+      'تُنشأ الخطط الجديدة بحالة نشطة.';
+
+  @override
+  String get specialistTreatmentPlanTitleLabel => 'عنوان الخطة';
+
+  @override
+  String get specialistTreatmentPlanTitleHint => 'عنوان خطة العلاج';
+
+  @override
+  String get specialistTreatmentPlanCreating => 'جارٍ الإنشاء...';
+
+  @override
+  String get specialistTreatmentPlanCurrentGoals => 'الأهداف الحالية';
+
+  @override
+  String get specialistTreatmentPlanNoGoalsForPlan =>
+      'لم تُحدَّد أهداف لهذه الخطة.';
+
+  @override
+  String get specialistTreatmentPlanSelectDate => 'اختر التاريخ';
+
+  @override
+  String get specialistTreatmentPlanPatientRequired => 'المريض مطلوب';
+
+  @override
+  String get specialistTreatmentPlanTitleRequired => 'عنوان الخطة مطلوب';
+
+  @override
+  String get specialistTreatmentPlanStartDateRequired => 'تاريخ البدء مطلوب';
+
+  @override
+  String get specialistTreatmentPlanEndDateBeforeStart =>
+      'لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء';
+
+  @override
+  String get specialistTreatmentPlanCreateFailed =>
+      'تعذّر إنشاء خطة العلاج. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String specialistTreatmentPlanLoadFailed(String error) {
+    return 'تعذّر تحميل خطة العلاج: $error';
+  }
+
+  @override
+  String get specialistTreatmentPlanSaveFailed =>
+      'تعذّر حفظ خطة العلاج. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistGoalsCreatedSuccess => 'تم إنشاء الهدف بنجاح';
+
+  @override
+  String get specialistGoalsUpdatedSuccess => 'تم تحديث الهدف بنجاح';
+
+  @override
+  String get specialistGoalsProgressUpdatedSuccess => 'تم تحديث التقدم بنجاح';
+
+  @override
+  String get specialistGoalsMarkedAchievedSuccess =>
+      'تم وضع علامة على الهدف كمتحقق';
+
+  @override
+  String get specialistGoalsCouldNotLoad => 'تعذّر تحميل الأهداف.';
+
+  @override
+  String get specialistGoalsNoActivePlanForPatient =>
+      'لم يتم العثور على خطة علاج نشطة لهذا المريض.';
+
+  @override
+  String get specialistGoalsNoGoalsForPlan =>
+      'لم تُحدَّد أهداف لخطة العلاج هذه.';
+
+  @override
+  String get specialistGoalsAddNewGoal => 'إضافة هدف جديد';
+
+  @override
+  String get specialistGoalsUpdateProgress => 'تحديث التقدم';
+
+  @override
+  String get specialistGoalsEditGoal => 'تعديل الهدف';
+
+  @override
+  String get specialistGoalsArchiveGoal => 'أرشفة الهدف';
+
+  @override
+  String get specialistGoalsMarkedAchievedHelper => 'هذا الهدف مُعلَّم كمتحقق.';
+
+  @override
+  String get specialistGoalsAddDialogTitle => 'إضافة هدف جديد';
+
+  @override
+  String get specialistGoalsEditDialogTitle => 'تعديل الهدف';
+
+  @override
+  String get specialistGoalsUpdateProgressDialogTitle => 'تحديث التقدم';
+
+  @override
+  String get specialistGoalsArchiveDialogTitle => 'أرشفة الهدف';
+
+  @override
+  String get specialistGoalsArchiveDialogBody =>
+      'لا يوجد مسار أرشفة مخصص. سيؤدي هذا إلى وضع علامة على الهدف كمتحقق باستخدام PATCH /goals/:id/achieve.';
+
+  @override
+  String get specialistGoalsMarkAchieved => 'وضع علامة كمتحقق';
+
+  @override
+  String get specialistGoalsGoalType => 'نوع الهدف';
+
+  @override
+  String get specialistGoalsTitleHint => 'عنوان الهدف';
+
+  @override
+  String get specialistGoalsTargetValueOptional => 'القيمة المستهدفة (اختياري)';
+
+  @override
+  String get specialistGoalsTargetDateOptional => 'التاريخ المستهدف (اختياري)';
+
+  @override
+  String get specialistGoalsDescriptionOptional => 'الوصف (اختياري)';
+
+  @override
+  String get specialistGoalsTitleRequired => 'عنوان الهدف مطلوب';
+
+  @override
+  String get specialistGoalsTargetValueMustBeNumber =>
+      'يجب أن تكون القيمة المستهدفة رقمًا';
+
+  @override
+  String get specialistGoalsProgressRangeValidation =>
+      'أدخل قيمة تقدم بين 0 و100';
+
+  @override
+  String get specialistGoalsProgressRangeProvider =>
+      'يجب أن يكون التقدم بين 0 و100';
+
+  @override
+  String get specialistGoalsCompletionPercentageHint => 'نسبة الإكمال (0–100)';
+
+  @override
+  String get specialistGoalsProgressNoteOptional => 'ملاحظة التقدم (اختياري)';
+
+  @override
+  String get specialistGoalsSaveProgress => 'حفظ التقدم';
+
+  @override
+  String get specialistGoalsAddGoal => 'إضافة الهدف';
+
+  @override
+  String get specialistGoalsMarkAsAchieved => 'وضع علامة كمتحقق';
+
+  @override
+  String get specialistGoalsNoActivePlan => 'لم يتم العثور على خطة علاج نشطة';
+
+  @override
+  String specialistGoalsLoadFailed(String error) {
+    return 'تعذّر تحميل الأهداف: $error';
+  }
+
+  @override
+  String specialistGoalsRefreshFailed(String error) {
+    return 'تعذّر تحديث الأهداف: $error';
+  }
+
+  @override
+  String specialistGoalsCreateFailed(String error) {
+    return 'تعذّر إنشاء الهدف: $error';
+  }
+
+  @override
+  String specialistGoalsUpdateFailed(String error) {
+    return 'تعذّر تحديث الهدف: $error';
+  }
+
+  @override
+  String specialistGoalsProgressUpdateFailed(String error) {
+    return 'تعذّر تحديث التقدم: $error';
+  }
+
+  @override
+  String specialistGoalsArchiveFailed(String error) {
+    return 'تعذّر أرشفة الهدف: $error';
+  }
+
+  @override
+  String get languageEnglish => 'الإنجليزية';
+
+  @override
+  String get languageArabic => 'العربية';
+
+  @override
+  String get commonClear => 'مسح';
+
+  @override
+  String get exerciseFrequencyOneTime => 'مرة واحدة';
+
+  @override
+  String get specialistExerciseEditExercise => 'تعديل التمرين';
+
+  @override
+  String get specialistExerciseDetailsTitle => 'تفاصيل التمرين';
+
+  @override
+  String get specialistExerciseFormSubtitle =>
+      'أضف تمارين علاجية إلى المكتبة المشتركة للتعيين.';
+
+  @override
+  String get specialistExerciseCategoriesLoadFailed =>
+      'تعذّر تحميل الفئات. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistExerciseNoCategories => 'لا توجد فئات تمارين متاحة بعد.';
+
+  @override
+  String get specialistExerciseNotFound => 'لم يتم العثور على التمرين.';
+
+  @override
+  String get specialistExerciseLoadFailed =>
+      'تعذّر تحميل التمرين. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistExerciseDetailsLoadFailed =>
+      'تعذّر تحميل تفاصيل التمرين.';
+
+  @override
+  String get specialistExerciseChooseImage => 'اختر صورة';
+
+  @override
+  String get specialistExerciseChooseVideo => 'اختر فيديو';
+
+  @override
+  String get specialistExerciseChooseAudioFile => 'اختر صوت / ملف';
+
+  @override
+  String get specialistExerciseUnableReadFile => 'تعذّر قراءة الملف المحدد.';
+
+  @override
+  String get specialistExerciseUnsupportedMediaType =>
+      'نوع الوسائط غير مدعوم. استخدم صورة أو صوت أو PDF أو فيديو MP4/MOV.';
+
+  @override
+  String get specialistExerciseFileTooLarge =>
+      'الملف كبير جداً. الحد الأقصى للحجم 50 ميغابايت.';
+
+  @override
+  String get specialistExerciseSelectCategory => 'يرجى اختيار فئة.';
+
+  @override
+  String get specialistExerciseTitleRequired => 'العنوان مطلوب.';
+
+  @override
+  String get specialistExerciseLanguageField => 'لغة التمرين';
+
+  @override
+  String get specialistExerciseCategoryField => 'الفئة';
+
+  @override
+  String get specialistExerciseTitleField => 'العنوان';
+
+  @override
+  String get specialistExerciseDescriptionOptional => 'الوصف (اختياري)';
+
+  @override
+  String get specialistExerciseInstructionsField => 'تعليمات مفصلة';
+
+  @override
+  String get specialistExerciseInstructionMediaSection =>
+      'وسائط تعليمية (اختياري)';
+
+  @override
+  String get specialistExerciseCurrentMediaAttached => 'وسائط مرفقة حالياً';
+
+  @override
+  String get specialistExerciseNoMediaSelected =>
+      'لم يتم اختيار وسائط. الصور والصوت وPDF وفيديو MP4/MOV مدعومة (بحد أقصى 50 ميغابايت).';
+
+  @override
+  String get specialistExerciseReplaceMedia => 'استبدال الوسائط';
+
+  @override
+  String get specialistExerciseAddMedia => 'إضافة وسائط';
+
+  @override
+  String get specialistExerciseRemoveMediaTooltip => 'إزالة الوسائط';
+
+  @override
+  String get specialistExerciseUploadingMedia => 'جارٍ رفع الوسائط...';
+
+  @override
+  String get specialistExerciseCreateExercise => 'إنشاء تمرين';
+
+  @override
+  String get specialistExerciseCreatedSuccess => 'تم إنشاء التمرين بنجاح';
+
+  @override
+  String get specialistExerciseUpdatedSuccess => 'تم تحديث التمرين بنجاح';
+
+  @override
+  String get specialistExerciseSaveFailed =>
+      'تعذّر حفظ التمرين. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String specialistExerciseLanguageLine(String language) {
+    return 'اللغة: $language';
+  }
+
+  @override
+  String specialistExerciseCreatedBy(String name) {
+    return 'أنشأه $name';
+  }
+
+  @override
+  String get specialistExerciseDescriptionSection => 'الوصف';
+
+  @override
+  String get specialistExerciseNoDescription => 'لا يوجد وصف متاح.';
+
+  @override
+  String get specialistExerciseInstructionsSection => 'التعليمات';
+
+  @override
+  String get specialistExerciseNoInstructions => 'لا توجد تعليمات متاحة.';
+
+  @override
+  String get specialistExerciseInstructionMediaTitle => 'وسائط تعليمية';
+
+  @override
+  String get specialistAssignExerciseSubtitle =>
+      'اختر تمريناً، ثم حدّد التكرار والتواريخ.';
+
+  @override
+  String get specialistAssignExerciseSelectRequired => 'يرجى اختيار تمرين.';
+
+  @override
+  String get specialistAssignExerciseSuccess => 'تم تعيين التمرين بنجاح';
+
+  @override
+  String get specialistAssignExerciseAssigning => 'جارٍ التعيين...';
+
+  @override
+  String get specialistAssignExerciseNoMatchSearch =>
+      'لا توجد تمارين تطابق البحث أو الفلتر.';
+
+  @override
+  String get specialistAssignExerciseSelectedExercise => 'التمرين المحدد';
+
+  @override
+  String get specialistAssignExerciseFrequency => 'التكرار';
+
+  @override
+  String get specialistAssignExerciseDueDateOptional =>
+      'تاريخ الاستحقاق (اختياري)';
+
+  @override
+  String get specialistAssignExerciseSetDueDate => 'تعيين تاريخ الاستحقاق';
+
+  @override
+  String get specialistAssignExerciseFailed =>
+      'تعذّر تعيين التمرين. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistAssignExerciseRequirementsMissing =>
+      'المريض وخطة العلاج والتمرين مطلوبة للتعيين.';
+
+  @override
+  String get specialistAssignedExerciseTitle => 'التمرين المعيّن';
+
+  @override
+  String get specialistAssignedExerciseNotFound =>
+      'لم يتم العثور على التمرين المعيّن.';
+
+  @override
+  String get specialistAssignedExerciseLoadFailed =>
+      'تعذّر تحميل التمرين المعيّن.';
+
+  @override
+  String get specialistAssignedExerciseAssignmentSection => 'التعيين';
+
+  @override
+  String get specialistAssignedExerciseFrequency => 'التكرار';
+
+  @override
+  String get specialistAssignedExerciseAssigned => 'تاريخ التعيين';
+
+  @override
+  String get specialistAssignedExerciseDueDate => 'تاريخ الاستحقاق';
+
+  @override
+  String get specialistAssignedExerciseLatestSubmission => 'آخر تسليم';
+
+  @override
+  String get specialistAssignedExerciseNoSubmissions =>
+      'لا توجد تسليمات لهذا التعيين بعد.';
+
+  @override
+  String get specialistAssignedExerciseRecentlySubmitted => 'تم التسليم مؤخراً';
+
+  @override
+  String get specialistAssignedExerciseOpenLibraryExercise =>
+      'فتح تمرين المكتبة';
+
+  @override
+  String get specialistAssignedExerciseInstructionalMedia => 'وسائط تعليمية';
+
+  @override
+  String get priorityHigh => 'مرتفع';
+
+  @override
+  String get priorityMedium => 'متوسط';
+
+  @override
+  String get specialistReviewExerciseTitle => 'مراجعة التمرين';
+
+  @override
+  String get specialistReviewUploadedMedia => 'الوسائط المرفوعة';
+
+  @override
+  String get specialistReviewNoMedia => 'لم يتم رفع وسائط لهذا التسليم.';
+
+  @override
+  String get specialistReviewSection => 'المراجعة';
+
+  @override
+  String get specialistReviewRating => 'التقييم';
+
+  @override
+  String get specialistReviewFeedback => 'الملاحظات';
+
+  @override
+  String get specialistReviewFeedbackHint => 'اكتب ملاحظات للوالد والمريض...';
+
+  @override
+  String get specialistReviewSubmitReview => 'إرسال المراجعة';
+
+  @override
+  String get specialistReviewUpdateReview => 'تحديث المراجعة';
+
+  @override
+  String get specialistReviewSubmitting => 'جارٍ الإرسال...';
+
+  @override
+  String get specialistReviewSubmittedSuccess => 'تم إرسال المراجعة بنجاح';
+
+  @override
+  String get specialistReviewSubmissionNotFound => 'لم يتم العثور على التسليم.';
+
+  @override
+  String get specialistReviewSignInRequired =>
+      'يرجى تسجيل الدخول لإرسال مراجعة.';
+
+  @override
+  String specialistReviewLoadFailed(String error) {
+    return 'تعذّر تحميل التسليم: $error';
+  }
+
+  @override
+  String specialistReviewSubmitFailed(String error) {
+    return 'تعذّر إرسال المراجعة: $error';
+  }
+
+  @override
+  String get specialistReviewViewSpeechAnalysis => 'عرض تحليل النطق';
+
+  @override
+  String get specialistSubmissionMediaUnavailable => 'ملف الوسائط غير متاح.';
+
+  @override
+  String get specialistSubmissionUnsupportedMediaPreview =>
+      'نوع الوسائط غير مدعوم للمعاينة.';
+
+  @override
+  String get specialistSubmissionUnableLoadVideo => 'تعذّر تحميل الفيديو.';
+
+  @override
+  String get specialistSubmissionUnableLoadAudio => 'تعذّر تحميل الصوت.';
+
+  @override
+  String get specialistSubmissionUploadTimeUnavailable => 'وقت الرفع غير متاح';
+
+  @override
+  String get statusFailed => 'فشل';
+
+  @override
+  String get specialistSpeechAnalysisResultsSubtitle => 'نتائج تحليل النطق';
+
+  @override
+  String specialistSpeechAnalysisLatestLine(String dateTime) {
+    return 'الأحدث: $dateTime';
+  }
+
+  @override
+  String specialistSpeechAnalysisSubmissionLine(String id) {
+    return 'التسليم $id';
+  }
+
+  @override
+  String get specialistSpeechAnalysisScores => 'الدرجات';
+
+  @override
+  String get specialistSpeechAnalysisTranscript => 'النص المفرغ';
+
+  @override
+  String specialistSpeechAnalysisLanguageLine(String language) {
+    return 'اللغة: $language';
+  }
+
+  @override
+  String specialistSpeechAnalysisDurationLine(String seconds) {
+    return 'المدة: $seconds ث';
+  }
+
+  @override
+  String get specialistSpeechAnalysisNoTranscript =>
+      'لا يوجد نص مفرغ متاح لهذا التحليل.';
+
+  @override
+  String get specialistSpeechAnalysisComparisonTitle => 'مقارنة مع السابق';
+
+  @override
+  String specialistSpeechAnalysisPreviousLine(String date) {
+    return 'السابق: $date';
+  }
+
+  @override
+  String get specialistSpeechAnalysisTrendBaseline => 'خط الأساس';
+
+  @override
+  String get specialistSpeechAnalysisTrendDeclining => 'تراجع';
+
+  @override
+  String get specialistSpeechAnalysisAiFeedbackTitle =>
+      'ملاحظات الذكاء الاصطناعي والتوصيات';
+
+  @override
+  String get specialistSpeechAnalysisImprovementSummary => 'ملخص التحسن';
+
+  @override
+  String get specialistSpeechAnalysisClinicalNote => 'ملاحظة سريرية';
+
+  @override
+  String get specialistSpeechAnalysisRecommendedAction => 'الإجراء الموصى به';
+
+  @override
+  String get specialistSpeechAnalysisRecommendations => 'التوصيات';
+
+  @override
+  String get specialistSpeechAnalysisTreatmentAnalysis => 'تحليل العلاج';
+
+  @override
+  String get specialistSpeechAnalysisDecisionSupport => 'دعم القرار';
+
+  @override
+  String specialistSpeechAnalysisSuggestedLine(String action) {
+    return 'مقترح: $action';
+  }
+
+  @override
+  String get specialistSpeechAnalysisOverallScoreTrend =>
+      'اتجاه الدرجة الإجمالية';
+
+  @override
+  String get specialistSpeechAnalysisUnknownDate => 'تاريخ غير معروف';
+
+  @override
+  String specialistSpeechAnalysisHistorySummary(
+    String overall,
+    String pronunciation,
+  ) {
+    return 'الإجمالي $overall • النطق $pronunciation';
+  }
+
+  @override
+  String get specialistSpeechAnalysisRunTitle => 'تشغيل تحليل النطق';
+
+  @override
+  String get specialistSpeechAnalysisRunSubtitle =>
+      'حلّل الصوت من تسليم هذا التمرين باستخدام التعرف على الكلام.';
+
+  @override
+  String get specialistSpeechAnalysisAnalyzing => 'جارٍ التحليل...';
+
+  @override
+  String get specialistSpeechAnalysisAnalyzeSubmission => 'تحليل التسليم';
+
+  @override
+  String get specialistSpeechAnalysisLatestSummary => 'ملخص أحدث تحليل';
+
+  @override
+  String get specialistSpeechAnalysisHistory => 'سجل التحليل';
+
+  @override
+  String get specialistSpeechAnalysisEmptyResults =>
+      'لا توجد نتائج تحليل نطق بعد. شغّل التحليل على تسليم صوتي للبدء.';
+
+  @override
+  String get specialistSpeechAnalysisEmptyHistory =>
+      'لا توجد تحليلات نطق سابقة مسجلة.';
+
+  @override
+  String get specialistSpeechAnalysisNoSubmissionSelected =>
+      'لم يتم تحديد تسليم لتحليل النطق.';
+
+  @override
+  String get specialistSpeechAnalysisExistingLoaded =>
+      'تم تحميل تحليل النطق الموجود.';
+
+  @override
+  String get specialistSpeechAnalysisCompletedSuccess =>
+      'اكتمل تحليل النطق بنجاح.';
+
+  @override
+  String get specialistSpeechAnalysisAnalyzeFailed =>
+      'تعذّر إكمال تحليل النطق. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistSpeechAnalysisLoadFailed =>
+      'تعذّر تحميل تحليل النطق. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistSpeechAnalysisPermissionDenied =>
+      'ليس لديك إذن لتحليل هذا التسليم.';
+
+  @override
+  String get specialistSpeechAnalysisNotAvailableYet =>
+      'لا يتوفر تحليل نطق لهذا التسليم بعد.';
+
+  @override
+  String get specialistSpeechAnalysisSubmissionNotFound =>
+      'تعذّر العثور على تسليم التمرين.';
+
+  @override
+  String get specialistSpeechAnalysisUnsupportedAudio =>
+      'لا يحتوي هذا التسليم على تسجيل صوتي مدعوم.';
+
+  @override
+  String get specialistSpeechAnalysisServiceUnavailable =>
+      'خدمة تحليل النطق غير متاحة حالياً. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistSpeechAnalysisConnectionFailed =>
+      'تعذّر الاتصال بخدمة التحليل. تحقق من اتصالك وحاول مرة أخرى.';
+
+  @override
+  String get specialistSpeechAnalysisSourceUploaded => 'مرفوع';
+
+  @override
+  String get specialistSpeechAnalysisSourceRecorded => 'مسجل';
+
+  @override
+  String get specialistSessionDetailsTitle => 'تفاصيل الجلسة';
+
+  @override
+  String get specialistSessionNotFound => 'لم يتم العثور على الجلسة.';
+
+  @override
+  String get specialistSessionLoadFailed => 'تعذّر تحميل تفاصيل الجلسة.';
+
+  @override
+  String get specialistSessionPermissionDenied =>
+      'ليس لديك إذن لإدارة هذه الجلسة.';
+
+  @override
+  String get specialistSessionUpdateBlocked =>
+      'لا يمكن تحديث هذه الجلسة. تحقق من التفاصيل وحاول مرة أخرى.';
+
+  @override
+  String get specialistSessionPatientProfileUnavailable =>
+      'ملف المريض غير متاح.';
+
+  @override
+  String get specialistSessionKeepSession => 'الإبقاء على الجلسة';
+
+  @override
+  String get specialistSessionMarkCompletedTitle => 'تحديد كمكتملة';
+
+  @override
+  String get specialistSessionMarkCompletedMessage =>
+      'تحديد هذه الجلسة كمكتملة؟ لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get specialistSessionMarkCompletedConfirm => 'تحديد كمكتملة';
+
+  @override
+  String get specialistSessionMarkedCompleted => 'تم تحديد الجلسة كمكتملة.';
+
+  @override
+  String get specialistSessionMarkNoShowTitle => 'تحديد كعدم حضور';
+
+  @override
+  String get specialistSessionMarkNoShowMessage =>
+      'تحديد هذه الجلسة كعدم حضور؟ لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get specialistSessionMarkNoShowConfirm => 'تحديد كعدم حضور';
+
+  @override
+  String get specialistSessionMarkedNoShow => 'تم تحديد الجلسة كعدم حضور.';
+
+  @override
+  String get specialistSessionCancelTitle => 'إلغاء الجلسة';
+
+  @override
+  String get specialistSessionCancelMessage =>
+      'إلغاء هذه الجلسة؟ لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get specialistSessionCancelReasonOptional => 'سبب الإلغاء (اختياري)';
+
+  @override
+  String get specialistSessionCancelled => 'تم إلغاء الجلسة.';
+
+  @override
+  String get specialistSessionNoMeetingLink => 'لا يوجد رابط اجتماع صالح.';
+
+  @override
+  String get specialistSessionMeetingLinkCopied => 'تم نسخ رابط الاجتماع.';
+
+  @override
+  String get specialistSessionCouldNotOpenMeetingLink =>
+      'تعذّر فتح رابط الاجتماع. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistSessionStartTime => 'وقت البدء';
+
+  @override
+  String get specialistSessionEndTime => 'وقت الانتهاء';
+
+  @override
+  String get specialistSessionDuration => 'المدة';
+
+  @override
+  String specialistSessionMinutesValue(int minutes) {
+    return '$minutes د';
+  }
+
+  @override
+  String get specialistSessionMeetingLink => 'رابط الاجتماع';
+
+  @override
+  String get specialistSessionNotProvided => 'غير متوفر';
+
+  @override
+  String get specialistSessionOpenMeeting => 'فتح الاجتماع';
+
+  @override
+  String get specialistSessionCopyLink => 'نسخ الرابط';
+
+  @override
+  String get specialistSessionViewPatientProfile => 'عرض ملف المريض';
+
+  @override
+  String get specialistSessionActions => 'الإجراءات';
+
+  @override
+  String get specialistSessionEditSession => 'تعديل الجلسة';
+
+  @override
+  String get specialistSessionMarkAsCompleted => 'تحديد كمكتملة';
+
+  @override
+  String get specialistSessionMarkAsNoShow => 'تحديد كعدم حضور';
+
+  @override
+  String get specialistSessionCancellationReason => 'سبب الإلغاء';
+
+  @override
+  String specialistSessionLockedCannotEdit(String status) {
+    return 'هذه الجلسة $status ولا يمكن تعديلها بعد الآن.';
+  }
+
+  @override
+  String get specialistSessionCompleteFailed => 'تعذّر تحديد الجلسة كمكتملة.';
+
+  @override
+  String get specialistSessionCancelFailed => 'تعذّر إلغاء الجلسة.';
+
+  @override
+  String get specialistSessionNoShowFailed => 'تعذّر تحديد الجلسة كعدم حضور.';
+
+  @override
+  String get specialistSessionUpdateFailed => 'تعذّر تحديث الجلسة.';
+
+  @override
+  String get specialistSessionCreateFailed => 'تعذّر إنشاء الجلسة.';
+
+  @override
+  String get specialistSessionEditTitle => 'تعديل الجلسة';
+
+  @override
+  String get specialistSessionUpdateSubtitle => 'حدّث تفاصيل جدول الجلسة.';
+
+  @override
+  String get specialistSessionCreateSubtitle =>
+      'جدولة جلسة لأحد المرضى المعيّنين لك.';
+
+  @override
+  String get specialistSessionTypeTitle => 'نوع الجلسة / العنوان';
+
+  @override
+  String get specialistSessionTypeHint => 'جلسة علاج';
+
+  @override
+  String get specialistSessionSelectPatient => 'اختر مريضاً';
+
+  @override
+  String get specialistSessionSelectPatientRequired => 'اختر مريضاً معيّناً.';
+
+  @override
+  String get specialistSessionTitleRequired => 'أدخل نوع الجلسة أو العنوان.';
+
+  @override
+  String get specialistSessionDurationRangeError =>
+      'يجب أن تكون المدة بين 1 و480 دقيقة.';
+
+  @override
+  String get specialistSessionScheduleFutureRequired =>
+      'يجب أن يكون تاريخ ووقت الجدولة في المستقبل.';
+
+  @override
+  String get specialistSessionNoAssignedPatients =>
+      'لم يتم العثور على مرضى معيّنين. عيّن مريضاً قبل الجدولة.';
+
+  @override
+  String get specialistSessionLocationOrLink => 'الموقع أو رابط الاجتماع';
+
+  @override
+  String get specialistSessionLocationHint => 'غرفة العيادة أو https://…';
+
+  @override
+  String get specialistSessionNotesOptional => 'ملاحظات (اختياري)';
+
+  @override
+  String get specialistSessionNotesHint => 'تفاصيل إضافية لهذه الجلسة';
+
+  @override
+  String get specialistSessionFormHelper =>
+      'يُحتفظ بالعنوان والملاحظات في هذا النموذج. يخزّن الخادم المريض والجدولة والمدة والموقع/الرابط.';
+
+  @override
+  String get specialistSessionUpdatedSuccess => 'تم تحديث الجلسة بنجاح.';
+
+  @override
+  String get specialistSessionScheduledSuccess => 'تمت جدولة الجلسة بنجاح.';
+
+  @override
+  String specialistSessionCannotEditStatus(String status) {
+    return 'هذه الجلسة $status ولا يمكن تعديلها.';
+  }
+
+  @override
+  String get specialistSessionRequestApproveTitle => 'الموافقة على طلب الجلسة';
+
+  @override
+  String get specialistSessionRequestRejectTitle => 'رفض طلب الجلسة';
+
+  @override
+  String get specialistSessionRequestRejectSubtitle =>
+      'قدّم سبباً ليفهم ولي الأمر سبب رفض هذا الطلب.';
+
+  @override
+  String get specialistSessionRequestScheduledDate => 'تاريخ الجدولة';
+
+  @override
+  String get specialistSessionRequestScheduledTime => 'وقت الجدولة';
+
+  @override
+  String get specialistSessionRequestDurationField => 'المدة (بالدقائق)';
+
+  @override
+  String get specialistSessionRequestMeetingLinkOrLocation =>
+      'رابط الاجتماع أو الموقع';
+
+  @override
+  String get specialistSessionRequestApproveCreate => 'الموافقة وإنشاء الجلسة';
+
+  @override
+  String get specialistSessionRequestApproving => 'جارٍ الموافقة...';
+
+  @override
+  String get specialistSessionRequestRejecting => 'جارٍ الرفض...';
+
+  @override
+  String get specialistSessionRequestRejectConfirm => 'رفض الطلب';
+
+  @override
+  String get specialistSessionRequestRejectReason => 'سبب الرفض';
+
+  @override
+  String get specialistSessionRequestRejectReasonHint =>
+      'اشرح سبب عدم إمكانية الموافقة على هذا الطلب';
+
+  @override
+  String get specialistSessionRequestRejectReasonRequired => 'سبب الرفض مطلوب.';
+
+  @override
+  String get specialistSessionRequestApprovedSuccess =>
+      'تمت الموافقة على طلب الجلسة وإنشاء الجلسة.';
+
+  @override
+  String get specialistSessionRequestRejectedSuccess => 'تم رفض طلب الجلسة.';
+
+  @override
+  String specialistSessionRequestApproveFailed(String error) {
+    return 'تعذّرت الموافقة على طلب الجلسة: $error';
+  }
+
+  @override
+  String specialistSessionRequestRejectFailed(String error) {
+    return 'تعذّر رفض طلب الجلسة: $error';
+  }
+
+  @override
+  String get specialistSessionRequestPreferredTimeMorning => 'صباحاً';
+
+  @override
+  String get specialistSessionRequestPreferredTimeAfternoon => 'بعد الظهر';
+
+  @override
+  String get specialistSessionRequestPreferredTimeEvening => 'مساءً';
+
+  @override
+  String get specialistSessionRequestPreferredTimeFlexible => 'مرن';
+
+  @override
+  String get specialistSessionLinkCopied => 'تم نسخ الرابط';
+
+  @override
+  String get specialistSessionNoValidLink => 'لا يوجد رابط صالح';
+
+  @override
+  String get specialistSessionCouldNotOpenLink => 'تعذّر فتح الرابط';
+
+  @override
+  String specialistSessionCalendarTileMeta(
+    String time,
+    int duration,
+    String mode,
+  ) {
+    return '$time • $duration د • $mode';
+  }
+
+  @override
+  String get communicationSignInToSendMessages => 'سجّل الدخول لإرسال الرسائل.';
+
+  @override
+  String get communicationNoSpecialistAssigned =>
+      'لم يتم تعيين أخصائي لهذا الطفل بعد.';
+
+  @override
+  String get communicationMessageSpecialist => 'مراسلة الأخصائي';
+
+  @override
+  String get communicationLoadingConversations => 'جارٍ تحميل المحادثات...';
+
+  @override
+  String get communicationNoConversations => 'لا توجد محادثات بعد.';
+
+  @override
+  String communicationStartedOn(String date) {
+    return 'بدأت $date';
+  }
+
+  @override
+  String get communicationOpeningConversation => 'جارٍ فتح المحادثة...';
+
+  @override
+  String get communicationLoadingMessages => 'جارٍ تحميل الرسائل...';
+
+  @override
+  String get communicationNoMessagesYet =>
+      'لا توجد رسائل بعد. قل مرحباً لبدء المحادثة.';
+
+  @override
+  String get communicationTypeMessageHint => 'اكتب رسالة...';
+
+  @override
+  String get communicationAttachHint => 'أرفق ملفاً أو صورة أو صوتاً';
+
+  @override
+  String get communicationEarlierMessages => 'سابقاً';
+
+  @override
+  String get communicationFileLinkUnavailable => 'رابط الملف غير متاح.';
+
+  @override
+  String get communicationInvalidFileLink => 'رابط الملف غير صالح.';
+
+  @override
+  String get communicationFileLinkCopied => 'تم نسخ رابط الملف.';
+
+  @override
+  String get communicationUnsupportedVideoFormat => 'صيغة الفيديو غير مدعومة.';
+
+  @override
+  String get communicationAttachmentTypeImage => 'صورة';
+
+  @override
+  String get communicationAttachmentTypeAudio => 'صوت';
+
+  @override
+  String get communicationAttachmentTypeVideo => 'فيديو';
+
+  @override
+  String get communicationAttachmentTypeFile => 'ملف';
+
+  @override
+  String get communicationAttachmentPreviewUnavailable => 'المعاينة غير متاحة';
+
+  @override
+  String get communicationAudioLoading => 'جارٍ تحميل الصوت...';
+
+  @override
+  String get communicationAudioPlaybackError => 'تعذّر تشغيل الصوت.';
+
+  @override
+  String commonLabelCopied(String label) {
+    return 'تم نسخ $label';
+  }
+
+  @override
+  String get attachmentUnableToOpen => 'تعذّر فتح هذا المرفق.';
+
+  @override
+  String get parentReportNoLinkToCopy => 'لا يوجد رابط تقرير للنسخ.';
+
+  @override
+  String get parentReportNoFileAvailable => 'ملف التقرير غير متاح بعد.';
+
+  @override
+  String get parentReportInvalidLink => 'رابط التقرير غير صالح.';
+
+  @override
+  String get parentReportLinkCopied => 'تم نسخ رابط التقرير إلى الحافظة.';
+
+  @override
+  String get parentReportOpenFailedLinkCopied =>
+      'تعذّر فتح التقرير. تم نسخ الرابط إلى الحافظة.';
+
+  @override
+  String get adminSessionsEditTitle => 'تعديل الجلسة';
+
+  @override
+  String adminSessionsPatientLabel(String name) {
+    return 'المريض: $name';
+  }
+
+  @override
+  String get adminSessionsDateField => 'التاريخ (YYYY-MM-DD)';
+
+  @override
+  String get adminSessionsTimeField => 'الوقت (HH:MM)';
+
+  @override
+  String get adminSessionsLocationField => 'الموقع / الرابط';
+
+  @override
+  String get adminSessionsStatusField => 'الحالة';
+
+  @override
+  String get adminSessionsCancellationReasonField => 'سبب الإلغاء';
+
+  @override
+  String get adminSessionsStatusFinal => 'الحالة نهائية ولا يمكن تغييرها.';
+
+  @override
+  String get adminSessionsInvalidDateTime => 'التاريخ أو الوقت غير صالح.';
+
+  @override
+  String get adminSessionsUpdatedSuccess => 'تم تحديث الجلسة بنجاح.';
+
+  @override
+  String adminSessionsActionFailed(String error) {
+    return 'فشل الإجراء: $error';
+  }
+
+  @override
+  String get adminPatientsUpdatedSuccess => 'تم تحديث المريض بنجاح.';
+
+  @override
+  String get adminPatientsNotFound => 'لم يتم العثور على المريض.';
+
+  @override
+  String get adminPatientsNotSpecified => 'غير محدد';
+
+  @override
+  String get adminPatientsSelectDateOfBirth => 'اختر تاريخ الميلاد';
+
+  @override
+  String get adminPatientsAssignments => 'تعيينات المريض';
+
+  @override
+  String get adminUsersUserDeactivated => 'تم إلغاء تفعيل المستخدم.';
+
+  @override
+  String get adminUsersUserActivated => 'تم تفعيل المستخدم.';
+
+  @override
+  String get adminUsersAddUserTitle => 'إضافة مستخدم';
+
+  @override
+  String get adminUsersEditUserTitle => 'تعديل المستخدم';
+
+  @override
+  String get adminUsersPasswordField => 'كلمة المرور';
+
+  @override
+  String get adminUsersPhoneOptional => 'الهاتف (اختياري)';
+
+  @override
+  String get adminUsersRoleField => 'الدور';
+
+  @override
+  String get adminUsersValidationRequired => 'يرجى إكمال جميع الحقول المطلوبة.';
+
+  @override
+  String get adminUsersCreatedSuccess => 'تم إنشاء المستخدم بنجاح.';
+
+  @override
+  String get adminUsersUpdatedSuccess => 'تم تحديث المستخدم بنجاح.';
+
+  @override
+  String get adminMatchingChooseSpecialist => 'اختر أخصائياً';
+
+  @override
+  String get adminMatchingLoadingSpecialists =>
+      'جارٍ تحميل الأخصائيين المطابقين...';
+
+  @override
+  String get adminMatchingAssigning => 'جارٍ التعيين...';
+
+  @override
+  String get adminMatchingNoSpecialists =>
+      'لم يتم العثور على أخصائيين مطابقين.';
+
+  @override
+  String get adminMatchingSelectSpecialist =>
+      'اختر أخصائياً لتعيينه لهذه الحالة.';
+
+  @override
+  String get adminMatchingConfirmBody => 'تعيين هذا الأخصائي لطلب الحالة؟';
+
+  @override
+  String get adminMatchingAssignedSuccess => 'تم تعيين الأخصائي بنجاح.';
+
+  @override
+  String get adminMatchingWaitForAssignment =>
+      'يرجى الانتظار أثناء معالجة التعيين.';
+
+  @override
+  String get specialistProfileUpdatedSuccess => 'تم تحديث الملف الشخصي بنجاح.';
+
+  @override
+  String get specialistProfilePersonalSection => 'شخصي';
+
+  @override
+  String get specialistProfileProfessionalSection => 'مهني';
+
+  @override
+  String get specialistReportNotFound => 'لم يتم العثور على التقرير.';
+
+  @override
+  String get specialistReportDetailsTitle => 'تفاصيل التقرير';
+
+  @override
+  String get specialistReportAttachments => 'المرفقات';
+
+  @override
+  String get specialistReportViewPdf => 'عرض PDF';
+
+  @override
+  String get specialistReportCopyPdfLink => 'نسخ رابط PDF';
+
+  @override
+  String get specialistReportPdfLinkCopied => 'تم نسخ رابط PDF إلى الحافظة';
+
+  @override
+  String get specialistReportPdfGeneratedSuccess => 'تم إنشاء PDF بنجاح';
+
+  @override
+  String get specialistReportGeneratingPdf => 'جارٍ إنشاء PDF...';
+
+  @override
+  String get specialistReportGeneratePdf => 'إنشاء PDF';
+
+  @override
+  String get specialistAiRecommendationsTitle => 'توصيات الذكاء الاصطناعي';
+
+  @override
+  String get specialistAiRecommendationGenerated =>
+      'تم إنشاء توصية الذكاء الاصطناعي';
+
+  @override
+  String get specialistAiRecommendationAccepted => 'تم قبول التوصية';
+
+  @override
+  String get specialistAiRecommendationRejected => 'تم رفض التوصية';
+
+  @override
+  String get specialistAiGenerateFirstRecommendation =>
+      'أنشئ أول توصية بالذكاء الاصطناعي';
+
+  @override
+  String get devDashboardPreviewsTitle => 'معاينات لوحة التحكم';
 }

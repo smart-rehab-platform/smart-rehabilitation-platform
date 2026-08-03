@@ -249,12 +249,13 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                           onTap:
                               report.pdfUrl != null && report.pdfUrl!.isNotEmpty
                               ? () =>
-                                    parentOpenReportUrl(context, report.pdfUrl)
+                                    parentOpenReportUrl(context, l10n, report.pdfUrl)
                               : null,
                           onLongPress:
                               report.pdfUrl != null && report.pdfUrl!.isNotEmpty
                               ? () => parentLongPressReportUrl(
                                   context,
+                                  l10n,
                                   report.pdfUrl,
                                 )
                               : null,
@@ -316,6 +317,7 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                                 IconButton(
                                   onPressed: () => parentOpenReportUrl(
                                     context,
+                                    l10n,
                                     report.pdfUrl,
                                   ),
                                   tooltip: l10n.parentReportsOpenReport,

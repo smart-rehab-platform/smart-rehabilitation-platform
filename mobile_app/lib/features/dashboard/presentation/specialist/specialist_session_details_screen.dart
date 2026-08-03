@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_dashboard_provider.dart';
@@ -16,6 +17,7 @@ import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import 'specialist_sessions_localization_utils.dart';
 import 'specialist_sessions_widgets.dart';
 
 class SpecialistSessionDetailsScreen extends ConsumerStatefulWidget {
@@ -79,8 +81,11 @@ class _SpecialistSessionDetailsScreenState
   Future<void> _openPatientProfile() async {
     final patientId = _session?.patientId.trim() ?? '';
     if (patientId.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Patient profile is unavailable.')),
+        SnackBar(
+          content: Text(l10n.specialistSessionPatientProfileUnavailable),
+        ),
       );
       return;
     }
@@ -101,6 +106,7 @@ class _SpecialistSessionDetailsScreenState
     required String title,
     required String message,
     required String confirmLabel,
+    required String dismissLabel,
     bool isDestructive = false,
   }) async {
     final confirmed = await showDialog<bool>(
@@ -112,7 +118,7 @@ class _SpecialistSessionDetailsScreenState
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Keep Session'),
+              child: Text(dismissLabel),
             ),
             FilledButton(
               style: isDestructive
@@ -134,6 +140,7 @@ class _SpecialistSessionDetailsScreenState
     required String title,
     required String message,
     required String confirmLabel,
+    required String dismissLabel,
     required Future<SpecialistSessionDetail> Function() action,
     required String successMessage,
     bool isDestructive = false,
@@ -146,6 +153,7 @@ class _SpecialistSessionDetailsScreenState
       title: title,
       message: message,
       confirmLabel: confirmLabel,
+      dismissLabel: dismissLabel,
       isDestructive: isDestructive,
     );
     if (!confirmed || !mounted) {
@@ -172,20 +180,28 @@ class _SpecialistSessionDetailsScreenState
     } catch (error) {
       if (!mounted) return;
       setState(() => _isActing = false);
+      final l10n = AppLocalizations.of(context)!;
       messenger.showSnackBar(
         SnackBar(
-          content: Text(error.toString().replaceFirst('Exception: ', '')),
+          content: Text(
+            mapSpecialistSessionActionError(
+              l10n,
+              error.toString().replaceFirst('Exception: ', ''),
+            ),
+          ),
         ),
       );
     }
   }
 
   Future<void> _markCompleted() {
+    final l10n = AppLocalizations.of(context)!;
     return _runStatusAction(
-      title: 'Mark as Completed',
-      message: 'Mark this session as completed? This cannot be undone.',
-      confirmLabel: 'Mark Completed',
-      successMessage: 'Session marked as completed.',
+      title: l10n.specialistSessionMarkCompletedTitle,
+      message: l10n.specialistSessionMarkCompletedMessage,
+      confirmLabel: l10n.specialistSessionMarkCompletedConfirm,
+      dismissLabel: l10n.specialistSessionKeepSession,
+      successMessage: l10n.specialistSessionMarkedCompleted,
       action: () => ref
           .read(specialistFeaturesRepositoryProvider)
           .completeSession(widget.sessionId),
@@ -193,12 +209,14 @@ class _SpecialistSessionDetailsScreenState
   }
 
   Future<void> _markNoShow() {
+    final l10n = AppLocalizations.of(context)!;
     return _runStatusAction(
-      title: 'Mark as No Show',
-      message: 'Mark this session as no show? This cannot be undone.',
-      confirmLabel: 'Mark No Show',
+      title: l10n.specialistSessionMarkNoShowTitle,
+      message: l10n.specialistSessionMarkNoShowMessage,
+      confirmLabel: l10n.specialistSessionMarkNoShowConfirm,
+      dismissLabel: l10n.specialistSessionKeepSession,
       isDestructive: true,
-      successMessage: 'Session marked as no show.',
+      successMessage: l10n.specialistSessionMarkedNoShow,
       action: () => ref
           .read(specialistFeaturesRepositoryProvider)
           .markSessionNoShow(widget.sessionId),
@@ -211,22 +229,23 @@ class _SpecialistSessionDetailsScreenState
     }
 
     final reasonController = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Cancel Session'),
+          title: Text(l10n.specialistSessionCancelTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Cancel this session? This cannot be undone.'),
+              Text(l10n.specialistSessionCancelMessage),
               const SizedBox(height: 12),
               TextField(
                 controller: reasonController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Cancellation reason (optional)',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.specialistSessionCancelReasonOptional,
+                  border: const OutlineInputBorder(),
                 ),
               ),
             ],
@@ -234,14 +253,14 @@ class _SpecialistSessionDetailsScreenState
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Keep Session'),
+              child: Text(l10n.specialistSessionKeepSession),
             ),
             FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: DashboardColors.highPriority,
               ),
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Cancel Session'),
+              child: Text(l10n.specialistSessionCancelTitle),
             ),
           ],
         );
@@ -277,14 +296,19 @@ class _SpecialistSessionDetailsScreenState
       await _refreshRelatedProviders();
       if (!mounted) return;
       messenger.showSnackBar(
-        const SnackBar(content: Text('Session cancelled.')),
+        SnackBar(content: Text(l10n.specialistSessionCancelled)),
       );
     } catch (error) {
       if (!mounted) return;
       setState(() => _isActing = false);
       messenger.showSnackBar(
         SnackBar(
-          content: Text(error.toString().replaceFirst('Exception: ', '')),
+          content: Text(
+            mapSpecialistSessionActionError(
+              l10n,
+              error.toString().replaceFirst('Exception: ', ''),
+            ),
+          ),
         ),
       );
     }
@@ -292,27 +316,29 @@ class _SpecialistSessionDetailsScreenState
 
   Future<void> _copyMeetingLink(String? locationOrLink) async {
     final uri = extractSessionMeetingUrl(locationOrLink);
+    final l10n = AppLocalizations.of(context)!;
     if (uri == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No valid meeting link available.')),
+        SnackBar(content: Text(l10n.specialistSessionNoMeetingLink)),
       );
       return;
     }
 
     await Clipboard.setData(ClipboardData(text: uri.toString()));
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Meeting link copied.')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.specialistSessionMeetingLinkCopied)),
+    );
   }
 
   Future<void> _openMeeting(String? locationOrLink) async {
     final uri = extractSessionMeetingUrl(locationOrLink);
+    final l10n = AppLocalizations.of(context)!;
     if (uri == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No valid meeting link available.')),
+        SnackBar(content: Text(l10n.specialistSessionNoMeetingLink)),
       );
       return;
     }
@@ -324,17 +350,15 @@ class _SpecialistSessionDetailsScreenState
       );
       if (!launched && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open the meeting link. Please try again.'),
+          SnackBar(
+            content: Text(l10n.specialistSessionCouldNotOpenMeetingLink),
           ),
         );
       }
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not open the meeting link. Please try again.'),
-        ),
+        SnackBar(content: Text(l10n.specialistSessionCouldNotOpenMeetingLink)),
       );
     }
   }
@@ -343,24 +367,30 @@ class _SpecialistSessionDetailsScreenState
   Widget build(BuildContext context) {
     final session = _session;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final localizedError = _errorMessage != null
+        ? mapSpecialistSessionDetailError(l10n, _errorMessage!)
+        : null;
 
     return SpecialistPageScaffold(
-      title: 'Session Details',
+      title: l10n.specialistSessionDetailsTitle,
       showBackButton: true,
       body: _isLoading
           ? const Center(child: DashboardLoadingCard())
-          : _errorMessage != null && session == null
+          : localizedError != null && session == null
           ? Padding(
               padding: context.dashPadding,
               child: DashboardErrorCard(
-                message: _errorMessage!,
+                message: localizedError,
                 onRetry: _load,
               ),
             )
           : session == null
           ? Padding(
               padding: context.dashPadding,
-              child: const DashboardEmptyCard(message: 'Session not found.'),
+              child: DashboardEmptyCard(
+                message: l10n.specialistSessionNotFound,
+              ),
             )
           : RefreshIndicator(
               onRefresh: _load,
@@ -398,7 +428,10 @@ class _SpecialistSessionDetailsScreenState
                               ),
                               SizedBox(height: context.dashSpacing * 0.2),
                               Text(
-                                session.sessionType,
+                                localizedSessionTypeLabel(
+                                  l10n,
+                                  session.sessionType,
+                                ),
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: DashboardColors.textSecondary,
                                 ),
@@ -417,7 +450,7 @@ class _SpecialistSessionDetailsScreenState
                       children: [
                         _DetailRow(
                           icon: Icons.calendar_today_outlined,
-                          label: 'Date',
+                          label: l10n.fieldDate,
                           value: session.scheduledAt != null
                               ? DateFormat(
                                   'EEEE, MMM d, yyyy',
@@ -427,20 +460,23 @@ class _SpecialistSessionDetailsScreenState
                         SizedBox(height: context.dashSpacing * 0.55),
                         _DetailRow(
                           icon: Icons.schedule_rounded,
-                          label: 'Start time',
+                          label: l10n.specialistSessionStartTime,
                           value: session.timeLabel,
                         ),
                         SizedBox(height: context.dashSpacing * 0.55),
                         _DetailRow(
                           icon: Icons.timelapse_outlined,
-                          label: 'End time',
+                          label: l10n.specialistSessionEndTime,
                           value: session.endTimeLabel,
                         ),
                         SizedBox(height: context.dashSpacing * 0.55),
                         _DetailRow(
                           icon: Icons.timer_outlined,
-                          label: 'Duration',
-                          value: '${session.durationMinutes ?? 45} minutes',
+                          label: l10n.specialistSessionDuration,
+                          value: formatSessionDurationValue(
+                            l10n,
+                            session.durationMinutes ?? 45,
+                          ),
                         ),
                         SizedBox(height: context.dashSpacing * 0.55),
                         _DetailRow(
@@ -448,11 +484,11 @@ class _SpecialistSessionDetailsScreenState
                               ? Icons.videocam_outlined
                               : Icons.location_on_outlined,
                           label: session.hasOnlineMeetingLink
-                              ? 'Meeting Link'
-                              : 'Location',
+                              ? l10n.specialistSessionMeetingLink
+                              : l10n.fieldLocation,
                           value: (session.location?.trim().isNotEmpty == true)
                               ? session.location!.trim()
-                              : 'Not provided',
+                              : l10n.specialistSessionNotProvided,
                         ),
                         if (session.hasOnlineMeetingLink) ...[
                           SizedBox(height: context.dashSpacing * 0.65),
@@ -463,7 +499,9 @@ class _SpecialistSessionDetailsScreenState
                                   onPressed: () =>
                                       _openMeeting(session.location),
                                   icon: const Icon(Icons.open_in_new_rounded),
-                                  label: const Text('Open Meeting'),
+                                  label: Text(
+                                    l10n.specialistSessionOpenMeeting,
+                                  ),
                                 ),
                               ),
                               SizedBox(width: context.dashSpacing * 0.45),
@@ -472,7 +510,7 @@ class _SpecialistSessionDetailsScreenState
                                   onPressed: () =>
                                       _copyMeetingLink(session.location),
                                   icon: const Icon(Icons.copy_rounded),
-                                  label: const Text('Copy Link'),
+                                  label: Text(l10n.specialistSessionCopyLink),
                                 ),
                               ),
                             ],
@@ -483,7 +521,7 @@ class _SpecialistSessionDetailsScreenState
                           SizedBox(height: context.dashSpacing * 0.55),
                           _DetailRow(
                             icon: Icons.notes_outlined,
-                            label: 'Cancellation reason',
+                            label: l10n.specialistSessionCancellationReason,
                             value: session.cancellationReason!.trim(),
                           ),
                         ],
@@ -494,12 +532,12 @@ class _SpecialistSessionDetailsScreenState
                   FilledButton.tonalIcon(
                     onPressed: _openPatientProfile,
                     icon: const Icon(Icons.person_outline_rounded),
-                    label: const Text('View Patient Profile'),
+                    label: Text(l10n.specialistSessionViewPatientProfile),
                   ),
                   if (session.canModify) ...[
                     SizedBox(height: context.dashSpacing * 0.85),
                     Text(
-                      'Actions',
+                      l10n.specialistSessionActions,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -508,19 +546,19 @@ class _SpecialistSessionDetailsScreenState
                     FilledButton.icon(
                       onPressed: _isActing ? null : _editSession,
                       icon: const Icon(Icons.edit_outlined),
-                      label: const Text('Edit Session'),
+                      label: Text(l10n.specialistSessionEditSession),
                     ),
                     SizedBox(height: context.dashSpacing * 0.4),
                     OutlinedButton.icon(
                       onPressed: _isActing ? null : _markCompleted,
                       icon: const Icon(Icons.check_circle_outline),
-                      label: const Text('Mark as Completed'),
+                      label: Text(l10n.specialistSessionMarkAsCompleted),
                     ),
                     SizedBox(height: context.dashSpacing * 0.4),
                     OutlinedButton.icon(
                       onPressed: _isActing ? null : _markNoShow,
                       icon: const Icon(Icons.person_off_outlined),
-                      label: const Text('Mark as No Show'),
+                      label: Text(l10n.specialistSessionMarkAsNoShow),
                     ),
                     SizedBox(height: context.dashSpacing * 0.4),
                     OutlinedButton.icon(
@@ -532,13 +570,16 @@ class _SpecialistSessionDetailsScreenState
                         ),
                       ),
                       icon: const Icon(Icons.cancel_outlined),
-                      label: const Text('Cancel Session'),
+                      label: Text(l10n.specialistSessionCancelTitle),
                     ),
                   ] else ...[
                     SizedBox(height: context.dashSpacing * 0.75),
                     DashboardSurfaceCard(
                       child: Text(
-                        'This session is ${session.displayStatus.label.toLowerCase()} and can no longer be edited.',
+                        localizedSessionLockedMessage(
+                          l10n,
+                          session.displayStatus,
+                        ),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: DashboardColors.textSecondary,
                         ),

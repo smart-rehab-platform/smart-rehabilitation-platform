@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_goals_models.dart';
 import '../../models/specialist_patient_details_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import 'edit_treatment_plan_widgets.dart';
 import 'patient_details_widgets.dart';
+import 'specialist_treatment_plans_goals_localization_utils.dart';
 
 class ManageGoalCard extends StatelessWidget {
   const ManageGoalCard({
@@ -25,6 +27,7 @@ class ManageGoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Column(
@@ -37,17 +40,19 @@ class ManageGoalCard extends StatelessWidget {
           runSpacing: context.dashSpacing * 0.25,
           children: [
             _GoalActionButton(
-              label: 'Update Progress',
+              label: l10n.specialistGoalsUpdateProgress,
               icon: Icons.trending_up_rounded,
               onPressed: isSaving ? null : onUpdateProgress,
             ),
             _GoalActionButton(
-              label: 'Edit Goal',
+              label: l10n.specialistGoalsEditGoal,
               icon: Icons.edit_outlined,
               onPressed: isSaving ? null : onEdit,
             ),
             _GoalActionButton(
-              label: goal.isAchieved ? 'Achieved' : 'Archive Goal',
+              label: goal.isAchieved
+                  ? l10n.specialistPatientDetailsAchieved
+                  : l10n.specialistGoalsArchiveGoal,
               icon: Icons.archive_outlined,
               onPressed: (isSaving || goal.isAchieved) ? null : onArchive,
             ),
@@ -57,7 +62,7 @@ class ManageGoalCard extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(top: context.dashSpacing * 0.25),
             child: Text(
-              'This goal is marked as achieved.',
+              l10n.specialistGoalsMarkedAchievedHelper,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
@@ -110,6 +115,8 @@ class GoalTermSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: GoalTerm.values.map((value) {
         final selected = term == value;
@@ -137,7 +144,7 @@ class GoalTermSelector extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  value.label,
+                  localizedGoalTermEnum(l10n, value),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: selected
@@ -203,21 +210,21 @@ Future<CreateGoalProgressInput?> showUpdateProgressDialog(
 }
 
 Future<bool?> showArchiveGoalDialog(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
+
   return showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: const Text('Archive Goal'),
-      content: const Text(
-        'There is no dedicated archive endpoint. This will mark the goal as achieved using PATCH /goals/:id/achieve.',
-      ),
+      title: Text(l10n.specialistGoalsArchiveDialogTitle),
+      content: Text(l10n.specialistGoalsArchiveDialogBody),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(dialogContext, false),
-          child: const Text('Cancel'),
+          child: Text(l10n.commonCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(dialogContext, true),
-          child: const Text('Mark as Achieved'),
+          child: Text(l10n.specialistGoalsMarkAchieved),
         ),
       ],
     ),
@@ -248,9 +255,15 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context)!;
     final title = _titleController.text.trim();
     if (title.isEmpty) {
-      setState(() => _error = 'Goal title is required');
+      setState(
+        () => _error = mapSpecialistGoalsValidation(
+          l10n,
+          'Goal title is required',
+        ),
+      );
       return;
     }
 
@@ -259,7 +272,12 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
     if (targetValueText.isNotEmpty) {
       targetValue = double.tryParse(targetValueText);
       if (targetValue == null) {
-        setState(() => _error = 'Target value must be a number');
+        setState(
+          () => _error = mapSpecialistGoalsValidation(
+            l10n,
+            'Target value must be a number',
+          ),
+        );
         return;
       }
     }
@@ -278,15 +296,17 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AlertDialog(
-      title: const Text('Add New Goal'),
+      title: Text(l10n.specialistGoalsAddDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Goal type',
+              l10n.specialistGoalsGoalType,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -300,7 +320,7 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
               controller: _titleController,
-              decoration: goalFieldDecoration('Goal title'),
+              decoration: goalFieldDecoration(l10n.specialistGoalsTitleHint),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
@@ -308,11 +328,13 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: goalFieldDecoration('Target value (optional)'),
+              decoration: goalFieldDecoration(
+                l10n.specialistGoalsTargetValueOptional,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             PlanDatePickerField(
-              label: 'Target date (optional)',
+              label: l10n.specialistGoalsTargetDateOptional,
               value: _targetDate,
               allowClear: true,
               onChanged: (date) => setState(() => _targetDate = date),
@@ -321,7 +343,9 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
             TextField(
               controller: _descriptionController,
               maxLines: 3,
-              decoration: goalFieldDecoration('Description (optional)'),
+              decoration: goalFieldDecoration(
+                l10n.specialistGoalsDescriptionOptional,
+              ),
             ),
             if (_error != null) ...[
               SizedBox(height: context.dashSpacing * 0.5),
@@ -338,9 +362,12 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.commonCancel),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Add Goal')),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(l10n.specialistGoalsAddGoal),
+        ),
       ],
     );
   }
@@ -381,9 +408,15 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context)!;
     final title = _titleController.text.trim();
     if (title.isEmpty) {
-      setState(() => _error = 'Goal title is required');
+      setState(
+        () => _error = mapSpecialistGoalsValidation(
+          l10n,
+          'Goal title is required',
+        ),
+      );
       return;
     }
 
@@ -392,7 +425,12 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
     if (targetValueText.isNotEmpty) {
       targetValue = double.tryParse(targetValueText);
       if (targetValue == null) {
-        setState(() => _error = 'Target value must be a number');
+        setState(
+          () => _error = mapSpecialistGoalsValidation(
+            l10n,
+            'Target value must be a number',
+          ),
+        );
         return;
       }
     }
@@ -410,8 +448,10 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AlertDialog(
-      title: const Text('Edit Goal'),
+      title: Text(l10n.specialistGoalsEditDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -419,7 +459,7 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
           children: [
             TextField(
               controller: _titleController,
-              decoration: goalFieldDecoration('Goal title'),
+              decoration: goalFieldDecoration(l10n.specialistGoalsTitleHint),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
@@ -427,11 +467,13 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: goalFieldDecoration('Target value (optional)'),
+              decoration: goalFieldDecoration(
+                l10n.specialistGoalsTargetValueOptional,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             PlanDatePickerField(
-              label: 'Target date (optional)',
+              label: l10n.specialistGoalsTargetDateOptional,
               value: _targetDate,
               allowClear: true,
               onChanged: (date) => setState(() => _targetDate = date),
@@ -439,7 +481,7 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
             SizedBox(height: context.dashSpacing * 0.5),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Mark as achieved'),
+              title: Text(l10n.specialistGoalsMarkAsAchieved),
               value: _isAchieved,
               activeThumbColor: DashboardColors.brandCyan,
               onChanged: (value) => setState(() => _isAchieved = value),
@@ -459,9 +501,12 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.commonCancel),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Save Changes')),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(l10n.specialistTreatmentPlanSaveChanges),
+        ),
       ],
     );
   }
@@ -497,9 +542,15 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context)!;
     final progress = double.tryParse(_progressController.text.trim());
     if (progress == null || progress < 0 || progress > 100) {
-      setState(() => _error = 'Enter a progress value between 0 and 100');
+      setState(
+        () => _error = mapSpecialistGoalsValidation(
+          l10n,
+          'Enter a progress value between 0 and 100',
+        ),
+      );
       return;
     }
 
@@ -514,8 +565,10 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AlertDialog(
-      title: const Text('Update Progress'),
+      title: Text(l10n.specialistGoalsUpdateProgressDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -533,13 +586,17 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: goalFieldDecoration('Completion percentage (0–100)'),
+              decoration: goalFieldDecoration(
+                l10n.specialistGoalsCompletionPercentageHint,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
               controller: _notesController,
               maxLines: 3,
-              decoration: goalFieldDecoration('Progress note (optional)'),
+              decoration: goalFieldDecoration(
+                l10n.specialistGoalsProgressNoteOptional,
+              ),
             ),
             if (_error != null) ...[
               SizedBox(height: context.dashSpacing * 0.5),
@@ -556,9 +613,12 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.commonCancel),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Save Progress')),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(l10n.specialistGoalsSaveProgress),
+        ),
       ],
     );
   }

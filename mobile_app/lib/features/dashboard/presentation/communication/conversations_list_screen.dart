@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/communication_repository.dart';
 import '../../models/communication_models.dart';
 import '../../providers/communication_list_provider.dart';
@@ -44,22 +45,23 @@ class _ConversationsListScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(communicationListProvider);
     final role = ref.watch(authProvider).user?.role;
     final theme = Theme.of(context);
 
-    final body = _buildBody(context, state, role, theme);
+    final body = _buildBody(context, state, role, theme, l10n);
 
     if (widget.isParent) {
       return ParentPageScaffold(
-        title: 'Messages',
+        title: l10n.navMessages,
         showBackButton: true,
         body: body,
       );
     }
 
     return SpecialistPageScaffold(
-      title: 'Messages',
+      title: l10n.navMessages,
       showBackButton: true,
       body: body,
     );
@@ -70,17 +72,20 @@ class _ConversationsListScreenState
     CommunicationListState state,
     String? role,
     ThemeData theme,
+    AppLocalizations l10n,
   ) {
     if (state.isLoading && !state.hasLoaded) {
-      return const Center(
-        child: DashboardLoadingCard(message: 'Loading conversations...'),
+      return Center(
+        child: DashboardLoadingCard(
+          message: l10n.communicationLoadingConversations,
+        ),
       );
     }
 
     if (state.errorMessage != null && state.conversations.isEmpty) {
       return Center(
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: _mapCommunicationListError(l10n, state.errorMessage!),
           onRetry: () => ref.read(communicationListProvider.notifier).refresh(),
         ),
       );
@@ -92,11 +97,8 @@ class _ConversationsListScreenState
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
-          children: const [
-            DashboardEmptyCard(
-              message:
-                  'No conversations yet. Start a message from a patient profile.',
-            ),
+          children: [
+            DashboardEmptyCard(message: l10n.communicationNoConversations),
           ],
         ),
       );
@@ -181,7 +183,9 @@ class CommunicationConversationTile extends StatelessWidget {
                 if (conversation.createdAt != null) ...[
                   SizedBox(height: context.dashSpacing * 0.15),
                   Text(
-                    'Started ${DateFormat('MMM d, yyyy').format(conversation.createdAt!)}',
+                    AppLocalizations.of(context)!.communicationStartedOn(
+                      DateFormat('MMM d, yyyy').format(conversation.createdAt!),
+                    ),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: DashboardColors.textMuted,
                     ),
@@ -197,6 +201,13 @@ class CommunicationConversationTile extends StatelessWidget {
   }
 }
 
+String _mapCommunicationListError(AppLocalizations l10n, String message) {
+  if (message == 'You must be signed in to view messages.') {
+    return l10n.messageSignInRequired;
+  }
+  return message;
+}
+
 Future<void> openOrCreateConversation({
   required WidgetRef ref,
   required BuildContext context,
@@ -206,10 +217,11 @@ Future<void> openOrCreateConversation({
   required bool isParent,
   String? initialDraftMessage,
 }) async {
+  final l10n = AppLocalizations.of(context)!;
   final messenger = ScaffoldMessenger.of(context);
   messenger.hideCurrentSnackBar();
   messenger.showSnackBar(
-    const SnackBar(content: Text('Opening conversation...')),
+    SnackBar(content: Text(l10n.communicationOpeningConversation)),
   );
 
   final token = ref.read(authProvider).token;

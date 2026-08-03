@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_ai_recommendations_models.dart';
 import '../../providers/specialist_ai_recommendations_provider.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -32,6 +33,7 @@ class _SpecialistAiRecommendationsScreenState
   }
 
   Future<void> _generate(AiRecommendationType type) async {
+    final l10n = AppLocalizations.of(context)!;
     final success = await ref
         .read(specialistAiRecommendationsProvider(widget.patientId).notifier)
         .generate(type);
@@ -39,7 +41,7 @@ class _SpecialistAiRecommendationsScreenState
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('AI recommendation generated')),
+        SnackBar(content: Text(l10n.specialistAiRecommendationGenerated)),
       );
     } else {
       _showErrorSnackBar();
@@ -47,6 +49,7 @@ class _SpecialistAiRecommendationsScreenState
   }
 
   Future<void> _accept(String recommendationId) async {
+    final l10n = AppLocalizations.of(context)!;
     final success = await ref
         .read(specialistAiRecommendationsProvider(widget.patientId).notifier)
         .accept(recommendationId);
@@ -55,13 +58,16 @@ class _SpecialistAiRecommendationsScreenState
     if (success) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Recommendation accepted')));
+      ).showSnackBar(
+        SnackBar(content: Text(l10n.specialistAiRecommendationAccepted)),
+      );
     } else {
       _showErrorSnackBar();
     }
   }
 
   Future<void> _reject(String recommendationId) async {
+    final l10n = AppLocalizations.of(context)!;
     final success = await ref
         .read(specialistAiRecommendationsProvider(widget.patientId).notifier)
         .reject(recommendationId);
@@ -70,7 +76,9 @@ class _SpecialistAiRecommendationsScreenState
     if (success) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Recommendation rejected')));
+      ).showSnackBar(
+        SnackBar(content: Text(l10n.specialistAiRecommendationRejected)),
+      );
     } else {
       _showErrorSnackBar();
     }
@@ -89,6 +97,7 @@ class _SpecialistAiRecommendationsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(
       specialistAiRecommendationsProvider(widget.patientId),
     );
@@ -112,7 +121,9 @@ class _SpecialistAiRecommendationsScreenState
     } else if (bundle == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(message: 'Patient not found.'),
+        child: DashboardEmptyCard(
+          message: l10n.specialistPatientDetailsNotFound,
+        ),
       );
     } else {
       body = RefreshIndicator(
@@ -141,7 +152,7 @@ class _SpecialistAiRecommendationsScreenState
             ],
             SizedBox(height: context.dashSpacing * 0.75),
             Text(
-              'Recommendations',
+              l10n.specialistSpeechAnalysisRecommendations,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -149,8 +160,8 @@ class _SpecialistAiRecommendationsScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             if (bundle.recommendations.isEmpty)
-              const DashboardEmptyCard(
-                message: 'Generate your first AI recommendation',
+              DashboardEmptyCard(
+                message: l10n.specialistAiGenerateFirstRecommendation,
               )
             else
               ...bundle.recommendations.map(
@@ -169,7 +180,7 @@ class _SpecialistAiRecommendationsScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'AI Recommendations',
+      title: l10n.specialistAiRecommendationsTitle,
       showBackButton: true,
       body: body,
     );

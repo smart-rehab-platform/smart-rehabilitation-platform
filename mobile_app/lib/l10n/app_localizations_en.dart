@@ -452,6 +452,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldFullName => 'Full Name';
 
   @override
+  String get fieldDateOfBirth => 'Date of Birth';
+
+  @override
+  String get fieldGender => 'Gender';
+
+  @override
   String get fieldAddress => 'Address';
 
   @override
@@ -2129,4 +2135,1257 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get specialistFamilyPatternScheduleFollowUp => 'Schedule Follow-up';
+
+  @override
+  String get commonPleaseWait => 'Please wait…';
+
+  @override
+  String get specialistTreatmentPlanSaveChanges => 'Save Changes';
+
+  @override
+  String get specialistTreatmentPlanCreatedSuccess =>
+      'Treatment plan created successfully';
+
+  @override
+  String get specialistTreatmentPlanUpdatedSuccess =>
+      'Treatment plan updated successfully';
+
+  @override
+  String get specialistTreatmentPlanNotFound => 'Treatment plan not found.';
+
+  @override
+  String get specialistTreatmentPlanNewPlansActiveHelper =>
+      'New plans are created as Active.';
+
+  @override
+  String get specialistTreatmentPlanTitleLabel => 'Plan title';
+
+  @override
+  String get specialistTreatmentPlanTitleHint => 'Treatment plan title';
+
+  @override
+  String get specialistTreatmentPlanCreating => 'Creating...';
+
+  @override
+  String get specialistTreatmentPlanCurrentGoals => 'Current Goals';
+
+  @override
+  String get specialistTreatmentPlanNoGoalsForPlan =>
+      'No goals defined for this plan.';
+
+  @override
+  String get specialistTreatmentPlanSelectDate => 'Select date';
+
+  @override
+  String get specialistTreatmentPlanPatientRequired => 'Patient is required';
+
+  @override
+  String get specialistTreatmentPlanTitleRequired => 'Plan title is required';
+
+  @override
+  String get specialistTreatmentPlanStartDateRequired =>
+      'Start date is required';
+
+  @override
+  String get specialistTreatmentPlanEndDateBeforeStart =>
+      'End date cannot be before start date';
+
+  @override
+  String get specialistTreatmentPlanCreateFailed =>
+      'Failed to create treatment plan. Please try again.';
+
+  @override
+  String specialistTreatmentPlanLoadFailed(String error) {
+    return 'Failed to load treatment plan: $error';
+  }
+
+  @override
+  String get specialistTreatmentPlanSaveFailed =>
+      'Failed to save treatment plan. Please try again.';
+
+  @override
+  String get specialistGoalsCreatedSuccess => 'Goal created successfully';
+
+  @override
+  String get specialistGoalsUpdatedSuccess => 'Goal updated successfully';
+
+  @override
+  String get specialistGoalsProgressUpdatedSuccess =>
+      'Progress updated successfully';
+
+  @override
+  String get specialistGoalsMarkedAchievedSuccess => 'Goal marked as achieved';
+
+  @override
+  String get specialistGoalsCouldNotLoad => 'Goals could not be loaded.';
+
+  @override
+  String get specialistGoalsNoActivePlanForPatient =>
+      'No active treatment plan found for this patient.';
+
+  @override
+  String get specialistGoalsNoGoalsForPlan =>
+      'No goals defined for this treatment plan.';
+
+  @override
+  String get specialistGoalsAddNewGoal => 'Add New Goal';
+
+  @override
+  String get specialistGoalsUpdateProgress => 'Update Progress';
+
+  @override
+  String get specialistGoalsEditGoal => 'Edit Goal';
+
+  @override
+  String get specialistGoalsArchiveGoal => 'Archive Goal';
+
+  @override
+  String get specialistGoalsMarkedAchievedHelper =>
+      'This goal is marked as achieved.';
+
+  @override
+  String get specialistGoalsAddDialogTitle => 'Add New Goal';
+
+  @override
+  String get specialistGoalsEditDialogTitle => 'Edit Goal';
+
+  @override
+  String get specialistGoalsUpdateProgressDialogTitle => 'Update Progress';
+
+  @override
+  String get specialistGoalsArchiveDialogTitle => 'Archive Goal';
+
+  @override
+  String get specialistGoalsArchiveDialogBody =>
+      'There is no dedicated archive endpoint. This will mark the goal as achieved using PATCH /goals/:id/achieve.';
+
+  @override
+  String get specialistGoalsMarkAchieved => 'Mark as Achieved';
+
+  @override
+  String get specialistGoalsGoalType => 'Goal type';
+
+  @override
+  String get specialistGoalsTitleHint => 'Goal title';
+
+  @override
+  String get specialistGoalsTargetValueOptional => 'Target value (optional)';
+
+  @override
+  String get specialistGoalsTargetDateOptional => 'Target date (optional)';
+
+  @override
+  String get specialistGoalsDescriptionOptional => 'Description (optional)';
+
+  @override
+  String get specialistGoalsTitleRequired => 'Goal title is required';
+
+  @override
+  String get specialistGoalsTargetValueMustBeNumber =>
+      'Target value must be a number';
+
+  @override
+  String get specialistGoalsProgressRangeValidation =>
+      'Enter a progress value between 0 and 100';
+
+  @override
+  String get specialistGoalsProgressRangeProvider =>
+      'Progress must be between 0 and 100';
+
+  @override
+  String get specialistGoalsCompletionPercentageHint =>
+      'Completion percentage (0–100)';
+
+  @override
+  String get specialistGoalsProgressNoteOptional => 'Progress note (optional)';
+
+  @override
+  String get specialistGoalsSaveProgress => 'Save Progress';
+
+  @override
+  String get specialistGoalsAddGoal => 'Add Goal';
+
+  @override
+  String get specialistGoalsMarkAsAchieved => 'Mark as achieved';
+
+  @override
+  String get specialistGoalsNoActivePlan => 'No active treatment plan found';
+
+  @override
+  String specialistGoalsLoadFailed(String error) {
+    return 'Failed to load goals: $error';
+  }
+
+  @override
+  String specialistGoalsRefreshFailed(String error) {
+    return 'Failed to refresh goals: $error';
+  }
+
+  @override
+  String specialistGoalsCreateFailed(String error) {
+    return 'Failed to create goal: $error';
+  }
+
+  @override
+  String specialistGoalsUpdateFailed(String error) {
+    return 'Failed to update goal: $error';
+  }
+
+  @override
+  String specialistGoalsProgressUpdateFailed(String error) {
+    return 'Failed to update progress: $error';
+  }
+
+  @override
+  String specialistGoalsArchiveFailed(String error) {
+    return 'Failed to archive goal: $error';
+  }
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageArabic => 'Arabic';
+
+  @override
+  String get commonClear => 'Clear';
+
+  @override
+  String get exerciseFrequencyOneTime => 'One time';
+
+  @override
+  String get specialistExerciseEditExercise => 'Edit Exercise';
+
+  @override
+  String get specialistExerciseDetailsTitle => 'Exercise Details';
+
+  @override
+  String get specialistExerciseFormSubtitle =>
+      'Add therapy exercises to the shared library for assignment.';
+
+  @override
+  String get specialistExerciseCategoriesLoadFailed =>
+      'Failed to load categories. Please retry.';
+
+  @override
+  String get specialistExerciseNoCategories =>
+      'No exercise categories available yet.';
+
+  @override
+  String get specialistExerciseNotFound => 'Exercise not found.';
+
+  @override
+  String get specialistExerciseLoadFailed =>
+      'Failed to load exercise. Please try again.';
+
+  @override
+  String get specialistExerciseDetailsLoadFailed =>
+      'Failed to load exercise details.';
+
+  @override
+  String get specialistExerciseChooseImage => 'Choose image';
+
+  @override
+  String get specialistExerciseChooseVideo => 'Choose video';
+
+  @override
+  String get specialistExerciseChooseAudioFile => 'Choose audio / file';
+
+  @override
+  String get specialistExerciseUnableReadFile =>
+      'Unable to read the selected file.';
+
+  @override
+  String get specialistExerciseUnsupportedMediaType =>
+      'Unsupported media type. Use image, audio, PDF, or MP4/MOV video.';
+
+  @override
+  String get specialistExerciseFileTooLarge =>
+      'File is too large. Maximum size is 50 MB.';
+
+  @override
+  String get specialistExerciseSelectCategory => 'Please select a category.';
+
+  @override
+  String get specialistExerciseTitleRequired => 'Title is required.';
+
+  @override
+  String get specialistExerciseLanguageField => 'Exercise Language';
+
+  @override
+  String get specialistExerciseCategoryField => 'Category';
+
+  @override
+  String get specialistExerciseTitleField => 'Title';
+
+  @override
+  String get specialistExerciseDescriptionOptional => 'Description (optional)';
+
+  @override
+  String get specialistExerciseInstructionsField => 'Detailed instructions';
+
+  @override
+  String get specialistExerciseInstructionMediaSection =>
+      'Instructional media (optional)';
+
+  @override
+  String get specialistExerciseCurrentMediaAttached => 'Current media attached';
+
+  @override
+  String get specialistExerciseNoMediaSelected =>
+      'No media selected. Images, audio, PDF, and MP4/MOV video are supported (max 50 MB).';
+
+  @override
+  String get specialistExerciseReplaceMedia => 'Replace media';
+
+  @override
+  String get specialistExerciseAddMedia => 'Add media';
+
+  @override
+  String get specialistExerciseRemoveMediaTooltip => 'Remove media';
+
+  @override
+  String get specialistExerciseUploadingMedia => 'Uploading media...';
+
+  @override
+  String get specialistExerciseCreateExercise => 'Create Exercise';
+
+  @override
+  String get specialistExerciseCreatedSuccess =>
+      'Exercise created successfully';
+
+  @override
+  String get specialistExerciseUpdatedSuccess =>
+      'Exercise updated successfully';
+
+  @override
+  String get specialistExerciseSaveFailed =>
+      'Failed to save exercise. Please try again.';
+
+  @override
+  String specialistExerciseLanguageLine(String language) {
+    return 'Language: $language';
+  }
+
+  @override
+  String specialistExerciseCreatedBy(String name) {
+    return 'Created by $name';
+  }
+
+  @override
+  String get specialistExerciseDescriptionSection => 'Description';
+
+  @override
+  String get specialistExerciseNoDescription => 'No description available.';
+
+  @override
+  String get specialistExerciseInstructionsSection => 'Instructions';
+
+  @override
+  String get specialistExerciseNoInstructions => 'No instructions available.';
+
+  @override
+  String get specialistExerciseInstructionMediaTitle => 'Instruction Media';
+
+  @override
+  String get specialistAssignExerciseSubtitle =>
+      'Choose an exercise, then set frequency and dates.';
+
+  @override
+  String get specialistAssignExerciseSelectRequired =>
+      'Please select an exercise.';
+
+  @override
+  String get specialistAssignExerciseSuccess =>
+      'Exercise assigned successfully';
+
+  @override
+  String get specialistAssignExerciseAssigning => 'Assigning...';
+
+  @override
+  String get specialistAssignExerciseNoMatchSearch =>
+      'No exercises match your search or filter.';
+
+  @override
+  String get specialistAssignExerciseSelectedExercise => 'Selected exercise';
+
+  @override
+  String get specialistAssignExerciseFrequency => 'Frequency';
+
+  @override
+  String get specialistAssignExerciseDueDateOptional => 'Due date (optional)';
+
+  @override
+  String get specialistAssignExerciseSetDueDate => 'Set due date';
+
+  @override
+  String get specialistAssignExerciseFailed =>
+      'Failed to assign exercise. Please try again.';
+
+  @override
+  String get specialistAssignExerciseRequirementsMissing =>
+      'Patient, treatment plan, and exercise are required to assign.';
+
+  @override
+  String get specialistAssignedExerciseTitle => 'Assigned Exercise';
+
+  @override
+  String get specialistAssignedExerciseNotFound =>
+      'Assigned exercise not found.';
+
+  @override
+  String get specialistAssignedExerciseLoadFailed =>
+      'Failed to load assigned exercise.';
+
+  @override
+  String get specialistAssignedExerciseAssignmentSection => 'Assignment';
+
+  @override
+  String get specialistAssignedExerciseFrequency => 'Frequency';
+
+  @override
+  String get specialistAssignedExerciseAssigned => 'Assigned';
+
+  @override
+  String get specialistAssignedExerciseDueDate => 'Due date';
+
+  @override
+  String get specialistAssignedExerciseLatestSubmission => 'Latest Submission';
+
+  @override
+  String get specialistAssignedExerciseNoSubmissions =>
+      'No submissions for this assignment yet.';
+
+  @override
+  String get specialistAssignedExerciseRecentlySubmitted =>
+      'Recently submitted';
+
+  @override
+  String get specialistAssignedExerciseOpenLibraryExercise =>
+      'Open library exercise';
+
+  @override
+  String get specialistAssignedExerciseInstructionalMedia =>
+      'Instructional Media';
+
+  @override
+  String get priorityHigh => 'High';
+
+  @override
+  String get priorityMedium => 'Medium';
+
+  @override
+  String get specialistReviewExerciseTitle => 'Review Exercise';
+
+  @override
+  String get specialistReviewUploadedMedia => 'Uploaded Media';
+
+  @override
+  String get specialistReviewNoMedia =>
+      'No media uploaded for this submission.';
+
+  @override
+  String get specialistReviewSection => 'Review';
+
+  @override
+  String get specialistReviewRating => 'Rating';
+
+  @override
+  String get specialistReviewFeedback => 'Feedback';
+
+  @override
+  String get specialistReviewFeedbackHint =>
+      'Write feedback for the parent and patient...';
+
+  @override
+  String get specialistReviewSubmitReview => 'Submit Review';
+
+  @override
+  String get specialistReviewUpdateReview => 'Update Review';
+
+  @override
+  String get specialistReviewSubmitting => 'Submitting...';
+
+  @override
+  String get specialistReviewSubmittedSuccess =>
+      'Review submitted successfully';
+
+  @override
+  String get specialistReviewSubmissionNotFound => 'Submission not found.';
+
+  @override
+  String get specialistReviewSignInRequired =>
+      'Please sign in to submit a review.';
+
+  @override
+  String specialistReviewLoadFailed(String error) {
+    return 'Failed to load submission: $error';
+  }
+
+  @override
+  String specialistReviewSubmitFailed(String error) {
+    return 'Failed to submit review: $error';
+  }
+
+  @override
+  String get specialistReviewViewSpeechAnalysis => 'View Speech Analysis';
+
+  @override
+  String get specialistSubmissionMediaUnavailable => 'Media file unavailable.';
+
+  @override
+  String get specialistSubmissionUnsupportedMediaPreview =>
+      'Unsupported media type for preview.';
+
+  @override
+  String get specialistSubmissionUnableLoadVideo => 'Unable to load video.';
+
+  @override
+  String get specialistSubmissionUnableLoadAudio => 'Unable to load audio.';
+
+  @override
+  String get specialistSubmissionUploadTimeUnavailable =>
+      'Upload time unavailable';
+
+  @override
+  String get statusFailed => 'Failed';
+
+  @override
+  String get specialistSpeechAnalysisResultsSubtitle =>
+      'Speech analysis results';
+
+  @override
+  String specialistSpeechAnalysisLatestLine(String dateTime) {
+    return 'Latest: $dateTime';
+  }
+
+  @override
+  String specialistSpeechAnalysisSubmissionLine(String id) {
+    return 'Submission $id';
+  }
+
+  @override
+  String get specialistSpeechAnalysisScores => 'Scores';
+
+  @override
+  String get specialistSpeechAnalysisTranscript => 'Transcript';
+
+  @override
+  String specialistSpeechAnalysisLanguageLine(String language) {
+    return 'Language: $language';
+  }
+
+  @override
+  String specialistSpeechAnalysisDurationLine(String seconds) {
+    return 'Duration: ${seconds}s';
+  }
+
+  @override
+  String get specialistSpeechAnalysisNoTranscript =>
+      'No transcript available for this analysis.';
+
+  @override
+  String get specialistSpeechAnalysisComparisonTitle =>
+      'Comparison with Previous';
+
+  @override
+  String specialistSpeechAnalysisPreviousLine(String date) {
+    return 'Previous: $date';
+  }
+
+  @override
+  String get specialistSpeechAnalysisTrendBaseline => 'Baseline';
+
+  @override
+  String get specialistSpeechAnalysisTrendDeclining => 'Declining';
+
+  @override
+  String get specialistSpeechAnalysisAiFeedbackTitle =>
+      'AI Feedback & Recommendations';
+
+  @override
+  String get specialistSpeechAnalysisImprovementSummary =>
+      'Improvement Summary';
+
+  @override
+  String get specialistSpeechAnalysisClinicalNote => 'Clinical Note';
+
+  @override
+  String get specialistSpeechAnalysisRecommendedAction => 'Recommended Action';
+
+  @override
+  String get specialistSpeechAnalysisRecommendations => 'Recommendations';
+
+  @override
+  String get specialistSpeechAnalysisTreatmentAnalysis => 'Treatment Analysis';
+
+  @override
+  String get specialistSpeechAnalysisDecisionSupport => 'Decision Support';
+
+  @override
+  String specialistSpeechAnalysisSuggestedLine(String action) {
+    return 'Suggested: $action';
+  }
+
+  @override
+  String get specialistSpeechAnalysisOverallScoreTrend => 'Overall Score Trend';
+
+  @override
+  String get specialistSpeechAnalysisUnknownDate => 'Unknown date';
+
+  @override
+  String specialistSpeechAnalysisHistorySummary(
+    String overall,
+    String pronunciation,
+  ) {
+    return 'Overall $overall • Pronunciation $pronunciation';
+  }
+
+  @override
+  String get specialistSpeechAnalysisRunTitle => 'Run Speech Analysis';
+
+  @override
+  String get specialistSpeechAnalysisRunSubtitle =>
+      'Analyze the audio from this exercise submission using speech recognition.';
+
+  @override
+  String get specialistSpeechAnalysisAnalyzing => 'Analyzing...';
+
+  @override
+  String get specialistSpeechAnalysisAnalyzeSubmission => 'Analyze Submission';
+
+  @override
+  String get specialistSpeechAnalysisLatestSummary => 'Latest Analysis Summary';
+
+  @override
+  String get specialistSpeechAnalysisHistory => 'Analysis History';
+
+  @override
+  String get specialistSpeechAnalysisEmptyResults =>
+      'No speech analysis results yet. Run analysis on an audio submission to get started.';
+
+  @override
+  String get specialistSpeechAnalysisEmptyHistory =>
+      'No previous speech analyses recorded.';
+
+  @override
+  String get specialistSpeechAnalysisNoSubmissionSelected =>
+      'No submission selected for speech analysis.';
+
+  @override
+  String get specialistSpeechAnalysisExistingLoaded =>
+      'Existing speech analysis loaded.';
+
+  @override
+  String get specialistSpeechAnalysisCompletedSuccess =>
+      'Speech analysis completed successfully.';
+
+  @override
+  String get specialistSpeechAnalysisAnalyzeFailed =>
+      'Speech analysis could not be completed. Please try again.';
+
+  @override
+  String get specialistSpeechAnalysisLoadFailed =>
+      'Failed to load speech analysis. Please try again.';
+
+  @override
+  String get specialistSpeechAnalysisPermissionDenied =>
+      'You do not have permission to analyze this submission.';
+
+  @override
+  String get specialistSpeechAnalysisNotAvailableYet =>
+      'No speech analysis is available for this submission yet.';
+
+  @override
+  String get specialistSpeechAnalysisSubmissionNotFound =>
+      'The exercise submission could not be found.';
+
+  @override
+  String get specialistSpeechAnalysisUnsupportedAudio =>
+      'This submission does not contain a supported audio recording.';
+
+  @override
+  String get specialistSpeechAnalysisServiceUnavailable =>
+      'The speech analysis service is currently unavailable. Please try again.';
+
+  @override
+  String get specialistSpeechAnalysisConnectionFailed =>
+      'Unable to connect to the analysis service. Check your connection and try again.';
+
+  @override
+  String get specialistSpeechAnalysisSourceUploaded => 'Uploaded';
+
+  @override
+  String get specialistSpeechAnalysisSourceRecorded => 'Recorded';
+
+  @override
+  String get specialistSessionDetailsTitle => 'Session Details';
+
+  @override
+  String get specialistSessionNotFound => 'Session not found.';
+
+  @override
+  String get specialistSessionLoadFailed => 'Failed to load session details.';
+
+  @override
+  String get specialistSessionPermissionDenied =>
+      'You do not have permission to manage this session.';
+
+  @override
+  String get specialistSessionUpdateBlocked =>
+      'This session cannot be updated. Check the details and try again.';
+
+  @override
+  String get specialistSessionPatientProfileUnavailable =>
+      'Patient profile is unavailable.';
+
+  @override
+  String get specialistSessionKeepSession => 'Keep Session';
+
+  @override
+  String get specialistSessionMarkCompletedTitle => 'Mark as Completed';
+
+  @override
+  String get specialistSessionMarkCompletedMessage =>
+      'Mark this session as completed? This cannot be undone.';
+
+  @override
+  String get specialistSessionMarkCompletedConfirm => 'Mark Completed';
+
+  @override
+  String get specialistSessionMarkedCompleted => 'Session marked as completed.';
+
+  @override
+  String get specialistSessionMarkNoShowTitle => 'Mark as No Show';
+
+  @override
+  String get specialistSessionMarkNoShowMessage =>
+      'Mark this session as no show? This cannot be undone.';
+
+  @override
+  String get specialistSessionMarkNoShowConfirm => 'Mark No Show';
+
+  @override
+  String get specialistSessionMarkedNoShow => 'Session marked as no show.';
+
+  @override
+  String get specialistSessionCancelTitle => 'Cancel Session';
+
+  @override
+  String get specialistSessionCancelMessage =>
+      'Cancel this session? This cannot be undone.';
+
+  @override
+  String get specialistSessionCancelReasonOptional =>
+      'Cancellation reason (optional)';
+
+  @override
+  String get specialistSessionCancelled => 'Session cancelled.';
+
+  @override
+  String get specialistSessionNoMeetingLink =>
+      'No valid meeting link available.';
+
+  @override
+  String get specialistSessionMeetingLinkCopied => 'Meeting link copied.';
+
+  @override
+  String get specialistSessionCouldNotOpenMeetingLink =>
+      'Could not open the meeting link. Please try again.';
+
+  @override
+  String get specialistSessionStartTime => 'Start time';
+
+  @override
+  String get specialistSessionEndTime => 'End time';
+
+  @override
+  String get specialistSessionDuration => 'Duration';
+
+  @override
+  String specialistSessionMinutesValue(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get specialistSessionMeetingLink => 'Meeting Link';
+
+  @override
+  String get specialistSessionNotProvided => 'Not provided';
+
+  @override
+  String get specialistSessionOpenMeeting => 'Open Meeting';
+
+  @override
+  String get specialistSessionCopyLink => 'Copy Link';
+
+  @override
+  String get specialistSessionViewPatientProfile => 'View Patient Profile';
+
+  @override
+  String get specialistSessionActions => 'Actions';
+
+  @override
+  String get specialistSessionEditSession => 'Edit Session';
+
+  @override
+  String get specialistSessionMarkAsCompleted => 'Mark as Completed';
+
+  @override
+  String get specialistSessionMarkAsNoShow => 'Mark as No Show';
+
+  @override
+  String get specialistSessionCancellationReason => 'Cancellation reason';
+
+  @override
+  String specialistSessionLockedCannotEdit(String status) {
+    return 'This session is $status and can no longer be edited.';
+  }
+
+  @override
+  String get specialistSessionCompleteFailed =>
+      'Failed to mark session completed.';
+
+  @override
+  String get specialistSessionCancelFailed => 'Failed to cancel session.';
+
+  @override
+  String get specialistSessionNoShowFailed =>
+      'Failed to mark session as no show.';
+
+  @override
+  String get specialistSessionUpdateFailed => 'Failed to update session.';
+
+  @override
+  String get specialistSessionCreateFailed => 'Failed to create session.';
+
+  @override
+  String get specialistSessionEditTitle => 'Edit Session';
+
+  @override
+  String get specialistSessionUpdateSubtitle =>
+      'Update the session schedule details.';
+
+  @override
+  String get specialistSessionCreateSubtitle =>
+      'Schedule a session for one of your assigned patients.';
+
+  @override
+  String get specialistSessionTypeTitle => 'Session type / title';
+
+  @override
+  String get specialistSessionTypeHint => 'Therapy Session';
+
+  @override
+  String get specialistSessionSelectPatient => 'Select patient';
+
+  @override
+  String get specialistSessionSelectPatientRequired =>
+      'Select an assigned patient.';
+
+  @override
+  String get specialistSessionTitleRequired => 'Enter a session type or title.';
+
+  @override
+  String get specialistSessionDurationRangeError =>
+      'Duration must be between 1 and 480 minutes.';
+
+  @override
+  String get specialistSessionScheduleFutureRequired =>
+      'Scheduled date and time must be in the future.';
+
+  @override
+  String get specialistSessionNoAssignedPatients =>
+      'No assigned patients found. Assign a patient before scheduling.';
+
+  @override
+  String get specialistSessionLocationOrLink => 'Location or meeting link';
+
+  @override
+  String get specialistSessionLocationHint => 'Clinic room or https://…';
+
+  @override
+  String get specialistSessionNotesOptional => 'Notes (optional)';
+
+  @override
+  String get specialistSessionNotesHint =>
+      'Additional details for this session';
+
+  @override
+  String get specialistSessionFormHelper =>
+      'Title and notes are kept for this form. The server stores patient, schedule, duration, and location/link.';
+
+  @override
+  String get specialistSessionUpdatedSuccess => 'Session updated successfully.';
+
+  @override
+  String get specialistSessionScheduledSuccess =>
+      'Session scheduled successfully.';
+
+  @override
+  String specialistSessionCannotEditStatus(String status) {
+    return 'This session is $status and cannot be edited.';
+  }
+
+  @override
+  String get specialistSessionRequestApproveTitle => 'Approve Session Request';
+
+  @override
+  String get specialistSessionRequestRejectTitle => 'Reject Session Request';
+
+  @override
+  String get specialistSessionRequestRejectSubtitle =>
+      'Provide a reason so the parent understands why this request was declined.';
+
+  @override
+  String get specialistSessionRequestScheduledDate => 'Scheduled Date';
+
+  @override
+  String get specialistSessionRequestScheduledTime => 'Scheduled Time';
+
+  @override
+  String get specialistSessionRequestDurationField => 'Duration (minutes)';
+
+  @override
+  String get specialistSessionRequestMeetingLinkOrLocation =>
+      'Meeting Link or Location';
+
+  @override
+  String get specialistSessionRequestApproveCreate =>
+      'Approve & Create Session';
+
+  @override
+  String get specialistSessionRequestApproving => 'Approving...';
+
+  @override
+  String get specialistSessionRequestRejecting => 'Rejecting...';
+
+  @override
+  String get specialistSessionRequestRejectConfirm => 'Reject Request';
+
+  @override
+  String get specialistSessionRequestRejectReason => 'Rejection Reason';
+
+  @override
+  String get specialistSessionRequestRejectReasonHint =>
+      'Explain why this request cannot be approved';
+
+  @override
+  String get specialistSessionRequestRejectReasonRequired =>
+      'Rejection reason is required.';
+
+  @override
+  String get specialistSessionRequestApprovedSuccess =>
+      'Session request approved and session created.';
+
+  @override
+  String get specialistSessionRequestRejectedSuccess =>
+      'Session request rejected.';
+
+  @override
+  String specialistSessionRequestApproveFailed(String error) {
+    return 'Failed to approve session request: $error';
+  }
+
+  @override
+  String specialistSessionRequestRejectFailed(String error) {
+    return 'Failed to reject session request: $error';
+  }
+
+  @override
+  String get specialistSessionRequestPreferredTimeMorning => 'Morning';
+
+  @override
+  String get specialistSessionRequestPreferredTimeAfternoon => 'Afternoon';
+
+  @override
+  String get specialistSessionRequestPreferredTimeEvening => 'Evening';
+
+  @override
+  String get specialistSessionRequestPreferredTimeFlexible => 'Flexible';
+
+  @override
+  String get specialistSessionLinkCopied => 'Link copied';
+
+  @override
+  String get specialistSessionNoValidLink => 'No valid link available';
+
+  @override
+  String get specialistSessionCouldNotOpenLink => 'Could not open link';
+
+  @override
+  String specialistSessionCalendarTileMeta(
+    String time,
+    int duration,
+    String mode,
+  ) {
+    return '$time • $duration min • $mode';
+  }
+
+  @override
+  String get communicationSignInToSendMessages => 'Sign in to send messages.';
+
+  @override
+  String get communicationNoSpecialistAssigned =>
+      'No specialist is assigned to this child yet.';
+
+  @override
+  String get communicationMessageSpecialist => 'Message Specialist';
+
+  @override
+  String get communicationLoadingConversations => 'Loading conversations...';
+
+  @override
+  String get communicationNoConversations => 'No conversations yet.';
+
+  @override
+  String communicationStartedOn(String date) {
+    return 'Started $date';
+  }
+
+  @override
+  String get communicationOpeningConversation => 'Opening conversation...';
+
+  @override
+  String get communicationLoadingMessages => 'Loading messages...';
+
+  @override
+  String get communicationNoMessagesYet =>
+      'No messages yet. Say hello to start the conversation.';
+
+  @override
+  String get communicationTypeMessageHint => 'Type a message...';
+
+  @override
+  String get communicationAttachHint => 'Attach a file, image, or audio';
+
+  @override
+  String get communicationEarlierMessages => 'Earlier';
+
+  @override
+  String get communicationFileLinkUnavailable => 'File link unavailable.';
+
+  @override
+  String get communicationInvalidFileLink => 'Invalid file link.';
+
+  @override
+  String get communicationFileLinkCopied => 'File link copied.';
+
+  @override
+  String get communicationUnsupportedVideoFormat => 'Unsupported video format.';
+
+  @override
+  String get communicationAttachmentTypeImage => 'Image';
+
+  @override
+  String get communicationAttachmentTypeAudio => 'Audio';
+
+  @override
+  String get communicationAttachmentTypeVideo => 'Video';
+
+  @override
+  String get communicationAttachmentTypeFile => 'File';
+
+  @override
+  String get communicationAttachmentPreviewUnavailable => 'Preview unavailable';
+
+  @override
+  String get communicationAudioLoading => 'Loading audio...';
+
+  @override
+  String get communicationAudioPlaybackError => 'Unable to play audio.';
+
+  @override
+  String commonLabelCopied(String label) {
+    return '$label copied';
+  }
+
+  @override
+  String get attachmentUnableToOpen => 'Unable to open this attachment.';
+
+  @override
+  String get parentReportNoLinkToCopy => 'No report link to copy.';
+
+  @override
+  String get parentReportNoFileAvailable => 'No report file available yet.';
+
+  @override
+  String get parentReportInvalidLink => 'Invalid report link.';
+
+  @override
+  String get parentReportLinkCopied => 'Report link copied to clipboard.';
+
+  @override
+  String get parentReportOpenFailedLinkCopied =>
+      'Could not open report. Link copied to clipboard.';
+
+  @override
+  String get adminSessionsEditTitle => 'Edit Session';
+
+  @override
+  String adminSessionsPatientLabel(String name) {
+    return 'Patient: $name';
+  }
+
+  @override
+  String get adminSessionsDateField => 'Date (YYYY-MM-DD)';
+
+  @override
+  String get adminSessionsTimeField => 'Time (HH:MM)';
+
+  @override
+  String get adminSessionsLocationField => 'Location / Link';
+
+  @override
+  String get adminSessionsStatusField => 'Status';
+
+  @override
+  String get adminSessionsCancellationReasonField => 'Cancellation reason';
+
+  @override
+  String get adminSessionsStatusFinal =>
+      'Status is final and cannot be changed.';
+
+  @override
+  String get adminSessionsInvalidDateTime => 'Invalid date or time.';
+
+  @override
+  String get adminSessionsUpdatedSuccess => 'Session updated successfully.';
+
+  @override
+  String adminSessionsActionFailed(String error) {
+    return 'Action failed: $error';
+  }
+
+  @override
+  String get adminPatientsUpdatedSuccess => 'Patient updated successfully.';
+
+  @override
+  String get adminPatientsNotFound => 'Patient not found.';
+
+  @override
+  String get adminPatientsNotSpecified => 'Not specified';
+
+  @override
+  String get adminPatientsSelectDateOfBirth => 'Select date of birth';
+
+  @override
+  String get adminPatientsAssignments => 'Patient Assignments';
+
+  @override
+  String get adminUsersUserDeactivated => 'User deactivated.';
+
+  @override
+  String get adminUsersUserActivated => 'User activated.';
+
+  @override
+  String get adminUsersAddUserTitle => 'Add User';
+
+  @override
+  String get adminUsersEditUserTitle => 'Edit User';
+
+  @override
+  String get adminUsersPasswordField => 'Password';
+
+  @override
+  String get adminUsersPhoneOptional => 'Phone (optional)';
+
+  @override
+  String get adminUsersRoleField => 'Role';
+
+  @override
+  String get adminUsersValidationRequired =>
+      'Please complete all required fields.';
+
+  @override
+  String get adminUsersCreatedSuccess => 'User created successfully.';
+
+  @override
+  String get adminUsersUpdatedSuccess => 'User updated successfully.';
+
+  @override
+  String get adminMatchingChooseSpecialist => 'Choose Specialist';
+
+  @override
+  String get adminMatchingLoadingSpecialists =>
+      'Loading matching specialists...';
+
+  @override
+  String get adminMatchingAssigning => 'Assigning...';
+
+  @override
+  String get adminMatchingNoSpecialists => 'No matching specialists found.';
+
+  @override
+  String get adminMatchingSelectSpecialist =>
+      'Select a specialist to assign to this case.';
+
+  @override
+  String get adminMatchingConfirmBody =>
+      'Assign this specialist to the case request?';
+
+  @override
+  String get adminMatchingAssignedSuccess =>
+      'Specialist assigned successfully.';
+
+  @override
+  String get adminMatchingWaitForAssignment =>
+      'Please wait while the assignment is processed.';
+
+  @override
+  String get specialistProfileUpdatedSuccess => 'Profile updated successfully.';
+
+  @override
+  String get specialistProfilePersonalSection => 'Personal';
+
+  @override
+  String get specialistProfileProfessionalSection => 'Professional';
+
+  @override
+  String get specialistReportNotFound => 'Report not found.';
+
+  @override
+  String get specialistReportDetailsTitle => 'Report Details';
+
+  @override
+  String get specialistReportAttachments => 'Attachments';
+
+  @override
+  String get specialistReportViewPdf => 'View PDF';
+
+  @override
+  String get specialistReportCopyPdfLink => 'Copy PDF Link';
+
+  @override
+  String get specialistReportPdfLinkCopied => 'PDF link copied to clipboard';
+
+  @override
+  String get specialistReportPdfGeneratedSuccess =>
+      'PDF generated successfully';
+
+  @override
+  String get specialistReportGeneratingPdf => 'Generating PDF...';
+
+  @override
+  String get specialistReportGeneratePdf => 'Generate PDF';
+
+  @override
+  String get specialistAiRecommendationsTitle => 'AI Recommendations';
+
+  @override
+  String get specialistAiRecommendationGenerated =>
+      'AI recommendation generated';
+
+  @override
+  String get specialistAiRecommendationAccepted => 'Recommendation accepted';
+
+  @override
+  String get specialistAiRecommendationRejected => 'Recommendation rejected';
+
+  @override
+  String get specialistAiGenerateFirstRecommendation =>
+      'Generate your first AI recommendation';
+
+  @override
+  String get devDashboardPreviewsTitle => 'Dashboard Previews';
 }

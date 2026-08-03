@@ -20,6 +20,7 @@ import '../../widgets/specialist_navigation.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'specialist_dashboard_localization_utils.dart';
+import 'specialist_exercise_review_localization_utils.dart';
 import 'specialist_exercises_widgets.dart';
 import 'specialist_scoped_localization_utils.dart';
 import 'treatment_plans_list_widgets.dart';
@@ -862,7 +863,9 @@ Widget _buildReviewCard(
               ],
             ),
           ),
-          DashboardPriorityBadge(label: review.priority),
+          DashboardPriorityBadge(
+            label: localizedPendingReviewPriority(l10n, review.priority),
+          ),
           SizedBox(width: context.dashSpacing * 0.25),
           Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
         ],

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_speech_analysis_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
+import 'specialist_speech_analysis_localization_utils.dart';
 
 class SpeechAnalysisHeaderCard extends StatelessWidget {
   const SpeechAnalysisHeaderCard({
@@ -21,6 +23,7 @@ class SpeechAnalysisHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -41,7 +44,7 @@ class SpeechAnalysisHeaderCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.2),
           Text(
-            'Speech analysis results',
+            l10n.specialistSpeechAnalysisResultsSubtitle,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
             ),
@@ -50,7 +53,9 @@ class SpeechAnalysisHeaderCard extends StatelessWidget {
           if (analyzedAt != null) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
-              'Latest: ${DateFormat('MMM d, yyyy • h:mm a').format(analyzedAt!)}',
+              l10n.specialistSpeechAnalysisLatestLine(
+                DateFormat('MMM d, yyyy • h:mm a').format(analyzedAt!),
+              ),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
@@ -60,7 +65,11 @@ class SpeechAnalysisHeaderCard extends StatelessWidget {
           if (submissionId != null && submissionId!.isNotEmpty) ...[
             SizedBox(height: context.dashSpacing * 0.25),
             Text(
-              'Submission ${submissionId!.length > 8 ? submissionId!.substring(0, 8) : submissionId!}',
+              l10n.specialistSpeechAnalysisSubmissionLine(
+                submissionId!.length > 8
+                    ? submissionId!.substring(0, 8)
+                    : submissionId!,
+              ),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
@@ -87,6 +96,7 @@ class SpeechAnalysisScoreGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -94,7 +104,7 @@ class SpeechAnalysisScoreGrid extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Scores',
+            l10n.specialistSpeechAnalysisScores,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -105,7 +115,7 @@ class SpeechAnalysisScoreGrid extends StatelessWidget {
             children: [
               Expanded(
                 child: _ScoreTile(
-                  label: 'Pronunciation',
+                  label: l10n.parentDashboardPronunciation,
                   value: formatSpeechScore(pronunciationScore),
                   color: const Color(0xFF3B82F6),
                   background: DashboardColors.blueSoft,
@@ -114,7 +124,7 @@ class SpeechAnalysisScoreGrid extends StatelessWidget {
               SizedBox(width: context.dashSpacing * 0.5),
               Expanded(
                 child: _ScoreTile(
-                  label: 'Fluency',
+                  label: l10n.parentDashboardFluency,
                   value: formatSpeechScore(fluencyScore),
                   color: DashboardColors.accent,
                   background: DashboardColors.tealSoft,
@@ -123,7 +133,7 @@ class SpeechAnalysisScoreGrid extends StatelessWidget {
               SizedBox(width: context.dashSpacing * 0.5),
               Expanded(
                 child: _ScoreTile(
-                  label: 'Overall',
+                  label: l10n.parentDashboardOverall,
                   value: formatSpeechScore(overallScore),
                   color: DashboardColors.brandCyan,
                   background: DashboardColors.brandSoft,
@@ -198,29 +208,40 @@ class SpeechAnalysisTranscriptCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final text = transcript?.trim();
+    final metaParts = <String>[];
+    if (language != null && language!.trim().isNotEmpty) {
+      metaParts.add(
+        l10n.specialistSpeechAnalysisLanguageLine(
+          localizedSpeechAnalysisLanguage(l10n, language!.trim()),
+        ),
+      );
+    }
+    if (durationSeconds != null) {
+      metaParts.add(
+        l10n.specialistSpeechAnalysisDurationLine(
+          durationSeconds!.toStringAsFixed(1),
+        ),
+      );
+    }
 
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Transcript',
+            l10n.specialistSpeechAnalysisTranscript,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
             ),
           ),
-          if (language != null || durationSeconds != null) ...[
+          if (metaParts.isNotEmpty) ...[
             SizedBox(height: context.dashSpacing * 0.25),
             Text(
-              [
-                if (language != null && language!.isNotEmpty)
-                  'Language: $language',
-                if (durationSeconds != null)
-                  'Duration: ${durationSeconds!.toStringAsFixed(1)}s',
-              ].join(' • '),
+              metaParts.join(' • '),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
@@ -230,7 +251,7 @@ class SpeechAnalysisTranscriptCard extends StatelessWidget {
           Text(
             text != null && text.isNotEmpty
                 ? text
-                : 'No transcript available for this analysis.',
+                : l10n.specialistSpeechAnalysisNoTranscript,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: text != null && text.isNotEmpty
                   ? DashboardColors.textPrimary
@@ -251,6 +272,7 @@ class SpeechAnalysisComparisonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -262,7 +284,7 @@ class SpeechAnalysisComparisonCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Comparison with Previous',
+                  l10n.specialistSpeechAnalysisComparisonTitle,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: DashboardColors.textPrimary,
@@ -275,7 +297,11 @@ class SpeechAnalysisComparisonCard extends StatelessWidget {
           if (comparison.previousAnalyzedAt != null) ...[
             SizedBox(height: context.dashSpacing * 0.25),
             Text(
-              'Previous: ${DateFormat('MMM d, yyyy').format(comparison.previousAnalyzedAt!)}',
+              l10n.specialistSpeechAnalysisPreviousLine(
+                DateFormat(
+                  'MMM d, yyyy',
+                ).format(comparison.previousAnalyzedAt!),
+              ),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
@@ -283,14 +309,17 @@ class SpeechAnalysisComparisonCard extends StatelessWidget {
           ],
           SizedBox(height: context.dashSpacing * 0.65),
           _ComparisonRow(
-            label: 'Pronunciation',
+            label: l10n.parentDashboardPronunciation,
             delta: comparison.pronunciationChange,
           ),
           SizedBox(height: context.dashSpacing * 0.35),
-          _ComparisonRow(label: 'Fluency', delta: comparison.fluencyChange),
+          _ComparisonRow(
+            label: l10n.parentDashboardFluency,
+            delta: comparison.fluencyChange,
+          ),
           SizedBox(height: context.dashSpacing * 0.35),
           _ComparisonRow(
-            label: 'Overall',
+            label: l10n.parentDashboardOverall,
             delta: comparison.overallScoreChange,
             emphasized: true,
           ),
@@ -352,6 +381,7 @@ class SpeechTrendBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final normalized = (trend ?? '').toLowerCase();
     final color = switch (normalized) {
       'improvement' => DashboardColors.success,
@@ -367,13 +397,7 @@ class SpeechTrendBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        switch (normalized) {
-          'improvement' => 'Improving',
-          'regression' => 'Declining',
-          'baseline' => 'Baseline',
-          'stable' => 'Stable',
-          _ => trend ?? '—',
-        },
+        localizedSpeechAnalysisTrend(l10n, trend),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           color: color,
           fontWeight: FontWeight.w700,
@@ -390,6 +414,7 @@ class SpeechAnalysisFeedbackCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -397,7 +422,7 @@ class SpeechAnalysisFeedbackCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'AI Feedback & Recommendations',
+            l10n.specialistSpeechAnalysisAiFeedbackTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -407,24 +432,24 @@ class SpeechAnalysisFeedbackCard extends StatelessWidget {
           if (feedback.improvementSummary != null &&
               feedback.improvementSummary!.trim().isNotEmpty)
             _FeedbackSection(
-              title: 'Improvement Summary',
+              title: l10n.specialistSpeechAnalysisImprovementSummary,
               body: feedback.improvementSummary!,
             ),
           if (feedback.clinicalNote != null &&
               feedback.clinicalNote!.trim().isNotEmpty)
             _FeedbackSection(
-              title: 'Clinical Note',
+              title: l10n.specialistSpeechAnalysisClinicalNote,
               body: feedback.clinicalNote!,
             ),
           if (feedback.recommendedAction != null &&
               feedback.recommendedAction!.trim().isNotEmpty)
             _FeedbackSection(
-              title: 'Recommended Action',
+              title: l10n.specialistSpeechAnalysisRecommendedAction,
               body: feedback.recommendedAction!,
             ),
           if (feedback.recommendations.isNotEmpty)
             _FeedbackSection(
-              title: 'Recommendations',
+              title: l10n.specialistSpeechAnalysisRecommendations,
               body: feedback.recommendations
                   .map((item) => '• $item')
                   .join('\n'),
@@ -432,17 +457,19 @@ class SpeechAnalysisFeedbackCard extends StatelessWidget {
           if (feedback.treatmentAnalysis != null &&
               feedback.treatmentAnalysis!.trim().isNotEmpty)
             _FeedbackSection(
-              title: 'Treatment Analysis',
+              title: l10n.specialistSpeechAnalysisTreatmentAnalysis,
               body: feedback.treatmentAnalysis!,
             ),
           if (feedback.decisionSupportReason != null &&
               feedback.decisionSupportReason!.trim().isNotEmpty)
             _FeedbackSection(
-              title: 'Decision Support',
+              title: l10n.specialistSpeechAnalysisDecisionSupport,
               body: [
                 if (feedback.suggestedAction != null &&
                     feedback.suggestedAction!.trim().isNotEmpty)
-                  'Suggested: ${feedback.suggestedAction}',
+                  l10n.specialistSpeechAnalysisSuggestedLine(
+                    feedback.suggestedAction!.trim(),
+                  ),
                 feedback.decisionSupportReason!,
               ].join('\n'),
             ),
@@ -495,6 +522,7 @@ class SpeechAnalysisProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     if (progressItems.length < 2) {
       return const SizedBox.shrink();
@@ -510,7 +538,7 @@ class SpeechAnalysisProgressCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Overall Score Trend',
+            l10n.specialistSpeechAnalysisOverallScoreTrend,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -588,10 +616,11 @@ class SpeechAnalysisHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final dateLabel = analysis.analyzedAt != null
         ? DateFormat('MMM d, yyyy • h:mm a').format(analysis.analyzedAt!)
-        : 'Unknown date';
+        : l10n.specialistSpeechAnalysisUnknownDate;
 
     return Padding(
       padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
@@ -629,7 +658,10 @@ class SpeechAnalysisHistoryTile extends StatelessWidget {
                   ),
                   SizedBox(height: context.dashSpacing * 0.15),
                   Text(
-                    'Overall ${formatSpeechScore(analysis.overallScore)} • Pronunciation ${formatSpeechScore(analysis.pronunciationScore)}',
+                    l10n.specialistSpeechAnalysisHistorySummary(
+                      formatSpeechScore(analysis.overallScore),
+                      formatSpeechScore(analysis.pronunciationScore),
+                    ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: DashboardColors.textSecondary,
                     ),
@@ -667,6 +699,7 @@ class SpeechAnalysisAnalyzeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -675,7 +708,7 @@ class SpeechAnalysisAnalyzeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Run Speech Analysis',
+            l10n.specialistSpeechAnalysisRunTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -683,7 +716,7 @@ class SpeechAnalysisAnalyzeCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.25),
           Text(
-            'Analyze the audio from this exercise submission using speech recognition.',
+            l10n.specialistSpeechAnalysisRunSubtitle,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
             ),
@@ -701,7 +734,11 @@ class SpeechAnalysisAnalyzeCard extends StatelessWidget {
                     ),
                   )
                 : const Icon(Icons.record_voice_over_outlined),
-            label: Text(isAnalyzing ? 'Analyzing...' : 'Analyze Submission'),
+            label: Text(
+              isAnalyzing
+                  ? l10n.specialistSpeechAnalysisAnalyzing
+                  : l10n.specialistSpeechAnalysisAnalyzeSubmission,
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: DashboardColors.brandCyan,
               foregroundColor: Colors.white,

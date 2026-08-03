@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/theme/dashboard_theme.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../../presence/widgets/chat_presence_subtitle.dart';
 import '../../models/communication_models.dart';
@@ -206,6 +207,7 @@ class _CommunicationChatScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(communicationThreadProvider(widget.conversationId));
     final auth = ref.watch(authProvider);
     final role = auth.user?.role;
@@ -254,7 +256,7 @@ class _CommunicationChatScreenState
     });
 
     final headerParticipant =
-        conversation?.otherParticipantName(role) ?? 'Messages';
+        conversation?.otherParticipantName(role) ?? l10n.navMessages;
     final headerSubtitle = conversation?.conversationSubtitle();
     final otherParticipantId = conversation?.otherParticipantId(role) ?? '';
 
@@ -298,8 +300,8 @@ class _CommunicationChatScreenState
           child: CommunicationAudioPlaybackScope(
             child: Column(
               children: [
-                Expanded(child: _buildBody(context, state, userId, theme)),
-                _buildComposer(context, state),
+                Expanded(child: _buildBody(context, state, userId, theme, l10n)),
+                _buildComposer(context, state, l10n),
               ],
             ),
           ),
@@ -321,10 +323,11 @@ class _CommunicationChatScreenState
     CommunicationThreadState state,
     String? userId,
     ThemeData theme,
+    AppLocalizations l10n,
   ) {
     if (state.isLoading && !state.hasLoaded) {
-      return const Center(
-        child: DashboardLoadingCard(message: 'Loading messages...'),
+      return Center(
+        child: DashboardLoadingCard(message: l10n.communicationLoadingMessages),
       );
     }
 
@@ -343,9 +346,7 @@ class _CommunicationChatScreenState
       return Center(
         child: Padding(
           padding: context.dashPadding,
-          child: const DashboardEmptyCard(
-            message: 'No messages yet. Say hello to start the conversation.',
-          ),
+          child: DashboardEmptyCard(message: l10n.communicationNoMessagesYet),
         ),
       );
     }
@@ -455,7 +456,11 @@ class _CommunicationChatScreenState
     return null;
   }
 
-  Widget _buildComposer(BuildContext context, CommunicationThreadState state) {
+  Widget _buildComposer(
+    BuildContext context,
+    CommunicationThreadState state,
+    AppLocalizations l10n,
+  ) {
     final pendingAttachment = state.pendingAttachment;
     final hasText = _inputController.text.trim().isNotEmpty;
     final hasAttachment = pendingAttachment != null;
@@ -517,9 +522,7 @@ class _CommunicationChatScreenState
                     textInputAction: TextInputAction.newline,
                     onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(
-                      hintText: hasAttachment
-                          ? 'Add a caption (optional)...'
-                          : 'Type a message...',
+                      hintText: l10n.communicationTypeMessageHint,
                       filled: true,
                       fillColor: DashboardColors.background,
                       border: OutlineInputBorder(
@@ -560,8 +563,9 @@ class _DaySeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final label = date == null
-        ? 'Earlier'
+        ? l10n.communicationEarlierMessages
         : DateFormat('EEEE, MMM d, yyyy').format(date!);
 
     return Padding(

@@ -51,6 +51,7 @@ String localizedReviewStatus(AppLocalizations l10n, String reviewStatus) {
   return switch (normalized) {
     'reviewed' => l10n.statusReviewed,
     'needs retry' => l10n.statusNeedsRetry,
+    'needs_retry' => l10n.statusNeedsRetry,
     'pending' => l10n.statusPending,
     _ => reviewStatus,
   };

@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../parent/parent_exercise_media_picker.dart';
@@ -26,12 +27,12 @@ class CommunicationAttachmentSelection {
   bool get isVideo => mimeType.startsWith('video/');
   bool get isPdf => mimeType == 'application/pdf';
 
-  String get displayLabel {
-    if (isImage) return 'Image';
-    if (isAudio) return 'Audio';
-    if (isVideo) return 'Video';
-    if (isPdf) return 'PDF';
-    return 'File';
+  String displayLabel(AppLocalizations l10n) {
+    if (isImage) return l10n.communicationAttachmentTypeImage;
+    if (isAudio) return l10n.communicationAttachmentTypeAudio;
+    if (isVideo) return l10n.communicationAttachmentTypeVideo;
+    if (isPdf) return l10n.communicationAttachmentTypeFile;
+    return l10n.communicationAttachmentTypeFile;
   }
 
   IconData get icon {
@@ -91,9 +92,10 @@ String? inferCommunicationMimeType(String filename, {String? reportedMime}) {
 
 String? validateCommunicationAttachmentSelection(
   CommunicationAttachmentSelection selection,
+  AppLocalizations l10n,
 ) {
   if (!_allowedMimeTypes.contains(selection.mimeType)) {
-    return 'This file type is not supported.';
+    return l10n.specialistExerciseUnsupportedMediaType;
   }
 
   final category = selection.isImage
@@ -108,8 +110,7 @@ String? validateCommunicationAttachmentSelection(
   final maxBytes =
       _maxBytesByCategory[category] ?? _maxBytesByCategory['file']!;
   if (selection.sizeBytes > maxBytes) {
-    final maxMb = (maxBytes / (1024 * 1024)).round();
-    return 'File is too large. Maximum allowed size is $maxMb MB.';
+    return l10n.specialistExerciseFileTooLarge;
   }
 
   return null;
@@ -205,13 +206,18 @@ Future<void> showCommunicationAttachmentSheet({
   required Future<void> Function(CommunicationAttachmentSelection selection)
   onSelected,
 }) async {
+  final l10n = AppLocalizations.of(context)!;
+
   Future<void> handleSelection(
     CommunicationAttachmentSelection? selection,
   ) async {
     if (selection == null) {
       return;
     }
-    final validationError = validateCommunicationAttachmentSelection(selection);
+    final validationError = validateCommunicationAttachmentSelection(
+      selection,
+      l10n,
+    );
     if (validationError != null) {
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -232,6 +238,8 @@ Future<void> showCommunicationAttachmentSheet({
       ),
     ),
     builder: (sheetContext) {
+      final sheetL10n = AppLocalizations.of(sheetContext)!;
+
       return SafeArea(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
@@ -256,7 +264,7 @@ Future<void> showCommunicationAttachmentSheet({
               ),
               SizedBox(height: context.dashSpacing * 0.75),
               Text(
-                'Attach a file',
+                sheetL10n.communicationAttachHint,
                 style: Theme.of(
                   sheetContext,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -264,7 +272,7 @@ Future<void> showCommunicationAttachmentSheet({
               SizedBox(height: context.dashSpacing * 0.75),
               _AttachmentSheetTile(
                 icon: Icons.photo_camera_outlined,
-                label: 'Take Photo',
+                label: sheetL10n.parentProfilePhotoTake,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   final photo = await captureExercisePhoto(context);
@@ -275,7 +283,7 @@ Future<void> showCommunicationAttachmentSheet({
               ),
               _AttachmentSheetTile(
                 icon: Icons.image_outlined,
-                label: 'Choose Image',
+                label: sheetL10n.specialistExerciseChooseImage,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   await handleSelection(
@@ -285,7 +293,7 @@ Future<void> showCommunicationAttachmentSheet({
               ),
               _AttachmentSheetTile(
                 icon: Icons.mic_none_outlined,
-                label: 'Record Audio',
+                label: sheetL10n.communicationAttachmentTypeAudio,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   final audio = await showExerciseAudioRecorderSheet(context);
@@ -296,7 +304,7 @@ Future<void> showCommunicationAttachmentSheet({
               ),
               _AttachmentSheetTile(
                 icon: Icons.folder_open_outlined,
-                label: 'Choose File',
+                label: sheetL10n.specialistExerciseChooseAudioFile,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   await handleSelection(await pickCommunicationFile());
@@ -304,7 +312,7 @@ Future<void> showCommunicationAttachmentSheet({
               ),
               _AttachmentSheetTile(
                 icon: Icons.videocam_outlined,
-                label: 'Choose Video',
+                label: sheetL10n.specialistExerciseChooseVideo,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   final video = await ImagePicker().pickVideo(
@@ -323,8 +331,10 @@ Future<void> showCommunicationAttachmentSheet({
                   if (mimeType == null || !mimeType.startsWith('video/')) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Unsupported video format.'),
+                        SnackBar(
+                          content: Text(
+                            sheetL10n.communicationUnsupportedVideoFormat,
+                          ),
                         ),
                       );
                     }

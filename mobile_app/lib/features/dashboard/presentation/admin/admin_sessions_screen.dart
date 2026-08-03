@@ -87,6 +87,7 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
   }
 
   Future<void> _openEditDialog(AdminSessionRecord session) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final isScheduled = _isScheduledStatus(session.status);
     final dateController = TextEditingController(
@@ -110,27 +111,36 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
       final saved = await showDialog<bool>(
         context: context,
         builder: (dialogContext) {
+          final dialogL10n = AppLocalizations.of(dialogContext)!;
           return StatefulBuilder(
             builder: (context, setDialogState) {
               return AlertDialog(
-                title: const Text('Edit Session'),
+                title: Text(dialogL10n.adminSessionsEditTitle),
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Patient: ${session.patientName}'),
-                      Text('Specialist: ${session.specialistName}'),
+                      Text(
+                        dialogL10n.adminSessionsPatientLabel(
+                          session.patientName,
+                        ),
+                      ),
+                      Text(
+                        dialogL10n.adminSessionsSpecialistLabel(
+                          session.specialistName,
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: dateController,
-                        decoration: const InputDecoration(
-                          labelText: 'Date (YYYY-MM-DD)',
+                        decoration: InputDecoration(
+                          labelText: dialogL10n.adminSessionsDateField,
                         ),
                       ),
                       TextField(
                         controller: timeController,
-                        decoration: const InputDecoration(
-                          labelText: 'Time (HH:MM)',
+                        decoration: InputDecoration(
+                          labelText: dialogL10n.adminSessionsTimeField,
                         ),
                       ),
                       TextField(
@@ -142,32 +152,32 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                       ),
                       TextField(
                         controller: locationController,
-                        decoration: const InputDecoration(
-                          labelText: 'Location / Link',
+                        decoration: InputDecoration(
+                          labelText: dialogL10n.adminSessionsLocationField,
                         ),
                       ),
                       if (isScheduled) ...[
                         DropdownButtonFormField<String>(
                           initialValue: selectedStatus,
-                          decoration: const InputDecoration(
-                            labelText: 'Status',
+                          decoration: InputDecoration(
+                            labelText: dialogL10n.adminSessionsStatusField,
                           ),
-                          items: const [
+                          items: [
                             DropdownMenuItem(
                               value: 'scheduled',
-                              child: Text('Scheduled'),
+                              child: Text(dialogL10n.statusScheduled),
                             ),
                             DropdownMenuItem(
                               value: 'completed',
-                              child: Text('Completed'),
+                              child: Text(dialogL10n.statusCompleted),
                             ),
                             DropdownMenuItem(
                               value: 'cancelled',
-                              child: Text('Cancelled'),
+                              child: Text(dialogL10n.statusCancelled),
                             ),
                             DropdownMenuItem(
                               value: 'no_show',
-                              child: Text('No Show'),
+                              child: Text(dialogL10n.statusNoShow),
                             ),
                           ],
                           onChanged: (value) {
@@ -179,20 +189,26 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                         if (selectedStatus == 'cancelled')
                           TextField(
                             controller: reasonController,
-                            decoration: const InputDecoration(
-                              labelText: 'Cancellation reason',
+                            decoration: InputDecoration(
+                              labelText:
+                                  dialogL10n.adminSessionsCancellationReasonField,
                             ),
                           ),
                       ] else ...[
                         InputDecorator(
-                          decoration: const InputDecoration(
-                            labelText: 'Status',
+                          decoration: InputDecoration(
+                            labelText: dialogL10n.adminSessionsStatusField,
                           ),
-                          child: Text(_formatStatusLabel(session.status)),
+                          child: Text(
+                            localizedAdminSessionStatus(
+                              dialogL10n,
+                              session.status,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Status is final and cannot be changed.',
+                          dialogL10n.adminSessionsStatusFinal,
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(color: DashboardColors.textSecondary),
                         ),
@@ -203,11 +219,11 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(dialogContext).pop(false),
-                    child: const Text('Cancel'),
+                    child: Text(dialogL10n.commonCancel),
                   ),
                   FilledButton(
                     onPressed: () => Navigator.of(dialogContext).pop(true),
-                    child: const Text('Save'),
+                    child: Text(dialogL10n.commonSave),
                   ),
                 ],
               );
@@ -226,7 +242,7 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
       );
       if (scheduledAt == null) {
         _showSnack(
-          'Invalid date or time.',
+          l10n.adminSessionsInvalidDateTime,
           isError: true,
           messenger: messenger,
         );
@@ -249,7 +265,7 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
               : null,
         );
         if (!mounted) return;
-        _showSnack('Session updated successfully.', messenger: messenger);
+        _showSnack(l10n.adminSessionsUpdatedSuccess, messenger: messenger);
         await _load();
       } on DioException catch (error) {
         final repo = ref.read(adminFeaturesRepositoryProvider);
@@ -263,7 +279,7 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
       } catch (error) {
         if (!mounted) return;
         _showSnack(
-          'Failed to update session: $error',
+          l10n.adminSessionsUpdateFailed('$error'),
           isError: true,
           messenger: messenger,
         );
@@ -529,21 +545,6 @@ class _AdminSessionsScreenState extends ConsumerState<AdminSessionsScreen> {
         scheduledAt.isBefore(DateTime.now());
   }
 
-  String _formatStatusLabel(String? status) {
-    switch ((status ?? '').toLowerCase()) {
-      case 'completed':
-        return 'Completed';
-      case 'cancelled':
-        return 'Cancelled';
-      case 'no_show':
-        return 'No Show';
-      case 'scheduled':
-        return 'Scheduled';
-      default:
-        return status ?? 'Unknown';
-    }
-  }
-
   String _formatDateTime(DateTime? date) {
     if (date == null) {
       return 'Unknown date';
@@ -645,9 +646,10 @@ class _SessionStatusConfirmDialogState
     } catch (error) {
       if (!mounted) return;
       setState(() => _submitting = false);
+      final l10n = AppLocalizations.of(context)!;
       widget.messenger.showSnackBar(
         SnackBar(
-          content: Text('Action failed: $error'),
+          content: Text(l10n.adminSessionsActionFailed('$error')),
           backgroundColor: DashboardColors.highPriority,
         ),
       );

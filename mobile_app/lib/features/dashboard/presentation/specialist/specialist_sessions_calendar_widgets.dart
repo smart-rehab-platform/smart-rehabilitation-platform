@@ -9,6 +9,7 @@ import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import 'specialist_scoped_localization_utils.dart';
+import 'specialist_sessions_localization_utils.dart';
 import 'specialist_sessions_widgets.dart';
 
 enum SpecialistSessionsViewMode { calendar, list }
@@ -431,7 +432,7 @@ class SpecialistCalendarSessionTile extends StatelessWidget {
                   ),
                   SizedBox(height: context.dashSpacing * 0.12),
                   Text(
-                    session.sessionType,
+                    localizedSessionTypeLabel(l10n, session.sessionType),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodySmall?.copyWith(
@@ -440,7 +441,11 @@ class SpecialistCalendarSessionTile extends StatelessWidget {
                   ),
                   SizedBox(height: context.dashSpacing * 0.12),
                   Text(
-                    '${session.timeLabel} • $duration min • $modeLabel',
+                    l10n.specialistSessionCalendarTileMeta(
+                      session.timeLabel,
+                      duration,
+                      modeLabel,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelSmall?.copyWith(
