@@ -9,6 +9,7 @@ import 'package:mobile_app/features/auth/data/auth_repository.dart';
 import 'package:mobile_app/features/dashboard/data/specialist_dashboard_repository.dart';
 import 'package:mobile_app/features/dashboard/data/specialist_features_repository.dart';
 import 'package:mobile_app/features/dashboard/models/specialist_dashboard_models.dart';
+import 'package:mobile_app/features/dashboard/models/specialist_weekly_interactions_models.dart';
 import 'package:mobile_app/features/dashboard/presentation/specialist_dashboard_screen.dart';
 import 'package:mobile_app/features/dashboard/providers/specialist_dashboard_provider.dart';
 import 'package:mobile_app/features/dashboard/providers/specialist_features_provider.dart';
@@ -78,23 +79,44 @@ Widget _specialistDashboardTestApp({
 }) {
   final resolvedState =
       dashboardState ??
-      const SpecialistDashboardState(
+      SpecialistDashboardState(
         isLoading: false,
         hasAssignedPatients: true,
-        overview: SpecialistOverviewData(
+        overview: const SpecialistOverviewData(
           activeCases: 3,
           pendingReviews: 2,
           upcomingSessions: 1,
           treatmentPlans: 4,
         ),
-        pendingReviews: [
+        pendingReviews: const [
           SpecialistPendingReview(
             id: 'review-1',
             patientName: 'Omar Ali',
             exerciseTitle: 'Speech Drill A',
           ),
         ],
-        progress: [SpecialistPatientProgress(name: 'Omar Ali', progress: 0.72)],
+        progress: const [
+          SpecialistPatientProgress(name: 'Omar Ali', progress: 0.72),
+        ],
+        weeklyInteractions: SpecialistWeeklyInteractionsData(
+          weekOffset: 0,
+          totalUniquePatients: 2,
+          days: [
+            SpecialistWeeklyInteractionDay(
+              date: DateTime(2026, 8, 4),
+              patients: const [
+                SpecialistWeeklyInteractionPatient(
+                  id: 'patient-1',
+                  name: 'Omar Hassan',
+                ),
+                SpecialistWeeklyInteractionPatient(
+                  id: 'patient-2',
+                  name: 'Lina Ahmad',
+                ),
+              ],
+            ),
+          ],
+        ),
       );
 
   return ProviderScope(
@@ -155,6 +177,9 @@ void main() {
     expect(find.text("Today's Sessions"), findsOneWidget);
     expect(find.text('Treatment Plans'), findsOneWidget);
     expect(find.text('THIS WEEK'), findsOneWidget);
+    expect(find.text('Weekly Patient Interactions'), findsOneWidget);
+    expect(find.textContaining('unique patients this week'), findsOneWidget);
+    expect(find.text('2 unique patients this week'), findsOneWidget);
     expect(find.text('Recent Patient Progress'), findsOneWidget);
     expect(find.text('Omar Ali'), findsWidgets);
     expect(find.textContaining('Speech Drill A'), findsOneWidget);
@@ -172,10 +197,50 @@ void main() {
     expect(find.text('بانتظار المراجعة'), findsWidgets);
     expect(find.text('جلسات اليوم'), findsOneWidget);
     expect(find.text('الخطط العلاجية'), findsOneWidget);
-    expect(find.text('هذا الأسبوع'), findsOneWidget);
+    expect(find.text('هذا الأسبوع'), findsWidgets);
+    expect(find.text('تفاعلات المرضى الأسبوعية'), findsOneWidget);
     expect(find.text('تقدم المرضى الأخير'), findsOneWidget);
     expect(find.text('Omar Ali'), findsWidgets);
     expect(find.textContaining('Speech Drill A'), findsOneWidget);
+  });
+
+  testWidgets('Weekly interactions card shows loading skeleton', (tester) async {
+    await tester.pumpWidget(
+      _specialistDashboardTestApp(
+        dashboardState: const SpecialistDashboardState(
+          isLoading: false,
+          hasAssignedPatients: true,
+          overview: SpecialistOverviewData(activeCases: 1),
+          isWeeklyInteractionsLoading: true,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Weekly Patient Interactions'), findsOneWidget);
+    expect(find.textContaining('unique patients this week'), findsNothing);
+    expect(find.text('Retry'), findsNothing);
+  });
+
+  testWidgets('Weekly interactions card shows retry on error', (tester) async {
+    await tester.pumpWidget(
+      _specialistDashboardTestApp(
+        dashboardState: const SpecialistDashboardState(
+          isLoading: false,
+          hasAssignedPatients: true,
+          overview: SpecialistOverviewData(activeCases: 1),
+          weeklyInteractionsErrorMessage: 'failed',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text("Couldn't load weekly patient interactions. Please try again."),
+      findsOneWidget,
+    );
+    expect(find.text('Retry'), findsOneWidget);
+    expect(find.textContaining('unique patients this week'), findsNothing);
   });
 
   testWidgets('Specialist dashboard renders Arabic empty states', (

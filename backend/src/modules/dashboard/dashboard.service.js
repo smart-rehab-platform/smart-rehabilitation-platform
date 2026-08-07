@@ -1,4 +1,10 @@
 const pool = require("../../database/db");
+const {
+  getAppTimezone,
+  formatWeekLabel,
+  localDateSql,
+  normalizeWeekOffset,
+} = require("../../utils/appTimezone");
 
 // Admin Dashboard
 exports.getAdminOverview = async () => {
@@ -267,6 +273,257 @@ exports.getSpecialistPendingReviews = async () => {
   `);
 
   return result.rows;
+};
+
+exports.getSpecialistWeeklyPatientInteractions = async (
+  specialistId,
+  weekOffset = 0
+) => {
+  const offset = normalizeWeekOffset(weekOffset);
+  const timezone = getAppTimezone();
+  const localTimestamp = (expression) => localDateSql(expression, timezone);
+  const sessionActivityDay = localTimestamp("COALESCE(s.updated_at, s.scheduled_at)");
+  const assessmentActivityDay = `COALESCE(a.assessment_date, ${localTimestamp("a.created_at")})`;
+  const treatmentPlanCreatedDay = localTimestamp("tp.created_at");
+  const treatmentPlanUpdatedDay = localTimestamp("tp.updated_at");
+  const planRevisionDay = localTimestamp("tpr.created_at");
+  const assignedExerciseDay = localTimestamp("ae.created_at");
+  const exerciseReviewDay = localTimestamp("er.reviewed_at");
+  const reportDay = localTimestamp("r.created_at");
+  const aiRecommendationDay = localTimestamp("rec.reviewed_at");
+  const messageDay = localTimestamp("m.sent_at");
+  const sessionRequestDay = localTimestamp("sr.reviewed_at");
+
+  const result = await pool.query(
+    `
+    WITH local_today AS (
+      SELECT (now() AT TIME ZONE '${timezone}')::date AS today
+    ),
+    week_bounds AS (
+      SELECT
+        (date_trunc('week', today)::date + ($1 * interval '7 days'))::date AS week_start,
+        (date_trunc('week', today)::date + ($1 * interval '7 days') + interval '6 days')::date AS week_end
+      FROM local_today
+    ),
+    days AS (
+      SELECT
+        generate_series(
+          (SELECT week_start FROM week_bounds),
+          (SELECT week_end FROM week_bounds),
+          interval '1 day'
+        )::date AS activity_day
+    ),
+    events AS (
+      SELECT
+        s.patient_id,
+        ${sessionActivityDay} AS activity_day
+      FROM sessions s
+      JOIN patient_specialists ps
+        ON ps.patient_id = s.patient_id
+       AND ps.specialist_id = $2
+      WHERE s.specialist_id = $2
+        AND s.status = 'completed'
+        AND ${sessionActivityDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        a.patient_id,
+        ${assessmentActivityDay} AS activity_day
+      FROM assessments a
+      JOIN patient_specialists ps
+        ON ps.patient_id = a.patient_id
+       AND ps.specialist_id = $2
+      WHERE a.specialist_id = $2
+        AND ${assessmentActivityDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        tp.patient_id,
+        ${treatmentPlanCreatedDay} AS activity_day
+      FROM treatment_plans tp
+      JOIN patient_specialists ps
+        ON ps.patient_id = tp.patient_id
+       AND ps.specialist_id = $2
+      WHERE tp.specialist_id = $2
+        AND ${treatmentPlanCreatedDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        tp.patient_id,
+        ${treatmentPlanUpdatedDay} AS activity_day
+      FROM treatment_plans tp
+      JOIN patient_specialists ps
+        ON ps.patient_id = tp.patient_id
+       AND ps.specialist_id = $2
+      WHERE tp.specialist_id = $2
+        AND ${treatmentPlanUpdatedDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        tp.patient_id,
+        ${planRevisionDay} AS activity_day
+      FROM treatment_plan_revisions tpr
+      JOIN treatment_plans tp
+        ON tp.id = tpr.plan_id
+      JOIN patient_specialists ps
+        ON ps.patient_id = tp.patient_id
+       AND ps.specialist_id = $2
+      WHERE tpr.edited_by = $2
+        AND ${planRevisionDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        ae.patient_id,
+        ${assignedExerciseDay} AS activity_day
+      FROM assigned_exercises ae
+      JOIN patient_specialists ps
+        ON ps.patient_id = ae.patient_id
+       AND ps.specialist_id = $2
+      WHERE ae.assigned_by = $2
+        AND ${assignedExerciseDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        ae.patient_id,
+        ${exerciseReviewDay} AS activity_day
+      FROM exercise_reviews er
+      JOIN exercise_submissions es
+        ON es.id = er.submission_id
+      JOIN assigned_exercises ae
+        ON ae.id = es.assigned_exercise_id
+      JOIN patient_specialists ps
+        ON ps.patient_id = ae.patient_id
+       AND ps.specialist_id = $2
+      WHERE er.specialist_id = $2
+        AND ${exerciseReviewDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        r.patient_id,
+        ${reportDay} AS activity_day
+      FROM reports r
+      JOIN patient_specialists ps
+        ON ps.patient_id = r.patient_id
+       AND ps.specialist_id = $2
+      WHERE r.generated_by = $2
+        AND ${reportDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        rec.patient_id,
+        ${aiRecommendationDay} AS activity_day
+      FROM ai_recommendations rec
+      JOIN patient_specialists ps
+        ON ps.patient_id = rec.patient_id
+       AND ps.specialist_id = $2
+      WHERE rec.reviewed_by = $2
+        AND rec.reviewed_at IS NOT NULL
+        AND ${aiRecommendationDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        c.patient_id,
+        ${messageDay} AS activity_day
+      FROM messages m
+      JOIN conversations c
+        ON c.id = m.conversation_id
+      JOIN patient_specialists ps
+        ON ps.patient_id = c.patient_id
+       AND ps.specialist_id = $2
+      WHERE m.sender_id = $2
+        AND c.patient_id IS NOT NULL
+        AND ${messageDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+
+      UNION ALL
+
+      SELECT
+        sr.patient_id,
+        ${sessionRequestDay} AS activity_day
+      FROM session_requests sr
+      JOIN patient_specialists ps
+        ON ps.patient_id = sr.patient_id
+       AND ps.specialist_id = $2
+      WHERE sr.specialist_id = $2
+        AND sr.reviewed_at IS NOT NULL
+        AND ${sessionRequestDay}
+          BETWEEN (SELECT week_start FROM week_bounds) AND (SELECT week_end FROM week_bounds)
+    ),
+    daily_patients AS (
+      SELECT DISTINCT
+        e.activity_day,
+        e.patient_id,
+        p.full_name AS patient_name
+      FROM events e
+      JOIN patients p
+        ON p.id = e.patient_id
+    ),
+    weekly_totals AS (
+      SELECT COUNT(DISTINCT patient_id)::int AS total_unique_patients
+      FROM daily_patients
+    )
+    SELECT
+      d.activity_day,
+      trim(to_char(d.activity_day, 'Dy')) AS day_label,
+      COALESCE(COUNT(dp.patient_id), 0)::int AS interaction_count,
+      COALESCE(
+        json_agg(
+          json_build_object('id', dp.patient_id, 'name', dp.patient_name)
+          ORDER BY dp.patient_name
+        ) FILTER (WHERE dp.patient_id IS NOT NULL),
+        '[]'::json
+      ) AS patients,
+      (SELECT total_unique_patients FROM weekly_totals) AS total_unique_patients
+    FROM days d
+    LEFT JOIN daily_patients dp
+      ON dp.activity_day = d.activity_day
+    GROUP BY d.activity_day
+    ORDER BY d.activity_day
+    `,
+    [offset, specialistId]
+  );
+
+  const weekStart = result.rows[0]?.activity_day ?? null;
+  const weekEnd = result.rows[result.rows.length - 1]?.activity_day ?? null;
+  const totalUniquePatients = result.rows[0]?.total_unique_patients ?? 0;
+
+  const weekLabel = formatWeekLabel(offset);
+
+  return {
+    week_offset: offset,
+    weekOffset: offset,
+    week_label: weekLabel,
+    weekLabel,
+    week_start: weekStart,
+    week_end: weekEnd,
+    total_unique_patients: totalUniquePatients,
+    totalUniquePatients,
+    timezone,
+    days: result.rows.map((row) => ({
+      day: row.day_label,
+      date: row.activity_day,
+      count: row.interaction_count,
+      patients: row.patients,
+    })),
+  };
 };
 
 // Parent Dashboard

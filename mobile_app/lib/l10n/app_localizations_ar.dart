@@ -182,6 +182,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navCaseRequests => 'طلبات الحالات';
 
   @override
+  String get navComplaints => 'الشكاوى';
+
+  @override
   String get navPatientAssignments => 'إسناد المرضى';
 
   @override
@@ -1035,6 +1038,44 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String specialistDashboardLoadFailed(String error) {
     return 'فشل تحميل لوحة الأخصائي: $error';
+  }
+
+  @override
+  String get specialistDashboardWeeklyPatientInteractions =>
+      'تفاعلات المرضى الأسبوعية';
+
+  @override
+  String get specialistDashboardWeeklyPatientInteractionsSubtitle =>
+      'المرضى الفريدون الذين تفاعلت معهم هذا الأسبوع';
+
+  @override
+  String specialistDashboardUniquePatientsThisWeek(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مريضاً فريداً هذا الأسبوع',
+      one: 'مريض واحد فريد هذا الأسبوع',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get specialistDashboardWeeklyInteractionsLoadFailed =>
+      'تعذّر تحميل تفاعلات المرضى الأسبوعية. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get specialistDashboardNoInteractionsThisDay =>
+      'لا توجد تفاعلات مع المرضى في هذا اليوم.';
+
+  @override
+  String specialistDashboardInteractionPatientsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مرضى',
+      one: 'مريض واحد',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5259,4 +5300,302 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get parentAiAssistantFailedToSend => 'تعذر الإرسال';
+
+  @override
+  String get complaintMoreReportSpecialist => 'الإبلاغ عن أخصائي';
+
+  @override
+  String get complaintMoreReportSpecialistSubtitle =>
+      'قدّم مخاوفك لمراجعة الإدارة';
+
+  @override
+  String get complaintFormTitle => 'الإبلاغ عن أخصائي';
+
+  @override
+  String get complaintFormIntro =>
+      'ستتم مراجعة شكواك من قبل الإدارة فقط ولن تُرسل مباشرة إلى الأخصائي.';
+
+  @override
+  String get complaintHistoryTitle => 'شكاواي';
+
+  @override
+  String get complaintFormChildLabel => 'الطفل';
+
+  @override
+  String get complaintFormSpecialistLabel => 'الأخصائي';
+
+  @override
+  String get complaintFormCategoryLabel => 'فئة الشكوى';
+
+  @override
+  String get complaintFormDescriptionLabel => 'الوصف';
+
+  @override
+  String get complaintFormDescriptionHint =>
+      'صف مخاوفك بالتفصيل (20 حرفًا على الأقل)';
+
+  @override
+  String complaintFormDescriptionCounter(int count) {
+    return '$count/1000';
+  }
+
+  @override
+  String get complaintFormDescriptionTooShort =>
+      'يجب أن يكون الوصف 20 حرفًا على الأقل.';
+
+  @override
+  String get complaintFormDescriptionTooLong =>
+      'يجب ألا يتجاوز الوصف 1000 حرف.';
+
+  @override
+  String get complaintFormSelectChild => 'يرجى اختيار طفل.';
+
+  @override
+  String get complaintFormSelectSpecialist => 'يرجى اختيار أخصائي.';
+
+  @override
+  String get complaintFormSelectCategory => 'يرجى اختيار فئة الشكوى.';
+
+  @override
+  String get complaintFormNoSpecialistAssigned =>
+      'لا يوجد أخصائي مُعيَّن لهذا الطفل.';
+
+  @override
+  String get complaintFormAttachmentLabel => 'مرفق (اختياري)';
+
+  @override
+  String get complaintFormAttachmentHint => 'الصيغ المدعومة: صورة أو PDF.';
+
+  @override
+  String get complaintFormAddAttachment => 'إضافة مرفق';
+
+  @override
+  String get complaintFormRemoveAttachment => 'إزالة المرفق';
+
+  @override
+  String get complaintFormAttachmentPickFailed => 'تعذر قراءة الملف المحدد.';
+
+  @override
+  String get complaintFormAttachmentUploadFailed =>
+      'تعذر رفع المرفق. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get complaintFormSubmit => 'إرسال الشكوى';
+
+  @override
+  String get complaintFormSubmitting => 'جارٍ الإرسال...';
+
+  @override
+  String get complaintFormSubmittedSuccess =>
+      'تم إرسال شكواك بنجاح وستتم مراجعتها من قبل الإدارة.';
+
+  @override
+  String get complaintFormSubmitFailed =>
+      'تعذر إرسال الشكوى. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get complaintFormDuplicateActiveError =>
+      'توجد شكوى نشطة بالفعل لنفس الطفل والأخصائي والفئة.';
+
+  @override
+  String get complaintFormSpecialistNotAssigned =>
+      'الأخصائي المحدد غير مُعيَّن لهذا الطفل.';
+
+  @override
+  String get complaintFormChildNotAuthorized =>
+      'غير مصرح لك بتقديم شكوى لهذا الطفل.';
+
+  @override
+  String complaintFormLoadFailed(String error) {
+    return 'تعذر تحميل بيانات النموذج: $error';
+  }
+
+  @override
+  String get complaintCategorySpecialistNotResponding => 'الأخصائي لا يرد';
+
+  @override
+  String get complaintCategoryPoorFollowUp => 'متابعة ضعيفة';
+
+  @override
+  String get complaintCategoryRepeatedSessionCancellations =>
+      'جلسات فائتة أو ملغاة بشكل متكرر';
+
+  @override
+  String get complaintCategoryDelayedExerciseFeedback =>
+      'تأخر في ملاحظات التمارين';
+
+  @override
+  String get complaintCategoryInappropriateCommunication => 'تواصل غير لائق';
+
+  @override
+  String get complaintCategoryOther => 'أخرى';
+
+  @override
+  String get complaintStatusPending => 'قيد الانتظار';
+
+  @override
+  String get complaintStatusUnderReview => 'قيد المراجعة';
+
+  @override
+  String get complaintStatusResolved => 'تم الحل';
+
+  @override
+  String get complaintStatusRejected => 'مرفوضة';
+
+  @override
+  String get complaintHistoryEmptyTitle => 'لا توجد شكاوى بعد';
+
+  @override
+  String get complaintHistoryEmptyMessage =>
+      'إذا كان لديك مخاوف بشأن أخصائي مُعيَّن، يمكنك تقديم شكوى لمراجعة الإدارة.';
+
+  @override
+  String complaintHistoryChildSpecialist(
+    String childName,
+    String specialistName,
+  ) {
+    return '$childName · $specialistName';
+  }
+
+  @override
+  String get complaintDateUnavailable => 'التاريخ غير متاح';
+
+  @override
+  String get complaintDetailsTitle => 'تفاصيل الشكوى';
+
+  @override
+  String get complaintDetailsNotFound => 'لم يتم العثور على الشكوى.';
+
+  @override
+  String get complaintDetailsSubmitted => 'تاريخ الإرسال';
+
+  @override
+  String get complaintDetailsStatus => 'الحالة';
+
+  @override
+  String get complaintDetailsAdminResponse => 'رد الإدارة';
+
+  @override
+  String get adminComplaintsTitle => 'إدارة الشكاوى';
+
+  @override
+  String get adminComplaintsDescription =>
+      'راجع شكاوى الأخصائيين المقدمة من أولياء الأمور واتخذ إجراءات المراجعة.';
+
+  @override
+  String get adminComplaintsLoading => 'جارٍ تحميل الشكاوى...';
+
+  @override
+  String get adminComplaintsEmpty => 'لا توجد شكاوى.';
+
+  @override
+  String get adminComplaintsNoMatch =>
+      'لا توجد شكاوى تطابق عوامل التصفية المحددة.';
+
+  @override
+  String get adminComplaintsAllStatuses => 'جميع الحالات';
+
+  @override
+  String get adminComplaintsAllCategories => 'جميع الفئات';
+
+  @override
+  String get adminComplaintsAllSpecialists => 'جميع الأخصائيين';
+
+  @override
+  String get adminComplaintsDateRange => 'نطاق التاريخ';
+
+  @override
+  String get adminComplaintsDateRangeSelected => 'تم تحديد نطاق التاريخ';
+
+  @override
+  String adminComplaintsParentLabel(String name) {
+    return 'ولي الأمر: $name';
+  }
+
+  @override
+  String adminComplaintsChildLabel(String name) {
+    return 'الطفل: $name';
+  }
+
+  @override
+  String adminComplaintsSpecialistLabel(String name) {
+    return 'الأخصائي: $name';
+  }
+
+  @override
+  String get adminComplaintDetailsTitle => 'تفاصيل الشكوى';
+
+  @override
+  String get adminComplaintFieldParent => 'ولي الأمر';
+
+  @override
+  String get adminComplaintFieldChild => 'الطفل';
+
+  @override
+  String get adminComplaintFieldSpecialist => 'الأخصائي';
+
+  @override
+  String get adminComplaintReviewer => 'تمت المراجعة بواسطة';
+
+  @override
+  String get adminComplaintReviewedAt => 'تاريخ المراجعة';
+
+  @override
+  String get adminComplaintAdminNotes => 'ملاحظات الإدارة';
+
+  @override
+  String get adminComplaintAdminNotesHint => 'مطلوبة عند حل الشكوى أو رفضها';
+
+  @override
+  String get adminComplaintAdminNotesRequired =>
+      'ملاحظات الإدارة مطلوبة لحل الشكوى أو رفضها.';
+
+  @override
+  String get adminComplaintParentResponse => 'رد لولي الأمر (اختياري)';
+
+  @override
+  String get adminComplaintParentResponseHint =>
+      'رسالة آمنة تظهر لولي الأمر بعد المراجعة';
+
+  @override
+  String get adminComplaintStartReview => 'بدء المراجعة';
+
+  @override
+  String get adminComplaintStartReviewTitle => 'بدء المراجعة؟';
+
+  @override
+  String get adminComplaintStartReviewMessage =>
+      'ستُعلَّم هذه الشكوى على أنها قيد المراجعة.';
+
+  @override
+  String get adminComplaintStartReviewSuccess => 'تم وضع الشكوى قيد المراجعة.';
+
+  @override
+  String get adminComplaintResolve => 'حل الشكوى';
+
+  @override
+  String get adminComplaintResolveTitle => 'حل الشكوى؟';
+
+  @override
+  String get adminComplaintResolveMessage => 'سيؤكد هذا الشكوى بعد المراجعة.';
+
+  @override
+  String get adminComplaintResolveSuccess => 'تم حل الشكوى بنجاح.';
+
+  @override
+  String get adminComplaintReject => 'رفض الشكوى';
+
+  @override
+  String get adminComplaintRejectTitle => 'رفض الشكوى؟';
+
+  @override
+  String get adminComplaintRejectMessage =>
+      'ستُعلَّم هذه الشكوى على أنها مرفوضة بعد المراجعة.';
+
+  @override
+  String get adminComplaintRejectSuccess => 'تم رفض الشكوى بنجاح.';
+
+  @override
+  String get adminComplaintInvalidTransition =>
+      'لا يُسمح بهذا التغيير في الحالة للشكوى الحالية.';
 }

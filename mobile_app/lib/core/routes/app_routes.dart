@@ -262,4 +262,19 @@ class AppRoutes {
 
   static String parentCaseRequestEdit(String requestId) =>
       '/dashboard/parent/case-requests/$requestId/edit';
+
+  static const String parentComplaints = '/dashboard/parent/complaints';
+  static const String parentComplaintNew = '/dashboard/parent/complaints/new';
+  static const String parentComplaintDetailPath =
+      '/dashboard/parent/complaints/:complaintId';
+
+  static String parentComplaintDetail(String complaintId) =>
+      '/dashboard/parent/complaints/$complaintId';
+
+  static const String adminComplaints = '/dashboard/admin/complaints';
+  static const String adminComplaintDetailPath =
+      '/dashboard/admin/complaints/:complaintId';
+
+  static String adminComplaintDetail(String complaintId) =>
+      '/dashboard/admin/complaints/$complaintId';
 }

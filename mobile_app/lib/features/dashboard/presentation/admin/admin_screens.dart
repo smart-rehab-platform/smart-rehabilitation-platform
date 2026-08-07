@@ -198,6 +198,11 @@ class AdminMoreScreen extends ConsumerWidget {
             onTap: () => context.go(AppRoutes.adminCaseRequests),
           ),
           _MoreTile(
+            icon: Icons.report_outlined,
+            label: l10n.navComplaints,
+            onTap: () => context.go(AppRoutes.adminComplaints),
+          ),
+          _MoreTile(
             icon: Icons.event_note_outlined,
             label: l10n.navSessions,
             onTap: () => context.go(AppRoutes.adminSessions),

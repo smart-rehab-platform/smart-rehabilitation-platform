@@ -440,6 +440,12 @@ abstract class AppLocalizations {
   /// **'Case Requests'**
   String get navCaseRequests;
 
+  /// Admin specialist complaints management.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaints'**
+  String get navComplaints;
+
   /// Admin assignment of patients to specialists.
   ///
   /// In en, this message translates to:
@@ -1981,6 +1987,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load specialist dashboard: {error}'**
   String specialistDashboardLoadFailed(String error);
+
+  /// Title for the weekly unique patient interactions analytics card.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Patient Interactions'**
+  String get specialistDashboardWeeklyPatientInteractions;
+
+  /// Subtitle for the weekly unique patient interactions analytics card.
+  ///
+  /// In en, this message translates to:
+  /// **'Unique patients you interacted with this week'**
+  String get specialistDashboardWeeklyPatientInteractionsSubtitle;
+
+  /// Weekly summary above the patient interactions chart.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unique patient this week} other{{count} unique patients this week}}'**
+  String specialistDashboardUniquePatientsThisWeek(int count);
+
+  /// Error when weekly patient interactions fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load weekly patient interactions. Please try again.'**
+  String get specialistDashboardWeeklyInteractionsLoadFailed;
+
+  /// Empty state when a chart day has no patient interactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No patient interactions on this day.'**
+  String get specialistDashboardNoInteractionsThisDay;
+
+  /// Patient count subtitle in the daily interactions bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 patient} other{{count} patients}}'**
+  String specialistDashboardInteractionPatientsCount(int count);
 
   /// Weekly schedule card heading.
   ///
@@ -9304,6 +9346,531 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to send'**
   String get parentAiAssistantFailedToSend;
+
+  /// Parent More page item to submit a specialist complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a Specialist'**
+  String get complaintMoreReportSpecialist;
+
+  /// Subtitle for the Report a Specialist More page item.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit a concern for administration review'**
+  String get complaintMoreReportSpecialistSubtitle;
+
+  /// Title for the parent specialist complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a Specialist'**
+  String get complaintFormTitle;
+
+  /// Intro text on the complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Your complaint will be reviewed by the administration only. It will not be sent directly to the specialist.'**
+  String get complaintFormIntro;
+
+  /// Title for the parent complaints history screen.
+  ///
+  /// In en, this message translates to:
+  /// **'My Complaints'**
+  String get complaintHistoryTitle;
+
+  /// Child selector label on complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get complaintFormChildLabel;
+
+  /// Specialist selector label on complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist'**
+  String get complaintFormSpecialistLabel;
+
+  /// Category selector label on complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Category'**
+  String get complaintFormCategoryLabel;
+
+  /// Description field label on complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get complaintFormDescriptionLabel;
+
+  /// Description field hint on complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your concern in detail (minimum 20 characters)'**
+  String get complaintFormDescriptionHint;
+
+  /// Character counter for complaint description.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/1000'**
+  String complaintFormDescriptionCounter(int count);
+
+  /// Validation when complaint description is too short.
+  ///
+  /// In en, this message translates to:
+  /// **'Description must be at least 20 characters.'**
+  String get complaintFormDescriptionTooShort;
+
+  /// Validation when complaint description is too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Description must not exceed 1000 characters.'**
+  String get complaintFormDescriptionTooLong;
+
+  /// Validation when child is not selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a child.'**
+  String get complaintFormSelectChild;
+
+  /// Validation when specialist is not selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a specialist.'**
+  String get complaintFormSelectSpecialist;
+
+  /// Validation when category is not selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a complaint category.'**
+  String get complaintFormSelectCategory;
+
+  /// Shown when selected child has no assigned specialists.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialist is assigned to this child.'**
+  String get complaintFormNoSpecialistAssigned;
+
+  /// Attachment section label on complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment (optional)'**
+  String get complaintFormAttachmentLabel;
+
+  /// Attachment hint on complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Supported formats: image or PDF.'**
+  String get complaintFormAttachmentHint;
+
+  /// Button to add an attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add attachment'**
+  String get complaintFormAddAttachment;
+
+  /// Tooltip to remove selected attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove attachment'**
+  String get complaintFormRemoveAttachment;
+
+  /// Error when attachment picker fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the selected file.'**
+  String get complaintFormAttachmentPickFailed;
+
+  /// Error when attachment upload fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload attachment. Please try again.'**
+  String get complaintFormAttachmentUploadFailed;
+
+  /// Submit button on complaint form.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Complaint'**
+  String get complaintFormSubmit;
+
+  /// Submit button label while submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get complaintFormSubmitting;
+
+  /// Success message after complaint submission.
+  ///
+  /// In en, this message translates to:
+  /// **'Your complaint has been submitted successfully and will be reviewed by the administration.'**
+  String get complaintFormSubmittedSuccess;
+
+  /// Generic submit failure message.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit complaint. Please try again.'**
+  String get complaintFormSubmitFailed;
+
+  /// Error when duplicate active complaint exists.
+  ///
+  /// In en, this message translates to:
+  /// **'An active complaint already exists for this child, specialist, and category.'**
+  String get complaintFormDuplicateActiveError;
+
+  /// Error when specialist is not assigned.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected specialist is not assigned to this child.'**
+  String get complaintFormSpecialistNotAssigned;
+
+  /// Error when parent is not linked to child.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authorized to submit a complaint for this child.'**
+  String get complaintFormChildNotAuthorized;
+
+  /// Error when complaint form initial data fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load form data: {error}'**
+  String complaintFormLoadFailed(String error);
+
+  /// Complaint category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist is not responding'**
+  String get complaintCategorySpecialistNotResponding;
+
+  /// Complaint category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor follow-up'**
+  String get complaintCategoryPoorFollowUp;
+
+  /// Complaint category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed or repeatedly cancelled sessions'**
+  String get complaintCategoryRepeatedSessionCancellations;
+
+  /// Complaint category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Delayed exercise feedback'**
+  String get complaintCategoryDelayedExerciseFeedback;
+
+  /// Complaint category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate communication'**
+  String get complaintCategoryInappropriateCommunication;
+
+  /// Complaint category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get complaintCategoryOther;
+
+  /// Complaint status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get complaintStatusPending;
+
+  /// Complaint status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Under Review'**
+  String get complaintStatusUnderReview;
+
+  /// Complaint status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get complaintStatusResolved;
+
+  /// Complaint status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get complaintStatusRejected;
+
+  /// Empty state title for parent complaints list.
+  ///
+  /// In en, this message translates to:
+  /// **'No complaints yet'**
+  String get complaintHistoryEmptyTitle;
+
+  /// Empty state message for parent complaints list.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have a concern about an assigned specialist, you can submit a complaint for administration review.'**
+  String get complaintHistoryEmptyMessage;
+
+  /// Child and specialist line on complaint list item.
+  ///
+  /// In en, this message translates to:
+  /// **'{childName} · {specialistName}'**
+  String complaintHistoryChildSpecialist(
+    String childName,
+    String specialistName,
+  );
+
+  /// Fallback when complaint date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Date unavailable'**
+  String get complaintDateUnavailable;
+
+  /// Title for parent complaint details screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Details'**
+  String get complaintDetailsTitle;
+
+  /// Error when complaint details are unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint not found.'**
+  String get complaintDetailsNotFound;
+
+  /// Label for complaint submission date.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get complaintDetailsSubmitted;
+
+  /// Label for complaint status on details screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get complaintDetailsStatus;
+
+  /// Parent-visible admin response on complaint details.
+  ///
+  /// In en, this message translates to:
+  /// **'Administration Response'**
+  String get complaintDetailsAdminResponse;
+
+  /// Title for admin complaints inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaints Management'**
+  String get adminComplaintsTitle;
+
+  /// Intro text on admin complaints screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Review specialist complaints submitted by parents and manage review actions.'**
+  String get adminComplaintsDescription;
+
+  /// Loading message on admin complaints screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading complaints...'**
+  String get adminComplaintsLoading;
+
+  /// Empty state when no complaints exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No complaints found.'**
+  String get adminComplaintsEmpty;
+
+  /// Empty state when filters hide all complaints.
+  ///
+  /// In en, this message translates to:
+  /// **'No complaints match the selected filters.'**
+  String get adminComplaintsNoMatch;
+
+  /// Status filter option for all complaint statuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get adminComplaintsAllStatuses;
+
+  /// Category filter option for all complaint categories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get adminComplaintsAllCategories;
+
+  /// Specialist filter option for all specialists.
+  ///
+  /// In en, this message translates to:
+  /// **'All Specialists'**
+  String get adminComplaintsAllSpecialists;
+
+  /// Date range filter label.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range'**
+  String get adminComplaintsDateRange;
+
+  /// Chip label when date range filter is active.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range selected'**
+  String get adminComplaintsDateRangeSelected;
+
+  /// Parent name label on admin complaint card.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent: {name}'**
+  String adminComplaintsParentLabel(String name);
+
+  /// Child name label on admin complaint card.
+  ///
+  /// In en, this message translates to:
+  /// **'Child: {name}'**
+  String adminComplaintsChildLabel(String name);
+
+  /// Specialist name label on admin complaint card.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist: {name}'**
+  String adminComplaintsSpecialistLabel(String name);
+
+  /// Title for admin complaint details screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Details'**
+  String get adminComplaintDetailsTitle;
+
+  /// Parent field label on admin complaint details.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent'**
+  String get adminComplaintFieldParent;
+
+  /// Child field label on admin complaint details.
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get adminComplaintFieldChild;
+
+  /// Specialist field label on admin complaint details.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist'**
+  String get adminComplaintFieldSpecialist;
+
+  /// Reviewer label on admin complaint details.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed by'**
+  String get adminComplaintReviewer;
+
+  /// Review date label on admin complaint details.
+  ///
+  /// In en, this message translates to:
+  /// **'Review date'**
+  String get adminComplaintReviewedAt;
+
+  /// Admin notes field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin notes'**
+  String get adminComplaintAdminNotes;
+
+  /// Hint for admin notes field.
+  ///
+  /// In en, this message translates to:
+  /// **'Required when resolving or rejecting a complaint'**
+  String get adminComplaintAdminNotesHint;
+
+  /// Validation when admin notes are missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin notes are required to resolve or reject this complaint.'**
+  String get adminComplaintAdminNotesRequired;
+
+  /// Optional parent-facing response field.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent response (optional)'**
+  String get adminComplaintParentResponse;
+
+  /// Hint for parent response field.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe message visible to the parent after review'**
+  String get adminComplaintParentResponseHint;
+
+  /// Button to start complaint review.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Review'**
+  String get adminComplaintStartReview;
+
+  /// Confirmation dialog title for start review.
+  ///
+  /// In en, this message translates to:
+  /// **'Start review?'**
+  String get adminComplaintStartReviewTitle;
+
+  /// Confirmation dialog message for start review.
+  ///
+  /// In en, this message translates to:
+  /// **'This complaint will be marked as under review.'**
+  String get adminComplaintStartReviewMessage;
+
+  /// Success message after starting review.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint marked as under review.'**
+  String get adminComplaintStartReviewSuccess;
+
+  /// Button to resolve complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve Complaint'**
+  String get adminComplaintResolve;
+
+  /// Confirmation dialog title for resolve.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve complaint?'**
+  String get adminComplaintResolveTitle;
+
+  /// Confirmation dialog message for resolve.
+  ///
+  /// In en, this message translates to:
+  /// **'This will confirm the complaint after review.'**
+  String get adminComplaintResolveMessage;
+
+  /// Success message after resolving complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint resolved successfully.'**
+  String get adminComplaintResolveSuccess;
+
+  /// Button to reject complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Complaint'**
+  String get adminComplaintReject;
+
+  /// Confirmation dialog title for reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject complaint?'**
+  String get adminComplaintRejectTitle;
+
+  /// Confirmation dialog message for reject.
+  ///
+  /// In en, this message translates to:
+  /// **'This complaint will be marked as rejected after review.'**
+  String get adminComplaintRejectMessage;
+
+  /// Success message after rejecting complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint rejected successfully.'**
+  String get adminComplaintRejectSuccess;
+
+  /// Error when admin attempts invalid status transition.
+  ///
+  /// In en, this message translates to:
+  /// **'This status change is not allowed for the current complaint.'**
+  String get adminComplaintInvalidTransition;
 }
 
 class _AppLocalizationsDelegate

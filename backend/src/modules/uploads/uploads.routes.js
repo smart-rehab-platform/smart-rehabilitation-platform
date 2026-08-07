@@ -20,6 +20,10 @@ const {
   isAllowedCaseRequestChildImage,
   MAX_CASE_REQUEST_CHILD_IMAGE_BYTES,
 } = require("../../config/caseRequestChildImage");
+const {
+  isAllowedComplaintAttachment,
+  MAX_COMPLAINT_ATTACHMENT_BYTES,
+} = require("../../config/complaintAttachments");
 
 const router = express.Router();
 
@@ -123,6 +127,23 @@ const uploadCaseRequestChildImage = multer({
   },
 });
 
+const uploadComplaintAttachment = multer({
+  storage: createStorage(uploadsRoot, { sanitizeFilename: true }),
+  limits: { fileSize: MAX_COMPLAINT_ATTACHMENT_BYTES },
+  fileFilter: (_req, file, cb) => {
+    if (isAllowedComplaintAttachment(file.mimetype, file.originalname)) {
+      cb(null, true);
+      return;
+    }
+
+    const error = new Error(
+      "Unsupported attachment type. Allowed: images and PDF."
+    );
+    error.statusCode = 400;
+    cb(error);
+  },
+});
+
 router.post(
   "/profile-image",
   upload.single("file"),
@@ -208,6 +229,23 @@ router.post(
     });
   },
   uploadsController.uploadCaseRequestChildImage
+);
+
+router.post(
+  "/complaint-attachment",
+  authenticate,
+  authorizeRoles("parent"),
+  (req, res, next) => {
+    uploadComplaintAttachment.single("file")(req, res, (err) => {
+      if (err) {
+        return uploadsController.handleUploadError(res, err, {
+          maxSizeMessage: "Attachment is too large. Maximum allowed size is 10 MB.",
+        });
+      }
+      next();
+    });
+  },
+  uploadsController.uploadMessageAttachment
 );
 
 router.post(

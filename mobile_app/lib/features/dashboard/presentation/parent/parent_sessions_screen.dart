@@ -592,7 +592,7 @@ class _SessionsSection extends StatelessWidget {
           ...sessions.map(
             (session) => Padding(
               padding: EdgeInsets.only(bottom: context.dashSpacing * 0.55),
-              child: _ModernSessionCard(session: session),
+              child: ParentModernSessionCard(session: session),
             ),
           ),
       ],
@@ -640,8 +640,8 @@ class _SessionSectionTitle extends StatelessWidget {
   }
 }
 
-class _ModernSessionCard extends StatelessWidget {
-  const _ModernSessionCard({required this.session});
+class ParentModernSessionCard extends StatelessWidget {
+  const ParentModernSessionCard({super.key, required this.session});
 
   final ParentSessionItem session;
 

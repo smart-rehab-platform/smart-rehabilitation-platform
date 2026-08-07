@@ -146,6 +146,11 @@ class AdminDrawer extends ConsumerWidget {
                     onTap: () => _go(context, AppRoutes.adminCaseRequests),
                   ),
                   _AdminDrawerTile(
+                    icon: Icons.report_outlined,
+                    label: l10n.navComplaints,
+                    onTap: () => _go(context, AppRoutes.adminComplaints),
+                  ),
+                  _AdminDrawerTile(
                     icon: Icons.event_note_outlined,
                     label: l10n.navSessions,
                     onTap: () => _go(context, AppRoutes.adminSessions),

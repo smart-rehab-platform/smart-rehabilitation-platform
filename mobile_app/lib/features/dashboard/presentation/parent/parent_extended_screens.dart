@@ -12,9 +12,11 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/exercise_instruction_media_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
+import 'parent_child_detail_widgets.dart';
 import 'parent_exercise_media_picker.dart';
 export 'parent_progress_screen.dart';
 import 'parent_extended_localization_utils.dart';
+import 'parent_sessions_screen.dart';
 import 'parent_specialist_feedback_section.dart';
 import 'parent_ui_helpers.dart';
 import '../communication/communication_patient_actions.dart';
@@ -39,12 +41,60 @@ class _ParentChildDetailScreenState
     });
   }
 
+  ParentChild _resolvedChild(ParentChild child) {
+    final dashboard = ref.read(parentDashboardProvider);
+    ParentChild? dashboardChild;
+    ParentChild? progressChild;
+
+    for (final item in dashboard.children) {
+      if (item.id == child.id) {
+        dashboardChild = item;
+        break;
+      }
+    }
+    for (final item in dashboard.childrenProgress) {
+      if (item.id == child.id) {
+        progressChild = item;
+        break;
+      }
+    }
+
+    return child.copyWith(
+      profileImageUrl:
+          child.profileImageUrl ??
+          dashboardChild?.profileImageUrl ??
+          progressChild?.profileImageUrl,
+      progressPercent:
+          child.progressPercent ??
+          dashboardChild?.progressPercent ??
+          progressChild?.progressPercent,
+      dateOfBirth: child.dateOfBirth ?? dashboardChild?.dateOfBirth,
+      gender: child.gender ?? dashboardChild?.gender,
+    );
+  }
+
+  String _exerciseSubtitle(
+    AppLocalizations l10n,
+    ParentAssignedExercise exercise,
+  ) {
+    final parts = <String>[];
+    if (exercise.frequency != null && exercise.frequency!.trim().isNotEmpty) {
+      parts.add(localizedExerciseFrequency(l10n, exercise.frequency!.trim()));
+    }
+    if (exercise.dueDate != null) {
+      parts.add(
+        l10n.parentExercisesDueDate(parentFormatDate(exercise.dueDate)),
+      );
+    }
+    return parts.join(' • ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(parentChildDetailProvider(widget.childId));
     final theme = Theme.of(context);
-    final child = state.child;
+    final child = state.child == null ? null : _resolvedChild(state.child!);
 
     return ParentPageScaffold(
       title: child?.name ?? l10n.parentExerciseChildDetailsTitle,
@@ -62,48 +112,7 @@ class _ParentChildDetailScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DashboardSurfaceCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    child!.name,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  if (child.age != null)
-                    Text(
-                      l10n.parentExerciseAgeLabel(child.age!),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  if (child.dateOfBirth != null)
-                    Text(
-                      l10n.parentExerciseDateOfBirthLabel(
-                        parentFormatDate(child.dateOfBirth),
-                      ),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  if (child.gender != null && child.gender!.isNotEmpty)
-                    Text(
-                      l10n.parentExerciseGenderLabel(
-                        localizedChildGender(l10n, child.gender!),
-                      ),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  if (child.progressPercent != null)
-                    Text(
-                      l10n.parentExerciseProgressLabel(
-                        child.progressPercent!.round(),
-                      ),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: DashboardColors.brandCyan,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            ParentChildDetailHeaderCard(child: child!),
             SizedBox(height: context.dashSpacing),
             ParentMessageSpecialistButton(childId: widget.childId),
             SizedBox(height: context.dashSpacing),
@@ -120,11 +129,9 @@ class _ParentChildDetailScreenState
               ...state.assignedExercises.map(
                 (exercise) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-                  child: DashboardSurfaceCard(
-                    child: Text(
-                      '${exercise.title}${exercise.frequency != null ? ' • ${localizedExerciseFrequency(l10n, exercise.frequency!)}' : ''}',
-                      style: theme.textTheme.bodyMedium,
-                    ),
+                  child: ParentChildDetailExerciseCard(
+                    exercise: exercise,
+                    subtitle: _exerciseSubtitle(l10n, exercise),
                   ),
                 ),
               ),
@@ -141,7 +148,9 @@ class _ParentChildDetailScreenState
                       padding: EdgeInsets.only(
                         bottom: context.dashSpacing * 0.5,
                       ),
-                      child: DashboardSurfaceCard(
+                      child: ParentChildDetailReportCard(
+                        report: report,
+                        childName: child.name,
                         onTap:
                             report.pdfUrl != null && report.pdfUrl!.isNotEmpty
                             ? () => parentOpenReportUrl(
@@ -158,10 +167,6 @@ class _ParentChildDetailScreenState
                                 report.pdfUrl,
                               )
                             : null,
-                        child: Text(
-                          report.title,
-                          style: theme.textTheme.bodyMedium,
-                        ),
                       ),
                     ),
                   ),
@@ -176,19 +181,7 @@ class _ParentChildDetailScreenState
               ...state.sessions.map(
                 (session) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-                  child: DashboardSurfaceCard(
-                    child: Text(
-                      l10n.parentExerciseSessionSummary(
-                        session.specialistName ?? l10n.roleSpecialist,
-                        parentFormatDate(session.scheduledAt),
-                        localizedParentSessionStatusLabel(
-                          l10n,
-                          session.status ?? 'scheduled',
-                        ),
-                      ),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ),
+                  child: ParentModernSessionCard(session: session),
                 ),
               ),
           ],

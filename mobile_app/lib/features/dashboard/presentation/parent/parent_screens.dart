@@ -628,6 +628,17 @@ class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
             onTap: () => context.push(AppRoutes.parentCaseRequests),
           ),
           _MoreTile(
+            icon: Icons.report_outlined,
+            label: l10n.complaintMoreReportSpecialist,
+            subtitle: l10n.complaintMoreReportSpecialistSubtitle,
+            onTap: () => context.push(AppRoutes.parentComplaintNew),
+          ),
+          _MoreTile(
+            icon: Icons.history_rounded,
+            label: l10n.complaintHistoryTitle,
+            onTap: () => context.push(AppRoutes.parentComplaints),
+          ),
+          _MoreTile(
             icon: Icons.chat_bubble_outline_rounded,
             label: l10n.navMessages,
             onTap: () => context.push(AppRoutes.parentMessages),
@@ -658,11 +669,13 @@ class _MoreTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    this.subtitle,
     this.badgeCount = 0,
   });
 
   final IconData icon;
   final String label;
+  final String? subtitle;
   final VoidCallback onTap;
   final int badgeCount;
 
@@ -677,11 +690,23 @@ class _MoreTile extends StatelessWidget {
             Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
-              child: Text(
-                label,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  if (subtitle != null && subtitle!.isNotEmpty)
+                    Text(
+                      subtitle!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
+                ],
               ),
             ),
             if (badgeCount > 0)

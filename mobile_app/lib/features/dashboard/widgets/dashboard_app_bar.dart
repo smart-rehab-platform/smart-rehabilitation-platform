@@ -61,7 +61,6 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       title: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
           ColorFiltered(
             colorFilter: const ColorFilter.mode(
@@ -77,11 +76,16 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           if (showBrandTitle) ...[
             SizedBox(width: context.dashSpacing * 0.45),
-            Text(
-              l10n.appTitle,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: DashboardColors.textPrimary,
+            Expanded(
+              child: Text(
+                l10n.appTitle,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: DashboardColors.textPrimary,
+                ),
               ),
             ),
           ],
@@ -105,77 +109,105 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
         ...?additionalActions,
-        if (showMessagesAction)
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              IconButton(
-                onPressed: onMessagesTap,
-                icon: const Icon(Icons.chat_bubble_outline_rounded),
-                color: DashboardColors.textPrimary,
-                tooltip: l10n.navMessages,
-              ),
-              if (messageCount > 0)
-                PositionedDirectional(
-                  top: 10,
-                  end: 10,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: DashboardColors.highPriority,
-                      shape: BoxShape.circle,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (showMessagesAction) ...[
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    onPressed: onMessagesTap,
+                    icon: const Icon(Icons.chat_bubble_outline_rounded),
+                    padding: const EdgeInsetsDirectional.only(
+                      start: 4,
+                      end: 0,
+                      top: 8,
+                      bottom: 8,
                     ),
                     constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
+                      minWidth: 28,
+                      minHeight: 48,
                     ),
-                    child: Text(
-                      messageCount > 99 ? '99+' : '$messageCount',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 9,
+                    color: DashboardColors.textPrimary,
+                    tooltip: l10n.navMessages,
+                  ),
+                  if (messageCount > 0)
+                    PositionedDirectional(
+                      top: 8,
+                      end: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: DashboardColors.highPriority,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          messageCount > 99 ? '99+' : '$messageCount',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 9,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 8),
+            ],
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                IconButton(
+                  onPressed: onNotificationsTap,
+                  icon: const Icon(Icons.notifications_none_rounded),
+                  padding: EdgeInsetsDirectional.only(
+                    start: showMessagesAction ? 0 : 8,
+                    end: 8,
+                    top: 8,
+                    bottom: 8,
+                  ),
+                  constraints: BoxConstraints(
+                    minWidth: showMessagesAction ? 32 : 40,
+                    minHeight: 48,
+                  ),
+                  color: DashboardColors.textPrimary,
+                  tooltip: l10n.navNotifications,
+                ),
+                if (notificationCount > 0)
+                  PositionedDirectional(
+                    top: 8,
+                    end: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: DashboardColors.highPriority,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '$notificationCount',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 9,
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
-          ),
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            IconButton(
-              onPressed: onNotificationsTap,
-              icon: const Icon(Icons.notifications_none_rounded),
-              color: DashboardColors.textPrimary,
-              tooltip: l10n.navNotifications,
+              ],
             ),
-            if (notificationCount > 0)
-              PositionedDirectional(
-                top: 10,
-                end: 10,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: DashboardColors.highPriority,
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
-                  child: Text(
-                    '$notificationCount',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 9,
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
         Padding(

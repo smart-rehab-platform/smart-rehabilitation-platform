@@ -15,6 +15,7 @@ import '../widgets/dashboard_scaffold.dart';
 import '../widgets/dashboard_surface_card.dart';
 import '../widgets/dashboard_visuals.dart';
 import '../widgets/parent_dashboard_cards.dart';
+import '../widgets/specialist_dashboard_weekly_interactions_card.dart';
 import '../widgets/specialist_dashboard_weekly_schedule_card.dart';
 import '../widgets/specialist_navigation.dart';
 import 'specialist/specialist_dashboard_localization_utils.dart';
@@ -191,6 +192,18 @@ class _SpecialistDashboardScreenState
                 onTap: () => context.push(AppRoutes.specialistTreatmentPlans),
               ),
             ],
+          ),
+          SizedBox(height: context.dashSpacing * 1.2),
+          SpecialistDashboardWeeklyInteractionsCard(
+            data: state.weeklyInteractions,
+            isLoading: state.isWeeklyInteractionsLoading,
+            hasError: state.weeklyInteractionsErrorMessage != null,
+            onPeriodChanged: (offset) => ref
+                .read(specialistDashboardProvider.notifier)
+                .setWeeklyInteractionsWeekOffset(offset),
+            onRetry: () => ref
+                .read(specialistDashboardProvider.notifier)
+                .retryWeeklyInteractions(),
           ),
           SizedBox(height: context.dashSpacing * 1.2),
           DashboardSectionHeader(

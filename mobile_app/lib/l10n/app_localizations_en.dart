@@ -182,6 +182,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navCaseRequests => 'Case Requests';
 
   @override
+  String get navComplaints => 'Complaints';
+
+  @override
   String get navPatientAssignments => 'Patient Assignments';
 
   @override
@@ -1044,6 +1047,44 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String specialistDashboardLoadFailed(String error) {
     return 'Failed to load specialist dashboard: $error';
+  }
+
+  @override
+  String get specialistDashboardWeeklyPatientInteractions =>
+      'Weekly Patient Interactions';
+
+  @override
+  String get specialistDashboardWeeklyPatientInteractionsSubtitle =>
+      'Unique patients you interacted with this week';
+
+  @override
+  String specialistDashboardUniquePatientsThisWeek(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unique patients this week',
+      one: '1 unique patient this week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get specialistDashboardWeeklyInteractionsLoadFailed =>
+      'Couldn\'t load weekly patient interactions. Please try again.';
+
+  @override
+  String get specialistDashboardNoInteractionsThisDay =>
+      'No patient interactions on this day.';
+
+  @override
+  String specialistDashboardInteractionPatientsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count patients',
+      one: '1 patient',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5351,4 +5392,309 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get parentAiAssistantFailedToSend => 'Failed to send';
+
+  @override
+  String get complaintMoreReportSpecialist => 'Report a Specialist';
+
+  @override
+  String get complaintMoreReportSpecialistSubtitle =>
+      'Submit a concern for administration review';
+
+  @override
+  String get complaintFormTitle => 'Report a Specialist';
+
+  @override
+  String get complaintFormIntro =>
+      'Your complaint will be reviewed by the administration only. It will not be sent directly to the specialist.';
+
+  @override
+  String get complaintHistoryTitle => 'My Complaints';
+
+  @override
+  String get complaintFormChildLabel => 'Child';
+
+  @override
+  String get complaintFormSpecialistLabel => 'Specialist';
+
+  @override
+  String get complaintFormCategoryLabel => 'Complaint Category';
+
+  @override
+  String get complaintFormDescriptionLabel => 'Description';
+
+  @override
+  String get complaintFormDescriptionHint =>
+      'Describe your concern in detail (minimum 20 characters)';
+
+  @override
+  String complaintFormDescriptionCounter(int count) {
+    return '$count/1000';
+  }
+
+  @override
+  String get complaintFormDescriptionTooShort =>
+      'Description must be at least 20 characters.';
+
+  @override
+  String get complaintFormDescriptionTooLong =>
+      'Description must not exceed 1000 characters.';
+
+  @override
+  String get complaintFormSelectChild => 'Please select a child.';
+
+  @override
+  String get complaintFormSelectSpecialist => 'Please select a specialist.';
+
+  @override
+  String get complaintFormSelectCategory =>
+      'Please select a complaint category.';
+
+  @override
+  String get complaintFormNoSpecialistAssigned =>
+      'No specialist is assigned to this child.';
+
+  @override
+  String get complaintFormAttachmentLabel => 'Attachment (optional)';
+
+  @override
+  String get complaintFormAttachmentHint => 'Supported formats: image or PDF.';
+
+  @override
+  String get complaintFormAddAttachment => 'Add attachment';
+
+  @override
+  String get complaintFormRemoveAttachment => 'Remove attachment';
+
+  @override
+  String get complaintFormAttachmentPickFailed =>
+      'Could not read the selected file.';
+
+  @override
+  String get complaintFormAttachmentUploadFailed =>
+      'Failed to upload attachment. Please try again.';
+
+  @override
+  String get complaintFormSubmit => 'Submit Complaint';
+
+  @override
+  String get complaintFormSubmitting => 'Submitting...';
+
+  @override
+  String get complaintFormSubmittedSuccess =>
+      'Your complaint has been submitted successfully and will be reviewed by the administration.';
+
+  @override
+  String get complaintFormSubmitFailed =>
+      'Failed to submit complaint. Please try again.';
+
+  @override
+  String get complaintFormDuplicateActiveError =>
+      'An active complaint already exists for this child, specialist, and category.';
+
+  @override
+  String get complaintFormSpecialistNotAssigned =>
+      'The selected specialist is not assigned to this child.';
+
+  @override
+  String get complaintFormChildNotAuthorized =>
+      'You are not authorized to submit a complaint for this child.';
+
+  @override
+  String complaintFormLoadFailed(String error) {
+    return 'Failed to load form data: $error';
+  }
+
+  @override
+  String get complaintCategorySpecialistNotResponding =>
+      'Specialist is not responding';
+
+  @override
+  String get complaintCategoryPoorFollowUp => 'Poor follow-up';
+
+  @override
+  String get complaintCategoryRepeatedSessionCancellations =>
+      'Missed or repeatedly cancelled sessions';
+
+  @override
+  String get complaintCategoryDelayedExerciseFeedback =>
+      'Delayed exercise feedback';
+
+  @override
+  String get complaintCategoryInappropriateCommunication =>
+      'Inappropriate communication';
+
+  @override
+  String get complaintCategoryOther => 'Other';
+
+  @override
+  String get complaintStatusPending => 'Pending';
+
+  @override
+  String get complaintStatusUnderReview => 'Under Review';
+
+  @override
+  String get complaintStatusResolved => 'Resolved';
+
+  @override
+  String get complaintStatusRejected => 'Rejected';
+
+  @override
+  String get complaintHistoryEmptyTitle => 'No complaints yet';
+
+  @override
+  String get complaintHistoryEmptyMessage =>
+      'If you have a concern about an assigned specialist, you can submit a complaint for administration review.';
+
+  @override
+  String complaintHistoryChildSpecialist(
+    String childName,
+    String specialistName,
+  ) {
+    return '$childName · $specialistName';
+  }
+
+  @override
+  String get complaintDateUnavailable => 'Date unavailable';
+
+  @override
+  String get complaintDetailsTitle => 'Complaint Details';
+
+  @override
+  String get complaintDetailsNotFound => 'Complaint not found.';
+
+  @override
+  String get complaintDetailsSubmitted => 'Submitted';
+
+  @override
+  String get complaintDetailsStatus => 'Status';
+
+  @override
+  String get complaintDetailsAdminResponse => 'Administration Response';
+
+  @override
+  String get adminComplaintsTitle => 'Complaints Management';
+
+  @override
+  String get adminComplaintsDescription =>
+      'Review specialist complaints submitted by parents and manage review actions.';
+
+  @override
+  String get adminComplaintsLoading => 'Loading complaints...';
+
+  @override
+  String get adminComplaintsEmpty => 'No complaints found.';
+
+  @override
+  String get adminComplaintsNoMatch =>
+      'No complaints match the selected filters.';
+
+  @override
+  String get adminComplaintsAllStatuses => 'All Statuses';
+
+  @override
+  String get adminComplaintsAllCategories => 'All Categories';
+
+  @override
+  String get adminComplaintsAllSpecialists => 'All Specialists';
+
+  @override
+  String get adminComplaintsDateRange => 'Date range';
+
+  @override
+  String get adminComplaintsDateRangeSelected => 'Date range selected';
+
+  @override
+  String adminComplaintsParentLabel(String name) {
+    return 'Parent: $name';
+  }
+
+  @override
+  String adminComplaintsChildLabel(String name) {
+    return 'Child: $name';
+  }
+
+  @override
+  String adminComplaintsSpecialistLabel(String name) {
+    return 'Specialist: $name';
+  }
+
+  @override
+  String get adminComplaintDetailsTitle => 'Complaint Details';
+
+  @override
+  String get adminComplaintFieldParent => 'Parent';
+
+  @override
+  String get adminComplaintFieldChild => 'Child';
+
+  @override
+  String get adminComplaintFieldSpecialist => 'Specialist';
+
+  @override
+  String get adminComplaintReviewer => 'Reviewed by';
+
+  @override
+  String get adminComplaintReviewedAt => 'Review date';
+
+  @override
+  String get adminComplaintAdminNotes => 'Admin notes';
+
+  @override
+  String get adminComplaintAdminNotesHint =>
+      'Required when resolving or rejecting a complaint';
+
+  @override
+  String get adminComplaintAdminNotesRequired =>
+      'Admin notes are required to resolve or reject this complaint.';
+
+  @override
+  String get adminComplaintParentResponse => 'Parent response (optional)';
+
+  @override
+  String get adminComplaintParentResponseHint =>
+      'Safe message visible to the parent after review';
+
+  @override
+  String get adminComplaintStartReview => 'Start Review';
+
+  @override
+  String get adminComplaintStartReviewTitle => 'Start review?';
+
+  @override
+  String get adminComplaintStartReviewMessage =>
+      'This complaint will be marked as under review.';
+
+  @override
+  String get adminComplaintStartReviewSuccess =>
+      'Complaint marked as under review.';
+
+  @override
+  String get adminComplaintResolve => 'Resolve Complaint';
+
+  @override
+  String get adminComplaintResolveTitle => 'Resolve complaint?';
+
+  @override
+  String get adminComplaintResolveMessage =>
+      'This will confirm the complaint after review.';
+
+  @override
+  String get adminComplaintResolveSuccess => 'Complaint resolved successfully.';
+
+  @override
+  String get adminComplaintReject => 'Reject Complaint';
+
+  @override
+  String get adminComplaintRejectTitle => 'Reject complaint?';
+
+  @override
+  String get adminComplaintRejectMessage =>
+      'This complaint will be marked as rejected after review.';
+
+  @override
+  String get adminComplaintRejectSuccess => 'Complaint rejected successfully.';
+
+  @override
+  String get adminComplaintInvalidTransition =>
+      'This status change is not allowed for the current complaint.';
 }
