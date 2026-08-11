@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { resolveParentSidebarActiveId } from "../../../routes/parentDashboardRoutes";
+import { DashboardShell } from "../../shared-dashboard/layout/DashboardShell";
 import { ParentSidebar } from "./ParentSidebar";
 import { ParentTopHeader } from "./ParentTopHeader";
 
@@ -29,20 +30,22 @@ export function ParentDashboardShell({
   const activeNavId = resolveParentSidebarActiveId(pathname);
 
   return (
-    <div className={`pd-shell${collapsed ? " is-collapsed" : ""}`}>
-      <ParentSidebar
-        collapsed={collapsed}
-        mobileOpen={mobileOpen}
-        navItems={navItems}
-        badges={badges}
-        activeId={activeNavId}
-        onToggleCollapse={onToggleCollapse}
-        onCloseMobile={onCloseMobile}
-        onNavAction={onNavAction}
-        onSignOut={onSignOut}
-      />
-
-      <main className="pd-main">
+    <DashboardShell
+      collapsed={collapsed}
+      sidebar={
+        <ParentSidebar
+          collapsed={collapsed}
+          mobileOpen={mobileOpen}
+          navItems={navItems}
+          badges={badges}
+          activeId={activeNavId}
+          onToggleCollapse={onToggleCollapse}
+          onCloseMobile={onCloseMobile}
+          onNavAction={onNavAction}
+          onSignOut={onSignOut}
+        />
+      }
+      header={
         <ParentTopHeader
           parent={parent}
           badges={badges}
@@ -58,8 +61,9 @@ export function ParentDashboardShell({
           onViewProfile={onViewProfile}
           onSignOut={onSignOut}
         />
-        <div className="pd-content">{children}</div>
-      </main>
-    </div>
+      }
+    >
+      {children}
+    </DashboardShell>
   );
 }

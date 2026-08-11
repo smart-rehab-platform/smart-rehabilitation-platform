@@ -2,10 +2,10 @@
  * Parent sidebar icons — exact downloaded assets from the Landing Page.
  * Each entry references the same import path used in landing components.
  */
-import adminPanelSettingsIcon from "../../../assets/icons/admin_panel_settings.svg";
 import calendarMonthIcon from "../../../assets/icons/calendar-month.svg";
 import chartBarIcon from "../../../assets/icons/chart-bar.svg";
 import clipboardCheckMultipleIcon from "../../../assets/icons/clipboard-check-multiple.svg";
+import dumbbellIcon from "../../../assets/icons/dumbbell.svg";
 import familyRestroomIcon from "../../../assets/icons/family_restroom.svg";
 import folderOpenIcon from "../../../assets/icons/folder-open.svg";
 import homeIcon from "../../../assets/icons/home.svg";
@@ -13,8 +13,8 @@ import messageIcon from "../../../assets/icons/message.svg";
 import neurologyIcon from "../../../assets/icons/neurology.svg";
 import stethoscopeIcon from "../../../assets/icons/stethoscope.svg";
 
-/** Landing: HeroCards admin card — centralized workspace / dashboard overview */
-export const SIDEBAR_DASHBOARD_ICON = adminPanelSettingsIcon;
+/** Dashboard overview */
+export const SIDEBAR_DASHBOARD_ICON = homeIcon;
 
 /** Landing: HeroCards family card — For Families / My Children */
 export const SIDEBAR_CHILDREN_ICON = familyRestroomIcon;
@@ -22,8 +22,8 @@ export const SIDEBAR_CHILDREN_ICON = familyRestroomIcon;
 /** Landing: PlatformModulesSection — Case Management */
 export const SIDEBAR_CASE_REQUESTS_ICON = folderOpenIcon;
 
-/** Landing: PlatformModulesSection — Home Exercise Support */
-export const SIDEBAR_EXERCISES_ICON = homeIcon;
+/** Home Exercise Support */
+export const SIDEBAR_EXERCISES_ICON = dumbbellIcon;
 
 /** Landing: PlatformModulesSection — Progress & Reports */
 export const SIDEBAR_PROGRESS_ICON = chartBarIcon;

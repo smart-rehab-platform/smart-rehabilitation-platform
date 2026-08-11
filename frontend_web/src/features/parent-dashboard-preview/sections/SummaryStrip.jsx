@@ -1,9 +1,10 @@
 import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
+import { SIDEBAR_EXERCISES_ICON } from "../constants/parentSidebarIconAssets";
 
 const SEGMENTS = [
   {
     key: "tasks",
-    icon: "activity",
+    icon: SIDEBAR_EXERCISES_ICON,
     tone: "blue",
     label: "Today's Tasks",
     value: (s) => String(s.todaysExercises ?? 0),
