@@ -1,5 +1,4 @@
-import { Menu, Search } from "lucide-react";
-import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
+import { DashboardTopHeader } from "../../shared-dashboard/layout/DashboardTopHeader";
 import { ProfileMenu } from "../components/ProfileMenu";
 import { NotificationPopover } from "../components/NotificationPopover";
 
@@ -21,41 +20,13 @@ export function ParentTopHeader({
   const messageBadge = badges?.messages;
 
   return (
-    <header className="pd-top-header">
-      <button
-        type="button"
-        className="pd-mobile-menu"
-        aria-label="Open navigation menu"
-        onClick={onOpenMobileNav}
-      >
-        <Menu size={20} />
-      </button>
-
-      <label className="pd-search">
-        <Search size={16} aria-hidden="true" />
-        <span className="pd-sr-only">Search</span>
-        <input
-          type="search"
-          placeholder="Search exercises, reports, sessions..."
-          aria-label="Search exercises, reports, sessions"
-        />
-      </label>
-
-      <div className="pd-header-actions">
-        <button
-          type="button"
-          className="pd-icon-btn"
-          aria-label={`Messages${messageBadge ? `, ${messageBadge} unread` : ""}`}
-          onClick={onMessages}
-        >
-          <PlatformMaterialIcon icon="messageSquare" size={18} />
-          {messageBadge ? (
-            <span className="pd-icon-badge" aria-hidden="true">
-              {messageBadge}
-            </span>
-          ) : null}
-        </button>
-
+    <DashboardTopHeader
+      onOpenMobileNav={onOpenMobileNav}
+      searchPlaceholder="Search exercises, reports, sessions..."
+      searchAriaLabel="Search exercises, reports, sessions"
+      onMessages={onMessages}
+      messagesBadge={messageBadge ?? null}
+      notificationPopover={
         <NotificationPopover
           open={notificationsOpen}
           onOpenChange={onNotificationsOpenChange}
@@ -66,13 +37,14 @@ export function ParentTopHeader({
           onSelect={onNotificationSelect}
           onViewAll={onViewAllNotifications}
         />
-
+      }
+      profileMenu={
         <ProfileMenu
           parent={parent}
           onViewProfile={onViewProfile}
           onSignOut={onSignOut}
         />
-      </div>
-    </header>
+      }
+    />
   );
 }

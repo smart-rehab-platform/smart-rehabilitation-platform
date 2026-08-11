@@ -1,0 +1,807 @@
+.pd-preview .pd-specialist-overview {
+  margin-top: 16px;
+}
+
+.pd-preview .pd-specialist-overview .pd-section-title {
+  margin-bottom: 0;
+}
+
+.pd-preview .pd-specialist-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.pd-preview .pd-specialist-kpi-row .pd-quick-summary-item {
+  width: 100%;
+}
+
+.pd-preview .pd-specialist-kpi-loading {
+  display: block;
+  margin-top: 2px;
+}
+
+.pd-preview .pd-specialist-overview-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+@media (max-width: 1100px) {
+  .pd-preview .pd-specialist-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-preview .pd-specialist-kpi-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pd-preview .pd-specialist-weekly-schedule {
+  margin-top: 16px;
+}
+
+.pd-preview .pd-specialist-weekly-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-weekly-loading,
+.pd-preview .pd-specialist-week-empty {
+  margin: 14px 0 0;
+}
+
+.pd-preview .pd-specialist-weekly-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.pd-preview .pd-specialist-week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 14px;
+}
+
+.pd-preview .pd-specialist-week-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pd-preview .pd-specialist-week-day-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-week-day.is-today .pd-specialist-week-day-label,
+.pd-preview .pd-specialist-week-day.is-selected .pd-specialist-week-day-label {
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-week-day-num {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-week-day.is-selected .pd-specialist-week-day-num {
+  background: var(--pd-primary);
+  color: #fff;
+}
+
+.pd-preview .pd-specialist-week-day-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-week-day-dot.is-empty {
+  visibility: hidden;
+}
+
+.pd-preview .pd-specialist-week-divider {
+  height: 1px;
+  margin: 14px 0;
+  background: var(--pd-border-soft);
+}
+
+.pd-preview .pd-specialist-schedule-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pd-preview .pd-specialist-schedule-empty strong {
+  font-size: 0.875rem;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-schedule-empty p,
+.pd-preview .pd-specialist-week-empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+  line-height: 1.45;
+}
+
+.pd-preview .pd-specialist-schedule-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-specialist-schedule-preview-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pd-preview .pd-specialist-schedule-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-schedule-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-schedule-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--pd-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pd-preview .pd-specialist-schedule-patient {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-schedule-time,
+.pd-preview .pd-specialist-schedule-meta {
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-schedule-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-specialist-schedule-status {
+  text-transform: capitalize;
+}
+
+.pd-preview .pd-specialist-schedule-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+}
+
+@media (max-width: 640px) {
+  .pd-preview .pd-specialist-week-strip {
+    gap: 2px;
+  }
+
+  .pd-preview .pd-specialist-schedule-preview {
+    align-items: flex-start;
+  }
+}
+
+.pd-preview .pd-specialist-preview-row-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.pd-preview .pd-specialist-preview-card {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.pd-preview .pd-specialist-preview-loading,
+.pd-preview .pd-specialist-preview-empty {
+  margin: 14px 0 0;
+}
+
+.pd-preview .pd-specialist-preview-empty {
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+  line-height: 1.45;
+}
+
+.pd-preview .pd-specialist-preview-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.pd-preview .pd-specialist-preview-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.pd-preview .pd-specialist-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.pd-preview .pd-specialist-preview-row:hover {
+  background: rgba(42, 164, 201, 0.04);
+}
+
+.pd-preview .pd-specialist-preview-list li + li .pd-specialist-preview-row {
+  border-top: 1px solid var(--pd-border-soft);
+}
+
+.pd-preview .pd-specialist-preview-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-preview-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-preview-copy strong {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-preview-copy span {
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+  line-height: 1.4;
+}
+
+.pd-preview .pd-specialist-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+@media (max-width: 900px) {
+  .pd-preview .pd-specialist-preview-row-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pd-preview .pd-specialist-route-placeholder {
+  padding: 8px 0 24px;
+}
+
+.pd-preview .pd-specialist-route-placeholder .pd-section-sub {
+  margin: 8px 0 0;
+}
+
+.pd-preview .pd-specialist-conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.pd-preview .pd-avatar.pd-specialist-conversation-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-avatar.pd-specialist-conversation-avatar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(42, 164, 201, 0.14);
+  color: inherit;
+  overflow: visible;
+  line-height: 0;
+  padding: 0;
+}
+
+.pd-preview .pd-avatar.pd-specialist-conversation-avatar-icon > .pd-specialist-conversation-avatar-image {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  max-width: 22px;
+  max-height: 22px;
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0;
+}
+
+.pd-preview .pd-specialist-conversation-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pd-preview .pd-specialist-conversation-copy strong {
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-specialist-conversation-copy span {
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-conversation-meta {
+  font-size: 0.75rem !important;
+  color: var(--pd-text-muted, var(--pd-text-secondary)) !important;
+}
+
+.pd-preview .pd-specialist-conversation-chevron {
+  flex-shrink: 0;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-conversation-search {
+  display: block;
+  margin: 12px 0;
+}
+
+.pd-preview .pd-specialist-conversation-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--pd-border-soft);
+  border-radius: 10px;
+  font: inherit;
+  color: var(--pd-text);
+  background: #fff;
+}
+
+.pd-preview .pd-specialist-chat-header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-chat-header-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-presence-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-presence.is-online .pd-specialist-presence-dot {
+  background: #16a34a;
+}
+
+.pd-preview .pd-specialist-presence.is-online {
+  color: #15803d;
+}
+
+.pd-preview .pd-message-day-separator {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.pd-preview .pd-message-day-separator span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-notifications-mark-all {
+  margin-left: auto;
+}
+
+.pd-preview .pd-specialist-notification-card .pd-notification-feed-title {
+  font-weight: 500;
+}
+
+.pd-preview .pd-specialist-notification-card.is-unread .pd-notification-feed-title {
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-notification-card .pd-notification-feed-title-row,
+.pd-preview .pd-specialist-notification-card .pd-unread-dot {
+  display: none;
+}
+
+.pd-preview .pd-specialist-notification-card.is-unread .pd-notification-feed-icon {
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-notification-card.is-unread .pd-notification-feed-icon svg {
+  color: var(--pd-primary);
+  stroke: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-patient-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-patient-card-entry {
+  margin: 0;
+}
+
+.pd-preview .pd-specialist-patient-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--pd-border-soft);
+  border-radius: 12px;
+  background: var(--pd-surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-patient-card:hover {
+  background: var(--pd-surface-muted);
+}
+
+.pd-preview .pd-specialist-patient-card-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pd-preview .pd-specialist-patient-card-copy strong {
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-patient-card-copy span {
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-patient-card-chevron {
+  color: var(--pd-text-secondary);
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-patient-details {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pd-preview .pd-specialist-patient-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-patient-header-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-patient-header-avatar {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  min-height: 72px;
+  font-size: 1.1rem;
+}
+
+.pd-preview .pd-specialist-patient-name {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.pd-preview .pd-specialist-patient-meta {
+  margin: 4px 0 0;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-message-parent-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-patient-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-patient-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-patient-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-patient-stat-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  margin-bottom: 2px;
+}
+
+.pd-preview .pd-specialist-patient-stat-icon-image {
+  width: 16px;
+  height: 16px;
+}
+
+.pd-preview .pd-specialist-patient-stat-card strong {
+  font-size: 1.25rem;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-patient-stat-card span:last-child {
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-patient-stack,
+.pd-preview .pd-specialist-patient-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pd-preview .pd-specialist-patient-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-patient-list-row-aside {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-plan-head,
+.pd-preview .pd-specialist-goal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-subsection-title {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.pd-preview .pd-specialist-family-pattern-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-family-pattern-title-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-family-pattern-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-family-pattern-summary-panel {
+  background: var(--pd-primary-soft);
+  border: 1px solid rgba(var(--brand-cyan-rgb), 0.12);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.pd-preview .pd-specialist-family-pattern-summary-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.pd-preview .pd-specialist-family-pattern-summary-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-family-pattern-summary-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--pd-primary);
+  line-height: 1.2;
+}
+
+.pd-preview .pd-specialist-family-pattern-summary-text {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-family-pattern-findings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-pattern-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.pd-preview .pd-specialist-pattern-disclaimer {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-patient-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pd-preview .pd-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 120;
+}
+
+.pd-preview .pd-modal {
+  width: min(100%, 520px);
+  background: var(--pd-surface);
+  border: 1px solid var(--pd-border-soft);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+}
+
+.pd-preview .pd-modal-title {
+  margin: 0 0 12px;
+  font-size: 1.125rem;
+}
+
+.pd-preview .pd-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.pd-preview .pd-field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.pd-preview .pd-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 120px;
+  padding: 10px 12px;
+  border: 1px solid var(--pd-border-soft);
+  border-radius: 10px;
+  font: inherit;
+  resize: vertical;
+}
+
+@media (max-width: 900px) {
+  .pd-preview .pd-specialist-patient-quick-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
