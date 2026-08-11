@@ -6,9 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../dashboard/widgets/admin_navigation.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
 import '../../../dashboard/widgets/admin_ui_components.dart';
-import '../../../dashboard/widgets/dashboard_bottom_nav.dart';
 import '../../../dashboard/widgets/dashboard_layout.dart';
 import '../../models/matching_specialist_model.dart';
 import '../../providers/admin_matching_specialists_provider.dart';
@@ -125,7 +125,7 @@ class _AdminMatchingSpecialistsScreenState
       child: AdminPageScaffold(
         title: l10n.adminMatchingChooseSpecialist,
         showBackButton: true,
-        currentNav: DashboardNavItem.more,
+        currentNav: AdminNavigation.listScreenNav(context),
         onBackPressed: assigning
             ? () {
                 ScaffoldMessenger.of(context).showSnackBar(

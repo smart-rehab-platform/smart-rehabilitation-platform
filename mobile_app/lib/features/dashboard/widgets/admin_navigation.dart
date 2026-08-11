@@ -10,8 +10,60 @@ import '../widgets/dashboard_bottom_nav.dart';
 import '../widgets/dashboard_layout.dart';
 import '../widgets/dashboard_profile_avatar.dart';
 
+/// Route [extra] marker for screens opened from the Admin More menu.
+enum AdminModuleOrigin { more }
+
 class AdminNavigation {
   AdminNavigation._();
+
+  static AdminModuleOrigin? moduleOrigin(BuildContext context) {
+    final extra = GoRouterState.of(context).extra;
+    return extra is AdminModuleOrigin ? extra : null;
+  }
+
+  static bool isFromMore(BuildContext context) =>
+      moduleOrigin(context) == AdminModuleOrigin.more;
+
+  static void openFromMore(BuildContext context, String location) {
+    context.push(location, extra: AdminModuleOrigin.more);
+  }
+
+  /// Bottom-nav highlight for top-level module list screens.
+  static DashboardNavItem? listScreenNav(
+    BuildContext context, {
+    DashboardNavItem? tabItem,
+  }) {
+    if (isFromMore(context)) {
+      return DashboardNavItem.more;
+    }
+    if (tabItem != null) {
+      return tabItem;
+    }
+    if (context.canPop()) {
+      return DashboardNavItem.home;
+    }
+    return null;
+  }
+
+  static void handleModuleListBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    if (isFromMore(context)) {
+      context.go(AppRoutes.adminMore);
+      return;
+    }
+    context.go(AppRoutes.adminDashboard);
+  }
+
+  static void handleDetailBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    popOrGoAdmin(context);
+  }
 
   static void openDrawer(BuildContext context) {
     final scaffold = Scaffold.maybeOf(context);
@@ -42,7 +94,13 @@ class AdminNavigation {
     if (location.startsWith(AppRoutes.adminReports)) {
       return DashboardNavItem.reports;
     }
-    if (location.startsWith(AppRoutes.adminMore)) {
+    if (location.startsWith(AppRoutes.adminMore) ||
+        location.startsWith(AppRoutes.adminUsers) ||
+        location.startsWith(AppRoutes.adminSessions) ||
+        location.startsWith(AppRoutes.adminAuditLogs) ||
+        location.startsWith(AppRoutes.adminAiCenter) ||
+        location.startsWith(AppRoutes.adminCaseRequests) ||
+        location.startsWith(AppRoutes.adminNotifications)) {
       return DashboardNavItem.more;
     }
     return null;
@@ -207,6 +265,11 @@ class AdminDrawer extends ConsumerWidget {
   void _go(BuildContext context, String route) {
     Navigator.of(context).pop();
     context.go(route);
+  }
+
+  void _openFromMore(BuildContext context, String route) {
+    Navigator.of(context).pop();
+    AdminNavigation.openFromMore(context, route);
   }
 }
 

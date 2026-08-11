@@ -6,6 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../models/admin_assignments_models.dart';
 import '../../models/parent_links_models.dart';
 import '../../providers/admin_patient_assignments_provider.dart';
+import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_bottom_nav.dart';

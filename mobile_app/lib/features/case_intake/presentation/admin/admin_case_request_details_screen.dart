@@ -10,9 +10,9 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../dashboard/widgets/admin_navigation.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
 import '../../../dashboard/widgets/admin_ui_components.dart';
-import '../../../dashboard/widgets/dashboard_bottom_nav.dart';
 import '../../../dashboard/widgets/dashboard_layout.dart';
 import '../../models/admin_case_request_detail_model.dart';
 import '../../models/case_intake_request_model.dart';
@@ -141,7 +141,7 @@ class _AdminCaseRequestDetailsScreenState
     return AdminPageScaffold(
       title: l10n.parentCaseRequestDetailsTitle,
       showBackButton: true,
-      currentNav: DashboardNavItem.more,
+      currentNav: AdminNavigation.listScreenNav(context),
       body: isInitialLoading
           ? AdminLoadingCard(message: l10n.specialistCaseRequestDetailsLoading)
           : detail == null

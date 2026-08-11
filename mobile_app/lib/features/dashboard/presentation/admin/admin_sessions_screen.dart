@@ -6,6 +6,7 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
+import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_status_badge.dart';
 import '../../widgets/dashboard_layout.dart';
