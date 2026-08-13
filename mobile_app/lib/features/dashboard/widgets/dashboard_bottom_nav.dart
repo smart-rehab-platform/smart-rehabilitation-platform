@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import 'dashboard_layout.dart';
 
 enum DashboardNavItem { home, patients, exercises, reports, more }
@@ -20,6 +21,7 @@ class DashboardBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -47,7 +49,7 @@ class DashboardBottomNav extends StatelessWidget {
             children: [
               _NavItem(
                 icon: Icons.home_rounded,
-                label: 'Home',
+                label: l10n.navHome,
                 isActive: currentIndex == DashboardNavItem.home,
                 onTap: () => onTap?.call(DashboardNavItem.home),
                 accentColor: accentColor,
@@ -55,7 +57,7 @@ class DashboardBottomNav extends StatelessWidget {
               ),
               _NavItem(
                 icon: Icons.people_outline_rounded,
-                label: 'Patients',
+                label: l10n.navPatients,
                 isActive: currentIndex == DashboardNavItem.patients,
                 onTap: () => onTap?.call(DashboardNavItem.patients),
                 accentColor: accentColor,
@@ -63,7 +65,7 @@ class DashboardBottomNav extends StatelessWidget {
               ),
               _NavItem(
                 icon: Icons.fitness_center_outlined,
-                label: 'Exercises',
+                label: l10n.navExercises,
                 isActive: currentIndex == DashboardNavItem.exercises,
                 onTap: () => onTap?.call(DashboardNavItem.exercises),
                 accentColor: accentColor,
@@ -71,7 +73,7 @@ class DashboardBottomNav extends StatelessWidget {
               ),
               _NavItem(
                 icon: Icons.description_outlined,
-                label: 'Reports',
+                label: l10n.navReports,
                 isActive: currentIndex == DashboardNavItem.reports,
                 onTap: () => onTap?.call(DashboardNavItem.reports),
                 accentColor: accentColor,
@@ -79,7 +81,7 @@ class DashboardBottomNav extends StatelessWidget {
               ),
               _NavItem(
                 icon: Icons.grid_view_rounded,
-                label: 'More',
+                label: l10n.commonMore,
                 isActive: currentIndex == DashboardNavItem.more,
                 onTap: () => onTap?.call(DashboardNavItem.more),
                 accentColor: accentColor,

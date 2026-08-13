@@ -8,6 +8,7 @@ import '../data/specialist_dashboard_repository.dart';
 import '../data/specialist_features_repository.dart';
 import '../models/specialist_dashboard_models.dart';
 import '../models/specialist_feature_models.dart';
+import '../models/specialist_weekly_interactions_models.dart';
 
 final specialistDashboardRepositoryProvider =
     Provider<SpecialistDashboardRepository>((ref) {
@@ -49,6 +50,10 @@ class SpecialistDashboardState {
     this.progress = const [],
     this.unreadNotifications = 0,
     this.hasAssignedPatients = false,
+    this.weeklyInteractions,
+    this.weeklyInteractionsWeekOffset = 0,
+    this.isWeeklyInteractionsLoading = false,
+    this.weeklyInteractionsErrorMessage,
   });
 
   final bool isLoading;
@@ -61,6 +66,10 @@ class SpecialistDashboardState {
   final List<SpecialistPatientProgress> progress;
   final int unreadNotifications;
   final bool hasAssignedPatients;
+  final SpecialistWeeklyInteractionsData? weeklyInteractions;
+  final int weeklyInteractionsWeekOffset;
+  final bool isWeeklyInteractionsLoading;
+  final String? weeklyInteractionsErrorMessage;
 
   SpecialistDashboardState copyWith({
     bool? isLoading,
@@ -73,6 +82,10 @@ class SpecialistDashboardState {
     List<SpecialistPatientProgress>? progress,
     int? unreadNotifications,
     bool? hasAssignedPatients,
+    Object? weeklyInteractions = _sentinel,
+    int? weeklyInteractionsWeekOffset,
+    bool? isWeeklyInteractionsLoading,
+    Object? weeklyInteractionsErrorMessage = _sentinel,
   }) {
     return SpecialistDashboardState(
       isLoading: isLoading ?? this.isLoading,
@@ -89,6 +102,19 @@ class SpecialistDashboardState {
       progress: progress ?? this.progress,
       unreadNotifications: unreadNotifications ?? this.unreadNotifications,
       hasAssignedPatients: hasAssignedPatients ?? this.hasAssignedPatients,
+      weeklyInteractions: identical(weeklyInteractions, _sentinel)
+          ? this.weeklyInteractions
+          : weeklyInteractions as SpecialistWeeklyInteractionsData?,
+      weeklyInteractionsWeekOffset:
+          weeklyInteractionsWeekOffset ?? this.weeklyInteractionsWeekOffset,
+      isWeeklyInteractionsLoading:
+          isWeeklyInteractionsLoading ?? this.isWeeklyInteractionsLoading,
+      weeklyInteractionsErrorMessage: identical(
+            weeklyInteractionsErrorMessage,
+            _sentinel,
+          )
+          ? this.weeklyInteractionsErrorMessage
+          : weeklyInteractionsErrorMessage as String?,
     );
   }
 }
@@ -126,11 +152,17 @@ class SpecialistDashboardNotifier
       isLoading: true,
       errorMessage: null,
       userName: user.fullName,
+      isWeeklyInteractionsLoading: true,
+      weeklyInteractionsErrorMessage: null,
     );
 
     try {
-      final bundle = await _repository.fetchDashboardBundle(user.id!);
-      final unreadCount = await _featuresRepository.fetchUnreadCount(user.id!);
+      final results = await Future.wait([
+        _repository.fetchDashboardBundle(user.id!),
+        _featuresRepository.fetchUnreadCount(user.id!),
+      ]);
+      final bundle = results[0] as SpecialistDashboardBundle;
+      final unreadCount = results[1] as int;
 
       final schedule = bundle.todaySessions
           .map(
@@ -157,9 +189,62 @@ class SpecialistDashboardNotifier
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Failed to load specialist dashboard: $error',
+        isWeeklyInteractionsLoading: false,
+      );
+      return;
+    }
+
+    await _loadWeeklyInteractions(state.weeklyInteractionsWeekOffset);
+  }
+
+  Future<void> _loadWeeklyInteractions(int weekOffset) async {
+    final normalizedOffset = normalizeWeeklyInteractionsWeekOffset(weekOffset);
+
+    state = state.copyWith(
+      weeklyInteractionsWeekOffset: normalizedOffset,
+      isWeeklyInteractionsLoading: true,
+      weeklyInteractionsErrorMessage: null,
+    );
+
+    try {
+      final interactions = await _repository.fetchWeeklyPatientInteractions(
+        weekOffset: normalizedOffset,
+      );
+
+      if (normalizedOffset != state.weeklyInteractionsWeekOffset) {
+        return;
+      }
+
+      state = state.copyWith(
+        weeklyInteractions: interactions,
+        weeklyInteractionsWeekOffset: normalizedOffset,
+        isWeeklyInteractionsLoading: false,
+        weeklyInteractionsErrorMessage: null,
+      );
+    } catch (error) {
+      if (normalizedOffset != state.weeklyInteractionsWeekOffset) {
+        return;
+      }
+
+      state = state.copyWith(
+        isWeeklyInteractionsLoading: false,
+        weeklyInteractionsErrorMessage: 'failed',
       );
     }
   }
+
+  Future<void> setWeeklyInteractionsWeekOffset(int weekOffset) async {
+    final normalizedOffset = normalizeWeeklyInteractionsWeekOffset(weekOffset);
+    if (normalizedOffset == state.weeklyInteractionsWeekOffset &&
+        !state.isWeeklyInteractionsLoading) {
+      return;
+    }
+
+    await _loadWeeklyInteractions(normalizedOffset);
+  }
+
+  Future<void> retryWeeklyInteractions() =>
+      _loadWeeklyInteractions(state.weeklyInteractionsWeekOffset);
 
   Future<void> refresh() => initialize();
 

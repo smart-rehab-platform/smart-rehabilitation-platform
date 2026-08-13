@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../widgets/dashboard_bottom_nav.dart';
 import '../widgets/dashboard_layout.dart';
@@ -134,8 +135,9 @@ class AdminDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authProvider).user;
-    final name = user?.fullName ?? 'Admin';
+    final name = user?.fullName ?? l10n.roleAdmin;
 
     return Drawer(
       backgroundColor: DashboardColors.surface,
@@ -177,68 +179,69 @@ class AdminDrawer extends ConsumerWidget {
                 children: [
                   _AdminDrawerTile(
                     icon: Icons.dashboard_outlined,
-                    label: 'Dashboard',
+                    label: l10n.navDashboard,
                     onTap: () => _go(context, AppRoutes.adminDashboard),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.groups_outlined,
-                    label: 'Users',
-                    onTap: () => _openFromMore(context, AppRoutes.adminUsers),
+                    label: l10n.navUsers,
+                    onTap: () => _go(context, AppRoutes.adminUsers),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.people_outline_rounded,
-                    label: 'Patients',
-                    onTap: () => _openFromMore(context, AppRoutes.adminPatients),
+                    label: l10n.navPatients,
+                    onTap: () => _go(context, AppRoutes.adminPatients),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.assignment_ind_outlined,
-                    label: 'Patient Assignments',
-                    onTap: () => _openFromMore(
-                      context,
-                      AppRoutes.adminPatientAssignments,
-                    ),
+                    label: l10n.navPatientAssignments,
+                    onTap: () =>
+                        _go(context, AppRoutes.adminPatientAssignments),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.inbox_outlined,
-                    label: 'Case Requests',
-                    onTap: () =>
-                        _openFromMore(context, AppRoutes.adminCaseRequests),
+                    label: l10n.navCaseRequests,
+                    onTap: () => _go(context, AppRoutes.adminCaseRequests),
+                  ),
+                  _AdminDrawerTile(
+                    icon: Icons.report_outlined,
+                    label: l10n.navComplaints,
+                    onTap: () => _go(context, AppRoutes.adminComplaints),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.event_note_outlined,
-                    label: 'Sessions',
-                    onTap: () => _openFromMore(context, AppRoutes.adminSessions),
+                    label: l10n.navSessions,
+                    onTap: () => _go(context, AppRoutes.adminSessions),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.psychology_outlined,
-                    label: 'AI Center',
-                    onTap: () => _openFromMore(context, AppRoutes.adminAiCenter),
+                    label: l10n.navAiCenter,
+                    onTap: () => _go(context, AppRoutes.adminAiCenter),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.history_rounded,
-                    label: 'Audit Logs',
-                    onTap: () => _openFromMore(context, AppRoutes.adminAuditLogs),
+                    label: l10n.navAuditLogs,
+                    onTap: () => _go(context, AppRoutes.adminAuditLogs),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.fitness_center_outlined,
-                    label: 'Exercises',
+                    label: l10n.navExercises,
                     onTap: () => _go(context, AppRoutes.adminExercises),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.description_outlined,
-                    label: 'Reports',
+                    label: l10n.navReports,
                     onTap: () => _go(context, AppRoutes.adminReports),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.notifications_none_rounded,
-                    label: 'Notifications',
-                    onTap: () =>
-                        _openFromMore(context, AppRoutes.adminNotifications),
+                    label: l10n.navNotifications,
+                    onTap: () => _go(context, AppRoutes.adminNotifications),
                   ),
                   _AdminDrawerTile(
                     icon: Icons.person_outline_rounded,
-                    label: 'Profile',
-                    onTap: () => _openFromMore(context, AppRoutes.adminProfile),
+                    label: l10n.navProfile,
+                    onTap: () => _go(context, AppRoutes.adminProfile),
                   ),
                 ],
               ),
@@ -246,7 +249,7 @@ class AdminDrawer extends ConsumerWidget {
             const Divider(height: 1),
             _AdminDrawerTile(
               icon: Icons.logout_rounded,
-              label: 'Logout',
+              label: l10n.commonLogout,
               onTap: () async {
                 Navigator.of(context).pop();
                 await AdminNavigation.logout(context, ref);

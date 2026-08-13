@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
 import '../../dashboard/widgets/dashboard_components.dart';
 import '../../dashboard/widgets/parent_dashboard_cards.dart';
 import '../../dashboard/widgets/parent_page_scaffold.dart';
+import '../presentation/parent_case_intake_localization_utils.dart';
 import '../providers/parent_case_intake_provider.dart';
 import '../widgets/case_request_card.dart';
 
@@ -35,6 +37,7 @@ class _ParentCaseRequestsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(parentCaseIntakeProvider);
     final theme = Theme.of(context);
 
@@ -52,14 +55,17 @@ class _ParentCaseRequestsScreenState
           children: [
             if (state.errorMessage != null) ...[
               DashboardErrorCard(
-                message: state.errorMessage!,
+                message: mapParentCaseIntakeProviderError(
+                  l10n,
+                  state.errorMessage!,
+                ),
                 onRetry: () =>
                     ref.read(parentCaseIntakeProvider.notifier).loadRequests(),
               ),
               SizedBox(height: context.dashSpacing * 0.75),
             ],
             Text(
-              'These are preliminary requests, not official diagnoses. The admin team reviews each request and assigns a suitable specialist.',
+              l10n.parentCaseRequestsListDisclaimer,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -70,7 +76,7 @@ class _ParentCaseRequestsScreenState
               child: BrandGradientButton(
                 onPressed: _openNewRequest,
                 icon: Icons.add_rounded,
-                label: 'Submit New Case Request',
+                label: l10n.parentDashboardCaseIntakeSubmitNew,
               ),
             ),
             SizedBox(height: context.dashSpacing),
@@ -80,7 +86,7 @@ class _ParentCaseRequestsScreenState
                 child: LinearProgressIndicator(),
               ),
             if (state.requests.isEmpty)
-              _EmptyCaseRequestsCard(onSubmit: _openNewRequest)
+              _EmptyCaseRequestsCard(onSubmit: _openNewRequest, l10n: l10n)
             else
               ...state.requests.map(
                 (request) => Padding(
@@ -99,7 +105,7 @@ class _ParentCaseRequestsScreenState
     }
 
     return ParentPageScaffold(
-      title: 'Case Requests',
+      title: l10n.navCaseRequests,
       showBackButton: true,
       body: body,
     );
@@ -107,9 +113,10 @@ class _ParentCaseRequestsScreenState
 }
 
 class _EmptyCaseRequestsCard extends StatelessWidget {
-  const _EmptyCaseRequestsCard({required this.onSubmit});
+  const _EmptyCaseRequestsCard({required this.onSubmit, required this.l10n});
 
   final VoidCallback onSubmit;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +133,7 @@ class _EmptyCaseRequestsCard extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'No case requests yet.',
+            l10n.parentCaseRequestsEmptyTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
@@ -134,7 +141,7 @@ class _EmptyCaseRequestsCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           Text(
-            'Submit a request so the admin team can review the case and assign a suitable specialist.',
+            l10n.parentCaseRequestsEmptyMessage,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,
@@ -144,7 +151,7 @@ class _EmptyCaseRequestsCard extends StatelessWidget {
           OutlinedButton(
             onPressed: onSubmit,
             style: brandOutlinedButtonStyle(),
-            child: const Text('Submit New Case Request'),
+            child: Text(l10n.parentDashboardCaseIntakeSubmitNew),
           ),
         ],
       ),

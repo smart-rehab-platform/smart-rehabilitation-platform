@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/specialist_patient_details_repository.dart';
 import '../../models/family_pattern_details_models.dart';
 import '../../models/family_pattern_insight_models.dart';
 import '../../widgets/dashboard_layout.dart';
+import 'specialist_patient_details_localization_utils.dart';
 
 const _familyPatternNoteDraft =
     'Repeated clinical characteristics were detected across children linked to the same parent account. Further family-history inquiry may be considered.';
@@ -109,12 +111,13 @@ class _FamilyPatternDetailsSheetState extends State<FamilyPatternDetailsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final details = _details;
     final evidenceLevel =
         details?.evidenceLevel ?? widget.insight.evidenceLevel;
     final patternScore = details?.patternScore ?? widget.insight.patternScore;
-    final badge = _EvidenceBadgeStyle.fromLevel(evidenceLevel);
+    final badge = _EvidenceBadgeStyle.fromLevel(l10n, evidenceLevel);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.88,
@@ -146,7 +149,7 @@ class _FamilyPatternDetailsSheetState extends State<FamilyPatternDetailsSheet> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Family Pattern Details',
+                                l10n.specialistFamilyPatternDetailsTitle,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: DashboardColors.textPrimary,
@@ -154,7 +157,7 @@ class _FamilyPatternDetailsSheetState extends State<FamilyPatternDetailsSheet> {
                               ),
                               SizedBox(height: context.dashSpacing * 0.2),
                               Text(
-                                'Review which linked children matched each detected pattern.',
+                                l10n.specialistFamilyPatternDetailsSubtitle,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: DashboardColors.textSecondary,
                                   height: 1.35,
@@ -166,7 +169,7 @@ class _FamilyPatternDetailsSheetState extends State<FamilyPatternDetailsSheet> {
                         IconButton(
                           onPressed: () => Navigator.of(context).pop(),
                           icon: const Icon(Icons.close_rounded),
-                          tooltip: 'Close',
+                          tooltip: l10n.commonClose,
                         ),
                       ],
                     ),
@@ -241,7 +244,7 @@ class _FamilyPatternDetailsSheetState extends State<FamilyPatternDetailsSheet> {
                                 bottom: context.dashSpacing * 0.55,
                               ),
                               child: Text(
-                                'No detailed matches are available.',
+                                l10n.specialistFamilyPatternNoDetailedMatches,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: DashboardColors.textSecondary,
                                 ),
@@ -297,6 +300,7 @@ class _DetailsErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Center(
@@ -308,7 +312,7 @@ class _DetailsErrorState extends StatelessWidget {
             const Icon(Icons.error_outline, color: DashboardColors.textMuted),
             SizedBox(height: context.dashSpacing * 0.45),
             Text(
-              'Unable to load matched children details.',
+              l10n.specialistFamilyPatternLoadDetailsFailed,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
@@ -325,7 +329,7 @@ class _DetailsErrorState extends StatelessWidget {
               ),
             ],
             SizedBox(height: context.dashSpacing * 0.55),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(onPressed: onRetry, child: Text(l10n.commonRetry)),
           ],
         ),
       ),
@@ -340,6 +344,7 @@ class _HiddenMatchesNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
@@ -366,9 +371,7 @@ class _HiddenMatchesNotice extends StatelessWidget {
           SizedBox(width: context.dashSpacing * 0.35),
           Expanded(
             child: Text(
-              count == 1
-                  ? 'Some matched children are not shown because you are not assigned to their records.'
-                  : '$count matched children are not shown because you are not assigned to their records.',
+              localizedFamilyPatternHiddenMatchesNotice(l10n, count),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
                 height: 1.35,
@@ -388,6 +391,7 @@ class _PatternDetailsGroupSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final value = group.condition ?? group.category;
 
@@ -414,7 +418,7 @@ class _PatternDetailsGroupSection extends StatelessWidget {
         if (group.overlappingKeywords.isNotEmpty) ...[
           SizedBox(height: context.dashSpacing * 0.25),
           Text(
-            'Shared terms:',
+            l10n.specialistFamilyPatternSharedTerms,
             style: theme.textTheme.labelMedium?.copyWith(
               color: DashboardColors.textMuted,
               fontWeight: FontWeight.w600,
@@ -467,6 +471,7 @@ class _MatchedChildRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Row(
@@ -501,7 +506,7 @@ class _MatchedChildRow extends StatelessWidget {
                   child.matchedValue!.isNotEmpty) ...[
                 SizedBox(height: context.dashSpacing * 0.08),
                 Text(
-                  'Matched value: ${child.matchedValue}',
+                  l10n.specialistFamilyPatternMatchedValue(child.matchedValue!),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
@@ -555,25 +560,27 @@ class _SpecialistActionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         OutlinedButton.icon(
           onPressed: onAddClinicalNote,
           icon: const Icon(Icons.note_add_outlined, size: 18),
-          label: const Text('Add Clinical Note'),
+          label: Text(l10n.specialistFamilyPatternAddClinicalNote),
         ),
         SizedBox(height: context.dashSpacing * 0.35),
         OutlinedButton.icon(
           onPressed: onContactParent,
           icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-          label: const Text('Contact Parent'),
+          label: Text(l10n.specialistFamilyPatternContactParent),
         ),
         SizedBox(height: context.dashSpacing * 0.35),
         FilledButton.icon(
           onPressed: onScheduleFollowUp,
           icon: const Icon(Icons.event_available_outlined, size: 18),
-          label: const Text('Schedule Follow-up'),
+          label: Text(l10n.specialistFamilyPatternScheduleFollowUp),
         ),
       ],
     );
@@ -635,24 +642,24 @@ class _EvidenceBadgeStyle {
   final Color backgroundColor;
   final Color foregroundColor;
 
-  static _EvidenceBadgeStyle fromLevel(String level) {
+  static _EvidenceBadgeStyle fromLevel(AppLocalizations l10n, String level) {
     switch (level.trim().toUpperCase()) {
       case 'HIGH':
-        return const _EvidenceBadgeStyle(
-          label: 'High Evidence',
+        return _EvidenceBadgeStyle(
+          label: l10n.specialistFamilyPatternEvidenceHigh,
           backgroundColor: DashboardColors.tealSoft,
           foregroundColor: DashboardColors.accent,
         );
       case 'MODERATE':
-        return const _EvidenceBadgeStyle(
-          label: 'Moderate Evidence',
+        return _EvidenceBadgeStyle(
+          label: l10n.specialistFamilyPatternEvidenceModerate,
           backgroundColor: DashboardColors.amberSoft,
           foregroundColor: DashboardColors.warning,
         );
       case 'LOW':
       default:
-        return const _EvidenceBadgeStyle(
-          label: 'Low Evidence',
+        return _EvidenceBadgeStyle(
+          label: l10n.specialistFamilyPatternEvidenceLow,
           backgroundColor: DashboardColors.blueSoft,
           foregroundColor: DashboardColors.brandSecondaryBlue,
         );

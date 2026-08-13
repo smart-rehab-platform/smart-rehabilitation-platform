@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../providers/specialist_speech_analysis_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import 'specialist_speech_analysis_localization_utils.dart';
 import 'specialist_speech_analysis_widgets.dart';
 
 class SpecialistSpeechAnalysisScreen extends ConsumerStatefulWidget {
@@ -39,19 +41,27 @@ class _SpecialistSpeechAnalysisScreenState
   SpecialistSpeechAnalysisArgs get _providerArgs => _args;
 
   Future<void> _analyze() async {
-    final notifier =
-        ref.read(specialistSpeechAnalysisProvider(_providerArgs).notifier);
+    final l10n = AppLocalizations.of(context)!;
+    final notifier = ref.read(
+      specialistSpeechAnalysisProvider(_providerArgs).notifier,
+    );
     await notifier.analyzeSubmission();
     if (!mounted) return;
 
     final state = ref.read(specialistSpeechAnalysisProvider(_providerArgs));
     if (state.successMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.successMessage!)),
+        SnackBar(
+          content: Text(
+            mapSpecialistSpeechAnalysisSuccessMessage(
+              l10n,
+              state.successMessage!,
+            ),
+          ),
+        ),
       );
       notifier.clearMessages();
     }
-    // Errors stay on the screen error card only (no duplicate SnackBar).
   }
 
   Future<void> _retry() async {
@@ -74,12 +84,14 @@ class _SpecialistSpeechAnalysisScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistSpeechAnalysisProvider(_providerArgs));
-    final notifier =
-        ref.read(specialistSpeechAnalysisProvider(_providerArgs).notifier);
+    final notifier = ref.read(
+      specialistSpeechAnalysisProvider(_providerArgs).notifier,
+    );
     final theme = Theme.of(context);
     final selected = state.selectedAnalysis;
-    final patientName = state.patientName ?? 'Patient';
+    final patientName = state.patientName ?? l10n.entityPatient;
     final hasSubmissionContext =
         (state.submissionId ?? widget.submissionId)?.isNotEmpty ?? false;
     final busy = state.isAnalyzing || state.isLoading || state.isRefreshing;
@@ -93,7 +105,7 @@ class _SpecialistSpeechAnalysisScreenState
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.error!,
+          message: mapSpecialistSpeechAnalysisError(l10n, state.error!),
           onRetry: busy ? () {} : _retry,
         ),
       );
@@ -121,21 +133,20 @@ class _SpecialistSpeechAnalysisScreenState
             if (state.error != null) ...[
               SizedBox(height: context.dashSpacing * 0.75),
               DashboardErrorCard(
-                message: state.error!,
+                message: mapSpecialistSpeechAnalysisError(l10n, state.error!),
                 onRetry: busy ? () {} : _retry,
               ),
             ],
             if (selected == null && state.analyses.isEmpty) ...[
               SizedBox(height: context.dashSpacing * 0.75),
-              const DashboardEmptyCard(
-                message:
-                    'No speech analysis results yet. Run analysis on an audio submission to get started.',
+              DashboardEmptyCard(
+                message: l10n.specialistSpeechAnalysisEmptyResults,
               ),
             ],
             if (selected != null) ...[
               SizedBox(height: context.dashSpacing * 0.75),
               Text(
-                'Latest Analysis Summary',
+                l10n.specialistSpeechAnalysisLatestSummary,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: DashboardColors.textPrimary,
@@ -169,7 +180,7 @@ class _SpecialistSpeechAnalysisScreenState
             ],
             SizedBox(height: context.dashSpacing * 0.75),
             Text(
-              'Analysis History',
+              l10n.specialistSpeechAnalysisHistory,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -177,8 +188,8 @@ class _SpecialistSpeechAnalysisScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             if (state.analyses.isEmpty)
-              const DashboardEmptyCard(
-                message: 'No previous speech analyses recorded.',
+              DashboardEmptyCard(
+                message: l10n.specialistSpeechAnalysisEmptyHistory,
               )
             else
               ...state.analyses.map(
@@ -195,7 +206,7 @@ class _SpecialistSpeechAnalysisScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Speech Analysis',
+      title: l10n.clinicalSpeechAnalysis,
       showBackButton: true,
       body: state.isRefreshing
           ? Stack(

@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../core/utils/api_response_parser.dart';
 import '../models/specialist_dashboard_models.dart';
 import '../models/specialist_feature_models.dart';
+import '../models/specialist_weekly_interactions_models.dart';
 import 'specialist_dashboard_debug.dart';
 
 /// Aggregated specialist dashboard payload from existing backend endpoints.
@@ -211,5 +212,20 @@ class SpecialistDashboardRepository {
       for (final patient in patients) patient.id: patient.name,
     };
     return _fetchProgressForPatients(patientIds, patientNames);
+  }
+
+  Future<SpecialistWeeklyInteractionsData> fetchWeeklyPatientInteractions({
+    int weekOffset = 0,
+  }) async {
+    final normalizedOffset = normalizeWeeklyInteractionsWeekOffset(weekOffset);
+    final response = await _dio.get(
+      '/dashboard/specialist/weekly-patient-interactions',
+      queryParameters: {'week_offset': normalizedOffset},
+    );
+    final map = ApiResponseParser.extractMap(response.data) ?? const {};
+    return SpecialistWeeklyInteractionsData.fromMap(
+      map,
+      requestedWeekOffset: normalizedOffset,
+    );
   }
 }

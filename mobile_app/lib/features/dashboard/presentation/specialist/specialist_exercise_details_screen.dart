@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/dashboard_theme.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_exercise_assignment_provider.dart';
@@ -14,6 +15,7 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/exercise_instruction_media_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import 'specialist_exercises_localization_utils.dart';
 import 'specialist_exercises_widgets.dart';
 
 class SpecialistExerciseDetailsScreen extends ConsumerStatefulWidget {
@@ -59,6 +61,7 @@ class _SpecialistExerciseDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(
       specialistExerciseDetailProvider(widget.exerciseId),
     );
@@ -75,14 +78,14 @@ class _SpecialistExerciseDetailsScreenState
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: mapSpecialistExerciseDetailError(l10n, state.errorMessage!),
           onRetry: notifier.refresh,
         ),
       );
     } else if (state.exercise == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(message: 'Exercise not found.'),
+        child: DashboardEmptyCard(message: l10n.specialistExerciseNotFound),
       );
     } else {
       final exercise = state.exercise!;
@@ -135,15 +138,24 @@ class _SpecialistExerciseDetailsScreenState
                           ],
                           SizedBox(height: context.dashSpacing * 0.35),
                           Text(
-                            'Language: ${exercise.languageLabel}',
+                            l10n.specialistExerciseLanguageLine(
+                              localizedExerciseLanguageLabel(
+                                l10n,
+                                exercise.languageLabel,
+                              ),
+                            ),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: DashboardColors.textMuted,
                             ),
                           ),
-                          if ((exercise.createdByName ?? '').trim().isNotEmpty) ...[
+                          if ((exercise.createdByName ?? '')
+                              .trim()
+                              .isNotEmpty) ...[
                             SizedBox(height: context.dashSpacing * 0.35),
                             Text(
-                              'Created by ${exercise.createdByName}',
+                              l10n.specialistExerciseCreatedBy(
+                                exercise.createdByName!.trim(),
+                              ),
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: DashboardColors.textMuted,
                               ),
@@ -159,7 +171,7 @@ class _SpecialistExerciseDetailsScreenState
                   OutlinedButton.icon(
                     onPressed: () => _openEdit(exercise),
                     icon: const Icon(Icons.edit_outlined),
-                    label: const Text('Edit Exercise'),
+                    label: Text(l10n.specialistExerciseEditExercise),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: DashboardColors.brandCyan,
                       side: const BorderSide(color: DashboardColors.brandCyan),
@@ -171,23 +183,23 @@ class _SpecialistExerciseDetailsScreenState
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           _DetailSection(
-            title: 'Description',
+            title: l10n.specialistExerciseDescriptionSection,
             body: (description != null && description.isNotEmpty)
                 ? description
-                : 'No description available.',
+                : l10n.specialistExerciseNoDescription,
           ),
           SizedBox(height: context.dashSpacing * 0.65),
           _DetailSection(
-            title: 'Instructions',
+            title: l10n.specialistExerciseInstructionsSection,
             body: (instructions != null && instructions.isNotEmpty)
                 ? instructions
-                : 'No instructions available.',
+                : l10n.specialistExerciseNoInstructions,
           ),
           if (exercise.hasMedia) ...[
             SizedBox(height: context.dashSpacing * 0.65),
             ExerciseInstructionMediaCard(
               mediaUrl: exercise.instructionMediaUrl!,
-              title: 'Instruction Media',
+              title: l10n.specialistExerciseInstructionMediaTitle,
             ),
           ],
           SizedBox(height: context.dashSpacing),
@@ -197,7 +209,7 @@ class _SpecialistExerciseDetailsScreenState
 
     if (widget.useAdminChrome) {
       return AdminPageScaffold(
-        title: 'Exercise Details',
+        title: l10n.specialistExerciseDetailsTitle,
         showBackButton: true,
         showBottomNav: false,
         body: Theme(data: DashboardTheme.light, child: body),
@@ -205,7 +217,7 @@ class _SpecialistExerciseDetailsScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Exercise Details',
+      title: l10n.specialistExerciseDetailsTitle,
       showBackButton: true,
       body: body,
     );

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_edit_treatment_plan_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
+import 'specialist_treatment_plans_goals_localization_utils.dart';
 
 class EditTreatmentPlanPatientHeader extends StatelessWidget {
   const EditTreatmentPlanPatientHeader({super.key, required this.patientName});
@@ -56,6 +58,8 @@ class PlanStatusSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Wrap(
       spacing: context.dashSpacing * 0.45,
       runSpacing: context.dashSpacing * 0.45,
@@ -81,13 +85,13 @@ class PlanStatusSelector extends StatelessWidget {
               ),
             ),
             child: Text(
-              value.label,
+              localizedTreatmentPlanStatusEnum(l10n, value),
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: selected
-                        ? DashboardColors.brandCyan
-                        : DashboardColors.textSecondary,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: selected
+                    ? DashboardColors.brandCyan
+                    : DashboardColors.textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         );
@@ -112,10 +116,11 @@ class PlanDatePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final display = value != null
         ? DateFormat('MMM d, yyyy').format(value!)
-        : 'Select date';
+        : l10n.specialistTreatmentPlanSelectDate;
 
     return DashboardSurfaceCard(
       onTap: () async {
@@ -193,12 +198,13 @@ InputDecoration _planFieldDecoration(String hint) {
 Widget buildPlanTitleField({
   required TextEditingController controller,
   required ValueChanged<String> onChanged,
+  required String hint,
   bool enabled = true,
 }) {
   return TextField(
     controller: controller,
     onChanged: onChanged,
     enabled: enabled,
-    decoration: _planFieldDecoration('Treatment plan title'),
+    decoration: _planFieldDecoration(hint),
   );
 }

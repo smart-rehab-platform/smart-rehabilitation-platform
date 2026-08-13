@@ -21,6 +21,9 @@ import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_navigation.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import 'parent_ui_helpers.dart';
+import '../../../../core/locale/language_selector.dart';
+import '../../../../l10n/app_localizations.dart';
+import 'parent_scoped_localization_utils.dart';
 
 export 'parent_sessions_screen.dart';
 
@@ -56,17 +59,20 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(parentDashboardProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final mappedError = state.errorMessage == null
+        ? null
+        : mapParentDashboardError(l10n, state.errorMessage!);
 
     return ParentPageScaffold(
-      title: 'Children',
+      title: l10n.parentChildrenScreenTitle,
       currentNav: DashboardNavItem.patients,
       body: ParentAsyncBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: mappedError,
         onRetry: () => ref.read(parentDashboardProvider.notifier).refresh(),
         isEmpty: state.children.isEmpty,
-        emptyMessage:
-            'No linked children yet. Add a child from the specialist portal.',
+        emptyMessage: l10n.parentChildrenNoLinked,
         child: Column(
           children: state.children.map((child) {
             final progressChild = _progressFor(
@@ -75,13 +81,14 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
             );
             final progress =
                 progressChild?.progressPercent ?? child.progressPercent;
-            final metaParts = <String>[
-              if (child.age != null) '${child.age} yrs',
-              if (child.dateOfBirth != null)
-                parentFormatDate(child.dateOfBirth),
-              if (child.gender != null && child.gender!.isNotEmpty)
-                child.gender!,
-            ];
+            final metaParts = buildChildMetaParts(
+              l10n: l10n,
+              child: child,
+              formatDate: parentFormatDate,
+            );
+            final progressPercent = progress == null
+                ? null
+                : normalizeProgressPercent(progress);
 
             return Padding(
               padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
@@ -123,16 +130,18 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
                                 color: DashboardColors.textMuted,
                               ),
                             ),
-                          if (progress != null)
+                          if (progressPercent != null)
                             Text(
-                              '${progress <= 1 ? (progress * 100).round() : progress.round()}% progress',
+                              l10n.parentChildrenProgressPercent(
+                                progressPercent,
+                              ),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: DashboardColors.textSecondary,
                               ),
                             )
                           else
                             Text(
-                              'Progress will appear once exercises are tracked.',
+                              l10n.parentChildrenProgressPending,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: DashboardColors.textSecondary,
                               ),
@@ -140,9 +149,9 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
                         ],
                       ),
                     ),
-                    if (progress != null)
+                    if (progressPercent != null)
                       Text(
-                        '${progress <= 1 ? (progress * 100).round() : progress.round()}%',
+                        '$progressPercent%',
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: DashboardColors.brandCyan,
                           fontWeight: FontWeight.w800,
@@ -187,20 +196,26 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
     final state = ref.watch(parentDashboardProvider);
     final theme = Theme.of(context);
     final selectedChild = state.selectedChild;
+    final l10n = AppLocalizations.of(context)!;
+    final mappedError = state.errorMessage == null
+        ? null
+        : mapParentDashboardError(l10n, state.errorMessage!);
 
     return ParentPageScaffold(
-      title: 'Reports',
+      title: l10n.navReports,
       currentNav: DashboardNavItem.reports,
       body: state.isLoading
-          ? const Center(child: DashboardLoadingCard())
+          ? Center(
+              child: DashboardLoadingCard(message: l10n.parentReportsLoading),
+            )
           : SingleChildScrollView(
               padding: context.dashPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (state.errorMessage != null)
+                  if (mappedError != null)
                     DashboardErrorCard(
-                      message: state.errorMessage!,
+                      message: mappedError,
                       onRetry: () =>
                           ref.read(parentDashboardProvider.notifier).refresh(),
                     ),
@@ -215,15 +230,14 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                   ),
                   SizedBox(height: context.dashSpacing),
                   if (state.isLoadingChild)
-                    const DashboardLoadingCard(message: 'Loading reports...')
+                    DashboardLoadingCard(message: l10n.parentReportsLoading)
                   else if (selectedChild == null)
-                    const DashboardEmptyCard(
-                      message: 'Select a child to view reports.',
-                    )
+                    DashboardEmptyCard(message: l10n.parentReportsSelectChild)
                   else if (state.reports.isEmpty)
                     DashboardEmptyCard(
-                      message:
-                          'No reports available for ${selectedChild.name}.',
+                      message: l10n.parentReportsEmptyForChild(
+                        selectedChild.name,
+                      ),
                     )
                   else
                     ...state.reports.map(
@@ -235,12 +249,13 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                           onTap:
                               report.pdfUrl != null && report.pdfUrl!.isNotEmpty
                               ? () =>
-                                    parentOpenReportUrl(context, report.pdfUrl)
+                                    parentOpenReportUrl(context, l10n, report.pdfUrl)
                               : null,
                           onLongPress:
                               report.pdfUrl != null && report.pdfUrl!.isNotEmpty
                               ? () => parentLongPressReportUrl(
                                   context,
+                                  l10n,
                                   report.pdfUrl,
                                 )
                               : null,
@@ -279,7 +294,10 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                                     Text(
                                       [
                                         if (report.reportType != null)
-                                          report.reportType,
+                                          localizedReportType(
+                                            l10n,
+                                            report.reportType!,
+                                          ),
                                         selectedChild.name,
                                         if (report.summary != null)
                                           report.summary,
@@ -299,9 +317,10 @@ class _ParentReportsScreenState extends ConsumerState<ParentReportsScreen> {
                                 IconButton(
                                   onPressed: () => parentOpenReportUrl(
                                     context,
+                                    l10n,
                                     report.pdfUrl,
                                   ),
-                                  tooltip: 'Open report',
+                                  tooltip: l10n.parentReportsOpenReport,
                                   icon: Icon(
                                     Icons.open_in_new_outlined,
                                     color: DashboardColors.brandCyan,
@@ -365,9 +384,13 @@ class _ParentNotificationsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(parentNotificationsProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final mappedError = state.errorMessage == null
+        ? null
+        : mapParentNotificationsError(l10n, state.errorMessage!);
 
     return ParentPageScaffold(
-      title: 'Notifications',
+      title: l10n.navNotifications,
       showBackButton: true,
       actions: [
         if (state.unreadCount > 0)
@@ -377,70 +400,83 @@ class _ParentNotificationsScreenState
                 : () => ref
                       .read(parentNotificationsProvider.notifier)
                       .markAllAsRead(),
-            child: const Text('Mark all as read'),
+            child: Text(l10n.parentNotificationsMarkAllRead),
           ),
       ],
-      body: ParentAsyncBody(
-        isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
-        onRetry: () => ref.read(parentNotificationsProvider.notifier).refresh(),
-        isEmpty: state.items.isEmpty,
-        emptyMessage: 'No notifications yet.',
-        child: Column(
-          children: state.items
-              .map(
-                (item) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: DashboardSurfaceCard(
-                    onTap: () => _onNotificationTap(item),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          item.isRead
-                              ? Icons.notifications_none_rounded
-                              : Icons.notifications_active_rounded,
-                          color: item.isRead
-                              ? DashboardColors.textMuted
-                              : DashboardColors.brandCyan,
+      body: state.isLoading
+          ? Center(
+              child: DashboardLoadingCard(
+                message: l10n.parentNotificationsLoading,
+              ),
+            )
+          : ParentAsyncBody(
+              isLoading: false,
+              errorMessage: mappedError,
+              onRetry: () =>
+                  ref.read(parentNotificationsProvider.notifier).refresh(),
+              isEmpty: state.items.isEmpty,
+              emptyMessage: l10n.parentNotificationsEmpty,
+              child: Column(
+                children: state.items
+                    .map(
+                      (item) => Padding(
+                        padding: EdgeInsets.only(
+                          bottom: context.dashSpacing * 0.6,
                         ),
-                        SizedBox(width: context.dashSpacing * 0.65),
-                        Expanded(
-                          child: Column(
+                        child: DashboardSurfaceCard(
+                          onTap: () => _onNotificationTap(item),
+                          child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                item.title,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: item.isRead
-                                      ? FontWeight.w500
-                                      : FontWeight.w700,
-                                ),
+                              Icon(
+                                item.isRead
+                                    ? Icons.notifications_none_rounded
+                                    : Icons.notifications_active_rounded,
+                                color: item.isRead
+                                    ? DashboardColors.textMuted
+                                    : DashboardColors.brandCyan,
                               ),
-                              if (item.message != null)
-                                Text(
-                                  item.message!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: DashboardColors.textSecondary,
-                                  ),
-                                ),
-                              Text(
-                                '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: DashboardColors.textMuted,
+                              SizedBox(width: context.dashSpacing * 0.65),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.title,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: item.isRead
+                                                ? FontWeight.w500
+                                                : FontWeight.w700,
+                                          ),
+                                    ),
+                                    if (item.message != null)
+                                      Text(
+                                        item.message!,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color:
+                                                  DashboardColors.textSecondary,
+                                            ),
+                                      ),
+                                    Text(
+                                      '${item.type ?? l10n.notificationTypeUpdate} • ${_formatDate(item.createdAt)}',
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: DashboardColors.textMuted,
+                                          ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
     );
   }
 }
@@ -462,18 +498,24 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
     });
   }
 
-  List<DashboardProfileFieldEntry> _profileFields(ParentProfileBundle bundle) {
-    final fields = buildRequiredProfileFields(
-      fullName: bundle.fullName,
-      email: bundle.email,
-      role: 'parent',
-    );
+  List<DashboardProfileFieldEntry> _profileFields(
+    ParentProfileBundle bundle,
+    AppLocalizations l10n,
+  ) {
+    final fields = <DashboardProfileFieldEntry>[
+      DashboardProfileFieldEntry(
+        label: l10n.fieldFullName,
+        value: bundle.fullName,
+      ),
+      DashboardProfileFieldEntry(label: l10n.fieldEmail, value: bundle.email),
+      DashboardProfileFieldEntry(label: l10n.fieldRole, value: l10n.roleParent),
+    ];
 
-    appendOptionalProfileField(fields, 'Phone', bundle.phone);
-    appendOptionalProfileField(fields, 'Address', bundle.address);
+    appendOptionalProfileField(fields, l10n.fieldPhone, bundle.phone);
+    appendOptionalProfileField(fields, l10n.fieldAddress, bundle.address);
     appendOptionalProfileField(
       fields,
-      'Relationship Notes',
+      l10n.parentProfileRelationshipNotes,
       bundle.relationshipNotes,
       multiline: true,
     );
@@ -485,22 +527,25 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(parentProfileProvider);
     final bundle = state.bundle;
+    final l10n = AppLocalizations.of(context)!;
 
     Widget body;
     if (state.isLoading) {
-      body = const Center(child: DashboardLoadingCard());
+      body = Center(
+        child: DashboardLoadingCard(message: l10n.parentProfileLoading),
+      );
     } else if (state.errorMessage != null && bundle == null) {
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: mapParentProfileError(l10n, state.errorMessage!),
           onRetry: () => ref.read(parentProfileProvider.notifier).refresh(),
         ),
       );
     } else if (bundle == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(message: 'Profile not available.'),
+        child: DashboardEmptyCard(message: l10n.parentProfileNotAvailable),
       );
     } else {
       body = RefreshIndicator(
@@ -509,24 +554,34 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
-          child: SharedProfileCard(
-            initials: bundle.fullName,
-            initialsFallback: 'PR',
-            imageUrl: bundle.profileImageUrl,
-            fields: _profileFields(bundle),
-            presenceUserId: bundle.userId,
-            accentColor: DashboardColors.brandCyan,
-            cardTint: DashboardColors.brandCyan,
-            useBrandLogoutGradient: true,
-            onEditPressed: () => context.push(AppRoutes.parentEditProfile),
-            onLogout: () => ParentNavigation.logout(context, ref),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const LanguageSelector(
+                presentation: LanguageSelectorPresentation.settingsTile,
+              ),
+              SharedProfileCard(
+                initials: bundle.fullName,
+                initialsFallback: 'PR',
+                imageUrl: bundle.profileImageUrl,
+                fields: _profileFields(bundle, l10n),
+                presenceUserId: bundle.userId,
+                accentColor: DashboardColors.brandCyan,
+                cardTint: DashboardColors.brandCyan,
+                useBrandLogoutGradient: true,
+                editProfileLabel: l10n.parentProfileEditProfile,
+                logoutLabel: l10n.commonLogout,
+                onEditPressed: () => context.push(AppRoutes.parentEditProfile),
+                onLogout: () => ParentNavigation.logout(context, ref),
+              ),
+            ],
           ),
         ),
       );
     }
 
     return ParentPageScaffold(
-      title: 'Profile',
+      title: l10n.navProfile,
       showBackButton: true,
       body: body,
     );
@@ -555,37 +610,52 @@ class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
     final activeCaseRequestCount = countActiveParentCaseRequests(
       caseIntakeState.requests,
     );
+    final l10n = AppLocalizations.of(context)!;
 
     return ParentPageScaffold(
-      title: 'More',
+      title: l10n.commonMore,
       currentNav: DashboardNavItem.more,
       body: ListView(
         padding: context.dashPadding,
         children: [
+          const LanguageSelector(
+            presentation: LanguageSelectorPresentation.settingsTile,
+          ),
           _MoreTile(
             icon: Icons.assignment_outlined,
-            label: 'Case Requests',
+            label: l10n.navCaseRequests,
             badgeCount: activeCaseRequestCount,
             onTap: () => context.push(AppRoutes.parentCaseRequests),
           ),
           _MoreTile(
+            icon: Icons.report_outlined,
+            label: l10n.complaintMoreReportSpecialist,
+            subtitle: l10n.complaintMoreReportSpecialistSubtitle,
+            onTap: () => context.push(AppRoutes.parentComplaintNew),
+          ),
+          _MoreTile(
+            icon: Icons.history_rounded,
+            label: l10n.complaintHistoryTitle,
+            onTap: () => context.push(AppRoutes.parentComplaints),
+          ),
+          _MoreTile(
             icon: Icons.chat_bubble_outline_rounded,
-            label: 'Messages',
+            label: l10n.navMessages,
             onTap: () => context.push(AppRoutes.parentMessages),
           ),
           _MoreTile(
             icon: Icons.person_outline_rounded,
-            label: 'Profile',
+            label: l10n.navProfile,
             onTap: () => context.push(AppRoutes.parentProfile),
           ),
           _MoreTile(
             icon: Icons.notifications_none_rounded,
-            label: 'Notifications',
+            label: l10n.navNotifications,
             onTap: () => context.push(AppRoutes.parentNotifications),
           ),
           _MoreTile(
             icon: Icons.logout_rounded,
-            label: 'Logout',
+            label: l10n.commonLogout,
             onTap: () => ParentNavigation.logout(context, ref),
           ),
         ],
@@ -599,11 +669,13 @@ class _MoreTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    this.subtitle,
     this.badgeCount = 0,
   });
 
   final IconData icon;
   final String label;
+  final String? subtitle;
   final VoidCallback onTap;
   final int badgeCount;
 
@@ -618,16 +690,28 @@ class _MoreTile extends StatelessWidget {
             Icon(icon, color: DashboardColors.brandCyan),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
-              child: Text(
-                label,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  if (subtitle != null && subtitle!.isNotEmpty)
+                    Text(
+                      subtitle!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
+                ],
               ),
             ),
             if (badgeCount > 0)
               Container(
-                margin: const EdgeInsets.only(right: 8),
+                margin: const EdgeInsetsDirectional.only(end: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: DashboardColors.brandCyan,

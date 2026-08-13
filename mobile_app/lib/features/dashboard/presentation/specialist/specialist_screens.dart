@@ -4,11 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/locale/language_selector.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/dashboard_theme.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_dashboard_models.dart';
 import '../../models/specialist_feature_models.dart';
-import '../../providers/specialist_dashboard_provider.dart';
 import '../../providers/specialist_features_provider.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -18,7 +19,10 @@ import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/specialist_navigation.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import 'specialist_dashboard_localization_utils.dart';
+import 'specialist_exercise_review_localization_utils.dart';
 import 'specialist_exercises_widgets.dart';
+import 'specialist_scoped_localization_utils.dart';
 import 'treatment_plans_list_widgets.dart';
 
 class SpecialistPatientsScreen extends ConsumerStatefulWidget {
@@ -43,16 +47,19 @@ class _SpecialistPatientsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(specialistPatientsProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return SpecialistPageScaffold(
-      title: 'Active Cases',
+      title: l10n.specialistDashboardActiveCases,
       currentNav: DashboardNavItem.patients,
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: state.errorMessage != null
+            ? mapSpecialistListError(l10n, state.errorMessage!)
+            : null,
         onRetry: () => ref.read(specialistPatientsProvider.notifier).refresh(),
         isEmpty: state.items.isEmpty,
-        emptyMessage: 'No active cases assigned yet.',
+        emptyMessage: l10n.specialistDashboardNoActiveCases,
         child: Column(
           children: state.items
               .map(
@@ -133,20 +140,23 @@ class _SpecialistPendingReviewsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(specialistPendingReviewsListProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return SpecialistPageScaffold(
-      title: 'Pending Reviews',
+      title: l10n.navPendingReviews,
       showBackButton: true,
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: state.errorMessage != null
+            ? mapSpecialistListError(l10n, state.errorMessage!)
+            : null,
         onRetry: () =>
             ref.read(specialistPendingReviewsListProvider.notifier).refresh(),
         isEmpty: state.items.isEmpty,
-        emptyMessage: 'No pending reviews right now.',
+        emptyMessage: l10n.specialistDashboardNoPendingReviews,
         child: Column(
           children: state.items
-              .map((review) => _buildReviewCard(context, theme, review))
+              .map((review) => _buildReviewCard(context, theme, review, l10n))
               .toList(),
         ),
       ),
@@ -224,6 +234,7 @@ class _SpecialistTreatmentPlansScreenState
   }
 
   Future<void> _openPatientPicker() async {
+    final l10n = AppLocalizations.of(context)!;
     final patientsState = ref.read(specialistPatientsProvider);
     final plansState = ref.read(specialistTreatmentPlansProvider);
     if (patientsState.items.isEmpty) {
@@ -236,7 +247,7 @@ class _SpecialistTreatmentPlansScreenState
 
     if (patients.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No assigned patients available.')),
+        SnackBar(content: Text(l10n.specialistNoAssignedPatients)),
       );
       return;
     }
@@ -259,7 +270,7 @@ class _SpecialistTreatmentPlansScreenState
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Select patient',
+                  l10n.specialistSelectPatient,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -286,8 +297,8 @@ class _SpecialistTreatmentPlansScreenState
                         title: Text(patient.name),
                         subtitle: Text(
                           hasActive
-                              ? 'This patient already has an active treatment plan.'
-                              : 'No active plan',
+                              ? l10n.specialistPatientHasActivePlan
+                              : l10n.specialistNoActivePlan,
                         ),
                         trailing: hasActive
                             ? const Icon(Icons.lock_outline)
@@ -317,6 +328,7 @@ class _SpecialistTreatmentPlansScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(specialistTreatmentPlansProvider);
     final visible = _visible(state.items);
+    final l10n = AppLocalizations.of(context)!;
 
     Widget body;
     if (state.isLoading) {
@@ -332,7 +344,7 @@ class _SpecialistTreatmentPlansScreenState
           children: [
             if (state.errorMessage != null) ...[
               DashboardErrorCard(
-                message: state.errorMessage!,
+                message: mapSpecialistListError(l10n, state.errorMessage!),
                 onRetry: () => ref
                     .read(specialistTreatmentPlansProvider.notifier)
                     .refresh(),
@@ -344,7 +356,7 @@ class _SpecialistTreatmentPlansScreenState
               onChanged: (_) => setState(() {}),
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
-                hintText: 'Search by plan title or patient',
+                hintText: l10n.specialistSearchPlansHint,
                 prefixIcon: const Icon(Icons.search_rounded),
                 filled: true,
                 fillColor: DashboardColors.surface,
@@ -370,7 +382,7 @@ class _SpecialistTreatmentPlansScreenState
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'No treatment plans found.',
+                      l10n.specialistNoTreatmentPlans,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: DashboardColors.textSecondary,
                       ),
@@ -379,19 +391,19 @@ class _SpecialistTreatmentPlansScreenState
                     OutlinedButton.icon(
                       onPressed: _openPatientPicker,
                       icon: const Icon(Icons.add_rounded),
-                      label: const Text('Add Treatment Plan'),
+                      label: Text(l10n.specialistAddTreatmentPlan),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: DashboardColors.brandCyan,
-                        side: const BorderSide(color: DashboardColors.brandCyan),
+                        side: const BorderSide(
+                          color: DashboardColors.brandCyan,
+                        ),
                       ),
                     ),
                   ],
                 ),
               )
             else if (visible.isEmpty)
-              const DashboardEmptyCard(
-                message: 'No plans match your search or filter.',
-              )
+              DashboardEmptyCard(message: l10n.specialistNoPlansMatchFilter)
             else
               ...visible.map(
                 (plan) => TreatmentPlanListCard(
@@ -410,11 +422,11 @@ class _SpecialistTreatmentPlansScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Treatment Plans',
+      title: l10n.navTreatmentPlans,
       showBackButton: true,
       actions: [
         IconButton(
-          tooltip: 'Add Treatment Plan',
+          tooltip: l10n.specialistAddTreatmentPlan,
           onPressed: _openPatientPicker,
           icon: const Icon(Icons.add_rounded),
         ),
@@ -445,17 +457,20 @@ class _SpecialistPatientProgressScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistProgressListProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return SpecialistPageScaffold(
-      title: 'Patient Progress',
+      title: l10n.specialistPatientProgress,
       showBackButton: true,
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: state.errorMessage != null
+            ? mapSpecialistProgressError(l10n, state.errorMessage!)
+            : null,
         onRetry: () =>
             ref.read(specialistProgressListProvider.notifier).refresh(),
         isEmpty: state.items.isEmpty,
-        emptyMessage: 'No progress data available yet.',
+        emptyMessage: l10n.specialistDashboardNoProgressData,
         child: DashboardSurfaceCard(
           child: Column(
             children: [
@@ -511,13 +526,14 @@ class _SpecialistExercisesScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(specialistExercisesProvider);
     final notifier = ref.read(specialistExercisesProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     return SpecialistPageScaffold(
-      title: 'Exercises',
+      title: l10n.navExercises,
       currentNav: DashboardNavItem.exercises,
       actions: [
         IconButton(
-          tooltip: 'Add Exercise',
+          tooltip: l10n.specialistAddExercise,
           onPressed: () async {
             final created = await context.push<bool>(
               AppRoutes.specialistAddExercise,
@@ -531,13 +547,19 @@ class _SpecialistExercisesScreenState
       ],
       body: ExerciseLibraryBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: state.errorMessage != null
+            ? mapSpecialistExercisesError(l10n, state.errorMessage!)
+            : null,
         onRetry: notifier.refresh,
         items: state.items,
         searchController: _searchController,
         selectedCategory: _selectedCategory,
         onCategoryChanged: (value) => setState(() => _selectedCategory = value),
         onSearchChanged: (_) => setState(() {}),
+        headerTitle: l10n.specialistExerciseLibrary,
+        headerSubtitle: l10n.specialistExerciseLibrarySubtitle,
+        emptyItemsMessage: l10n.specialistNoExercises,
+        emptyFilteredMessage: l10n.specialistNoExercisesMatchFilter,
         itemBuilder: (context, exercise) => SpecialistExerciseCard(
           exercise: exercise,
           showChevron: true,
@@ -571,6 +593,7 @@ class _SpecialistNotificationsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(specialistNotificationsProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Theme(
       data: DashboardTheme.light,
@@ -585,7 +608,7 @@ class _SpecialistNotificationsScreenState
           ),
           automaticallyImplyLeading: true,
           title: Text(
-            'Notifications',
+            l10n.navNotifications,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -606,24 +629,26 @@ class _SpecialistNotificationsScreenState
         body: SafeArea(
           child: SpecialistAsyncBody(
             isLoading: state.isLoading,
-            errorMessage: state.errorMessage,
+            errorMessage: state.errorMessage != null
+                ? mapSpecialistNotificationsError(l10n, state.errorMessage!)
+                : null,
             onRetry: () =>
                 ref.read(specialistNotificationsProvider.notifier).refresh(),
             isEmpty: state.items.isEmpty,
-            emptyMessage: 'No notifications yet.',
+            emptyMessage: l10n.parentNotificationsEmpty,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (state.unreadCount > 0)
                   Align(
-                    alignment: Alignment.centerRight,
+                    alignment: AlignmentDirectional.centerEnd,
                     child: TextButton(
                       onPressed: state.isUpdating
                           ? null
                           : () => ref
                                 .read(specialistNotificationsProvider.notifier)
                                 .markAllAsRead(),
-                      child: const Text('Mark all as read'),
+                      child: Text(l10n.parentNotificationsMarkAllRead),
                     ),
                   ),
                 ...state.items.map(
@@ -665,7 +690,7 @@ class _SpecialistNotificationsScreenState
                                     ),
                                   ),
                                 Text(
-                                  '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
+                                  '${item.type ?? l10n.notificationTypeUpdate} • ${_formatDate(item.createdAt)}',
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: DashboardColors.textMuted,
                                   ),
@@ -706,8 +731,8 @@ class _SpecialistNotificationBellAction extends StatelessWidget {
           icon: const Icon(Icons.notifications_none_rounded),
         ),
         if (count > 0)
-          Positioned(
-            right: 6,
+          PositionedDirectional(
+            end: 6,
             top: 6,
             child: Container(
               padding: const EdgeInsets.all(4),
@@ -737,50 +762,55 @@ class SpecialistMoreScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SpecialistPageScaffold(
-      title: 'More',
+      title: l10n.commonMore,
       currentNav: DashboardNavItem.more,
       body: ListView(
         padding: context.dashPadding,
         children: [
+          const LanguageSelector(
+            presentation: LanguageSelectorPresentation.settingsTile,
+          ),
           _MoreTile(
             icon: Icons.assignment_ind_outlined,
-            label: 'Assigned Case Requests',
+            label: l10n.navAssignedCaseRequests,
             onTap: () => context.push(AppRoutes.specialistCaseRequests),
           ),
           _MoreTile(
             icon: Icons.chat_bubble_outline_rounded,
-            label: 'Messages',
+            label: l10n.navMessages,
             onTap: () => context.push(AppRoutes.specialistMessages),
           ),
           _MoreTile(
             icon: Icons.person_outline_rounded,
-            label: 'Profile',
+            label: l10n.navProfile,
             onTap: () => context.push(AppRoutes.specialistProfile),
           ),
           _MoreTile(
             icon: Icons.notifications_none_rounded,
-            label: 'Notifications',
+            label: l10n.navNotifications,
             onTap: () => context.push(AppRoutes.specialistNotifications),
           ),
           _MoreTile(
             icon: Icons.rate_review_outlined,
-            label: 'Pending Reviews',
+            label: l10n.navPendingReviews,
             onTap: () => context.push(AppRoutes.specialistPendingReviews),
           ),
           _MoreTile(
             icon: Icons.calendar_today_outlined,
-            label: "Today's Sessions",
+            label: l10n.navTodaysSessions,
             onTap: () => context.push(AppRoutes.specialistSessions),
           ),
           _MoreTile(
             icon: Icons.assignment_outlined,
-            label: 'Treatment Plans',
+            label: l10n.navTreatmentPlans,
             onTap: () => context.push(AppRoutes.specialistTreatmentPlans),
           ),
           _MoreTile(
             icon: Icons.logout_rounded,
-            label: 'Logout',
+            label: l10n.commonLogout,
             onTap: () => SpecialistNavigation.logout(context, ref),
           ),
         ],
@@ -793,6 +823,7 @@ Widget _buildReviewCard(
   BuildContext context,
   ThemeData theme,
   SpecialistPendingReview review,
+  AppLocalizations l10n,
 ) {
   return Padding(
     padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
@@ -824,7 +855,7 @@ Widget _buildReviewCard(
                   ),
                 ),
                 Text(
-                  '${review.exerciseTitle} • ${formatSubmittedAgo(review.submittedAt)}',
+                  '${review.exerciseTitle} • ${formatLocalizedSubmittedAgo(l10n, review.submittedAt)}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
@@ -832,7 +863,9 @@ Widget _buildReviewCard(
               ],
             ),
           ),
-          DashboardPriorityBadge(label: review.priority),
+          DashboardPriorityBadge(
+            label: localizedPendingReviewPriority(l10n, review.priority),
+          ),
           SizedBox(width: context.dashSpacing * 0.25),
           Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
         ],

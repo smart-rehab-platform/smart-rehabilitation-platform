@@ -3,7 +3,9 @@ const aiReportsService = require("./aiReports.service");
 const generateWeeklyReport = async (req, res) => {
   try {
     const report = await aiReportsService.generateReport({
-      ...req.body,
+      patient_id: req.body.patient_id,
+      period_start: req.body.period_start,
+      period_end: req.body.period_end,
       type: "weekly"
     });
 
@@ -23,7 +25,9 @@ const generateWeeklyReport = async (req, res) => {
 const generateMonthlyReport = async (req, res) => {
   try {
     const report = await aiReportsService.generateReport({
-      ...req.body,
+      patient_id: req.body.patient_id,
+      period_start: req.body.period_start,
+      period_end: req.body.period_end,
       type: "monthly"
     });
 
@@ -42,7 +46,7 @@ const generateMonthlyReport = async (req, res) => {
 
 const getAllReports = async (req, res) => {
   try {
-    const reports = await aiReportsService.getAllReports();
+    const reports = await aiReportsService.getAllReports(req.user);
 
     res.status(200).json({
       success: true,
@@ -50,7 +54,7 @@ const getAllReports = async (req, res) => {
       data: reports
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message
     });
@@ -68,12 +72,17 @@ const getReportById = async (req, res) => {
       });
     }
 
+    await aiReportsService.assertActorCanReadPatientAiReports(
+      req.user,
+      report.patient_id
+    );
+
     res.status(200).json({
       success: true,
       data: report
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message
     });
@@ -99,7 +108,7 @@ const getReportsByPatient = async (req, res) => {
 
 const exportReportPdf = async (req, res) => {
   try {
-    const result = await aiReportsService.exportReportPdf(req.params.id);
+    const result = await aiReportsService.exportReportPdf(req.params.id, req.user);
 
     if (!result) {
       return res.status(404).json({

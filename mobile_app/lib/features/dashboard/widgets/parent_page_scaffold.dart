@@ -104,8 +104,8 @@ class _NotificationAction extends StatelessWidget {
           icon: const Icon(Icons.notifications_none_rounded),
         ),
         if (count > 0)
-          Positioned(
-            right: 6,
+          PositionedDirectional(
+            end: 6,
             top: 6,
             child: Container(
               padding: const EdgeInsets.all(4),

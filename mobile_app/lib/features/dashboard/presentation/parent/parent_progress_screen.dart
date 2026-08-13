@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/parent_dashboard_models.dart';
 import '../../providers/parent_dashboard_provider.dart';
 import '../../providers/parent_features_provider.dart';
@@ -605,6 +606,7 @@ class _JourneyErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return DashboardSurfaceCard(
       tint: DashboardColors.warning,
       child: Row(
@@ -618,7 +620,7 @@ class _JourneyErrorBanner extends StatelessWidget {
               ),
             ),
           ),
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
+          TextButton(onPressed: onRetry, child: Text(l10n.commonRetry)),
         ],
       ),
     );
@@ -744,6 +746,7 @@ class _SupportingProgressSections extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     if (state.isLoading) {
       return const _DetailedProgressLoading();
     }
@@ -766,7 +769,7 @@ class _SupportingProgressSections extends ConsumerWidget {
                   onPressed: () => ref
                       .read(parentProgressProvider(childId).notifier)
                       .refresh(),
-                  child: const Text('Retry'),
+                  child: Text(l10n.commonRetry),
                 ),
               ],
             ),

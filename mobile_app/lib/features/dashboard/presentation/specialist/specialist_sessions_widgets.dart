@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import 'manage_goals_widgets.dart';
+import 'specialist_scoped_localization_utils.dart';
 
 class SessionFilterChips extends StatelessWidget {
   const SessionFilterChips({
@@ -19,13 +21,15 @@ class SessionFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: SessionListFilter.values.map((filter) {
           final isSelected = selected == filter;
           return Padding(
-            padding: EdgeInsets.only(right: context.dashSpacing * 0.4),
+            padding: EdgeInsetsDirectional.only(end: context.dashSpacing * 0.4),
             child: InkWell(
               onTap: () => onChanged(filter),
               borderRadius: BorderRadius.circular(14),
@@ -46,13 +50,13 @@ class SessionFilterChips extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  filter.label,
+                  localizedSessionListFilter(l10n, filter),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: isSelected
-                            ? DashboardColors.brandCyan
-                            : DashboardColors.textSecondary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: isSelected
+                        ? DashboardColors.brandCyan
+                        : DashboardColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -69,14 +73,16 @@ class SessionStatusBadge extends StatelessWidget {
   final SessionDisplayStatus status;
 
   Color get _color => switch (status) {
-        SessionDisplayStatus.scheduled => const Color(0xFF00A884),
-        SessionDisplayStatus.completed => DashboardColors.success,
-        SessionDisplayStatus.cancelled => DashboardColors.highPriority,
-        SessionDisplayStatus.noShow => const Color(0xFFC62828),
-      };
+    SessionDisplayStatus.scheduled => const Color(0xFF00A884),
+    SessionDisplayStatus.completed => DashboardColors.success,
+    SessionDisplayStatus.cancelled => DashboardColors.highPriority,
+    SessionDisplayStatus.noShow => const Color(0xFFC62828),
+  };
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: context.dashSpacing * 0.45,
@@ -87,11 +93,11 @@ class SessionStatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        status.label,
+        localizedSessionDisplayStatus(l10n, status),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: _color,
-              fontWeight: FontWeight.w700,
-            ),
+          color: _color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -110,6 +116,7 @@ class SpecialistSessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final dateLabel = session.scheduledAt != null
         ? DateFormat('MMM d, yyyy').format(session.scheduledAt!)
         : '—';
@@ -162,20 +169,20 @@ class SpecialistSessionCard extends StatelessWidget {
             SizedBox(height: context.dashSpacing * 0.55),
             _SessionInfoRow(
               icon: Icons.calendar_today_outlined,
-              label: 'Date',
+              label: l10n.fieldDate,
               value: dateLabel,
             ),
             SizedBox(height: context.dashSpacing * 0.25),
             _SessionInfoRow(
               icon: Icons.schedule_rounded,
-              label: 'Time',
+              label: l10n.fieldTime,
               value: session.timeLabel,
             ),
             if (session.location != null && session.location!.isNotEmpty) ...[
               SizedBox(height: context.dashSpacing * 0.25),
               _SessionInfoRow(
                 icon: Icons.location_on_outlined,
-                label: 'Location',
+                label: l10n.fieldLocation,
                 value: session.location!,
               ),
             ],
@@ -202,15 +209,19 @@ class _SessionInfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: context.dashSpacing * 0.5, color: DashboardColors.textMuted),
+        Icon(
+          icon,
+          size: context.dashSpacing * 0.5,
+          color: DashboardColors.textMuted,
+        ),
         SizedBox(width: context.dashSpacing * 0.35),
         Expanded(
           child: RichText(
             text: TextSpan(
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: DashboardColors.textSecondary,
-                    height: 1.35,
-                  ),
+                color: DashboardColors.textSecondary,
+                height: 1.35,
+              ),
               children: [
                 TextSpan(
                   text: '$label: ',
@@ -227,14 +238,20 @@ class _SessionInfoRow extends StatelessWidget {
 }
 
 Widget buildSessionSearchField({
+  required BuildContext context,
   required TextEditingController controller,
   required ValueChanged<String> onChanged,
 }) {
+  final l10n = AppLocalizations.of(context)!;
+
   return TextField(
     controller: controller,
     onChanged: onChanged,
-    decoration: goalFieldDecoration('Search by patient name').copyWith(
-      prefixIcon: const Icon(Icons.search_rounded, color: DashboardColors.textMuted),
+    decoration: goalFieldDecoration(l10n.specialistSearchSessionsHint).copyWith(
+      prefixIcon: const Icon(
+        Icons.search_rounded,
+        color: DashboardColors.textMuted,
+      ),
     ),
   );
 }

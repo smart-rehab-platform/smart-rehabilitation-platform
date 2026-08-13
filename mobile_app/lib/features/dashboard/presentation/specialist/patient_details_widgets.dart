@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
+import './specialist_patient_details_localization_utils.dart';
 import '../../models/specialist_patient_details_models.dart';
 import '../../widgets/dashboard_components.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -23,8 +25,14 @@ class PatientDetailsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final ageLabel = patient.age != null ? '${patient.age} years' : '—';
+    final ageLabel = patient.age != null
+        ? l10n.parentChildrenAgeYears(patient.age!)
+        : '—';
+    final diagnosisLabel = diagnosis?.trim().isNotEmpty == true
+        ? diagnosis!.trim()
+        : l10n.specialistPatientDetailsNoDiagnosis;
 
     return DashboardSurfaceCard(
       child: Column(
@@ -51,7 +59,7 @@ class PatientDetailsHeader extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.2),
           Text(
-            'Age $ageLabel • ${diagnosis ?? 'No diagnosis recorded'}',
+            l10n.specialistPatientDetailsAgeDiagnosis(ageLabel, diagnosisLabel),
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
             ),
@@ -62,7 +70,7 @@ class PatientDetailsHeader extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               DashboardProgressRing(
-                label: 'Overall Progress',
+                label: l10n.parentDashboardOverallProgress,
                 progress: overallProgress.clamp(0, 1),
                 color: DashboardColors.accent,
               ),
@@ -92,10 +100,12 @@ class PatientQuickStatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSummaryGrid(
       cards: [
         DashboardSummaryCard(
-          label: 'Active Goals',
+          label: l10n.specialistPatientDetailsActiveGoals,
           value: '${stats.activeGoals}',
           icon: Icons.flag_outlined,
           iconBackground: DashboardColors.brandSoft,
@@ -103,7 +113,7 @@ class PatientQuickStatsGrid extends StatelessWidget {
           onTap: onActiveGoalsTap,
         ),
         DashboardSummaryCard(
-          label: 'Assigned Exercises',
+          label: l10n.specialistPatientDetailsAssignedExercises,
           value: '${stats.assignedExercises}',
           icon: Icons.fitness_center_outlined,
           iconBackground: DashboardColors.tealSoft,
@@ -111,7 +121,7 @@ class PatientQuickStatsGrid extends StatelessWidget {
           onTap: onAssignedExercisesTap,
         ),
         DashboardSummaryCard(
-          label: 'Pending Reviews',
+          label: l10n.navPendingReviews,
           value: '${stats.pendingReviews}',
           icon: Icons.rate_review_outlined,
           iconBackground: DashboardColors.amberSoft,
@@ -119,7 +129,7 @@ class PatientQuickStatsGrid extends StatelessWidget {
           onTap: onPendingReviewsTap,
         ),
         DashboardSummaryCard(
-          label: 'Reports',
+          label: l10n.navReports,
           value: '${stats.reports}',
           icon: Icons.description_outlined,
           iconBackground: DashboardColors.blueSoft,
@@ -136,15 +146,9 @@ class PatientTreatmentPlanCard extends StatelessWidget {
 
   final PatientTreatmentPlan plan;
 
-  static String _formatPlanStatus(String status) {
-    if (status.isEmpty) {
-      return status;
-    }
-    return status[0].toUpperCase() + status.substring(1);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final dateFormat = DateFormat('MMM d, yyyy');
 
@@ -164,22 +168,23 @@ class PatientTreatmentPlanCard extends StatelessWidget {
                 ),
               ),
               DashboardPriorityBadge(
-                label: _formatPlanStatus(plan.status),
+                label: localizedTreatmentPlanStatus(l10n, plan.status),
               ),
             ],
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           _InfoRow(
-            label: 'Start date',
+            label: l10n.specialistPatientDetailsStartDate,
             value: plan.startDate != null
                 ? dateFormat.format(plan.startDate!)
                 : '—',
           ),
           SizedBox(height: context.dashSpacing * 0.2),
           _InfoRow(
-            label: 'End date',
-            value:
-                plan.endDate != null ? dateFormat.format(plan.endDate!) : '—',
+            label: l10n.specialistPatientDetailsEndDate,
+            value: plan.endDate != null
+                ? dateFormat.format(plan.endDate!)
+                : '—',
           ),
         ],
       ),
@@ -199,9 +204,16 @@ class PatientGoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final progress = goal.isAchieved ? 1.0 : goal.completionPercentage.clamp(0, 1);
+    final progress = goal.isAchieved
+        ? 1.0
+        : goal.completionPercentage.clamp(0, 1);
     final dateFormat = DateFormat('MMM d, yyyy');
+    final targetValueText = switch (goal.targetValue) {
+      final value? => value.toStringAsFixed(value % 1 == 0 ? 0 : 1),
+      null => null,
+    };
 
     return DashboardSurfaceCard(
       child: Column(
@@ -219,11 +231,15 @@ class PatientGoalCard extends StatelessWidget {
               ),
               if (goal.isAchieved)
                 Padding(
-                  padding: EdgeInsets.only(right: context.dashSpacing * 0.35),
-                  child: DashboardPriorityBadge(label: 'Achieved'),
+                  padding: EdgeInsetsDirectional.only(
+                    end: context.dashSpacing * 0.35,
+                  ),
+                  child: DashboardPriorityBadge(
+                    label: l10n.specialistPatientDetailsAchieved,
+                  ),
                 ),
               Text(
-                goal.termLabel,
+                localizedGoalTerm(l10n, goal.term),
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: DashboardColors.brandCyan,
                   fontWeight: FontWeight.w600,
@@ -236,7 +252,7 @@ class PatientGoalCard extends StatelessWidget {
             SizedBox(height: context.dashSpacing * 0.35),
             if (goal.targetValue != null)
               Text(
-                'Target value: ${goal.targetValue!.toStringAsFixed(goal.targetValue! % 1 == 0 ? 0 : 1)}',
+                l10n.specialistPatientDetailsTargetValue(targetValueText!),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: DashboardColors.textSecondary,
                 ),
@@ -245,7 +261,9 @@ class PatientGoalCard extends StatelessWidget {
               if (goal.targetValue != null)
                 SizedBox(height: context.dashSpacing * 0.15),
               Text(
-                'Target date: ${dateFormat.format(goal.targetDate!)}',
+                l10n.specialistPatientDetailsTargetDate(
+                  dateFormat.format(goal.targetDate!),
+                ),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: DashboardColors.textSecondary,
                 ),
@@ -264,7 +282,9 @@ class PatientGoalCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.25),
           Text(
-            '${(progress * 100).round()}% complete',
+            l10n.specialistPatientDetailsPercentComplete(
+              (progress * 100).round(),
+            ),
             style: theme.textTheme.labelSmall?.copyWith(
               color: DashboardColors.textSecondary,
               fontWeight: FontWeight.w600,
@@ -288,10 +308,13 @@ class PatientAssignedExerciseTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final dueLabel = exercise.dueDate != null
-        ? DateFormat('MMM d, yyyy').format(exercise.dueDate!)
-        : 'No due date';
+        ? l10n.parentExercisesDueDate(
+            DateFormat('MMM d, yyyy').format(exercise.dueDate!),
+          )
+        : l10n.specialistPatientDetailsNoDueDate;
 
     return DashboardSurfaceCard(
       onTap: onTap,
@@ -327,7 +350,7 @@ class PatientAssignedExerciseTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Due $dueLabel',
+                  dueLabel,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: DashboardColors.textMuted,
                   ),
@@ -335,7 +358,9 @@ class PatientAssignedExerciseTile extends StatelessWidget {
               ],
             ),
           ),
-          DashboardPriorityBadge(label: exercise.statusLabel),
+          DashboardPriorityBadge(
+            label: localizedExerciseStatusLabel(l10n, exercise.statusLabel),
+          ),
           if (onTap != null) ...[
             SizedBox(width: context.dashSpacing * 0.25),
             const Icon(
@@ -361,10 +386,12 @@ class PatientSubmissionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final dateLabel = submission.submittedAt != null
         ? DateFormat('MMM d, yyyy • h:mm a').format(submission.submittedAt!)
-        : 'Recently';
+        : l10n.parentDashboardRecently;
+    final mediaLabel = localizedMediaTypeLabel(l10n, submission.mediaTypeLabel);
 
     return DashboardSurfaceCard(
       onTap: onTap,
@@ -386,7 +413,7 @@ class PatientSubmissionTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${submission.mediaTypeLabel} • $dateLabel',
+                  '$mediaLabel • $dateLabel',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
@@ -394,13 +421,12 @@ class PatientSubmissionTile extends StatelessWidget {
               ],
             ),
           ),
-          DashboardPriorityBadge(label: submission.reviewStatus),
+          DashboardPriorityBadge(
+            label: localizedReviewStatus(l10n, submission.reviewStatus),
+          ),
           if (onTap != null) ...[
             SizedBox(width: context.dashSpacing * 0.25),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: DashboardColors.textMuted,
-            ),
+            Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
           ],
         ],
       ),
@@ -424,10 +450,11 @@ class PatientNoteTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final dateLabel = note.createdAt != null
         ? DateFormat('MMM d, yyyy • h:mm a').format(note.createdAt!)
-        : 'Recently';
+        : l10n.parentDashboardRecently;
 
     return DashboardSurfaceCard(
       child: Column(
@@ -490,8 +517,8 @@ class PatientDetailsEmptySection extends StatelessWidget {
           Text(
             message,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: DashboardColors.textSecondary,
-                ),
+              color: DashboardColors.textSecondary,
+            ),
           ),
           SizedBox(height: context.dashSpacing * 0.65),
           OutlinedButton.icon(
@@ -522,17 +549,17 @@ class _InfoRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: DashboardColors.textMuted,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: DashboardColors.textMuted),
           ),
         ),
         Text(
           value,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: DashboardColors.textPrimary,
-              ),
+            fontWeight: FontWeight.w600,
+            color: DashboardColors.textPrimary,
+          ),
         ),
       ],
     );

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import 'manage_goals_widgets.dart';
+import 'specialist_scoped_localization_utils.dart';
 
 const specialistExerciseAllCategoryLabel = 'All';
 
@@ -166,17 +168,18 @@ Color exerciseCategoryIconBackground(String? category) {
 }
 
 Widget buildExerciseSearchField({
+  required BuildContext context,
   required TextEditingController controller,
   required ValueChanged<String> onChanged,
 }) {
+  final l10n = AppLocalizations.of(context)!;
+
   return TextField(
     controller: controller,
     onChanged: onChanged,
     textInputAction: TextInputAction.search,
-    decoration:
-        goalFieldDecoration(
-          'Search by title, category, or instructions',
-        ).copyWith(
+    decoration: goalFieldDecoration(l10n.specialistSearchExercisesHint)
+        .copyWith(
           prefixIcon: const Icon(
             Icons.search_rounded,
             color: DashboardColors.textMuted,
@@ -199,6 +202,8 @@ class SpecialistExerciseCategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: context.dashSpacing * 2.1,
       child: ListView.separated(
@@ -235,7 +240,7 @@ class SpecialistExerciseCategoryChips extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  category,
+                  localizedExerciseCategory(l10n, category),
                   maxLines: 1,
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
@@ -307,6 +312,7 @@ class SpecialistExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final category = exercise.category?.trim();
     final summary = exercise.previewText;
     final iconColor = exerciseCategoryIconColor(category);
@@ -386,7 +392,7 @@ class SpecialistExerciseCard extends StatelessWidget {
                         ),
                         SizedBox(width: context.dashSpacing * 0.25),
                         Text(
-                          'Includes instruction media',
+                          l10n.specialistExerciseIncludesMedia,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.labelSmall?.copyWith(
@@ -400,7 +406,7 @@ class SpecialistExerciseCard extends StatelessWidget {
                   if (isSelected) ...[
                     SizedBox(height: context.dashSpacing * 0.35),
                     Text(
-                      'Selected',
+                      l10n.commonSelected,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: DashboardColors.brandCyan,
                         fontWeight: FontWeight.w700,
@@ -525,6 +531,7 @@ class ExerciseLibraryBody extends StatelessWidget {
         ),
         SizedBox(height: context.dashSpacing * 0.75),
         buildExerciseSearchField(
+          context: context,
           controller: searchController,
           onChanged: onSearchChanged,
         ),

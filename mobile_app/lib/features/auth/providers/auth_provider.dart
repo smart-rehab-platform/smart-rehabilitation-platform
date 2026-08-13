@@ -62,7 +62,7 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._repository, this._tokenStorage)
-      : super(const AuthState(isInitializing: true));
+    : super(const AuthState(isInitializing: true));
 
   final AuthRepository _repository;
   final TokenStorage _tokenStorage;
@@ -89,11 +89,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return;
       }
 
-      state = AuthState(
-        token: token,
-        user: user,
-        isInitializing: false,
-      );
+      state = AuthState(token: token, user: user, isInitializing: false);
     } catch (_) {
       await _tokenStorage.clearToken();
       await _repository.logout();
@@ -307,7 +303,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<String?> uploadSignupProfileImage(List<int> bytes, String filename) async {
+  Future<String?> uploadSignupProfileImage(
+    List<int> bytes,
+    String filename,
+  ) async {
     try {
       return await _repository.uploadSignupProfileImage(bytes, filename);
     } on DioException catch (error) {
@@ -333,15 +332,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return false;
       }
 
-      state = state.copyWith(
-        user: user,
-        errorMessage: null,
-      );
+      state = state.copyWith(user: user, errorMessage: null);
       return true;
     } on DioException catch (error) {
-      state = state.copyWith(
-        errorMessage: _readDioErrorMessage(error),
-      );
+      state = state.copyWith(errorMessage: _readDioErrorMessage(error));
       return false;
     } catch (error) {
       state = state.copyWith(
@@ -380,7 +374,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     return AuthUser(
       id: fetched.id ?? current.id,
-      fullName: fetched.fullName.isNotEmpty ? fetched.fullName : current.fullName,
+      fullName: fetched.fullName.isNotEmpty
+          ? fetched.fullName
+          : current.fullName,
       email: fetched.email.isNotEmpty ? fetched.email : current.email,
       phone: fetched.phone ?? current.phone,
       role: fetched.role ?? current.role,

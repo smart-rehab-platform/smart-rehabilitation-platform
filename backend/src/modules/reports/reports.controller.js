@@ -2,7 +2,13 @@ const reportsService = require("./reports.service");
 
 const createReport = async (req, res) => {
   try {
-    const report = await reportsService.createReport(req.body);
+    const report = await reportsService.createReport({
+      patient_id: req.body.patient_id,
+      generated_by: req.user.id,
+      report_type: req.body.report_type,
+      title: req.body.title,
+      summary: req.body.summary,
+    });
 
     return res.status(201).json({
       success: true,
@@ -10,13 +16,13 @@ const createReport = async (req, res) => {
       data: report
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };
 
 const getAllReports = async (req, res) => {
   try {
-    const reports = await reportsService.getAllReports();
+    const reports = await reportsService.getAllReports(req.user);
 
     return res.status(200).json({
       success: true,
@@ -24,7 +30,7 @@ const getAllReports = async (req, res) => {
       data: reports
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };
 
@@ -39,12 +45,14 @@ const getReportById = async (req, res) => {
       });
     }
 
+    await reportsService.assertActorCanAccessReportPatient(req.user, report.patient_id);
+
     return res.status(200).json({
       success: true,
       data: report
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };
 
@@ -65,7 +73,7 @@ const deleteReport = async (req, res) => {
       data: report
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };
 
@@ -79,7 +87,7 @@ const getPatientReports = async (req, res) => {
       data: reports
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };
 
@@ -93,7 +101,7 @@ const getPatientWeeklyReports = async (req, res) => {
       data: reports
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };
 
@@ -107,13 +115,13 @@ const getPatientMonthlyReports = async (req, res) => {
       data: reports
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };
 
 const exportReportPdf = async (req, res) => {
   try {
-    const result = await reportsService.exportReportPdf(req.params.id);
+    const result = await reportsService.exportReportPdf(req.params.id, req.user);
 
     if (!result) {
       return res.status(404).json({
@@ -128,7 +136,7 @@ const exportReportPdf = async (req, res) => {
       data: result
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };
 

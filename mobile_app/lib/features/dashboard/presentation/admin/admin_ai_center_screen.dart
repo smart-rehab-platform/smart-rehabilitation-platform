@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
 import '../../widgets/admin_navigation.dart';
@@ -11,12 +12,14 @@ import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_status_badge.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_layout.dart';
+import 'admin_scoped_localization_utils.dart';
 
 class AdminAiCenterScreen extends ConsumerStatefulWidget {
   const AdminAiCenterScreen({super.key});
 
   @override
-  ConsumerState<AdminAiCenterScreen> createState() => _AdminAiCenterScreenState();
+  ConsumerState<AdminAiCenterScreen> createState() =>
+      _AdminAiCenterScreenState();
 }
 
 class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
@@ -105,10 +108,15 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final errorMessage = _error == null
+        ? null
+        : mapAdminAiCenterError(l10n, _error!);
+
     return AdminPageScaffold(
-      title: 'AI Center',
-      currentNav: AdminNavigation.listScreenNav(context),
-      enableModuleListBack: true,
+      title: l10n.navAiCenter,
+      showBackButton: true,
+      showBottomNav: false,
       body: _isLoading
           ? const AdminLoadingCard()
           : RefreshIndicator(
@@ -120,28 +128,28 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const AdminPageTitle(
-                      title: 'AI Insights',
-                      subtitle:
-                          'Speech analysis, recommendations, and clinical reports',
+                    AdminPageTitle(
+                      title: l10n.adminAiInsights,
+                      subtitle: l10n.adminAiInsightsSubtitle,
                     ),
                     SizedBox(height: context.dashSpacing),
                     if (_error != null)
-                      AdminErrorCard(message: _error!, onRetry: _load),
+                      AdminErrorCard(message: errorMessage!, onRetry: _load),
                     AdminMetricGrid(
                       cards: [
                         AdminMetricCard(
-                          label: 'Speech Analyses',
+                          label: l10n.adminAiSpeechAnalyses,
                           value: '${_data.speechTotal}',
-                          subtitle:
-                              'Avg score ${_data.speechAverageScore.toStringAsFixed(1)}',
+                          subtitle: l10n.adminAiAvgScore(
+                            _data.speechAverageScore.toStringAsFixed(1),
+                          ),
                           icon: Icons.mic_outlined,
                           iconColor: DashboardColors.primary,
                           iconBackground: DashboardColors.blueSoft,
                           onTap: () => _scrollToSection(_speechSectionKey),
                         ),
                         AdminMetricCard(
-                          label: 'AI Recommendations',
+                          label: l10n.adminAiRecommendations,
                           value: '${_data.recommendationsTotal}',
                           icon: Icons.auto_awesome_outlined,
                           iconColor: DashboardColors.success,
@@ -150,7 +158,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                               _scrollToSection(_recommendationsSectionKey),
                         ),
                         AdminMetricCard(
-                          label: 'AI Reports',
+                          label: l10n.reportTypeAiReports,
                           value: '${_data.reportsTotal}',
                           icon: Icons.summarize_outlined,
                           iconColor: DashboardColors.warning,
@@ -158,10 +166,12 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                           onTap: () => context.push(AppRoutes.adminReports),
                         ),
                         AdminMetricCard(
-                          label: 'Needs Attention',
+                          label: l10n.adminAiNeedsAttention,
                           value: '${_data.patientsNeedingAttention.length}',
-                          subtitle:
-                              '${_data.usageStatistics['pending_recommendations'] ?? 0} pending reviews',
+                          subtitle: l10n.adminAiPendingReviews(
+                            _data.usageStatistics['pending_recommendations'] ??
+                                0,
+                          ),
                           icon: Icons.warning_amber_rounded,
                           iconColor: DashboardColors.highPriority,
                           iconBackground: DashboardColors.amberSoft,
@@ -175,28 +185,29 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const AdminSectionHeader(
-                            title: 'Patients Needing Attention',
+                          AdminSectionHeader(
+                            title: l10n.adminAiPatientsNeedingAttention,
                           ),
                           SizedBox(height: context.dashSpacing * 0.5),
                           if (_data.patientsNeedingAttention.isEmpty)
-                            const AdminEmptyCard(
-                              message: 'No patients flagged for low scores.',
+                            AdminEmptyCard(
+                              message: l10n.adminAiNoPatientsFlagged,
                             )
                           else
                             AdminTableContainer(
-                              onRowTaps: _data.patientsNeedingAttention
-                                  .map((patient) {
-                                    final patientId = _readId(
-                                      patient,
-                                      const ['id', 'patient_id', 'patientId'],
-                                    );
-                                    if (patientId == null) {
-                                      return null;
-                                    }
-                                    return () => _openPatientDetails(patientId);
-                                  })
-                                  .toList(),
+                              onRowTaps: _data.patientsNeedingAttention.map((
+                                patient,
+                              ) {
+                                final patientId = _readId(patient, const [
+                                  'id',
+                                  'patient_id',
+                                  'patientId',
+                                ]);
+                                if (patientId == null) {
+                                  return null;
+                                }
+                                return () => _openPatientDetails(patientId);
+                              }).toList(),
                               rows: _data.patientsNeedingAttention
                                   .map(
                                     (patient) => Row(
@@ -206,14 +217,13 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                                         const AdminIconCircle(
                                           icon: Icons.person_outline_rounded,
                                           color: DashboardColors.highPriority,
-                                          background:
-                                              DashboardColors.amberSoft,
+                                          background: DashboardColors.amberSoft,
                                           size: 40,
                                         ),
                                         const SizedBox(width: 12),
                                         Expanded(
                                           child: Text(
-                                            '${patient['full_name'] ?? 'Patient'}',
+                                            '${patient['full_name'] ?? l10n.entityPatient}',
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: Theme.of(context)
@@ -229,8 +239,9 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                                           const SizedBox(width: 8),
                                           Flexible(
                                             child: AdminStatusBadge(
-                                              label:
-                                                  'Speech ${patient['speech_score']}',
+                                              label: l10n.adminAiSpeechScore(
+                                                '${patient['speech_score']}',
+                                              ),
                                               color:
                                                   DashboardColors.highPriority,
                                             ),
@@ -250,8 +261,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const AdminSectionHeader(
-                            title: 'Latest Speech Analyses',
+                          AdminSectionHeader(
+                            title: l10n.adminAiLatestSpeechAnalyses,
                           ),
                           SizedBox(height: context.dashSpacing * 0.5),
                           ..._buildRecordList(
@@ -282,8 +293,8 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const AdminSectionHeader(
-                            title: 'Latest AI Recommendations',
+                          AdminSectionHeader(
+                            title: l10n.adminAiLatestRecommendations,
                           ),
                           SizedBox(height: context.dashSpacing * 0.5),
                           ..._buildRecordList(
@@ -295,7 +306,10 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                             subtitleBuilder: (item) =>
                                 '${item['type'] ?? 'recommendation'} • ${item['status'] ?? 'pending'}',
                             badgeBuilder: (item) => AdminStatusBadge(
-                              label: '${item['status'] ?? 'pending'}',
+                              label: localizedAdminAiStatus(
+                                l10n,
+                                '${item['status'] ?? 'pending'}',
+                              ),
                               color: _statusColor('${item['status']}'),
                             ),
                             resolveTap: (item) {
@@ -313,7 +327,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                       ),
                     ),
                     SizedBox(height: context.dashSpacing),
-                    const AdminSectionHeader(title: 'Latest AI Reports'),
+                    AdminSectionHeader(title: l10n.adminAiLatestReports),
                     SizedBox(height: context.dashSpacing * 0.5),
                     ..._buildRecordList(
                       _data.latestReports,
@@ -353,62 +367,59 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
     VoidCallback? Function(Map<String, dynamic> item)? resolveTap,
   }) {
     if (items.isEmpty) {
-      return [const AdminEmptyCard(message: 'No records yet.')];
+      final l10n = AppLocalizations.of(context)!;
+      return [AdminEmptyCard(message: l10n.adminAiNoRecords)];
     }
 
-    return items
-        .map(
-          (item) {
-            final onTap = resolveTap?.call(item);
-            return Padding(
-              padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-              child: AdminSurfaceCard(
-                onTap: onTap,
-                child: Row(
+    return items.map((item) {
+      final onTap = resolveTap?.call(item);
+      return Padding(
+        padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
+        child: AdminSurfaceCard(
+          onTap: onTap,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AdminIconCircle(
+                icon: icon,
+                color: iconColor,
+                background: iconBackground,
+                size: 40,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AdminIconCircle(
-                      icon: icon,
-                      color: iconColor,
-                      background: iconBackground,
-                      size: 40,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${item[titleKey] ?? 'Record'}',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: DashboardColors.textPrimary,
-                                ),
-                          ),
-                          Text(
-                            subtitleBuilder(item),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: DashboardColors.textSecondary,
-                                ),
-                          ),
-                        ],
+                    Text(
+                      '${item[titleKey] ?? AppLocalizations.of(context)!.adminRecordFallback}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: DashboardColors.textPrimary,
                       ),
                     ),
-                    if (badgeBuilder != null) ...[
-                      const SizedBox(width: 8),
-                      Flexible(child: badgeBuilder(item)),
-                    ],
+                    Text(
+                      subtitleBuilder(item),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
-            );
-          },
-        )
-        .toList();
+              if (badgeBuilder != null) ...[
+                const SizedBox(width: 8),
+                Flexible(child: badgeBuilder(item)),
+              ],
+            ],
+          ),
+        ),
+      );
+    }).toList();
   }
 
   Color _statusColor(String status) {
@@ -424,7 +435,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
 
   String _formatDate(Object? value) {
     if (value == null) {
-      return 'Recently';
+      return AppLocalizations.of(context)!.parentDashboardRecently;
     }
     final parsed = DateTime.tryParse(value.toString());
     if (parsed == null) {

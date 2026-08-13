@@ -5,11 +5,14 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_exercise_review_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/parent_dashboard_cards.dart';
+import 'specialist_exercise_review_localization_utils.dart';
+import 'specialist_patient_details_localization_utils.dart';
 
 class ReviewExerciseHeader extends StatelessWidget {
   const ReviewExerciseHeader({super.key, required this.submission});
@@ -18,10 +21,11 @@ class ReviewExerciseHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final dateLabel = submission.submittedAt != null
         ? DateFormat('MMM d, yyyy • h:mm a').format(submission.submittedAt!)
-        : 'Recently submitted';
+        : l10n.specialistAssignedExerciseRecentlySubmitted;
 
     return DashboardSurfaceCard(
       child: Column(
@@ -50,7 +54,9 @@ class ReviewExerciseHeader extends StatelessWidget {
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.45),
-          DashboardPriorityBadge(label: submission.statusLabel),
+          DashboardPriorityBadge(
+            label: localizedReviewStatus(l10n, submission.statusLabel),
+          ),
         ],
       ),
     );
@@ -64,10 +70,11 @@ class SubmissionMediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final uploadedLabel = media.createdAt != null
         ? DateFormat('MMM d, yyyy • h:mm a').format(media.createdAt!)
-        : 'Upload time unavailable';
+        : l10n.specialistSubmissionUploadTimeUnavailable;
 
     return DashboardSurfaceCard(
       child: Column(
@@ -83,7 +90,7 @@ class SubmissionMediaCard extends StatelessWidget {
               SizedBox(width: context.dashSpacing * 0.45),
               Expanded(
                 child: Text(
-                  media.mediaTypeLabel,
+                  localizedSubmissionMediaTypeLabel(l10n, media.mediaTypeLabel),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -130,38 +137,41 @@ class _MediaPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final url = ApiConstants.resolveMediaUrl(media.fileUrl);
     if (url == null || url.isEmpty) {
-      return const DashboardEmptyCard(message: 'Media file unavailable.');
+      return DashboardEmptyCard(
+        message: l10n.specialistSubmissionMediaUnavailable,
+      );
     }
 
     return switch (media.mediaType.toLowerCase()) {
       'image' => ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: CachedNetworkImage(
-            imageUrl: url,
+        borderRadius: BorderRadius.circular(12),
+        child: CachedNetworkImage(
+          imageUrl: url,
+          height: context.dashboardSize.height * 0.22,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          placeholder: (_, __) => Container(
             height: context.dashboardSize.height * 0.22,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            placeholder: (_, __) => Container(
-              height: context.dashboardSize.height * 0.22,
-              color: DashboardColors.border,
-              alignment: Alignment.center,
-              child: const CircularProgressIndicator(),
-            ),
-            errorWidget: (_, __, ___) => Container(
-              height: context.dashboardSize.height * 0.22,
-              color: DashboardColors.border,
-              alignment: Alignment.center,
-              child: const Icon(Icons.broken_image_outlined),
-            ),
+            color: DashboardColors.border,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          ),
+          errorWidget: (_, __, ___) => Container(
+            height: context.dashboardSize.height * 0.22,
+            color: DashboardColors.border,
+            alignment: Alignment.center,
+            child: const Icon(Icons.broken_image_outlined),
           ),
         ),
+      ),
       'video' => _NetworkVideoPlayer(url: url),
       'audio' => _NetworkAudioPlayer(url: url),
-      _ => const DashboardEmptyCard(
-          message: 'Unsupported media type for preview.',
-        ),
+      _ => DashboardEmptyCard(
+        message: l10n.specialistSubmissionUnsupportedMediaPreview,
+      ),
     };
   }
 }
@@ -184,13 +194,15 @@ class _NetworkVideoPlayerState extends State<_NetworkVideoPlayer> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url))
-      ..initialize().then((_) {
-        if (!mounted) return;
-        setState(() => _initialized = true);
-      }).catchError((_) {
-        if (!mounted) return;
-        setState(() => _hasError = true);
-      });
+      ..initialize()
+          .then((_) {
+            if (!mounted) return;
+            setState(() => _initialized = true);
+          })
+          .catchError((_) {
+            if (!mounted) return;
+            setState(() => _hasError = true);
+          });
   }
 
   @override
@@ -201,8 +213,11 @@ class _NetworkVideoPlayerState extends State<_NetworkVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_hasError) {
-      return const DashboardEmptyCard(message: 'Unable to load video.');
+      return DashboardEmptyCard(
+        message: l10n.specialistSubmissionUnableLoadVideo,
+      );
     }
     if (!_initialized) {
       return SizedBox(
@@ -262,13 +277,15 @@ class _NetworkAudioPlayerState extends State<_NetworkAudioPlayer> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url))
-      ..initialize().then((_) {
-        if (!mounted) return;
-        setState(() => _initialized = true);
-      }).catchError((_) {
-        if (!mounted) return;
-        setState(() => _hasError = true);
-      });
+      ..initialize()
+          .then((_) {
+            if (!mounted) return;
+            setState(() => _initialized = true);
+          })
+          .catchError((_) {
+            if (!mounted) return;
+            setState(() => _hasError = true);
+          });
   }
 
   @override
@@ -285,8 +302,11 @@ class _NetworkAudioPlayerState extends State<_NetworkAudioPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_hasError) {
-      return const DashboardEmptyCard(message: 'Unable to load audio.');
+      return DashboardEmptyCard(
+        message: l10n.specialistSubmissionUnableLoadAudio,
+      );
     }
     if (!_initialized) {
       return const Center(child: CircularProgressIndicator());
@@ -329,8 +349,8 @@ class _NetworkAudioPlayerState extends State<_NetworkAudioPlayer> {
           Text(
             '${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: DashboardColors.textSecondary,
-                ),
+              color: DashboardColors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -358,7 +378,9 @@ class ReviewStarRating extends StatelessWidget {
           onPressed: () => onChanged(star),
           icon: Icon(
             isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
-            color: isSelected ? DashboardColors.warning : DashboardColors.textMuted,
+            color: isSelected
+                ? DashboardColors.warning
+                : DashboardColors.textMuted,
           ),
         );
       }),
@@ -378,11 +400,13 @@ class ReviewDecisionSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         Expanded(
           child: _DecisionChip(
-            label: 'Approved',
+            label: localizedReviewDecision(l10n, ReviewDecision.approved),
             selected: decision == ReviewDecision.approved,
             onTap: () => onChanged(ReviewDecision.approved),
           ),
@@ -390,7 +414,7 @@ class ReviewDecisionSelector extends StatelessWidget {
         SizedBox(width: context.dashSpacing * 0.5),
         Expanded(
           child: _DecisionChip(
-            label: 'Needs Retry',
+            label: localizedReviewDecision(l10n, ReviewDecision.needsRetry),
             selected: decision == ReviewDecision.needsRetry,
             onTap: () => onChanged(ReviewDecision.needsRetry),
           ),
@@ -422,18 +446,20 @@ class _DecisionChip extends StatelessWidget {
           color: selected ? DashboardColors.brandSoft : DashboardColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? DashboardColors.brandCyan : DashboardColors.border,
+            color: selected
+                ? DashboardColors.brandCyan
+                : DashboardColors.border,
           ),
         ),
         alignment: Alignment.center,
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: selected
-                    ? DashboardColors.brandCyan
-                    : DashboardColors.textSecondary,
-                fontWeight: FontWeight.w700,
-              ),
+            color: selected
+                ? DashboardColors.brandCyan
+                : DashboardColors.textSecondary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );

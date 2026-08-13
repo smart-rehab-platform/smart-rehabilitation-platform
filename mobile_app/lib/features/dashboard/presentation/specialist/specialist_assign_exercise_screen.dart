@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_exercise_assignment_provider.dart';
 import '../../providers/specialist_features_provider.dart';
@@ -10,6 +11,8 @@ import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import 'specialist_exercises_localization_utils.dart';
+import 'specialist_scoped_localization_utils.dart';
 import 'specialist_exercises_widgets.dart';
 
 class SpecialistAssignExerciseScreen extends ConsumerStatefulWidget {
@@ -86,16 +89,19 @@ class _SpecialistAssignExerciseScreenState
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final exercise = _selectedExercise;
     if (exercise == null || exercise.id.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Please select an exercise.')),
+        SnackBar(content: Text(l10n.specialistAssignExerciseSelectRequired)),
       );
       return;
     }
 
-    final success = await ref.read(specialistAssignExerciseProvider(_args).notifier).assign(
+    final success = await ref
+        .read(specialistAssignExerciseProvider(_args).notifier)
+        .assign(
           exerciseId: exercise.id,
           frequency: _frequency,
           startDate: _startDate,
@@ -108,30 +114,34 @@ class _SpecialistAssignExerciseScreenState
 
     if (success) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Exercise assigned successfully')),
+        SnackBar(content: Text(l10n.specialistAssignExerciseSuccess)),
       );
       Navigator.of(context).pop(true);
       return;
     }
 
-    final error =
-        ref.read(specialistAssignExerciseProvider(_args)).errorMessage;
+    final error = ref
+        .read(specialistAssignExerciseProvider(_args))
+        .errorMessage;
     if (error != null) {
-      messenger.showSnackBar(SnackBar(content: Text(error)));
+      messenger.showSnackBar(
+        SnackBar(content: Text(mapSpecialistAssignExerciseError(l10n, error))),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (widget.planId.trim().isEmpty) {
       return SpecialistPageScaffold(
-        title: 'Assign Exercise',
+        title: l10n.specialistAssignExercise,
         showBackButton: true,
         body: Padding(
           padding: context.dashPadding,
-          child: const DashboardEmptyCard(
-            message:
-                'An active treatment plan is required before assigning an exercise.',
+          child: DashboardEmptyCard(
+            message: l10n.specialistPatientDetailsActivePlanRequired,
           ),
         ),
       );
@@ -156,7 +166,10 @@ class _SpecialistAssignExerciseScreenState
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: exercisesState.errorMessage!,
+          message: mapSpecialistExercisesError(
+            l10n,
+            exercisesState.errorMessage!,
+          ),
           onRetry: () =>
               ref.read(specialistExercisesProvider.notifier).refresh(),
         ),
@@ -166,7 +179,7 @@ class _SpecialistAssignExerciseScreenState
         padding: context.dashPadding,
         children: [
           Text(
-            'Assign Exercise',
+            l10n.specialistAssignExercise,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w800,
               color: DashboardColors.textPrimary,
@@ -174,13 +187,14 @@ class _SpecialistAssignExerciseScreenState
           ),
           SizedBox(height: context.dashSpacing * 0.25),
           Text(
-            'Choose an exercise, then set frequency and dates.',
+            l10n.specialistAssignExerciseSubtitle,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           buildExerciseSearchField(
+            context: context,
             controller: _searchController,
             onChanged: (_) => setState(() {}),
           ),
@@ -194,8 +208,8 @@ class _SpecialistAssignExerciseScreenState
           ],
           SizedBox(height: context.dashSpacing * 0.75),
           if (visible.isEmpty)
-            const DashboardEmptyCard(
-              message: 'No exercises match your search or filter.',
+            DashboardEmptyCard(
+              message: l10n.specialistAssignExerciseNoMatchSearch,
             )
           else
             ...visible.map(
@@ -214,7 +228,7 @@ class _SpecialistAssignExerciseScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Selected exercise',
+                    l10n.specialistAssignExerciseSelectedExercise,
                     style: theme.textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: DashboardColors.brandCyan,
@@ -228,7 +242,9 @@ class _SpecialistAssignExerciseScreenState
                       color: DashboardColors.textPrimary,
                     ),
                   ),
-                  if ((_selectedExercise!.category ?? '').trim().isNotEmpty) ...[
+                  if ((_selectedExercise!.category ?? '')
+                      .trim()
+                      .isNotEmpty) ...[
                     SizedBox(height: context.dashSpacing * 0.25),
                     SpecialistExerciseCategoryBadge(
                       label: _selectedExercise!.category!.trim(),
@@ -240,7 +256,7 @@ class _SpecialistAssignExerciseScreenState
           ],
           SizedBox(height: context.dashSpacing),
           Text(
-            'Frequency',
+            l10n.specialistAssignExerciseFrequency,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -253,7 +269,7 @@ class _SpecialistAssignExerciseScreenState
             children: ExerciseAssignmentFrequency.values.map((value) {
               final selected = _frequency == value;
               return ChoiceChip(
-                label: Text(value.label),
+                label: Text(localizedExerciseAssignmentFrequency(l10n, value)),
                 selected: selected,
                 onSelected: assignState.isSubmitting
                     ? null
@@ -270,7 +286,7 @@ class _SpecialistAssignExerciseScreenState
           ),
           SizedBox(height: context.dashSpacing * 0.85),
           Text(
-            'Start date',
+            l10n.specialistPatientDetailsStartDate,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -294,7 +310,7 @@ class _SpecialistAssignExerciseScreenState
             children: [
               Expanded(
                 child: Text(
-                  'Due date (optional)',
+                  l10n.specialistAssignExerciseDueDateOptional,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: DashboardColors.textPrimary,
@@ -306,7 +322,7 @@ class _SpecialistAssignExerciseScreenState
                   onPressed: assignState.isSubmitting
                       ? null
                       : () => setState(() => _dueDate = null),
-                  child: const Text('Clear'),
+                  child: Text(l10n.commonClear),
                 ),
             ],
           ),
@@ -315,7 +331,9 @@ class _SpecialistAssignExerciseScreenState
             onPressed: assignState.isSubmitting ? null : _pickDueDate,
             icon: const Icon(Icons.event_outlined),
             label: Text(
-              _dueDate == null ? 'Set due date' : dateFormat.format(_dueDate!),
+              _dueDate == null
+                  ? l10n.specialistAssignExerciseSetDueDate
+                  : dateFormat.format(_dueDate!),
             ),
             style: OutlinedButton.styleFrom(
               foregroundColor: DashboardColors.brandCyan,
@@ -328,7 +346,10 @@ class _SpecialistAssignExerciseScreenState
           if (assignState.errorMessage != null) ...[
             SizedBox(height: context.dashSpacing * 0.75),
             DashboardErrorCard(
-              message: assignState.errorMessage!,
+              message: mapSpecialistAssignExerciseError(
+                l10n,
+                assignState.errorMessage!,
+              ),
               onRetry: assignState.isSubmitting ? () {} : _submit,
             ),
           ],
@@ -346,7 +367,9 @@ class _SpecialistAssignExerciseScreenState
                   )
                 : const Icon(Icons.assignment_turned_in_outlined),
             label: Text(
-              assignState.isSubmitting ? 'Assigning...' : 'Assign Exercise',
+              assignState.isSubmitting
+                  ? l10n.specialistAssignExerciseAssigning
+                  : l10n.specialistAssignExercise,
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: DashboardColors.brandCyan,
@@ -365,12 +388,9 @@ class _SpecialistAssignExerciseScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Assign Exercise',
+      title: l10n.specialistAssignExercise,
       showBackButton: true,
-      body: PopScope(
-        canPop: !assignState.isSubmitting,
-        child: body,
-      ),
+      body: PopScope(canPop: !assignState.isSubmitting, child: body),
     );
   }
 }

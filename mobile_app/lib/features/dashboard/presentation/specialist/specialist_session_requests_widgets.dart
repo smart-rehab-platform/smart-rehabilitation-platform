@@ -5,12 +5,15 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/session_requests_models.dart';
 import '../../providers/specialist_session_requests_provider.dart';
 import '../../utils/session_request_display_helpers.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
+import 'specialist_scoped_localization_utils.dart';
+import 'specialist_sessions_localization_utils.dart';
 
 class SpecialistSessionRequestsInbox extends ConsumerWidget {
   const SpecialistSessionRequestsInbox({super.key});
@@ -20,6 +23,10 @@ class SpecialistSessionRequestsInbox extends ConsumerWidget {
     final state = ref.watch(specialistSessionRequestsProvider);
     final notifier = ref.read(specialistSessionRequestsProvider.notifier);
     final visible = state.visibleRequests;
+    final l10n = AppLocalizations.of(context)!;
+    final localizedError = state.errorMessage != null
+        ? mapSpecialistSessionRequestsError(l10n, state.errorMessage!)
+        : null;
 
     if (state.isLoading) {
       return const Center(child: DashboardLoadingCard());
@@ -33,21 +40,21 @@ class SpecialistSessionRequestsInbox extends ConsumerWidget {
           selected: state.filter,
           onChanged: notifier.setFilter,
         ),
-        if (state.errorMessage != null) ...[
+        if (localizedError != null) ...[
           SizedBox(height: context.dashSpacing * 0.75),
           DashboardErrorCard(
-            message: state.errorMessage!,
+            message: localizedError,
             onRetry: notifier.refresh,
           ),
         ],
         SizedBox(height: context.dashSpacing * 0.75),
         if (state.requests.isEmpty)
-          const DashboardEmptyCard(message: 'No session requests yet.')
+          DashboardEmptyCard(message: l10n.specialistNoSessionRequests)
         else if (visible.isEmpty)
           DashboardEmptyCard(
             message: state.filter == SessionRequestInboxFilter.pending
-                ? 'No pending session requests.'
-                : 'No session requests match this filter.',
+                ? l10n.specialistNoPendingSessionRequests
+                : l10n.specialistNoSessionRequestsMatchFilter,
           )
         else
           ...visible.map(
@@ -76,13 +83,15 @@ class SessionRequestInboxFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: SessionRequestInboxFilter.values.map((filter) {
           final isSelected = selected == filter;
           return Padding(
-            padding: EdgeInsets.only(right: context.dashSpacing * 0.4),
+            padding: EdgeInsetsDirectional.only(end: context.dashSpacing * 0.4),
             child: InkWell(
               onTap: () => onChanged(filter),
               borderRadius: BorderRadius.circular(14),
@@ -103,13 +112,13 @@ class SessionRequestInboxFilterChips extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  filter.label,
+                  localizedSessionRequestInboxFilter(l10n, filter),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: isSelected
-                            ? DashboardColors.brandCyan
-                            : DashboardColors.textSecondary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: isSelected
+                        ? DashboardColors.brandCyan
+                        : DashboardColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -158,6 +167,7 @@ class SpecialistSessionRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final statusVisual = sessionRequestStatusVisual(request.status);
     final approvedSession = request.approvedSession;
     final isPending = request.status == SessionRequestStatus.pending;
@@ -178,14 +188,14 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        request.patientName ?? 'Patient',
+                        request.patientName ?? l10n.entityPatient,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       SizedBox(height: context.dashSpacing * 0.15),
                       Text(
-                        request.parentName ?? 'Parent',
+                        request.parentName ?? l10n.roleParent,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: DashboardColors.textSecondary,
                           fontWeight: FontWeight.w600,
@@ -194,12 +204,15 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                SessionRequestStatusChip(visual: statusVisual),
+                SessionRequestStatusChip(
+                  visual: statusVisual,
+                  label: localizedSessionRequestStatus(l10n, request.status),
+                ),
               ],
             ),
             SizedBox(height: context.dashSpacing * 0.45),
             Text(
-              sessionRequestReasonDisplayLabel(request),
+              localizedSessionRequestReason(l10n, request),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -219,19 +232,22 @@ class SpecialistSessionRequestCard extends StatelessWidget {
             SizedBox(height: context.dashSpacing * 0.45),
             _RequestInfoRow(
               icon: Icons.calendar_today_outlined,
-              label: 'Preferred date',
+              label: l10n.specialistSessionRequestPreferredDate,
               value: _formatDate(request.preferredDate),
             ),
             SizedBox(height: context.dashSpacing * 0.2),
             _RequestInfoRow(
               icon: Icons.wb_twilight_outlined,
-              label: 'Preferred time',
-              value: request.preferredTimePeriod?.label ?? '—',
+              label: l10n.specialistSessionRequestPreferredTime,
+              value: localizedPreferredTimePeriod(
+                l10n,
+                request.preferredTimePeriod,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.2),
             _RequestInfoRow(
               icon: Icons.schedule_rounded,
-              label: 'Requested',
+              label: l10n.specialistSessionRequestRequested,
               value: _formatCreatedDate(request.createdAt),
             ),
             if (request.notes != null && request.notes!.trim().isNotEmpty) ...[
@@ -285,7 +301,9 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Scheduled: ${_formatDateTime(approvedSession.scheduledAt)}',
+                      l10n.specialistSessionScheduledAt(
+                        _formatDateTime(approvedSession.scheduledAt),
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: const Color(0xFF2E7D32),
                         fontWeight: FontWeight.w700,
@@ -294,7 +312,9 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                     if (approvedSession.durationMinutes != null) ...[
                       SizedBox(height: context.dashSpacing * 0.2),
                       Text(
-                        'Duration: ${approvedSession.durationMinutes} min',
+                        l10n.specialistSessionDurationMinutes(
+                          approvedSession.durationMinutes!,
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: const Color(0xFF2E7D32),
                           fontWeight: FontWeight.w600,
@@ -319,12 +339,15 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                             OutlinedButton.icon(
                               onPressed: () => _copyLink(context, location),
                               icon: const Icon(Icons.copy_rounded, size: 16),
-                              label: const Text('Copy'),
+                              label: Text(l10n.commonCopy),
                             ),
                             ElevatedButton.icon(
                               onPressed: () => _openLink(context, location),
-                              icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                              label: const Text('Open'),
+                              icon: const Icon(
+                                Icons.open_in_new_rounded,
+                                size: 16,
+                              ),
+                              label: Text(l10n.commonOpen),
                             ),
                           ],
                         ),
@@ -344,7 +367,9 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: DashboardColors.highPriority,
                         side: BorderSide(
-                          color: DashboardColors.highPriority.withValues(alpha: 0.35),
+                          color: DashboardColors.highPriority.withValues(
+                            alpha: 0.35,
+                          ),
                         ),
                         padding: EdgeInsets.symmetric(
                           vertical: context.dashSpacing * 0.5,
@@ -353,7 +378,7 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: const Text('Reject'),
+                      child: Text(l10n.commonReject),
                     ),
                   ),
                   SizedBox(width: context.dashSpacing * 0.45),
@@ -370,7 +395,11 @@ class SpecialistSessionRequestCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: Text(isProcessing ? 'Processing...' : 'Approve'),
+                      child: Text(
+                        isProcessing
+                            ? l10n.commonProcessing
+                            : l10n.commonApprove,
+                      ),
                     ),
                   ),
                 ],
@@ -384,9 +413,10 @@ class SpecialistSessionRequestCard extends StatelessWidget {
 }
 
 class SessionRequestStatusChip extends StatelessWidget {
-  const SessionRequestStatusChip({super.key, required this.visual});
+  const SessionRequestStatusChip({super.key, required this.visual, this.label});
 
   final SessionRequestStatusVisual visual;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -403,11 +433,11 @@ class SessionRequestStatusChip extends StatelessWidget {
           Icon(visual.icon, size: 14, color: visual.foreground),
           const SizedBox(width: 4),
           Text(
-            visual.label,
+            label ?? visual.label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: visual.foreground,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: visual.foreground,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -437,9 +467,9 @@ class _RequestInfoRow extends StatelessWidget {
           child: RichText(
             text: TextSpan(
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: DashboardColors.textSecondary,
-                    height: 1.35,
-                  ),
+                color: DashboardColors.textSecondary,
+                height: 1.35,
+              ),
               children: [
                 TextSpan(
                   text: '$label: ',
@@ -491,7 +521,8 @@ class _ApproveSessionRequestSheetState
     final preferred = widget.request.preferredDate ?? DateTime.now();
     final now = DateTime.now();
     final baseDate = DateTime(preferred.year, preferred.month, preferred.day);
-    final initialDate = baseDate.isBefore(DateTime(now.year, now.month, now.day))
+    final initialDate =
+        baseDate.isBefore(DateTime(now.year, now.month, now.day))
         ? DateTime(now.year, now.month, now.day)
         : baseDate;
     _scheduledDate = initialDate;
@@ -506,12 +537,12 @@ class _ApproveSessionRequestSheetState
   }
 
   DateTime get _scheduledDateTime => DateTime(
-        _scheduledDate.year,
-        _scheduledDate.month,
-        _scheduledDate.day,
-        _scheduledTime.hour,
-        _scheduledTime.minute,
-      );
+    _scheduledDate.year,
+    _scheduledDate.month,
+    _scheduledDate.day,
+    _scheduledTime.hour,
+    _scheduledTime.minute,
+  );
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
@@ -537,21 +568,18 @@ class _ApproveSessionRequestSheetState
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final duration = int.tryParse(_durationController.text.trim());
     if (duration == null || duration < 1 || duration > 480) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Duration must be between 1 and 480 minutes.'),
-        ),
+        SnackBar(content: Text(l10n.specialistSessionDurationRangeError)),
       );
       return;
     }
 
     if (!_scheduledDateTime.isAfter(DateTime.now())) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Scheduled date and time must be in the future.'),
-        ),
+        SnackBar(content: Text(l10n.specialistSessionScheduleFutureRequired)),
       );
       return;
     }
@@ -574,24 +602,27 @@ class _ApproveSessionRequestSheetState
     }
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(mapSpecialistSessionRequestActionError(l10n, error)),
+        ),
+      );
       return;
     }
 
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Session request approved and session created.'),
-      ),
+      SnackBar(content: Text(l10n.specialistSessionRequestApprovedSuccess)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final isProcessing =
         ref.watch(specialistSessionRequestsProvider).processingRequestId ==
-            widget.request.id;
+        widget.request.id;
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Container(
@@ -623,38 +654,43 @@ class _ApproveSessionRequestSheetState
               ),
               SizedBox(height: context.dashSpacing * 0.85),
               Text(
-                'Approve Session Request',
+                l10n.specialistSessionRequestApproveTitle,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               SizedBox(height: context.dashSpacing),
               _ReadOnlyField(
-                label: 'Patient',
-                value: widget.request.patientName ?? 'Patient',
+                label: l10n.entityPatient,
+                value: widget.request.patientName ?? l10n.entityPatient,
               ),
               SizedBox(height: context.dashSpacing * 0.55),
               _ReadOnlyField(
-                label: 'Parent',
-                value: widget.request.parentName ?? 'Parent',
+                label: l10n.roleParent,
+                value: widget.request.parentName ?? l10n.roleParent,
               ),
               SizedBox(height: context.dashSpacing * 0.55),
               _ReadOnlyField(
-                label: 'Preferred date',
+                label: l10n.specialistSessionRequestPreferredDate,
                 value: widget.request.preferredDate != null
-                    ? DateFormat('MMM d, yyyy').format(widget.request.preferredDate!)
+                    ? DateFormat(
+                        'MMM d, yyyy',
+                      ).format(widget.request.preferredDate!)
                     : '—',
               ),
               SizedBox(height: context.dashSpacing * 0.55),
               _ReadOnlyField(
-                label: 'Preferred time',
-                value: widget.request.preferredTimePeriod?.label ?? '—',
+                label: l10n.specialistSessionRequestPreferredTime,
+                value: localizedPreferredTimePeriod(
+                  l10n,
+                  widget.request.preferredTimePeriod,
+                ),
               ),
               SizedBox(height: context.dashSpacing * 0.65),
               DashboardSurfaceCard(
                 onTap: _pickDate,
                 child: _PickerField(
-                  label: 'Scheduled Date',
+                  label: l10n.specialistSessionRequestScheduledDate,
                   value: DateFormat('MMM d, yyyy').format(_scheduledDate),
                   icon: Icons.calendar_today_outlined,
                 ),
@@ -663,7 +699,7 @@ class _ApproveSessionRequestSheetState
               DashboardSurfaceCard(
                 onTap: _pickTime,
                 child: _PickerField(
-                  label: 'Scheduled Time',
+                  label: l10n.specialistSessionRequestScheduledTime,
                   value: _scheduledTime.format(context),
                   icon: Icons.access_time_rounded,
                 ),
@@ -674,7 +710,7 @@ class _ApproveSessionRequestSheetState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Duration (minutes)',
+                      l10n.specialistSessionRequestDurationField,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: DashboardColors.textMuted,
                         fontWeight: FontWeight.w600,
@@ -699,7 +735,7 @@ class _ApproveSessionRequestSheetState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Meeting Link or Location',
+                      l10n.specialistSessionRequestMeetingLinkOrLocation,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: DashboardColors.textMuted,
                         fontWeight: FontWeight.w600,
@@ -709,11 +745,11 @@ class _ApproveSessionRequestSheetState
                     TextField(
                       controller: _locationController,
                       maxLines: 2,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
-                        hintText: 'Optional',
+                        hintText: l10n.commonOptional,
                       ),
                     ),
                   ],
@@ -732,7 +768,11 @@ class _ApproveSessionRequestSheetState
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text(isProcessing ? 'Approving...' : 'Approve & Create Session'),
+                child: Text(
+                  isProcessing
+                      ? l10n.specialistSessionRequestApproving
+                      : l10n.specialistSessionRequestApproveCreate,
+                ),
               ),
             ],
           ),
@@ -775,10 +815,13 @@ class _RejectSessionRequestSheetState
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final reason = _reasonController.text.trim();
     if (reason.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Rejection reason is required.')),
+        SnackBar(
+          content: Text(l10n.specialistSessionRequestRejectReasonRequired),
+        ),
       );
       return;
     }
@@ -795,22 +838,27 @@ class _RejectSessionRequestSheetState
     }
 
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(mapSpecialistSessionRequestActionError(l10n, error)),
+        ),
+      );
       return;
     }
 
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Session request rejected.')),
+      SnackBar(content: Text(l10n.specialistSessionRequestRejectedSuccess)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final isProcessing =
         ref.watch(specialistSessionRequestsProvider).processingRequestId ==
-            widget.request.id;
+        widget.request.id;
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Container(
@@ -843,14 +891,14 @@ class _RejectSessionRequestSheetState
               ),
               SizedBox(height: context.dashSpacing * 0.85),
               Text(
-                'Reject Session Request',
+                l10n.specialistSessionRequestRejectTitle,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               SizedBox(height: context.dashSpacing * 0.35),
               Text(
-                'Provide a reason so the parent understands why this request was declined.',
+                l10n.specialistSessionRequestRejectSubtitle,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: DashboardColors.textSecondary,
                   height: 1.45,
@@ -862,7 +910,7 @@ class _RejectSessionRequestSheetState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Rejection Reason',
+                      l10n.specialistSessionRequestRejectReason,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: DashboardColors.textMuted,
                         fontWeight: FontWeight.w600,
@@ -872,11 +920,11 @@ class _RejectSessionRequestSheetState
                     TextField(
                       controller: _reasonController,
                       maxLines: 4,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
-                        hintText: 'Explain why this request cannot be approved',
+                        hintText: l10n.specialistSessionRequestRejectReasonHint,
                       ),
                     ),
                   ],
@@ -895,7 +943,11 @@ class _RejectSessionRequestSheetState
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text(isProcessing ? 'Rejecting...' : 'Reject Request'),
+                child: Text(
+                  isProcessing
+                      ? l10n.specialistSessionRequestRejecting
+                      : l10n.specialistSessionRequestRejectConfirm,
+                ),
               ),
             ],
           ),
@@ -996,7 +1048,10 @@ Uri? _extractValidUrl(String? locationOrLink) {
     return direct;
   }
 
-  final match = RegExp(r'https?://[^\s]+', caseSensitive: false).firstMatch(raw);
+  final match = RegExp(
+    r'https?://[^\s]+',
+    caseSensitive: false,
+  ).firstMatch(raw);
   if (match != null) {
     return Uri.tryParse(match.group(0)!);
   }
@@ -1007,18 +1062,20 @@ Uri? _extractValidUrl(String? locationOrLink) {
 Future<void> _copyLink(BuildContext context, String link) async {
   await Clipboard.setData(ClipboardData(text: link));
   if (context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Link copied')),
-    );
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.specialistSessionLinkCopied)));
   }
 }
 
 Future<void> _openLink(BuildContext context, String link) async {
   final uri = _extractValidUrl(link);
+  final l10n = AppLocalizations.of(context)!;
   if (uri == null) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No valid link available')),
+        SnackBar(content: Text(l10n.specialistSessionNoValidLink)),
       );
     }
     return;
@@ -1028,13 +1085,13 @@ Future<void> _openLink(BuildContext context, String link) async {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open link')),
+        SnackBar(content: Text(l10n.specialistSessionCouldNotOpenLink)),
       );
     }
   } catch (_) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open link')),
+        SnackBar(content: Text(l10n.specialistSessionCouldNotOpenLink)),
       );
     }
   }

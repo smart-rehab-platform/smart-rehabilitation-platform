@@ -15,7 +15,9 @@ import '../../dashboard/widgets/dashboard_scaffold.dart';
 import '../../dashboard/widgets/dashboard_surface_card.dart';
 import '../../dashboard/widgets/parent_dashboard_cards.dart';
 import '../../dashboard/widgets/parent_navigation.dart';
+import '../../dashboard/presentation/parent/parent_scoped_localization_utils.dart';
 import '../../dashboard/presentation/parent/parent_ui_helpers.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ParentDailyTasksScreen extends ConsumerStatefulWidget {
   const ParentDailyTasksScreen({super.key});
@@ -107,6 +109,7 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
   }
 
   String _taskSubtitle({
+    required AppLocalizations l10n,
     required String childName,
     ParentDailyTask? task,
     ParentAssignedExercise? exercise,
@@ -114,20 +117,29 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
     final parts = <String>[childName];
     if (task != null) {
       if (task.dueTime != null) parts.add(task.dueTime!);
-      if (task.frequency != null) parts.add(task.frequency!);
-      parts.add(task.isCompleted ? 'Completed' : 'Pending');
-    } else if (exercise != null) {
-      if (exercise.frequency != null) parts.add(exercise.frequency!);
-      if (exercise.dueDate != null) {
-        parts.add('Due ${parentFormatDate(exercise.dueDate)}');
+      if (task.frequency != null) {
+        parts.add(localizedExerciseFrequency(l10n, task.frequency!));
       }
-      if (exercise.status != null) parts.add(exercise.status!);
+      parts.add(task.isCompleted ? l10n.statusCompleted : l10n.statusPending);
+    } else if (exercise != null) {
+      if (exercise.frequency != null) {
+        parts.add(localizedExerciseFrequency(l10n, exercise.frequency!));
+      }
+      if (exercise.dueDate != null) {
+        parts.add(
+          l10n.parentExercisesDueDate(parentFormatDate(exercise.dueDate)),
+        );
+      }
+      if (exercise.status != null) {
+        parts.add(localizedExerciseStatus(l10n, exercise.status!));
+      }
     }
     return parts.join(' • ');
   }
 
   Widget _buildTaskList({
     required ThemeData theme,
+    required AppLocalizations l10n,
     required String childName,
     required List<ParentDailyTask> tasks,
     required String emptyMessage,
@@ -176,7 +188,11 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
                       ),
                       SizedBox(height: context.dashSpacing * 0.15),
                       Text(
-                        _taskSubtitle(childName: childName, task: task),
+                        _taskSubtitle(
+                          l10n: l10n,
+                          childName: childName,
+                          task: task,
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: DashboardColors.textSecondary,
                         ),
@@ -199,12 +215,13 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
 
   Widget _buildAssignedList({
     required ThemeData theme,
+    required AppLocalizations l10n,
     required String childName,
     required List<ParentAssignedExercise> exercises,
   }) {
     if (exercises.isEmpty) {
       return DashboardEmptyCard(
-        message: 'No assigned exercises for $childName yet.',
+        message: l10n.parentExercisesNoAssignedForChild(childName),
       );
     }
 
@@ -256,7 +273,11 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
                       ],
                       SizedBox(height: context.dashSpacing * 0.15),
                       Text(
-                        _taskSubtitle(childName: childName, exercise: exercise),
+                        _taskSubtitle(
+                          l10n: l10n,
+                          childName: childName,
+                          exercise: exercise,
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: DashboardColors.textMuted,
                         ),
@@ -283,10 +304,17 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
     final auth = ref.watch(authProvider);
     final exercises = ref.watch(parentExercisesProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final selectedChild = dashboard.selectedChild;
     final displayName = auth.user?.fullName ?? dashboard.user?.fullName;
     final avatarInitials = dashboardInitials(displayName);
     final profileImageUrl = auth.user?.profileImageUrl;
+    final dashboardError = dashboard.errorMessage == null
+        ? null
+        : mapParentDashboardError(l10n, dashboard.errorMessage!);
+    final exercisesError = exercises.errorMessage == null
+        ? null
+        : mapParentExercisesError(l10n, exercises.errorMessage!);
 
     if (dashboard.isLoading) {
       return DashboardScaffold(
@@ -298,7 +326,7 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
         onNavTap: (item) => ParentNavigation.onNavTap(context, item),
         onNotificationsTap: _onNotificationsTap,
         onAvatarTap: _onAvatarTap,
-        body: const DashboardLoadingCard(),
+        body: DashboardLoadingCard(message: l10n.parentExercisesLoading),
       );
     }
 
@@ -313,7 +341,7 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
         onNotificationsTap: _onNotificationsTap,
         onAvatarTap: _onAvatarTap,
         body: DashboardErrorCard(
-          message: dashboard.errorMessage!,
+          message: dashboardError!,
           onRetry: () => context.go(AppRoutes.login),
         ),
       );
@@ -331,14 +359,14 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const DashboardSectionHeader(
-            title: 'Exercises',
+          DashboardSectionHeader(
+            title: l10n.navExercises,
             linkColor: DashboardColors.brandCyan,
           ),
           if (selectedChild != null) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
-              'Exercises for ${selectedChild.name}',
+              l10n.parentExercisesForChild(selectedChild.name),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -354,18 +382,18 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
               ref.read(parentExercisesProvider.notifier).loadForChild(childId);
             },
           ),
-          if (dashboard.errorMessage != null) ...[
+          if (dashboardError != null) ...[
             SizedBox(height: context.dashSpacing * 0.75),
             DashboardErrorCard(
-              message: dashboard.errorMessage!,
+              message: dashboardError,
               onRetry: () =>
                   ref.read(parentDashboardProvider.notifier).refresh(),
             ),
           ],
-          if (exercises.errorMessage != null) ...[
+          if (exercisesError != null) ...[
             SizedBox(height: context.dashSpacing * 0.75),
             DashboardErrorCard(
-              message: exercises.errorMessage!,
+              message: exercisesError,
               onRetry: _loadExercisesForSelectedChild,
             ),
           ],
@@ -375,42 +403,42 @@ class _ParentDailyTasksScreenState extends ConsumerState<ParentDailyTasksScreen>
             labelColor: DashboardColors.brandCyan,
             unselectedLabelColor: DashboardColors.textMuted,
             indicatorColor: DashboardColors.brandCyan,
-            tabs: const [
-              Tab(text: 'Daily'),
-              Tab(text: 'Weekly'),
-              Tab(text: 'Assigned'),
+            tabs: [
+              Tab(text: l10n.exerciseFrequencyDaily),
+              Tab(text: l10n.exerciseFrequencyWeekly),
+              Tab(text: l10n.parentExercisesTabAssigned),
             ],
           ),
           SizedBox(height: context.dashSpacing),
           if (dashboard.children.isEmpty)
-            const DashboardEmptyCard(
-              message:
-                  'No linked children yet. Add a child from the specialist portal.',
-            )
+            DashboardEmptyCard(message: l10n.parentChildrenNoLinked)
           else if (exercises.isLoading || dashboard.isLoadingChild)
-            const DashboardLoadingCard(message: 'Loading exercises...')
+            DashboardLoadingCard(message: l10n.parentExercisesLoading)
           else if (selectedChild == null)
-            const DashboardEmptyCard(
-              message: 'Select a child to view exercises.',
-            )
+            DashboardEmptyCard(message: l10n.parentExercisesSelectChild)
           else
             switch (_tabController.index) {
               0 => _buildTaskList(
                 theme: theme,
+                l10n: l10n,
                 childName: selectedChild.name,
                 tasks: exercises.dailyTasks,
-                emptyMessage:
-                    'No daily tasks assigned for ${selectedChild.name} today.',
+                emptyMessage: l10n.parentExercisesNoDailyForChild(
+                  selectedChild.name,
+                ),
               ),
               1 => _buildTaskList(
                 theme: theme,
+                l10n: l10n,
                 childName: selectedChild.name,
                 tasks: exercises.weeklyTasks,
-                emptyMessage:
-                    'No weekly tasks assigned for ${selectedChild.name}.',
+                emptyMessage: l10n.parentExercisesNoWeeklyForChild(
+                  selectedChild.name,
+                ),
               ),
               _ => _buildAssignedList(
                 theme: theme,
+                l10n: l10n,
                 childName: selectedChild.name,
                 exercises: exercises.assignedExercises,
               ),

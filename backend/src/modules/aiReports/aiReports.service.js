@@ -1,5 +1,6 @@
 const db = require("../../database/db");
 const aiProviderService = require("../../services/aiProvider.service");
+const { isSpecialistAssignedToPatient } = require("../../utils/patientAccess");
 const { generateAiReportPdfFile } = require("./aiReportPdf.generator");
 
 const createError = (message, statusCode) => {
@@ -646,17 +647,60 @@ const generateReport = async ({ patient_id, period_start, period_end, type }) =>
   return insertResult.rows[0];
 };
 
-const getAllReports = async () => {
-  const result = await db.query(
-    `
-    SELECT ar.*, p.full_name AS patient_name
-    FROM ai_reports ar
-    JOIN patients p ON p.id = ar.patient_id
-    ORDER BY ar.generated_at DESC
-    `
-  );
+const assertActorCanReadPatientAiReports = async (actor, patientId) => {
+  if (!actor) {
+    throw createError("Unauthorized", 401);
+  }
 
-  return result.rows;
+  const role = String(actor.role || "").toLowerCase();
+  if (role === "admin") {
+    return;
+  }
+
+  if (role !== "specialist") {
+    throw createError("Access forbidden. You do not have permission", 403);
+  }
+
+  const assigned = await isSpecialistAssignedToPatient(actor.id, patientId);
+  if (!assigned) {
+    throw createError("You do not have access to this patient.", 403);
+  }
+};
+
+const getAllReports = async (actor) => {
+  const role = String(actor?.role || "").toLowerCase();
+
+  if (role === "admin") {
+    const result = await db.query(
+      `
+      SELECT ar.*, p.full_name AS patient_name
+      FROM ai_reports ar
+      JOIN patients p ON p.id = ar.patient_id
+      ORDER BY ar.generated_at DESC
+      `
+    );
+
+    return result.rows;
+  }
+
+  if (role === "specialist") {
+    const result = await db.query(
+      `
+      SELECT ar.*, p.full_name AS patient_name
+      FROM ai_reports ar
+      JOIN patients p ON p.id = ar.patient_id
+      JOIN patient_specialists ps
+        ON ps.patient_id = ar.patient_id
+       AND ps.specialist_id = $1
+      ORDER BY ar.generated_at DESC
+      `,
+      [actor.id]
+    );
+
+    return result.rows;
+  }
+
+  throw createError("Access forbidden. You do not have permission", 403);
 };
 
 const getReportById = async (id) => {
@@ -722,12 +766,14 @@ const fetchAiReportPdfContext = async (report) => {
   };
 };
 
-const exportReportPdf = async (id) => {
+const exportReportPdf = async (id, actor) => {
   const report = await getReportById(id);
 
   if (!report) {
     return null;
   }
+
+  await assertActorCanReadPatientAiReports(actor, report.patient_id);
 
   const context = await fetchAiReportPdfContext(report);
   const { publicUrl } = await generateAiReportPdfFile(context);
@@ -755,4 +801,5 @@ module.exports = {
   getReportById,
   getReportsByPatient,
   exportReportPdf,
+  assertActorCanReadPatientAiReports,
 };

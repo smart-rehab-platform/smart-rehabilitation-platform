@@ -4,8 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../providers/auth_provider.dart';
+import '../utils/auth_localization_utils.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/locale/language_selector.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/auth_ui.dart';
 
 enum _VerifyEmailStatus { pending, loading, success, error }
@@ -24,8 +27,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   final _tokenController = TextEditingController();
 
   _VerifyEmailStatus _status = _VerifyEmailStatus.pending;
-  String _message =
-      'Please check your email and open the verification link on this device.';
+  String? _message;
   bool _isResending = false;
   bool _showTokenInput = false;
 
@@ -62,13 +64,15 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   }
 
   Future<void> _verifyWithToken(String token) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _status = _VerifyEmailStatus.loading;
-      _message = 'We are verifying your email now.';
+      _message = l10n.verifyEmailVerifyingMessage;
     });
 
-    final message =
-        await ref.read(authProvider.notifier).verifyEmail(token: token);
+    final message = await ref
+        .read(authProvider.notifier)
+        .verifyEmail(token: token);
 
     if (!mounted) {
       return;
@@ -84,18 +88,20 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
     setState(() {
       _status = _VerifyEmailStatus.error;
-      _message =
-          ref.read(authProvider).errorMessage ??
-          'Unable to verify your email right now.';
+      _message = mapAuthProviderError(
+        l10n,
+        ref.read(authProvider).errorMessage ?? l10n.verifyEmailFailedDefault,
+      );
     });
   }
 
   Future<void> _verifyFromInput() async {
+    final l10n = AppLocalizations.of(context)!;
     final token = _extractVerificationToken(_tokenController.text);
     if (token == null || token.isEmpty) {
       showAuthSnackBar(
         context,
-        'Enter the verification token or paste the full verification link.',
+        l10n.verifyEmailEnterToken,
         type: AuthSnackBarType.error,
       );
       return;
@@ -105,11 +111,12 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   }
 
   Future<void> _resendVerification() async {
+    final l10n = AppLocalizations.of(context)!;
     final email = widget.email?.trim() ?? '';
     if (email.isEmpty) {
       showAuthSnackBar(
         context,
-        'Email address is missing. Please sign up again or contact support.',
+        l10n.verifyEmailEmailMissing,
         type: AuthSnackBarType.error,
       );
       return;
@@ -134,68 +141,87 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
     showAuthSnackBar(
       context,
-      ref.read(authProvider).errorMessage ??
-          'Unable to resend the verification email right now.',
+      mapAuthProviderError(
+        l10n,
+        ref.read(authProvider).errorMessage ?? l10n.verifyEmailResendFailed,
+      ),
       type: AuthSnackBarType.error,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final email = widget.email?.trim();
 
     return Scaffold(
       body: AuthBackground(
         child: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: AuthGlassCard(
-                  child: switch (_status) {
-                    _VerifyEmailStatus.pending => _buildPendingContent(email),
-                    _VerifyEmailStatus.loading => AuthStatusCard(
-                      title: 'Verifying Email',
-                      message: _message,
-                      isLoading: true,
-                      icon: Icons.mark_email_read_outlined,
-                    ),
-                    _VerifyEmailStatus.success => AuthStatusCard(
-                      title: 'Email Verified',
-                      message:
-                          'Your email has been verified successfully. You can now sign in.',
-                      buttonLabel: 'Go to Login',
-                      onPressed: () => context.go(AppRoutes.login),
-                      icon: Icons.verified_user_rounded,
-                    ),
-                    _VerifyEmailStatus.error => AuthStatusCard(
-                      title: 'Verification Failed',
-                      message: _message,
-                      buttonLabel: 'Back to Login',
-                      onPressed: () => context.go(AppRoutes.login),
-                      isError: true,
-                    ),
-                  },
+          child: Column(
+            children: [
+              const Align(
+                alignment: AlignmentDirectional.topEnd,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16, 10, 16, 0),
+                  child: LanguageSelector(),
                 ),
               ),
-            ),
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: AuthGlassCard(
+                        child: switch (_status) {
+                          _VerifyEmailStatus.pending => _buildPendingContent(
+                            l10n,
+                            email,
+                          ),
+                          _VerifyEmailStatus.loading => AuthStatusCard(
+                            title: l10n.verifyEmailVerifyingTitle,
+                            message:
+                                _message ?? l10n.verifyEmailVerifyingMessage,
+                            isLoading: true,
+                            icon: Icons.mark_email_read_outlined,
+                          ),
+                          _VerifyEmailStatus.success => AuthStatusCard(
+                            title: l10n.verifyEmailSuccessTitle,
+                            message: l10n.verifyEmailSuccessMessage,
+                            buttonLabel: l10n.verifyEmailGoToLogin,
+                            onPressed: () => context.go(AppRoutes.login),
+                            icon: Icons.verified_user_rounded,
+                          ),
+                          _VerifyEmailStatus.error => AuthStatusCard(
+                            title: l10n.verifyEmailFailedTitle,
+                            message:
+                                _message ?? l10n.verifyEmailFailedDefault,
+                            buttonLabel: l10n.verifyEmailBackToSignIn,
+                            onPressed: () => context.go(AppRoutes.login),
+                            isError: true,
+                          ),
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildPendingContent(String? email) {
+  Widget _buildPendingContent(AppLocalizations l10n, String? email) {
     final authState = ref.watch(authProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const AuthStatusCard(
-          title: 'Check Your Email',
-          message:
-              'We sent a verification link to your email address. Open the link on this device to activate your account.',
+        AuthStatusCard(
+          title: l10n.verifyEmailCheckTitle,
+          message: l10n.verifyEmailCheckMessage,
           icon: Icons.mark_email_unread_outlined,
         ),
         if (email != null && email.isNotEmpty) ...[
@@ -212,10 +238,14 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
         ],
         const SizedBox(height: 18),
         AuthGradientButton(
-          label: _isResending ? 'Sending...' : 'Resend Verification Email',
+          label: _isResending
+              ? l10n.verifyEmailResending
+              : l10n.verifyEmailResend,
           trailingIcon: Icons.refresh_rounded,
           isLoading: _isResending || authState.isLoading,
-          onPressed: _isResending || authState.isLoading ? null : _resendVerification,
+          onPressed: _isResending || authState.isLoading
+              ? null
+              : _resendVerification,
         ),
         const SizedBox(height: 12),
         TextButton(
@@ -224,8 +254,8 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
           },
           child: Text(
             _showTokenInput
-                ? 'Hide manual verification'
-                : 'Already have a verification link?',
+                ? l10n.verifyEmailHideManual
+                : l10n.verifyEmailShowManual,
             style: GoogleFonts.inter(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
@@ -237,15 +267,15 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
           const SizedBox(height: 8),
           AuthInputField(
             controller: _tokenController,
-            label: 'Verification link or token',
-            hintText: 'Paste the link or token from your email',
+            label: l10n.verifyEmailTokenLabel,
+            hintText: l10n.verifyEmailTokenHint,
             icon: Icons.link_rounded,
             textInputAction: TextInputAction.done,
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 12),
           AuthGradientButton(
-            label: 'Verify Email',
+            label: l10n.verifyEmailVerifyButton,
             trailingIcon: Icons.verified_user_outlined,
             isLoading: authState.isLoading,
             onPressed: authState.isLoading ? null : _verifyFromInput,
@@ -255,7 +285,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
         TextButton(
           onPressed: () => context.go(AppRoutes.login),
           child: Text(
-            'Back to Sign In',
+            l10n.verifyEmailBackToSignIn,
             style: GoogleFonts.inter(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,

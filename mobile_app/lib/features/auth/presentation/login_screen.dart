@@ -4,10 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
+import '../utils/auth_localization_utils.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/routes/role_routing.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/auth_ui.dart';
+import '../../../core/locale/language_selector.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -40,8 +43,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _loadRememberedLogin() async {
-    final remembered =
-        await ref.read(authProvider.notifier).loadRememberedLogin();
+    final remembered = await ref
+        .read(authProvider.notifier)
+        .loadRememberedLogin();
 
     if (!mounted) {
       return;
@@ -64,23 +68,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _login() async {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
       showAuthSnackBar(
         context,
-        'Please enter email and password',
+        l10n.loginEnterEmailAndPassword,
         type: AuthSnackBarType.error,
       );
       return;
     }
 
-    final success = await ref.read(authProvider.notifier).login(
-          email: email,
-          password: password,
-          rememberMe: _rememberMe,
-        );
+    final success = await ref
+        .read(authProvider.notifier)
+        .login(email: email, password: password, rememberMe: _rememberMe);
 
     if (!mounted) {
       return;
@@ -90,7 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() => _showVerifyEmailPrompt = false);
       showAuthSnackBar(
         context,
-        'Login successful',
+        l10n.loginSuccess,
         type: AuthSnackBarType.success,
       );
 
@@ -100,29 +103,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         context.go(destination);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Unable to determine your account role. Please contact support.'),
-          ),
+          SnackBar(content: Text(l10n.loginUnableToDetermineRole)),
         );
         context.go(AppRoutes.login);
       }
       return;
     }
 
-    final errorMessage =
-        ref.read(authProvider).errorMessage ??
-        'Login failed. Please try again.';
+    final rawErrorMessage =
+        ref.read(authProvider).errorMessage ?? l10n.loginFailed;
 
     setState(() {
-      _showVerifyEmailPrompt =
-          errorMessage.toLowerCase().contains('verify');
+      _showVerifyEmailPrompt = rawErrorMessage.toLowerCase().contains('verify');
     });
 
-    showAuthSnackBar(context, errorMessage, type: AuthSnackBarType.error);
+    showAuthSnackBar(
+      context,
+      mapAuthProviderError(l10n, rawErrorMessage),
+      type: AuthSnackBarType.error,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authProvider);
 
     return Scaffold(
@@ -153,6 +157,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             logoSize: 26,
                             logoColor: Color(0xFF2AA4C9),
                           ),
+                          const Spacer(),
+                          const LanguageSelector(),
                         ],
                       ),
                       SizedBox(height: topGap.toDouble()),
@@ -172,7 +178,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               const SizedBox(height: 22),
                               Text(
-                                'Welcome Back',
+                                l10n.loginTitle,
                                 style: GoogleFonts.syne(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w700,
@@ -181,7 +187,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Continue your smart rehabilitation journey',
+                                l10n.loginSubtitle,
                                 style: GoogleFonts.inter(
                                   fontSize: 12.5,
                                   height: 1.5,
@@ -193,8 +199,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               const SizedBox(height: 18),
                               AuthInputField(
                                 controller: _emailController,
-                                label: 'Email Address',
-                                hintText: 'name@example.com',
+                                label: l10n.fieldEmail,
+                                hintText: l10n.loginEmailHint,
+                                textDirection: TextDirection.ltr,
                                 icon: Icons.mail_outline_rounded,
                                 keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.next,
@@ -209,13 +216,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     _emailController.text.isEmpty ||
                                         _isEmailValid
                                     ? null
-                                    : 'Invalid email address',
+                                    : l10n.authValidationInvalidEmail,
                               ),
                               const SizedBox(height: 14),
                               AuthInputField(
                                 controller: _passwordController,
-                                label: 'Password',
-                                hintText: 'Enter your password',
+                                label: l10n.fieldPassword,
+                                hintText: l10n.loginPasswordHint,
                                 icon: Icons.lock_outline_rounded,
                                 textInputAction: TextInputAction.done,
                                 autofillHints: const [AutofillHints.password],
@@ -226,6 +233,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       () => _showPassword = !_showPassword,
                                     );
                                   },
+                                  tooltip: _showPassword
+                                      ? l10n.loginHidePassword
+                                      : l10n.loginShowPassword,
                                   icon: Icon(
                                     _showPassword
                                         ? Icons.visibility_off_outlined
@@ -278,7 +288,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
-                                          'Remember Me',
+                                          l10n.loginRememberMe,
                                           style: GoogleFonts.inter(
                                             fontSize: 11,
                                             color: AppColors.lightBlue,
@@ -301,7 +311,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     child: Text(
-                                      'Forgot Password?',
+                                      l10n.loginForgotPassword,
                                       style: GoogleFonts.inter(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
@@ -313,7 +323,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               const SizedBox(height: 18),
                               if (_showVerifyEmailPrompt) ...[
                                 AuthGradientButton(
-                                  label: 'Go to Email Verification',
+                                  label: l10n.loginGoToEmailVerification,
                                   trailingIcon: Icons.mark_email_read_outlined,
                                   onPressed: () {
                                     final email = _emailController.text.trim();
@@ -331,12 +341,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ],
                               AuthGradientButton(
                                 label: authState.isLoading
-                                    ? 'Signing In...'
-                                    : 'Sign In',
+                                    ? l10n.loginSigningIn
+                                    : l10n.commonSignIn,
                                 trailingIcon: Icons.chevron_right_rounded,
                                 isLoading:
-                                    authState.isLoading || _isLoadingRememberedLogin,
-                                onPressed: authState.isLoading ||
+                                    authState.isLoading ||
+                                    _isLoadingRememberedLogin,
+                                onPressed:
+                                    authState.isLoading ||
                                         _isLoadingRememberedLogin
                                     ? null
                                     : _login,
@@ -344,7 +356,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               const SizedBox(height: 18),
                               Text.rich(
                                 TextSpan(
-                                  text: "Don't have an account? ",
+                                  text: l10n.loginNoAccountPrompt,
                                   style: GoogleFonts.inter(
                                     fontSize: 11.5,
                                     color: AppColors.lightBlue,
@@ -356,7 +368,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         onTap: () =>
                                             context.go(AppRoutes.signup),
                                         child: Text(
-                                          'Create Account',
+                                          l10n.authCommonCreateAccount,
                                           style: GoogleFonts.inter(
                                             fontSize: 11.5,
                                             fontWeight: FontWeight.w700,

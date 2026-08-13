@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
+import 'specialist_patient_details_localization_utils.dart';
+import 'specialist_scoped_localization_utils.dart';
 
 enum TreatmentPlanListFilter {
   all,
@@ -13,11 +16,11 @@ enum TreatmentPlanListFilter {
   archived;
 
   String get label => switch (this) {
-        TreatmentPlanListFilter.all => 'All',
-        TreatmentPlanListFilter.active => 'Active',
-        TreatmentPlanListFilter.completed => 'Completed',
-        TreatmentPlanListFilter.archived => 'Archived',
-      };
+    TreatmentPlanListFilter.all => 'All',
+    TreatmentPlanListFilter.active => 'Active',
+    TreatmentPlanListFilter.completed => 'Completed',
+    TreatmentPlanListFilter.archived => 'Archived',
+  };
 
   bool matches(SpecialistTreatmentPlanItem plan) {
     final status = plan.status?.trim().toLowerCase() ?? 'active';
@@ -50,6 +53,7 @@ class TreatmentPlanListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final statusColor = treatmentPlanStatusColor(plan.status);
 
@@ -68,10 +72,7 @@ class TreatmentPlanListCard extends StatelessWidget {
                 color: statusColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(
-                Icons.assignment_outlined,
-                color: statusColor,
-              ),
+              child: Icon(Icons.assignment_outlined, color: statusColor),
             ),
             SizedBox(width: context.dashSpacing * 0.65),
             Expanded(
@@ -99,7 +100,12 @@ class TreatmentPlanListCard extends StatelessWidget {
                     runSpacing: 8,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      DashboardPriorityBadge(label: plan.statusLabel),
+                      DashboardPriorityBadge(
+                        label: localizedTreatmentPlanStatus(
+                          l10n,
+                          plan.status ?? 'active',
+                        ),
+                      ),
                       Text(
                         '${formatDashboardDate(plan.startDate)} → ${formatDashboardDate(plan.endDate)}',
                         style: theme.textTheme.labelSmall?.copyWith(
@@ -134,14 +140,15 @@ class TreatmentPlanFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: context.dashSpacing * 2.1,
       child: ListView.separated(
         primary: false,
         scrollDirection: Axis.horizontal,
         itemCount: TreatmentPlanListFilter.values.length,
-        separatorBuilder: (_, __) =>
-            SizedBox(width: context.dashSpacing * 0.4),
+        separatorBuilder: (_, __) => SizedBox(width: context.dashSpacing * 0.4),
         itemBuilder: (context, index) {
           final filter = TreatmentPlanListFilter.values[index];
           final isSelected = selected == filter;
@@ -165,13 +172,13 @@ class TreatmentPlanFilterChips extends StatelessWidget {
                 ),
               ),
               child: Text(
-                filter.label,
+                localizedTreatmentPlanFilter(l10n, filter),
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: isSelected
-                          ? DashboardColors.brandCyan
-                          : DashboardColors.textSecondary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: isSelected
+                      ? DashboardColors.brandCyan
+                      : DashboardColors.textSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           );

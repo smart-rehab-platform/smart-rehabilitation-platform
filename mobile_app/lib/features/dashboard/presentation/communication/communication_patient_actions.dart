@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../models/admin_assignments_models.dart';
 import '../../models/parent_links_models.dart';
@@ -42,8 +43,9 @@ class _ParentMessageSpecialistButtonState
 
     final parentId = ref.read(authProvider).user?.id;
     if (parentId == null || parentId.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sign in to send messages.')),
+        SnackBar(content: Text(l10n.communicationSignInToSendMessages)),
       );
       return;
     }
@@ -61,10 +63,9 @@ class _ParentMessageSpecialistButtonState
       }
 
       if (specialist == null) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No specialist is assigned to this child yet.'),
-          ),
+          SnackBar(content: Text(l10n.communicationNoSpecialistAssigned)),
         );
         return;
       }
@@ -86,6 +87,8 @@ class _ParentMessageSpecialistButtonState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return OutlinedButton.icon(
       onPressed: _isOpening ? null : _openConversation,
       style: OutlinedButton.styleFrom(
@@ -102,7 +105,11 @@ class _ParentMessageSpecialistButtonState
               ),
             )
           : const Icon(Icons.chat_bubble_outline_rounded),
-      label: Text(_isOpening ? 'Opening...' : 'Message Specialist'),
+      label: Text(
+        _isOpening
+            ? l10n.commonOpening
+            : l10n.communicationMessageSpecialist,
+      ),
     );
   }
 }
@@ -140,9 +147,10 @@ class _SpecialistMessageParentButtonState
 
     final specialistId = ref.read(authProvider).user?.id;
     if (specialistId == null || specialistId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sign in to send messages.')),
-      );
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.messageSignInRequired)));
       return;
     }
 
@@ -164,10 +172,9 @@ class _SpecialistMessageParentButtonState
       }
 
       if (parent == null) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No parent is linked to this patient yet.'),
-          ),
+          SnackBar(content: Text(l10n.specialistPatientDetailsNoParentLinked)),
         );
         return;
       }
@@ -189,6 +196,8 @@ class _SpecialistMessageParentButtonState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return OutlinedButton.icon(
       onPressed: _isOpening ? null : _openConversation,
       icon: _isOpening
@@ -198,7 +207,9 @@ class _SpecialistMessageParentButtonState
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : const Icon(Icons.chat_bubble_outline_rounded),
-      label: Text(_isOpening ? 'Opening...' : 'Message Parent'),
+      label: Text(
+        _isOpening ? l10n.commonOpening : l10n.specialistMessageParent,
+      ),
     );
   }
 }

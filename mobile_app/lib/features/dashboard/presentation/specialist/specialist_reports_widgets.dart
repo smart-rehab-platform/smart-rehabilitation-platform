@@ -21,10 +21,12 @@ typedef SpecialistReportFilterChips = ReportFilterChips;
 typedef SpecialistReportCard = ReportListCard;
 
 Widget buildReportSearchField({
+  required BuildContext context,
   required TextEditingController controller,
   required ValueChanged<String> onChanged,
 }) {
   return buildSharedReportSearchField(
+    context: context,
     controller: controller,
     onChanged: onChanged,
   );
@@ -136,22 +138,10 @@ class SpecialistReportInformationCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.65),
-          _ReportInfoRow(
-            label: 'Patient',
-            value: detail.patientName ?? '—',
-          ),
-          _ReportInfoRow(
-            label: 'Specialist',
-            value: specialistLabel,
-          ),
-          _ReportInfoRow(
-            label: 'Report Type',
-            value: detail.typeLabel,
-          ),
-          _ReportInfoRow(
-            label: 'Created Date',
-            value: dateLabel,
-          ),
+          _ReportInfoRow(label: 'Patient', value: detail.patientName ?? '—'),
+          _ReportInfoRow(label: 'Specialist', value: specialistLabel),
+          _ReportInfoRow(label: 'Report Type', value: detail.typeLabel),
+          _ReportInfoRow(label: 'Created Date', value: dateLabel),
           if (detail.hasPdf)
             Padding(
               padding: EdgeInsets.only(top: context.dashSpacing * 0.15),
@@ -191,9 +181,9 @@ class _ReportInfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: DashboardColors.textMuted,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: DashboardColors.textMuted),
             ),
           ),
           Expanded(
@@ -201,9 +191,9 @@ class _ReportInfoRow extends StatelessWidget {
               value,
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: DashboardColors.textPrimary,
-                  ),
+                fontWeight: FontWeight.w600,
+                color: DashboardColors.textPrimary,
+              ),
             ),
           ),
         ],
@@ -213,10 +203,7 @@ class _ReportInfoRow extends StatelessWidget {
 }
 
 class SpecialistReportSectionCard extends StatelessWidget {
-  const SpecialistReportSectionCard({
-    super.key,
-    required this.section,
-  });
+  const SpecialistReportSectionCard({super.key, required this.section});
 
   final SpecialistReportSection section;
 
@@ -271,8 +258,8 @@ class SpecialistReportAttachmentCard extends StatelessWidget {
             child: Text(
               resolved,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: DashboardColors.textSecondary,
-                  ),
+                color: DashboardColors.textSecondary,
+              ),
             ),
           ),
         ],
@@ -298,9 +285,9 @@ class _MetaChip extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: DashboardColors.brandCyan,
-              fontWeight: FontWeight.w700,
-            ),
+          color: DashboardColors.brandCyan,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

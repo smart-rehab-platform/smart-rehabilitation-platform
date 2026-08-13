@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../widgets/dashboard_bottom_nav.dart';
 import '../widgets/dashboard_profile_avatar.dart';
@@ -47,8 +48,9 @@ class SpecialistDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authProvider).user;
-    final name = user?.fullName ?? 'Specialist';
+    final name = user?.fullName ?? l10n.roleSpecialist;
 
     return Drawer(
       backgroundColor: DashboardColors.surface,
@@ -86,60 +88,60 @@ class SpecialistDrawer extends ConsumerWidget {
                 children: [
                   _DrawerTile(
                     icon: Icons.dashboard_outlined,
-                    label: 'Dashboard',
+                    label: l10n.navDashboard,
                     onTap: () => _go(context, AppRoutes.specialistDashboard),
                   ),
                   _DrawerTile(
                     icon: Icons.people_outline_rounded,
-                    label: 'Patients',
+                    label: l10n.navPatients,
                     onTap: () => _go(context, AppRoutes.specialistPatients),
                   ),
                   _DrawerTile(
                     icon: Icons.rate_review_outlined,
-                    label: 'Pending Reviews',
+                    label: l10n.navPendingReviews,
                     onTap: () =>
                         _go(context, AppRoutes.specialistPendingReviews),
                   ),
                   _DrawerTile(
                     icon: Icons.calendar_today_outlined,
-                    label: "Today's Sessions",
+                    label: l10n.navTodaysSessions,
                     onTap: () => _go(context, AppRoutes.specialistSessions),
                   ),
                   _DrawerTile(
                     icon: Icons.assignment_outlined,
-                    label: 'Treatment Plans',
+                    label: l10n.navTreatmentPlans,
                     onTap: () =>
                         _go(context, AppRoutes.specialistTreatmentPlans),
                   ),
                   _DrawerTile(
                     icon: Icons.assignment_ind_outlined,
-                    label: 'Assigned Case Requests',
+                    label: l10n.navAssignedCaseRequests,
                     onTap: () => _go(context, AppRoutes.specialistCaseRequests),
                   ),
                   _DrawerTile(
                     icon: Icons.chat_bubble_outline_rounded,
-                    label: 'Messages',
+                    label: l10n.navMessages,
                     onTap: () => _go(context, AppRoutes.specialistMessages),
                   ),
                   _DrawerTile(
                     icon: Icons.fitness_center_outlined,
-                    label: 'Exercises',
+                    label: l10n.navExercises,
                     onTap: () => _go(context, AppRoutes.specialistExercises),
                   ),
                   _DrawerTile(
                     icon: Icons.description_outlined,
-                    label: 'Reports',
+                    label: l10n.navReports,
                     onTap: () => _go(context, AppRoutes.specialistReports),
                   ),
                   _DrawerTile(
                     icon: Icons.notifications_none_rounded,
-                    label: 'Notifications',
+                    label: l10n.navNotifications,
                     onTap: () =>
                         _go(context, AppRoutes.specialistNotifications),
                   ),
                   _DrawerTile(
                     icon: Icons.person_outline_rounded,
-                    label: 'Profile',
+                    label: l10n.navProfile,
                     onTap: () => _go(context, AppRoutes.specialistProfile),
                   ),
                 ],
@@ -148,7 +150,7 @@ class SpecialistDrawer extends ConsumerWidget {
             const Divider(height: 1),
             _DrawerTile(
               icon: Icons.logout_rounded,
-              label: 'Logout',
+              label: l10n.commonLogout,
               onTap: () async {
                 Navigator.of(context).pop();
                 await SpecialistNavigation.logout(context, ref);

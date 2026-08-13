@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
-
-const caseRequestFormSteps = <String>[
-  'Child',
-  'Category',
-  'Description',
-  'History',
-  'Contact',
-  'Review',
-];
+import '../presentation/parent_case_intake_localization_utils.dart';
 
 class CaseRequestStepIndicator extends StatelessWidget {
   const CaseRequestStepIndicator({
@@ -27,6 +20,9 @@ class CaseRequestStepIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final stepLabels = parentCaseRequestFormStepLabels(l10n);
+    final stepName = stepLabels[currentStep];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,10 +38,8 @@ class CaseRequestStepIndicator extends StatelessWidget {
             return Expanded(
               child: Container(
                 height: 4,
-                margin: EdgeInsets.only(
-                  right: index == totalSteps - 1
-                      ? 0
-                      : context.dashSpacing * 0.2,
+                margin: EdgeInsetsDirectional.only(
+                  end: index == totalSteps - 1 ? 0 : context.dashSpacing * 0.2,
                 ),
                 decoration: BoxDecoration(
                   color: color,
@@ -57,7 +51,11 @@ class CaseRequestStepIndicator extends StatelessWidget {
         ),
         SizedBox(height: context.dashSpacing * 0.35),
         Text(
-          'Step ${currentStep + 1} of $totalSteps: ${caseRequestFormSteps[currentStep]}',
+          l10n.parentCaseRequestFormStepProgress(
+            currentStep + 1,
+            totalSteps,
+            stepName,
+          ),
           style: theme.textTheme.labelLarge?.copyWith(
             color: DashboardColors.textSecondary,
             fontWeight: FontWeight.w700,

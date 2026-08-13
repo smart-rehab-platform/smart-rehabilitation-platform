@@ -79,6 +79,13 @@ router.get(
   dashboardController.getSpecialistPendingReviews
 );
 
+router.get(
+  "/dashboard/specialist/weekly-patient-interactions",
+  authenticate,
+  authorizeRoles("specialist"),
+  dashboardController.getSpecialistWeeklyPatientInteractions
+);
+
 // Parent Dashboard
 router.get(
   "/dashboard/parent/overview",

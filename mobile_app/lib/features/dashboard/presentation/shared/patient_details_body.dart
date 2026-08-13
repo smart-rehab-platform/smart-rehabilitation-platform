@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../models/specialist_patient_details_models.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -88,13 +89,15 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
       widget.onReportsTap!();
       return;
     }
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-      const SnackBar(content: Text('Reports are unavailable right now.')),
+      SnackBar(content: Text(l10n.specialistPatientDetailsReportsUnavailable)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final data = widget.data;
     final patientId = widget.patientId;
@@ -118,7 +121,7 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
           ],
           SizedBox(height: context.dashSpacing),
           Text(
-            'Quick Statistics',
+            l10n.specialistPatientDetailsQuickStatistics,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -130,17 +133,17 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
             onActiveGoalsTap: () => _scrollToSection(
               _goalsSectionKey,
               unavailableMessage:
-                  'Goals section is not available yet. Pull to refresh and try again.',
+                  l10n.specialistPatientDetailsGoalsSectionUnavailable,
             ),
             onAssignedExercisesTap: () => _scrollToSection(
               _assignedExercisesSectionKey,
-              unavailableMessage:
-                  'Assigned Exercises section is not available yet. Pull to refresh and try again.',
+              unavailableMessage: l10n
+                  .specialistPatientDetailsAssignedExercisesSectionUnavailable,
             ),
             onPendingReviewsTap: () => _scrollToSection(
               _submissionsSectionKey,
               unavailableMessage:
-                  'Submissions section is not available yet. Pull to refresh and try again.',
+                  l10n.specialistPatientDetailsSubmissionsSectionUnavailable,
             ),
             onReportsTap: _onReportsTap,
           ),
@@ -150,7 +153,7 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
           ],
           SizedBox(height: context.dashSpacing * 1.1),
           Text(
-            'Treatment Plan',
+            l10n.clinicalTreatmentPlan,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -159,11 +162,11 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
           SizedBox(height: context.dashSpacing * 0.5),
           if (data.treatmentPlan == null)
             PatientDetailsEmptySection(
-              message: 'No treatment plan assigned yet.',
+              message: l10n.specialistPatientDetailsNoTreatmentPlanYet,
               actionLabel:
                   showSpecialistWorkflowActions &&
                       widget.onCreateTreatmentPlan != null
-                  ? 'Create Treatment Plan'
+                  ? l10n.specialistCreateTreatmentPlan
                   : null,
               onAction: showSpecialistWorkflowActions
                   ? widget.onCreateTreatmentPlan
@@ -178,7 +181,7 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Goals',
+                  l10n.entityGoals,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: DashboardColors.textPrimary,
@@ -186,8 +189,8 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                 ),
                 SizedBox(height: context.dashSpacing * 0.5),
                 if (data.goals.isEmpty)
-                  const PatientDetailsEmptySection(
-                    message: 'No goals defined for this patient.',
+                  PatientDetailsEmptySection(
+                    message: l10n.specialistPatientDetailsNoGoals,
                   )
                 else
                   ...data.goals.map(
@@ -206,7 +209,7 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                       AppRoutes.specialistManageGoals(patientId),
                     ),
                     icon: const Icon(Icons.flag_outlined),
-                    label: const Text('Manage Goals'),
+                    label: Text(l10n.specialistManageGoals),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: DashboardColors.brandCyan,
                       side: const BorderSide(color: DashboardColors.brandCyan),
@@ -229,7 +232,7 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Assigned Exercises',
+                  l10n.specialistPatientDetailsAssignedExercises,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: DashboardColors.textPrimary,
@@ -241,7 +244,7 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                   OutlinedButton.icon(
                     onPressed: widget.onAssignExercise,
                     icon: const Icon(Icons.fitness_center_outlined),
-                    label: const Text('Assign Exercise'),
+                    label: Text(l10n.specialistAssignExercise),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: DashboardColors.brandCyan,
                       side: const BorderSide(color: DashboardColors.brandCyan),
@@ -256,8 +259,8 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                 ],
                 SizedBox(height: context.dashSpacing * 0.5),
                 if (data.assignedExercises.isEmpty)
-                  const PatientDetailsEmptySection(
-                    message: 'No exercises assigned yet.',
+                  PatientDetailsEmptySection(
+                    message: l10n.specialistPatientDetailsNoExercises,
                   )
                 else
                   ...data.assignedExercises.map(
@@ -289,7 +292,7 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Recent Exercise Submissions',
+                  l10n.specialistPatientDetailsRecentSubmissions,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: DashboardColors.textPrimary,
@@ -297,8 +300,8 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                 ),
                 SizedBox(height: context.dashSpacing * 0.5),
                 if (data.recentSubmissions.isEmpty)
-                  const PatientDetailsEmptySection(
-                    message: 'No exercise submissions yet.',
+                  PatientDetailsEmptySection(
+                    message: l10n.specialistPatientDetailsNoSubmissions,
                   )
                 else
                   ...data.recentSubmissions.map(
@@ -325,7 +328,7 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
           ),
           SizedBox(height: context.dashSpacing * 0.5),
           Text(
-            'Latest Specialist Notes',
+            l10n.specialistPatientDetailsLatestNotes,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -333,8 +336,8 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
           ),
           SizedBox(height: context.dashSpacing * 0.5),
           if (data.notes.isEmpty)
-            const PatientDetailsEmptySection(
-              message: 'No specialist notes yet.',
+            PatientDetailsEmptySection(
+              message: l10n.specialistPatientDetailsNoNotes,
             )
           else
             ...data.notes.map(

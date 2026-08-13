@@ -2,9 +2,11 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../models/signup_wizard_models.dart';
+import '../../utils/auth_localization_utils.dart';
 import '../../utils/signup_wizard_helpers.dart';
 import 'signup_navigation_buttons.dart';
 
@@ -36,14 +38,16 @@ class SignupReviewStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _ReviewSection(
-          title: 'Account Type',
+          title: l10n.signupAccountType,
           onEdit: () => onEditStep(1),
           child: Text(
-            formatRoleLabel(selectedRole),
+            localizedSignupRoleLabel(l10n, selectedRole),
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -52,7 +56,7 @@ class SignupReviewStep extends StatelessWidget {
           ),
         ),
         _ReviewSection(
-          title: 'Personal Details',
+          title: l10n.signupPersonalDetails,
           onEdit: () => onEditStep(2),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +86,9 @@ class SignupReviewStep extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ReviewLine(fullName.trim().isEmpty ? '—' : fullName.trim()),
+                    _ReviewLine(
+                      fullName.trim().isEmpty ? '—' : fullName.trim(),
+                    ),
                     _ReviewLine(
                       email.trim().isEmpty ? '—' : email.trim(),
                       muted: true,
@@ -99,33 +105,36 @@ class SignupReviewStep extends StatelessWidget {
         ),
         if (selectedRole == SignupRole.specialist)
           _ReviewSection(
-            title: 'Professional Details',
+            title: l10n.signupProfessionalDetails,
             onEdit: () => onEditStep(3),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _ReviewLabelValue(
-                  label: 'Specialization',
+                  label: l10n.fieldSpecialization,
                   value: specialistProfile.specialization.trim().isEmpty
                       ? '—'
                       : specialistProfile.specialization.trim(),
                 ),
                 const SizedBox(height: 8),
                 _ReviewLabelValue(
-                  label: 'License Number',
+                  label: l10n.fieldLicenseNumber,
                   value: specialistProfile.licenseNumber.trim().isEmpty
                       ? '—'
                       : specialistProfile.licenseNumber.trim(),
                 ),
                 const SizedBox(height: 8),
                 _ReviewLabelValue(
-                  label: 'Experience',
-                  value: formatExperience(specialistProfile.yearsOfExperience),
+                  label: l10n.signupExperience,
+                  value: localizedSignupExperience(
+                    l10n,
+                    specialistProfile.yearsOfExperience,
+                  ),
                 ),
                 if (specialistProfile.bio.trim().isNotEmpty) ...[
                   const SizedBox(height: 8),
                   _ReviewLabelValue(
-                    label: 'Bio',
+                    label: l10n.fieldBio,
                     value: specialistProfile.bio.trim(),
                     clamp: true,
                   ),
@@ -134,7 +143,7 @@ class SignupReviewStep extends StatelessWidget {
             ),
           ),
         _ReviewSection(
-          title: 'Security',
+          title: l10n.signupSecuritySection,
           onEdit: () => onEditStep(signupSecurityStep),
           isLast: true,
           child: Row(
@@ -152,7 +161,7 @@ class SignupReviewStep extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'Password created securely',
+                l10n.signupPasswordCreatedSecurely,
                 style: GoogleFonts.inter(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
@@ -164,7 +173,7 @@ class SignupReviewStep extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          'By creating this account, you confirm that the information above is accurate.',
+          l10n.signupReviewConfirmAccuracy,
           style: GoogleFonts.inter(
             fontSize: 10.5,
             height: 1.45,
@@ -177,7 +186,9 @@ class SignupReviewStep extends StatelessWidget {
           onContinue: onCreateAccount,
           continueEnabled: !isLoading,
           isLoading: isLoading,
-          continueLabel: isLoading ? 'Creating Account...' : 'Create Account',
+          continueLabel: isLoading
+              ? l10n.signupCreatingAccount
+              : l10n.authCommonCreateAccount,
         ),
       ],
     );
@@ -199,6 +210,8 @@ class _ReviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         Row(
@@ -222,7 +235,7 @@ class _ReviewSection extends StatelessWidget {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: Text(
-                'Edit',
+                l10n.signupEdit,
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
@@ -235,10 +248,7 @@ class _ReviewSection extends StatelessWidget {
         child,
         if (!isLast) ...[
           const SizedBox(height: 12),
-          Divider(
-            height: 1,
-            color: AppColors.cyan.withValues(alpha: 0.14),
-          ),
+          Divider(height: 1, color: AppColors.cyan.withValues(alpha: 0.14)),
           const SizedBox(height: 12),
         ],
       ],

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/dashboard_colors.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/dashboard_theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/responsive_layout.dart';
 
 /// Temporary launcher to preview role dashboards during UI development.
@@ -12,12 +13,13 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Theme(
       data: DashboardTheme.light,
       child: Scaffold(
         backgroundColor: DashboardColors.background,
         appBar: AppBar(
-          title: const Text('Dashboard Previews'),
+          title: Text(l10n.devDashboardPreviewsTitle),
         ),
         body: ListView(
           padding: context.responsivePadding,

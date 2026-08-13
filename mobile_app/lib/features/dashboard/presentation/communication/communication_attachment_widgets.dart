@@ -4,6 +4,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/communication_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
@@ -22,6 +23,8 @@ class CommunicationAttachmentContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (attachment.isImage) {
       return CommunicationImageAttachment(
         attachment: attachment,
@@ -35,20 +38,20 @@ class CommunicationAttachmentContent extends StatelessWidget {
       return CommunicationFileAttachment(
         attachment: attachment,
         icon: Icons.picture_as_pdf_outlined,
-        label: 'PDF document',
+        label: l10n.communicationAttachmentTypeFile,
       );
     }
     if (attachment.isVideo) {
       return CommunicationFileAttachment(
         attachment: attachment,
         icon: Icons.videocam_outlined,
-        label: 'Video attachment',
+        label: l10n.communicationAttachmentTypeVideo,
       );
     }
     return CommunicationFileAttachment(
       attachment: attachment,
       icon: Icons.insert_drive_file_outlined,
-      label: 'File attachment',
+      label: l10n.communicationAttachmentTypeFile,
     );
   }
 }
@@ -65,9 +68,12 @@ class CommunicationImageAttachment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final resolvedUrl = attachment.resolvedUrl;
     if (resolvedUrl == null || resolvedUrl.isEmpty) {
-      return const _AttachmentErrorPlaceholder(message: 'Image unavailable');
+      return _AttachmentErrorPlaceholder(
+        message: l10n.communicationAttachmentPreviewUnavailable,
+      );
     }
 
     return GestureDetector(
@@ -86,8 +92,8 @@ class CommunicationImageAttachment extends StatelessWidget {
             imageUrl: resolvedUrl,
             fit: BoxFit.cover,
             placeholder: (_, __) => const _AttachmentLoadingPlaceholder(),
-            errorWidget: (_, __, ___) => const _AttachmentErrorPlaceholder(
-              message: 'Could not load image',
+            errorWidget: (_, __, ___) => _AttachmentErrorPlaceholder(
+              message: l10n.communicationAttachmentPreviewUnavailable,
             ),
           ),
         ),
@@ -103,6 +109,8 @@ class CommunicationImagePreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -115,9 +123,9 @@ class CommunicationImagePreviewScreen extends StatelessWidget {
             imageUrl: url,
             fit: BoxFit.contain,
             placeholder: (_, __) => const CircularProgressIndicator(),
-            errorWidget: (_, __, ___) => const Text(
-              'Could not load image',
-              style: TextStyle(color: Colors.white),
+            errorWidget: (_, __, ___) => Text(
+              l10n.communicationAttachmentPreviewUnavailable,
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -197,8 +205,12 @@ class _CommunicationAudioAttachmentState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_hasError) {
-      return const _AttachmentErrorPlaceholder(message: 'Audio unavailable');
+      return _AttachmentErrorPlaceholder(
+        message: l10n.communicationAudioPlaybackError,
+      );
     }
 
     return StreamBuilder<PlayerState>(
@@ -232,7 +244,7 @@ class _CommunicationAudioAttachmentState
                     ),
                     if (processing == ProcessingState.loading)
                       Text(
-                        'Loading audio...',
+                        l10n.communicationAudioLoading,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: DashboardColors.textMuted,
                         ),
@@ -304,19 +316,20 @@ class CommunicationFileAttachment extends StatelessWidget {
   final String label;
 
   Future<void> _open(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final resolved = attachment.resolvedUrl;
     if (resolved == null || resolved.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('File link unavailable.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.communicationFileLinkUnavailable)),
+      );
       return;
     }
 
     final uri = Uri.tryParse(resolved);
     if (uri == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid file link.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.communicationInvalidFileLink)),
+      );
       return;
     }
 
@@ -324,20 +337,27 @@ class CommunicationFileAttachment extends StatelessWidget {
     if (!launched && context.mounted) {
       await parentCopyReportUrl(
         context,
+        l10n,
         resolved,
-        message: 'File link copied.',
+        message: l10n.communicationFileLinkCopied,
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: () => _open(context),
       onLongPress: () {
         final resolved = attachment.resolvedUrl;
         if (resolved != null && resolved.isNotEmpty) {
-          parentCopyReportUrl(context, resolved, message: 'File link copied.');
+          parentCopyReportUrl(
+            context,
+            l10n,
+            resolved,
+            message: l10n.communicationFileLinkCopied,
+          );
         }
       },
       child: Container(
@@ -441,6 +461,8 @@ class CommunicationPendingAttachmentPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSurfaceCard(
       child: Row(
         children: [
@@ -451,7 +473,7 @@ class CommunicationPendingAttachmentPreview extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  selection.displayLabel,
+                  selection.displayLabel(l10n),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),

@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/locale/language_selector.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../providers/specialist_features_provider.dart';
 import '../../providers/specialist_reports_provider.dart';
@@ -15,7 +17,9 @@ import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import '../specialist/specialist_scoped_localization_utils.dart';
 import '../specialist/specialist_exercises_widgets.dart';
+import 'admin_scoped_localization_utils.dart';
 import '../../../presence/widgets/online_status_dot.dart';
 import '../shared/reports_list_widgets.dart';
 
@@ -33,22 +37,25 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
   Future<void> _changeProfilePhoto() async {
     final action = await showModalBottomSheet<_PhotoAction>(
       context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from gallery'),
-              onTap: () => Navigator.pop(context, _PhotoAction.gallery),
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take a photo'),
-              onTap: () => Navigator.pop(context, _PhotoAction.camera),
-            ),
-          ],
-        ),
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: Text(l10n.parentProfilePhotoChooseGallery),
+                onTap: () => Navigator.pop(context, _PhotoAction.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: Text(l10n.parentProfilePhotoTake),
+                onTap: () => Navigator.pop(context, _PhotoAction.camera),
+              ),
+            ],
+          ),
+        );
+      },
     );
 
     if (action == null || !mounted) {
@@ -85,9 +92,9 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
       SnackBar(
         content: Text(
           success
-              ? 'Profile photo updated successfully.'
+              ? AppLocalizations.of(context)!.adminProfilePhotoUpdated
               : ref.read(authProvider).errorMessage ??
-                    'Failed to upload photo.',
+                    AppLocalizations.of(context)!.parentProfileImageUploadError,
         ),
       ),
     );
@@ -96,14 +103,12 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user;
-    final fromMore = AdminNavigation.isFromMore(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return AdminPageScaffold(
-      title: 'Profile',
-      showBackButton: !fromMore && context.canPop(),
-      currentNav: fromMore ? DashboardNavItem.more : null,
-      showBottomNav: fromMore,
-      enableModuleListBack: fromMore,
+      title: l10n.navProfile,
+      showBackButton: true,
+      showBottomNav: false,
       body: SingleChildScrollView(
         padding: context.dashPadding,
         child: DashboardSurfaceCard(
@@ -119,9 +124,15 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
                 ),
               ),
               SizedBox(height: context.dashSpacing),
-              _ProfileRow(label: 'Full Name', value: user?.fullName ?? '—'),
-              _ProfileRow(label: 'Email', value: user?.email ?? '—'),
-              _ProfileRow(label: 'Role', value: user?.role ?? 'admin'),
+              _ProfileRow(
+                label: l10n.fieldFullName,
+                value: user?.fullName ?? '—',
+              ),
+              _ProfileRow(label: l10n.fieldEmail, value: user?.email ?? '—'),
+              _ProfileRow(
+                label: l10n.fieldRole,
+                value: localizedAdminRole(l10n, user?.role ?? 'admin'),
+              ),
               if (user?.id != null) ...[
                 SizedBox(height: context.dashSpacing * 0.35),
                 Row(
@@ -133,9 +144,12 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
                 ),
               ],
               SizedBox(height: context.dashSpacing),
+              const LanguageSelector(
+                presentation: LanguageSelectorPresentation.settingsTile,
+              ),
               FilledButton(
                 onPressed: () => AdminNavigation.logout(context, ref),
-                child: const Text('Logout'),
+                child: Text(l10n.commonLogout),
               ),
             ],
           ),
@@ -152,72 +166,70 @@ class AdminMoreScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AdminPageScaffold(
-      title: 'More',
+      title: l10n.commonMore,
       currentNav: DashboardNavItem.more,
       body: ListView(
         padding: context.dashPadding,
         children: [
+          const LanguageSelector(
+            presentation: LanguageSelectorPresentation.settingsTile,
+          ),
           _MoreTile(
             icon: Icons.groups_outlined,
-            label: 'Users',
-            onTap: () => AdminNavigation.openFromMore(context, AppRoutes.adminUsers),
+            label: l10n.navUsers,
+            onTap: () => context.go(AppRoutes.adminUsers),
           ),
           _MoreTile(
             icon: Icons.people_outline_rounded,
-            label: 'Patients',
-            onTap: () =>
-                AdminNavigation.openFromMore(context, AppRoutes.adminPatients),
+            label: l10n.navPatients,
+            onTap: () => context.go(AppRoutes.adminPatients),
           ),
           _MoreTile(
             icon: Icons.assignment_ind_outlined,
-            label: 'Patient Assignments',
-            onTap: () => AdminNavigation.openFromMore(
-              context,
-              AppRoutes.adminPatientAssignments,
-            ),
+            label: l10n.navPatientAssignments,
+            onTap: () => context.go(AppRoutes.adminPatientAssignments),
           ),
           _MoreTile(
             icon: Icons.inbox_outlined,
-            label: 'Case Requests',
-            onTap: () =>
-                AdminNavigation.openFromMore(context, AppRoutes.adminCaseRequests),
+            label: l10n.navCaseRequests,
+            onTap: () => context.go(AppRoutes.adminCaseRequests),
+          ),
+          _MoreTile(
+            icon: Icons.report_outlined,
+            label: l10n.navComplaints,
+            onTap: () => context.go(AppRoutes.adminComplaints),
           ),
           _MoreTile(
             icon: Icons.event_note_outlined,
-            label: 'Sessions',
-            onTap: () =>
-                AdminNavigation.openFromMore(context, AppRoutes.adminSessions),
+            label: l10n.navSessions,
+            onTap: () => context.go(AppRoutes.adminSessions),
           ),
           _MoreTile(
             icon: Icons.psychology_outlined,
-            label: 'AI Center',
-            onTap: () =>
-                AdminNavigation.openFromMore(context, AppRoutes.adminAiCenter),
+            label: l10n.navAiCenter,
+            onTap: () => context.go(AppRoutes.adminAiCenter),
           ),
           _MoreTile(
             icon: Icons.history_rounded,
-            label: 'Audit Logs',
-            onTap: () =>
-                AdminNavigation.openFromMore(context, AppRoutes.adminAuditLogs),
+            label: l10n.navAuditLogs,
+            onTap: () => context.go(AppRoutes.adminAuditLogs),
           ),
           _MoreTile(
             icon: Icons.notifications_none_rounded,
-            label: 'Notifications',
-            onTap: () => AdminNavigation.openFromMore(
-              context,
-              AppRoutes.adminNotifications,
-            ),
+            label: l10n.navNotifications,
+            onTap: () => context.go(AppRoutes.adminNotifications),
           ),
           _MoreTile(
             icon: Icons.person_outline_rounded,
-            label: 'Profile',
-            onTap: () =>
-                AdminNavigation.openFromMore(context, AppRoutes.adminProfile),
+            label: l10n.navProfile,
+            onTap: () => context.push(AppRoutes.adminProfile),
           ),
           _MoreTile(
             icon: Icons.logout_rounded,
-            label: 'Logout',
+            label: l10n.commonLogout,
             onTap: () => AdminNavigation.logout(context, ref),
           ),
         ],
@@ -276,21 +288,24 @@ class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
     final state = ref.watch(specialistExercisesProvider);
     final notifier = ref.read(specialistExercisesProvider.notifier);
     final auth = ref.watch(authProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return AdminPageScaffold(
-      title: 'Exercises',
+      title: l10n.navExercises,
       currentNav: DashboardNavItem.exercises,
       wrapBodyInScrollView: false,
       actions: [
         IconButton(
-          tooltip: 'Add Exercise',
+          tooltip: l10n.specialistAddExercise,
           onPressed: _openAddExercise,
           icon: const Icon(Icons.add_rounded),
         ),
       ],
       body: ExerciseLibraryBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: state.errorMessage == null
+            ? null
+            : mapSpecialistExercisesError(l10n, state.errorMessage!),
         onRetry: notifier.refresh,
         items: state.items,
         searchController: _searchController,
@@ -310,7 +325,7 @@ class _AdminExercisesScreenState extends ConsumerState<AdminExercisesScreen> {
                 context.push(AppRoutes.adminExerciseDetails(exercise.id)),
             trailing: canEdit
                 ? IconButton(
-                    tooltip: 'Edit Exercise',
+                    tooltip: l10n.commonEdit,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
                       minWidth: 36,
@@ -358,8 +373,10 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AdminPageScaffold(
-      title: 'Reports',
+      title: l10n.navReports,
       currentNav: DashboardNavItem.reports,
       body: ReportsListBody(
         searchController: _searchController,
@@ -396,21 +413,21 @@ class _AdminNotificationsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(specialistNotificationsProvider);
     final theme = Theme.of(context);
-    final fromMore = AdminNavigation.isFromMore(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return AdminPageScaffold(
-      title: 'Notifications',
-      showBackButton: !fromMore && context.canPop(),
-      currentNav: fromMore ? DashboardNavItem.more : null,
-      showBottomNav: fromMore,
-      enableModuleListBack: fromMore,
+      title: l10n.navNotifications,
+      showBackButton: true,
+      showBottomNav: false,
       body: SpecialistAsyncBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: state.errorMessage == null
+            ? null
+            : mapSpecialistNotificationsError(l10n, state.errorMessage!),
         onRetry: () =>
             ref.read(specialistNotificationsProvider.notifier).refresh(),
         isEmpty: state.items.isEmpty,
-        emptyMessage: 'No notifications yet.',
+        emptyMessage: l10n.parentNotificationsEmpty,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -419,7 +436,7 @@ class _AdminNotificationsScreenState
               children: [
                 Expanded(
                   child: Text(
-                    'Notifications',
+                    l10n.navNotifications,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: DashboardColors.textPrimary,
@@ -433,7 +450,7 @@ class _AdminNotificationsScreenState
                         : () => ref
                               .read(specialistNotificationsProvider.notifier)
                               .markAllAsRead(),
-                    child: const Text('Mark all as read'),
+                    child: Text(l10n.parentNotificationsMarkAllRead),
                   ),
               ],
             ),
@@ -477,7 +494,7 @@ class _AdminNotificationsScreenState
                                 ),
                               ),
                             Text(
-                              '${item.type ?? 'Update'} • ${_formatDate(item.createdAt)}',
+                              '${item.type ?? l10n.notificationTypeUpdate} • ${_formatDate(l10n, item.createdAt)}',
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: DashboardColors.textMuted,
                               ),
@@ -497,9 +514,9 @@ class _AdminNotificationsScreenState
   }
 }
 
-String _formatDate(DateTime? date) {
+String _formatDate(AppLocalizations l10n, DateTime? date) {
   if (date == null) {
-    return 'Recently';
+    return l10n.parentDashboardRecently;
   }
   return '${date.day}/${date.month}/${date.year}';
 }

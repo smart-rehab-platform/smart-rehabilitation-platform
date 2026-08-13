@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../case_intake/models/case_intake_request_model.dart';
 import '../../models/specialist_patient_details_models.dart';
 import '../../providers/specialist_patient_details_provider.dart';
@@ -12,6 +13,7 @@ import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../shared/patient_details_body.dart';
+import 'admin_scoped_localization_utils.dart';
 
 class AdminPatientDetailsScreen extends ConsumerStatefulWidget {
   const AdminPatientDetailsScreen({super.key, required this.patientId});
@@ -48,31 +50,36 @@ class _AdminPatientDetailsScreenState
       builder: (_) => _EditPatientDialog(
         patient: patient,
         messenger: messenger,
-        onSave: ({
-          required String fullName,
-          DateTime? dateOfBirth,
-          String? gender,
-        }) {
-          return ref
-              .read(specialistPatientDetailsProvider(widget.patientId).notifier)
-              .updatePatient(
-                fullName: fullName,
-                dateOfBirth: dateOfBirth,
-                gender: gender,
-              );
-        },
+        onSave:
+            ({
+              required String fullName,
+              DateTime? dateOfBirth,
+              String? gender,
+            }) {
+              return ref
+                  .read(
+                    specialistPatientDetailsProvider(widget.patientId).notifier,
+                  )
+                  .updatePatient(
+                    fullName: fullName,
+                    dateOfBirth: dateOfBirth,
+                    gender: gender,
+                  );
+            },
       ),
     );
 
     if (!mounted || saved != true) return;
     _patientUpdated = true;
+    final l10n = AppLocalizations.of(context)!;
     messenger.showSnackBar(
-      const SnackBar(content: Text('Patient updated successfully.')),
+      SnackBar(content: Text(l10n.adminPatientsUpdatedSuccess)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistPatientDetailsProvider(widget.patientId));
     final data = state.data;
 
@@ -92,7 +99,7 @@ class _AdminPatientDetailsScreenState
     } else if (data == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const AdminEmptyCard(message: 'Patient not found.'),
+        child: AdminEmptyCard(message: l10n.adminPatientsNotFound),
       );
     } else {
       body = RefreshIndicator(
@@ -111,7 +118,7 @@ class _AdminPatientDetailsScreenState
               FilledButton.icon(
                 onPressed: () => _openEditPatient(data.patient),
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Edit Patient'),
+                label: Text(l10n.adminPatientsEditPatient),
                 style: FilledButton.styleFrom(
                   backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
@@ -125,7 +132,7 @@ class _AdminPatientDetailsScreenState
                 onPressed: () =>
                     context.push(AppRoutes.adminPatientAssignments),
                 icon: const Icon(Icons.assignment_ind_outlined),
-                label: const Text('Patient Assignments'),
+                label: Text(l10n.adminPatientsAssignments),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: DashboardColors.brandCyan,
                   side: const BorderSide(color: DashboardColors.brandCyan),
@@ -147,13 +154,13 @@ class _AdminPatientDetailsScreenState
         _popDetails();
       },
       child: AdminPageScaffold(
-        title: data?.patient.fullName ?? 'Patient Details',
+        title: data?.patient.fullName ?? l10n.specialistPatientDetailsTitle,
         showBackButton: true,
         onBackPressed: _popDetails,
         actions: [
           if (data != null)
             IconButton(
-              tooltip: 'Edit Patient',
+              tooltip: l10n.adminPatientsEditPatient,
               onPressed: () => _openEditPatient(data.patient),
               icon: const Icon(Icons.edit_outlined, color: Colors.white),
             ),
@@ -177,7 +184,8 @@ class _EditPatientDialog extends StatefulWidget {
     required String fullName,
     DateTime? dateOfBirth,
     String? gender,
-  }) onSave;
+  })
+  onSave;
 
   @override
   State<_EditPatientDialog> createState() => _EditPatientDialogState();
@@ -256,14 +264,15 @@ class _EditPatientDialogState extends State<_EditPatientDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dateLabel = _dateOfBirth == null
-        ? 'Select date of birth'
+        ? l10n.adminPatientsSelectDateOfBirth
         : DateFormat('yyyy-MM-dd').format(_dateOfBirth!);
 
     return PopScope(
       canPop: !_submitting,
       child: AlertDialog(
-        title: const Text('Edit Patient'),
+        title: Text(l10n.adminPatientsEditPatient),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -271,15 +280,15 @@ class _EditPatientDialogState extends State<_EditPatientDialog> {
               TextField(
                 controller: _nameController,
                 enabled: !_submitting,
-                decoration: const InputDecoration(labelText: 'Full Name'),
+                decoration: InputDecoration(labelText: l10n.fieldFullName),
               ),
               const SizedBox(height: 12),
               InkWell(
                 onTap: _submitting ? null : _pickDate,
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Date of Birth',
-                    suffixIcon: Icon(Icons.calendar_today_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.fieldDateOfBirth,
+                    suffixIcon: const Icon(Icons.calendar_today_outlined),
                   ),
                   child: Text(
                     dateLabel,
@@ -294,16 +303,18 @@ class _EditPatientDialogState extends State<_EditPatientDialog> {
               const SizedBox(height: 12),
               DropdownButtonFormField<CaseIntakeGender?>(
                 initialValue: _gender,
-                decoration: const InputDecoration(labelText: 'Gender'),
+                decoration: InputDecoration(labelText: l10n.fieldGender),
                 items: [
-                  const DropdownMenuItem<CaseIntakeGender?>(
+                  DropdownMenuItem<CaseIntakeGender?>(
                     value: null,
-                    child: Text('Not specified'),
+                    child: Text(l10n.adminPatientsNotSpecified),
                   ),
                   ...CaseIntakeGender.values.map(
                     (gender) => DropdownMenuItem<CaseIntakeGender?>(
                       value: gender,
-                      child: Text(gender.label),
+                      child: Text(
+                        localizedAdminGender(l10n, gender.apiValue),
+                      ),
                     ),
                   ),
                 ],
@@ -317,7 +328,7 @@ class _EditPatientDialogState extends State<_EditPatientDialog> {
         actions: [
           TextButton(
             onPressed: _submitting ? null : _cancel,
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: _submitting ? null : _submit,
@@ -330,7 +341,7 @@ class _EditPatientDialogState extends State<_EditPatientDialog> {
                       color: Colors.white,
                     ),
                   )
-                : const Text('Save'),
+                : Text(l10n.commonSave),
           ),
         ],
       ),

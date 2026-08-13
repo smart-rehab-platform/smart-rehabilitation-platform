@@ -1,17 +1,22 @@
 import 'package:dio/dio.dart';
 
 import '../../../core/utils/api_response_parser.dart';
+import '../models/specialist_ai_report_generation.dart';
+import '../models/specialist_regular_report_creation.dart';
 import '../models/specialist_reports_models.dart';
 
 /// Specialist reports API access.
 ///
 /// Endpoints:
 /// - GET /reports
+/// - POST /reports
 /// - GET /reports/:id
 /// - POST /reports/:id/export-pdf
 /// - POST /ai/reports/:id/export-pdf
 /// - GET /ai/reports
 /// - GET /ai/reports/:id
+/// - POST /ai/reports/generate-weekly
+/// - POST /ai/reports/generate-monthly
 class SpecialistReportsRepository {
   SpecialistReportsRepository(this._dio);
 
@@ -155,6 +160,91 @@ class SpecialistReportsRepository {
 
     return fetchReportDetail(reportId: reportId, isAiReport: isAiReport);
   }
+
+  Future<SpecialistReportDetail> generateAiReport(
+    SpecialistAiReportGenerateRequest request,
+  ) async {
+    try {
+      final response = await _dio.post(
+        request.type.generatePath,
+        data: request.toJson(),
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw SpecialistAiReportGenerationException(
+          message: 'Invalid AI report generation response.',
+        );
+      }
+
+      final detail = SpecialistReportDetail.fromAiMap(map);
+      if (detail.id.isEmpty) {
+        throw SpecialistAiReportGenerationException(
+          message: 'Invalid AI report generation response.',
+        );
+      }
+      return detail;
+    } on DioException catch (error) {
+      throw SpecialistAiReportGenerationException(
+        message: _readErrorMessage(error),
+        statusCode: error.response?.statusCode,
+      );
+    }
+  }
+
+  /// Creates a regular report via POST /reports.
+  /// Does not generate PDF or run AI.
+  Future<SpecialistReportDetail> createRegularReport(
+    SpecialistRegularReportCreateRequest request,
+  ) async {
+    try {
+      final response = await _dio.post(
+        '/reports',
+        data: request.toJson(),
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw const SpecialistRegularReportCreationException(
+          message: 'Invalid report creation response.',
+        );
+      }
+
+      final detail = SpecialistReportDetail.fromRegularMap(map);
+      if (detail.id.isEmpty) {
+        throw const SpecialistRegularReportCreationException(
+          message: 'Invalid report creation response.',
+        );
+      }
+      return detail;
+    } on DioException catch (error) {
+      throw SpecialistRegularReportCreationException(
+        message: _readErrorMessage(
+          error,
+          fallback: 'Failed to create report.',
+        ),
+        statusCode: error.response?.statusCode,
+      );
+    }
+  }
+
+  String _readErrorMessage(
+    DioException error, {
+    String fallback = 'Failed to generate AI report.',
+  }) {
+    final data = error.response?.data;
+    if (data is Map) {
+      final normalized = data.map(
+        (key, value) => MapEntry(key.toString(), value),
+      );
+      final message = ApiResponseParser.readString(normalized, const [
+        'message',
+        'error',
+      ]);
+      if (message != null) {
+        return message;
+      }
+    }
+    return error.message ?? fallback;
+  }
 }
 
 /// Raised when GET /reports/:id or GET /ai/reports/:id returns 404.
@@ -170,4 +260,30 @@ class ReportNotFoundException implements Exception {
   @override
   String toString() =>
       isAiReport ? 'AI report not found.' : 'Report not found.';
+}
+
+class SpecialistAiReportGenerationException implements Exception {
+  const SpecialistAiReportGenerationException({
+    required this.message,
+    this.statusCode,
+  });
+
+  final String message;
+  final int? statusCode;
+
+  @override
+  String toString() => message;
+}
+
+class SpecialistRegularReportCreationException implements Exception {
+  const SpecialistRegularReportCreationException({
+    required this.message,
+    this.statusCode,
+  });
+
+  final String message;
+  final int? statusCode;
+
+  @override
+  String toString() => message;
 }

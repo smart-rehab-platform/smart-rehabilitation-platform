@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import 'dashboard_layout.dart';
 import 'dashboard_surface_card.dart';
 
@@ -47,11 +48,7 @@ class DashboardSummaryCard extends StatelessWidget {
 
     final iconSize = spacing * 0.55;
 
-    Widget iconWidget = Icon(
-      icon,
-      size: iconSize,
-      color: iconColor,
-    );
+    Widget iconWidget = Icon(icon, size: iconSize, color: iconColor);
 
     if (circularIcon) {
       iconWidget = Container(
@@ -62,11 +59,7 @@ class DashboardSummaryCard extends StatelessWidget {
           color: iconBackground,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          icon,
-          size: iconSize,
-          color: iconColor,
-        ),
+        child: Icon(icon, size: iconSize, color: iconColor),
       );
     } else {
       iconWidget = Container(
@@ -83,9 +76,7 @@ class DashboardSummaryCard extends StatelessWidget {
         ? BoxDecoration(
             color: backgroundColor,
             borderRadius: DashboardDecorations.cardRadius,
-            border: Border.all(
-              color: iconBackground.withValues(alpha: 0.65),
-            ),
+            border: Border.all(color: iconBackground.withValues(alpha: 0.65)),
             boxShadow: [
               BoxShadow(
                 color: iconColor.withValues(alpha: 0.08),
@@ -100,7 +91,8 @@ class DashboardSummaryCard extends StatelessWidget {
       value,
       maxLines: valueMaxLines,
       overflow: TextOverflow.ellipsis,
-      style: valueStyle ??
+      style:
+          valueStyle ??
           theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w800,
             color: DashboardColors.textPrimary,
@@ -330,19 +322,21 @@ class DashboardSectionHeader extends StatelessWidget {
   const DashboardSectionHeader({
     super.key,
     required this.title,
-    this.actionLabel = 'See all',
+    this.actionLabel,
     this.onActionTap,
     this.linkColor = DashboardColors.brandCyan,
   });
 
   final String title;
-  final String actionLabel;
+  final String? actionLabel;
   final VoidCallback? onActionTap;
   final Color linkColor;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final resolvedActionLabel = actionLabel ?? l10n.commonSeeAll;
 
     return Row(
       children: [
@@ -364,7 +358,7 @@ class DashboardSectionHeader extends StatelessWidget {
             ),
           ),
           child: Text(
-            actionLabel,
+            resolvedActionLabel,
             style: theme.textTheme.labelLarge?.copyWith(
               color: linkColor,
               fontWeight: FontWeight.w600,

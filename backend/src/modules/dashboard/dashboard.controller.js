@@ -1,4 +1,5 @@
 const dashboardService = require("./dashboard.service");
+const { normalizeWeekOffset } = require("../../utils/appTimezone");
 
 // Admin Dashboard
 exports.getAdminOverview = async (req, res, next) => {
@@ -124,6 +125,25 @@ exports.getSpecialistUpcomingSessions = async (req, res, next) => {
 exports.getSpecialistPendingReviews = async (req, res, next) => {
   try {
     const data = await dashboardService.getSpecialistPendingReviews(req.user.id);
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getSpecialistWeeklyPatientInteractions = async (req, res, next) => {
+  try {
+    const weekOffset = normalizeWeekOffset(
+      req.query.week_offset ?? req.query.weekOffset ?? 0
+    );
+    const data = await dashboardService.getSpecialistWeeklyPatientInteractions(
+      req.user.id,
+      weekOffset
+    );
 
     res.status(200).json({
       success: true,
