@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../models/specialist_patient_details_models.dart';
 import '../../../auth/providers/auth_provider.dart';
@@ -17,6 +18,7 @@ import '../communication/conversations_list_screen.dart';
 import '../shared/patient_details_body.dart';
 import 'family_pattern_details_sheet.dart';
 import 'family_pattern_insight_card.dart';
+import 'specialist_patient_details_localization_utils.dart';
 
 class SpecialistPatientDetailsScreen extends ConsumerStatefulWidget {
   const SpecialistPatientDetailsScreen({super.key, required this.patientId});
@@ -53,7 +55,10 @@ class _SpecialistPatientDetailsScreenState
 
     if (!mounted) return;
     if (result == true) {
-      messenger.showSnackBar(const SnackBar(content: Text('Note saved')));
+      final l10n = AppLocalizations.of(context)!;
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.specialistPatientDetailsNoteSaved)),
+      );
     }
   }
 
@@ -75,9 +80,10 @@ class _SpecialistPatientDetailsScreenState
     final specialistId = ref.read(authProvider).user?.id;
     if (specialistId == null || specialistId.isEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sign in to send messages.')),
-      );
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.messageSignInRequired)));
       return;
     }
 
@@ -94,10 +100,9 @@ class _SpecialistPatientDetailsScreenState
     if (!mounted) return;
 
     if (parent == null) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No parent is linked to this patient yet.'),
-        ),
+        SnackBar(content: Text(l10n.specialistPatientDetailsNoParentLinked)),
       );
       return;
     }
@@ -161,13 +166,12 @@ class _SpecialistPatientDetailsScreenState
     final hasActivePlan = plan != null && plan.isActive && planId.isNotEmpty;
 
     if (!hasActivePlan) {
+      final l10n = AppLocalizations.of(context)!;
       messenger.showSnackBar(
         SnackBar(
-          content: const Text(
-            'An active treatment plan is required before assigning an exercise.',
-          ),
+          content: Text(l10n.specialistPatientDetailsActivePlanRequired),
           action: SnackBarAction(
-            label: 'Plans',
+            label: l10n.navTreatmentPlans,
             onPressed: () {
               if (!context.mounted) return;
               context.push(AppRoutes.specialistTreatmentPlans);
@@ -188,6 +192,7 @@ class _SpecialistPatientDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistPatientDetailsProvider(widget.patientId));
     final data = state.data;
 
@@ -198,7 +203,7 @@ class _SpecialistPatientDetailsScreenState
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: mapSpecialistPatientDetailsError(l10n, state.errorMessage!),
           onRetry: () => ref
               .read(specialistPatientDetailsProvider(widget.patientId).notifier)
               .refresh(),
@@ -207,7 +212,9 @@ class _SpecialistPatientDetailsScreenState
     } else if (data == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(message: 'Patient not found.'),
+        child: DashboardEmptyCard(
+          message: l10n.specialistPatientDetailsNotFound,
+        ),
       );
     } else {
       body = RefreshIndicator(
@@ -266,9 +273,12 @@ class _SpecialistPatientDetailsScreenState
               if (planId != null && planId.isNotEmpty) {
                 context.push(AppRoutes.specialistEditTreatmentPlan(planId));
               } else {
+                final snackL10n = AppLocalizations.of(context)!;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('No treatment plan found for this patient.'),
+                  SnackBar(
+                    content: Text(
+                      snackL10n.specialistPatientDetailsNoTreatmentPlan,
+                    ),
                   ),
                 );
               }
@@ -303,7 +313,7 @@ class _SpecialistPatientDetailsScreenState
     }
 
     return SpecialistPageScaffold(
-      title: data?.patient.fullName ?? 'Patient Details',
+      title: data?.patient.fullName ?? l10n.specialistPatientDetailsTitle,
       showBackButton: true,
       body: body,
     );
@@ -359,13 +369,15 @@ class _SpecialistActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         OutlinedButton.icon(
           onPressed: onReviewExercises,
           icon: const Icon(Icons.rate_review_outlined),
-          label: const Text('Review Exercises'),
+          label: Text(l10n.specialistReviewExercises),
           style: OutlinedButton.styleFrom(
             foregroundColor: DashboardColors.brandCyan,
             side: const BorderSide(color: DashboardColors.brandCyan),
@@ -379,7 +391,9 @@ class _SpecialistActionButtons extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: isSavingNote ? null : onAddNote,
           icon: const Icon(Icons.note_add_outlined),
-          label: Text(isSavingNote ? 'Saving...' : 'Add Specialist Note'),
+          label: Text(
+            isSavingNote ? l10n.commonSaving : l10n.specialistAddSpecialistNote,
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: DashboardColors.brandCyan,
             foregroundColor: Colors.white,
@@ -393,7 +407,7 @@ class _SpecialistActionButtons extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onViewReports,
           icon: const Icon(Icons.description_outlined),
-          label: const Text('View Reports'),
+          label: Text(l10n.specialistViewReports),
           style: OutlinedButton.styleFrom(
             foregroundColor: DashboardColors.brandCyan,
             side: const BorderSide(color: DashboardColors.brandCyan),
@@ -408,7 +422,7 @@ class _SpecialistActionButtons extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onEditTreatmentPlan,
             icon: const Icon(Icons.edit_note_outlined),
-            label: const Text('Edit Treatment Plan'),
+            label: Text(l10n.specialistEditTreatmentPlan),
             style: OutlinedButton.styleFrom(
               foregroundColor: DashboardColors.brandCyan,
               side: const BorderSide(color: DashboardColors.brandCyan),
@@ -424,7 +438,7 @@ class _SpecialistActionButtons extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onCreateTreatmentPlan,
             icon: const Icon(Icons.playlist_add_check_rounded),
-            label: const Text('Create Treatment Plan'),
+            label: Text(l10n.specialistCreateTreatmentPlan),
             style: OutlinedButton.styleFrom(
               foregroundColor: DashboardColors.brandCyan,
               side: const BorderSide(color: DashboardColors.brandCyan),
@@ -440,7 +454,7 @@ class _SpecialistActionButtons extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onAiRecommendations,
           icon: const Icon(Icons.auto_awesome_outlined),
-          label: const Text('AI Recommendations'),
+          label: Text(l10n.adminAiRecommendations),
           style: OutlinedButton.styleFrom(
             foregroundColor: DashboardColors.brandCyan,
             side: const BorderSide(color: DashboardColors.brandCyan),
@@ -454,7 +468,7 @@ class _SpecialistActionButtons extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onSpeechAnalysis,
           icon: const Icon(Icons.graphic_eq_rounded),
-          label: const Text('Speech Analysis'),
+          label: Text(l10n.clinicalSpeechAnalysis),
           style: OutlinedButton.styleFrom(
             foregroundColor: DashboardColors.brandCyan,
             side: const BorderSide(color: DashboardColors.brandCyan),
@@ -522,7 +536,12 @@ class _AddSpecialistNoteDialogState
 
     if (error != null) {
       setState(() => _saving = false);
-      widget.messenger.showSnackBar(SnackBar(content: Text(error)));
+      final l10n = AppLocalizations.of(context)!;
+      widget.messenger.showSnackBar(
+        SnackBar(
+          content: Text(mapSpecialistPatientDetailsSaveNoteError(l10n, error)),
+        ),
+      );
       return;
     }
 
@@ -531,25 +550,27 @@ class _AddSpecialistNoteDialogState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AlertDialog(
-      title: const Text('Add Specialist Note'),
+      title: Text(l10n.specialistAddSpecialistNote),
       content: TextField(
         controller: _controller,
         maxLines: 4,
         enabled: !_saving,
-        decoration: const InputDecoration(
-          hintText: 'Enter clinical note...',
-          border: OutlineInputBorder(),
+        decoration: InputDecoration(
+          hintText: l10n.specialistPatientDetailsEnterClinicalNote,
+          border: const OutlineInputBorder(),
         ),
       ),
       actions: [
         TextButton(
           onPressed: _saving ? null : _cancel,
-          child: const Text('Cancel'),
+          child: Text(l10n.commonCancel),
         ),
         FilledButton(
           onPressed: _saving ? null : _save,
-          child: Text(_saving ? 'Saving...' : 'Save'),
+          child: Text(_saving ? l10n.commonSaving : l10n.commonSave),
         ),
       ],
     );

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +9,18 @@ import 'package:video_player/video_player.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../features/auth/utils/password_strength.dart';
+import '../../l10n/app_localizations.dart';
+
+String _localizedPasswordRuleLabel(AppLocalizations l10n, int index) {
+  return switch (index) {
+    0 => l10n.authPasswordRuleMinLength,
+    1 => l10n.authPasswordRuleUppercase,
+    2 => l10n.authPasswordRuleLowercase,
+    3 => l10n.authPasswordRuleNumber,
+    4 => l10n.authPasswordRuleSpecialCharacter,
+    _ => '',
+  };
+}
 
 const _authBackgroundVideoAsset = 'assets/videos/auth-bg.mp4';
 const _authBackgroundVideoStartSeconds = 4;
@@ -104,6 +118,7 @@ class AuthBackground extends StatefulWidget {
 class _AuthBackgroundState extends State<AuthBackground> {
   VideoPlayerController? _videoController;
   bool _isVideoReady = false;
+  int _videoInitGeneration = 0;
 
   @override
   void initState() {
@@ -124,45 +139,180 @@ class _AuthBackgroundState extends State<AuthBackground> {
 
     if (!widget.showBackgroundVideo && oldWidget.showBackgroundVideo) {
       _disposeBackgroundVideo();
+      return;
+    }
+
+    if (widget.showBackgroundVideo &&
+        oldWidget.showBackgroundVideo &&
+        oldWidget.playbackSpeed != widget.playbackSpeed &&
+        _isVideoReady &&
+        _videoController != null) {
+      unawaited(_applyPlaybackSpeed(_videoController!));
+    }
+  }
+
+  void _debugLogBackgroundVideo(
+    String stage, {
+    Object? error,
+    StackTrace? stackTrace,
+    VideoPlayerController? controller,
+  }) {
+    if (!kDebugMode) {
+      return;
+    }
+
+    final value = controller?.value;
+    debugPrint('[AuthBackgroundVideo] $stage');
+    debugPrint('[AuthBackgroundVideo] assetPath=$_authBackgroundVideoAsset');
+    debugPrint(
+      '[AuthBackgroundVideo] controller=${controller != null}, '
+      'isVideoReady=$_isVideoReady, '
+      'initialized=${value?.isInitialized ?? false}, '
+      'hasError=${value?.hasError ?? false}, '
+      'isPlaying=${value?.isPlaying ?? false}, '
+      'duration=${value?.duration}, '
+      'size=${value?.size}, '
+      'position=${value?.position}, '
+      'playbackSpeed=${widget.playbackSpeed}, '
+      'videoUpperPortionOnly=${widget.videoUpperPortionOnly}',
+    );
+    if (value?.hasError ?? false) {
+      debugPrint(
+        '[AuthBackgroundVideo] errorDescription=${value?.errorDescription}',
+      );
+    }
+    if (error != null) {
+      debugPrint('[AuthBackgroundVideo] exception=$error');
+    }
+    if (stackTrace != null) {
+      debugPrint('[AuthBackgroundVideo] stackTrace=$stackTrace');
+    }
+  }
+
+  Future<void> _applyPlaybackSpeed(VideoPlayerController controller) async {
+    if (widget.playbackSpeed <= 0 || widget.playbackSpeed == 1.0) {
+      return;
+    }
+
+    try {
+      await controller.setPlaybackSpeed(widget.playbackSpeed);
+      _debugLogBackgroundVideo('playbackSpeedApplied', controller: controller);
+    } catch (error, stackTrace) {
+      _debugLogBackgroundVideo(
+        'playbackSpeedFailed',
+        error: error,
+        stackTrace: stackTrace,
+        controller: controller,
+      );
     }
   }
 
   Future<void> _initializeBackgroundVideo() async {
-    final controller = VideoPlayerController.asset(_authBackgroundVideoAsset);
+    if (!widget.showBackgroundVideo) {
+      return;
+    }
+
+    final initGeneration = ++_videoInitGeneration;
+    _debugLogBackgroundVideo('initializeStart');
+
+    final previousController = _videoController;
+    if (previousController != null) {
+      previousController.removeListener(_handleVideoProgress);
+      previousController.removeListener(_handleVideoControllerUpdate);
+      _videoController = null;
+      _isVideoReady = false;
+      await previousController.dispose();
+      if (!mounted || initGeneration != _videoInitGeneration) {
+        return;
+      }
+    }
+
+    final controller = VideoPlayerController.asset(
+      _authBackgroundVideoAsset,
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    );
     _videoController = controller;
 
     try {
       await controller.initialize();
-      if (!mounted || _videoController != controller) {
+      if (!mounted ||
+          _videoController != controller ||
+          initGeneration != _videoInitGeneration) {
         await controller.dispose();
         return;
       }
 
+      _debugLogBackgroundVideo('initialized', controller: controller);
+
       await controller.setVolume(0);
       await controller.setLooping(false);
-      if (widget.playbackSpeed > 0 && widget.playbackSpeed != 1.0) {
-        await controller.setPlaybackSpeed(widget.playbackSpeed);
-      }
 
       final startPosition = Duration(seconds: _authBackgroundVideoStartSeconds);
       if (controller.value.duration > startPosition) {
         await controller.seekTo(startPosition);
       }
 
-      controller.addListener(_handleVideoProgress);
-      await controller.play();
+      controller
+        ..removeListener(_handleVideoProgress)
+        ..removeListener(_handleVideoControllerUpdate)
+        ..addListener(_handleVideoProgress)
+        ..addListener(_handleVideoControllerUpdate);
 
-      if (!mounted || _videoController != controller) {
+      await controller.play();
+      await _applyPlaybackSpeed(controller);
+
+      if (!mounted ||
+          _videoController != controller ||
+          initGeneration != _videoInitGeneration) {
+        await controller.dispose();
         return;
       }
 
+      if (!controller.value.isInitialized ||
+          controller.value.size.width <= 0 ||
+          controller.value.size.height <= 0) {
+        throw StateError(
+          'Video initialized without a valid frame size: ${controller.value.size}',
+        );
+      }
+
       setState(() => _isVideoReady = true);
-    } catch (_) {
+      _debugLogBackgroundVideo('ready', controller: controller);
+    } catch (error, stackTrace) {
+      _debugLogBackgroundVideo(
+        'initializeFailed',
+        error: error,
+        stackTrace: stackTrace,
+        controller: controller,
+      );
+
+      controller.removeListener(_handleVideoProgress);
+      controller.removeListener(_handleVideoControllerUpdate);
+
       if (_videoController == controller) {
-        await controller.dispose();
         _videoController = null;
+        _isVideoReady = false;
+      }
+
+      await controller.dispose();
+
+      if (mounted && initGeneration == _videoInitGeneration) {
+        setState(() {});
       }
     }
+  }
+
+  void _handleVideoControllerUpdate() {
+    final controller = _videoController;
+    if (controller == null || !controller.value.hasError) {
+      return;
+    }
+
+    _debugLogBackgroundVideo(
+      'playbackError',
+      error: StateError(controller.value.errorDescription ?? 'Unknown error'),
+      controller: controller,
+    );
   }
 
   void _handleVideoProgress() {
@@ -189,12 +339,14 @@ class _AuthBackgroundState extends State<AuthBackground> {
   }
 
   Future<void> _disposeBackgroundVideo() async {
+    _videoInitGeneration++;
     final controller = _videoController;
     _videoController = null;
     _isVideoReady = false;
 
     if (controller != null) {
       controller.removeListener(_handleVideoProgress);
+      controller.removeListener(_handleVideoControllerUpdate);
       await controller.dispose();
     }
 
@@ -205,9 +357,11 @@ class _AuthBackgroundState extends State<AuthBackground> {
 
   @override
   void dispose() {
+    _videoInitGeneration++;
     final controller = _videoController;
     if (controller != null) {
       controller.removeListener(_handleVideoProgress);
+      controller.removeListener(_handleVideoControllerUpdate);
       controller.dispose();
     }
     super.dispose();
@@ -264,39 +418,58 @@ class _AuthBackgroundState extends State<AuthBackground> {
             const _GlowOrb(
               size: 260,
               top: -70,
-              left: -90,
+              start: -90,
               color: AppColors.mediumBlue,
               opacity: 0.08,
             ),
             const _GlowOrb(
               size: 320,
               top: 80,
-              right: -130,
+              end: -130,
               color: AppColors.buttonHighlight,
               opacity: 0.05,
             ),
             const _GlowOrb(
               size: 300,
               bottom: -110,
-              left: -70,
+              start: -70,
               color: AppColors.mediumBlue,
               opacity: 0.06,
             ),
             const _GlowOrb(
               size: 240,
               bottom: 10,
-              right: -80,
+              end: -80,
               color: AppColors.buttonHighlight,
               opacity: 0.04,
             ),
           ],
           Positioned.fill(
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.primaryNavy.withValues(
-                  alpha: widget.overlayOpacity,
-                ),
-              ),
+              decoration: showVideo
+                  ? BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.primaryNavy.withValues(
+                            alpha: widget.overlayOpacity * 0.42,
+                          ),
+                          AppColors.primaryNavy.withValues(
+                            alpha: widget.overlayOpacity * 0.58,
+                          ),
+                          AppColors.primaryNavy.withValues(
+                            alpha: widget.overlayOpacity * 0.78,
+                          ),
+                        ],
+                        stops: const [0, 0.55, 1],
+                      ),
+                    )
+                  : BoxDecoration(
+                      color: AppColors.primaryNavy.withValues(
+                        alpha: widget.overlayOpacity,
+                      ),
+                    ),
             ),
           ),
           if (widget.bottomFade && !widget.showBackgroundVideo)
@@ -329,31 +502,62 @@ class _AuthBackgroundVideoLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: AppColors.primaryNavy,
-      child: SizedBox.expand(
-        child: FittedBox(
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
-          child: SizedBox(
-            width: controller.value.size.width,
-            height: controller.value.size.height,
-            child: Transform(
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        if (!controller.value.isInitialized) {
+          return const ColoredBox(color: AppColors.primaryNavy);
+        }
+
+        final size = controller.value.size;
+        if (size.width <= 0 || size.height <= 0) {
+          return const ColoredBox(color: AppColors.primaryNavy);
+        }
+
+        return ColoredBox(
+          color: AppColors.primaryNavy,
+          child: SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.cover,
               alignment: Alignment.center,
-              transform: Matrix4.identity()..scaleByDouble(-1.0, 1.0, 1.0, 1.0),
-              child: ColorFiltered(
-                colorFilter: const ColorFilter.matrix(<double>[
-                  0.86, 0, 0, 0, 0,
-                  0, 0.88, 0, 0, 0,
-                  0, 0, 1.04, 0, 0,
-                  0, 0, 0, 1, 0,
-                ]),
-                child: VideoPlayer(controller),
+              child: SizedBox(
+                width: size.width,
+                height: size.height,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..scaleByDouble(-1.0, 1.0, 1.0, 1.0),
+                  child: ColorFiltered(
+                    colorFilter: const ColorFilter.matrix(<double>[
+                      0.86,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0.88,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1.04,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                    ]),
+                    child: VideoPlayer(controller),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -527,12 +731,21 @@ class AuthBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _RoundGlassButton(
-      onPressed: onPressed,
-      child: const Icon(
-        Icons.arrow_back_ios_new_rounded,
-        size: 15,
-        color: AppColors.lightBlue,
+    final l10n = AppLocalizations.of(context)!;
+
+    return Semantics(
+      button: true,
+      label: l10n.commonBack,
+      child: Tooltip(
+        message: l10n.commonBack,
+        child: _RoundGlassButton(
+          onPressed: onPressed,
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 15,
+            color: AppColors.lightBlue,
+          ),
+        ),
       ),
     );
   }
@@ -572,10 +785,7 @@ class AuthTopLogo extends StatelessWidget {
       logoChild = AuthLogoMark(size: logoSize);
     }
 
-    return _RoundGlassButton(
-      onPressed: null,
-      child: logoChild,
-    );
+    return _RoundGlassButton(onPressed: null, child: logoChild);
   }
 }
 
@@ -591,7 +801,8 @@ class AuthTabSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const labels = ['Sign In', 'Create Account'];
+    final l10n = AppLocalizations.of(context)!;
+    final labels = [l10n.commonSignIn, l10n.authCommonCreateAccount];
 
     return Container(
       padding: const EdgeInsets.all(4),
@@ -665,6 +876,7 @@ class AuthInputField extends StatelessWidget {
     this.state = AuthFieldState.idle,
     this.message,
     this.textCapitalization = TextCapitalization.none,
+    this.textDirection,
   });
 
   final TextEditingController controller;
@@ -681,6 +893,7 @@ class AuthInputField extends StatelessWidget {
   final AuthFieldState state;
   final String? message;
   final TextCapitalization textCapitalization;
+  final TextDirection? textDirection;
 
   @override
   Widget build(BuildContext context) {
@@ -726,6 +939,7 @@ class AuthInputField extends StatelessWidget {
           obscureText: obscureText,
           autocorrect: false,
           textCapitalization: textCapitalization,
+          textDirection: textDirection,
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w500,
@@ -895,7 +1109,12 @@ class _AuthGradientButtonState extends State<AuthGradientButton> {
                 ),
                 if (!widget.isLoading && widget.trailingIcon != null) ...[
                   const SizedBox(width: 6),
-                  Icon(widget.trailingIcon, size: 16, color: AppColors.white),
+                  Icon(
+                    widget.trailingIcon,
+                    size: 16,
+                    color: AppColors.white,
+                    textDirection: Directionality.of(context),
+                  ),
                 ],
               ],
             ),
@@ -917,6 +1136,7 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final result = evaluateAuthPasswordStrength(password);
     final strengthColor = switch (result.level) {
       AuthPasswordStrengthLevel.weak => AppColors.danger,
@@ -924,9 +1144,9 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
       AuthPasswordStrengthLevel.strong => AppColors.success,
     };
     final strengthLabel = switch (result.level) {
-      AuthPasswordStrengthLevel.weak => 'Weak',
-      AuthPasswordStrengthLevel.medium => 'Medium',
-      AuthPasswordStrengthLevel.strong => 'Strong',
+      AuthPasswordStrengthLevel.weak => l10n.authPasswordStrengthWeak,
+      AuthPasswordStrengthLevel.medium => l10n.authPasswordStrengthMedium,
+      AuthPasswordStrengthLevel.strong => l10n.authPasswordStrengthStrong,
     };
 
     return Container(
@@ -942,7 +1162,7 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Password strength',
+                l10n.authPasswordStrengthTitle,
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
@@ -973,7 +1193,7 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
               return Expanded(
                 child: Container(
                   height: 6,
-                  margin: EdgeInsets.only(right: index == 2 ? 0 : 6),
+                  margin: EdgeInsetsDirectional.only(end: index == 2 ? 0 : 6),
                   decoration: BoxDecoration(
                     color: isActive
                         ? strengthColor
@@ -985,28 +1205,28 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
             }),
           ),
           const SizedBox(height: 12),
-          for (final rule in result.rules) ...[
+          for (var index = 0; index < result.rules.length; index++) ...[
             Row(
               children: [
                 Icon(
-                  rule.isSatisfied
+                  result.rules[index].isSatisfied
                       ? Icons.check_circle_rounded
                       : Icons.radio_button_unchecked_rounded,
                   size: 14,
-                  color: rule.isSatisfied
+                  color: result.rules[index].isSatisfied
                       ? AppColors.success
                       : AppColors.lightBlue.withValues(alpha: 0.48),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    rule.label,
+                    _localizedPasswordRuleLabel(l10n, index),
                     style: GoogleFonts.inter(
                       fontSize: 10.5,
-                      fontWeight: rule.isSatisfied
+                      fontWeight: result.rules[index].isSatisfied
                           ? FontWeight.w600
                           : FontWeight.w500,
-                      color: rule.isSatisfied
+                      color: result.rules[index].isSatisfied
                           ? AppColors.success
                           : AppColors.lightBlue.withValues(alpha: 0.8),
                     ),
@@ -1014,7 +1234,7 @@ class AuthPasswordStrengthIndicator extends StatelessWidget {
                 ),
               ],
             ),
-            if (rule != result.rules.last) const SizedBox(height: 7),
+            if (index != result.rules.length - 1) const SizedBox(height: 7),
           ],
         ],
       ),
@@ -1171,9 +1391,9 @@ class AuthRoleCard extends StatelessWidget {
             child: Stack(
               children: [
                 if (isSelected)
-                  Positioned(
+                  PositionedDirectional(
                     top: 0,
-                    right: 0,
+                    end: 0,
                     child: Container(
                       width: 18,
                       height: 18,
@@ -1291,26 +1511,26 @@ class _GlowOrb extends StatelessWidget {
     required this.color,
     required this.opacity,
     this.top,
-    this.right,
+    this.end,
     this.bottom,
-    this.left,
+    this.start,
   });
 
   final double size;
   final Color color;
   final double opacity;
   final double? top;
-  final double? right;
+  final double? end;
   final double? bottom;
-  final double? left;
+  final double? start;
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
+    return PositionedDirectional(
       top: top,
-      right: right,
+      end: end,
       bottom: bottom,
-      left: left,
+      start: start,
       child: IgnorePointer(
         child: Container(
           width: size,

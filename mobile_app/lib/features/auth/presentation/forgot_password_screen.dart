@@ -4,8 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
+import '../utils/auth_localization_utils.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/locale/language_selector.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/auth_ui.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -64,12 +67,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
       showAuthSnackBar(
         context,
-        'Please enter your email address',
+        l10n.forgotPasswordEnterEmail,
         type: AuthSnackBarType.error,
       );
       return;
@@ -78,7 +82,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     if (!_isEmailValid) {
       showAuthSnackBar(
         context,
-        'Please enter a valid email address',
+        l10n.forgotPasswordEnterValidEmail,
         type: AuthSnackBarType.error,
       );
       return;
@@ -100,13 +104,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       return;
     }
 
-    final errorMessage =
-        ref.read(authProvider).errorMessage ?? 'Failed to send reset link.';
+    final errorMessage = mapAuthProviderError(
+      l10n,
+      ref.read(authProvider).errorMessage ?? l10n.forgotPasswordFailedSend,
+    );
     showAuthSnackBar(context, errorMessage, type: AuthSnackBarType.error);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authProvider);
 
     return Scaffold(
@@ -135,6 +142,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             logoSize: 26,
                             logoColor: Color(0xFF2AA4C9),
                           ),
+                          const Spacer(),
+                          const LanguageSelector(),
                         ],
                       ),
                       SizedBox(height: topGap.toDouble()),
@@ -143,10 +152,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         child: AuthGlassCard(
                           child: _successMessage != null
                               ? AuthStatusCard(
-                                  title: 'Reset Email Sent',
+                                  title: l10n.forgotPasswordResetEmailSentTitle,
                                   message:
-                                      'If an account exists with this email, a password reset link has been sent.',
-                                  buttonLabel: 'Back to Sign In',
+                                      l10n.forgotPasswordResetEmailSentMessage,
+                                  buttonLabel: l10n.forgotPasswordBackToSignIn,
                                   onPressed: () => context.go(AppRoutes.login),
                                 )
                               : Column(
@@ -154,7 +163,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                       CrossAxisAlignment.stretch,
                                   children: [
                                     Text(
-                                      'Forgot Password',
+                                      l10n.forgotPasswordTitle,
                                       style: GoogleFonts.syne(
                                         fontSize: 24,
                                         fontWeight: FontWeight.w700,
@@ -163,7 +172,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Enter your email address and we will send you a password reset link.',
+                                      l10n.forgotPasswordSubtitle,
                                       style: GoogleFonts.inter(
                                         fontSize: 12.5,
                                         height: 1.5,
@@ -176,8 +185,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                     AuthInputField(
                                       controller: _emailController,
                                       focusNode: _emailFocusNode,
-                                      label: 'Email Address',
-                                      hintText: 'name@example.com',
+                                      label: l10n.signupEmailAddress,
+                                      hintText: l10n.loginEmailHint,
                                       icon: Icons.mail_outline_rounded,
                                       keyboardType: TextInputType.emailAddress,
                                       textInputAction: TextInputAction.done,
@@ -194,13 +203,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                           _emailController.text.isEmpty ||
                                               _isEmailValid
                                           ? null
-                                          : 'Invalid email address',
+                                          : l10n.authValidationInvalidEmail,
                                     ),
                                     const SizedBox(height: 18),
                                     AuthGradientButton(
                                       label: authState.isLoading
-                                          ? 'Sending Reset Link...'
-                                          : 'Send Reset Link',
+                                          ? l10n.forgotPasswordSending
+                                          : l10n.forgotPasswordSendLink,
                                       trailingIcon: Icons.chevron_right_rounded,
                                       isLoading: authState.isLoading,
                                       onPressed: authState.isLoading
@@ -212,7 +221,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                       onPressed: () =>
                                           context.go(AppRoutes.login),
                                       child: Text(
-                                        'Back to Sign In',
+                                        l10n.forgotPasswordBackToSignIn,
                                         style: GoogleFonts.inter(
                                           fontSize: 11.5,
                                           fontWeight: FontWeight.w700,

@@ -1,3 +1,5 @@
+import 'package:mobile_app/l10n/app_localizations.dart';
+
 import '../models/parent_dashboard_models.dart';
 import 'session_classification.dart';
 
@@ -83,4 +85,69 @@ String parentHeroUpcomingSessionCountdownLabel({
   }
 
   return formatParentHeroSessionCountdown(scheduledAt, now: now);
+}
+
+/// Localized version of [formatParentHeroSessionCountdown].
+String localizedParentHeroSessionCountdown(
+  AppLocalizations l10n,
+  DateTime scheduledAt, {
+  DateTime? now,
+}) {
+  final clock = (now ?? DateTime.now()).toLocal();
+  final session = scheduledAt.toLocal();
+
+  if (!session.isAfter(clock)) {
+    return l10n.parentSessionNoUpcoming;
+  }
+
+  final today = DateTime(clock.year, clock.month, clock.day);
+  final sessionDay = DateTime(session.year, session.month, session.day);
+  final dayDiff = sessionDay.difference(today).inDays;
+  final diff = session.difference(clock);
+
+  if (dayDiff >= 2) {
+    return l10n.parentSessionInDays(dayDiff);
+  }
+  if (dayDiff == 1) {
+    return l10n.dateTomorrow;
+  }
+
+  if (diff.inMinutes < 60) {
+    final minutes = diff.inMinutes <= 0 ? 1 : diff.inMinutes;
+    return minutes == 1
+        ? l10n.parentSessionInOneMinute
+        : l10n.parentSessionInMinutes(minutes);
+  }
+  if (diff.inHours < 24) {
+    final hours = diff.inHours;
+    return hours == 1
+        ? l10n.parentSessionInOneHour
+        : l10n.parentSessionInHours(hours);
+  }
+
+  return l10n.dateToday;
+}
+
+/// Localized hero-card countdown label for the selected child.
+String localizedParentHeroUpcomingSessionCountdownLabel(
+  AppLocalizations l10n, {
+  required List<ParentSessionItem> sessions,
+  required String? selectedPatientId,
+  DateTime? now,
+}) {
+  if (selectedPatientId == null || selectedPatientId.trim().isEmpty) {
+    return l10n.parentSessionNoUpcoming;
+  }
+
+  final nearest = nearestUpcomingParentSessionForChild(
+    sessions,
+    selectedPatientId,
+    now: now,
+  );
+  final scheduledAt = nearest?.scheduledAt;
+  if (scheduledAt == null) {
+    return l10n.parentSessionNoUpcoming;
+  }
+
+  return localizedParentHeroSessionCountdown(l10n, scheduledAt, now: now);
 }

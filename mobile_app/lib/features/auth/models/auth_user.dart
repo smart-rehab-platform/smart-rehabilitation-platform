@@ -20,21 +20,25 @@ class AuthUser {
   factory AuthUser.fromMap(Map<String, dynamic> map) {
     return AuthUser(
       id: _readString(map, const ['id', '_id', 'userId']),
-      fullName: _readString(map, const ['fullName', 'full_name', 'name', 'username']) ?? '',
+      fullName:
+          _readString(map, const [
+            'fullName',
+            'full_name',
+            'name',
+            'username',
+          ]) ??
+          '',
       email: _readString(map, const ['email', 'mail']) ?? '',
       phone: _readString(map, const ['phone', 'phoneNumber', 'mobile']),
       role: _readString(map, const ['role', 'userRole']),
-      profileImageUrl: _readString(
-        map,
-        const [
-          'profileImageUrl',
-          'profile_image_url',
-          'profileImage',
-          'profile_image',
-          'avatar',
-          'avatarUrl',
-        ],
-      ),
+      profileImageUrl: _readString(map, const [
+        'profileImageUrl',
+        'profile_image_url',
+        'profileImage',
+        'profile_image',
+        'avatar',
+        'avatarUrl',
+      ]),
       rawData: Map<String, dynamic>.unmodifiable(map),
     );
   }
@@ -54,9 +58,7 @@ class AuthUser {
     }
 
     if (value is Map) {
-      return value.map(
-        (key, val) => MapEntry(key.toString(), val),
-      );
+      return value.map((key, val) => MapEntry(key.toString(), val));
     }
 
     return null;

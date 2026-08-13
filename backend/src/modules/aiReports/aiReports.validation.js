@@ -1,4 +1,8 @@
 const validateGenerateReport = (req, res, next) => {
+  if (req.body && Object.prototype.hasOwnProperty.call(req.body, "specialist_id")) {
+    delete req.body.specialist_id;
+  }
+
   const { patient_id, period_start, period_end } = req.body;
 
   if (!patient_id || !period_start || !period_end) {

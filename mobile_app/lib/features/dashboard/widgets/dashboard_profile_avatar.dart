@@ -260,8 +260,8 @@ class EditableProfileAvatar extends StatelessWidget {
               imageCacheBustMs: imageCacheBustMs,
               onTap: avatarTap,
             ),
-            Positioned(
-              right: 0,
+            PositionedDirectional(
+              end: 0,
               bottom: 0,
               child: Material(
                 color: DashboardColors.brandCyan,

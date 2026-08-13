@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/api_constants.dart';
+import '../../../../l10n/app_localizations.dart';
 
 String parentFormatDate(DateTime? date) {
   if (date == null) {
@@ -25,36 +26,45 @@ String? parentResolveReportUrl(String? pdfUrl) {
 
 Future<void> parentCopyReportUrl(
   BuildContext context,
+  AppLocalizations l10n,
   String url, {
-  String message = 'Report link copied to clipboard.',
+  String? message,
 }) async {
   await Clipboard.setData(ClipboardData(text: url));
   if (context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(content: Text(message ?? l10n.parentReportLinkCopied)),
     );
   }
 }
 
-Future<void> parentLongPressReportUrl(BuildContext context, String? pdfUrl) async {
+Future<void> parentLongPressReportUrl(
+  BuildContext context,
+  AppLocalizations l10n,
+  String? pdfUrl,
+) async {
   final resolved = parentResolveReportUrl(pdfUrl);
   if (resolved == null || resolved.isEmpty) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No report link to copy.')),
+        SnackBar(content: Text(l10n.parentReportNoLinkToCopy)),
       );
     }
     return;
   }
-  await parentCopyReportUrl(context, resolved);
+  await parentCopyReportUrl(context, l10n, resolved);
 }
 
-Future<void> parentOpenReportUrl(BuildContext context, String? pdfUrl) async {
+Future<void> parentOpenReportUrl(
+  BuildContext context,
+  AppLocalizations l10n,
+  String? pdfUrl,
+) async {
   final resolved = parentResolveReportUrl(pdfUrl);
   if (resolved == null || resolved.isEmpty) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No report file available yet.')),
+        SnackBar(content: Text(l10n.parentReportNoFileAvailable)),
       );
     }
     return;
@@ -64,7 +74,7 @@ Future<void> parentOpenReportUrl(BuildContext context, String? pdfUrl) async {
   if (uri == null) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid report link.')),
+        SnackBar(content: Text(l10n.parentReportInvalidLink)),
       );
     }
     return;
@@ -78,16 +88,18 @@ Future<void> parentOpenReportUrl(BuildContext context, String? pdfUrl) async {
     if (!launched && context.mounted) {
       await parentCopyReportUrl(
         context,
+        l10n,
         resolved,
-        message: 'Could not open report. Link copied to clipboard.',
+        message: l10n.parentReportOpenFailedLinkCopied,
       );
     }
   } catch (_) {
     if (context.mounted) {
       await parentCopyReportUrl(
         context,
+        l10n,
         resolved,
-        message: 'Could not open report. Link copied to clipboard.',
+        message: l10n.parentReportOpenFailedLinkCopied,
       );
     }
   }

@@ -63,11 +63,7 @@ class SignupOnboardingRoleCard extends StatelessWidget {
                       : AppColors.cyan.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  icon,
-                  size: 20,
-                  color: AppColors.cyan,
-                ),
+                child: Icon(icon, size: 20, color: AppColors.cyan),
               ),
               const SizedBox(width: 12),
               Expanded(

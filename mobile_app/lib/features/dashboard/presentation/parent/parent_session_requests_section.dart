@@ -3,16 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/session_requests_models.dart';
 import '../../providers/session_requests_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
+import 'parent_sessions_localization_utils.dart';
 
 class ParentSessionRequestsSection extends ConsumerWidget {
   const ParentSessionRequestsSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(sessionRequestsProvider);
     final theme = Theme.of(context);
 
@@ -23,7 +26,7 @@ class ParentSessionRequestsSection extends ConsumerWidget {
           children: [
             Expanded(
               child: Text(
-                'My Session Requests',
+                l10n.parentSessionsMyRequests,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: DashboardColors.textPrimary,
@@ -51,7 +54,7 @@ class ParentSessionRequestsSection extends ConsumerWidget {
           const Center(child: DashboardLoadingCard())
         else if (state.errorMessage != null) ...[
           DashboardErrorCard(
-            message: state.errorMessage!,
+            message: mapParentSessionRequestsError(l10n, state.errorMessage!),
             onRetry: () => ref.read(sessionRequestsProvider.notifier).refresh(),
           ),
         ] else if (state.requests.isEmpty)
@@ -73,6 +76,7 @@ class _EmptySessionRequestsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
@@ -81,7 +85,9 @@ class _EmptySessionRequestsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: DashboardColors.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.8)),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.8),
+        ),
       ),
       child: Column(
         children: [
@@ -92,14 +98,14 @@ class _EmptySessionRequestsCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.45),
           Text(
-            'No session requests yet.',
+            l10n.parentSessionsNoRequestsTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.2),
           Text(
-            'Use Request New Session above when you need an appointment.',
+            l10n.parentSessionsNoRequestsMessage,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,
@@ -138,11 +144,12 @@ class _SessionRequestCard extends StatelessWidget {
     return DateFormat('h:mm a').format(date);
   }
 
-  _RequestStatusVisual _statusVisual() {
+  _RequestStatusVisual _statusVisual(AppLocalizations l10n) {
+    final label = localizedSessionRequestStatus(l10n, request.status);
     switch (request.status) {
       case SessionRequestStatus.approved:
         return (
-          label: 'Approved',
+          label: label,
           background: const Color(0xFFEAF8EE),
           foreground: const Color(0xFF2E7D32),
           border: const Color(0xFF2E7D32).withValues(alpha: 0.18),
@@ -150,7 +157,7 @@ class _SessionRequestCard extends StatelessWidget {
         );
       case SessionRequestStatus.rejected:
         return (
-          label: 'Rejected',
+          label: label,
           background: const Color(0xFFFDECEC),
           foreground: const Color(0xFFD32F2F),
           border: const Color(0xFFD32F2F).withValues(alpha: 0.18),
@@ -159,7 +166,7 @@ class _SessionRequestCard extends StatelessWidget {
       case SessionRequestStatus.pending:
       default:
         return (
-          label: 'Pending',
+          label: label,
           background: const Color(0xFFFFF8E1),
           foreground: const Color(0xFFF9A825),
           border: const Color(0xFFF9A825).withValues(alpha: 0.22),
@@ -170,8 +177,9 @@ class _SessionRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final statusVisual = _statusVisual();
+    final statusVisual = _statusVisual(l10n);
     final approvedSession = request.approvedSession;
 
     return Container(
@@ -180,7 +188,9 @@ class _SessionRequestCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: DashboardColors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.75)),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.75),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -197,7 +207,7 @@ class _SessionRequestCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  request.patientName ?? 'Patient',
+                  request.patientName ?? l10n.entityPatient,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -208,7 +218,7 @@ class _SessionRequestCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           Text(
-            request.reasonLabel,
+            localizedSessionRequestReason(l10n, request),
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,
               fontWeight: FontWeight.w600,
@@ -231,14 +241,19 @@ class _SessionRequestCard extends StatelessWidget {
               ),
               _RequestMetaItem(
                 icon: Icons.wb_twilight_outlined,
-                label: request.preferredTimePeriod?.label ?? '—',
+                label: localizedPreferredTimePeriod(
+                  l10n,
+                  request.preferredTimePeriod,
+                ),
               ),
             ],
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           _RequestMetaItem(
             icon: Icons.schedule_rounded,
-            label: 'Requested ${_formatCreatedDate(request.createdAt)}',
+            label: l10n.parentSessionsRequestedOn(
+              _formatCreatedDate(request.createdAt),
+            ),
           ),
           if (request.notes != null && request.notes!.trim().isNotEmpty) ...[
             SizedBox(height: context.dashSpacing * 0.45),
@@ -291,7 +306,10 @@ class _SessionRequestCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Scheduled: ${_formatDate(approvedSession.scheduledAt)} at ${_formatTime(approvedSession.scheduledAt)}',
+                    l10n.parentSessionsScheduledAt(
+                      _formatDate(approvedSession.scheduledAt),
+                      _formatTime(approvedSession.scheduledAt),
+                    ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: const Color(0xFF2E7D32),
                       fontWeight: FontWeight.w700,
@@ -300,7 +318,9 @@ class _SessionRequestCard extends StatelessWidget {
                   if (approvedSession.durationMinutes != null) ...[
                     SizedBox(height: context.dashSpacing * 0.2),
                     Text(
-                      'Duration: ${approvedSession.durationMinutes} min',
+                      l10n.specialistSessionDurationMinutes(
+                        approvedSession.durationMinutes!,
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: const Color(0xFF2E7D32),
                         fontWeight: FontWeight.w600,
@@ -358,9 +378,9 @@ class _RequestStatusChip extends StatelessWidget {
           Text(
             visual.label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: visual.foreground,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: visual.foreground,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),

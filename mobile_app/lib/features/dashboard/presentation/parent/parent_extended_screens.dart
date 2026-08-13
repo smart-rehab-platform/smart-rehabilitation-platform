@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/parent_dashboard_models.dart';
 import '../../providers/parent_dashboard_provider.dart';
 import '../../providers/parent_features_provider.dart';
@@ -11,8 +12,11 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/exercise_instruction_media_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
+import 'parent_child_detail_widgets.dart';
 import 'parent_exercise_media_picker.dart';
 export 'parent_progress_screen.dart';
+import 'parent_extended_localization_utils.dart';
+import 'parent_sessions_screen.dart';
 import 'parent_specialist_feedback_section.dart';
 import 'parent_ui_helpers.dart';
 import '../communication/communication_patient_actions.dart';
@@ -37,85 +41,105 @@ class _ParentChildDetailScreenState
     });
   }
 
+  ParentChild _resolvedChild(ParentChild child) {
+    final dashboard = ref.read(parentDashboardProvider);
+    ParentChild? dashboardChild;
+    ParentChild? progressChild;
+
+    for (final item in dashboard.children) {
+      if (item.id == child.id) {
+        dashboardChild = item;
+        break;
+      }
+    }
+    for (final item in dashboard.childrenProgress) {
+      if (item.id == child.id) {
+        progressChild = item;
+        break;
+      }
+    }
+
+    return child.copyWith(
+      profileImageUrl:
+          child.profileImageUrl ??
+          dashboardChild?.profileImageUrl ??
+          progressChild?.profileImageUrl,
+      progressPercent:
+          child.progressPercent ??
+          dashboardChild?.progressPercent ??
+          progressChild?.progressPercent,
+      dateOfBirth: child.dateOfBirth ?? dashboardChild?.dateOfBirth,
+      gender: child.gender ?? dashboardChild?.gender,
+    );
+  }
+
+  String _exerciseSubtitle(
+    AppLocalizations l10n,
+    ParentAssignedExercise exercise,
+  ) {
+    final parts = <String>[];
+    if (exercise.frequency != null && exercise.frequency!.trim().isNotEmpty) {
+      parts.add(localizedExerciseFrequency(l10n, exercise.frequency!.trim()));
+    }
+    if (exercise.dueDate != null) {
+      parts.add(
+        l10n.parentExercisesDueDate(parentFormatDate(exercise.dueDate)),
+      );
+    }
+    return parts.join(' • ');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(parentChildDetailProvider(widget.childId));
     final theme = Theme.of(context);
-    final child = state.child;
+    final child = state.child == null ? null : _resolvedChild(state.child!);
 
     return ParentPageScaffold(
-      title: child?.name ?? 'Child Details',
+      title: child?.name ?? l10n.parentExerciseChildDetailsTitle,
       showBackButton: true,
       body: ParentAsyncBody(
         isLoading: state.isLoading,
-        errorMessage: state.errorMessage,
+        errorMessage: state.errorMessage == null
+            ? null
+            : mapParentChildDetailError(l10n, state.errorMessage!),
         onRetry: () => ref
             .read(parentChildDetailProvider(widget.childId).notifier)
             .refresh(),
         isEmpty: child == null,
-        emptyMessage: 'Child not found.',
+        emptyMessage: l10n.parentExerciseChildNotFound,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DashboardSurfaceCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    child!.name,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  if (child.age != null)
-                    Text('Age: ${child.age}', style: theme.textTheme.bodySmall),
-                  if (child.dateOfBirth != null)
-                    Text(
-                      'Date of birth: ${parentFormatDate(child.dateOfBirth)}',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  if (child.gender != null && child.gender!.isNotEmpty)
-                    Text(
-                      'Gender: ${child.gender}',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  if (child.progressPercent != null)
-                    Text(
-                      'Progress: ${child.progressPercent!.round()}%',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: DashboardColors.brandCyan,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            ParentChildDetailHeaderCard(child: child!),
             SizedBox(height: context.dashSpacing),
             ParentMessageSpecialistButton(childId: widget.childId),
             SizedBox(height: context.dashSpacing),
             ParentSpecialistFeedbackSection(childId: widget.childId),
             SizedBox(height: context.dashSpacing),
-            Text('Assigned Exercises', style: theme.textTheme.titleSmall),
+            Text(
+              l10n.parentExerciseAssignedExercisesTitle,
+              style: theme.textTheme.titleSmall,
+            ),
             SizedBox(height: context.dashSpacing * 0.5),
             if (state.assignedExercises.isEmpty)
-              const DashboardEmptyCard(message: 'No assigned exercises yet.')
+              DashboardEmptyCard(message: l10n.parentExerciseNoAssignedYet)
             else
               ...state.assignedExercises.map(
                 (exercise) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-                  child: DashboardSurfaceCard(
-                    child: Text(
-                      '${exercise.title}${exercise.frequency != null ? ' • ${exercise.frequency}' : ''}',
-                      style: theme.textTheme.bodyMedium,
-                    ),
+                  child: ParentChildDetailExerciseCard(
+                    exercise: exercise,
+                    subtitle: _exerciseSubtitle(l10n, exercise),
                   ),
                 ),
               ),
             SizedBox(height: context.dashSpacing),
-            Text('Reports', style: theme.textTheme.titleSmall),
+            Text(l10n.entityReports, style: theme.textTheme.titleSmall),
             SizedBox(height: context.dashSpacing * 0.5),
             if (state.reports.isEmpty)
-              const DashboardEmptyCard(message: 'No reports yet.')
+              DashboardEmptyCard(message: l10n.parentExerciseNoReportsYet)
             else
               ...state.reports
                   .take(3)
@@ -124,40 +148,40 @@ class _ParentChildDetailScreenState
                       padding: EdgeInsets.only(
                         bottom: context.dashSpacing * 0.5,
                       ),
-                      child: DashboardSurfaceCard(
+                      child: ParentChildDetailReportCard(
+                        report: report,
+                        childName: child.name,
                         onTap:
                             report.pdfUrl != null && report.pdfUrl!.isNotEmpty
-                            ? () => parentOpenReportUrl(context, report.pdfUrl)
+                            ? () => parentOpenReportUrl(
+                                context,
+                                l10n,
+                                report.pdfUrl,
+                              )
                             : null,
                         onLongPress:
                             report.pdfUrl != null && report.pdfUrl!.isNotEmpty
                             ? () => parentLongPressReportUrl(
                                 context,
+                                l10n,
                                 report.pdfUrl,
                               )
                             : null,
-                        child: Text(
-                          report.title,
-                          style: theme.textTheme.bodyMedium,
-                        ),
                       ),
                     ),
                   ),
             SizedBox(height: context.dashSpacing),
-            Text('Sessions', style: theme.textTheme.titleSmall),
+            Text(l10n.navSessions, style: theme.textTheme.titleSmall),
             SizedBox(height: context.dashSpacing * 0.5),
             if (state.sessions.isEmpty)
-              const DashboardEmptyCard(message: 'No sessions scheduled.')
+              DashboardEmptyCard(
+                message: l10n.parentExerciseNoSessionsScheduled,
+              )
             else
               ...state.sessions.map(
                 (session) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
-                  child: DashboardSurfaceCard(
-                    child: Text(
-                      '${session.specialistName ?? 'Specialist'} • ${parentFormatDate(session.scheduledAt)} • ${session.status ?? 'scheduled'}',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ),
+                  child: ParentModernSessionCard(session: session),
                 ),
               ),
           ],
@@ -172,17 +196,16 @@ class ParentFeedbackScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final feedback = ref.watch(parentDashboardProvider).latestFeedback;
     final theme = Theme.of(context);
 
     return ParentPageScaffold(
-      title: 'Specialist Feedback',
+      title: l10n.parentFeedbackTitle,
       showBackButton: true,
       body: feedback == null
-          ? const Center(
-              child: DashboardEmptyCard(
-                message: 'No specialist feedback available yet.',
-              ),
+          ? Center(
+              child: DashboardEmptyCard(message: l10n.parentFeedbackNoneYet),
             )
           : SingleChildScrollView(
               padding: context.dashPadding,
@@ -204,7 +227,7 @@ class ParentFeedbackScreen extends ConsumerWidget {
                     Text(feedback.message),
                     if (feedback.rating != null) ...[
                       SizedBox(height: context.dashSpacing * 0.5),
-                      Text('Rating: ${feedback.rating}/5'),
+                      Text(l10n.parentFeedbackRating(feedback.rating!)),
                     ],
                     if (feedback.requiresRetry) ...[
                       SizedBox(height: context.dashSpacing * 0.5),
@@ -220,7 +243,7 @@ class ParentFeedbackScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
-                          'Retry required',
+                          l10n.parentDashboardRetryRequired,
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: DashboardColors.warning,
                             fontWeight: FontWeight.w700,
@@ -326,28 +349,30 @@ class _ParentExerciseDetailScreenState
       return;
     }
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(mapParentExerciseSubmitError(l10n, error))),
+      );
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Exercise submitted successfully')),
-    );
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.parentExerciseSubmitSuccess)));
     context.pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final exercisesState = ref.watch(parentExercisesProvider);
     final dashboard = ref.watch(parentDashboardProvider);
     final task = _findTask(exercisesState);
     final assigned = _findAssigned(exercisesState);
-    final title = task?.title ?? assigned?.title ?? 'Exercise';
+    final title = task?.title ?? assigned?.title ?? l10n.entityExercise;
     final instructions = task?.instructions ?? assigned?.instructions;
-    final instructionMediaUrl = (task?.instructionMediaUrl ??
-            assigned?.instructionMediaUrl)
-        ?.trim();
+    final instructionMediaUrl =
+        (task?.instructionMediaUrl ?? assigned?.instructionMediaUrl)?.trim();
     final hasInstructionMedia =
         instructionMediaUrl != null && instructionMediaUrl.isNotEmpty;
     final theme = Theme.of(context);
@@ -362,14 +387,14 @@ class _ParentExerciseDetailScreenState
           children: [
             if (dashboard.selectedChild != null)
               Text(
-                'For ${dashboard.selectedChild!.name}',
+                l10n.parentExerciseForChild(dashboard.selectedChild!.name),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: DashboardColors.textSecondary,
                 ),
               ),
             SizedBox(height: context.dashSpacing),
             Text(
-              'Exercise information',
+              l10n.parentExerciseInformation,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -381,7 +406,7 @@ class _ParentExerciseDetailScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Instructions',
+                    l10n.parentExerciseInstructions,
                     style: theme.textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: DashboardColors.textPrimary,
@@ -398,7 +423,7 @@ class _ParentExerciseDetailScreenState
                     )
                   else
                     Text(
-                      'Follow the specialist instructions for this exercise.',
+                      l10n.parentExerciseInstructionsFallback,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: DashboardColors.textSecondary,
                       ),
@@ -407,7 +432,12 @@ class _ParentExerciseDetailScreenState
                       assigned?.frequency != null) ...[
                     SizedBox(height: context.dashSpacing * 0.55),
                     Text(
-                      'Frequency: ${task?.frequency ?? assigned?.frequency}',
+                      l10n.parentExerciseFrequencyLabel(
+                        localizedExerciseFrequency(
+                          l10n,
+                          (task?.frequency ?? assigned?.frequency)!,
+                        ),
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: DashboardColors.textMuted,
                       ),
@@ -416,7 +446,9 @@ class _ParentExerciseDetailScreenState
                   if (task?.dueDate != null || assigned?.dueDate != null) ...[
                     SizedBox(height: context.dashSpacing * 0.35),
                     Text(
-                      'Due: ${parentFormatDate(task?.dueDate ?? assigned?.dueDate)}',
+                      l10n.parentExercisesDueDate(
+                        parentFormatDate(task?.dueDate ?? assigned?.dueDate),
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: DashboardColors.textMuted,
                       ),
@@ -425,7 +457,7 @@ class _ParentExerciseDetailScreenState
                   if (task?.isCompleted == true) ...[
                     SizedBox(height: context.dashSpacing * 0.5),
                     Text(
-                      'Already submitted',
+                      l10n.parentExerciseAlreadySubmitted,
                       style: TextStyle(color: DashboardColors.accent),
                     ),
                   ],
@@ -436,13 +468,14 @@ class _ParentExerciseDetailScreenState
               SizedBox(height: context.dashSpacing * 0.75),
               ExerciseInstructionMediaCard(
                 mediaUrl: instructionMediaUrl,
+                title: l10n.parentExerciseInstructionMedia,
               ),
             ],
             SizedBox(height: context.dashSpacing),
             Divider(color: DashboardColors.border),
             SizedBox(height: context.dashSpacing),
             Text(
-              'Your Submission',
+              l10n.parentExerciseYourSubmission,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -452,9 +485,9 @@ class _ParentExerciseDetailScreenState
             TextField(
               controller: _notesController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Notes for specialist (optional)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.parentExerciseNotesForSpecialist,
+                border: const OutlineInputBorder(),
               ),
             ),
             SizedBox(height: context.dashSpacing * 0.75),
@@ -478,8 +511,8 @@ class _ParentExerciseDetailScreenState
               ),
               child: Text(
                 exercisesState.isSubmitting
-                    ? 'Submitting...'
-                    : 'Submit Exercise',
+                    ? l10n.parentExerciseSubmitting
+                    : l10n.parentExerciseSubmit,
               ),
             ),
           ],

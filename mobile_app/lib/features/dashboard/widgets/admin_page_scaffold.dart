@@ -26,7 +26,7 @@ class AdminPageScaffold extends ConsumerWidget {
     this.wrapBodyInScrollView = false,
     this.onBackPressed,
     this.appBarShowBrandTitle = true,
-    this.appBarShowMessagesAction = true,
+    this.appBarShowMessagesAction = false,
   });
 
   final String title;

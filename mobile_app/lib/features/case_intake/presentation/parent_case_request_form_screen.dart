@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../dashboard/models/session_requests_models.dart';
 import '../../dashboard/widgets/dashboard_components.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
@@ -19,6 +20,7 @@ import '../models/case_category_model.dart';
 import '../models/case_intake_request_model.dart';
 import '../providers/case_categories_provider.dart';
 import '../providers/parent_case_intake_provider.dart';
+import 'parent_case_intake_localization_utils.dart';
 import '../widgets/case_request_step_indicator.dart';
 
 class ParentCaseRequestFormScreen extends ConsumerStatefulWidget {
@@ -37,6 +39,7 @@ class _ParentCaseRequestFormScreenState
     extends ConsumerState<ParentCaseRequestFormScreen> {
   static const _childNameMax = 150;
   static const _textMax = 5000;
+  static const _totalSteps = 6;
 
   final _childNameController = TextEditingController();
   final _caseDescriptionController = TextEditingController();
@@ -163,22 +166,23 @@ class _ParentCaseRequestFormScreenState
 
     final shouldLeave = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Discard changes?'),
-        content: const Text(
-          'You have unsaved changes. Leave this form without saving?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Stay'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Leave'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog(
+          title: Text(l10n.parentCaseRequestFormDiscardTitle),
+          content: Text(l10n.parentCaseRequestFormDiscardMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.parentCaseRequestFormStay),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.parentCaseRequestFormLeave),
+            ),
+          ],
+        );
+      },
     );
 
     return shouldLeave ?? false;
@@ -266,7 +270,15 @@ class _ParentCaseRequestFormScreenState
   void _goNext() {
     final error = _validateCurrentStep();
     if (error != null) {
-      setState(() => _stepError = error);
+      final l10n = AppLocalizations.of(context)!;
+      setState(
+        () => _stepError = mapParentCaseIntakeValidationMessage(
+          l10n,
+          error,
+          childNameMax: _childNameMax,
+          textMax: _textMax,
+        ),
+      );
       return;
     }
 
@@ -276,7 +288,10 @@ class _ParentCaseRequestFormScreenState
     });
   }
 
-  CaseIntakeRequestInput _buildInput({String? childImageUrl, bool clearChildImageUrl = false}) {
+  CaseIntakeRequestInput _buildInput({
+    String? childImageUrl,
+    bool clearChildImageUrl = false,
+  }) {
     return CaseIntakeRequestInput(
       childName: _childNameController.text.trim(),
       dateOfBirth: DateFormat('yyyy-MM-dd').format(_dateOfBirth!),
@@ -303,10 +318,19 @@ class _ParentCaseRequestFormScreenState
   Future<void> _submit() async {
     final error = _validateCurrentStep();
     if (error != null) {
-      setState(() => _stepError = error);
+      final l10n = AppLocalizations.of(context)!;
+      setState(
+        () => _stepError = mapParentCaseIntakeValidationMessage(
+          l10n,
+          error,
+          childNameMax: _childNameMax,
+          textMax: _textMax,
+        ),
+      );
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final notifier = ref.read(parentCaseIntakeProvider.notifier);
     String? childImageUrl;
     var clearChildImageUrl = false;
@@ -325,7 +349,9 @@ class _ParentCaseRequestFormScreenState
         final message = ref.read(parentCaseIntakeProvider).errorMessage;
         if (message != null && message.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
+            SnackBar(
+              content: Text(mapParentCaseIntakeProviderError(l10n, message)),
+            ),
           );
         }
         return;
@@ -355,8 +381,8 @@ class _ParentCaseRequestFormScreenState
         SnackBar(
           content: Text(
             widget.isEditMode
-                ? 'Case request updated successfully.'
-                : 'Case request submitted successfully.',
+                ? l10n.parentCaseRequestFormUpdatedSuccess
+                : l10n.parentCaseRequestFormSubmittedSuccess,
           ),
         ),
       );
@@ -367,9 +393,11 @@ class _ParentCaseRequestFormScreenState
     } else {
       final message = ref.read(parentCaseIntakeProvider).errorMessage;
       if (message != null && message.isNotEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(mapParentCaseIntakeProviderError(l10n, message)),
+          ),
+        );
       }
     }
   }
@@ -413,7 +441,13 @@ class _ParentCaseRequestFormScreenState
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to select image: $error')),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(
+              context,
+            )!.parentCaseRequestFormImageSelectFailed('$error'),
+          ),
+        ),
       );
     }
   }
@@ -438,6 +472,7 @@ class _ParentCaseRequestFormScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final categoriesState = ref.watch(caseCategoriesProvider);
     final intakeState = ref.watch(parentCaseIntakeProvider);
     final isSubmitting =
@@ -445,10 +480,13 @@ class _ParentCaseRequestFormScreenState
         intakeState.isUpdating ||
         _isUploadingChildImage;
     final theme = Theme.of(context);
+    final formTitle = widget.isEditMode
+        ? l10n.parentCaseRequestFormEditTitle
+        : l10n.parentCaseRequestFormNewTitle;
 
     if (_isLoadingExisting) {
       return ParentPageScaffold(
-        title: widget.isEditMode ? 'Edit Case Request' : 'New Case Request',
+        title: formTitle,
         showBackButton: true,
         body: const Center(child: DashboardLoadingCard()),
       );
@@ -456,10 +494,10 @@ class _ParentCaseRequestFormScreenState
 
     if (_loadError != null) {
       return ParentPageScaffold(
-        title: widget.isEditMode ? 'Edit Case Request' : 'New Case Request',
+        title: formTitle,
         showBackButton: true,
         body: DashboardErrorCard(
-          message: _loadError!,
+          message: mapParentCaseIntakeFormLoadError(l10n, _loadError!),
           onRetry: widget.isEditMode
               ? _loadExistingRequest
               : () => context.pop(),
@@ -476,7 +514,7 @@ class _ParentCaseRequestFormScreenState
         await _handleBack();
       },
       child: ParentPageScaffold(
-        title: widget.isEditMode ? 'Edit Case Request' : 'New Case Request',
+        title: formTitle,
         showBackButton: true,
         body: Column(
           children: [
@@ -486,14 +524,14 @@ class _ParentCaseRequestFormScreenState
                 children: [
                   if (_currentStep == 0) ...[
                     Text(
-                      'Start Your Child\'s Follow-Up Journey',
+                      l10n.parentDashboardCaseIntakeTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     SizedBox(height: context.dashSpacing * 0.35),
                     Text(
-                      'Tell us about the observed condition. The admin team will review the request and assign a suitable specialist.',
+                      l10n.parentDashboardCaseIntakeDescription,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: DashboardColors.textSecondary,
                       ),
@@ -502,7 +540,7 @@ class _ParentCaseRequestFormScreenState
                   ],
                   CaseRequestStepIndicator(
                     currentStep: _currentStep,
-                    totalSteps: caseRequestFormSteps.length,
+                    totalSteps: _totalSteps,
                     accentColor: DashboardColors.brandCyan,
                   ),
                   SizedBox(height: context.dashSpacing),
@@ -528,7 +566,7 @@ class _ParentCaseRequestFormScreenState
                         child: OutlinedButton(
                           onPressed: isSubmitting ? null : _handleBack,
                           style: brandOutlinedButtonStyle(),
-                          child: const Text('Back'),
+                          child: Text(l10n.commonBack),
                         ),
                       ),
                     if (_currentStep > 0)
@@ -537,15 +575,17 @@ class _ParentCaseRequestFormScreenState
                       child: BrandGradientButton(
                         onPressed: isSubmitting
                             ? null
-                            : _currentStep == caseRequestFormSteps.length - 1
+                            : _currentStep == _totalSteps - 1
                             ? _submit
                             : _goNext,
                         isLoading: isSubmitting,
-                        label: _currentStep == caseRequestFormSteps.length - 1
-                            ? (widget.isEditMode
-                                  ? 'Save Changes'
-                                  : 'Submit Case Request')
-                            : 'Next',
+                        label: _currentStep == _totalSteps - 1
+                            ? (isSubmitting
+                                  ? l10n.parentCaseRequestFormSubmitting
+                                  : widget.isEditMode
+                                  ? l10n.parentProfileSaveChanges
+                                  : l10n.parentCaseRequestFormSubmitRequest)
+                            : l10n.commonNext,
                       ),
                     ),
                   ],
@@ -629,12 +669,19 @@ class _ParentCaseRequestFormScreenState
           childName: _childNameController.text.trim(),
           dateOfBirth: _dateOfBirth,
           gender: _gender,
-          childImageUrl: _clearExistingChildImage ? null : _existingChildImageUrl,
+          childImageUrl: _clearExistingChildImage
+              ? null
+              : _existingChildImageUrl,
           previewBytes: _pendingChildImageBytes,
           hasChildPhoto: _hasChildPhotoPreview,
           category: categories.firstWhere(
             (item) => item.id == _selectedCategoryId,
-            orElse: () => const CaseCategory(id: '', name: 'Not selected'),
+            orElse: () => CaseCategory(
+              id: '',
+              name: AppLocalizations.of(
+                context,
+              )!.parentCaseRequestFormNotSelected,
+            ),
           ),
           caseDescription: _caseDescriptionController.text.trim(),
           observedDifficulties: _observedDifficultiesController.text.trim(),
@@ -681,16 +728,18 @@ class _ChildInfoStep extends StatelessWidget {
 
   bool get _hasPhoto =>
       previewBytes != null ||
-      (existingChildImageUrl != null && existingChildImageUrl!.trim().isNotEmpty);
+      (existingChildImageUrl != null &&
+          existingChildImageUrl!.trim().isNotEmpty);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final dobLabel = dateOfBirth != null
         ? DateFormat('MMM d, yyyy').format(dateOfBirth!)
-        : 'Select date of birth';
+        : l10n.adminPatientsSelectDateOfBirth;
     final initials = dashboardInitials(
-      childName.trim().isEmpty ? 'Child' : childName.trim(),
+      childName.trim().isEmpty ? l10n.entityChild : childName.trim(),
       fallback: 'CH',
     );
 
@@ -699,7 +748,7 @@ class _ChildInfoStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Child Information',
+            l10n.parentCaseRequestFormChildInfoSection,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -713,14 +762,16 @@ class _ChildInfoStep extends StatelessWidget {
                   children: [
                     DashboardProfileAvatar(
                       initials: initials,
-                      imageUrl: previewBytes == null ? existingChildImageUrl : null,
+                      imageUrl: previewBytes == null
+                          ? existingChildImageUrl
+                          : null,
                       previewBytes: previewBytes,
                       radius: 40,
                       isLoading: isBusy,
                       onTap: isBusy ? null : onPickPhoto,
                     ),
-                    Positioned(
-                      right: 0,
+                    PositionedDirectional(
+                      end: 0,
                       bottom: 0,
                       child: Material(
                         color: DashboardColors.brandCyan,
@@ -744,14 +795,16 @@ class _ChildInfoStep extends StatelessWidget {
                 ),
                 SizedBox(height: context.dashSpacing * 0.35),
                 Text(
-                  _hasPhoto ? 'Change child photo' : 'Add child photo',
+                  _hasPhoto
+                      ? l10n.parentCaseRequestFormChangeChildPhoto
+                      : l10n.parentCaseRequestFormAddChildPhoto,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: DashboardColors.brandCyan,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
-                  'Optional',
+                  l10n.commonOptional,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: DashboardColors.textMuted,
                   ),
@@ -761,7 +814,7 @@ class _ChildInfoStep extends StatelessWidget {
                   TextButton(
                     onPressed: isBusy ? null : onRemovePhoto,
                     child: Text(
-                      'Remove photo',
+                      l10n.parentCaseRequestFormRemovePhoto,
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: DashboardColors.brandCyan,
                         fontWeight: FontWeight.w600,
@@ -776,9 +829,9 @@ class _ChildInfoStep extends StatelessWidget {
           TextField(
             controller: childNameController,
             maxLength: childNameMax,
-            decoration: const InputDecoration(
-              labelText: 'Child name',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.parentCaseRequestFormChildName,
+              border: const OutlineInputBorder(),
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.5),
@@ -790,7 +843,7 @@ class _ChildInfoStep extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.75),
           Text(
-            'Gender',
+            l10n.fieldGender,
             style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -798,12 +851,21 @@ class _ChildInfoStep extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.35),
           Row(
             children: [
-              for (var index = 0; index < CaseIntakeGender.values.length; index++) ...[
+              for (
+                var index = 0;
+                index < CaseIntakeGender.values.length;
+                index++
+              ) ...[
                 if (index > 0) SizedBox(width: context.dashSpacing * 0.35),
                 Expanded(
                   child: ChoiceChip(
                     label: Center(
-                      child: Text(CaseIntakeGender.values[index].label),
+                      child: Text(
+                        localizedCaseIntakeGender(
+                          l10n,
+                          CaseIntakeGender.values[index],
+                        ),
+                      ),
                     ),
                     selected: gender == CaseIntakeGender.values[index],
                     onSelected: (_) =>
@@ -854,27 +916,31 @@ class _CategoryStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     if (isLoading && categories.isEmpty) {
       return const DashboardLoadingCard();
     }
 
     if (errorMessage != null && categories.isEmpty) {
-      return DashboardErrorCard(message: errorMessage!, onRetry: onRetry);
+      return DashboardErrorCard(
+        message: mapParentCaseIntakeProviderError(l10n, errorMessage!),
+        onRetry: onRetry,
+      );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Choose the category closest to the observed difficulty. The specialist will confirm the case after assessment.',
+          l10n.parentCaseRequestFormCategoryGuidance,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: DashboardColors.textSecondary,
           ),
         ),
         SizedBox(height: context.dashSpacing * 0.35),
         Text(
-          'The selected category is preliminary and does not represent a medical diagnosis.',
+          l10n.parentDashboardCaseIntakeDisclaimer,
           style: theme.textTheme.bodySmall?.copyWith(
             color: DashboardColors.textMuted,
             fontStyle: FontStyle.italic,
@@ -946,13 +1012,14 @@ class _DescriptionStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Case Description',
+            l10n.parentCaseRequestFormCaseDescriptionSection,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -963,8 +1030,10 @@ class _DescriptionStep extends StatelessWidget {
             maxLines: 5,
             maxLength: textMax,
             decoration: InputDecoration(
-              labelText: 'Case description',
-              helperText: 'Required. Up to $textMax characters.',
+              labelText: l10n.parentCaseRequestFormCaseDescriptionLabel,
+              helperText: l10n.parentCaseRequestFormCaseDescriptionHelper(
+                textMax,
+              ),
               border: const OutlineInputBorder(),
             ),
           ),
@@ -974,8 +1043,10 @@ class _DescriptionStep extends StatelessWidget {
             maxLines: 4,
             maxLength: textMax,
             decoration: InputDecoration(
-              labelText: 'Observed difficulties',
-              helperText: 'Optional. Up to $textMax characters.',
+              labelText: l10n.parentCaseRequestFormObservedDifficultiesLabel,
+              helperText: l10n.parentCaseRequestFormObservedDifficultiesHelper(
+                textMax,
+              ),
               border: const OutlineInputBorder(),
             ),
           ),
@@ -1007,6 +1078,7 @@ class _HistoryStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       child: Column(
@@ -1014,7 +1086,7 @@ class _HistoryStep extends StatelessWidget {
         children: [
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Has previous diagnosis?'),
+            title: Text(l10n.parentCaseRequestFormHasPreviousDiagnosis),
             value: hasPreviousDiagnosis,
             onChanged: onPreviousDiagnosisChanged,
             activeThumbColor: DashboardColors.brandCyan,
@@ -1025,15 +1097,15 @@ class _HistoryStep extends StatelessWidget {
               controller: previousDiagnosisController,
               maxLines: 3,
               maxLength: textMax,
-              decoration: const InputDecoration(
-                labelText: 'Previous diagnosis details',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.parentCaseRequestFormPreviousDiagnosisDetails,
+                border: const OutlineInputBorder(),
               ),
             ),
           SizedBox(height: context.dashSpacing * 0.5),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Currently receiving treatment?'),
+            title: Text(l10n.parentCaseRequestFormCurrentlyReceivingTreatment),
             value: isCurrentlyReceivingTreatment,
             onChanged: onCurrentTreatmentChanged,
             activeThumbColor: DashboardColors.brandCyan,
@@ -1044,14 +1116,14 @@ class _HistoryStep extends StatelessWidget {
               controller: currentTreatmentController,
               maxLines: 3,
               maxLength: textMax,
-              decoration: const InputDecoration(
-                labelText: 'Current treatment details',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.parentCaseRequestFormCurrentTreatmentDetails,
+                border: const OutlineInputBorder(),
               ),
             ),
           SizedBox(height: context.dashSpacing * 0.35),
           Text(
-            'Provide as much detail as you can to help the specialist prepare.',
+            l10n.parentCaseRequestFormHistoryHelper,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textMuted,
             ),
@@ -1071,13 +1143,14 @@ class _ContactStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Preferred Contact Period',
+            l10n.parentCaseRequestFormPreferredContactPeriod,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -1088,7 +1161,9 @@ class _ContactStep extends StatelessWidget {
             runSpacing: 8,
             children: PreferredTimePeriod.values.map((period) {
               return ChoiceChip(
-                label: Text(period.label),
+                label: Text(
+                  localizedCaseIntakePreferredContactPeriod(l10n, period),
+                ),
                 selected: selected == period,
                 onSelected: (_) => onSelected(period),
                 selectedColor: DashboardColors.brandSoft,
@@ -1102,8 +1177,9 @@ class _ContactStep extends StatelessWidget {
                   color: selected == period
                       ? DashboardColors.brandCyan
                       : DashboardColors.textPrimary,
-                  fontWeight:
-                      selected == period ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: selected == period
+                      ? FontWeight.w700
+                      : FontWeight.w500,
                 ),
               );
             }).toList(),
@@ -1150,16 +1226,17 @@ class _ReviewStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final dobLabel = dateOfBirth != null
         ? DateFormat('MMM d, yyyy').format(dateOfBirth!)
-        : 'Not set';
+        : l10n.parentCaseRequestFormNotSet;
 
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Review and Submit',
+            l10n.parentCaseRequestFormReviewTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -1176,36 +1253,54 @@ class _ReviewStep extends StatelessWidget {
             ),
             SizedBox(height: context.dashSpacing * 0.75),
           ],
-          _ReviewRow(label: 'Child name', value: childName),
-          _ReviewRow(label: 'Date of birth', value: dobLabel),
-          _ReviewRow(label: 'Gender', value: gender?.label ?? 'Not specified'),
-          _ReviewRow(label: 'Category', value: category.name),
-          _ReviewRow(label: 'Case description', value: caseDescription),
           _ReviewRow(
-            label: 'Observed difficulties',
+            label: l10n.parentCaseRequestFormReviewChildName,
+            value: childName,
+          ),
+          _ReviewRow(
+            label: l10n.parentCaseRequestFormReviewDob,
+            value: dobLabel,
+          ),
+          _ReviewRow(
+            label: l10n.parentCaseRequestFormReviewGender,
+            value: localizedCaseIntakeGender(l10n, gender),
+          ),
+          _ReviewRow(
+            label: l10n.parentCaseRequestFormReviewCategory,
+            value: category.name,
+          ),
+          _ReviewRow(
+            label: l10n.parentCaseRequestFormReviewCaseDescription,
+            value: caseDescription,
+          ),
+          _ReviewRow(
+            label: l10n.parentCaseRequestFormReviewObservedDifficulties,
             value: observedDifficulties.isEmpty
-                ? 'None provided'
+                ? l10n.parentCaseRequestFormNoneProvided
                 : observedDifficulties,
           ),
           _ReviewRow(
-            label: 'Previous diagnosis',
+            label: l10n.parentCaseRequestFormReviewPreviousDiagnosis,
             value: hasPreviousDiagnosis
                 ? (previousDiagnosisDetails.isEmpty
-                      ? 'Yes'
+                      ? l10n.commonYes
                       : previousDiagnosisDetails)
-                : 'No',
+                : l10n.commonNo,
           ),
           _ReviewRow(
-            label: 'Current treatment',
+            label: l10n.parentCaseRequestFormReviewCurrentTreatment,
             value: isCurrentlyReceivingTreatment
                 ? (currentTreatmentDetails.isEmpty
-                      ? 'Yes'
+                      ? l10n.commonYes
                       : currentTreatmentDetails)
-                : 'No',
+                : l10n.commonNo,
           ),
           _ReviewRow(
-            label: 'Preferred contact',
-            value: preferredContactPeriod?.label ?? 'Not selected',
+            label: l10n.parentCaseRequestFormReviewPreferredContact,
+            value: localizedCaseIntakePreferredContactPeriod(
+              l10n,
+              preferredContactPeriod,
+            ),
           ),
         ],
       ),

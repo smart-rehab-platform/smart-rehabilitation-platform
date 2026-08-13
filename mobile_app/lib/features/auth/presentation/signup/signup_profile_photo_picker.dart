@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 
@@ -17,12 +18,13 @@ class SignupProfilePhotoPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hasImage = imageBytes != null;
 
     return Column(
       children: [
         Text(
-          'Profile Photo',
+          l10n.signupProfilePhoto,
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -33,8 +35,8 @@ class SignupProfilePhotoPicker extends StatelessWidget {
         Semantics(
           button: true,
           label: hasImage
-              ? 'Profile photo, tap to change'
-              : 'Profile photo, tap to upload',
+              ? l10n.signupProfilePhotoSemanticChange
+              : l10n.signupProfilePhotoSemanticUpload,
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(40),
@@ -83,7 +85,9 @@ class SignupProfilePhotoPicker extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          hasImage ? 'Tap to change photo' : 'Click to upload',
+          hasImage
+              ? l10n.signupProfilePhotoTapChange
+              : l10n.signupProfilePhotoTapUpload,
           style: GoogleFonts.inter(
             fontSize: 10.5,
             color: AppColors.lightBlue.withValues(alpha: 0.65),

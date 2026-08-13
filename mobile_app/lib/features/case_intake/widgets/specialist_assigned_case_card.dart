@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../dashboard/widgets/dashboard_layout.dart';
 import '../../dashboard/widgets/dashboard_surface_card.dart';
 import '../models/specialist_assigned_case_models.dart';
+import '../presentation/specialist_case_intake_localization_utils.dart';
 import 'case_request_status_chip.dart';
 
 class SpecialistAssignedCaseCard extends StatelessWidget {
@@ -20,13 +22,17 @@ class SpecialistAssignedCaseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final parentName = item.parent?.fullName?.trim();
     final categoryName = item.category?.name.trim();
     final assignedSource = item.assignedAt ?? item.submittedAt;
     final assignedLabel = assignedSource != null
         ? DateFormat('MMM d, yyyy').format(assignedSource)
-        : 'Date unavailable';
-    final assignedPrefix = item.assignedAt != null ? 'Assigned' : 'Submitted';
+        : l10n.parentCaseRequestsDateUnavailable;
+    final dateLabel = item.assignedAt != null
+        ? l10n.specialistCaseRequestsAssignedOn(assignedLabel)
+        : l10n.parentDashboardCaseSubmittedOn(assignedLabel);
+    final statusLabel = localizedCaseIntakeStatusLabel(l10n, item.status);
 
     return Padding(
       padding: EdgeInsets.only(bottom: context.dashSpacing * 0.65),
@@ -42,7 +48,7 @@ class SpecialistAssignedCaseCard extends StatelessWidget {
                   child: Text(
                     item.childName.isNotEmpty
                         ? item.childName
-                        : 'Unnamed child',
+                        : l10n.specialistCaseRequestsUnnamedChild,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: DashboardColors.textPrimary,
@@ -54,8 +60,11 @@ class SpecialistAssignedCaseCard extends StatelessWidget {
                 SizedBox(width: context.dashSpacing * 0.4),
                 Flexible(
                   child: Align(
-                    alignment: Alignment.topRight,
-                    child: CaseRequestStatusChip(status: item.status),
+                    alignment: AlignmentDirectional.topEnd,
+                    child: CaseRequestStatusChip(
+                      status: item.status,
+                      label: statusLabel,
+                    ),
                   ),
                 ),
               ],
@@ -89,20 +98,18 @@ class SpecialistAssignedCaseCard extends StatelessWidget {
               runSpacing: 6,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                _MetaChip(
-                  icon: Icons.event_outlined,
-                  label: '$assignedPrefix $assignedLabel',
-                ),
+                _MetaChip(icon: Icons.event_outlined, label: dateLabel),
                 _MetaChip(
                   icon: Icons.attach_file_rounded,
-                  label: item.attachmentCount == 1
-                      ? '1 attachment'
-                      : '${item.attachmentCount} attachments',
+                  label: localizedSpecialistCaseAttachmentCountLabel(
+                    l10n,
+                    item.attachmentCount,
+                  ),
                 ),
                 if (item.hasConversation)
-                  const _MetaChip(
+                  _MetaChip(
                     icon: Icons.forum_outlined,
-                    label: 'Conversation available',
+                    label: l10n.specialistCaseRequestsConversationAvailable,
                   ),
               ],
             ),

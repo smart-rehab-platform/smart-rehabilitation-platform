@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/parent_dashboard_models.dart';
 import '../../providers/parent_dashboard_provider.dart';
 import '../../providers/parent_features_provider.dart';
@@ -16,6 +17,7 @@ import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import 'parent_request_session_sheet.dart';
 import 'parent_session_requests_section.dart';
+import 'parent_sessions_localization_utils.dart';
 
 enum _SessionTab { upcoming, past }
 
@@ -64,11 +66,15 @@ const _cancelledStatusFg = Color(0xFFD32F2F);
 const _noShowStatusBg = Color(0xFFFFF0F0);
 const _noShowStatusFg = Color(0xFFC62828);
 
-ParentSessionStatusVisual parentSessionStatusVisual(String? status) {
+ParentSessionStatusVisual parentSessionStatusVisual(
+  AppLocalizations l10n,
+  String? status,
+) {
+  final label = localizedParentSessionStatusLabel(l10n, status);
   switch (status?.toLowerCase().trim()) {
     case 'completed':
       return (
-        label: 'Completed',
+        label: label,
         background: _completedStatusBg,
         foreground: _completedStatusFg,
         border: _completedStatusFg.withValues(alpha: 0.18),
@@ -76,7 +82,7 @@ ParentSessionStatusVisual parentSessionStatusVisual(String? status) {
       );
     case 'cancelled':
       return (
-        label: 'Cancelled',
+        label: label,
         background: _cancelledStatusBg,
         foreground: _cancelledStatusFg,
         border: _cancelledStatusFg.withValues(alpha: 0.18),
@@ -84,16 +90,24 @@ ParentSessionStatusVisual parentSessionStatusVisual(String? status) {
       );
     case 'no_show':
       return (
-        label: 'Missed',
+        label: label,
         background: _noShowStatusBg,
         foreground: _noShowStatusFg,
         border: _noShowStatusFg.withValues(alpha: 0.18),
         icon: Icons.warning_amber_rounded,
       );
+    case 'in_progress':
+      return (
+        label: label,
+        background: _scheduledStatusBg,
+        foreground: _scheduledStatusFg,
+        border: _scheduledStatusFg.withValues(alpha: 0.18),
+        icon: Icons.play_circle_outline_rounded,
+      );
     case 'scheduled':
     default:
       return (
-        label: 'Scheduled',
+        label: label,
         background: _scheduledStatusBg,
         foreground: _scheduledStatusFg,
         border: _scheduledStatusFg.withValues(alpha: 0.18),
@@ -102,31 +116,11 @@ ParentSessionStatusVisual parentSessionStatusVisual(String? status) {
   }
 }
 
-bool parentSessionIsOnline(ParentSessionItem session) {
-  final location = session.locationOrLink?.toLowerCase().trim() ?? '';
-  if (location.isEmpty) {
-    return false;
-  }
-  return location.contains('meet') ||
-      location.contains('online') ||
-      location.contains('zoom') ||
-      location.contains('http') ||
-      location.contains('teams') ||
-      location.contains('link');
-}
-
-String parentSessionLocationLabel(ParentSessionItem session) {
-  final location = session.locationOrLink?.trim();
-  if (location == null || location.isEmpty) {
-    return 'Location pending';
-  }
-  if (parentSessionIsOnline(session)) {
-    if (location.toLowerCase().contains('meet')) {
-      return 'Online • Google Meet';
-    }
-    return 'Online • Video Session';
-  }
-  return location;
+String parentSessionLocationLabel(
+  AppLocalizations l10n,
+  ParentSessionItem session,
+) {
+  return localizedParentSessionLocationLabel(l10n, session);
 }
 
 Uri? parentSessionExtractValidUrl(String? locationOrLink) {
@@ -142,7 +136,10 @@ Uri? parentSessionExtractValidUrl(String? locationOrLink) {
     return direct;
   }
 
-  final match = RegExp(r'https?://[^\s]+', caseSensitive: false).firstMatch(raw);
+  final match = RegExp(
+    r'https?://[^\s]+',
+    caseSensitive: false,
+  ).firstMatch(raw);
   if (match != null) {
     return Uri.tryParse(match.group(0)!);
   }
@@ -163,11 +160,12 @@ void parentShowSessionDetailsBottomSheet(
 }
 
 Future<void> parentCopySessionLink(BuildContext context, String? link) async {
+  final l10n = AppLocalizations.of(context)!;
   final text = link?.trim() ?? '';
   if (text.isEmpty) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No session link available')),
+        SnackBar(content: Text(l10n.parentSessionsNoLinkAvailable)),
       );
     }
     return;
@@ -175,19 +173,20 @@ Future<void> parentCopySessionLink(BuildContext context, String? link) async {
 
   await Clipboard.setData(ClipboardData(text: text));
   if (context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Session link copied')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.parentSessionsLinkCopied)));
   }
 }
 
 Future<void> parentOpenSessionLink(BuildContext context, String? link) async {
+  final l10n = AppLocalizations.of(context)!;
   final uri = parentSessionExtractValidUrl(link);
   if (uri == null) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No valid session link available')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.parentSessionsNoValidLink)));
     }
     return;
   }
@@ -195,15 +194,15 @@ Future<void> parentOpenSessionLink(BuildContext context, String? link) async {
   try {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No valid session link available')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.parentSessionsNoValidLink)));
     }
   } catch (_) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No valid session link available')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.parentSessionsNoValidLink)));
     }
   }
 }
@@ -229,21 +228,19 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
   }
 
   List<ParentSessionItem> _upcomingSessions(List<ParentSessionItem> sessions) {
-    return sessions.where(parentSessionIsUpcoming).toList()
-      ..sort((a, b) {
-        final aDate = a.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final bDate = b.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        return aDate.compareTo(bDate);
-      });
+    return sessions.where(parentSessionIsUpcoming).toList()..sort((a, b) {
+      final aDate = a.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bDate = b.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return aDate.compareTo(bDate);
+    });
   }
 
   List<ParentSessionItem> _pastSessions(List<ParentSessionItem> sessions) {
-    return sessions.where(parentSessionIsPast).toList()
-      ..sort((a, b) {
-        final aDate = a.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final bDate = b.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        return bDate.compareTo(aDate);
-      });
+    return sessions.where(parentSessionIsPast).toList()..sort((a, b) {
+      final aDate = a.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bDate = b.scheduledAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bDate.compareTo(aDate);
+    });
   }
 
   Future<void> _refresh() async {
@@ -257,7 +254,8 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
     showParentRequestSessionSheet(context);
   }
 
-  Widget _buildSessionContent({
+  Widget _buildSessionContent(
+    AppLocalizations l10n, {
     required List<ParentSessionItem> upcoming,
     required List<ParentSessionItem> past,
   }) {
@@ -273,35 +271,35 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
         SizedBox(height: context.dashSpacing),
         if (_selectedTab == _SessionTab.upcoming) ...[
           _SessionsSection(
-            title: 'Upcoming Session',
+            title: l10n.parentSessionsSectionUpcoming,
             count: upcoming.length,
             sessions: upcoming,
-            emptyTitle: 'No upcoming sessions',
-            emptyMessage: 'You do not have any scheduled sessions right now.',
+            emptyTitle: l10n.parentSessionsEmptyUpcomingTitle,
+            emptyMessage: l10n.parentSessionsEmptyUpcomingMessage,
           ),
           SizedBox(height: context.dashSpacing),
           _SessionsSection(
-            title: 'Past Sessions',
+            title: l10n.parentSessionsSectionPast,
             count: past.length,
             sessions: past,
-            emptyTitle: 'No past sessions yet',
-            emptyMessage: 'Completed sessions will appear here.',
+            emptyTitle: l10n.parentSessionsEmptyPastTitle,
+            emptyMessage: l10n.parentSessionsEmptyPastMessage,
           ),
         ] else ...[
           _SessionsSection(
-            title: 'Past Sessions',
+            title: l10n.parentSessionsSectionPast,
             count: past.length,
             sessions: past,
-            emptyTitle: 'No past sessions yet',
-            emptyMessage: 'Completed sessions will appear here.',
+            emptyTitle: l10n.parentSessionsEmptyPastTitle,
+            emptyMessage: l10n.parentSessionsEmptyPastMessage,
           ),
           SizedBox(height: context.dashSpacing),
           _SessionsSection(
-            title: 'Upcoming Session',
+            title: l10n.parentSessionsSectionUpcoming,
             count: upcoming.length,
             sessions: upcoming,
-            emptyTitle: 'No upcoming sessions',
-            emptyMessage: 'You do not have any scheduled sessions right now.',
+            emptyTitle: l10n.parentSessionsEmptyUpcomingTitle,
+            emptyMessage: l10n.parentSessionsEmptyUpcomingMessage,
           ),
         ],
         SizedBox(height: context.dashSpacing),
@@ -326,6 +324,7 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dashboard = ref.watch(parentDashboardProvider);
     final selectedPatientId = ref.watch(selectedPatientIdProvider);
     final state = ref.watch(parentSessionsProvider);
@@ -337,7 +336,7 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
     final past = _pastSessions(patientSessions);
 
     return ParentPageScaffold(
-      title: 'Sessions',
+      title: l10n.navSessions,
       showBackButton: true,
       body: state.isLoading
           ? const Center(child: DashboardLoadingCard())
@@ -366,15 +365,15 @@ class _ParentSessionsScreenState extends ConsumerState<ParentSessionsScreen> {
                     ],
                     if (state.errorMessage != null) ...[
                       DashboardErrorCard(
-                        message: state.errorMessage!,
+                        message: mapParentSessionsError(
+                          l10n,
+                          state.errorMessage!,
+                        ),
                         onRetry: _refresh,
                       ),
                       SizedBox(height: context.dashSpacing),
                     ],
-                    _buildSessionContent(
-                      upcoming: upcoming,
-                      past: past,
-                    ),
+                    _buildSessionContent(l10n, upcoming: upcoming, past: past),
                     SizedBox(height: context.dashSpacing * 1.25),
                     const ParentSessionRequestsSection(),
                   ],
@@ -396,18 +395,22 @@ class _SessionSegmentedTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: EdgeInsets.all(context.dashSpacing * 0.18),
       decoration: BoxDecoration(
         color: DashboardColors.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.8)),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.8),
+        ),
       ),
       child: Row(
         children: [
           Expanded(
             child: _SegmentTabButton(
-              label: 'Upcoming',
+              label: l10n.parentSessionsTabUpcoming,
               icon: Icons.event_available_outlined,
               isSelected: selectedTab == _SessionTab.upcoming,
               onTap: () => onChanged(_SessionTab.upcoming),
@@ -416,7 +419,7 @@ class _SessionSegmentedTabs extends StatelessWidget {
           SizedBox(width: context.dashSpacing * 0.25),
           Expanded(
             child: _SegmentTabButton(
-              label: 'Past',
+              label: l10n.parentSessionsTabPast,
               icon: Icons.history_rounded,
               isSelected: selectedTab == _SessionTab.past,
               onTap: () => onChanged(_SessionTab.past),
@@ -458,9 +461,7 @@ class _SegmentTabButton extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(14),
           child: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: context.dashSpacing * 0.45,
-            ),
+            padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.45),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -497,6 +498,7 @@ class _SessionSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final hasUpcoming = upcomingCount > 0;
 
@@ -531,7 +533,9 @@ class _SessionSummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  hasUpcoming ? 'Stay on track!' : 'No upcoming sessions',
+                  hasUpcoming
+                      ? l10n.parentSessionsSummaryStayOnTrack
+                      : l10n.parentSessionsSummaryNoUpcoming,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: DashboardColors.brandCyan,
@@ -540,8 +544,12 @@ class _SessionSummaryCard extends StatelessWidget {
                 SizedBox(height: context.dashSpacing * 0.15),
                 Text(
                   hasUpcoming
-                      ? 'You have $upcomingCount upcoming session${upcomingCount == 1 ? '' : 's'}.'
-                      : 'Past sessions are still available below.',
+                      ? (upcomingCount == 1
+                            ? l10n.parentSessionsSummaryOneUpcoming
+                            : l10n.parentSessionsSummaryUpcomingCount(
+                                upcomingCount,
+                              ))
+                      : l10n.parentSessionsSummaryPastAvailable,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: DashboardColors.textSecondary,
                     height: 1.4,
@@ -584,7 +592,7 @@ class _SessionsSection extends StatelessWidget {
           ...sessions.map(
             (session) => Padding(
               padding: EdgeInsets.only(bottom: context.dashSpacing * 0.55),
-              child: _ModernSessionCard(session: session),
+              child: ParentModernSessionCard(session: session),
             ),
           ),
       ],
@@ -593,10 +601,7 @@ class _SessionsSection extends StatelessWidget {
 }
 
 class _SessionSectionTitle extends StatelessWidget {
-  const _SessionSectionTitle({
-    required this.title,
-    required this.count,
-  });
+  const _SessionSectionTitle({required this.title, required this.count});
 
   final String title;
   final int count;
@@ -635,8 +640,8 @@ class _SessionSectionTitle extends StatelessWidget {
   }
 }
 
-class _ModernSessionCard extends StatelessWidget {
-  const _ModernSessionCard({required this.session});
+class ParentModernSessionCard extends StatelessWidget {
+  const ParentModernSessionCard({super.key, required this.session});
 
   final ParentSessionItem session;
 
@@ -676,9 +681,10 @@ class _ModernSessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final statusVisual = parentSessionStatusVisual(session.status);
-    final locationLabel = parentSessionLocationLabel(session);
+    final statusVisual = parentSessionStatusVisual(l10n, session.status);
+    final locationLabel = parentSessionLocationLabel(l10n, session);
 
     return Material(
       color: DashboardColors.surface,
@@ -691,7 +697,9 @@ class _ModernSessionCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: DashboardColors.border.withValues(alpha: 0.75)),
+            border: Border.all(
+              color: DashboardColors.border.withValues(alpha: 0.75),
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.04),
@@ -768,7 +776,10 @@ class _ModernSessionCard extends StatelessWidget {
                           ),
                           _SessionMetaItem(
                             icon: Icons.timer_outlined,
-                            label: '${session.durationMinutes} min',
+                            label: formatSessionDurationValue(
+                              l10n,
+                              session.durationMinutes!,
+                            ),
                           ),
                         ],
                       ],
@@ -780,7 +791,7 @@ class _ModernSessionCard extends StatelessWidget {
                       children: [
                         _SessionInfoChip(
                           icon: Icons.person_outline_rounded,
-                          label: session.specialistName ?? 'Specialist',
+                          label: session.specialistName ?? l10n.roleSpecialist,
                         ),
                         _SessionInfoChip(
                           icon: parentSessionIsOnline(session)
@@ -823,18 +834,14 @@ class _SessionStatusChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            visual.icon,
-            size: 14,
-            color: visual.foreground,
-          ),
+          Icon(visual.icon, size: 14, color: visual.foreground),
           const SizedBox(width: 4),
           Text(
             visual.label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: visual.foreground,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: visual.foreground,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -849,14 +856,15 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final statusVisual = parentSessionStatusVisual(session.status);
+    final statusVisual = parentSessionStatusVisual(l10n, session.status);
     final locationText = session.locationOrLink?.trim();
-    final locationLabel = parentSessionLocationLabel(session);
+    final locationLabel = parentSessionLocationLabel(l10n, session);
     final isOnline = parentSessionIsOnline(session);
     final validUrl = parentSessionExtractValidUrl(session.locationOrLink);
     final durationLabel = session.durationMinutes != null
-        ? '${session.durationMinutes} min'
+        ? formatSessionDurationValue(l10n, session.durationMinutes!)
         : '—';
 
     return Container(
@@ -911,7 +919,7 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Session Details',
+                          l10n.parentSessionsDetailsTitle,
                           style: theme.textTheme.labelLarge?.copyWith(
                             color: DashboardColors.textSecondary,
                             fontWeight: FontWeight.w600,
@@ -937,15 +945,15 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                 icon: Icons.person_outline_rounded,
                 iconBackground: DashboardColors.blueSoft,
                 iconColor: DashboardColors.brandCyan,
-                label: 'Specialist',
-                value: session.specialistName ?? 'Specialist',
+                label: l10n.roleSpecialist,
+                value: session.specialistName ?? l10n.roleSpecialist,
               ),
               SizedBox(height: context.dashSpacing * 0.55),
               _SessionDetailRow(
                 icon: Icons.calendar_today_outlined,
                 iconBackground: DashboardColors.brandSoft,
                 iconColor: DashboardColors.brandCyan,
-                label: 'Date',
+                label: l10n.fieldDate,
                 value: parentSessionFormatDate(session.scheduledAt),
               ),
               SizedBox(height: context.dashSpacing * 0.55),
@@ -953,7 +961,7 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                 icon: Icons.access_time_rounded,
                 iconBackground: DashboardColors.tealSoft,
                 iconColor: DashboardColors.accent,
-                label: 'Time',
+                label: l10n.fieldTime,
                 value: parentSessionFormatTime(session.scheduledAt),
               ),
               SizedBox(height: context.dashSpacing * 0.55),
@@ -961,7 +969,7 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                 icon: Icons.timer_outlined,
                 iconBackground: DashboardColors.amberSoft,
                 iconColor: DashboardColors.warning,
-                label: 'Duration',
+                label: l10n.specialistSessionDuration,
                 value: durationLabel,
               ),
               SizedBox(height: context.dashSpacing * 0.55),
@@ -971,7 +979,9 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                     : Icons.location_on_outlined,
                 iconBackground: DashboardColors.background,
                 iconColor: DashboardColors.textSecondary,
-                label: isOnline ? 'Online session' : 'Location',
+                label: isOnline
+                    ? l10n.parentSessionsOnlineSession
+                    : l10n.fieldLocation,
                 value: locationLabel,
                 valueMaxLines: 3,
               ),
@@ -984,11 +994,13 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                         onPressed: () =>
                             parentCopySessionLink(context, locationText),
                         icon: const Icon(Icons.copy_rounded, size: 18),
-                        label: const Text('Copy Link'),
+                        label: Text(l10n.parentSessionsCopyMeetingLink),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: DashboardColors.brandCyan,
                           side: BorderSide(
-                            color: DashboardColors.brandCyan.withValues(alpha: 0.35),
+                            color: DashboardColors.brandCyan.withValues(
+                              alpha: 0.35,
+                            ),
                           ),
                           padding: EdgeInsets.symmetric(
                             vertical: context.dashSpacing * 0.55,
@@ -1005,7 +1017,7 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                         onPressed: () =>
                             parentOpenSessionLink(context, locationText),
                         icon: const Icon(Icons.open_in_new_rounded, size: 18),
-                        label: const Text('Open Link'),
+                        label: Text(l10n.parentSessionsOpenMeetingLink),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: DashboardColors.brandCyan,
                           foregroundColor: Colors.white,
@@ -1028,7 +1040,7 @@ class _SessionDetailsBottomSheet extends StatelessWidget {
                     onPressed: () =>
                         parentOpenSessionLink(context, locationText),
                     icon: const Icon(Icons.open_in_new_rounded, size: 18),
-                    label: const Text('Open Link'),
+                    label: Text(l10n.parentSessionsOpenMeetingLink),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: DashboardColors.brandCyan,
                       foregroundColor: Colors.white,
@@ -1076,7 +1088,9 @@ class _SessionDetailRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: DashboardColors.background,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.75)),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.75),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1167,7 +1181,9 @@ class _SessionInfoChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: DashboardColors.background,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.8)),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.8),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1195,10 +1211,7 @@ class _SessionInfoChip extends StatelessWidget {
 }
 
 class _EmptySessionsCard extends StatelessWidget {
-  const _EmptySessionsCard({
-    required this.title,
-    required this.message,
-  });
+  const _EmptySessionsCard({required this.title, required this.message});
 
   final String title;
   final String message;
@@ -1213,7 +1226,9 @@ class _EmptySessionsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: DashboardColors.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: DashboardColors.border.withValues(alpha: 0.8)),
+        border: Border.all(
+          color: DashboardColors.border.withValues(alpha: 0.8),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1245,6 +1260,7 @@ class _RequestSessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
@@ -1282,14 +1298,14 @@ class _RequestSessionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Need to schedule a session?',
+                      l10n.parentSessionsRequestCardTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     SizedBox(height: context.dashSpacing * 0.2),
                     Text(
-                      'Request a new session with your specialist at a time that suits you.',
+                      l10n.parentSessionsRequestCardMessage,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: DashboardColors.textSecondary,
                         height: 1.45,
@@ -1306,7 +1322,7 @@ class _RequestSessionCard extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onPressed,
               icon: const Icon(Icons.calendar_month_outlined, size: 18),
-              label: const Text('Request New Session'),
+              label: Text(l10n.parentSessionsRequestNewSession),
               style: ElevatedButton.styleFrom(
                 backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,

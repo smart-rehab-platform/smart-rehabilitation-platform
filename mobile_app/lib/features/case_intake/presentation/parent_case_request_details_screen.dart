@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../dashboard/models/communication_models.dart';
 import '../../dashboard/presentation/communication/communication_attachment_picker.dart';
 import '../../dashboard/widgets/dashboard_components.dart';
@@ -17,17 +18,9 @@ import '../../dashboard/widgets/parent_dashboard_cards.dart';
 import '../../dashboard/widgets/parent_page_scaffold.dart';
 import '../models/case_intake_request_model.dart';
 import '../models/case_request_attachment_model.dart';
+import 'parent_case_intake_localization_utils.dart';
 import '../providers/parent_case_intake_provider.dart';
 import '../widgets/case_request_status_chip.dart';
-
-const _progressStepLabels = <String>[
-  'Submitted',
-  'Admin Review',
-  'Specialist Assigned',
-  'Assessment',
-  'Accepted',
-  'Patient Profile Created',
-];
 
 class ParentCaseRequestDetailsScreen extends ConsumerStatefulWidget {
   const ParentCaseRequestDetailsScreen({super.key, required this.requestId});
@@ -76,14 +69,27 @@ class _ParentCaseRequestDetailsScreenState
 
         if (attachment != null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Attachment uploaded successfully')),
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(
+                  context,
+                )!.parentCaseRequestDetailsAttachmentUploaded,
+              ),
+            ),
           );
         } else {
           final error = ref.read(parentCaseIntakeProvider).errorMessage;
           if (error != null && error.isNotEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(error)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  mapParentCaseIntakeProviderError(
+                    AppLocalizations.of(context)!,
+                    error,
+                  ),
+                ),
+              ),
+            );
           }
         }
       },
@@ -94,19 +100,24 @@ class _ParentCaseRequestDetailsScreenState
     CaseIntakeRequest request,
     CaseRequestAttachment attachment,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete attachment?'),
-        content: Text('Remove "${attachment.displayName}" from this request?'),
+        title: Text(l10n.parentCaseRequestDetailsDeleteAttachmentTitle),
+        content: Text(
+          l10n.parentCaseRequestDetailsDeleteAttachmentMessage(
+            attachment.displayName,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: Text(l10n.commonDelete),
           ),
         ],
       ),
@@ -125,9 +136,9 @@ class _ParentCaseRequestDetailsScreenState
     }
 
     if (success) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Attachment deleted')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.parentCaseRequestDetailsAttachmentDeleted)),
+      );
     }
   }
 
@@ -147,7 +158,13 @@ class _ParentCaseRequestDetailsScreenState
     final conversationId = request.conversationId;
     if (conversationId == null || conversationId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Conversation is not available yet.')),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(
+              context,
+            )!.parentDashboardConversationUnavailable,
+          ),
+        ),
       );
       return;
     }
@@ -168,18 +185,19 @@ class _ParentCaseRequestDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(parentCaseIntakeProvider);
     final request = state.selectedRequest;
     final isInitialLoading =
         state.isLoading && (request == null || request.id != widget.requestId);
 
     return ParentPageScaffold(
-      title: 'Request Details',
+      title: l10n.parentCaseRequestDetailsTitle,
       showBackButton: true,
       actions: request != null && request.canEdit
           ? [
               IconButton(
-                tooltip: 'Edit request',
+                tooltip: l10n.parentCaseRequestDetailsEditTooltip,
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: () =>
                     context.push(AppRoutes.parentCaseRequestEdit(request.id)),
@@ -190,7 +208,10 @@ class _ParentCaseRequestDetailsScreenState
           ? const Center(child: DashboardLoadingCard())
           : request == null || request.id != widget.requestId
           ? DashboardErrorCard(
-              message: state.errorMessage ?? 'Case request not found.',
+              message: mapParentCaseIntakeProviderError(
+                l10n,
+                state.errorMessage ?? l10n.parentCaseRequestDetailsNotFound,
+              ),
               onRetry: () => ref
                   .read(parentCaseIntakeProvider.notifier)
                   .loadRequestDetails(widget.requestId),
@@ -203,7 +224,10 @@ class _ParentCaseRequestDetailsScreenState
                 children: [
                   if (state.errorMessage != null) ...[
                     DashboardErrorCard(
-                      message: state.errorMessage!,
+                      message: mapParentCaseIntakeProviderError(
+                        l10n,
+                        state.errorMessage!,
+                      ),
                       onRetry: () => ref
                           .read(parentCaseIntakeProvider.notifier)
                           .clearError(),
@@ -266,9 +290,11 @@ class _HeaderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final submittedLabel = request.submittedAt != null
         ? DateFormat('MMM d, yyyy').format(request.submittedAt!)
-        : 'Unavailable';
+        : l10n.parentCaseRequestDetailsUnavailable;
+    final statusLabel = localizedCaseIntakeStatusLabel(l10n, request.status);
 
     return DashboardSurfaceCard(
       child: Column(
@@ -292,10 +318,10 @@ class _HeaderSection extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.5),
           Row(
             children: [
-              CaseRequestStatusChip(status: request.status),
+              CaseRequestStatusChip(status: request.status, label: statusLabel),
               const Spacer(),
               Text(
-                'Submitted $submittedLabel',
+                l10n.parentDashboardCaseSubmittedOn(submittedLabel),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: DashboardColors.textMuted,
                 ),
@@ -316,6 +342,8 @@ class _ProgressSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final progressStepLabels = parentCaseRequestProgressStepLabels(l10n);
     final isRejected = request.status == CaseIntakeStatus.rejected;
     final activeIndex =
         request.status?.progressStepIndex(assignedAt: request.assignedAt) ?? 0;
@@ -325,13 +353,13 @@ class _ProgressSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Request Progress',
+            l10n.parentCaseRequestDetailsProgressTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
-          ...List.generate(_progressStepLabels.length, (index) {
+          ...List.generate(progressStepLabels.length, (index) {
             final isComplete = !isRejected && index < activeIndex;
             final isCurrent = !isRejected && index == activeIndex;
             final isFailed = isRejected && index == activeIndex;
@@ -357,7 +385,7 @@ class _ProgressSection extends StatelessWidget {
                   SizedBox(width: context.dashSpacing * 0.35),
                   Expanded(
                     child: Text(
-                      _progressStepLabels[index],
+                      progressStepLabels[index],
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: isCurrent || isFailed
                             ? FontWeight.w700
@@ -375,7 +403,7 @@ class _ProgressSection extends StatelessWidget {
           if (request.status != null) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
-              request.status!.subtitle,
+              localizedCaseIntakeStatusSubtitle(l10n, request.status!),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -395,13 +423,14 @@ class _RejectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Request Not Accepted',
+            l10n.parentCaseRequestDetailsNotAcceptedTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
               color: DashboardColors.highPriority,
@@ -411,7 +440,7 @@ class _RejectionCard extends StatelessWidget {
           Text(
             request.rejectionReason?.trim().isNotEmpty == true
                 ? request.rejectionReason!.trim()
-                : 'No rejection reason was provided.',
+                : l10n.parentDashboardCaseNoRejectionReason,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,
             ),
@@ -430,13 +459,14 @@ class _ConvertedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Child Profile Active',
+            l10n.parentCaseRequestDetailsChildProfileActiveTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
               color: DashboardColors.brandCyan,
@@ -444,7 +474,7 @@ class _ConvertedCard extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           Text(
-            'The child profile is now active and ready for follow-up.',
+            l10n.parentCaseRequestDetailsChildProfileActiveMessage,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: DashboardColors.textSecondary,
             ),
@@ -456,7 +486,7 @@ class _ConvertedCard extends StatelessWidget {
               onPressed: () => context.push(
                 AppRoutes.parentChildDetail.replaceFirst(':childId', patientId),
               ),
-              label: 'Open Child Profile',
+              label: l10n.parentCaseRequestDetailsOpenChildProfile,
             ),
           ),
         ],
@@ -473,59 +503,62 @@ class _ChildInfoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final notProvided = l10n.specialistSessionNotProvided;
     final dobLabel = request.dateOfBirth != null
         ? DateFormat('MMM d, yyyy').format(request.dateOfBirth!)
-        : 'Not provided';
-    final genderLabel =
-        CaseIntakeGender.fromApi(request.gender)?.label ??
-        (request.gender?.trim().isNotEmpty == true
-            ? request.gender!
-            : 'Not provided');
+        : notProvided;
+    final genderLabel = localizedCaseIntakeGenderFromApi(l10n, request.gender);
 
     return DashboardSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Child Information',
+            l10n.parentCaseRequestDetailsChildInformation,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.75),
-          _InfoRow(label: 'Date of birth', value: dobLabel),
-          _InfoRow(label: 'Gender', value: genderLabel),
+          _InfoRow(label: l10n.fieldDateOfBirth, value: dobLabel),
+          _InfoRow(label: l10n.fieldGender, value: genderLabel),
           _InfoRow(
-            label: 'Case description',
+            label: l10n.parentCaseRequestDetailsCaseDescription,
             value: request.caseDescription?.trim().isNotEmpty == true
                 ? request.caseDescription!.trim()
-                : 'Not provided',
+                : notProvided,
           ),
           _InfoRow(
-            label: 'Observed difficulties',
+            label: l10n.parentCaseRequestDetailsObservedDifficulties,
             value: request.observedDifficulties?.trim().isNotEmpty == true
                 ? request.observedDifficulties!.trim()
-                : 'Not provided',
+                : notProvided,
           ),
           _InfoRow(
-            label: 'Previous diagnosis',
+            label: l10n.parentCaseRequestDetailsPreviousDiagnosis,
             value: request.hasPreviousDiagnosis
                 ? (request.previousDiagnosisDetails?.trim().isNotEmpty == true
                       ? request.previousDiagnosisDetails!.trim()
-                      : 'Yes')
-                : 'No',
+                      : l10n.commonYes)
+                : l10n.commonNo,
           ),
           _InfoRow(
-            label: 'Current treatment',
+            label: l10n.parentCaseRequestDetailsCurrentTreatment,
             value: request.isCurrentlyReceivingTreatment
                 ? (request.currentTreatmentDetails?.trim().isNotEmpty == true
                       ? request.currentTreatmentDetails!.trim()
-                      : 'Yes')
-                : 'No',
+                      : l10n.commonYes)
+                : l10n.commonNo,
           ),
           _InfoRow(
-            label: 'Preferred contact period',
-            value: request.preferredContactPeriod?.label ?? 'Not provided',
+            label: l10n.parentCaseRequestDetailsPreferredContactPeriod,
+            value: request.preferredContactPeriod != null
+                ? localizedCaseIntakePreferredContactPeriod(
+                    l10n,
+                    request.preferredContactPeriod,
+                  )
+                : notProvided,
           ),
         ],
       ),
@@ -577,6 +610,7 @@ class _SpecialistSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final specialist = request.assignedSpecialist!;
     final imageUrl = ApiConstants.resolveProfileImageUrl(
       specialist.profileImageUrl,
@@ -587,7 +621,7 @@ class _SpecialistSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Assigned Specialist',
+            l10n.parentCaseRequestDetailsAssignedSpecialist,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -616,7 +650,7 @@ class _SpecialistSection extends StatelessWidget {
                     Text(
                       specialist.fullName?.trim().isNotEmpty == true
                           ? specialist.fullName!.trim()
-                          : 'Specialist',
+                          : l10n.roleSpecialist,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -640,7 +674,7 @@ class _SpecialistSection extends StatelessWidget {
               child: BrandGradientButton(
                 onPressed: onOpenConversation,
                 icon: Icons.chat_bubble_outline_rounded,
-                label: 'Open Conversation',
+                label: l10n.parentDashboardCaseOpenConversation,
               ),
             ),
           ],
@@ -668,6 +702,7 @@ class _AttachmentsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final attachments = request.attachments;
 
     return DashboardSurfaceCard(
@@ -675,14 +710,14 @@ class _AttachmentsSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Attachments',
+            l10n.parentCaseRequestDetailsAttachments,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.35),
           Text(
-            'Supported: image, audio, video, PDF',
+            l10n.parentCaseRequestDetailsAttachmentsHint,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textMuted,
             ),
@@ -690,7 +725,7 @@ class _AttachmentsSection extends StatelessWidget {
           SizedBox(height: context.dashSpacing * 0.75),
           if (attachments.isEmpty)
             Text(
-              'No attachments yet.',
+              l10n.parentCaseRequestDetailsNoAttachments,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -718,7 +753,10 @@ class _AttachmentsSection extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            _attachmentTypeLabel(attachment),
+                            localizedCaseIntakeAttachmentTypeLabel(
+                              l10n,
+                              attachment,
+                            ),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: DashboardColors.textMuted,
                             ),
@@ -727,13 +765,13 @@ class _AttachmentsSection extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      tooltip: 'Open',
+                      tooltip: l10n.commonOpen,
                       onPressed: () => onOpen(attachment),
                       icon: const Icon(Icons.open_in_new_rounded),
                     ),
                     if (request.canEditAttachments)
                       IconButton(
-                        tooltip: 'Delete',
+                        tooltip: l10n.commonDelete,
                         onPressed: () => onDelete(attachment),
                         icon: Icon(
                           Icons.delete_outline_rounded,
@@ -753,7 +791,7 @@ class _AttachmentsSection extends StatelessWidget {
                 onPressed: onAdd,
                 style: brandOutlinedButtonStyle(),
                 icon: const Icon(Icons.attach_file_rounded),
-                label: const Text('Add Attachment'),
+                label: Text(l10n.parentCaseRequestDetailsAddAttachment),
               ),
           ],
         ],
@@ -767,13 +805,5 @@ class _AttachmentsSection extends StatelessWidget {
     if (attachment.isVideo) return Icons.videocam_outlined;
     if (attachment.isPdf) return Icons.picture_as_pdf_outlined;
     return Icons.insert_drive_file_outlined;
-  }
-
-  String _attachmentTypeLabel(CaseRequestAttachment attachment) {
-    if (attachment.isImage) return 'Image';
-    if (attachment.isAudio) return 'Audio';
-    if (attachment.isVideo) return 'Video';
-    if (attachment.isPdf) return 'PDF';
-    return attachment.fileType ?? 'File';
   }
 }

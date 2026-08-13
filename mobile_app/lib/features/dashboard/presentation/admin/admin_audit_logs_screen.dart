@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../data/admin_features_repository.dart';
 import '../../data/admin_users_repository.dart';
 import '../../providers/admin_features_provider.dart';
@@ -10,12 +11,15 @@ import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/admin_ui_components.dart';
 import 'admin_audit_log_widgets.dart';
+import 'admin_audit_localization_utils.dart';
+import 'admin_scoped_localization_utils.dart';
 
 class AdminAuditLogsScreen extends ConsumerStatefulWidget {
   const AdminAuditLogsScreen({super.key});
 
   @override
-  ConsumerState<AdminAuditLogsScreen> createState() => _AdminAuditLogsScreenState();
+  ConsumerState<AdminAuditLogsScreen> createState() =>
+      _AdminAuditLogsScreenState();
 }
 
 class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
@@ -118,10 +122,15 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final errorMessage = _error == null
+        ? null
+        : mapAdminAuditLogsError(l10n, _error!);
+
     return AdminPageScaffold(
-      title: 'Audit Logs',
-      currentNav: AdminNavigation.listScreenNav(context),
-      enableModuleListBack: true,
+      title: l10n.navAuditLogs,
+      showBackButton: true,
+      showBottomNav: false,
       body: _isLoading
           ? const AdminLoadingCard()
           : SingleChildScrollView(
@@ -130,19 +139,19 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (_error != null)
-                    AdminErrorCard(message: _error!, onRetry: _load),
+                    AdminErrorCard(message: errorMessage!, onRetry: _load),
                   AdminSurfaceCard(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _AuditFilterDropdown<String?>(
-                          label: 'Filter by user',
+                          label: l10n.adminAuditFilterByUser,
                           value: _selectedUserId,
                           items: [
-                            const _AuditFilterOption<String?>(
+                            _AuditFilterOption<String?>(
                               value: null,
-                              label: 'All users',
+                              label: l10n.adminAuditAllUsers,
                             ),
                             ..._users.map(
                               (user) => _AuditFilterOption<String?>(
@@ -158,17 +167,17 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                         ),
                         SizedBox(height: context.dashSpacing * 0.5),
                         _AuditFilterDropdown<String?>(
-                          label: 'Filter by action',
+                          label: l10n.adminAuditFilterByAction,
                           value: _selectedAction,
                           items: [
-                            const _AuditFilterOption<String?>(
+                            _AuditFilterOption<String?>(
                               value: null,
-                              label: 'All actions',
+                              label: l10n.adminAuditAllActions,
                             ),
                             ..._actions.map(
                               (action) => _AuditFilterOption<String?>(
                                 value: action,
-                                label: action,
+                                label: localizedAuditActionTitle(l10n, action),
                               ),
                             ),
                           ],
@@ -179,17 +188,17 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                         ),
                         SizedBox(height: context.dashSpacing * 0.5),
                         _AuditFilterDropdown<String?>(
-                          label: 'Filter by entity',
+                          label: l10n.adminAuditFilterByEntity,
                           value: _selectedEntity,
                           items: [
-                            const _AuditFilterOption<String?>(
+                            _AuditFilterOption<String?>(
                               value: null,
-                              label: 'All entities',
+                              label: l10n.adminAuditAllEntities,
                             ),
                             ..._entities.map(
                               (entity) => _AuditFilterOption<String?>(
                                 value: entity,
-                                label: entity,
+                                label: localizedAuditEntityLabel(l10n, entity),
                               ),
                             ),
                           ],
@@ -206,8 +215,10 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                                 onPressed: () => _pickDate(isFrom: true),
                                 child: Text(
                                   _dateFrom == null
-                                      ? 'From date'
-                                      : 'From ${_dateFrom!.day}/${_dateFrom!.month}/${_dateFrom!.year}',
+                                      ? l10n.adminAuditFromDate
+                                      : l10n.adminAuditFromDateValue(
+                                          '${_dateFrom!.day}/${_dateFrom!.month}/${_dateFrom!.year}',
+                                        ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
@@ -220,8 +231,10 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                                 onPressed: () => _pickDate(isFrom: false),
                                 child: Text(
                                   _dateTo == null
-                                      ? 'To date'
-                                      : 'To ${_dateTo!.day}/${_dateTo!.month}/${_dateTo!.year}',
+                                      ? l10n.adminAuditToDate
+                                      : l10n.adminAuditToDateValue(
+                                          '${_dateTo!.day}/${_dateTo!.month}/${_dateTo!.year}',
+                                        ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
@@ -235,7 +248,7 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
                   ),
                   SizedBox(height: context.dashSpacing),
                   if (_logs.isEmpty)
-                    const AdminEmptyCard(message: 'No audit logs found.')
+                    AdminEmptyCard(message: l10n.adminAuditNoLogs)
                   else
                     ..._logs.map((log) => AdminAuditLogCard(log: log)),
                 ],
@@ -246,10 +259,7 @@ class _AdminAuditLogsScreenState extends ConsumerState<AdminAuditLogsScreen> {
 }
 
 class _AuditFilterOption<T> {
-  const _AuditFilterOption({
-    required this.value,
-    required this.label,
-  });
+  const _AuditFilterOption({required this.value, required this.label});
 
   final T value;
   final String label;
@@ -274,10 +284,7 @@ class _AuditFilterDropdown<T> extends StatelessWidget {
       key: ValueKey('$label-$value'),
       isExpanded: true,
       initialValue: value,
-      decoration: InputDecoration(
-        labelText: label,
-        isDense: true,
-      ),
+      decoration: InputDecoration(labelText: label, isDense: true),
       items: items
           .map(
             (item) => DropdownMenuItem<T>(
@@ -293,7 +300,7 @@ class _AuditFilterDropdown<T> extends StatelessWidget {
       selectedItemBuilder: (context) => items
           .map(
             (item) => Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
                 item.label,
                 maxLines: 1,

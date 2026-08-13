@@ -5,12 +5,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/constants/api_constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../dashboard/widgets/admin_navigation.dart';
 import '../../../dashboard/widgets/admin_page_scaffold.dart';
 import '../../../dashboard/widgets/admin_ui_components.dart';
 import '../../../dashboard/widgets/dashboard_layout.dart';
 import '../../models/matching_specialist_model.dart';
 import '../../providers/admin_matching_specialists_provider.dart';
+import '../admin_case_intake_localization_utils.dart';
 
 class AdminMatchingSpecialistsScreen extends ConsumerStatefulWidget {
   const AdminMatchingSpecialistsScreen({super.key, required this.requestId});
@@ -35,39 +37,22 @@ class _AdminMatchingSpecialistsScreenState
   }
 
   Future<bool?> _showConfirmDialog(MatchingSpecialist specialist) {
-    final theme = Theme.of(context);
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
+        final dialogL10n = AppLocalizations.of(dialogContext)!;
         return AlertDialog(
-          title: const Text('Assign Specialist'),
-          content: Text.rich(
-            TextSpan(
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: DashboardColors.textSecondary,
-              ),
-              children: [
-                const TextSpan(text: 'Are you sure you want to assign\n'),
-                TextSpan(
-                  text: specialist.displayName,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: DashboardColors.textPrimary,
-                  ),
-                ),
-                const TextSpan(text: '\nto this case?'),
-              ],
-            ),
-          ),
+          title: Text(dialogL10n.adminAssignmentsAssignSpecialist),
+          content: Text(dialogL10n.adminMatchingConfirmBody),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancel'),
+              child: Text(dialogL10n.commonCancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Assign'),
+              child: Text(dialogL10n.adminAssignmentsAssignSpecialist),
             ),
           ],
         );
@@ -93,10 +78,12 @@ class _AdminMatchingSpecialistsScreenState
       return;
     }
 
-    final message =
-        actionResult.result?.message ??
-        actionResult.errorMessage ??
-        'Specialist assigned successfully';
+    final l10n = AppLocalizations.of(context)!;
+    final rawMessage =
+        actionResult.result?.message ?? actionResult.errorMessage;
+    final message = rawMessage != null
+        ? mapAdminMatchingSpecialistsAssignError(l10n, rawMessage)
+        : l10n.adminMatchingAssignedSuccess;
 
     if (actionResult.outcome == AssignSpecialistOutcome.success) {
       ScaffoldMessenger.of(
@@ -117,6 +104,7 @@ class _AdminMatchingSpecialistsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(adminMatchingSpecialistsProvider(widget.requestId));
     final notifier = ref.read(
       adminMatchingSpecialistsProvider(widget.requestId).notifier,
@@ -131,43 +119,38 @@ class _AdminMatchingSpecialistsScreenState
           return;
         }
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Please wait while the specialist is being assigned.',
-            ),
-          ),
+          SnackBar(content: Text(l10n.adminMatchingWaitForAssignment)),
         );
       },
       child: AdminPageScaffold(
-        title: 'Choose Specialist',
+        title: l10n.adminMatchingChooseSpecialist,
         showBackButton: true,
         currentNav: AdminNavigation.listScreenNav(context),
         onBackPressed: assigning
             ? () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Please wait while the specialist is being assigned.',
-                    ),
-                  ),
+                  SnackBar(content: Text(l10n.adminMatchingWaitForAssignment)),
                 );
               }
             : null,
         body: state.isLoading
-            ? const AdminLoadingCard(message: 'Loading matching specialists...')
+            ? AdminLoadingCard(message: l10n.adminMatchingLoadingSpecialists)
             : state.errorMessage != null && state.specialists.isEmpty
             ? ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: context.dashPadding,
                 children: [
                   AdminErrorCard(
-                    message: state.errorMessage!,
+                    message: mapAdminMatchingSpecialistsError(
+                      l10n,
+                      state.errorMessage!,
+                    ),
                     onRetry: notifier.retry,
                   ),
                   SizedBox(height: context.dashSpacing),
                   OutlinedButton(
                     onPressed: () => context.pop(),
-                    child: const Text('Back'),
+                    child: Text(l10n.commonBack),
                   ),
                 ],
               )
@@ -181,24 +164,22 @@ class _AdminMatchingSpecialistsScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'No matching specialists available.',
+                          l10n.adminMatchingNoSpecialists,
                           style: Theme.of(context).textTheme.titleSmall
                               ?.copyWith(fontWeight: FontWeight.w800),
                         ),
                         SizedBox(height: context.dashSpacing * 0.4),
                         Text(
-                          'There are currently no active specialists linked to this category.',
+                          l10n.adminCaseAssignmentNoActiveSpecialists,
                           style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: DashboardColors.textSecondary,
-                              ),
+                              ?.copyWith(color: DashboardColors.textSecondary),
                         ),
                         SizedBox(height: context.dashSpacing),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
                             onPressed: assigning ? null : () => context.pop(),
-                            child: const Text('Back'),
+                            child: Text(l10n.commonBack),
                           ),
                         ),
                       ],
@@ -213,11 +194,9 @@ class _AdminMatchingSpecialistsScreenState
                       padding: context.dashPadding,
                       children: [
                         Text(
-                          'Select the most suitable specialist for this case.',
+                          l10n.adminMatchingSelectSpecialist,
                           style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: DashboardColors.textSecondary,
-                              ),
+                              ?.copyWith(color: DashboardColors.textSecondary),
                         ),
                         SizedBox(height: context.dashSpacing),
                         ...state.specialists.map((specialist) {
@@ -239,11 +218,9 @@ class _AdminMatchingSpecialistsScreenState
                         if (selected != null) ...[
                           SizedBox(height: context.dashSpacing * 0.35),
                           Text(
-                            'The selected specialist will be notified after assignment.',
+                            l10n.adminCaseAssignmentNotifySpecialist,
                             style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: DashboardColors.textMuted,
-                                ),
+                                ?.copyWith(color: DashboardColors.textMuted),
                           ),
                           SizedBox(height: context.dashSpacing * 4),
                         ],
@@ -267,10 +244,10 @@ class _AdminMatchingSpecialistsScreenState
                                 ? null
                                 : () => _onContinuePressed(selected),
                             child: assigning
-                                ? const Row(
+                                ? Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 18,
                                         height: 18,
                                         child: CircularProgressIndicator(
@@ -278,11 +255,11 @@ class _AdminMatchingSpecialistsScreenState
                                           color: Colors.white,
                                         ),
                                       ),
-                                      SizedBox(width: 10),
-                                      Text('Assigning...'),
+                                      const SizedBox(width: 10),
+                                      Text(l10n.adminMatchingAssigning),
                                     ],
                                   )
-                                : const Text('Continue'),
+                                : Text(l10n.commonContinue),
                           ),
                         ),
                       ),
@@ -307,6 +284,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final imageUrl = ApiConstants.resolveProfileImageUrl(
       specialist.profileImageUrl,
@@ -336,9 +314,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
             borderRadius: DashboardDecorations.cardRadius,
             border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
             boxShadow: DashboardDecorations.cardShadow(
-              isSelected
-                  ? DashboardColors.brandCyan
-                  : DashboardColors.border,
+              isSelected ? DashboardColors.brandCyan : DashboardColors.border,
             ),
           ),
           child: Column(
@@ -366,7 +342,9 @@ class _MatchingSpecialistCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          specialist.displayName,
+                          specialist.fullName?.trim().isNotEmpty == true
+                              ? specialist.fullName!.trim()
+                              : l10n.roleSpecialist,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
@@ -401,27 +379,25 @@ class _MatchingSpecialistCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _MetricChip(
-                      text: years == null
-                          ? '— Years'
-                          : years == 1
-                          ? '1 Year'
-                          : '$years Years',
+                      text: formatAdminMatchingSpecialistYears(l10n, years),
                     ),
                   ),
                   SizedBox(width: context.dashSpacing * 0.35),
                   Expanded(
                     child: _MetricChip(
-                      text: specialist.activeCasesCount == 1
-                          ? '1 Active Patient'
-                          : '${specialist.activeCasesCount} Active Patients',
+                      text: formatAdminMatchingSpecialistActivePatients(
+                        l10n,
+                        specialist.activeCasesCount,
+                      ),
                     ),
                   ),
                   SizedBox(width: context.dashSpacing * 0.35),
                   Expanded(
                     child: _MetricChip(
-                      text: specialist.currentCaseRequestsCount == 1
-                          ? '1 Current Request'
-                          : '${specialist.currentCaseRequestsCount} Current Requests',
+                      text: formatAdminMatchingSpecialistCurrentRequests(
+                        l10n,
+                        specialist.currentCaseRequestsCount,
+                      ),
                     ),
                   ),
                 ],
@@ -429,7 +405,7 @@ class _MatchingSpecialistCard extends StatelessWidget {
               if (license != null && license.isNotEmpty) ...[
                 SizedBox(height: context.dashSpacing * 0.55),
                 Text(
-                  'License: $license',
+                  l10n.adminMatchingSpecialistsLicense(license),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelMedium?.copyWith(

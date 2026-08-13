@@ -1,0 +1,470 @@
+.pd-preview .pd-admin-users-toolbar {
+  margin-bottom: 16px;
+}
+
+.pd-preview .pd-admin-users-toolbar-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pd-preview .pd-admin-users-heading .pd-section-title {
+  margin-bottom: 4px;
+}
+
+.pd-preview .pd-admin-users-heading .pd-section-sub {
+  margin: 0;
+}
+
+.pd-preview .pd-admin-users-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.pd-preview .pd-admin-users-search-wrap {
+  display: block;
+}
+
+.pd-preview .pd-admin-users-search {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid var(--pd-border-soft, var(--pd-border));
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: var(--pd-surface);
+  color: var(--pd-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-admin-users-search:focus {
+  outline: 2px solid rgba(14, 165, 233, 0.25);
+  border-color: var(--pd-primary);
+}
+
+.pd-preview .pd-admin-users-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-preview .pd-admin-users-filter {
+  border: 1px solid var(--pd-border-soft, var(--pd-border));
+  border-radius: 999px;
+  background: var(--pd-surface);
+  color: var(--pd-text-secondary);
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pd-preview .pd-admin-users-filter.is-selected {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(14, 165, 233, 0.35);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-admin-users-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-admin-users-table-wrap {
+  padding: 0;
+  overflow: hidden;
+}
+
+.pd-preview .pd-admin-users-table-scroll {
+  overflow-x: auto;
+}
+
+.pd-preview .pd-admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.pd-preview .pd-admin-users-table thead th {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--pd-text-muted);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
+  background: rgba(248, 250, 252, 0.72);
+}
+
+.pd-preview .pd-admin-users-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
+  vertical-align: middle;
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-admin-users-row:last-child td {
+  border-bottom: none;
+}
+
+.pd-preview .pd-admin-users-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pd-preview .pd-admin-users-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-admin-users-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-admin-users-presence-dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--pd-text-muted);
+  border: 2px solid var(--pd-surface);
+}
+
+.pd-preview .pd-admin-users-presence-dot.is-online {
+  background: var(--pd-success, #10b981);
+}
+
+.pd-preview .pd-admin-users-name {
+  font-weight: 700;
+  color: var(--pd-text);
+  min-width: 0;
+}
+
+.pd-preview .pd-admin-users-email {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-admin-users-avatar.pd-admin-role-blue {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.pd-preview .pd-admin-users-avatar.pd-admin-role-cyan {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.pd-preview .pd-admin-users-avatar.pd-admin-role-green {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.pd-preview .pd-admin-users-avatar.pd-admin-role-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.pd-preview .pd-admin-users-role,
+.pd-preview .pd-admin-users-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-admin-users-role.pd-admin-role-blue {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.pd-preview .pd-admin-users-role.pd-admin-role-cyan {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.pd-preview .pd-admin-users-role.pd-admin-role-green {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.pd-preview .pd-admin-users-role.pd-admin-role-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.pd-preview .pd-admin-users-status.is-active {
+  background: rgba(14, 165, 233, 0.1);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-admin-users-status.is-inactive {
+  background: rgba(148, 163, 184, 0.14);
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-admin-users-last-seen {
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+  white-space: nowrap;
+}
+
+.pd-preview .pd-admin-users-last-seen.is-online {
+  color: var(--pd-success, #10b981);
+  font-weight: 600;
+}
+
+.pd-preview .pd-admin-users-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pd-preview .pd-btn-compact {
+  padding: 6px 10px;
+  font-size: 0.75rem;
+}
+
+.pd-preview .pd-btn-danger {
+  background: var(--pd-danger, #dc2626);
+  color: #fff;
+  border-color: var(--pd-danger, #dc2626);
+}
+
+.pd-preview .pd-btn-danger:hover {
+  filter: brightness(0.95);
+}
+
+.pd-preview .pd-admin-users-empty-row td,
+.pd-preview .pd-admin-users-row-loading td {
+  text-align: center;
+  padding: 28px 16px;
+}
+
+.pd-preview .pd-admin-empty-copy {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 120;
+}
+
+.pd-preview .pd-admin-modal {
+  width: min(100%, 520px);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  background: var(--pd-surface);
+  border: 1px solid var(--pd-border-soft, var(--pd-border));
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+}
+
+.pd-preview .pd-admin-modal-compact {
+  width: min(100%, 460px);
+}
+
+.pd-preview .pd-admin-modal-title {
+  margin: 0 0 12px;
+  font-size: 1.125rem;
+}
+
+.pd-preview .pd-admin-modal-copy {
+  margin: 0 0 12px;
+  color: var(--pd-text-secondary);
+  line-height: 1.45;
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-admin-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.pd-preview .pd-admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-preview .pd-admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pd-preview .pd-admin-field-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-admin-input,
+.pd-preview .pd-admin-select {
+  width: 100%;
+  border: 1px solid var(--pd-border-soft, var(--pd-border));
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--pd-surface);
+  color: var(--pd-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-admin-input:disabled,
+.pd-preview .pd-admin-select:disabled {
+  background: rgba(248, 250, 252, 0.8);
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-admin-input:focus,
+.pd-preview .pd-admin-select:focus {
+  outline: 2px solid rgba(14, 165, 233, 0.25);
+  border-color: var(--pd-primary);
+}
+
+.pd-preview .pd-admin-password-rules {
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid var(--pd-border-soft, var(--pd-border));
+  display: grid;
+  gap: 6px;
+}
+
+.pd-preview .pd-admin-password-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-admin-password-rule.is-satisfied {
+  color: var(--pd-success, #10b981);
+  font-weight: 600;
+}
+
+.pd-preview .pd-admin-password-rule-icon {
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .pd-preview .pd-admin-users-table {
+    min-width: 0;
+  }
+
+  .pd-preview .pd-admin-users-table thead {
+    display: none;
+  }
+
+  .pd-preview .pd-admin-users-table,
+  .pd-preview .pd-admin-users-table tbody,
+  .pd-preview .pd-admin-users-row,
+  .pd-preview .pd-admin-users-empty-row,
+  .pd-preview .pd-admin-users-row-loading {
+    display: block;
+    width: 100%;
+  }
+
+  .pd-preview .pd-admin-users-row,
+  .pd-preview .pd-admin-users-empty-row,
+  .pd-preview .pd-admin-users-row-loading {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
+  }
+
+  .pd-preview .pd-admin-users-row td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: none;
+  }
+
+  .pd-preview .pd-admin-users-row td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    width: 88px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--pd-text-muted);
+  }
+
+  .pd-preview .pd-admin-users-row td[data-label="Actions"] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-admin-users-row td[data-label="Actions"]::before {
+    margin-bottom: 4px;
+  }
+
+  .pd-preview .pd-admin-users-actions {
+    width: 100%;
+  }
+
+  .pd-preview .pd-admin-users-actions .pd-btn {
+    flex: 1 1 auto;
+  }
+
+  .pd-preview .pd-admin-users-email {
+    max-width: none;
+    white-space: normal;
+    word-break: break-word;
+    text-align: right;
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-preview .pd-admin-users-toolbar-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-admin-users-toolbar-top .pd-btn-primary {
+    width: 100%;
+  }
+
+  .pd-preview .pd-admin-users-search {
+    max-width: none;
+  }
+}

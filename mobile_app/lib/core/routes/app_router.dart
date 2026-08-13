@@ -9,6 +9,11 @@ import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/presentation/verify_email_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import '../../features/complaints/presentation/admin/admin_complaint_details_screen.dart';
+import '../../features/complaints/presentation/admin/admin_complaints_screen.dart';
+import '../../features/complaints/presentation/parent/parent_complaint_details_screen.dart';
+import '../../features/complaints/presentation/parent/parent_complaint_form_screen.dart';
+import '../../features/complaints/presentation/parent/parent_complaints_screen.dart';
 import '../../features/case_intake/presentation/parent_case_request_details_screen.dart';
 import '../../features/case_intake/presentation/parent_case_request_form_screen.dart';
 import '../../features/case_intake/presentation/parent_case_requests_screen.dart';
@@ -264,6 +269,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'parentCaseRequestDetail',
         builder: (context, state) => ParentCaseRequestDetailsScreen(
           requestId: state.pathParameters['requestId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.parentComplaints,
+        name: 'parentComplaints',
+        builder: (context, state) => const ParentComplaintsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentComplaintNew,
+        name: 'parentComplaintNew',
+        builder: (context, state) => const ParentComplaintFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parentComplaintDetailPath,
+        name: 'parentComplaintDetail',
+        builder: (context, state) => ParentComplaintDetailsScreen(
+          complaintId: state.pathParameters['complaintId']!,
         ),
       ),
       GoRoute(
@@ -600,6 +622,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'adminCaseRequestDetail',
         builder: (context, state) => AdminCaseRequestDetailsScreen(
           requestId: state.pathParameters['requestId']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.adminComplaints,
+        name: 'adminComplaints',
+        builder: (context, state) => const AdminComplaintsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminComplaintDetailPath,
+        name: 'adminComplaintDetail',
+        builder: (context, state) => AdminComplaintDetailsScreen(
+          complaintId: state.pathParameters['complaintId']!,
         ),
       ),
       GoRoute(

@@ -18,6 +18,8 @@ class SharedProfileCard extends ConsumerWidget {
     this.initialsFallback = 'SR',
     this.presenceUserId,
     this.onEditPressed,
+    this.editProfileLabel,
+    this.logoutLabel,
     this.accentColor = DashboardColors.brandCyan,
     this.cardTint = DashboardColors.brandCyan,
     this.useBrandLogoutGradient = false,
@@ -29,6 +31,8 @@ class SharedProfileCard extends ConsumerWidget {
   final List<DashboardProfileFieldEntry> fields;
   final String? presenceUserId;
   final VoidCallback? onEditPressed;
+  final String? editProfileLabel;
+  final String? logoutLabel;
   final VoidCallback onLogout;
   final Color accentColor;
   final Color cardTint;
@@ -49,9 +53,7 @@ class SharedProfileCard extends ConsumerWidget {
             ),
           ),
           SizedBox(height: context.dashSpacing),
-          ...fields.map(
-            (field) => DashboardProfileField.fromEntry(field),
-          ),
+          ...fields.map((field) => DashboardProfileField.fromEntry(field)),
           if (presenceUserId != null && presenceUserId!.isNotEmpty) ...[
             SizedBox(height: context.dashSpacing * 0.35),
             Row(
@@ -67,7 +69,7 @@ class SharedProfileCard extends ConsumerWidget {
             OutlinedButton.icon(
               onPressed: onEditPressed,
               icon: const Icon(Icons.edit_outlined),
-              label: const Text('Edit Profile'),
+              label: Text(editProfileLabel ?? 'Edit Profile'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: accentColor,
                 side: BorderSide(color: accentColor),
@@ -84,7 +86,7 @@ class SharedProfileCard extends ConsumerWidget {
           if (useBrandLogoutGradient)
             _BrandGradientButton(
               onPressed: onLogout,
-              label: 'Logout',
+              label: logoutLabel ?? 'Logout',
               verticalPadding: context.dashSpacing * 0.75,
             )
           else
@@ -100,7 +102,7 @@ class SharedProfileCard extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text('Logout'),
+              child: Text(logoutLabel ?? 'Logout'),
             ),
         ],
       ),
@@ -172,9 +174,9 @@ class _BrandGradientButtonState extends State<_BrandGradientButton> {
               child: Text(
                 widget.label,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),

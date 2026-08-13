@@ -3,18 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../providers/specialist_edit_treatment_plan_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'edit_treatment_plan_widgets.dart';
 import 'patient_details_widgets.dart';
+import 'specialist_treatment_plans_goals_localization_utils.dart';
 
 class SpecialistEditTreatmentPlanScreen extends ConsumerStatefulWidget {
-  const SpecialistEditTreatmentPlanScreen({
-    super.key,
-    required this.planId,
-  });
+  const SpecialistEditTreatmentPlanScreen({super.key, required this.planId});
 
   final String planId;
 
@@ -45,38 +44,49 @@ class _SpecialistEditTreatmentPlanScreenState
   }
 
   Future<void> _save() async {
-    final notifier =
-        ref.read(specialistEditTreatmentPlanProvider(widget.planId).notifier);
+    final l10n = AppLocalizations.of(context)!;
+    final notifier = ref.read(
+      specialistEditTreatmentPlanProvider(widget.planId).notifier,
+    );
     final success = await notifier.save();
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Treatment plan updated successfully')),
+        SnackBar(content: Text(l10n.specialistTreatmentPlanUpdatedSuccess)),
       );
       context.pop();
       return;
     }
 
-    final current =
-        ref.read(specialistEditTreatmentPlanProvider(widget.planId));
+    final current = ref.read(
+      specialistEditTreatmentPlanProvider(widget.planId),
+    );
     final message = current.validationMessage ?? current.errorMessage;
     if (message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      final localized = current.validationMessage != null
+          ? mapSpecialistTreatmentPlanValidation(l10n, message)
+          : mapSpecialistEditTreatmentPlanSaveError(l10n, message);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(localized)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistEditTreatmentPlanProvider(widget.planId));
-    final notifier =
-        ref.read(specialistEditTreatmentPlanProvider(widget.planId).notifier);
+    final notifier = ref.read(
+      specialistEditTreatmentPlanProvider(widget.planId).notifier,
+    );
     final bundle = state.bundle;
     final theme = Theme.of(context);
 
-    ref.listen(specialistEditTreatmentPlanProvider(widget.planId), (prev, next) {
+    ref.listen(specialistEditTreatmentPlanProvider(widget.planId), (
+      prev,
+      next,
+    ) {
       if (prev?.isLoading == true &&
           !next.isLoading &&
           next.bundle != null &&
@@ -92,14 +102,19 @@ class _SpecialistEditTreatmentPlanScreenState
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: mapSpecialistEditTreatmentPlanLoadError(
+            l10n,
+            state.errorMessage!,
+          ),
           onRetry: notifier.initialize,
         ),
       );
     } else if (bundle == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(message: 'Treatment plan not found.'),
+        child: DashboardEmptyCard(
+          message: l10n.specialistTreatmentPlanNotFound,
+        ),
       );
     } else {
       body = SingleChildScrollView(
@@ -110,7 +125,7 @@ class _SpecialistEditTreatmentPlanScreenState
             EditTreatmentPlanPatientHeader(patientName: bundle.patientName),
             SizedBox(height: context.dashSpacing),
             Text(
-              'Plan title',
+              l10n.specialistTreatmentPlanTitleLabel,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -120,10 +135,11 @@ class _SpecialistEditTreatmentPlanScreenState
             buildPlanTitleField(
               controller: _titleController,
               onChanged: notifier.setTitle,
+              hint: l10n.specialistTreatmentPlanTitleHint,
             ),
             SizedBox(height: context.dashSpacing * 0.75),
             Text(
-              'Status',
+              l10n.adminFieldStatus,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -136,7 +152,7 @@ class _SpecialistEditTreatmentPlanScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.75),
             PlanDatePickerField(
-              label: 'Start date',
+              label: l10n.specialistPatientDetailsStartDate,
               value: state.startDate,
               onChanged: (date) {
                 if (date != null) notifier.setStartDate(date);
@@ -144,14 +160,14 @@ class _SpecialistEditTreatmentPlanScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             PlanDatePickerField(
-              label: 'End date',
+              label: l10n.specialistPatientDetailsEndDate,
               value: state.endDate,
               allowClear: true,
               onChanged: notifier.setEndDate,
             ),
             SizedBox(height: context.dashSpacing * 1.1),
             Text(
-              'Current Goals',
+              l10n.specialistTreatmentPlanCurrentGoals,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -159,7 +175,9 @@ class _SpecialistEditTreatmentPlanScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             if (bundle.goals.isEmpty)
-              const DashboardEmptyCard(message: 'No goals defined for this plan.')
+              DashboardEmptyCard(
+                message: l10n.specialistTreatmentPlanNoGoalsForPlan,
+              )
             else
               ...bundle.goals.map(
                 (goal) => Padding(
@@ -170,14 +188,20 @@ class _SpecialistEditTreatmentPlanScreenState
             if (state.validationMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.5),
               DashboardErrorCard(
-                message: state.validationMessage!,
+                message: mapSpecialistTreatmentPlanValidation(
+                  l10n,
+                  state.validationMessage!,
+                ),
                 onRetry: _save,
               ),
             ],
             if (state.errorMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.5),
               DashboardErrorCard(
-                message: state.errorMessage!,
+                message: mapSpecialistEditTreatmentPlanSaveError(
+                  l10n,
+                  state.errorMessage!,
+                ),
                 onRetry: _save,
               ),
             ],
@@ -187,12 +211,18 @@ class _SpecialistEditTreatmentPlanScreenState
               style: ElevatedButton.styleFrom(
                 backgroundColor: DashboardColors.brandCyan,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+                padding: EdgeInsets.symmetric(
+                  vertical: context.dashSpacing * 0.65,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: Text(state.isSaving ? 'Saving...' : 'Save Changes'),
+              child: Text(
+                state.isSaving
+                    ? l10n.commonSaving
+                    : l10n.specialistTreatmentPlanSaveChanges,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             OutlinedButton(
@@ -200,12 +230,14 @@ class _SpecialistEditTreatmentPlanScreenState
               style: OutlinedButton.styleFrom(
                 foregroundColor: DashboardColors.brandCyan,
                 side: const BorderSide(color: DashboardColors.brandCyan),
-                padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+                padding: EdgeInsets.symmetric(
+                  vertical: context.dashSpacing * 0.65,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
             SizedBox(height: context.dashSpacing),
           ],
@@ -214,7 +246,7 @@ class _SpecialistEditTreatmentPlanScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Edit Treatment Plan',
+      title: l10n.specialistEditTreatmentPlan,
       showBackButton: true,
       body: body,
     );

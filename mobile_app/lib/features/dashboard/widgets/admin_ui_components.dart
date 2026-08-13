@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../l10n/app_localizations.dart';
+import '../presentation/admin/admin_scoped_localization_utils.dart';
 import '../../../core/constants/api_constants.dart';
 import '../data/admin_dashboard_repository.dart';
 import '../presentation/specialist/manage_goals_widgets.dart';
@@ -207,12 +209,12 @@ class AdminSectionHeader extends StatelessWidget {
   const AdminSectionHeader({
     super.key,
     required this.title,
-    this.actionLabel = 'See all',
+    this.actionLabel,
     this.onActionTap,
   });
 
   final String title;
-  final String actionLabel;
+  final String? actionLabel;
   final VoidCallback? onActionTap;
 
   @override
@@ -229,7 +231,7 @@ class AdminSectionHeader extends StatelessWidget {
 
     return DashboardSectionHeader(
       title: title,
-      actionLabel: actionLabel,
+      actionLabel: actionLabel ?? AppLocalizations.of(context)!.commonSeeAll,
       onActionTap: onActionTap,
     );
   }
@@ -303,7 +305,9 @@ class AdminLoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DashboardLoadingCard(message: message ?? 'Loading...');
+    return DashboardLoadingCard(
+      message: message ?? AppLocalizations.of(context)!.messageLoadingContent,
+    );
   }
 }
 
@@ -477,7 +481,7 @@ class AdminFilterDropdown<T> extends StatelessWidget {
       selectedItemBuilder: (context) => options
           .map(
             (option) => Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
                 option.label,
                 maxLines: 1,
@@ -506,7 +510,7 @@ class AdminFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: context.dashSpacing * 0.4),
+      padding: EdgeInsetsDirectional.only(end: context.dashSpacing * 0.4),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
@@ -564,20 +568,23 @@ class AdminSystemAnalyticsPeriodControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         _PeriodNavButton(
           icon: Icons.chevron_left_rounded,
-          tooltip: 'Previous week',
+          tooltip: l10n.adminSystemActivityPreviousWeek,
           onPressed: isLoading ? null : onPreviousWeek,
         ),
         PopupMenuButton<int>(
-          tooltip: 'Select period',
+          tooltip: l10n.adminSystemActivitySelectPeriod,
           enabled: !isLoading,
           offset: const Offset(0, 36),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           onSelected: (offset) {
             if (offset != selectedWeekOffset) {
               onPresetSelected(offset);
@@ -588,7 +595,9 @@ class AdminSystemAnalyticsPeriodControls extends StatelessWidget {
                 .map(
                   (entry) => PopupMenuItem<int>(
                     value: entry.value,
-                    child: Text(entry.key),
+                    child: Text(
+                      localizedSystemActivityPresetLabel(l10n, entry.value),
+                    ),
                   ),
                 )
                 .toList();
@@ -633,7 +642,7 @@ class AdminSystemAnalyticsPeriodControls extends StatelessWidget {
         ),
         _PeriodNavButton(
           icon: Icons.chevron_right_rounded,
-          tooltip: 'Next week',
+          tooltip: l10n.adminSystemActivityNextWeek,
           onPressed: (!canGoForward || isLoading) ? null : onNextWeek,
         ),
       ],
@@ -705,11 +714,10 @@ class _AdminBarChartState extends State<AdminBarChart> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final spacing = context.dashSpacing;
     final hasData = widget.values.any((value) => value > 0);
-    final maxValue = hasData
-        ? widget.values.reduce(math.max).toDouble()
-        : 1.0;
+    final maxValue = hasData ? widget.values.reduce(math.max).toDouble() : 1.0;
     final chartHeight = math.max(context.dashboardSize.height * 0.16, 136.0);
     final dayGap = spacing * 0.28;
     final animationKey = widget.periodKey;
@@ -717,7 +725,10 @@ class _AdminBarChartState extends State<AdminBarChart> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _LegendDot(color: DashboardColors.success, label: 'System Activity'),
+        _LegendDot(
+          color: DashboardColors.success,
+          label: l10n.adminSystemActivity,
+        ),
         if (_selectedIndex != null && hasData) ...[
           SizedBox(height: spacing * 0.45),
           Text(
@@ -728,7 +739,7 @@ class _AdminBarChartState extends State<AdminBarChart> {
             ),
           ),
           Text(
-            _activityTooltip(widget.values[_selectedIndex!]),
+            _activityTooltip(l10n, widget.values[_selectedIndex!]),
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
               fontWeight: FontWeight.w600,
@@ -745,8 +756,10 @@ class _AdminBarChartState extends State<AdminBarChart> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: List.generate(widget.labels.length, (index) {
                   final count = widget.values[index];
-                  final heightFactor =
-                      _normalizedHeight(count.toDouble(), maxValue);
+                  final heightFactor = _normalizedHeight(
+                    count.toDouble(),
+                    maxValue,
+                  );
 
                   return Expanded(
                     child: Padding(
@@ -766,8 +779,8 @@ class _AdminBarChartState extends State<AdminBarChart> {
                                           setState(() {
                                             _selectedIndex =
                                                 _selectedIndex == index
-                                                    ? null
-                                                    : index;
+                                                ? null
+                                                : index;
                                           });
                                         }
                                       : null,
@@ -812,7 +825,7 @@ class _AdminBarChartState extends State<AdminBarChart> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'No system activity during this period.',
+                        l10n.adminSystemActivityEmpty,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: DashboardColors.textSecondary,
@@ -821,7 +834,7 @@ class _AdminBarChartState extends State<AdminBarChart> {
                       ),
                       SizedBox(height: spacing * 0.35),
                       Text(
-                        'Try selecting another week.',
+                        l10n.adminSystemActivityTryAnotherWeek,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: DashboardColors.textMuted,
@@ -859,9 +872,11 @@ class _AdminBarChartState extends State<AdminBarChart> {
     return (value / maxValue).clamp(0.12, 1);
   }
 
-  String _activityTooltip(int count) {
-    final label = count == 1 ? 'event' : 'events';
-    return 'System Activity: $count $label';
+  String _activityTooltip(AppLocalizations l10n, int count) {
+    final label = count == 1
+        ? l10n.adminSystemActivityEvent
+        : l10n.adminSystemActivityEvents;
+    return l10n.adminSystemActivityTooltip(count, label);
   }
 }
 
@@ -925,7 +940,9 @@ class _Bar extends StatelessWidget {
         return Align(
           alignment: Alignment.bottomCenter,
           child: AnimatedContainer(
-            duration: animate ? const Duration(milliseconds: 350) : Duration.zero,
+            duration: animate
+                ? const Duration(milliseconds: 350)
+                : Duration.zero,
             curve: Curves.easeOutCubic,
             width: width,
             height: barHeight,

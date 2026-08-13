@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../data/admin_users_repository.dart';
 import '../../providers/admin_dashboard_provider.dart';
@@ -12,6 +13,7 @@ import '../../widgets/admin_page_scaffold.dart';
 import '../../../presence/widgets/online_status_dot.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/admin_ui_components.dart';
+import 'admin_scoped_localization_utils.dart';
 
 class AdminUsersScreen extends ConsumerStatefulWidget {
   const AdminUsersScreen({super.key});
@@ -60,11 +62,13 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
 
   List<AdminUserRecord> get _filteredUsers {
     return _users.where((user) {
-      final matchesRole = _roleFilter == null ||
+      final matchesRole =
+          _roleFilter == null ||
           _roleFilter!.isEmpty ||
           user.role.toLowerCase() == _roleFilter!.toLowerCase();
       final query = _searchQuery.trim().toLowerCase();
-      final matchesSearch = query.isEmpty ||
+      final matchesSearch =
+          query.isEmpty ||
           user.name.toLowerCase().contains(query) ||
           user.email.toLowerCase().contains(query) ||
           user.role.toLowerCase().contains(query);
@@ -87,6 +91,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
 
   Future<void> _openUserForm({AdminUserRecord? user}) async {
     final isEdit = user != null;
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final result = await showDialog<_AdminUserFormResult>(
       context: context,
@@ -107,13 +112,13 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           role: result.role,
         );
         if (!mounted) return;
-        _showSnack('User updated successfully.', messenger: messenger);
+        _showSnack(l10n.adminUsersUpdatedSuccess, messenger: messenger);
       } else {
         if (result.fullName.isEmpty ||
             result.email.isEmpty ||
             result.password.length < 8) {
           _showSnack(
-            'Please provide name, email, and a password of at least 8 characters.',
+            l10n.adminUsersValidationRequired,
             isError: true,
             messenger: messenger,
           );
@@ -128,19 +133,28 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           role: result.role,
         );
         if (!mounted) return;
-        _showSnack('User created successfully.', messenger: messenger);
+        _showSnack(l10n.adminUsersCreatedSuccess, messenger: messenger);
       }
       await _load();
     } on DioException catch (error) {
       if (!mounted) return;
-      _showSnack(repo.readErrorMessage(error), isError: true, messenger: messenger);
+      _showSnack(
+        repo.readErrorMessage(error),
+        isError: true,
+        messenger: messenger,
+      );
     } catch (error) {
       if (!mounted) return;
-      _showSnack('Failed to save user: $error', isError: true, messenger: messenger);
+      _showSnack(
+        l10n.adminUsersSaveFailed('$error'),
+        isError: true,
+        messenger: messenger,
+      );
     }
   }
 
   Future<void> _toggleStatus(AdminUserRecord user) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final repo = ref.read(adminUsersRepositoryProvider);
     final willDeactivate = user.isActive;
@@ -149,10 +163,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       context: context,
       builder: (_) => _ToggleUserStatusDialog(
         willDeactivate: willDeactivate,
-        onConfirm: () => repo.updateStatus(
-          id: user.id,
-          isActive: !user.isActive,
-        ),
+        onConfirm: () =>
+            repo.updateStatus(id: user.id, isActive: !user.isActive),
         readErrorMessage: repo.readErrorMessage,
         messenger: messenger,
       ),
@@ -161,13 +173,16 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     if (!mounted || success != true) return;
 
     _showSnack(
-      willDeactivate ? 'User deactivated.' : 'User activated.',
+      willDeactivate
+          ? l10n.adminUsersUserDeactivated
+          : l10n.adminUsersUserActivated,
       messenger: messenger,
     );
     await _load();
   }
 
   Future<void> _confirmDelete(AdminUserRecord user) async {
+    final l10n = AppLocalizations.of(context)!;
     final currentUserId = ref.read(authProvider).user?.id;
     final isSelf = currentUserId != null && currentUserId == user.id;
 
@@ -181,11 +196,16 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               : 'Are you sure you want to delete ${user.name}? This action cannot be undone.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.commonCancel),
+          ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: DashboardColors.highPriority),
-            child: const Text('Delete'),
+            style: FilledButton.styleFrom(
+              backgroundColor: DashboardColors.highPriority,
+            ),
+            child: Text(l10n.commonDelete),
           ),
         ],
       ),
@@ -198,7 +218,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     final repo = ref.read(adminUsersRepositoryProvider);
     try {
       await repo.deleteUser(user.id);
-      _showSnack('User deleted successfully.');
+      _showSnack(l10n.adminUsersDeletedSuccess);
       await _load();
     } on DioException catch (error) {
       _showSnack(repo.readErrorMessage(error), isError: true);
@@ -208,12 +228,15 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final filtered = _filteredUsers;
+    final errorMessage = _error == null
+        ? null
+        : mapAdminUsersError(l10n, _error!);
 
     return AdminPageScaffold(
-      title: 'Users',
-      currentNav: AdminNavigation.listScreenNav(context),
-      enableModuleListBack: true,
+      title: l10n.navUsers,
+      showBackButton: true,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openUserForm(),
         backgroundColor: DashboardColors.primary,
@@ -228,7 +251,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                   padding: context.dashPadding.copyWith(bottom: 0),
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Search by name, email, or role',
+                      hintText: l10n.adminUsersSearchHint,
                       prefixIcon: const Icon(Icons.search_rounded),
                       filled: true,
                       fillColor: DashboardColors.surface,
@@ -250,22 +273,22 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                     ),
                     children: [
                       _RoleChip(
-                        label: 'All',
+                        label: l10n.filterAll,
                         selected: _roleFilter == null,
                         onTap: () => setState(() => _roleFilter = null),
                       ),
                       _RoleChip(
-                        label: 'Admin',
+                        label: l10n.roleAdmin,
                         selected: _roleFilter == 'admin',
                         onTap: () => setState(() => _roleFilter = 'admin'),
                       ),
                       _RoleChip(
-                        label: 'Specialist',
+                        label: l10n.roleSpecialist,
                         selected: _roleFilter == 'specialist',
                         onTap: () => setState(() => _roleFilter = 'specialist'),
                       ),
                       _RoleChip(
-                        label: 'Parent',
+                        label: l10n.roleParent,
                         selected: _roleFilter == 'parent',
                         onTap: () => setState(() => _roleFilter = 'parent'),
                       ),
@@ -277,131 +300,166 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                       ? Center(
                           child: Padding(
                             padding: context.dashPadding,
-                            child: AdminErrorCard(message: _error!, onRetry: _load),
+                            child: AdminErrorCard(
+                              message: errorMessage!,
+                              onRetry: _load,
+                            ),
                           ),
                         )
                       : filtered.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: context.dashPadding,
-                                child: const AdminEmptyCard(message: 'No users found.'),
+                      ? Center(
+                          child: Padding(
+                            padding: context.dashPadding,
+                            child: AdminEmptyCard(
+                              message: l10n.adminDashboardNoUsers,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: context.dashPadding,
+                          itemCount: filtered.length,
+                          itemBuilder: (context, index) {
+                            final user = filtered[index];
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom: context.dashSpacing * 0.6,
                               ),
-                            )
-                          : ListView.builder(
-                              padding: context.dashPadding,
-                              itemCount: filtered.length,
-                              itemBuilder: (context, index) {
-                                final user = filtered[index];
-                                return Padding(
-                                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                                  child: AdminSurfaceCard(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                              child: AdminSurfaceCard(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                        Stack(
+                                          clipBehavior: Clip.none,
                                           children: [
-                                            Stack(
-                                              clipBehavior: Clip.none,
-                                              children: [
-                                                CircleAvatar(
-                                                  backgroundColor: adminRoleColor(user.role)
-                                                      .withValues(alpha: 0.15),
-                                                  child: Text(
-                                                    dashboardAvatarLetter(user.name),
-                                                    style: TextStyle(
-                                                      color: adminRoleColor(user.role),
-                                                      fontWeight: FontWeight.w700,
-                                                    ),
+                                            CircleAvatar(
+                                              backgroundColor: adminRoleColor(
+                                                user.role,
+                                              ).withValues(alpha: 0.15),
+                                              child: Text(
+                                                dashboardAvatarLetter(
+                                                  user.name,
+                                                ),
+                                                style: TextStyle(
+                                                  color: adminRoleColor(
+                                                    user.role,
                                                   ),
+                                                  fontWeight: FontWeight.w700,
                                                 ),
-                                                Positioned(
-                                                  right: -2,
-                                                  bottom: -2,
-                                                  child: OnlineStatusDot(userId: user.id),
-                                                ),
-                                              ],
+                                              ),
                                             ),
-                                            SizedBox(width: context.dashSpacing * 0.65),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    user.name,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                                      fontWeight: FontWeight.w700,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    user.email,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: theme.textTheme.bodySmall?.copyWith(
-                                                      color: DashboardColors.textSecondary,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    '${_formatRoleLabel(user.role)} • ${user.isActive ? 'Active' : 'Inactive'}',
-                                                    style: theme.textTheme.labelSmall?.copyWith(
-                                                      color: user.isActive
-                                                          ? DashboardColors.primary
-                                                          : DashboardColors.textMuted,
-                                                    ),
-                                                  ),
-                                                  PresenceStatusLabel(userId: user.id),
-                                                ],
+                                            PositionedDirectional(
+                                              end: -2,
+                                              bottom: -2,
+                                              child: OnlineStatusDot(
+                                                userId: user.id,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: context.dashSpacing * 0.5),
-                                        Wrap(
-                                          spacing: 8,
-                                          runSpacing: 8,
-                                          children: [
-                                            OutlinedButton.icon(
-                                              onPressed: () => _openUserForm(user: user),
-                                              icon: const Icon(Icons.edit_outlined, size: 16),
-                                              label: const Text('Edit'),
-                                            ),
-                                            OutlinedButton.icon(
-                                              onPressed: () => _toggleStatus(user),
-                                              icon: Icon(
-                                                user.isActive
-                                                    ? Icons.pause_circle_outline
-                                                    : Icons.play_circle_outline,
-                                                size: 16,
+                                        SizedBox(
+                                          width: context.dashSpacing * 0.65,
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                user.name,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: theme
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ),
                                               ),
-                                              label: Text(user.isActive ? 'Deactivate' : 'Activate'),
-                                            ),
-                                            OutlinedButton.icon(
-                                              onPressed: () => _confirmDelete(user),
-                                              icon: const Icon(Icons.delete_outline, size: 16),
-                                              label: const Text('Delete'),
-                                            ),
-                                          ],
+                                              Text(
+                                                user.email,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: theme.textTheme.bodySmall
+                                                    ?.copyWith(
+                                                      color: DashboardColors
+                                                          .textSecondary,
+                                                    ),
+                                              ),
+                                              Text(
+                                                '${localizedAdminRole(l10n, user.role)} • ${user.isActive ? l10n.statusActive : l10n.statusInactive}',
+                                                style: theme
+                                                    .textTheme
+                                                    .labelSmall
+                                                    ?.copyWith(
+                                                      color: user.isActive
+                                                          ? DashboardColors
+                                                                .primary
+                                                          : DashboardColors
+                                                                .textMuted,
+                                                    ),
+                                              ),
+                                              PresenceStatusLabel(
+                                                userId: user.id,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
+                                    SizedBox(height: context.dashSpacing * 0.5),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: [
+                                        OutlinedButton.icon(
+                                          onPressed: () =>
+                                              _openUserForm(user: user),
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            size: 16,
+                                          ),
+                                          label: Text(l10n.commonEdit),
+                                        ),
+                                        OutlinedButton.icon(
+                                          onPressed: () => _toggleStatus(user),
+                                          icon: Icon(
+                                            user.isActive
+                                                ? Icons.pause_circle_outline
+                                                : Icons.play_circle_outline,
+                                            size: 16,
+                                          ),
+                                          label: Text(
+                                            user.isActive
+                                                ? l10n.adminDeactivate
+                                                : l10n.adminActivate,
+                                          ),
+                                        ),
+                                        OutlinedButton.icon(
+                                          onPressed: () => _confirmDelete(user),
+                                          icon: const Icon(
+                                            Icons.delete_outline,
+                                            size: 16,
+                                          ),
+                                          label: Text(l10n.commonDelete),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                 ),
               ],
             ),
     );
   }
-}
-
-String _formatRoleLabel(String role) {
-  if (role.isEmpty) {
-    return 'User';
-  }
-  return '${role[0].toUpperCase()}${role.substring(1)}';
 }
 
 class _ToggleUserStatusDialog extends StatefulWidget {
@@ -418,7 +476,8 @@ class _ToggleUserStatusDialog extends StatefulWidget {
   final ScaffoldMessengerState messenger;
 
   @override
-  State<_ToggleUserStatusDialog> createState() => _ToggleUserStatusDialogState();
+  State<_ToggleUserStatusDialog> createState() =>
+      _ToggleUserStatusDialogState();
 }
 
 class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
@@ -445,9 +504,10 @@ class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
     } catch (error) {
       if (!mounted) return;
       setState(() => _submitting = false);
+      final l10n = AppLocalizations.of(context)!;
       widget.messenger.showSnackBar(
         SnackBar(
-          content: Text('Failed to update user status: $error'),
+          content: Text(l10n.adminUsersUpdateStatusFailed('$error')),
           backgroundColor: DashboardColors.highPriority,
         ),
       );
@@ -461,26 +521,33 @@ class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final willDeactivate = widget.willDeactivate;
 
     return PopScope(
       canPop: !_submitting,
       child: AlertDialog(
-        title: Text(willDeactivate ? 'Deactivate User' : 'Activate User'),
+        title: Text(
+          willDeactivate
+              ? l10n.adminUsersDeactivateTitle
+              : l10n.adminUsersActivateTitle,
+        ),
         content: Text(
           willDeactivate
-              ? 'Are you sure you want to deactivate this user? They may lose access to the platform.'
-              : 'Are you sure you want to activate this user?',
+              ? l10n.adminUsersDeactivateConfirm
+              : l10n.adminUsersActivateConfirm,
         ),
         actions: [
           TextButton(
             onPressed: _submitting ? null : _onCancelPressed,
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: _submitting ? null : _onConfirmPressed,
             style: willDeactivate
-                ? FilledButton.styleFrom(backgroundColor: DashboardColors.highPriority)
+                ? FilledButton.styleFrom(
+                    backgroundColor: DashboardColors.highPriority,
+                  )
                 : null,
             child: _submitting
                 ? const SizedBox(
@@ -491,7 +558,9 @@ class _ToggleUserStatusDialogState extends State<_ToggleUserStatusDialog> {
                       color: Colors.white,
                     ),
                   )
-                : Text(willDeactivate ? 'Deactivate' : 'Activate'),
+                : Text(
+                    willDeactivate ? l10n.adminDeactivate : l10n.adminActivate,
+                  ),
           ),
         ],
       ),
@@ -579,40 +648,47 @@ class _AdminUserFormDialogState extends State<_AdminUserFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AlertDialog(
-      title: Text(_isEdit ? 'Edit User' : 'Add User'),
+      title: Text(_isEdit ? l10n.adminUsersEditUserTitle : l10n.adminUsersAddUserTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Full Name'),
+              decoration: InputDecoration(labelText: l10n.fieldFullName),
             ),
             TextField(
               controller: _emailController,
               enabled: !_isEdit,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: l10n.fieldEmail),
             ),
             if (!_isEdit) ...[
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(
+                  labelText: l10n.adminUsersPasswordField,
+                ),
               ),
             ],
             TextField(
               controller: _phoneController,
-              decoration: const InputDecoration(labelText: 'Phone (optional)'),
+              decoration: InputDecoration(labelText: l10n.adminUsersPhoneOptional),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _selectedRole,
-              decoration: const InputDecoration(labelText: 'Role'),
-              items: const [
-                DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                DropdownMenuItem(value: 'specialist', child: Text('Specialist')),
-                DropdownMenuItem(value: 'parent', child: Text('Parent')),
+              decoration: InputDecoration(labelText: l10n.adminUsersRoleField),
+              items: [
+                DropdownMenuItem(value: 'admin', child: Text(l10n.roleAdmin)),
+                DropdownMenuItem(
+                  value: 'specialist',
+                  child: Text(l10n.roleSpecialist),
+                ),
+                DropdownMenuItem(value: 'parent', child: Text(l10n.roleParent)),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -624,13 +700,10 @@ class _AdminUserFormDialogState extends State<_AdminUserFormDialog> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: _cancel,
-          child: const Text('Cancel'),
-        ),
+        TextButton(onPressed: _cancel, child: Text(l10n.commonCancel)),
         FilledButton(
           onPressed: _submit,
-          child: Text(_isEdit ? 'Save' : 'Create'),
+          child: Text(_isEdit ? l10n.commonSave : l10n.commonCreate),
         ),
       ],
     );
@@ -651,7 +724,7 @@ class _RoleChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsetsDirectional.only(end: 8),
       child: FilterChip(
         label: Text(label),
         selected: selected,

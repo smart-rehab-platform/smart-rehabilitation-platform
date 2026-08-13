@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../providers/specialist_create_treatment_plan_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'edit_treatment_plan_widgets.dart';
+import 'specialist_treatment_plans_goals_localization_utils.dart';
 
 class SpecialistCreateTreatmentPlanScreen extends ConsumerStatefulWidget {
   const SpecialistCreateTreatmentPlanScreen({
@@ -34,7 +36,9 @@ class _SpecialistCreateTreatmentPlanScreenState
     super.initState();
     _titleController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(specialistCreateTreatmentPlanProvider.notifier).configure(
+      ref
+          .read(specialistCreateTreatmentPlanProvider.notifier)
+          .configure(
             patientId: widget.patientId,
             patientName: widget.patientName ?? 'Patient',
           );
@@ -48,29 +52,36 @@ class _SpecialistCreateTreatmentPlanScreenState
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
-    final error =
-        await ref.read(specialistCreateTreatmentPlanProvider.notifier).create();
+    final error = await ref
+        .read(specialistCreateTreatmentPlanProvider.notifier)
+        .create();
     if (!mounted) return;
     if (error != null) {
-      messenger.showSnackBar(SnackBar(content: Text(error)));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(mapSpecialistCreateTreatmentPlanError(l10n, error)),
+        ),
+      );
       return;
     }
     messenger.showSnackBar(
-      const SnackBar(content: Text('Treatment plan created successfully')),
+      SnackBar(content: Text(l10n.specialistTreatmentPlanCreatedSuccess)),
     );
     context.pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistCreateTreatmentPlanProvider);
     final notifier = ref.read(specialistCreateTreatmentPlanProvider.notifier);
     final theme = Theme.of(context);
     final busy = state.isSaving;
 
     return SpecialistPageScaffold(
-      title: 'Create Treatment Plan',
+      title: l10n.specialistCreateTreatmentPlan,
       showBackButton: true,
       body: SingleChildScrollView(
         padding: context.dashPadding,
@@ -79,24 +90,24 @@ class _SpecialistCreateTreatmentPlanScreenState
           children: [
             EditTreatmentPlanPatientHeader(
               patientName: state.patientName.isEmpty
-                  ? (widget.patientName ?? 'Patient')
+                  ? (widget.patientName ?? l10n.entityPatient)
                   : state.patientName,
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             Align(
-              alignment: Alignment.centerLeft,
-              child: DashboardPriorityBadge(label: 'Active'),
+              alignment: AlignmentDirectional.centerStart,
+              child: DashboardPriorityBadge(label: l10n.statusActive),
             ),
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
-              'New plans are created as Active.',
+              l10n.specialistTreatmentPlanNewPlansActiveHelper,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textMuted,
               ),
             ),
             SizedBox(height: context.dashSpacing),
             Text(
-              'Plan title',
+              l10n.specialistTreatmentPlanTitleLabel,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -106,11 +117,12 @@ class _SpecialistCreateTreatmentPlanScreenState
             buildPlanTitleField(
               controller: _titleController,
               onChanged: notifier.setTitle,
+              hint: l10n.specialistTreatmentPlanTitleHint,
               enabled: !busy,
             ),
             SizedBox(height: context.dashSpacing * 0.75),
             PlanDatePickerField(
-              label: 'Start date',
+              label: l10n.specialistPatientDetailsStartDate,
               value: state.startDate,
               onChanged: (date) {
                 if (date != null) notifier.setStartDate(date);
@@ -118,7 +130,7 @@ class _SpecialistCreateTreatmentPlanScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             PlanDatePickerField(
-              label: 'End date',
+              label: l10n.specialistPatientDetailsEndDate,
               value: state.endDate,
               allowClear: true,
               onChanged: notifier.setEndDate,
@@ -126,7 +138,10 @@ class _SpecialistCreateTreatmentPlanScreenState
             if (state.validationMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.65),
               Text(
-                state.validationMessage!,
+                mapSpecialistTreatmentPlanValidation(
+                  l10n,
+                  state.validationMessage!,
+                ),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: DashboardColors.highPriority,
                   fontWeight: FontWeight.w600,
@@ -136,7 +151,10 @@ class _SpecialistCreateTreatmentPlanScreenState
             if (state.errorMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.65),
               DashboardErrorCard(
-                message: state.errorMessage!,
+                message: mapSpecialistCreateTreatmentPlanError(
+                  l10n,
+                  state.errorMessage!,
+                ),
                 onRetry: busy ? () {} : _submit,
               ),
             ],
@@ -153,7 +171,11 @@ class _SpecialistCreateTreatmentPlanScreenState
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: Text(busy ? 'Creating...' : 'Create Treatment Plan'),
+              child: Text(
+                busy
+                    ? l10n.specialistTreatmentPlanCreating
+                    : l10n.specialistCreateTreatmentPlan,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             OutlinedButton(
@@ -168,7 +190,7 @@ class _SpecialistCreateTreatmentPlanScreenState
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
             SizedBox(height: context.dashSpacing),
           ],

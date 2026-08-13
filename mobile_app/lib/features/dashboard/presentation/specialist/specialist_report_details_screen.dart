@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -49,7 +50,7 @@ class _SpecialistReportDetailsScreenState
     return ApiConstants.resolveMediaUrl(pdfUrl) ?? pdfUrl;
   }
 
-  Future<void> _copyPdfLink(String pdfUrl) async {
+  Future<void> _copyPdfLink(AppLocalizations l10n, String pdfUrl) async {
     final resolved = _resolvedPdfUrl(pdfUrl);
     if (resolved == null) {
       return;
@@ -58,11 +59,11 @@ class _SpecialistReportDetailsScreenState
     await Clipboard.setData(ClipboardData(text: resolved));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('PDF link copied to clipboard')),
+      SnackBar(content: Text(l10n.specialistReportPdfLinkCopied)),
     );
   }
 
-  Future<void> _viewPdf(String pdfUrl) async {
+  Future<void> _viewPdf(AppLocalizations l10n, String pdfUrl) async {
     final resolved = _resolvedPdfUrl(pdfUrl);
     if (resolved == null) {
       return;
@@ -75,36 +76,37 @@ class _SpecialistReportDetailsScreenState
         mode: LaunchMode.externalApplication,
       );
       if (!launched && mounted) {
-        await _copyPdfLink(pdfUrl);
+        await _copyPdfLink(l10n, pdfUrl);
       }
       return;
     }
 
-    await _copyPdfLink(pdfUrl);
+    await _copyPdfLink(l10n, pdfUrl);
   }
 
-  Future<void> _generatePdf() async {
+  Future<void> _generatePdf(AppLocalizations l10n) async {
     final notifier = ref.read(specialistReportDetailProvider(_args).notifier);
     final success = await notifier.generatePdf();
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PDF generated successfully')),
+        SnackBar(content: Text(l10n.specialistReportPdfGeneratedSuccess)),
       );
       return;
     }
 
     final error = ref.read(specialistReportDetailProvider(_args)).errorMessage;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistReportDetailProvider(_args));
     final notifier = ref.read(specialistReportDetailProvider(_args).notifier);
     final detail = state.detail;
@@ -124,7 +126,7 @@ class _SpecialistReportDetailsScreenState
     } else if (detail == null) {
       body = Padding(
         padding: context.dashPadding,
-        child: const DashboardEmptyCard(message: 'Report not found.'),
+        child: DashboardEmptyCard(message: l10n.specialistReportNotFound),
       );
     } else {
       final sections = detail.sections;
@@ -151,7 +153,7 @@ class _SpecialistReportDetailsScreenState
             if (hasPdf && pdfUrl != null && pdfUrl.trim().isNotEmpty) ...[
               SizedBox(height: context.dashSpacing * 0.4),
               Text(
-                'Attachments',
+                l10n.specialistReportAttachments,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: DashboardColors.textPrimary,
@@ -161,9 +163,9 @@ class _SpecialistReportDetailsScreenState
               SpecialistReportAttachmentCard(pdfUrl: pdfUrl),
               SizedBox(height: context.dashSpacing),
               ElevatedButton.icon(
-                onPressed: () => _viewPdf(pdfUrl),
+                onPressed: () => _viewPdf(l10n, pdfUrl),
                 icon: const Icon(Icons.picture_as_pdf_outlined),
-                label: const Text('View PDF'),
+                label: Text(l10n.specialistReportViewPdf),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
@@ -177,9 +179,9 @@ class _SpecialistReportDetailsScreenState
               ),
               SizedBox(height: context.dashSpacing * 0.5),
               OutlinedButton.icon(
-                onPressed: () => _copyPdfLink(pdfUrl),
+                onPressed: () => _copyPdfLink(l10n, pdfUrl),
                 icon: const Icon(Icons.link_rounded),
-                label: const Text('Copy PDF Link'),
+                label: Text(l10n.specialistReportCopyPdfLink),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: DashboardColors.brandCyan,
                   padding: EdgeInsets.symmetric(
@@ -194,7 +196,7 @@ class _SpecialistReportDetailsScreenState
             ] else ...[
               SizedBox(height: context.dashSpacing),
               ElevatedButton.icon(
-                onPressed: state.isExporting ? null : _generatePdf,
+                onPressed: state.isExporting ? null : () => _generatePdf(l10n),
                 icon: state.isExporting
                     ? SizedBox(
                         width: context.dashSpacing * 0.55,
@@ -206,7 +208,9 @@ class _SpecialistReportDetailsScreenState
                       )
                     : const Icon(Icons.picture_as_pdf_outlined),
                 label: Text(
-                  state.isExporting ? 'Generating PDF...' : 'Generate PDF',
+                  state.isExporting
+                      ? l10n.specialistReportGeneratingPdf
+                      : l10n.specialistReportGeneratePdf,
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DashboardColors.brandCyan,
@@ -228,7 +232,7 @@ class _SpecialistReportDetailsScreenState
 
     if (widget.useAdminChrome) {
       return AdminPageScaffold(
-        title: 'Report Details',
+        title: l10n.specialistReportDetailsTitle,
         showBackButton: true,
         showBottomNav: false,
         body: body,
@@ -236,7 +240,7 @@ class _SpecialistReportDetailsScreenState
     }
 
     return SpecialistPageScaffold(
-      title: 'Report Details',
+      title: l10n.specialistReportDetailsTitle,
       showBackButton: true,
       body: body,
     );

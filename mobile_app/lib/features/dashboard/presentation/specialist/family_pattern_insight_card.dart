@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/family_pattern_insight_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
+import 'specialist_patient_details_localization_utils.dart';
 
 class FamilyPatternInsightCard extends StatelessWidget {
   const FamilyPatternInsightCard({
@@ -23,8 +25,9 @@ class FamilyPatternInsightCard extends StatelessWidget {
 
     if (!insight.hasDetectedPatterns) {
       return _NeutralInsightCard(
-        message:
-            'No repeated clinical characteristics were detected in the available records.',
+        message: AppLocalizations.of(
+          context,
+        )!.specialistFamilyPatternNoPatternsDetected,
       );
     }
 
@@ -40,6 +43,8 @@ class FamilyPatternInsightLoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSurfaceCard(
       child: Row(
         children: [
@@ -54,7 +59,7 @@ class FamilyPatternInsightLoadingCard extends StatelessWidget {
           SizedBox(width: context.dashSpacing * 0.75),
           Expanded(
             child: Text(
-              'Loading family pattern insight…',
+              l10n.specialistFamilyPatternLoading,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -73,6 +78,8 @@ class FamilyPatternInsightRetryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSurfaceCard(
       child: Row(
         children: [
@@ -84,13 +91,13 @@ class FamilyPatternInsightRetryCard extends StatelessWidget {
           SizedBox(width: context.dashSpacing * 0.6),
           Expanded(
             child: Text(
-              'Family pattern insight is unavailable right now.',
+              l10n.specialistFamilyPatternUnavailable,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
             ),
           ),
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
+          TextButton(onPressed: onRetry, child: Text(l10n.commonRetry)),
         ],
       ),
     );
@@ -134,10 +141,15 @@ class _FullInsightCardState extends State<_FullInsightCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final insight = widget.insight;
-    final badge = _EvidenceBadgeStyle.fromLevel(insight.evidenceLevel);
+    final badge = _EvidenceBadgeStyle.fromLevel(l10n, insight.evidenceLevel);
     final scoreRatio = (insight.patternScore.clamp(0, 100)) / 100;
+    final scoreCaption = localizedFamilyPatternScoreCaption(
+      l10n,
+      insight.evidenceLevel,
+    );
     final hasHiddenPatterns = insight.patterns.length > _visiblePatternCount;
     final visiblePatterns = !_showAllFindings && hasHiddenPatterns
         ? insight.patterns.take(_visiblePatternCount).toList()
@@ -157,8 +169,10 @@ class _FullInsightCardState extends State<_FullInsightCard> {
           _ClinicalSummaryBox(summary: insight.summaryReason),
           SizedBox(height: context.dashSpacing * 0.6),
           Semantics(
-            label:
-                'Pattern score ${insight.patternScore} out of 100. ${_ScoreCaption.fromLevel(insight.evidenceLevel)}',
+            label: l10n.specialistFamilyPatternScoreSemantics(
+              insight.patternScore,
+              scoreCaption,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -166,7 +180,7 @@ class _FullInsightCardState extends State<_FullInsightCard> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Pattern Score',
+                        l10n.specialistFamilyPatternPatternScore,
                         style: theme.textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: DashboardColors.textPrimary,
@@ -194,7 +208,7 @@ class _FullInsightCardState extends State<_FullInsightCard> {
                 ),
                 SizedBox(height: context.dashSpacing * 0.25),
                 Text(
-                  _ScoreCaption.fromLevel(insight.evidenceLevel),
+                  scoreCaption,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: DashboardColors.textMuted,
                     fontSize: 12,
@@ -214,7 +228,7 @@ class _FullInsightCardState extends State<_FullInsightCard> {
           ),
           if (hasHiddenPatterns) ...[
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: TextButton.icon(
                 onPressed: () {
                   setState(() => _showAllFindings = !_showAllFindings);
@@ -227,8 +241,8 @@ class _FullInsightCardState extends State<_FullInsightCard> {
                 ),
                 label: Text(
                   _showAllFindings
-                      ? 'Show fewer findings'
-                      : 'View all findings',
+                      ? l10n.specialistFamilyPatternShowFewerFindings
+                      : l10n.specialistFamilyPatternViewAllFindings,
                 ),
                 style: TextButton.styleFrom(
                   foregroundColor: DashboardColors.brandCyan,
@@ -247,7 +261,7 @@ class _FullInsightCardState extends State<_FullInsightCard> {
               child: OutlinedButton.icon(
                 onPressed: widget.onReviewMatchedChildren,
                 icon: const Icon(Icons.chevron_right_rounded, size: 18),
-                label: const Text('Review Matched Children'),
+                label: Text(l10n.specialistFamilyPatternReviewMatchedChildren),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: DashboardColors.brandCyan,
                   side: BorderSide(
@@ -276,6 +290,7 @@ class _CardTitleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Row(
@@ -285,7 +300,7 @@ class _CardTitleRow extends StatelessWidget {
         SizedBox(width: context.dashSpacing * 0.55),
         Expanded(
           child: Text(
-            'Family Pattern Insight',
+            l10n.specialistFamilyPatternInsightTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -325,6 +340,7 @@ class _ClinicalSummaryBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
@@ -359,7 +375,7 @@ class _ClinicalSummaryBox extends StatelessWidget {
               ),
               SizedBox(width: context.dashSpacing * 0.3),
               Text(
-                'Clinical Summary',
+                l10n.specialistFamilyPatternClinicalSummary,
                 style: theme.textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: DashboardColors.brandCyan,
@@ -388,8 +404,9 @@ class _LinkedChildrenBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final label = '$count ${count == 1 ? 'Child' : 'Children'} Matched';
+    final label = localizedFamilyPatternMatchedChildrenLabel(l10n, count);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -427,7 +444,7 @@ class _LinkedChildrenBadge extends StatelessWidget {
         ),
         SizedBox(height: context.dashSpacing * 0.18),
         Text(
-          'Matched at least one detected pattern.',
+          l10n.specialistFamilyPatternMatchedAtLeastOne,
           style: theme.textTheme.bodySmall?.copyWith(
             color: DashboardColors.textMuted,
             fontSize: 11.5,
@@ -445,6 +462,7 @@ class _PatternRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final presentation = _PatternPresentation.fromType(pattern.type);
     final value = _patternValue(pattern);
@@ -462,7 +480,7 @@ class _PatternRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                presentation.label,
+                localizedFamilyPatternType(l10n, pattern.type),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: DashboardColors.textPrimary,
@@ -586,20 +604,6 @@ class _PatternIconBadge extends StatelessWidget {
   }
 }
 
-class _ScoreCaption {
-  static String fromLevel(String level) {
-    switch (level.trim().toUpperCase()) {
-      case 'HIGH':
-        return 'High confidence based on available records.';
-      case 'MODERATE':
-        return 'Moderate repeated characteristics detected.';
-      case 'LOW':
-      default:
-        return 'Limited repeated characteristics detected.';
-    }
-  }
-}
-
 class _EvidenceBadgeStyle {
   const _EvidenceBadgeStyle({
     required this.label,
@@ -613,29 +617,29 @@ class _EvidenceBadgeStyle {
   final Color foregroundColor;
   final String semanticLabel;
 
-  static _EvidenceBadgeStyle fromLevel(String level) {
+  static _EvidenceBadgeStyle fromLevel(AppLocalizations l10n, String level) {
     switch (level.trim().toUpperCase()) {
       case 'HIGH':
-        return const _EvidenceBadgeStyle(
-          label: 'High Evidence',
+        return _EvidenceBadgeStyle(
+          label: l10n.specialistFamilyPatternEvidenceHigh,
           backgroundColor: DashboardColors.tealSoft,
           foregroundColor: DashboardColors.accent,
-          semanticLabel: 'High evidence of repeated characteristics',
+          semanticLabel: l10n.specialistFamilyPatternEvidenceSemanticHigh,
         );
       case 'MODERATE':
-        return const _EvidenceBadgeStyle(
-          label: 'Moderate Evidence',
+        return _EvidenceBadgeStyle(
+          label: l10n.specialistFamilyPatternEvidenceModerate,
           backgroundColor: DashboardColors.amberSoft,
           foregroundColor: DashboardColors.warning,
-          semanticLabel: 'Moderate evidence of repeated characteristics',
+          semanticLabel: l10n.specialistFamilyPatternEvidenceSemanticModerate,
         );
       case 'LOW':
       default:
-        return const _EvidenceBadgeStyle(
-          label: 'Low Evidence',
+        return _EvidenceBadgeStyle(
+          label: l10n.specialistFamilyPatternEvidenceLow,
           backgroundColor: DashboardColors.blueSoft,
           foregroundColor: DashboardColors.brandSecondaryBlue,
-          semanticLabel: 'Low evidence of repeated characteristics',
+          semanticLabel: l10n.specialistFamilyPatternEvidenceSemanticLow,
         );
     }
   }
@@ -643,13 +647,11 @@ class _EvidenceBadgeStyle {
 
 class _PatternPresentation {
   const _PatternPresentation({
-    required this.label,
     this.iconAsset,
     this.icon,
     this.useWrapForValue = false,
   }) : assert(iconAsset != null || icon != null);
 
-  final String label;
   final String? iconAsset;
   final IconData? icon;
   final bool useWrapForValue;
@@ -663,38 +665,26 @@ class _PatternPresentation {
   static _PatternPresentation fromType(String type) {
     switch (type) {
       case 'shared_diagnosis':
-        return const _PatternPresentation(
-          label: 'Shared Diagnosis',
-          iconAsset: _stethoscopeIcon,
-        );
+        return const _PatternPresentation(iconAsset: _stethoscopeIcon);
       case 'shared_case_category':
-        return const _PatternPresentation(
-          label: 'Shared Case Category',
-          iconAsset: _clipboardListIcon,
-        );
+        return const _PatternPresentation(iconAsset: _clipboardListIcon);
       case 'shared_difficulties':
         return const _PatternPresentation(
-          label: 'Observed Difficulties',
           iconAsset: _eyeSearchIcon,
           useWrapForValue: true,
         );
       case 'previous_diagnosis_similarity':
         return const _PatternPresentation(
-          label: 'Previous Diagnosis',
           iconAsset: _historyIcon,
           useWrapForValue: true,
         );
       case 'family_history_similarity':
         return const _PatternPresentation(
-          label: 'Family History',
           icon: Icons.groups_outlined,
           useWrapForValue: true,
         );
       default:
-        return const _PatternPresentation(
-          label: 'Repeated Characteristic',
-          icon: Icons.insights_outlined,
-        );
+        return const _PatternPresentation(icon: Icons.insights_outlined);
     }
   }
 }

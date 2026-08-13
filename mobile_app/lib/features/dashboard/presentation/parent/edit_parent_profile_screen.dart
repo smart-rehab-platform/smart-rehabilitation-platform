@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../providers/parent_edit_profile_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/edit_profile_avatar_section.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import '../specialist/manage_goals_widgets.dart';
+import 'parent_scoped_localization_utils.dart';
 
 class EditParentProfileScreen extends ConsumerStatefulWidget {
   const EditParentProfileScreen({super.key});
@@ -18,7 +20,8 @@ class EditParentProfileScreen extends ConsumerStatefulWidget {
       _EditParentProfileScreenState();
 }
 
-class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScreen> {
+class _EditParentProfileScreenState
+    extends ConsumerState<EditParentProfileScreen> {
   late final TextEditingController _fullNameController;
   late final TextEditingController _phoneController;
   late final TextEditingController _addressController;
@@ -61,19 +64,21 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
     final success = await ref.read(parentEditProfileProvider.notifier).save();
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.parentProfileUpdatedSuccess)));
       context.pop();
       return;
     }
 
     final current = ref.read(parentEditProfileProvider);
-    final message = current.validationMessage ?? current.errorMessage;
-    if (message != null) {
+    final rawMessage = current.validationMessage ?? current.errorMessage;
+    if (rawMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+        SnackBar(content: Text(mapParentProfileError(l10n, rawMessage))),
       );
     }
   }
@@ -83,17 +88,20 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
     final state = ref.watch(parentEditProfileProvider);
     final notifier = ref.read(parentEditProfileProvider.notifier);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     _syncControllers(state);
 
     Widget body;
     if (state.isLoading) {
-      body = const Center(child: DashboardLoadingCard());
+      body = Center(
+        child: DashboardLoadingCard(message: l10n.parentProfileLoading),
+      );
     } else if (state.errorMessage != null && !_controllersSynced) {
       body = Padding(
         padding: context.dashPadding,
         child: DashboardErrorCard(
-          message: state.errorMessage!,
+          message: mapParentProfileError(l10n, state.errorMessage!),
           onRetry: notifier.initialize,
         ),
       );
@@ -113,13 +121,13 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
               onImageSelected: notifier.setPendingProfileImage,
               onImageError: (message) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(message)),
+                  SnackBar(content: Text(mapParentProfileError(l10n, message))),
                 );
               },
             ),
             SizedBox(height: context.dashSpacing),
             Text(
-              'Personal',
+              l10n.parentProfilePersonalSection,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -130,7 +138,7 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
               controller: _fullNameController,
               onChanged: notifier.setFullName,
               textInputAction: TextInputAction.next,
-              decoration: goalFieldDecoration('Full name'),
+              decoration: goalFieldDecoration(l10n.fieldFullName),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
@@ -138,11 +146,11 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
               onChanged: notifier.setPhone,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.next,
-              decoration: goalFieldDecoration('Phone'),
+              decoration: goalFieldDecoration(l10n.fieldPhone),
             ),
             SizedBox(height: context.dashSpacing * 1.1),
             Text(
-              'Parent Details',
+              l10n.parentProfileParentDetails,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: DashboardColors.textPrimary,
@@ -155,7 +163,7 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
               textInputAction: TextInputAction.next,
               minLines: 1,
               maxLines: 3,
-              decoration: goalFieldDecoration('Address'),
+              decoration: goalFieldDecoration(l10n.fieldAddress),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
@@ -163,19 +171,21 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
               onChanged: notifier.setRelationshipNotes,
               minLines: 3,
               maxLines: 6,
-              decoration: goalFieldDecoration('Relationship notes'),
+              decoration: goalFieldDecoration(
+                l10n.parentProfileRelationshipNotes,
+              ),
             ),
             if (state.validationMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.75),
               DashboardErrorCard(
-                message: state.validationMessage!,
+                message: mapParentProfileError(l10n, state.validationMessage!),
                 onRetry: _save,
               ),
             ],
             if (state.errorMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.75),
               DashboardErrorCard(
-                message: state.errorMessage!,
+                message: mapParentProfileError(l10n, state.errorMessage!),
                 onRetry: _save,
               ),
             ],
@@ -192,7 +202,11 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: Text(state.isSaving ? 'Saving...' : 'Save Changes'),
+              child: Text(
+                state.isSaving
+                    ? l10n.commonSaving
+                    : l10n.parentProfileSaveChanges,
+              ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             OutlinedButton(
@@ -207,7 +221,7 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
             SizedBox(height: context.dashSpacing),
           ],
@@ -216,7 +230,7 @@ class _EditParentProfileScreenState extends ConsumerState<EditParentProfileScree
     }
 
     return ParentPageScaffold(
-      title: 'Edit Profile',
+      title: l10n.parentProfileEditProfile,
       showBackButton: true,
       body: body,
     );

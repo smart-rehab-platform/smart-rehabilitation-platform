@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/auth_ui.dart';
+import '../../utils/auth_localization_utils.dart';
 import '../../utils/signup_wizard_helpers.dart';
 import 'signup_navigation_buttons.dart';
 
@@ -29,8 +31,10 @@ class SignupProfessionalInfoStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final specializationResult =
-        validateSpecialization(specializationController.text);
+    final l10n = AppLocalizations.of(context)!;
+    final specializationResult = validateSpecialization(
+      specializationController.text,
+    );
     final licenseResult = validateLicenseNumber(licenseNumberController.text);
     final yearsResult = validateYearsOfExperience(yearsController.text);
     final bioResult = validateBio(bioController.text);
@@ -40,8 +44,8 @@ class SignupProfessionalInfoStep extends StatelessWidget {
       children: [
         AuthInputField(
           controller: specializationController,
-          label: 'Specialization',
-          hintText: 'Speech Therapy',
+          label: l10n.fieldSpecialization,
+          hintText: l10n.signupSpecializationHint,
           icon: Icons.work_outline_rounded,
           textInputAction: TextInputAction.next,
           textCapitalization: TextCapitalization.words,
@@ -52,15 +56,15 @@ class SignupProfessionalInfoStep extends StatelessWidget {
             final sideBySide = constraints.maxWidth >= 340;
             final licenseField = AuthInputField(
               controller: licenseNumberController,
-              label: 'License Number',
-              hintText: 'License Number',
+              label: l10n.fieldLicenseNumber,
+              hintText: l10n.fieldLicenseNumber,
               icon: Icons.badge_outlined,
               textInputAction: TextInputAction.next,
             );
             final yearsField = AuthInputField(
               controller: yearsController,
-              label: 'Years of Experience',
-              hintText: 'Years of Experience',
+              label: l10n.fieldYearsOfExperience,
+              hintText: l10n.fieldYearsOfExperience,
               icon: Icons.numbers_rounded,
               keyboardType: TextInputType.number,
               textInputAction: TextInputAction.next,
@@ -78,11 +82,7 @@ class SignupProfessionalInfoStep extends StatelessWidget {
             }
 
             return Column(
-              children: [
-                licenseField,
-                const SizedBox(height: 12),
-                yearsField,
-              ],
+              children: [licenseField, const SizedBox(height: 12), yearsField],
             );
           },
         ),
@@ -90,7 +90,9 @@ class SignupProfessionalInfoStep extends StatelessWidget {
         _BioField(
           controller: bioController,
           isValid: bioResult.valid,
-          message: bioResult.valid ? null : bioResult.message,
+          message: bioResult.valid
+              ? null
+              : mapSignupValidationMessage(l10n, bioResult.message),
         ),
         if (!canContinue &&
             (!specializationResult.valid ||
@@ -104,7 +106,7 @@ class SignupProfessionalInfoStep extends StatelessWidget {
           onBack: onBack,
           onContinue: onContinue,
           continueEnabled: canContinue,
-          continueLabel: 'Continue',
+          continueLabel: l10n.commonContinue,
         ),
       ],
     );
@@ -124,6 +126,7 @@ class _BioField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final length = controller.text.length;
     final borderColor = !isValid && length > 500
         ? AppColors.danger
@@ -133,7 +136,7 @@ class _BioField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Bio',
+          l10n.fieldBio,
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -157,8 +160,8 @@ class _BioField extends StatelessWidget {
                 color: AppColors.white,
               ),
               decoration: InputDecoration(
-                hintText: 'Brief professional bio',
-                counterText: '$length / 500',
+                hintText: l10n.signupBioHint,
+                counterText: l10n.signupBioCounter(length),
                 hintStyle: GoogleFonts.inter(
                   fontSize: 13,
                   color: AppColors.authPlaceholder,
@@ -188,10 +191,7 @@ class _BioField extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             message!,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              color: AppColors.danger,
-            ),
+            style: GoogleFonts.inter(fontSize: 10, color: AppColors.danger),
           ),
         ],
       ],

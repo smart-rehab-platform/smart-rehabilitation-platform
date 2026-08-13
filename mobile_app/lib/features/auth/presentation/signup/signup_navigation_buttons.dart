@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/auth_ui.dart';
@@ -24,6 +25,8 @@ class SignupNavigationButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         if (showBack) ...[
@@ -41,7 +44,7 @@ class SignupNavigationButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Back',
+                l10n.commonBack,
                 style: GoogleFonts.inter(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,

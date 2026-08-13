@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/api_client.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/specialist_reports_repository.dart';
+import '../models/specialist_ai_report_generation.dart';
+import '../models/specialist_regular_report_creation.dart';
 import '../models/specialist_reports_models.dart';
 
 final specialistReportsRepositoryProvider =
@@ -13,7 +15,11 @@ final specialistReportsRepositoryProvider =
 class SpecialistReportsState {
   const SpecialistReportsState({
     this.isLoading = false,
+    this.isGeneratingAiReport = false,
+    this.isCreatingRegularReport = false,
     this.errorMessage,
+    this.generationError,
+    this.regularCreationError,
     this.reports = const [],
     this.searchQuery = '',
     this.filter = SpecialistReportFilter.all,
@@ -21,7 +27,11 @@ class SpecialistReportsState {
   });
 
   final bool isLoading;
+  final bool isGeneratingAiReport;
+  final bool isCreatingRegularReport;
   final String? errorMessage;
+  final String? generationError;
+  final String? regularCreationError;
   final List<SpecialistReportListItem> reports;
   final String searchQuery;
   final SpecialistReportFilter filter;
@@ -44,7 +54,11 @@ class SpecialistReportsState {
 
   SpecialistReportsState copyWith({
     bool? isLoading,
+    bool? isGeneratingAiReport,
+    bool? isCreatingRegularReport,
     Object? errorMessage = _sentinel,
+    Object? generationError = _sentinel,
+    Object? regularCreationError = _sentinel,
     List<SpecialistReportListItem>? reports,
     String? searchQuery,
     SpecialistReportFilter? filter,
@@ -52,9 +66,19 @@ class SpecialistReportsState {
   }) {
     return SpecialistReportsState(
       isLoading: isLoading ?? this.isLoading,
+      isGeneratingAiReport:
+          isGeneratingAiReport ?? this.isGeneratingAiReport,
+      isCreatingRegularReport:
+          isCreatingRegularReport ?? this.isCreatingRegularReport,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
+      generationError: identical(generationError, _sentinel)
+          ? this.generationError
+          : generationError as String?,
+      regularCreationError: identical(regularCreationError, _sentinel)
+          ? this.regularCreationError
+          : regularCreationError as String?,
       reports: reports ?? this.reports,
       searchQuery: searchQuery ?? this.searchQuery,
       filter: filter ?? this.filter,
@@ -133,6 +157,128 @@ class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
 
   void setFilter(SpecialistReportFilter filter) =>
       state = state.copyWith(filter: filter);
+
+  void clearGenerationError() {
+    if (state.generationError != null) {
+      state = state.copyWith(generationError: null);
+    }
+  }
+
+  Future<bool> generateAiReport({
+    required String patientId,
+    required SpecialistAiReportType type,
+    required DateTime periodStart,
+    required DateTime periodEnd,
+  }) async {
+    if (state.isGeneratingAiReport) {
+      return false;
+    }
+
+    final validationError = validateSpecialistAiReportGeneration(
+      patientId: patientId,
+      type: type,
+      periodStart: periodStart,
+      periodEnd: periodEnd,
+    );
+    if (validationError != null) {
+      state = state.copyWith(generationError: validationError);
+      return false;
+    }
+
+    _ensureAuthToken();
+    state = state.copyWith(
+      isGeneratingAiReport: true,
+      generationError: null,
+    );
+
+    try {
+      await _repository.generateAiReport(
+        SpecialistAiReportGenerateRequest(
+          patientId: patientId,
+          type: type,
+          periodStart: periodStart,
+          periodEnd: periodEnd,
+        ),
+      );
+      state = state.copyWith(isGeneratingAiReport: false);
+      await refresh();
+      return true;
+    } on SpecialistAiReportGenerationException catch (error) {
+      state = state.copyWith(
+        isGeneratingAiReport: false,
+        generationError: error.message,
+      );
+      return false;
+    } catch (error) {
+      state = state.copyWith(
+        isGeneratingAiReport: false,
+        generationError: error.toString(),
+      );
+      return false;
+    }
+  }
+
+  void clearRegularCreationError() {
+    if (state.regularCreationError != null) {
+      state = state.copyWith(regularCreationError: null);
+    }
+  }
+
+  /// Creates a regular report, then refreshes the existing Reports list.
+  /// Independent of AI generation and PDF export state.
+  Future<bool> createRegularReport({
+    required String patientId,
+    required SpecialistRegularReportType reportType,
+    String? title,
+    String? summary,
+  }) async {
+    if (state.isCreatingRegularReport) {
+      return false;
+    }
+
+    final validationError = validateSpecialistRegularReportCreation(
+      patientId: patientId,
+      reportType: reportType,
+      title: title,
+      summary: summary,
+    );
+    if (validationError != null) {
+      state = state.copyWith(regularCreationError: validationError);
+      return false;
+    }
+
+    _ensureAuthToken();
+    state = state.copyWith(
+      isCreatingRegularReport: true,
+      regularCreationError: null,
+    );
+
+    try {
+      await _repository.createRegularReport(
+        SpecialistRegularReportCreateRequest(
+          patientId: patientId.trim(),
+          reportType: reportType,
+          title: title,
+          summary: summary,
+        ),
+      );
+      state = state.copyWith(isCreatingRegularReport: false);
+      await refresh();
+      return true;
+    } on SpecialistRegularReportCreationException catch (error) {
+      state = state.copyWith(
+        isCreatingRegularReport: false,
+        regularCreationError: error.message,
+      );
+      return false;
+    } catch (error) {
+      state = state.copyWith(
+        isCreatingRegularReport: false,
+        regularCreationError: error.toString(),
+      );
+      return false;
+    }
+  }
 }
 
 class SpecialistReportDetailState {

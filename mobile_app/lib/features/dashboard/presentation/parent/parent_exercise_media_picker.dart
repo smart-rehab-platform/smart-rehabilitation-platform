@@ -10,8 +10,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
+import 'parent_extended_localization_utils.dart';
 
 class ParentExerciseMediaSelection {
   const ParentExerciseMediaSelection({
@@ -71,9 +73,10 @@ Future<void> showPermissionRequiredSnackBar(BuildContext context) async {
   if (!context.mounted) {
     return;
   }
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Permission is required to add media.')),
-  );
+  final l10n = AppLocalizations.of(context)!;
+  ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text(l10n.parentMediaPermissionRequired)));
 }
 
 Future<void> showAddExerciseMediaSheet({
@@ -92,6 +95,7 @@ Future<void> showAddExerciseMediaSheet({
       ),
     ),
     builder: (sheetContext) {
+      final l10n = AppLocalizations.of(sheetContext)!;
       return SafeArea(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
@@ -116,23 +120,23 @@ Future<void> showAddExerciseMediaSheet({
               ),
               SizedBox(height: context.dashSpacing * 0.75),
               Text(
-                'Add media',
+                l10n.parentMediaAdd,
                 style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: DashboardColors.textPrimary,
-                    ),
+                  fontWeight: FontWeight.w700,
+                  color: DashboardColors.textPrimary,
+                ),
               ),
               SizedBox(height: context.dashSpacing * 0.35),
               Text(
-                'Optional photo, video, or audio for the specialist.',
+                l10n.parentMediaAddDescription,
                 style: Theme.of(sheetContext).textTheme.bodySmall?.copyWith(
-                      color: DashboardColors.textSecondary,
-                    ),
+                  color: DashboardColors.textSecondary,
+                ),
               ),
               SizedBox(height: context.dashSpacing * 0.75),
               _MediaSheetTile(
                 icon: Icons.folder_open_outlined,
-                label: 'Choose from gallery / files',
+                label: l10n.parentMediaChooseFromGallery,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   await onChooseFiles();
@@ -140,7 +144,7 @@ Future<void> showAddExerciseMediaSheet({
               ),
               _MediaSheetTile(
                 icon: Icons.videocam_outlined,
-                label: 'Record video',
+                label: l10n.parentMediaRecordVideo,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   await onRecordVideo();
@@ -148,7 +152,7 @@ Future<void> showAddExerciseMediaSheet({
               ),
               _MediaSheetTile(
                 icon: Icons.mic_none_outlined,
-                label: 'Record audio',
+                label: l10n.parentMediaRecordAudio,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   await onRecordAudio();
@@ -156,7 +160,7 @@ Future<void> showAddExerciseMediaSheet({
               ),
               _MediaSheetTile(
                 icon: Icons.photo_camera_outlined,
-                label: 'Take photo',
+                label: l10n.parentMediaTakePhoto,
                 onTap: () async {
                   Navigator.of(sheetContext).pop();
                   await onTakePhoto();
@@ -199,15 +203,12 @@ class _MediaSheetTile extends StatelessWidget {
               child: Text(
                 label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: DashboardColors.textPrimary,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: DashboardColors.textPrimary,
+                ),
               ),
             ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: DashboardColors.textMuted,
-            ),
+            Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
           ],
         ),
       ),
@@ -330,7 +331,8 @@ class _ExerciseAudioRecorderSheet extends StatefulWidget {
       _ExerciseAudioRecorderSheetState();
 }
 
-class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet> {
+class _ExerciseAudioRecorderSheetState
+    extends State<_ExerciseAudioRecorderSheet> {
   final _recorder = AudioRecorder();
   bool _isRecording = false;
   bool _isBusy = false;
@@ -381,11 +383,10 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
       });
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not record audio. Please try again.'),
-          ),
-        );
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.parentMediaRecordFailed)));
       }
     } finally {
       if (mounted) {
@@ -405,11 +406,10 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
       final resolvedPath = path ?? _recordedPath;
       if (resolvedPath == null || !File(resolvedPath).existsSync()) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not record audio. Please try again.'),
-            ),
-          );
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.parentMediaRecordFailed)));
         }
         return;
       }
@@ -417,11 +417,10 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
       final bytes = await File(resolvedPath).readAsBytes();
       if (bytes.isEmpty) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not record audio. Please try again.'),
-            ),
-          );
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.parentMediaRecordFailed)));
         }
         return;
       }
@@ -438,11 +437,10 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
       );
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not record audio. Please try again.'),
-          ),
-        );
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.parentMediaRecordFailed)));
       }
     } finally {
       if (mounted) {
@@ -465,6 +463,7 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return SafeArea(
@@ -491,7 +490,7 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
             ),
             SizedBox(height: context.dashSpacing * 0.75),
             Text(
-              'Record audio',
+              l10n.parentMediaRecordAudio,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -499,8 +498,8 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
             SizedBox(height: context.dashSpacing * 0.35),
             Text(
               _isRecording
-                  ? 'Recording in progress...'
-                  : 'Tap start, then stop when finished.',
+                  ? l10n.parentMediaRecordingInProgress
+                  : l10n.parentMediaTapStartStop,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -518,7 +517,9 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
                   SizedBox(width: context.dashSpacing * 0.65),
                   Expanded(
                     child: Text(
-                      _isRecording ? 'Recording audio' : 'Ready to record',
+                      _isRecording
+                          ? l10n.parentMediaRecordingAudio
+                          : l10n.parentMediaReadyToRecord,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -532,7 +533,7 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
               ElevatedButton.icon(
                 onPressed: _isBusy ? null : _startRecording,
                 icon: const Icon(Icons.fiber_manual_record),
-                label: const Text('Start Recording'),
+                label: Text(l10n.parentMediaStartRecording),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DashboardColors.brandCyan,
                   foregroundColor: Colors.white,
@@ -545,7 +546,7 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
               ElevatedButton.icon(
                 onPressed: _isBusy ? null : _stopRecording,
                 icon: const Icon(Icons.stop_rounded),
-                label: const Text('Stop Recording'),
+                label: Text(l10n.parentMediaStopRecording),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DashboardColors.warning,
                   foregroundColor: Colors.white,
@@ -557,7 +558,7 @@ class _ExerciseAudioRecorderSheetState extends State<_ExerciseAudioRecorderSheet
             SizedBox(height: context.dashSpacing * 0.5),
             TextButton(
               onPressed: _isBusy ? null : _cancel,
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
           ],
         ),
@@ -580,6 +581,7 @@ class ParentExerciseMediaSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Column(
@@ -588,10 +590,12 @@ class ParentExerciseMediaSection extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onAddMedia,
           icon: const Icon(Icons.add_photo_alternate_outlined),
-          label: const Text('Add media'),
+          label: Text(l10n.parentMediaAdd),
           style: OutlinedButton.styleFrom(
             foregroundColor: DashboardColors.brandCyan,
-            side: BorderSide(color: DashboardColors.brandCyan.withValues(alpha: 0.35)),
+            side: BorderSide(
+              color: DashboardColors.brandCyan.withValues(alpha: 0.35),
+            ),
             padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.75),
           ),
         ),
@@ -626,7 +630,10 @@ class ParentExerciseMediaSection extends StatelessWidget {
                       ),
                       SizedBox(height: context.dashSpacing * 0.1),
                       Text(
-                        '${selection!.displayLabel} attached',
+                        formatParentExerciseMediaAttachedLabel(
+                          l10n,
+                          selection!.mediaType,
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: DashboardColors.textSecondary,
                         ),
@@ -635,7 +642,7 @@ class ParentExerciseMediaSection extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Remove media',
+                  tooltip: l10n.parentMediaRemoveTooltip,
                   onPressed: onRemoveMedia,
                   icon: Icon(
                     Icons.close_rounded,

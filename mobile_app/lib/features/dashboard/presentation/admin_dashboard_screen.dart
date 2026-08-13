@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/admin_dashboard_provider.dart';
 import '../providers/specialist_features_provider.dart';
@@ -13,6 +14,7 @@ import '../widgets/dashboard_bottom_nav.dart';
 import '../widgets/dashboard_components.dart';
 import '../widgets/dashboard_layout.dart';
 import '../widgets/parent_dashboard_cards.dart';
+import 'admin/admin_scoped_localization_utils.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -37,6 +39,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final state = ref.watch(adminDashboardProvider);
     final authUser = ref.watch(authProvider).user;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final adminDisplayName = authUser?.fullName.trim();
     final userDisplayName =
         (adminDisplayName != null && adminDisplayName.isNotEmpty)
@@ -44,7 +47,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         : state.userName?.trim();
     final greetingName = userDisplayName != null && userDisplayName.isNotEmpty
         ? userDisplayName
-        : 'Admin';
+        : l10n.roleAdmin;
+    final periodLabel = localizedSystemActivityPeriodLabel(
+      l10n,
+      weekOffset: state.systemActivityWeekOffset,
+      weekStart: state.weeklySystemActivity.weekStart,
+      weekEnd: state.weeklySystemActivity.weekEnd,
+    );
 
     return AdminPageScaffold(
       title: '',
@@ -55,10 +64,12 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                DashboardGreeting(message: 'Welcome, $greetingName'),
+                DashboardGreeting(
+                  message: l10n.adminDashboardWelcome(greetingName),
+                ),
                 const SizedBox(height: 6),
                 Text(
-                  'Manage your rehabilitation platform from one place.',
+                  l10n.adminDashboardSubtitle,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
@@ -86,7 +97,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Patient Assignments',
+                              l10n.navPatientAssignments,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w800,
                                 color: DashboardColors.textPrimary,
@@ -95,7 +106,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                             ),
                             SizedBox(height: context.dashSpacing * 0.15),
                             Text(
-                              'Assign specialists and link parents to patients',
+                              l10n.adminDashboardPatientAssignmentsHint,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.bodySmall?.copyWith(
@@ -117,7 +128,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 if (state.errorMessage != null) ...[
                   SizedBox(height: context.dashSpacing * 0.75),
                   DashboardErrorCard(
-                    message: state.errorMessage!,
+                    message: mapAdminDashboardError(l10n, state.errorMessage!),
                     onRetry: () =>
                         ref.read(adminDashboardProvider.notifier).refresh(),
                   ),
@@ -129,10 +140,11 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   cards: [
                     DashboardSummaryCard(
                       compact: true,
-                      label: 'Users',
+                      label: l10n.entityUsers,
                       value: '${state.overview.totalUsers}',
-                      subtitle:
-                          '+${state.overview.newSignupsThisWeek} this week',
+                      subtitle: l10n.adminDashboardNewSignupsThisWeek(
+                        state.overview.newSignupsThisWeek,
+                      ),
                       icon: Icons.groups_outlined,
                       iconBackground: DashboardColors.blueSoft,
                       iconColor: const Color(0xFF3B82F6),
@@ -140,7 +152,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     ),
                     DashboardSummaryCard(
                       compact: true,
-                      label: 'Patients',
+                      label: l10n.entityPatients,
                       value: '${state.overview.totalPatients}',
                       icon: Icons.person_outline_rounded,
                       iconBackground: DashboardColors.tealSoft,
@@ -149,7 +161,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     ),
                     DashboardSummaryCard(
                       compact: true,
-                      label: 'Specialists',
+                      label: l10n.adminDashboardSpecialists,
                       value: '${state.overview.totalSpecialists}',
                       icon: Icons.medical_services_outlined,
                       iconBackground: DashboardColors.tealSoft,
@@ -158,9 +170,9 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     ),
                     DashboardSummaryCard(
                       compact: true,
-                      label: 'New Signups',
+                      label: l10n.adminDashboardNewSignups,
                       value: '${state.overview.newSignupsThisWeek}',
-                      subtitle: 'This week',
+                      subtitle: l10n.adminDashboardThisWeek,
                       labelMaxLines: 2,
                       icon: Icons.person_add_alt_1_outlined,
                       iconBackground: DashboardColors.amberSoft,
@@ -174,7 +186,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        'System Analytics',
+                        l10n.adminDashboardSystemAnalytics,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: DashboardColors.textPrimary,
@@ -182,7 +194,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       ),
                     ),
                     AdminSystemAnalyticsPeriodControls(
-                      periodLabel: state.selectedSystemActivityPeriodLabel,
+                      periodLabel: periodLabel,
                       selectedWeekOffset: state.systemActivityWeekOffset,
                       canGoForward: state.systemActivityWeekOffset > 0,
                       isLoading: state.isSystemActivityLoading,
@@ -207,7 +219,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 SizedBox(height: context.dashSpacing * 0.75),
                 if (state.systemActivityErrorMessage != null)
                   DashboardErrorCard(
-                    message: state.systemActivityErrorMessage!,
+                    message: mapAdminSystemActivityError(
+                      l10n,
+                      state.systemActivityErrorMessage!,
+                    ),
                     onRetry: () => ref
                         .read(adminDashboardProvider.notifier)
                         .setSystemActivityWeekOffset(
@@ -234,12 +249,12 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   ),
                 SizedBox(height: context.dashSpacing * 1.2),
                 AdminSectionHeader(
-                  title: 'Recent Users',
+                  title: l10n.adminDashboardRecentUsers,
                   onActionTap: () => context.push(AppRoutes.adminUsers),
                 ),
                 SizedBox(height: context.dashSpacing * 0.5),
                 if (state.recentUsers.isEmpty)
-                  const DashboardEmptyCard(message: 'No users found.')
+                  DashboardEmptyCard(message: l10n.adminDashboardNoUsers)
                 else
                   Column(
                     children: [
@@ -314,7 +329,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                       height: context.dashSpacing * 0.15,
                                     ),
                                     Text(
-                                      state.recentUsers[i].role,
+                                      localizedAdminRole(
+                                        l10n,
+                                        state.recentUsers[i].role,
+                                      ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: theme.textTheme.bodySmall

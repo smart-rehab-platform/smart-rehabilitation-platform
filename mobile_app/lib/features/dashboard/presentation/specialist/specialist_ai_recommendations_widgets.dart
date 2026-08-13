@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_ai_recommendations_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
@@ -9,10 +10,7 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 
 class AiRecommendationsHeaderCard extends StatelessWidget {
-  const AiRecommendationsHeaderCard({
-    super.key,
-    required this.patientName,
-  });
+  const AiRecommendationsHeaderCard({super.key, required this.patientName});
 
   final String patientName;
 
@@ -66,6 +64,7 @@ class AiRecommendationsGenerateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -92,11 +91,12 @@ class AiRecommendationsGenerateCard extends StatelessWidget {
             onPressed: isGenerating ? null : onGenerateExercise,
             icon: _buttonIcon(
               context,
-              isActive: generatingType == AiRecommendationType.exerciseSuggestion,
+              isActive:
+                  generatingType == AiRecommendationType.exerciseSuggestion,
             ),
             label: Text(
               generatingType == AiRecommendationType.exerciseSuggestion
-                  ? 'Generating...'
+                  ? l10n.commonProcessing
                   : 'Generate Exercise Suggestion',
             ),
             style: ElevatedButton.styleFrom(
@@ -120,7 +120,7 @@ class AiRecommendationsGenerateCard extends StatelessWidget {
             ),
             label: Text(
               generatingType == AiRecommendationType.planAdjustment
-                  ? 'Generating...'
+                  ? l10n.commonProcessing
                   : 'Generate Plan Adjustment',
             ),
             style: OutlinedButton.styleFrom(
@@ -177,6 +177,7 @@ class AiRecommendationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final details = recommendation.details;
     final dateLabel = recommendation.generatedAt != null
@@ -294,7 +295,9 @@ class AiRecommendationCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text(isUpdating ? 'Saving...' : 'Accept'),
+                      child: Text(
+                        isUpdating ? l10n.commonProcessing : l10n.commonApprove,
+                      ),
                     ),
                   ),
                   SizedBox(width: context.dashSpacing * 0.4),
@@ -313,7 +316,7 @@ class AiRecommendationCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Reject'),
+                      child: Text(l10n.commonReject),
                     ),
                   ),
                 ],
@@ -357,9 +360,9 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       title,
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: DashboardColors.textPrimary,
-          ),
+        fontWeight: FontWeight.w700,
+        color: DashboardColors.textPrimary,
+      ),
     );
   }
 }
@@ -374,9 +377,9 @@ class _SectionBody extends StatelessWidget {
     return Text(
       text,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: DashboardColors.textSecondary,
-            height: 1.4,
-          ),
+        color: DashboardColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 }

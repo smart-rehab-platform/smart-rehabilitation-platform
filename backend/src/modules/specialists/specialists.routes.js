@@ -32,6 +32,13 @@ router.get(
   specialistsController.getSpecialistById
 );
 
+router.get(
+  "/specialists/:id/complaints-summary",
+  authenticate,
+  authorizeRoles("admin"),
+  require("../complaints/complaints.controller").getSpecialistComplaintsSummary
+);
+
 router.put(
   "/specialists/:id/profile",
   authenticate,
