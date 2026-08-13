@@ -93,13 +93,30 @@ class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
     _ensureAuthToken();
     state = state.copyWith(isLoading: true, errorMessage: null);
 
+    final specialistUserId = _ref.read(authProvider).user?.id?.trim();
+    if (specialistUserId == null || specialistUserId.isEmpty) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Please sign in to view reports.',
+      );
+      return;
+    }
+
     try {
-      final reports = await _repository.fetchReports(patientId: _patientId);
+      final reports = await _repository.fetchReports(
+        specialistUserId: specialistUserId,
+        patientId: _patientId,
+      );
       final hasAi = reports.any((report) => report.isAiReport);
       state = state.copyWith(
         isLoading: false,
         reports: reports,
         hasAiReports: hasAi,
+      );
+    } on SpecialistReportScopeException catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: error.toString(),
       );
     } catch (error) {
       state = state.copyWith(

@@ -4,13 +4,17 @@
 export const SPECIALIST_WEB_ROUTES = {
   dashboard: "/dashboard/specialist",
   patients: "/dashboard/specialist/patients",
+  caseRequests: "/dashboard/specialist/case-requests",
   reviews: "/dashboard/specialist/reviews",
   sessions: "/dashboard/specialist/sessions",
+  exercises: "/dashboard/specialist/exercises",
   treatmentPlans: "/dashboard/specialist/treatment-plans",
   progress: "/dashboard/specialist/progress",
   messages: "/dashboard/specialist/messages",
   notifications: "/dashboard/specialist/notifications",
   reports: "/dashboard/specialist/reports",
+  profile: "/dashboard/specialist/profile",
+  profileEdit: "/dashboard/specialist/profile/edit",
   login: "/login",
 };
 
@@ -18,24 +22,21 @@ export const SPECIALIST_WEB_ROUTES = {
 export const SPECIALIST_SIDEBAR_NAV_ROUTE_KEYS = {
   dashboard: "dashboard",
   patients: "patients",
+  caseRequests: "caseRequests",
   exercises: "exercises",
   sessions: "sessions",
   reviews: "reviews",
   treatmentPlans: "treatmentPlans",
   reports: "reports",
   messages: "messages",
-  ai: "ai",
   notifications: "notifications",
   profile: "profile",
 };
 
 /** Temporary placeholder destinations until feature pages ship. */
 export const SPECIALIST_PLACEHOLDER_FEATURES = {
-  reviews: { title: "Reviews" },
   sessions: { title: "Sessions" },
-  treatmentPlans: { title: "Treatment Plans" },
   progress: { title: "Patient Progress" },
-  reports: { title: "Reports" },
   patientGoals: { title: "Manage Goals" },
   assignExercise: { title: "Assign Exercise" },
   aiRecommendations: { title: "AI Recommendations" },
@@ -43,10 +44,6 @@ export const SPECIALIST_PLACEHOLDER_FEATURES = {
 };
 
 export const SPECIALIST_NAV_UNAVAILABLE = {
-  exercises: "Exercises are not available on web yet.",
-  reports: "Reports are not available on web yet.",
-  ai: "AI & Insights are not available on web yet.",
-  profile: "Profile is not available on web yet.",
   generic: "This feature is not available on web yet.",
 };
 
@@ -58,11 +55,15 @@ const IMPLEMENTED_SPECIALIST_PATHS = new Set(
 
 const SIDEBAR_ACTIVE_ROUTE_MATCHERS = [
   { prefix: SPECIALIST_WEB_ROUTES.patients, navId: "patients" },
+  { prefix: SPECIALIST_WEB_ROUTES.caseRequests, navId: "caseRequests" },
   { prefix: SPECIALIST_WEB_ROUTES.reviews, navId: "reviews" },
+  { prefix: SPECIALIST_WEB_ROUTES.reports, navId: "reports" },
   { prefix: SPECIALIST_WEB_ROUTES.sessions, navId: "sessions" },
+  { prefix: SPECIALIST_WEB_ROUTES.exercises, navId: "exercises" },
   { prefix: SPECIALIST_WEB_ROUTES.treatmentPlans, navId: "treatmentPlans" },
   { prefix: SPECIALIST_WEB_ROUTES.messages, navId: "messages" },
   { prefix: SPECIALIST_WEB_ROUTES.notifications, navId: "notifications" },
+  { prefix: SPECIALIST_WEB_ROUTES.profile, navId: "profile" },
 ];
 
 /** Sentinel active id when no sidebar item should be highlighted. */
@@ -92,8 +93,16 @@ export function buildSpecialistPatientAiRecommendationsPath(patientId) {
   return `${buildSpecialistPatientDetailPath(patientId)}/ai-recommendations`;
 }
 
-export function buildSpecialistPatientSpeechAnalysisPath(patientId) {
-  return `${buildSpecialistPatientDetailPath(patientId)}/speech-analysis`;
+export function buildSpecialistPatientSpeechAnalysisPath(patientId, submissionId = null) {
+  const base = `${buildSpecialistPatientDetailPath(patientId)}/speech-analysis`;
+  if (!submissionId) {
+    return base;
+  }
+  return `${base}?submissionId=${encodeURIComponent(submissionId)}`;
+}
+
+export function buildSpecialistReviewExercisePath(submissionId) {
+  return `${SPECIALIST_WEB_ROUTES.reviews}/${encodeURIComponent(submissionId)}`;
 }
 
 export function buildSpecialistPatientAssignExercisePath(patientId, planId) {
@@ -109,6 +118,16 @@ export function buildSpecialistPatientReportsPath(patientId) {
     return SPECIALIST_WEB_ROUTES.reports;
   }
   return `${SPECIALIST_WEB_ROUTES.reports}?patientId=${encodeURIComponent(patientId)}`;
+}
+
+export function buildSpecialistReportDetailsPath(reportId, { isAi = false, patientId = null } = {}) {
+  const params = new URLSearchParams();
+  params.set("ai", isAi ? "1" : "0");
+  if (patientId) {
+    params.set("patientId", patientId);
+  }
+  const query = params.toString();
+  return `${SPECIALIST_WEB_ROUTES.reports}/${encodeURIComponent(reportId)}?${query}`;
 }
 
 export function buildSpecialistCreateTreatmentPlanPath(patientId, patientName = "") {
@@ -127,6 +146,68 @@ export function buildSpecialistCreateTreatmentPlanPath(patientId, patientName = 
 
 export function buildSpecialistEditTreatmentPlanPath(planId) {
   return `${SPECIALIST_WEB_ROUTES.treatmentPlans}/${encodeURIComponent(planId)}/edit`;
+}
+
+export function buildSpecialistExerciseDetailPath(exerciseId) {
+  return `${SPECIALIST_WEB_ROUTES.exercises}/${encodeURIComponent(exerciseId)}`;
+}
+
+export function buildSpecialistExerciseEditPath(exerciseId) {
+  return `${buildSpecialistExerciseDetailPath(exerciseId)}/edit`;
+}
+
+export function buildSpecialistCreateExercisePath() {
+  return `${SPECIALIST_WEB_ROUTES.exercises}/new`;
+}
+
+export function buildSpecialistCaseRequestDetailPath(caseRequestId) {
+  return `${SPECIALIST_WEB_ROUTES.caseRequests}/${encodeURIComponent(caseRequestId)}`;
+}
+
+export function buildSpecialistProfilePath() {
+  return SPECIALIST_WEB_ROUTES.profile;
+}
+
+export function buildSpecialistEditProfilePath() {
+  return SPECIALIST_WEB_ROUTES.profileEdit;
+}
+
+export function buildSpecialistCreateSessionPath(patientId = null, notes = null) {
+  const params = new URLSearchParams();
+  if (patientId) {
+    params.set("patientId", patientId);
+  }
+  if (notes) {
+    params.set("notes", notes);
+  }
+  const query = params.toString();
+  return query
+    ? `${SPECIALIST_WEB_ROUTES.sessions}/new?${query}`
+    : `${SPECIALIST_WEB_ROUTES.sessions}/new`;
+}
+
+export function buildSpecialistSessionsPath(options = null) {
+  const normalized = typeof options === "string"
+    ? { view: options }
+    : (options && typeof options === "object" ? options : {});
+
+  const params = new URLSearchParams();
+
+  if (normalized.view === "calendar") {
+    params.set("view", "calendar");
+  }
+
+  const filter = typeof normalized.filter === "string"
+    ? normalized.filter.trim().toLowerCase()
+    : "";
+  if (filter && filter !== "all") {
+    params.set("filter", filter);
+  }
+
+  const query = params.toString();
+  return query
+    ? `${SPECIALIST_WEB_ROUTES.sessions}?${query}`
+    : SPECIALIST_WEB_ROUTES.sessions;
 }
 
 /**
@@ -157,7 +238,14 @@ export function isImplementedSpecialistPath(path) {
 
   return pathname.startsWith(`${SPECIALIST_WEB_ROUTES.messages}/`)
     || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.patients}/`)
-    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.treatmentPlans}/`);
+    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.caseRequests}/`)
+    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.reviews}/`)
+    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.reports}/`)
+    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.sessions}/`)
+    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.exercises}/`)
+    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.treatmentPlans}/`)
+    || pathname === SPECIALIST_WEB_ROUTES.profile
+    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.profile}/`);
 }
 
 /**

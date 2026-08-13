@@ -5,9 +5,9 @@ import {
   Check,
   MessageSquare,
   Mic,
-  Sparkles,
   TrendingUp,
 } from "lucide-react";
+import neurologyIcon from "../../assets/icons/neurology.svg";
 import { L } from "./landingTokens";
 
 const PROGRESS_PERCENT = 67;
@@ -56,7 +56,7 @@ const AI_WIDGETS = [
   { icon: Mic, label: "Speech Analysis" },
   { icon: Activity, label: "Weekly Summary" },
   { icon: TrendingUp, label: "Progress Score" },
-  { icon: Sparkles, label: "AI Recommendation" },
+  { iconSrc: neurologyIcon, label: "AI Recommendation" },
 ];
 
 const cardStyle = {
@@ -227,13 +227,22 @@ function AiProgressPreview() {
         <CircularProgress value={92} />
       </div>
       <div className="grid grid-cols-2 gap-1.5">
-        {AI_WIDGETS.map(({ icon: Icon, label }) => (
+        {AI_WIDGETS.map(({ icon: Icon, iconSrc, label }) => (
           <div
             key={label}
             className="rounded-lg px-2 py-1.5"
             style={{ background: L.accentMuted, border: `1px solid ${L.journeyCardBorder}` }}
           >
-            <Icon size={12} style={{ color: L.primarySecondary }} aria-hidden="true" />
+            {iconSrc ? (
+              <img
+                src={iconSrc}
+                alt=""
+                aria-hidden="true"
+                style={{ width: 12, height: 12, display: "block", objectFit: "contain" }}
+              />
+            ) : (
+              <Icon size={12} style={{ color: L.primarySecondary }} aria-hidden="true" />
+            )}
             <p
               className="mt-0.5 text-[9px] leading-tight"
               style={{ color: L.textMuted, fontFamily: "'Inter', sans-serif" }}

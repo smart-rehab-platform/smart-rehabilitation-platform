@@ -12,6 +12,7 @@ import {
   buildSpecialistPatientSpeechAnalysisPath,
   buildSpecialistCreateTreatmentPlanPath,
   buildSpecialistEditTreatmentPlanPath,
+  buildSpecialistReviewExercisePath,
 } from "../../routes/specialistDashboardRoutes";
 import { useSpecialistPatientDetails } from "./hooks/useSpecialistPatientDetails";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
@@ -126,7 +127,21 @@ export default function SpecialistPatientDetailsPage() {
   }, [addNote, showToast]);
 
   const handleReviewExercises = useCallback(() => {
+    const pending = (details?.recentSubmissions || []).filter(
+      (submission) => submission.reviewStatusRaw === "pending",
+    );
+    if (pending.length > 0 && pending[0].id) {
+      navigate(buildSpecialistReviewExercisePath(pending[0].id));
+      return;
+    }
     navigate(SPECIALIST_WEB_ROUTES.reviews);
+  }, [details, navigate]);
+
+  const handleSubmissionClick = useCallback((submission) => {
+    if (!submission?.id) {
+      return;
+    }
+    navigate(buildSpecialistReviewExercisePath(submission.id));
   }, [navigate]);
 
   const handleAssignExercise = useCallback(() => {
@@ -222,6 +237,7 @@ export default function SpecialistPatientDetailsPage() {
           <SpecialistRecentSubmissions
             submissions={details.recentSubmissions}
             onReviewExercises={handleReviewExercises}
+            onSubmissionClick={handleSubmissionClick}
           />
         </div>
 
@@ -278,7 +294,7 @@ export default function SpecialistPatientDetailsPage() {
       >
         <div className="pd-task-hub-page">
           <div className="pd-task-hub-toolbar">
-            <button type="button" className="pd-btn pd-btn-ghost pd-back-btn" onClick={handleBack}>
+            <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
               Back to Patients
             </button>

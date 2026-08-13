@@ -1,4 +1,28 @@
-import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
+function TreatmentPlanStatusBadge({ label, status }) {
+  const normalized = (status || label || "").trim().toLowerCase();
+  let toneClass = "pd-specialist-treatment-plan-badge--active";
+
+  if (normalized === "archived") {
+    toneClass = "pd-specialist-treatment-plan-badge--archived";
+  } else if (normalized === "completed") {
+    toneClass = "pd-specialist-treatment-plan-badge--completed";
+  }
+
+  return (
+    <span className={`pd-specialist-treatment-plan-badge ${toneClass}`} role="status">
+      {label}
+    </span>
+  );
+}
+
+function TreatmentPlanMetaRow({ label, value }) {
+  return (
+    <div className="pd-specialist-treatment-plan-meta-row">
+      <span className="pd-specialist-treatment-plan-meta-label">{label}</span>
+      <span className="pd-specialist-treatment-plan-meta-value">{value}</span>
+    </div>
+  );
+}
 
 export function SpecialistPatientTreatmentPlan({ treatmentPlan, onCreatePlan, onEditPlan }) {
   return (
@@ -21,16 +45,24 @@ export function SpecialistPatientTreatmentPlan({ treatmentPlan, onCreatePlan, on
           <p className="pd-section-sub">No treatment plan yet.</p>
         </div>
       ) : (
-        <div className="pd-card pd-card-pad">
+        <div className="pd-card pd-card-pad pd-specialist-treatment-plan-card">
           <div className="pd-specialist-plan-head">
-            <strong>{treatmentPlan.title}</strong>
-            <StatusBadge label={treatmentPlan.statusLabel} tone={treatmentPlan.statusTone} />
+            <strong className="pd-specialist-treatment-plan-title">{treatmentPlan.title}</strong>
+            <TreatmentPlanStatusBadge
+              label={treatmentPlan.statusLabel}
+              status={treatmentPlan.status}
+            />
           </div>
-          <p className="pd-section-sub">
-            {treatmentPlan.startDateLabel ? `Start: ${treatmentPlan.startDateLabel}` : null}
-            {treatmentPlan.startDateLabel && treatmentPlan.endDateLabel ? " · " : null}
-            {treatmentPlan.endDateLabel ? `End: ${treatmentPlan.endDateLabel}` : null}
-          </p>
+          <div className="pd-specialist-treatment-plan-meta">
+            <TreatmentPlanMetaRow
+              label="Start date"
+              value={treatmentPlan.startDateLabel || "—"}
+            />
+            <TreatmentPlanMetaRow
+              label="End date"
+              value={treatmentPlan.endDateLabel || "—"}
+            />
+          </div>
         </div>
       )}
     </section>

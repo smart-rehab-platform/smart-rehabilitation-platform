@@ -18,6 +18,15 @@ function nullableTrim(value) {
   return trimmed || null;
 }
 
+export const EMPTY_VALUE = "—";
+
+export function formatOptionalProfileValue(value) {
+  if (value == null || value === "") {
+    return EMPTY_VALUE;
+  }
+  return String(value);
+}
+
 export function resolveProfileImageUrl(fileUrl) {
   return resolveReportFileUrl(fileUrl);
 }

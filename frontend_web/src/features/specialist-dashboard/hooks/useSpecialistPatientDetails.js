@@ -21,6 +21,9 @@ import {
   pickPrimaryGuardian,
   selectActiveTreatmentPlan,
 } from "../utils/specialistPatientMappers";
+import { subscribeSpecialistReviewRefresh } from "../utils/specialistReviewRefresh";
+import { subscribeSpecialistTreatmentPlanRefresh } from "../utils/specialistTreatmentPlanRefresh";
+import { subscribeSpecialistAiRecommendationRefresh } from "../utils/specialistAiRecommendationRefresh";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -42,6 +45,10 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
   const refetch = useCallback(() => {
     setRefreshToken((value) => value + 1);
   }, []);
+
+  useEffect(() => subscribeSpecialistReviewRefresh(refetch), [refetch]);
+  useEffect(() => subscribeSpecialistTreatmentPlanRefresh(refetch), [refetch]);
+  useEffect(() => subscribeSpecialistAiRecommendationRefresh(refetch), [refetch]);
 
   const loadFamilyPattern = useCallback(async (id) => {
     setIsLoadingFamilyPattern(true);

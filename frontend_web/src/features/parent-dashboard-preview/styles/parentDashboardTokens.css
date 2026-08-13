@@ -2,3 +2,50 @@
  * Flutter DashboardColors + AppColors via brandTokens.css
  */
 @import "../../shared-dashboard/styles/dashboardTokens.css";
+
+/*
+ * Parent dashboard home: keep the greeting child selector below the header
+ * profile dropdown footprint so the two controls never overlap visually.
+ *
+ * Root cause: profile menu uses absolute positioning under the sticky header
+ * (z-index 60) while the child selector sits in the greeting toolbar at the
+ * same top-right column with only content padding between them.
+ */
+.pd-preview {
+  --pd-parent-profile-dropdown-clearance: 5.75rem;
+}
+
+@media (min-width: 1151px) {
+  .pd-preview .pd-dashboard-hero-viewport > .pd-greeting {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(var(--pd-parent-profile-dropdown-clearance), auto) auto;
+    column-gap: 20px;
+    row-gap: 10px;
+    align-items: end;
+    /* Below sticky header (z-index 30) so profile dropdown clicks reach Sign out */
+    z-index: auto;
+  }
+
+  .pd-preview .pd-dashboard-hero-viewport > .pd-greeting .pd-greeting-main {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: center;
+  }
+
+  .pd-preview .pd-dashboard-hero-viewport > .pd-greeting .pd-greeting-toolbar {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 1150px) {
+  .pd-preview .pd-dashboard-hero-viewport > .pd-greeting {
+    z-index: auto;
+  }
+
+  .pd-preview .pd-dashboard-hero-viewport > .pd-greeting .pd-greeting-toolbar {
+    margin-top: 2.5rem;
+  }
+}

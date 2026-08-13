@@ -1,3 +1,11 @@
+/*
+ * Profile dropdown extends below the sticky header (z-index 30). Greeting uses
+ * z-index 50 from shared dashboardTokens and intercepts clicks on Sign out.
+ */
+.pd-preview .pd-greeting {
+  z-index: auto;
+}
+
 .pd-preview .pd-specialist-overview {
   margin-top: 16px;
 }
@@ -669,6 +677,89 @@
   gap: 12px;
 }
 
+.pd-preview .pd-specialist-goal-head > .pd-section-sub {
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-treatment-plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-card .pd-specialist-plan-head {
+  align-items: flex-start;
+}
+
+.pd-preview .pd-specialist-treatment-plan-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-treatment-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.pd-preview .pd-specialist-treatment-plan-badge--archived,
+.pd-preview .pd-specialist-treatment-plan-badge--active {
+  background: var(--pd-success-soft);
+  color: var(--pd-success);
+}
+
+.pd-preview .pd-specialist-treatment-plan-badge--completed {
+  background: #eef2f6;
+  color: #64748b;
+}
+
+.pd-preview .pd-specialist-treatment-plan-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-meta-label {
+  font-size: 0.8125rem;
+  color: var(--pd-text-muted);
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-meta-value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-text-primary);
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .pd-preview .pd-specialist-treatment-plan-meta-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-meta-value {
+    text-align: left;
+    width: 100%;
+  }
+}
+
 .pd-preview .pd-specialist-subsection-title {
   margin: 0 0 8px;
   font-size: 1rem;
@@ -800,8 +891,4003 @@
   resize: vertical;
 }
 
+/* Specialist exercise review */
+.pd-preview .pd-specialist-reviews-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-reviews-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-reviews-row:hover {
+  border-color: rgba(42, 164, 201, 0.35);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.pd-preview .pd-specialist-reviews-row-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pd-preview .pd-specialist-reviews-row-copy strong {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-review-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.pd-preview .pd-specialist-review-page {
+  width: min(100%, 1180px);
+  max-width: none;
+  margin: 0 auto;
+  padding-bottom: 8px;
+}
+
+.pd-preview .pd-specialist-review-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.pd-preview .pd-specialist-review-page-header > .pd-specialist-back-btn {
+  margin-bottom: 10px;
+}
+
+.pd-preview .pd-specialist-review-page-header .pd-section-title {
+  margin: 0;
+}
+
+.pd-preview .pd-specialist-review-page-subtitle {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.pd-preview .pd-specialist-review-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pd-preview .pd-specialist-review-header {
+  padding: 20px 22px;
+}
+
+.pd-preview .pd-specialist-review-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 16px 24px;
+  align-items: start;
+}
+
+.pd-preview .pd-specialist-review-summary-item {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-review-summary-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-review-patient-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--pd-text);
+  word-break: break-word;
+}
+
+.pd-preview .pd-specialist-review-exercise-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--pd-text);
+  word-break: break-word;
+}
+
+.pd-preview .pd-specialist-review-submitted-at {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-review-summary-badge {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-top: 2px;
+}
+
+.pd-preview .pd-specialist-review-body-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.pd-preview .pd-specialist-review-section-title {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-review-media-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 20px 22px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-review-media-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-review-media-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-review-media-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-review-media-head strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-review-media-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-review-media-video {
+  width: 100%;
+  max-height: 360px;
+  border-radius: 12px;
+  background: #0f172a;
+  object-fit: contain;
+}
+
+.pd-preview .pd-specialist-review-media-audio {
+  width: 100%;
+  max-width: 100%;
+}
+
+.pd-preview .pd-specialist-review-media-image {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: var(--pd-border-soft);
+}
+
+.pd-preview .pd-specialist-review-media-filename {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-text);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.pd-preview .pd-specialist-review-media-meta {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px 22px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-review-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-review-field-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-review-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.pd-preview .pd-specialist-review-star-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-review-star-btn.is-selected {
+  color: var(--pd-warning);
+}
+
+.pd-preview .pd-specialist-review-star-btn svg {
+  fill: currentColor;
+}
+
+.pd-preview .pd-specialist-review-star-btn:not(.is-selected) svg {
+  fill: none;
+}
+
+.pd-preview .pd-specialist-review-feedback {
+  min-height: 160px;
+  width: 100%;
+  resize: vertical;
+}
+
+.pd-preview .pd-specialist-review-decision {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-review-decision-btn {
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--pd-border);
+  background: var(--pd-surface);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--pd-text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-review-decision-btn.is-selected {
+  border-color: var(--pd-primary);
+  background: var(--pd-primary-softer);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.pd-preview .pd-specialist-review-speech-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.pd-preview .pd-specialist-review-submit {
+  width: auto;
+  min-width: 168px;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 1000px) {
+  .pd-preview .pd-specialist-review-body-grid {
+    grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
+  }
+
+  .pd-preview .pd-specialist-review-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pd-preview .pd-specialist-review-summary-badge {
+    justify-content: flex-start;
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 820px) {
+  .pd-preview .pd-specialist-review-body-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-review-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-review-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-specialist-review-submit,
+  .pd-preview .pd-specialist-review-speech-btn {
+    width: 100%;
+  }
+}
+
+.pd-preview .pd-specialist-patient-list-row-btn {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-patient-list-row-btn:hover:not(:disabled) {
+  border-color: rgba(42, 164, 201, 0.35);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.pd-preview .pd-specialist-patient-list-row-btn:disabled {
+  cursor: default;
+}
+
+/* Specialist reports */
+.pd-preview .pd-specialist-reports-page,
+.pd-preview .pd-specialist-report-detail-page {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.pd-preview .pd-specialist-reports-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-report-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--pd-border-soft);
+  border-radius: 12px;
+  background: var(--pd-surface);
+}
+
+.pd-preview .pd-specialist-report-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: var(--pd-text);
+  outline: none;
+}
+
+.pd-preview .pd-specialist-report-search svg {
+  color: var(--pd-text-muted);
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-report-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-report-filter-chip {
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--pd-border-soft);
+  background: var(--pd-surface);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--pd-text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-report-filter-chip.is-selected {
+  border-color: var(--pd-primary);
+  background: var(--pd-primary-softer);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-reports-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-report-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-report-card:hover {
+  border-color: rgba(42, 164, 201, 0.35);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.pd-preview .pd-specialist-report-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pd-preview .pd-specialist-report-card-copy strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-report-card-patient {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-report-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-report-card-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-report-inline-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-specialist-report-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-report-detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-report-detail-head-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-report-detail-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-report-info-grid {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.pd-preview .pd-specialist-report-info-grid div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-report-info-grid dt {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-report-info-grid dd {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.pd-preview .pd-specialist-report-section-body {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.45;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-report-attachment-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-report-copy-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plans-page {
+  max-width: 920px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-create-page {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding-bottom: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-edit-page {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding-bottom: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-edit-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.pd-preview .pd-specialist-treatment-plan-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.pd-preview .pd-specialist-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--pd-primary);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-back-btn:hover {
+  color: color-mix(in srgb, var(--pd-primary) 82%, #0f172a);
+  text-decoration: none;
+}
+
+.pd-preview .pd-specialist-back-btn:active {
+  color: color-mix(in srgb, var(--pd-primary) 68%, #0f172a);
+}
+
+.pd-preview .pd-specialist-back-btn svg {
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-page-header > .pd-specialist-back-btn {
+  margin-bottom: 20px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-page-header .pd-section-title {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.pd-preview .pd-specialist-treatment-plan-page-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.pd-preview .pd-specialist-treatment-plan-page-heading {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-edit-content,
+.pd-preview .pd-specialist-treatment-plan-form {
+  display: grid;
+  gap: 20px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-form--desktop {
+  gap: 20px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-form--create.pd-specialist-treatment-plan-form--desktop {
+  gap: 18px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-edit-stack {
+  display: grid;
+  gap: 18px;
+  width: 100%;
+}
+
+.pd-preview .pd-specialist-treatment-plan-label {
+  display: block;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pd-text-primary);
+  letter-spacing: 0.01em;
+}
+
+.pd-preview .pd-specialist-treatment-plan-control {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1px solid var(--pd-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--pd-text-primary);
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-treatment-plan-control::placeholder {
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-treatment-plan-control:hover:not(:disabled):not(:focus-visible) {
+  border-color: color-mix(in srgb, var(--pd-primary) 28%, var(--pd-border));
+}
+
+.pd-preview .pd-specialist-treatment-plan-control:focus-visible {
+  outline: none;
+  border-color: var(--pd-primary);
+  box-shadow: 0 0 0 3px var(--pd-primary-soft);
+}
+
+.pd-preview .pd-specialist-treatment-plan-control:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--pd-surface) 88%, #fff);
+}
+
+.pd-preview .pd-specialist-treatment-plan-select {
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-treatment-plan-field.has-error .pd-specialist-treatment-plan-control {
+  border-color: var(--pd-danger, #dc2626);
+}
+
+.pd-preview .pd-specialist-treatment-plan-field.has-error .pd-specialist-treatment-plan-control:focus-visible {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
+}
+
+.pd-preview .pd-specialist-treatment-plan-error {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--pd-danger, #dc2626);
+}
+
+.pd-preview .pd-specialist-treatment-plan-date-wrap {
+  position: relative;
+}
+
+.pd-preview .pd-specialist-treatment-plan-date-wrap .pd-specialist-treatment-plan-control {
+  padding-right: 44px;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-treatment-plan-date-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 44px;
+  height: 100%;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-treatment-plan-date-icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--pd-text-muted);
+  pointer-events: none;
+}
+
+.pd-preview .pd-specialist-treatment-plan-context-label {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-context-card,
+.pd-preview .pd-specialist-treatment-plan-patient-select-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--pd-border);
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-select-card {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-context-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-context-avatar {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-context-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-context-subtitle {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-treatment-plan-status-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-specialist-treatment-plan-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pd-preview .pd-specialist-treatment-plan-status-note {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-treatment-plan-info-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 18px;
+  margin-top: 4px;
+  border-top: 1px solid var(--pd-border-soft);
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-card,
+.pd-preview .pd-specialist-treatment-plan-info-card {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--pd-border);
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.pd-preview .pd-specialist-treatment-plan-info-card {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  padding: 24px 26px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-form--create .pd-specialist-treatment-plan-info-card {
+  padding: 22px 24px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-card {
+  display: grid;
+  gap: 16px;
+  padding: 20px 22px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-title,
+.pd-preview .pd-specialist-treatment-plan-info-title,
+.pd-preview .pd-specialist-treatment-plan-section-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--pd-text-primary);
+  letter-spacing: 0.01em;
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  text-align: left;
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-identity-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-metrics {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+  min-width: min(100%, 280px);
+  max-width: 320px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  border-radius: 16px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-avatar {
+  width: 56px;
+  height: 56px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-form--desktop .pd-specialist-treatment-plan-patient-avatar {
+  width: 64px;
+  height: 64px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-patient-name {
+  font-size: 1.05rem;
+}
+
+.pd-preview .pd-specialist-treatment-plan-form--desktop .pd-specialist-treatment-plan-patient-name {
+  font-size: 1.12rem;
+  line-height: 1.25;
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-age {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.92rem;
+}
+
+.pd-preview .pd-specialist-treatment-plan-summary-progress {
+  width: 100%;
+}
+
+.pd-preview .pd-specialist-treatment-plan-create-active {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-field {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plans-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  min-height: 46px;
+  border: 1px solid var(--pd-border);
+  border-radius: 14px;
+  background: var(--pd-surface);
+}
+
+.pd-preview .pd-specialist-treatment-plan-search input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--pd-text-primary);
+  font: inherit;
+}
+
+.pd-preview .pd-specialist-treatment-plan-search svg {
+  color: var(--pd-text-muted);
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-filter-chip {
+  border: 1px solid var(--pd-border);
+  border-radius: 14px;
+  background: var(--pd-surface);
+  color: var(--pd-text-secondary);
+  font: inherit;
+  font-weight: 700;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-treatment-plan-filter-chip.is-selected {
+  border-color: var(--pd-primary);
+  background: var(--pd-primary-soft);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-treatment-plans-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-card {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid var(--pd-border);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pd-preview .pd-specialist-treatment-plan-card:hover {
+  border-color: color-mix(in srgb, var(--pd-primary) 35%, var(--pd-border));
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.pd-preview .pd-specialist-treatment-plan-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-card-icon--active {
+  background: color-mix(in srgb, var(--pd-primary) 12%, white);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-treatment-plan-card-icon--completed,
+.pd-preview .pd-specialist-treatment-plan-card-icon--archived {
+  background: var(--pd-surface-muted, #f3f4f6);
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-treatment-plan-card-copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-card-copy strong {
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-treatment-plan-card-patient {
+  color: var(--pd-text-secondary);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.pd-preview .pd-specialist-treatment-plan-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-inline-error,
+.pd-preview .pd-specialist-treatment-plan-toolbar-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-add-btn {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-status-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-form--desktop .pd-specialist-treatment-plan-status-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-form--desktop .pd-specialist-treatment-plan-status-chip {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-preview .pd-specialist-treatment-plan-status-chip {
+  border: 1px solid var(--pd-border);
+  border-radius: 14px;
+  background: var(--pd-surface);
+  color: var(--pd-text-secondary);
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-treatment-plan-status-chip.is-selected {
+  border-color: var(--pd-primary);
+  background: var(--pd-primary-soft);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-treatment-plan-date-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-form--desktop .pd-specialist-treatment-plan-date-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-end-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-end-date .pd-input {
+  flex: 1;
+}
+
+.pd-preview .pd-specialist-treatment-plan-goals-section {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.pd-preview .pd-specialist-treatment-plan-goals {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.pd-preview .pd-specialist-treatment-plan-goals--edit {
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-goal-card {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--pd-border);
+}
+
+.pd-preview .pd-specialist-treatment-plan-goals--edit .pd-specialist-goal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-goals--edit .pd-specialist-goal-head strong {
+  flex: 1;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-treatment-plan-goal-term-badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--pd-primary-soft);
+  color: var(--pd-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pd-preview .pd-specialist-goal-term {
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-treatment-plan-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-submit,
+.pd-preview .pd-specialist-treatment-plan-cancel {
+  width: 100%;
+}
+
+.pd-preview .pd-specialist-treatment-plan-actions--desktop {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-actions--desktop .pd-specialist-treatment-plan-submit,
+.pd-preview .pd-specialist-treatment-plan-actions--desktop .pd-specialist-treatment-plan-cancel,
+.pd-preview .pd-specialist-treatment-plan-info-actions .pd-specialist-treatment-plan-submit,
+.pd-preview .pd-specialist-treatment-plan-info-actions .pd-specialist-treatment-plan-cancel {
+  width: auto;
+  min-width: 148px;
+  min-height: 48px;
+  padding-inline: 20px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-picker {
+  width: min(520px, 100%);
+}
+
+.pd-preview .pd-specialist-treatment-plan-picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  max-height: min(55vh, 420px);
+  overflow: auto;
+}
+
+.pd-preview .pd-specialist-treatment-plan-picker-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--pd-border);
+  border-radius: 14px;
+  background: var(--pd-surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-treatment-plan-picker-item.is-disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.pd-preview .pd-specialist-treatment-plan-picker-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.pd-preview .pd-specialist-ai-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.pd-preview .pd-specialist-ai-page {
+  width: 100%;
+  max-width: 1180px;
+}
+
+.pd-preview .pd-specialist-ai-stack {
+  display: grid;
+  gap: 24px;
+}
+
+.pd-preview .pd-specialist-ai-patient-header-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-ai-patient-avatar {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-ai-patient-header-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-ai-patient-name {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-ai-patient-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-ai-section-title {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-ai-section-sub {
+  margin: 0 0 20px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-ai-generate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-ai-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-inline: 18px;
+}
+
+.pd-preview .pd-inline-spinner {
+  animation: pd-spin 0.8s linear infinite;
+}
+
+@keyframes pd-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pd-preview .pd-specialist-ai-recommendations-section {
+  display: grid;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-ai-recommendations-list {
+  display: grid;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-ai-empty {
+  text-align: center;
+}
+
+.pd-preview .pd-specialist-ai-recommendation-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.pd-preview .pd-specialist-ai-recommendation-type {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-ai-recommendation-date {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-ai-recommendation-content {
+  display: grid;
+  gap: 16px;
+  max-width: 920px;
+}
+
+.pd-preview .pd-specialist-ai-recommendation-section {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-ai-recommendation-section-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-ai-recommendation-text {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--pd-text-muted);
+  white-space: pre-wrap;
+}
+
+.pd-preview .pd-specialist-ai-recommendation-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 8px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-ai-confidence {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-ai-recommendation-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  max-width: 420px;
+}
+
+.pd-preview .pd-specialist-ai-recommendation-actions .pd-btn {
+  flex: 1;
+  min-height: 42px;
+}
+
+.pd-preview .pd-specialist-ai-reject-btn {
+  color: var(--pd-danger, #dc2626);
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+.pd-preview .pd-specialist-ai-reject-btn:hover {
+  background: rgba(220, 38, 38, 0.06);
+}
+
+.pd-preview .pd-inline-error-card {
+  display: grid;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-sessions-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.pd-preview .pd-specialist-sessions-page {
+  width: 100%;
+  max-width: 1180px;
+}
+
+.pd-preview .pd-specialist-sessions-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pd-preview .pd-specialist-sessions-schedule-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.pd-preview .pd-specialist-sessions-segmented,
+.pd-preview .pd-specialist-sessions-view-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  padding: 4px;
+  margin-bottom: 20px;
+  border: 1px solid var(--pd-border);
+  border-radius: 14px;
+  background: var(--pd-surface);
+}
+
+.pd-preview .pd-specialist-sessions-segment,
+.pd-preview .pd-specialist-sessions-view-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--pd-text-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-sessions-segment.is-active,
+.pd-preview .pd-specialist-sessions-view-tab.is-active {
+  background: var(--pd-primary-softer);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-session-search {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.pd-preview .pd-specialist-session-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pd-preview .pd-specialist-session-filter-chip {
+  padding: 8px 14px;
+  border: 1px solid var(--pd-border);
+  border-radius: 14px;
+  background: var(--pd-surface);
+  color: var(--pd-text-muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-session-filter-chip.is-active {
+  border-color: rgba(var(--brand-cyan-rgb), 0.35);
+  background: var(--pd-primary-softer);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-sessions-list,
+.pd-preview .pd-specialist-session-requests-list {
+  display: grid;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-session-card-main {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.pd-preview .pd-specialist-session-card-avatar {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-session-card-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-session-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-session-card-patient {
+  font-size: 1rem;
+}
+
+.pd-preview .pd-specialist-session-card-type {
+  margin: 6px 0 0;
+  color: var(--pd-text-muted);
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-specialist-session-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  color: var(--pd-text-muted);
+  font-size: 0.8125rem;
+}
+
+.pd-preview .pd-specialist-session-card-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pd-preview .pd-specialist-session-card-location a {
+  color: var(--pd-primary);
+  text-decoration: none;
+}
+
+.pd-preview .pd-specialist-sessions-calendar-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-session-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pd-preview .pd-specialist-session-calendar-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-session-calendar-nav {
+  min-width: 40px;
+  padding-inline: 10px;
+}
+
+.pd-preview .pd-specialist-session-calendar-weekdays,
+.pd-preview .pd-specialist-session-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.pd-preview .pd-specialist-session-calendar-weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-session-calendar-day {
+  position: relative;
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--pd-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-session-calendar-day.is-outside {
+  color: var(--pd-text-muted);
+  opacity: 0.45;
+  cursor: default;
+}
+
+.pd-preview .pd-specialist-session-calendar-day.is-today:not(.is-selected) {
+  border-color: rgba(var(--brand-cyan-rgb), 0.35);
+  background: var(--pd-primary-softer);
+}
+
+.pd-preview .pd-specialist-session-calendar-day.is-selected {
+  background: var(--pd-primary);
+  color: #fff;
+}
+
+.pd-preview .pd-specialist-session-calendar-dot {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--pd-primary);
+  transform: translateX(-50%);
+}
+
+.pd-preview .pd-specialist-session-calendar-day.is-selected .pd-specialist-session-calendar-dot {
+  background: #fff;
+}
+
+.pd-preview .pd-specialist-session-calendar-day-title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-session-calendar-day-items {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-preview .pd-specialist-session-calendar-day-item {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--pd-border);
+  border-radius: 12px;
+  background: var(--pd-surface);
+}
+
+.pd-preview .pd-specialist-session-calendar-day-item span {
+  color: var(--pd-text-muted);
+  font-size: 0.8125rem;
+}
+
+.pd-preview .pd-specialist-session-request-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pd-preview .pd-specialist-session-request-patient {
+  display: block;
+  font-size: 1rem;
+}
+
+.pd-preview .pd-specialist-session-request-parent {
+  margin: 4px 0 0;
+  color: var(--pd-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-session-request-reason {
+  margin: 0 0 8px;
+  color: var(--pd-text-muted);
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-session-request-reason-other,
+.pd-preview .pd-specialist-session-request-notes {
+  margin: 0 0 12px;
+  color: var(--pd-text-muted);
+  line-height: 1.5;
+}
+
+.pd-preview .pd-specialist-session-request-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.pd-preview .pd-specialist-session-request-meta dt {
+  margin-bottom: 4px;
+  color: var(--pd-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-session-request-meta dd {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-specialist-session-request-panel {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  line-height: 1.5;
+}
+
+.pd-preview .pd-specialist-session-request-panel--approved {
+  background: #eaf8ee;
+  border: 1px solid rgba(46, 125, 50, 0.15);
+  color: #2e7d32;
+}
+
+.pd-preview .pd-specialist-session-request-panel--rejected {
+  background: #fdecec;
+  border: 1px solid rgba(211, 47, 47, 0.15);
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-session-request-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: inherit;
+}
+
 @media (max-width: 900px) {
   .pd-preview .pd-specialist-patient-quick-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-page-header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-summary-body {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-summary-identity {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-summary-metrics {
+    justify-items: stretch;
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-form--desktop .pd-specialist-treatment-plan-date-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-patient-card {
+    min-height: 0;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-actions--desktop {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-form--desktop .pd-specialist-treatment-plan-status-group {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-actions--desktop .pd-specialist-treatment-plan-submit,
+  .pd-preview .pd-specialist-treatment-plan-actions--desktop .pd-specialist-treatment-plan-cancel,
+  .pd-preview .pd-specialist-treatment-plan-info-actions .pd-specialist-treatment-plan-submit,
+  .pd-preview .pd-specialist-treatment-plan-info-actions .pd-specialist-treatment-plan-cancel {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-info-actions,
+  .pd-preview .pd-specialist-treatment-plan-patient-context-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-specialist-treatment-plan-info-actions {
+    flex-direction: column-reverse;
+  }
+
+  .pd-preview .pd-specialist-ai-generate-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-specialist-ai-recommendation-actions {
+    flex-direction: column;
+  }
+
+  .pd-preview .pd-specialist-sessions-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-specialist-sessions-calendar-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-session-request-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pd-preview .pd-specialist-schedule-session-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.pd-preview .pd-specialist-schedule-session-page {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding-bottom: 8px;
+}
+
+.pd-preview .pd-specialist-schedule-session-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  margin-bottom: 24px;
+}
+
+.pd-preview .pd-specialist-schedule-session-header > .pd-specialist-back-btn {
+  margin-bottom: 20px;
+}
+
+.pd-preview .pd-specialist-schedule-session-heading {
+  display: grid;
+  gap: 6px;
+}
+
+.pd-preview .pd-specialist-schedule-session-heading .pd-section-title {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.pd-preview .pd-specialist-schedule-session-form {
+  display: grid;
+  gap: 20px;
+}
+
+.pd-preview .pd-specialist-schedule-session-card {
+  display: grid;
+  gap: 22px;
+  padding: 22px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--pd-border);
+  background: var(--pd-surface);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.pd-preview .pd-specialist-schedule-session-label {
+  display: block;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pd-text-primary);
+  letter-spacing: 0.01em;
+}
+
+.pd-preview .pd-specialist-schedule-session-control {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1px solid var(--pd-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--pd-text-primary);
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-schedule-session-control::placeholder {
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-schedule-session-control:hover:not(:disabled):not(:focus-visible) {
+  border-color: color-mix(in srgb, var(--pd-primary) 28%, var(--pd-border));
+}
+
+.pd-preview .pd-specialist-schedule-session-control:focus-visible {
+  outline: none;
+  border-color: var(--pd-primary);
+  box-shadow: 0 0 0 3px var(--pd-primary-soft);
+}
+
+.pd-preview .pd-specialist-schedule-session-control:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--pd-surface) 88%, #fff);
+}
+
+.pd-preview .pd-specialist-schedule-session-field.has-error .pd-specialist-schedule-session-control,
+.pd-preview .pd-specialist-schedule-session-patient-select.has-error .pd-specialist-schedule-session-patient-trigger {
+  border-color: var(--pd-danger, #dc2626);
+}
+
+.pd-preview .pd-specialist-schedule-session-field.has-error .pd-specialist-schedule-session-control:focus-visible,
+.pd-preview .pd-specialist-schedule-session-patient-select.has-error .pd-specialist-schedule-session-patient-trigger:focus-visible {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
+}
+
+.pd-preview .pd-specialist-schedule-session-error {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--pd-danger, #dc2626);
+}
+
+.pd-preview .pd-specialist-schedule-session-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 24px;
+}
+
+.pd-preview .pd-specialist-schedule-session-column {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+.pd-preview .pd-specialist-schedule-session-field {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-schedule-session-notes {
+  margin-top: 0;
+}
+
+.pd-preview .pd-specialist-schedule-session-textarea {
+  min-height: 148px;
+  padding: 12px 14px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.pd-preview .pd-specialist-schedule-session-helper {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-schedule-session-duration-wrap {
+  position: relative;
+}
+
+.pd-preview .pd-specialist-schedule-session-control--duration {
+  padding-right: 74px;
+}
+
+.pd-preview .pd-specialist-schedule-session-duration-suffix {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--pd-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.pd-preview .pd-specialist-schedule-session-input-wrap {
+  position: relative;
+}
+
+.pd-preview .pd-specialist-schedule-session-input-wrap .pd-specialist-schedule-session-control {
+  padding-right: 44px;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-schedule-session-date-input::-webkit-calendar-picker-indicator,
+.pd-preview .pd-specialist-schedule-session-time-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 44px;
+  height: 100%;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-schedule-session-input-icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--pd-text-muted);
+  pointer-events: none;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-select {
+  position: relative;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 50px;
+  padding-right: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-select.is-open .pd-specialist-schedule-session-patient-trigger {
+  border-color: var(--pd-primary);
+  box-shadow: 0 0 0 3px var(--pd-primary-soft);
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-selected {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-name {
+  font-weight: 600;
+  color: var(--pd-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-placeholder {
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-chevron {
+  color: var(--pd-text-muted);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-select.is-open .pd-specialist-schedule-session-patient-chevron {
+  transform: rotate(180deg);
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--pd-border);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+  max-height: 260px;
+  overflow: auto;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.pd-preview .pd-specialist-schedule-session-patient-option:hover,
+.pd-preview .pd-specialist-schedule-session-patient-option.is-selected {
+  background: var(--pd-primary-soft);
+}
+
+.pd-preview .pd-specialist-schedule-session-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.pd-preview .pd-specialist-schedule-session-cancel,
+.pd-preview .pd-specialist-schedule-session-submit {
+  min-height: 48px;
+  min-width: 132px;
+  padding-inline: 20px;
+}
+
+.pd-preview .pd-specialist-schedule-session-submit:not(:disabled):hover {
+  filter: brightness(0.98);
+}
+
+.pd-preview .pd-specialist-schedule-session-cancel:not(:disabled):hover {
+  border-color: color-mix(in srgb, var(--pd-primary) 35%, var(--pd-border));
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-schedule-session-api-error {
+  margin: 0;
+}
+
+@media (max-width: 820px) {
+  .pd-preview .pd-specialist-schedule-session-card {
+    padding: 18px 16px;
+  }
+
+  .pd-preview .pd-specialist-schedule-session-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-schedule-session-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-specialist-schedule-session-cancel,
+  .pd-preview .pd-specialist-schedule-session-submit {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Specialist Exercise Library */
+.pd-preview .pd-specialist-exercises-page,
+.pd-preview .pd-specialist-exercise-details-page,
+.pd-preview .pd-specialist-exercise-edit-page {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  max-width: none;
+}
+
+.pd-preview .pd-specialist-exercise-page-header {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-exercise-page-header--library {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-exercise-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 44px;
+  padding-inline: 16px;
+}
+
+.pd-preview .pd-specialist-exercise-page-header > .pd-specialist-back-btn {
+  justify-self: start;
+}
+
+.pd-preview .pd-specialist-exercise-create-page {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  max-width: none;
+}
+
+.pd-preview .pd-specialist-exercise-library {
+  display: grid;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-exercise-search {
+  position: relative;
+  display: block;
+}
+
+.pd-preview .pd-specialist-exercise-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  color: var(--pd-text-muted);
+  pointer-events: none;
+}
+
+.pd-preview .pd-specialist-exercise-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 0 14px 0 42px;
+  border: 1px solid var(--pd-border);
+  border-radius: 12px;
+  background: var(--pd-surface);
+  color: var(--pd-text-primary);
+  font: inherit;
+}
+
+.pd-preview .pd-specialist-exercise-search-input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--pd-primary) 45%, transparent);
+  border-color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-exercise-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-exercise-filter-chip {
+  border: 1px solid var(--pd-border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: var(--pd-surface);
+  color: var(--pd-text-primary);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-exercise-filter-chip.is-selected {
+  border-color: var(--pd-primary);
+  background: color-mix(in srgb, var(--pd-primary) 10%, var(--pd-surface));
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-exercise-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pd-preview .pd-specialist-exercise-card:hover {
+  border-color: color-mix(in srgb, var(--pd-primary) 35%, var(--pd-border));
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.pd-preview .pd-specialist-exercise-card-copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-exercise-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-exercise-card-title {
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-exercise-card-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--pd-text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.pd-preview .pd-specialist-exercise-card-media {
+  color: var(--pd-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-exercise-card-chevron {
+  color: var(--pd-text-muted);
+  margin-top: 2px;
+}
+
+.pd-preview .pd-specialist-exercise-category-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-exercise-category-icon--cyan {
+  background: color-mix(in srgb, #06b6d4 14%, white);
+  color: #0891b2;
+}
+
+.pd-preview .pd-specialist-exercise-category-icon--accent {
+  background: color-mix(in srgb, #14b8a6 14%, white);
+  color: #0d9488;
+}
+
+.pd-preview .pd-specialist-exercise-category-icon--blue {
+  background: color-mix(in srgb, #3b82f6 14%, white);
+  color: #2563eb;
+}
+
+.pd-preview .pd-specialist-exercise-category-icon--teal {
+  background: color-mix(in srgb, #0d9488 14%, white);
+  color: #0f766e;
+}
+
+.pd-preview .pd-specialist-exercise-category-icon--secondary {
+  background: color-mix(in srgb, #64748b 14%, white);
+  color: #475569;
+}
+
+.pd-preview .pd-specialist-exercise-category-icon--warning {
+  background: color-mix(in srgb, #f59e0b 14%, white);
+  color: #d97706;
+}
+
+.pd-preview .pd-specialist-exercise-category-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pd-preview .pd-specialist-exercise-category-badge--cyan {
+  background: color-mix(in srgb, #06b6d4 12%, white);
+  color: #0891b2;
+}
+
+.pd-preview .pd-specialist-exercise-category-badge--accent {
+  background: color-mix(in srgb, #14b8a6 12%, white);
+  color: #0d9488;
+}
+
+.pd-preview .pd-specialist-exercise-category-badge--blue {
+  background: color-mix(in srgb, #3b82f6 12%, white);
+  color: #2563eb;
+}
+
+.pd-preview .pd-specialist-exercise-category-badge--teal {
+  background: color-mix(in srgb, #0d9488 12%, white);
+  color: #0f766e;
+}
+
+.pd-preview .pd-specialist-exercise-category-badge--secondary {
+  background: color-mix(in srgb, #64748b 12%, white);
+  color: #475569;
+}
+
+.pd-preview .pd-specialist-exercise-category-badge--warning {
+  background: color-mix(in srgb, #f59e0b 12%, white);
+  color: #d97706;
+}
+
+.pd-preview .pd-specialist-exercise-inline-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-exercise-card--skeleton {
+  pointer-events: none;
+}
+
+.pd-preview .pd-specialist-exercise-skeleton-icon,
+.pd-preview .pd-specialist-exercise-skeleton-line {
+  display: block;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%);
+  background-size: 200% 100%;
+  animation: pd-specialist-exercise-skeleton 1.2s ease-in-out infinite;
+}
+
+.pd-preview .pd-specialist-exercise-skeleton-icon {
+  width: 42px;
+  height: 42px;
+}
+
+.pd-preview .pd-specialist-exercise-skeleton-line {
+  height: 12px;
+}
+
+.pd-preview .pd-specialist-exercise-skeleton-line--title {
+  width: 70%;
+  height: 16px;
+}
+
+.pd-preview .pd-specialist-exercise-skeleton-line--short {
+  width: 45%;
+}
+
+@keyframes pd-specialist-exercise-skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.pd-preview .pd-specialist-exercise-details {
+  display: grid;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-exercise-details-hero {
+  display: grid;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-exercise-details-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: start;
+}
+
+.pd-preview .pd-specialist-exercise-details-copy {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-exercise-details-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-exercise-details-meta {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: 0.8rem;
+}
+
+.pd-preview .pd-specialist-exercise-edit-btn {
+  align-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-color: var(--pd-primary);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-exercise-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-exercise-details-section-title {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-exercise-details-body {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.pd-preview .pd-specialist-exercise-media {
+  width: 100%;
+  max-width: 640px;
+  border-radius: 12px;
+  border: 1px solid var(--pd-border);
+}
+
+.pd-preview .pd-specialist-exercise-form {
+  display: grid;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-exercise-form-card {
+  display: grid;
+  gap: 18px;
+  padding: 22px 24px;
+}
+
+.pd-preview .pd-specialist-exercise-form-heading {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-exercise-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-exercise-field {
+  display: grid;
+  gap: 6px;
+}
+
+.pd-preview .pd-specialist-exercise-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-exercise-control {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--pd-border);
+  border-radius: 12px;
+  background: var(--pd-surface);
+  color: var(--pd-text-primary);
+  font: inherit;
+}
+
+.pd-preview .pd-specialist-exercise-textarea {
+  min-height: 120px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.pd-preview .pd-specialist-exercise-control:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--pd-primary) 45%, transparent);
+  border-color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-exercise-field.has-error .pd-specialist-exercise-control {
+  border-color: #ef4444;
+}
+
+.pd-preview .pd-specialist-exercise-error {
+  margin: 0;
+  color: #ef4444;
+  font-size: 0.8rem;
+}
+
+.pd-preview .pd-specialist-exercise-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.pd-preview .pd-specialist-exercise-media-heading {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--pd-text-primary);
+}
+
+.pd-preview .pd-specialist-exercise-media-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--pd-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--pd-primary) 3%, var(--pd-surface));
+}
+
+.pd-preview .pd-specialist-exercise-media-empty,
+.pd-preview .pd-specialist-exercise-media-meta {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.pd-preview .pd-specialist-exercise-media-label {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--pd-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pd-preview .pd-specialist-exercise-media-filename {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--pd-text-primary);
+  word-break: break-word;
+}
+
+.pd-preview .pd-specialist-exercise-media-preview {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  max-height: 180px;
+  margin-top: 10px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--pd-border);
+}
+
+.pd-preview .pd-specialist-exercise-media-icon-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-top: 10px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--pd-primary) 10%, white);
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-exercise-media-removal-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #f59e0b 10%, white);
+  color: #92400e;
+  font-size: 0.84rem;
+}
+
+.pd-preview .pd-specialist-exercise-media-removal-notice p {
+  margin: 0;
+}
+
+.pd-preview .pd-specialist-exercise-media-progress {
+  display: grid;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-exercise-media-progress-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--pd-primary);
+  transition: width 0.15s ease;
+}
+
+.pd-preview .pd-specialist-exercise-media-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-exercise-media-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pd-preview .pd-specialist-exercise-media-add,
+.pd-preview .pd-specialist-exercise-media-remove,
+.pd-preview .pd-specialist-exercise-media-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-exercise-audio {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+}
+
+.pd-preview .pd-specialist-exercise-media-open {
+  margin-top: 12px;
+  text-decoration: none;
+}
+
+@media (max-width: 1100px) {
+  .pd-preview .pd-specialist-exercise-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .pd-preview .pd-specialist-exercise-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-exercise-details-head {
+    grid-template-columns: auto 1fr;
+  }
+
+  .pd-preview .pd-specialist-exercise-edit-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .pd-preview .pd-specialist-exercise-details-grid,
+  .pd-preview .pd-specialist-exercise-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-exercise-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .pd-preview .pd-specialist-exercise-form-actions .pd-btn {
+    width: 100%;
+  }
+
+  .pd-preview .pd-specialist-exercise-page-header--library {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-specialist-exercise-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ===== Specialist Case Requests ===== */
+.pd-preview .pd-specialist-case-requests-page,
+.pd-preview .pd-specialist-case-details-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pd-preview .pd-specialist-case-requests-page > .pd-specialist-case-request-filters {
+  margin-bottom: 4px;
+}
+
+.pd-preview .pd-specialist-case-request-filters {
+  display: grid;
+  gap: 20px;
+  padding: 22px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--pd-border);
+  background: var(--pd-surface, #fff);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.pd-preview .pd-specialist-case-request-filter-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-case-request-filter-label {
+  display: block;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pd-text-primary);
+  letter-spacing: 0.01em;
+}
+
+.pd-preview .pd-specialist-case-request-control {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1px solid var(--pd-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--pd-text-primary);
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-case-request-control::placeholder {
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-case-request-control:hover:not(:disabled):not(:focus-visible) {
+  border-color: color-mix(in srgb, var(--pd-primary) 28%, var(--pd-border));
+}
+
+.pd-preview .pd-specialist-case-request-control:focus-visible {
+  outline: none;
+  border-color: var(--pd-primary);
+  box-shadow: 0 0 0 3px var(--pd-primary-soft);
+}
+
+.pd-preview .pd-specialist-case-request-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-case-request-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--pd-text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pd-preview .pd-specialist-case-request-search-input {
+  padding-left: 44px;
+  padding-right: 42px;
+}
+
+.pd-preview .pd-specialist-case-request-search-input::-webkit-search-cancel-button,
+.pd-preview .pd-specialist-case-request-search-input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.pd-preview .pd-specialist-case-request-search-clear {
+  position: absolute;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--pd-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-case-request-search-clear:hover {
+  color: var(--pd-text-primary);
+  background: color-mix(in srgb, var(--pd-border) 55%, #fff);
+}
+
+.pd-preview .pd-specialist-case-request-filter-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.pd-preview .pd-specialist-case-request-select-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-case-request-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  padding-right: 44px;
+}
+
+.pd-preview .pd-specialist-case-request-select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--pd-text-muted);
+  pointer-events: none;
+}
+
+.pd-preview .pd-specialist-case-request-select-wrap:focus-within .pd-specialist-case-request-select-chevron {
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-case-request-clear-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pd-preview .pd-specialist-case-request-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-case-request-card {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pd-preview .pd-specialist-case-request-card:hover {
+  border-color: rgba(79, 166, 248, 0.45);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.pd-preview .pd-specialist-case-request-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-case-request-card-title {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--pd-text-primary, #0f172a);
+}
+
+.pd-preview .pd-specialist-case-request-card-parent {
+  color: var(--pd-text-secondary, #475569);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.pd-preview .pd-specialist-case-request-card-category {
+  color: var(--pd-text-muted, #64748b);
+  font-size: 0.88rem;
+}
+
+.pd-preview .pd-specialist-case-request-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-top: 6px;
+  color: var(--pd-text-secondary, #475569);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-case-request-card-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pd-preview .pd-specialist-case-request-skeleton {
+  min-height: 120px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: pd-specialist-case-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes pd-specialist-case-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.pd-preview .pd-specialist-case-state-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.pd-preview .pd-specialist-case-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-case-refresh-bar {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #4fa6f8, transparent);
+  animation: pd-specialist-case-shimmer 1s linear infinite;
+}
+
+.pd-preview .pd-specialist-case-loading-more,
+.pd-preview .pd-specialist-case-load-more-error {
+  text-align: center;
+  color: var(--pd-text-secondary, #475569);
+}
+
+.pd-preview .pd-specialist-case-load-more-sentinel {
+  height: 1px;
+}
+
+.pd-preview .pd-specialist-case-summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-case-summary-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-case-summary-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.pd-preview .pd-specialist-case-summary-category {
+  color: var(--pd-text-secondary, #475569);
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-case-summary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: var(--pd-text-muted, #64748b);
+  font-size: 0.9rem;
+}
+
+.pd-preview .pd-specialist-case-summary-parent {
+  margin: 4px 0 0;
+  color: var(--pd-text-secondary, #475569);
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-case-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-case-section-title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.pd-preview .pd-specialist-case-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-case-info-grid strong {
+  display: block;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-case-field + .pd-specialist-case-field {
+  margin-top: 12px;
+}
+
+.pd-preview .pd-specialist-case-field-value {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+  color: var(--pd-text-secondary, #475569);
+  line-height: 1.5;
+}
+
+.pd-preview .pd-specialist-case-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pd-preview .pd-specialist-case-timeline-step {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  min-height: 48px;
+}
+
+.pd-preview .pd-specialist-case-timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pd-preview .pd-specialist-case-timeline-connector {
+  flex: 1;
+  width: 2px;
+  margin: 4px 0;
+  background: #dbe3ef;
+}
+
+.pd-preview .pd-specialist-case-timeline-icon.is-completed {
+  color: #2e7d32;
+}
+
+.pd-preview .pd-specialist-case-timeline-icon.is-current {
+  color: #4fa6f8;
+}
+
+.pd-preview .pd-specialist-case-timeline-icon.is-upcoming {
+  color: #94a3b8;
+}
+
+.pd-preview .pd-specialist-case-timeline-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 12px;
+}
+
+.pd-preview .pd-specialist-case-timeline-step.is-upcoming .pd-specialist-case-timeline-copy strong {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.pd-preview .pd-specialist-case-timeline-copy span {
+  color: var(--pd-text-muted, #64748b);
+  font-size: 0.82rem;
+}
+
+.pd-preview .pd-specialist-case-parent-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pd-preview .pd-specialist-case-parent-avatar {
+  width: 56px;
+  height: 56px;
+}
+
+.pd-preview .pd-specialist-case-contact-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-case-contact-row + .pd-specialist-case-contact-row {
+  margin-top: 10px;
+}
+
+.pd-preview .pd-specialist-case-copy-btn {
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-case-attachments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-case-attachment-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  border: 1px solid var(--pd-border, #e2e8f0);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.pd-preview .pd-specialist-case-attachment-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-case-attachment-copy span {
+  color: var(--pd-text-muted, #64748b);
+  font-size: 0.82rem;
+}
+
+.pd-preview .pd-specialist-case-notes-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.pd-preview .pd-specialist-case-notes-actions {
+  margin-top: 12px;
+}
+
+.pd-preview .pd-specialist-case-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-case-rejection {
+  border-color: rgba(211, 47, 47, 0.28);
+  background: #fdecec;
+}
+
+.pd-preview .pd-specialist-case-rejection .pd-specialist-case-section-title {
+  color: #d32f2f;
+}
+
+.pd-preview .pd-specialist-case-conversion {
+  border-color: rgba(46, 125, 50, 0.28);
+  background: #eaf8ee;
+}
+
+.pd-preview .pd-specialist-case-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 80;
+}
+
+.pd-preview .pd-specialist-case-dialog {
+  width: min(480px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-case-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-case-reject-error {
+  margin: 0;
+  color: #d32f2f;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 960px) {
+  .pd-preview .pd-specialist-case-request-list,
+  .pd-preview .pd-specialist-case-details-grid,
+  .pd-preview .pd-specialist-case-request-filter-row,
+  .pd-preview .pd-specialist-case-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-case-request-filters {
+    padding: 18px 16px;
+    gap: 16px;
+  }
+
+  .pd-preview .pd-specialist-case-request-filter-row {
+    gap: 16px;
+  }
+}
+
+/* ===== Specialist Speech Analysis ===== */
+.pd-preview .pd-specialist-speech-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.pd-preview .pd-specialist-speech-page {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding-bottom: 8px;
+}
+
+.pd-preview .pd-specialist-speech-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.pd-preview .pd-specialist-speech-header-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-speech-avatar {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-speech-header-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-speech-patient-name {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-speech-subtitle {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.92rem;
+}
+
+.pd-preview .pd-specialist-speech-meta {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: 0.82rem;
+}
+
+.pd-preview .pd-specialist-speech-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.pd-preview .pd-specialist-speech-main,
+.pd-preview .pd-specialist-speech-sidebar,
+.pd-preview .pd-specialist-speech-summary {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-speech-section-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-speech-section-sub,
+.pd-preview .pd-specialist-speech-card-title {
+  margin: 0;
+}
+
+.pd-preview .pd-specialist-speech-section-sub {
+  color: var(--pd-text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.pd-preview .pd-specialist-speech-card-title {
+  margin-bottom: 12px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-speech-analyze-card {
+  display: grid;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-speech-analyze-btn {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--pd-primary);
+  border-color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-speech-analyze-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.pd-preview .pd-specialist-speech-spin {
+  animation: pd-specialist-speech-spin 0.9s linear infinite;
+}
+
+@keyframes pd-specialist-speech-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pd-preview .pd-specialist-speech-scores-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-speech-score-tile {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  padding: 14px 10px;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.pd-preview .pd-specialist-speech-score-pronunciation {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.pd-preview .pd-specialist-speech-score-pronunciation .pd-specialist-speech-score-value {
+  color: #3b82f6;
+}
+
+.pd-preview .pd-specialist-speech-score-fluency {
+  background: var(--pd-teal-soft, rgba(0, 206, 201, 0.14));
+}
+
+.pd-preview .pd-specialist-speech-score-fluency .pd-specialist-speech-score-value {
+  color: #00cec9;
+}
+
+.pd-preview .pd-specialist-speech-score-overall {
+  background: var(--pd-primary-softer);
+}
+
+.pd-preview .pd-specialist-speech-score-overall .pd-specialist-speech-score-value {
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-speech-score-value {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.pd-preview .pd-specialist-speech-score-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-speech-mid-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pd-preview .pd-specialist-speech-mid-grid > :only-child {
+  grid-column: 1 / -1;
+}
+
+.pd-preview .pd-specialist-speech-transcript-meta {
+  margin: 0 0 10px;
+  color: var(--pd-text-muted);
+  font-size: 0.82rem;
+}
+
+.pd-preview .pd-specialist-speech-transcript-text {
+  margin: 0;
+  color: var(--pd-text);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.pd-preview .pd-specialist-speech-comparison-card {
+  background: rgba(0, 206, 201, 0.06);
+}
+
+.pd-preview .pd-specialist-speech-comparison-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pd-preview .pd-specialist-speech-comparison-header .pd-specialist-speech-card-title {
+  margin-bottom: 0;
+}
+
+.pd-preview .pd-specialist-speech-trend-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-speech-trend-improving {
+  color: var(--pd-success);
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.pd-preview .pd-specialist-speech-trend-declining {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.pd-preview .pd-specialist-speech-trend-baseline {
+  color: var(--pd-primary);
+  background: var(--pd-primary-soft);
+}
+
+.pd-preview .pd-specialist-speech-trend-stable {
+  color: var(--pd-text-muted);
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.pd-preview .pd-specialist-speech-comparison-rows {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-speech-comparison-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--pd-text);
+  font-size: 0.92rem;
+}
+
+.pd-preview .pd-specialist-speech-delta-up {
+  color: var(--pd-success);
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-speech-delta-down {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-speech-delta-neutral {
+  color: var(--pd-text-secondary);
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-speech-comparison-previous {
+  margin: 12px 0 0;
+  color: var(--pd-text-muted);
+  font-size: 0.82rem;
+}
+
+.pd-preview .pd-specialist-speech-feedback-section {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.pd-preview .pd-specialist-speech-feedback-section:first-of-type {
+  margin-top: 0;
+}
+
+.pd-preview .pd-specialist-speech-feedback-section-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-speech-feedback-text {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.pd-preview .pd-specialist-speech-feedback-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--pd-text-secondary);
+  line-height: 1.5;
+}
+
+.pd-preview .pd-specialist-speech-trend-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  min-height: 160px;
+  overflow-x: auto;
+  padding-top: 8px;
+}
+
+.pd-preview .pd-specialist-speech-trend-col {
+  flex: 1 0 42px;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-width: 42px;
+}
+
+.pd-preview .pd-specialist-speech-trend-bar-wrap {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.pd-preview .pd-specialist-speech-trend-bar {
+  width: 100%;
+  border-radius: 8px 8px 4px 4px;
+  background: var(--pd-primary);
+  min-height: 8px;
+}
+
+.pd-preview .pd-specialist-speech-trend-label {
+  font-size: 0.72rem;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-specialist-speech-history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-speech-history-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid var(--pd-border);
+  background: var(--pd-surface);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.pd-preview .pd-specialist-speech-history-tile:hover {
+  border-color: rgba(var(--brand-cyan-rgb), 0.35);
+}
+
+.pd-preview .pd-specialist-speech-history-tile.is-selected {
+  border-color: var(--pd-primary);
+  background: var(--pd-primary-softer);
+}
+
+.pd-preview .pd-specialist-speech-history-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-speech-history-date {
+  margin: 0;
+  font-weight: 700;
+  color: var(--pd-text);
+  font-size: 0.9rem;
+}
+
+.pd-preview .pd-specialist-speech-history-scores {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.82rem;
+}
+
+.pd-preview .pd-specialist-speech-history-icon {
+  flex-shrink: 0;
+  color: var(--pd-primary);
+}
+
+@media (max-width: 980px) {
+  .pd-preview .pd-specialist-speech-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-speech-sidebar {
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .pd-preview .pd-specialist-speech-scores-grid,
+  .pd-preview .pd-specialist-speech-mid-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-speech-header-body {
+    align-items: flex-start;
+  }
+}
+
+/* Specialist profile */
+.pd-preview .pd-specialist-profile-page {
+  display: grid;
+  gap: 18px;
+}
+
+.pd-preview .pd-specialist-profile-page-header,
+.pd-preview .pd-specialist-profile-page-toolbar {
+  display: grid;
+  gap: 6px;
+}
+
+.pd-preview .pd-specialist-profile-layout {
+  display: grid;
+  gap: 18px;
+}
+
+.pd-preview .pd-specialist-profile-header-card {
+  overflow: hidden;
+}
+
+.pd-preview .pd-specialist-profile-header-body {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-specialist-profile-header-avatar {
+  width: 96px;
+  height: 96px;
+  font-size: 1.75rem;
+}
+
+.pd-preview .pd-specialist-profile-header-copy {
+  display: grid;
+  gap: 4px;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-profile-header-name {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-profile-header-role {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-weight: 600;
+}
+
+.pd-preview .pd-specialist-profile-presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.9rem;
+}
+
+.pd-preview .pd-specialist-profile-presence-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #94a3b8;
+}
+
+.pd-preview .pd-specialist-profile-presence-dot.is-online {
+  background: #22c55e;
+}
+
+.pd-preview .pd-specialist-profile-header-actions {
+  margin-left: auto;
+}
+
+.pd-preview .pd-specialist-profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.pd-preview .pd-specialist-profile-section-title {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-specialist-profile-info-list {
+  display: grid;
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-profile-info-row {
+  display: grid;
+  gap: 4px;
+}
+
+.pd-preview .pd-specialist-profile-info-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--auth-placeholder);
+}
+
+.pd-preview .pd-specialist-profile-info-value {
+  margin: 0;
+  color: var(--pd-text);
+  font-weight: 500;
+}
+
+.pd-preview .pd-specialist-profile-info-value.is-multiline {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.pd-preview .pd-specialist-profile-edit-layout {
+  display: grid;
+  gap: 18px;
+}
+
+.pd-preview .pd-specialist-profile-photo-card {
+  display: grid;
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-profile-photo-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-specialist-profile-avatar {
+  width: 88px;
+  height: 88px;
+  font-size: 1.5rem;
+}
+
+.pd-preview .pd-specialist-profile-photo-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-profile-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pd-preview .pd-specialist-profile-form-section {
+  display: grid;
+  gap: 14px;
+}
+
+.pd-preview .pd-specialist-profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+.pd-preview .pd-specialist-profile-form-span {
+  grid-column: 1 / -1;
+}
+
+.pd-preview .pd-specialist-profile-form-span-half {
+  grid-column: span 1;
+}
+
+.pd-preview .pd-specialist-profile-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-specialist-profile-form-error {
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  .pd-preview .pd-specialist-profile-info-grid,
+  .pd-preview .pd-specialist-profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-specialist-profile-form-span-half {
+    grid-column: 1 / -1;
+  }
+
+  .pd-preview .pd-specialist-profile-header-actions {
+    width: 100%;
+    margin-left: 0;
   }
 }

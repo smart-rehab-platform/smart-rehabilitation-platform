@@ -123,7 +123,7 @@ export default function SpecialistNotificationsPage() {
       >
         <div className="pd-task-hub-page">
           <div className="pd-task-hub-toolbar">
-            <button type="button" className="pd-btn pd-btn-ghost pd-back-btn" onClick={handleBack}>
+            <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
               Back to Dashboard
             </button>

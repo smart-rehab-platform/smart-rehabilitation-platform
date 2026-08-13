@@ -29,7 +29,8 @@ app = FastAPI(title="Faster Whisper API")
 @lru_cache(maxsize=1)
 def get_whisper_model() -> WhisperModel:
     model_size = os.getenv("WHISPER_MODEL_SIZE", DEFAULT_MODEL_SIZE).strip() or DEFAULT_MODEL_SIZE
-    return WhisperModel(model_size)
+    # Force CPU: device="auto" selects CUDA on this Windows host and fails without cublas64_12.dll.
+    return WhisperModel(model_size, device="cpu", compute_type="int8")
 
 
 def resolve_language(value: str | None) -> str:
