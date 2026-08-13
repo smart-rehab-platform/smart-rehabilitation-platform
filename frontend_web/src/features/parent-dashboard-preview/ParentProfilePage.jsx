@@ -2,24 +2,22 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
-import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
+import { PARENT_WEB_ROUTES, buildParentEditProfilePath } from "../../routes/parentDashboardRoutes";
 import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
-import { ParentAccountInfo } from "./components/profile/ParentAccountInfo";
 import { ParentProfileErrorState } from "./components/profile/ParentProfileErrorState";
-import { ParentProfileForm } from "./components/profile/ParentProfileForm";
-import { ParentProfileSummaryCard } from "./components/profile/ParentProfileSummaryCard";
+import { ParentProfileHeader } from "./components/profile/ParentProfileHeader";
+import { ParentParentInfo, ParentPersonalInfo } from "./components/profile/ParentProfileInfoCards";
 import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { useParentProfile } from "./hooks/useParentProfile";
-import { useParentProfileForm } from "./hooks/useParentProfileForm";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import { PROFILE_EMPTY_MESSAGES } from "./utils/parentProfileUtils";
 import "./styles/parentDashboardTokens.css";
 
 export default function ParentProfilePage() {
   const navigate = useNavigate();
-  const { user, isInitializing, refreshSession } = useAuth();
+  const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -34,7 +32,6 @@ export default function ParentProfilePage() {
     isLoading,
     error,
     refetch,
-    replaceProfile,
   } = useParentProfile(parentUserId);
 
   const {
@@ -62,27 +59,6 @@ export default function ParentProfilePage() {
     markNotificationRead,
     showToast,
     closeMobileNav,
-  });
-
-  const handleRefreshSession = useCallback(async () => refreshSession(), [refreshSession]);
-
-  const {
-    formValues,
-    fieldErrors,
-    saveError,
-    successMessage,
-    isSaving,
-    isDirty,
-    avatarPreviewUrl,
-    avatarError,
-    setFieldValue,
-    handleAvatarSelect,
-    resetForm,
-    saveProfile,
-  } = useParentProfileForm({
-    profile,
-    onProfileSaved: replaceProfile,
-    onRefreshSession: handleRefreshSession,
   });
 
   useEffect(() => {
@@ -124,6 +100,10 @@ export default function ParentProfilePage() {
     navigate(PARENT_WEB_ROUTES.dashboard);
   }, [navigate]);
 
+  const handleEdit = useCallback(() => {
+    navigate(buildParentEditProfilePath());
+  }, [navigate]);
+
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -152,24 +132,12 @@ export default function ParentProfilePage() {
     }
 
     return (
-      <div className="pd-profile-layout">
-        <ParentProfileSummaryCard profile={profile} />
-        <ParentProfileForm
-          profile={profile}
-          formValues={formValues}
-          fieldErrors={fieldErrors}
-          avatarPreviewUrl={avatarPreviewUrl}
-          avatarError={avatarError}
-          isSaving={isSaving}
-          isDirty={isDirty}
-          saveError={saveError}
-          successMessage={successMessage}
-          onFieldChange={setFieldValue}
-          onAvatarSelect={handleAvatarSelect}
-          onCancel={resetForm}
-          onSubmit={saveProfile}
-        />
-        <ParentAccountInfo profile={profile} />
+      <div className="pd-profile-layout pd-section-enter">
+        <ParentProfileHeader profile={profile} onEdit={handleEdit} />
+        <div className="pd-profile-info-grid">
+          <ParentPersonalInfo profile={profile} />
+          <ParentParentInfo profile={profile} />
+        </div>
       </div>
     );
   };

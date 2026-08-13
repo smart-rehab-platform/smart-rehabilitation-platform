@@ -32,6 +32,25 @@ import SpecialistMessagesPage from "./features/specialist-dashboard/SpecialistMe
 import SpecialistNotificationsPage from "./features/specialist-dashboard/SpecialistNotificationsPage";
 import SpecialistPatientsPage from "./features/specialist-dashboard/SpecialistPatientsPage";
 import SpecialistPatientDetailsPage from "./features/specialist-dashboard/SpecialistPatientDetailsPage";
+import SpecialistReviewsPage from "./features/specialist-dashboard/SpecialistReviewsPage";
+import SpecialistReviewExercisePage from "./features/specialist-dashboard/SpecialistReviewExercisePage";
+import SpecialistReportsPage from "./features/specialist-dashboard/SpecialistReportsPage";
+import SpecialistReportDetailsPage from "./features/specialist-dashboard/SpecialistReportDetailsPage";
+import SpecialistTreatmentPlansPage from "./features/specialist-dashboard/SpecialistTreatmentPlansPage";
+import SpecialistTreatmentPlanCreatePage from "./features/specialist-dashboard/SpecialistTreatmentPlanCreatePage";
+import SpecialistTreatmentPlanEditPage from "./features/specialist-dashboard/SpecialistTreatmentPlanEditPage";
+import SpecialistAiRecommendationsPage from "./features/specialist-dashboard/SpecialistAiRecommendationsPage";
+import SpecialistSpeechAnalysisPage from "./features/specialist-dashboard/SpecialistSpeechAnalysisPage";
+import SpecialistSessionsPage from "./features/specialist-dashboard/SpecialistSessionsPage";
+import SpecialistScheduleSessionPage from "./features/specialist-dashboard/SpecialistScheduleSessionPage";
+import SpecialistExercisesPage from "./features/specialist-dashboard/SpecialistExercisesPage";
+import SpecialistExerciseDetailsPage from "./features/specialist-dashboard/SpecialistExerciseDetailsPage";
+import SpecialistExerciseEditPage from "./features/specialist-dashboard/SpecialistExerciseEditPage";
+import SpecialistExerciseCreatePage from "./features/specialist-dashboard/SpecialistExerciseCreatePage";
+import SpecialistCaseRequestsPage from "./features/specialist-dashboard/SpecialistCaseRequestsPage";
+import SpecialistCaseRequestDetailsPage from "./features/specialist-dashboard/SpecialistCaseRequestDetailsPage";
+import SpecialistProfilePage from "./features/specialist-dashboard/SpecialistProfilePage";
+import SpecialistEditProfilePage from "./features/specialist-dashboard/SpecialistEditProfilePage";
 import { SPECIALIST_PLACEHOLDER_FEATURES } from "./routes/specialistDashboardRoutes";
 import { AuthSessionNavigator } from "./components/auth/AuthSessionNavigator";
 import ParentDashboardPreviewPage from "./features/parent-dashboard-preview/ParentDashboardPreviewPage";
@@ -44,6 +63,7 @@ import ParentReportDetailPage from "./features/parent-dashboard-preview/ParentRe
 import ParentNotificationsPage from "./features/parent-dashboard-preview/ParentNotificationsPage";
 import ParentAiAssistantPage from "./features/parent-dashboard-preview/ParentAiAssistantPage";
 import ParentProfilePage from "./features/parent-dashboard-preview/ParentProfilePage";
+import ParentEditProfilePage from "./features/parent-dashboard-preview/ParentEditProfilePage";
 import ParentChildrenPage from "./features/parent-dashboard-preview/ParentChildrenPage";
 import ParentChildDetailPage from "./features/parent-dashboard-preview/ParentChildDetailPage";
 import ParentProgressPage from "./features/parent-dashboard-preview/ParentProgressPage";
@@ -351,6 +371,22 @@ function App() {
           }
         />
         <Route
+          path="/dashboard/specialist/case-requests"
+          element={
+            <ProtectedRoute>
+              <SpecialistCaseRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/case-requests/:caseRequestId"
+          element={
+            <ProtectedRoute>
+              <SpecialistCaseRequestDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/dashboard/specialist/patients/:patientId"
           element={
             <ProtectedRoute>
@@ -370,7 +406,7 @@ function App() {
           path="/dashboard/specialist/patients/:patientId/ai-recommendations"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title={SPECIALIST_PLACEHOLDER_FEATURES.aiRecommendations.title} />
+              <SpecialistAiRecommendationsPage />
             </ProtectedRoute>
           }
         />
@@ -378,7 +414,7 @@ function App() {
           path="/dashboard/specialist/patients/:patientId/speech-analysis"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title={SPECIALIST_PLACEHOLDER_FEATURES.speechAnalysis.title} />
+              <SpecialistSpeechAnalysisPage />
             </ProtectedRoute>
           }
         />
@@ -394,7 +430,15 @@ function App() {
           path="/dashboard/specialist/reports"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title={SPECIALIST_PLACEHOLDER_FEATURES.reports.title} />
+              <SpecialistReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/reports/:reportId"
+          element={
+            <ProtectedRoute>
+              <SpecialistReportDetailsPage />
             </ProtectedRoute>
           }
         />
@@ -402,7 +446,7 @@ function App() {
           path="/dashboard/specialist/treatment-plans/new"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title="Create Treatment Plan" />
+              <SpecialistTreatmentPlanCreatePage />
             </ProtectedRoute>
           }
         />
@@ -410,7 +454,7 @@ function App() {
           path="/dashboard/specialist/treatment-plans/:planId/edit"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title="Edit Treatment Plan" />
+              <SpecialistTreatmentPlanEditPage />
             </ProtectedRoute>
           }
         />
@@ -418,7 +462,15 @@ function App() {
           path="/dashboard/specialist/reviews"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title={SPECIALIST_PLACEHOLDER_FEATURES.reviews.title} />
+              <SpecialistReviewsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/reviews/:submissionId"
+          element={
+            <ProtectedRoute>
+              <SpecialistReviewExercisePage />
             </ProtectedRoute>
           }
         />
@@ -426,7 +478,47 @@ function App() {
           path="/dashboard/specialist/sessions"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title={SPECIALIST_PLACEHOLDER_FEATURES.sessions.title} />
+              <SpecialistSessionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/sessions/new"
+          element={
+            <ProtectedRoute>
+              <SpecialistScheduleSessionPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/exercises/new"
+          element={
+            <ProtectedRoute>
+              <SpecialistExerciseCreatePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/exercises/:exerciseId/edit"
+          element={
+            <ProtectedRoute>
+              <SpecialistExerciseEditPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/exercises/:exerciseId"
+          element={
+            <ProtectedRoute>
+              <SpecialistExerciseDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/exercises"
+          element={
+            <ProtectedRoute>
+              <SpecialistExercisesPage />
             </ProtectedRoute>
           }
         />
@@ -434,9 +526,7 @@ function App() {
           path="/dashboard/specialist/treatment-plans"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage
-                title={SPECIALIST_PLACEHOLDER_FEATURES.treatmentPlans.title}
-              />
+              <SpecialistTreatmentPlansPage />
             </ProtectedRoute>
           }
         />
@@ -469,6 +559,22 @@ function App() {
           element={
             <ProtectedRoute>
               <SpecialistNotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/profile/edit"
+          element={
+            <ProtectedRoute>
+              <SpecialistEditProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/profile"
+          element={
+            <ProtectedRoute>
+              <SpecialistProfilePage />
             </ProtectedRoute>
           }
         />
@@ -549,6 +655,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ParentAiAssistantPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/profile/edit"
+          element={
+            <ProtectedRoute>
+              <ParentEditProfilePage />
             </ProtectedRoute>
           }
         />

@@ -5,6 +5,16 @@ import '../models/specialist_ai_report_generation.dart';
 import '../models/specialist_regular_report_creation.dart';
 import '../models/specialist_reports_models.dart';
 
+/// Raised when a patient-scoped reports request targets an unassigned patient.
+class SpecialistReportScopeException implements Exception {
+  const SpecialistReportScopeException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 /// Specialist reports API access.
 ///
 /// Endpoints:
@@ -42,25 +52,66 @@ class SpecialistReportsRepository {
     }
   }
 
+  Future<Set<String>> _loadAssignedPatientIds(String specialistUserId) async {
+    final rows = await _getList('/specialists/$specialistUserId/patients');
+    return rows
+        .map(
+          (row) =>
+              ApiResponseParser.readString(row, const [
+                'id',
+                '_id',
+                'patient_id',
+                'patientId',
+              ]) ??
+              '',
+        )
+        .where((id) => id.isNotEmpty)
+        .toSet();
+  }
+
+  bool _isAssignedPatient(Set<String> assignedPatientIds, String patientId) {
+    return assignedPatientIds.contains(patientId.trim());
+  }
+
   Future<List<SpecialistReportListItem>> fetchReports({
+    required String specialistUserId,
     String? patientId,
   }) async {
     final scopedPatientId = patientId?.trim();
+    final assignedPatientIds = await _loadAssignedPatientIds(specialistUserId);
+
     if (scopedPatientId != null && scopedPatientId.isNotEmpty) {
+      if (!_isAssignedPatient(assignedPatientIds, scopedPatientId)) {
+        throw const SpecialistReportScopeException(
+          'Patient not found or not assigned to you.',
+        );
+      }
       return _fetchPatientReports(scopedPatientId);
+    }
+
+    if (assignedPatientIds.isEmpty) {
+      return const [];
     }
 
     final regularRows = await _getList('/reports');
     final regular = regularRows
         .map(SpecialistReportListItem.fromRegularMap)
-        .where((item) => item.id.isNotEmpty);
+        .where(
+          (item) =>
+              item.id.isNotEmpty &&
+              _isAssignedPatient(assignedPatientIds, item.patientId),
+        );
 
     List<SpecialistReportListItem> ai = const [];
     try {
       final aiRows = await _getList('/ai/reports');
       ai = aiRows
           .map(SpecialistReportListItem.fromAiMap)
-          .where((item) => item.id.isNotEmpty)
+          .where(
+            (item) =>
+                item.id.isNotEmpty &&
+                _isAssignedPatient(assignedPatientIds, item.patientId),
+          )
           .toList();
     } on DioException {
       ai = const [];

@@ -1,6 +1,10 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
-import { SPECIALIST_NAV_UNAVAILABLE } from "../../routes/specialistDashboardRoutes";
+import {
+  buildSpecialistReviewExercisePath,
+  buildSpecialistSessionsPath,
+} from "../../routes/specialistDashboardRoutes";
 import { useSpecialistDashboardOverview } from "./hooks/useSpecialistDashboardOverview";
 import { useSpecialistPendingReviews } from "./hooks/useSpecialistPendingReviews";
 import { useSpecialistRecentProgress } from "./hooks/useSpecialistRecentProgress";
@@ -17,6 +21,7 @@ import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistDashboardPage() {
+  const navigate = useNavigate();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -78,6 +83,24 @@ export default function SpecialistDashboardPage() {
     reload: reloadRecentProgress,
   } = useSpecialistRecentProgress(specialistUserId);
 
+  const handleKpiCardAction = useCallback((cardKey) => {
+    if (cardKey === "todaysSessions") {
+      navigate(buildSpecialistSessionsPath({ filter: "today" }));
+      return;
+    }
+
+    const routeByCardKey = {
+      activeCases: "patients",
+      pendingReviews: "reviews",
+      treatmentPlans: "treatmentPlans",
+    };
+
+    const routeKey = routeByCardKey[cardKey];
+    if (routeKey) {
+      navigateToRouteKey(routeKey);
+    }
+  }, [navigate, navigateToRouteKey]);
+
   return (
     <div className="pd-preview">
       <SpecialistDashboardShell
@@ -123,7 +146,7 @@ export default function SpecialistDashboardPage() {
             <SpecialistSummaryStrip
               overview={overview}
               isLoading={isOverviewLoading}
-              onCardAction={navigateToRouteKey}
+              onCardAction={handleKpiCardAction}
             />
           )}
         </section>
@@ -133,8 +156,8 @@ export default function SpecialistDashboardPage() {
           isLoading={isScheduleLoading}
           error={scheduleError}
           onRetry={reloadSchedule}
-          onViewCalendar={() => navigateToRouteKey("sessions")}
-          onViewSession={() => showToast(SPECIALIST_NAV_UNAVAILABLE.generic)}
+          onViewCalendar={() => navigate(buildSpecialistSessionsPath("calendar"))}
+          onViewSession={() => navigate(buildSpecialistSessionsPath())}
         />
 
         <div className="pd-specialist-preview-row-layout">
@@ -144,7 +167,13 @@ export default function SpecialistDashboardPage() {
             error={pendingReviewsError}
             onRetry={reloadPendingReviews}
             onViewAll={() => navigateToRouteKey("reviews")}
-            onReviewClick={() => navigateToRouteKey("reviews")}
+            onReviewClick={(review) => {
+              if (review?.id) {
+                navigate(buildSpecialistReviewExercisePath(review.id));
+                return;
+              }
+              navigateToRouteKey("reviews");
+            }}
           />
 
           <SpecialistRecentPatientProgress

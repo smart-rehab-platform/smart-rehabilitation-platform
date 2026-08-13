@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { loadSpecialistPendingReviews } from "../../../services/specialistDashboardService";
+import { subscribeSpecialistReviewRefresh } from "../utils/specialistReviewRefresh";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -17,6 +18,8 @@ export function useSpecialistPendingReviews(specialistUserId) {
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
   }, []);
+
+  useEffect(() => subscribeSpecialistReviewRefresh(reload), [reload]);
 
   useEffect(() => {
     if (!specialistUserId) {

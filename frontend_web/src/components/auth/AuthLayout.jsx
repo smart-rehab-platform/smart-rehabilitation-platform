@@ -132,7 +132,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
     };
 
     const handleEnded = () => {
-      video.currentTime = VIDEO_START_SECONDS;
+        video.currentTime = VIDEO_START_SECONDS;
       playVideo();
     };
 
@@ -191,7 +191,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                   <span className="auth-panel-header-wordmark-rehab">REHABILITATION</span>
                 </div>
               </div>
-            </header>
+      </header>
 
             {/* Two-column body */}
             <div className="auth-panel-body">
@@ -206,8 +206,8 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
                   <h1
                     className="auth-panel-headline w-full font-extrabold"
-                    style={{
-                      fontFamily: "'Syne', sans-serif",
+                style={{
+                  fontFamily: "'Syne', sans-serif",
                       textShadow: "0 6px 24px rgba(0, 0, 0, 0.35)",
                     }}
                   >
@@ -221,24 +221,24 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                         }}
                       >
                         Empowering Every
-                      </span>
+                </span>
                     </div>
                     <span className="auth-hero-gradient-wrap mb-1 block w-full overflow-visible">
-                      <span
+                <span
                         className="inline-block overflow-visible"
-                        style={{
-                          fontSize: "clamp(44px, 3.85vw, 56px)",
+                  style={{
+                          fontSize: "clamp(36px, 3.05vw, 46px)",
                           fontWeight: 800,
                           lineHeight: 1,
                           background: HERO_GRADIENT,
-                          WebkitBackgroundClip: "text",
+                    WebkitBackgroundClip: "text",
                           backgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
+                    WebkitTextFillColor: "transparent",
                           color: "transparent",
-                        }}
-                      >
-                        Rehabilitation
-                      </span>
+                  }}
+                >
+                  Rehabilitation
+                </span>
                     </span>
                     <span
                       className="block"
@@ -250,15 +250,15 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                       }}
                     >
                       Journey
-                    </span>
+                </span>
                     <span className="auth-hero-accent-line" aria-hidden />
-                  </h1>
+              </h1>
 
                   <p className="auth-panel-hero-desc">
                     Smart therapy, personalized progress, and seamless collaboration between
                     specialists and families.
-                  </p>
-                  </div>
+              </p>
+            </div>
                 </div>
                 <Link
                   to="/"
@@ -273,7 +273,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                 <div className="auth-panel-form-ai-wrap">
                   <div
                     className="auth-ai-badge auth-panel-form-ai-badge inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide uppercase"
-                    style={{
+                  style={{
                       color: "#2AA4C9",
                       background: "rgba(79, 166, 248, 0.1)",
                       border: "1px solid rgba(79, 166, 248, 0.22)",
@@ -318,22 +318,22 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                     }}
                     aria-hidden
                   />
-                  {["signin", "signup"].map((t) => (
-                    <button
-                      key={t}
+                    {["signin", "signup"].map((t) => (
+                      <button
+                        key={t}
                       type="button"
-                      onClick={() => onTabChange(t)}
+                        onClick={() => onTabChange(t)}
                       disabled={isRegistrationSubmitting}
                       className="auth-segment-btn relative z-10 flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-55"
                       style={{
                         color: activeTab === t ? C.white : "#3D5675",
                         opacity: activeTab === t ? 1 : 0.88,
                       }}
-                    >
-                      {t === "signin" ? "Sign In" : "Create Account"}
-                    </button>
-                  ))}
-                </div>
+                      >
+                        {t === "signin" ? "Sign In" : "Create Account"}
+                      </button>
+                    ))}
+                  </div>
 
                 {isSignupCompactIntro && (
                   <div className="auth-signup-wizard-intro text-center">
@@ -359,12 +359,12 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                   </p>
                 )}
 
-                {children}
+                        {children}
                 </div>
               </div>
             </div>
           </div>
-        </div>
+      </div>
 
         <p
           className="relative z-10 mt-auto shrink-0 px-5 pb-6 pt-2 text-center text-[13px] font-normal"
@@ -420,7 +420,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
         .auth-panel {
           width: min(1180px, calc(100vw - 28px));
-          min-height: 660px;
+          min-height: 590px;
           border-radius: 24px;
           overflow: hidden;
           background: transparent;
@@ -438,7 +438,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           align-items: center;
           justify-content: flex-start;
           gap: 16px;
-          padding: 18px 28px;
+          padding: 14px 28px;
           background:
             radial-gradient(ellipse 80% 120% at 12% 0%, rgba(13, 45, 82, 0.55) 0%, transparent 62%),
             linear-gradient(165deg, #0a192f 0%, #05162d 100%);
@@ -447,7 +447,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
         @media (min-width: 640px) {
           .auth-panel-header {
-            padding: 20px 40px;
+            padding: 16px 40px;
           }
         }
 
@@ -485,7 +485,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           display: flex;
           justify-content: center;
           width: 100%;
-          margin-bottom: 1.25rem;
+          margin-bottom: 1rem;
         }
 
         .auth-panel-form-ai-badge {
@@ -517,7 +517,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
         @media (min-width: 980px) {
           .auth-panel-body {
             grid-template-columns: minmax(500px, 0.57fr) minmax(390px, 0.43fr);
-            min-height: 600px;
+            min-height: 540px;
           }
         }
 
@@ -526,12 +526,12 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           display: flex;
           flex-direction: column;
           background: rgba(238, 247, 255, 0.92);
-          padding: 28px 28px 40px;
+          padding: 24px 28px 32px;
         }
 
         @media (min-width: 640px) {
           .auth-panel-form {
-            padding: 32px 40px 48px;
+            padding: 26px 40px 36px;
           }
         }
 
@@ -560,12 +560,12 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           backdrop-filter: blur(14px) saturate(125%);
           -webkit-backdrop-filter: blur(14px) saturate(125%);
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
-          padding: 32px 28px 40px;
+          padding: 26px 28px 32px;
         }
 
         @media (min-width: 640px) {
           .auth-panel-hero {
-            padding: 36px 40px 48px;
+            padding: 28px 40px 36px;
           }
         }
 
@@ -617,7 +617,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           flex-direction: column;
           align-items: stretch;
           width: 100%;
-          transform: translateY(-30px);
+          transform: translateY(-18px);
         }
 
         @media (max-width: 979px) {
@@ -645,7 +645,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           position: relative;
           display: flex;
           justify-content: center;
-          margin-bottom: 28px;
+          margin-bottom: 20px;
         }
 
         .auth-panel-hero-brand::before {
@@ -654,8 +654,8 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           top: 50%;
           left: 50%;
           z-index: 0;
-          width: clamp(190px, 40vw, 260px);
-          height: clamp(190px, 40vw, 260px);
+          width: clamp(170px, 36vw, 230px);
+          height: clamp(170px, 36vw, 230px);
           border-radius: 50%;
           pointer-events: none;
           background: radial-gradient(
@@ -675,8 +675,8 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           top: 50%;
           left: 50%;
           z-index: 0;
-          width: clamp(130px, 28vw, 175px);
-          height: clamp(130px, 28vw, 175px);
+          width: clamp(116px, 25vw, 156px);
+          height: clamp(116px, 25vw, 156px);
           border-radius: 50%;
           pointer-events: none;
           background: radial-gradient(
@@ -701,9 +701,9 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
         }
 
         .auth-panel-hero-brand img {
-          width: clamp(148px, 30vw, 196px) !important;
+          width: clamp(132px, 27vw, 172px) !important;
           height: auto !important;
-          max-height: clamp(148px, 30vw, 196px) !important;
+          max-height: clamp(132px, 27vw, 172px) !important;
           object-fit: contain;
           filter:
             drop-shadow(0 0 18px rgba(79, 166, 248, 0.42))
@@ -718,8 +718,8 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
         .auth-hero-lead-wrap {
           overflow: visible;
-          margin-bottom: 1rem;
-          padding-bottom: 8px;
+          margin-bottom: 0.75rem;
+          padding-bottom: 4px;
         }
 
         .auth-hero-lead {
@@ -732,7 +732,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           display: block;
           width: 72px;
           height: 3px;
-          margin-top: 14px;
+          margin-top: 10px;
           border-radius: 999px;
           background: linear-gradient(90deg, #2aa4c9 0%, #56b6e9 55%, #8dd8f4 100%);
         }
@@ -757,7 +757,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
         }
 
         .auth-panel-hero-desc {
-          margin-top: 24px;
+          margin-top: 18px;
           max-width: 500px;
           font-size: clamp(16px, 1.5vw, 18px);
           line-height: 1.7;
@@ -781,7 +781,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
         .auth-panel-hero-back-home {
           position: absolute;
           right: 28px;
-          bottom: 22px;
+          bottom: 18px;
           z-index: 2;
           font-size: 12px;
           font-weight: 500;

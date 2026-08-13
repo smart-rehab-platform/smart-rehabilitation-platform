@@ -1,0 +1,82 @@
+import { Lock } from "lucide-react";
+
+export function SpecialistTreatmentPlanPatientPicker({
+  open,
+  patients,
+  activePatientIds,
+  onClose,
+  onSelect,
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="pd-modal-backdrop" role="presentation" onClick={() => onClose?.()}>
+      <div
+        className="pd-modal pd-specialist-treatment-plan-picker"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="specialist-treatment-plan-picker-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 id="specialist-treatment-plan-picker-title" className="pd-modal-title">
+          Select patient
+        </h2>
+        {patients.length === 0 ? (
+          <p className="pd-section-sub">No assigned patients available.</p>
+        ) : (
+          <ul className="pd-specialist-treatment-plan-picker-list">
+            {patients.map((patient) => {
+              const hasActive = activePatientIds.has(patient.id);
+              return (
+                <li key={patient.id}>
+                  <button
+                    type="button"
+                    className={`pd-specialist-treatment-plan-picker-item${hasActive ? " is-disabled" : ""}`}
+                    disabled={hasActive}
+                    onClick={() => onSelect?.(patient)}
+                  >
+                    <span className="pd-specialist-treatment-plan-picker-copy">
+                      <strong>{patient.name}</strong>
+                      <span className="pd-section-sub">
+                        {hasActive
+                          ? "This patient already has an active treatment plan."
+                          : "No active plan"}
+                      </span>
+                    </span>
+                    {hasActive ? (
+                      <Lock size={16} aria-hidden="true" />
+                    ) : (
+                      <ChevronRightPlaceholder />
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <div className="pd-modal-actions">
+          <button type="button" className="pd-btn pd-btn-soft" onClick={() => onClose?.()}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ChevronRightPlaceholder() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d="M9 6l6 6-6 6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

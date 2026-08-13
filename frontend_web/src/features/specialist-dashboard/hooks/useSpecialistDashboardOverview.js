@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { loadSpecialistDashboardOverview } from "../../../services/specialistDashboardService";
+import { subscribeSpecialistReviewRefresh } from "../utils/specialistReviewRefresh";
+import { subscribeSpecialistSessionRefresh } from "../utils/specialistSessionRefresh";
+import { subscribeSpecialistTreatmentPlanRefresh } from "../utils/specialistTreatmentPlanRefresh";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -17,6 +20,10 @@ export function useSpecialistDashboardOverview(specialistUserId) {
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
   }, []);
+
+  useEffect(() => subscribeSpecialistReviewRefresh(reload), [reload]);
+  useEffect(() => subscribeSpecialistTreatmentPlanRefresh(reload), [reload]);
+  useEffect(() => subscribeSpecialistSessionRefresh(reload), [reload]);
 
   useEffect(() => {
     if (!specialistUserId) {

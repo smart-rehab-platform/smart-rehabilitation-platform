@@ -94,7 +94,7 @@ export function SpecialistSummaryStrip({
             key={card.key}
             type="button"
             className={`pd-quick-summary-item pd-quick-summary-item--${card.key}`}
-            onClick={() => onCardAction?.(card.navKey)}
+            onClick={() => onCardAction?.(card.key)}
             aria-label={`${card.label}: ${value}`}
           >
             <span className={`pd-summary-icon pd-tone-${card.tone}`} aria-hidden="true">

@@ -8,10 +8,14 @@ function reviewTone(status) {
   if (status === "Needs retry") {
     return "warning";
   }
-  return "blue";
+  return "success";
 }
 
-export function SpecialistRecentSubmissions({ submissions, onReviewExercises }) {
+export function SpecialistRecentSubmissions({
+  submissions,
+  onReviewExercises,
+  onSubmissionClick,
+}) {
   return (
     <section className="pd-specialist-patient-section" id="specialist-patient-submissions">
       <div className="pd-specialist-section-head">
@@ -28,17 +32,24 @@ export function SpecialistRecentSubmissions({ submissions, onReviewExercises }) 
       ) : (
         <ul className="pd-specialist-patient-item-list">
           {submissions.map((submission) => (
-            <li key={submission.id} className="pd-card pd-card-pad pd-specialist-patient-list-row">
-              <div>
-                <strong>{submission.exerciseTitle}</strong>
-                <p className="pd-section-sub">
-                  {[submission.mediaTypeLabel, submission.submittedAtLabel].filter(Boolean).join(" · ")}
-                </p>
-              </div>
-              <div className="pd-specialist-patient-list-row-aside">
-                <StatusBadge label={submission.reviewStatus} tone={reviewTone(submission.reviewStatus)} />
-                <ChevronRight size={16} aria-hidden="true" />
-              </div>
+            <li key={submission.id}>
+              <button
+                type="button"
+                className="pd-card pd-card-pad pd-specialist-patient-list-row pd-specialist-patient-list-row-btn"
+                onClick={() => onSubmissionClick?.(submission)}
+                disabled={!submission.id || !onSubmissionClick}
+              >
+                <div>
+                  <strong>{submission.exerciseTitle}</strong>
+                  <p className="pd-section-sub">
+                    {[submission.mediaTypeLabel, submission.submittedAtLabel].filter(Boolean).join(" · ")}
+                  </p>
+                </div>
+                <div className="pd-specialist-patient-list-row-aside">
+                  <StatusBadge label={submission.reviewStatus} tone={reviewTone(submission.reviewStatus)} />
+                  <ChevronRight size={16} aria-hidden="true" />
+                </div>
+              </button>
             </li>
           ))}
         </ul>

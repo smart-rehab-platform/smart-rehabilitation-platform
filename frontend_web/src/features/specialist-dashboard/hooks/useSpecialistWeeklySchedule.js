@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { loadSpecialistScheduleSessions } from "../../../services/specialistDashboardService";
+import { subscribeSpecialistSessionRefresh } from "../utils/specialistSessionRefresh";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -17,6 +18,8 @@ export function useSpecialistWeeklySchedule(specialistUserId) {
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
   }, []);
+
+  useEffect(() => subscribeSpecialistSessionRefresh(reload), [reload]);
 
   useEffect(() => {
     if (!specialistUserId) {

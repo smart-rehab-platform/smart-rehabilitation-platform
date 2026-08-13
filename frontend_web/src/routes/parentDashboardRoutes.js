@@ -11,6 +11,7 @@ export const PARENT_WEB_ROUTES = {
   notifications: "/dashboard/parent/notifications",
   aiAssistant: "/dashboard/parent/ai-assistant",
   profile: "/dashboard/parent/profile",
+  profileEdit: "/dashboard/parent/profile/edit",
   children: "/dashboard/parent/children",
   progress: "/dashboard/parent/progress",
   caseRequests: "/dashboard/parent/case-requests",
@@ -260,6 +261,14 @@ export function buildParentMessagesPath(conversationId = null) {
   }
 
   return `${PARENT_WEB_ROUTES.messages}/${encodeURIComponent(conversationId)}`;
+}
+
+export function buildParentProfilePath() {
+  return PARENT_WEB_ROUTES.profile;
+}
+
+export function buildParentEditProfilePath() {
+  return PARENT_WEB_ROUTES.profileEdit;
 }
 
 /** Maps the current pathname to a sidebar nav item id for active highlighting. */

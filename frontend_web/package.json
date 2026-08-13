@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "node --test src/features/parent-dashboard-preview/utils/parentTreatmentJourneyUtils.test.js",
+    "test": "node --test src/features/parent-dashboard-preview/utils/parentTreatmentJourneyUtils.test.js src/features/specialist-dashboard/utils/specialistScheduleSessionMappers.test.js src/features/specialist-dashboard/utils/specialistExerciseMappers.test.js src/features/specialist-dashboard/utils/specialistExerciseMediaUtils.test.js src/features/specialist-dashboard/utils/specialistCaseRequestMappers.test.js src/features/specialist-dashboard/utils/specialistSpeechAnalysisMappers.test.js src/features/specialist-dashboard/utils/specialistProfileMappers.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

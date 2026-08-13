@@ -113,14 +113,19 @@ export function useParentProfileForm({
   }, [profile]);
 
   const saveProfile = useCallback(async () => {
-    if (!profile || isSaving || saveGuardRef.current || !isDirty) {
-      return false;
+    if (!profile || isSaving || saveGuardRef.current) {
+      return { ok: false };
+    }
+
+    if (!isDirty) {
+      return { ok: false };
     }
 
     const validationErrors = validateProfileForm(formValues);
     if (Object.keys(validationErrors).length > 0) {
       setFieldErrors(validationErrors);
-      return false;
+      const firstError = Object.values(validationErrors)[0];
+      return { ok: false, message: firstError };
     }
 
     saveGuardRef.current = true;
@@ -198,17 +203,18 @@ export function useParentProfileForm({
         setSyncedSnapshot(buildProfileSnapshot(nextProfile));
         setFormValues(mapProfileToFormValues(nextProfile));
         setPendingAvatarFile(null);
-        return false;
+        return { ok: false, message };
       }
 
       setSyncedSnapshot(buildProfileSnapshot(nextProfile));
       setFormValues(mapProfileToFormValues(nextProfile));
       setPendingAvatarFile(null);
       setSuccessMessage("Profile updated successfully.");
-      return true;
+      return { ok: true };
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : "Failed to save profile.");
-      return false;
+      const message = error instanceof Error ? error.message : "Failed to save profile.";
+      setSaveError(message);
+      return { ok: false, message };
     } finally {
       saveGuardRef.current = false;
       setIsSaving(false);
