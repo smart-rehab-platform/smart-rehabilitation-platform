@@ -336,6 +336,8 @@ void main() {
     expect(find.text('Monthly'), findsOneWidget);
     expect(find.text('Assessment'), findsOneWidget);
     expect(find.text('AI Reports'), findsOneWidget);
+    expect(find.text('Create'), findsOneWidget);
+    expect(find.text('Generate'), findsOneWidget);
   });
 
   testWidgets('Specialist Sessions screen renders English title and tabs', (

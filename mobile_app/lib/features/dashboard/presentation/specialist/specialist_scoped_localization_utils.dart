@@ -71,6 +71,37 @@ String mapSpecialistReportsError(AppLocalizations l10n, String message) {
   return message;
 }
 
+String mapSpecialistAiReportGenerationError(
+  AppLocalizations l10n,
+  String message,
+) {
+  return switch (message) {
+    'Patient is required.' => l10n.specialistAiReportPatientRequired,
+    'Report type must be weekly or monthly.' => l10n.specialistAiReportTypeRequired,
+    'Start date is required.' => l10n.specialistAiReportStartRequired,
+    'End date is required.' => l10n.specialistAiReportEndRequired,
+    'period_start cannot be after period_end' =>
+      l10n.specialistAiReportStartAfterEnd,
+    'Cannot generate report for a period that has not ended yet' =>
+      l10n.specialistAiReportPeriodNotEnded,
+    _ => message,
+  };
+}
+
+String mapSpecialistRegularReportCreationError(
+  AppLocalizations l10n,
+  String message,
+) {
+  return switch (message) {
+    'Patient is required.' => l10n.specialistAiReportPatientRequired,
+    'report_type must be weekly, monthly, assessment, or progress' =>
+      l10n.specialistRegularReportTypeRequired,
+    'title must be 200 characters or fewer' =>
+      l10n.specialistCreateReportTitleMaxLength,
+    _ => message,
+  };
+}
+
 String mapSpecialistSessionsError(AppLocalizations l10n, String message) {
   if (message == 'Please sign in to continue.') {
     return l10n.messageSignInRequired;

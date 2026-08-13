@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'Create'**
   String get commonCreate;
 
+  /// Compact action to generate a report or similar item.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate'**
+  String get commonGenerate;
+
   /// Send a form or request for processing.
   ///
   /// In en, this message translates to:
@@ -6008,6 +6014,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Generate PDF'**
   String get specialistReportGeneratePdf;
+
+  /// Action that opens the AI report generation sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate AI Report'**
+  String get specialistGenerateAiReport;
+
+  /// Helper text on the generate AI report sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a weekly or monthly AI report from the patient\'s clinical progress data.'**
+  String get specialistGenerateAiReportSubtitle;
+
+  /// Section label for weekly or monthly AI report type.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Type'**
+  String get specialistAiReportTypeLabel;
+
+  /// Section label for AI report from/to dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Period'**
+  String get specialistAiReportPeriodLabel;
+
+  /// Start date field on the generate AI report sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get specialistAiReportPeriodFrom;
+
+  /// End date field on the generate AI report sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get specialistAiReportPeriodTo;
+
+  /// Primary action to submit AI report generation.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Report'**
+  String get specialistGenerateAiReportSubmit;
+
+  /// Button label while an AI report is being generated.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating...'**
+  String get specialistGenerateAiReportGenerating;
+
+  /// Snack bar after successful AI report generation.
+  ///
+  /// In en, this message translates to:
+  /// **'AI report generated successfully.'**
+  String get specialistGenerateAiReportSuccess;
+
+  /// Validation when no patient is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient is required.'**
+  String get specialistAiReportPatientRequired;
+
+  /// Validation when report type is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Report type must be weekly or monthly.'**
+  String get specialistAiReportTypeRequired;
+
+  /// Validation when the from date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date is required.'**
+  String get specialistAiReportStartRequired;
+
+  /// Validation when the to date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'End date is required.'**
+  String get specialistAiReportEndRequired;
+
+  /// Validation when from date is after to date.
+  ///
+  /// In en, this message translates to:
+  /// **'period_start cannot be after period_end'**
+  String get specialistAiReportStartAfterEnd;
+
+  /// Validation when the to date is in the future.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot generate report for a period that has not ended yet'**
+  String get specialistAiReportPeriodNotEnded;
+
+  /// Title and action for the specialist regular report creation sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Report'**
+  String get specialistCreateReport;
+
+  /// Helper text on the create regular report sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a clinical report for one of your assigned patients.'**
+  String get specialistCreateReportSubtitle;
+
+  /// Optional title field on the create regular report sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get specialistCreateReportTitleLabel;
+
+  /// Optional summary field on the create regular report sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get specialistCreateReportSummaryLabel;
+
+  /// Button label while a regular report is being created.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating...'**
+  String get specialistCreateReportCreating;
+
+  /// Snack bar after successful regular report creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Report created successfully.'**
+  String get specialistCreateReportSuccess;
+
+  /// Validation when regular report type is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'report_type must be weekly, monthly, assessment, or progress'**
+  String get specialistRegularReportTypeRequired;
+
+  /// Validation when the optional report title exceeds 200 characters.
+  ///
+  /// In en, this message translates to:
+  /// **'title must be 200 characters or fewer'**
+  String get specialistCreateReportTitleMaxLength;
 
   /// Title for AI recommendations screen.
   ///

@@ -33,6 +33,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonCreate => 'إنشاء';
 
   @override
+  String get commonGenerate => 'إنشاء';
+
+  @override
   String get commonSubmit => 'إرسال';
 
   @override
@@ -3358,6 +3361,83 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get specialistReportGeneratePdf => 'إنشاء PDF';
+
+  @override
+  String get specialistGenerateAiReport => 'إنشاء تقرير الذكاء الاصطناعي';
+
+  @override
+  String get specialistGenerateAiReportSubtitle =>
+      'أنشئ تقرير ذكاء اصطناعي أسبوعي أو شهري من بيانات التقدم السريري للمريض.';
+
+  @override
+  String get specialistAiReportTypeLabel => 'نوع التقرير';
+
+  @override
+  String get specialistAiReportPeriodLabel => 'فترة التقرير';
+
+  @override
+  String get specialistAiReportPeriodFrom => 'من';
+
+  @override
+  String get specialistAiReportPeriodTo => 'إلى';
+
+  @override
+  String get specialistGenerateAiReportSubmit => 'إنشاء التقرير';
+
+  @override
+  String get specialistGenerateAiReportGenerating => 'جارٍ الإنشاء...';
+
+  @override
+  String get specialistGenerateAiReportSuccess =>
+      'تم إنشاء تقرير الذكاء الاصطناعي بنجاح.';
+
+  @override
+  String get specialistAiReportPatientRequired => 'يجب اختيار المريض.';
+
+  @override
+  String get specialistAiReportTypeRequired =>
+      'يجب أن يكون نوع التقرير أسبوعيًا أو شهريًا.';
+
+  @override
+  String get specialistAiReportStartRequired => 'تاريخ البداية مطلوب.';
+
+  @override
+  String get specialistAiReportEndRequired => 'تاريخ النهاية مطلوب.';
+
+  @override
+  String get specialistAiReportStartAfterEnd =>
+      'لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية';
+
+  @override
+  String get specialistAiReportPeriodNotEnded =>
+      'لا يمكن إنشاء تقرير لفترة لم تنتهِ بعد';
+
+  @override
+  String get specialistCreateReport => 'إنشاء تقرير';
+
+  @override
+  String get specialistCreateReportSubtitle =>
+      'أنشئ تقريراً سريرياً لأحد مرضاك المعيّنين.';
+
+  @override
+  String get specialistCreateReportTitleLabel => 'العنوان';
+
+  @override
+  String get specialistCreateReportSummaryLabel => 'الملخص';
+
+  @override
+  String get specialistCreateReportCreating => 'جارٍ الإنشاء...';
+
+  @override
+  String get specialistCreateReportSuccess => 'تم إنشاء التقرير بنجاح.';
+
+  @override
+  String get specialistRegularReportTypeRequired =>
+      'يجب أن يكون نوع التقرير أسبوعياً أو شهرياً أو تقييماً أو تقدماً';
+
+  @override
+  String get specialistCreateReportTitleMaxLength =>
+      'يجب ألا يتجاوز العنوان 200 حرف';
 
   @override
   String get specialistAiRecommendationsTitle => 'توصيات الذكاء الاصطناعي';

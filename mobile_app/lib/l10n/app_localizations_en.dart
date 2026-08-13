@@ -33,6 +33,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonCreate => 'Create';
 
   @override
+  String get commonGenerate => 'Generate';
+
+  @override
   String get commonSubmit => 'Submit';
 
   @override
@@ -3409,6 +3412,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get specialistReportGeneratePdf => 'Generate PDF';
+
+  @override
+  String get specialistGenerateAiReport => 'Generate AI Report';
+
+  @override
+  String get specialistGenerateAiReportSubtitle =>
+      'Create a weekly or monthly AI report from the patient\'s clinical progress data.';
+
+  @override
+  String get specialistAiReportTypeLabel => 'Report Type';
+
+  @override
+  String get specialistAiReportPeriodLabel => 'Report Period';
+
+  @override
+  String get specialistAiReportPeriodFrom => 'From';
+
+  @override
+  String get specialistAiReportPeriodTo => 'To';
+
+  @override
+  String get specialistGenerateAiReportSubmit => 'Generate Report';
+
+  @override
+  String get specialistGenerateAiReportGenerating => 'Generating...';
+
+  @override
+  String get specialistGenerateAiReportSuccess =>
+      'AI report generated successfully.';
+
+  @override
+  String get specialistAiReportPatientRequired => 'Patient is required.';
+
+  @override
+  String get specialistAiReportTypeRequired =>
+      'Report type must be weekly or monthly.';
+
+  @override
+  String get specialistAiReportStartRequired => 'Start date is required.';
+
+  @override
+  String get specialistAiReportEndRequired => 'End date is required.';
+
+  @override
+  String get specialistAiReportStartAfterEnd =>
+      'period_start cannot be after period_end';
+
+  @override
+  String get specialistAiReportPeriodNotEnded =>
+      'Cannot generate report for a period that has not ended yet';
+
+  @override
+  String get specialistCreateReport => 'Create Report';
+
+  @override
+  String get specialistCreateReportSubtitle =>
+      'Create a clinical report for one of your assigned patients.';
+
+  @override
+  String get specialistCreateReportTitleLabel => 'Title';
+
+  @override
+  String get specialistCreateReportSummaryLabel => 'Summary';
+
+  @override
+  String get specialistCreateReportCreating => 'Creating...';
+
+  @override
+  String get specialistCreateReportSuccess => 'Report created successfully.';
+
+  @override
+  String get specialistRegularReportTypeRequired =>
+      'report_type must be weekly, monthly, assessment, or progress';
+
+  @override
+  String get specialistCreateReportTitleMaxLength =>
+      'title must be 200 characters or fewer';
 
   @override
   String get specialistAiRecommendationsTitle => 'AI Recommendations';
