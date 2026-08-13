@@ -1,0 +1,88 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { loadAdminComplaintDetails } from "../../../services/adminComplaintsService";
+import { mapAdminComplaintDetails } from "../utils/adminComplaintsMappers";
+
+function resolveErrorMessage(error, fallback) {
+  return error instanceof Error ? error.message : fallback;
+}
+
+export function useAdminComplaintDetails(complaintId) {
+  const [complaint, setComplaint] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [errorStatus, setErrorStatus] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(0);
+  const loadTokenRef = useRef(0);
+
+  const refresh = useCallback(() => {
+    setRefreshToken((value) => value + 1);
+  }, []);
+
+  useEffect(() => {
+    const normalizedId = typeof complaintId === "string" ? complaintId.trim() : "";
+    const loadToken = loadTokenRef.current + 1;
+    loadTokenRef.current = loadToken;
+    let cancelled = false;
+
+    async function loadDetail() {
+      if (!normalizedId) {
+        setComplaint(null);
+        setError("Complaint not found.");
+        setErrorStatus(404);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+      setErrorStatus(null);
+
+      try {
+        const row = await loadAdminComplaintDetails(normalizedId);
+        if (cancelled || loadTokenRef.current !== loadToken) {
+          return;
+        }
+
+        const mapped = mapAdminComplaintDetails(row);
+        if (!mapped) {
+          setComplaint(null);
+          setError("Complaint not found.");
+          setErrorStatus(404);
+          return;
+        }
+
+        setComplaint(mapped);
+        setError(null);
+        setErrorStatus(null);
+      } catch (loadError) {
+        if (cancelled || loadTokenRef.current !== loadToken) {
+          return;
+        }
+
+        const message = resolveErrorMessage(loadError, "Failed to load complaint details.");
+        const status = typeof loadError?.status === "number" ? loadError.status : null;
+        setComplaint(null);
+        setError(message);
+        setErrorStatus(status);
+      } finally {
+        if (!cancelled && loadTokenRef.current === loadToken) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadDetail();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [complaintId, refreshToken]);
+
+  return {
+    complaint,
+    isLoading,
+    error,
+    errorStatus,
+    refresh,
+  };
+}

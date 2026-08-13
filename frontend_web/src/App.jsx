@@ -6,7 +6,26 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import Signup from "./pages/auth/Signup";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 import LandingPage from "./pages/LandingPage";
-import Dashboard from "./pages/Dashboard";
+import AdminDashboardPage from "./features/admin-dashboard/AdminDashboardPage";
+import AdminPatientDetailsPage from "./features/admin-dashboard/AdminPatientDetailsPage";
+import AdminCaseRequestDetailsPage from "./features/admin-dashboard/AdminCaseRequestDetailsPage";
+import AdminCaseRequestSpecialistsPage from "./features/admin-dashboard/AdminCaseRequestSpecialistsPage";
+import AdminCaseRequestsPage from "./features/admin-dashboard/AdminCaseRequestsPage";
+import AdminComplaintsPage from "./features/admin-dashboard/AdminComplaintsPage";
+import AdminComplaintDetailsPage from "./features/admin-dashboard/AdminComplaintDetailsPage";
+import AdminExercisesPage from "./features/admin-dashboard/AdminExercisesPage";
+import AdminSessionsPage from "./features/admin-dashboard/AdminSessionsPage";
+import AdminReportsPage from "./features/admin-dashboard/AdminReportsPage";
+import AdminReportDetailsPage from "./features/admin-dashboard/AdminReportDetailsPage";
+import AdminAiCenterPage from "./features/admin-dashboard/AdminAiCenterPage";
+import AdminAuditLogsPage from "./features/admin-dashboard/AdminAuditLogsPage";
+import AdminNotificationsPage from "./features/admin-dashboard/AdminNotificationsPage";
+import AdminProfilePage from "./features/admin-dashboard/AdminProfilePage";
+import AdminExerciseDetailsPage from "./features/admin-dashboard/AdminExerciseDetailsPage";
+import AdminUpsertExercisePage from "./features/admin-dashboard/AdminUpsertExercisePage";
+import AdminPatientAssignmentsPage from "./features/admin-dashboard/AdminPatientAssignmentsPage";
+import AdminPatientsPage from "./features/admin-dashboard/AdminPatientsPage";
+import AdminUsersPage from "./features/admin-dashboard/AdminUsersPage";
 import SpecialistDashboardPage from "./features/specialist-dashboard/SpecialistDashboardPage";
 import SpecialistPlaceholderPage from "./features/specialist-dashboard/SpecialistPlaceholderPage";
 import SpecialistMessagesPage from "./features/specialist-dashboard/SpecialistMessagesPage";
@@ -151,7 +170,167 @@ function App() {
           path="/dashboard/admin"
           element={
             <ProtectedRoute>
-              <Dashboard role="admin" />
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/users"
+          element={
+            <ProtectedRoute>
+              <AdminUsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/patients"
+          element={
+            <ProtectedRoute>
+              <AdminPatientsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/patients/:patientId"
+          element={
+            <ProtectedRoute>
+              <AdminPatientDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/patient-assignments"
+          element={
+            <ProtectedRoute>
+              <AdminPatientAssignmentsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/case-requests"
+          element={
+            <ProtectedRoute>
+              <AdminCaseRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/case-requests/:requestId/specialists"
+          element={
+            <ProtectedRoute>
+              <AdminCaseRequestSpecialistsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/case-requests/:requestId"
+          element={
+            <ProtectedRoute>
+              <AdminCaseRequestDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/complaints"
+          element={
+            <ProtectedRoute>
+              <AdminComplaintsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/complaints/:complaintId"
+          element={
+            <ProtectedRoute>
+              <AdminComplaintDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/exercises/new"
+          element={
+            <ProtectedRoute>
+              <AdminUpsertExercisePage mode="create" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/exercises/:exerciseId/edit"
+          element={
+            <ProtectedRoute>
+              <AdminUpsertExercisePage mode="edit" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/exercises/:exerciseId"
+          element={
+            <ProtectedRoute>
+              <AdminExerciseDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/exercises"
+          element={
+            <ProtectedRoute>
+              <AdminExercisesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/sessions"
+          element={
+            <ProtectedRoute>
+              <AdminSessionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/reports/:reportId"
+          element={
+            <ProtectedRoute>
+              <AdminReportDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/reports"
+          element={
+            <ProtectedRoute>
+              <AdminReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/ai-center"
+          element={
+            <ProtectedRoute>
+              <AdminAiCenterPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/audit-logs"
+          element={
+            <ProtectedRoute>
+              <AdminAuditLogsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/notifications"
+          element={
+            <ProtectedRoute>
+              <AdminNotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/profile"
+          element={
+            <ProtectedRoute>
+              <AdminProfilePage />
             </ProtectedRoute>
           }
         />
