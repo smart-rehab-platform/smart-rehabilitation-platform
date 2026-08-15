@@ -35,6 +35,82 @@ const formatText = (value, fallback = "Not available") => {
   return text.length > 0 ? text : fallback;
 };
 
+const parseJsonObject = (value) => {
+  if (!value) {
+    return null;
+  }
+  if (typeof value === "object" && !Array.isArray(value)) {
+    return value;
+  }
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? parsed
+        : null;
+    } catch (_error) {
+      return null;
+    }
+  }
+  return null;
+};
+
+const formatAnalysisReliabilityLabel = (quality) => {
+  const parsed = parseJsonObject(quality);
+  const status = String(parsed?.status || "").toLowerCase();
+
+  if (status === "good") {
+    return "Reliable";
+  }
+  if (status === "usable_with_caution") {
+    return "Use with Caution";
+  }
+  if (status === "low_quality") {
+    return "Low Reliability";
+  }
+  return null;
+};
+
+const formatWordAccuracyLabel = (value) => {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return null;
+  }
+  const rounded = Number(numeric.toFixed(2));
+  return `Word Accuracy (Expected vs ASR): ${rounded}%`;
+};
+
+const formatSpeechAnalysisSummaryLine = (analysis = {}) => {
+  const parts = [`Analyzed: ${formatDate(analysis.analyzed_at)}`];
+
+  if (analysis.expected_text) {
+    parts.push(`Expected text: ${formatText(analysis.expected_text, "")}`.trim());
+  }
+
+  const wordAccuracyLabel = formatWordAccuracyLabel(
+    analysis.word_accuracy_percentage
+  );
+  if (wordAccuracyLabel) {
+    parts.push(wordAccuracyLabel);
+  }
+
+  const reliabilityLabel = formatAnalysisReliabilityLabel(
+    analysis.speech_analysis_quality ?? analysis.analysis_quality
+  );
+  if (reliabilityLabel) {
+    parts.push(`Analysis Reliability: ${reliabilityLabel}`);
+  }
+
+  if (analysis.transcript) {
+    parts.push(`Transcript: ${analysis.transcript}`);
+  }
+
+  return parts.join(" | ");
+};
+
 const formatJsonDetails = (value) => {
   if (value === null || value === undefined) {
     return null;
@@ -295,25 +371,9 @@ const generateReportPdfFile = async (context) => {
       addSectionTitle(doc, "Speech Analysis Summary");
       addBulletList(
         doc,
-        context.speechAnalyses.map((analysis) => {
-          const parts = [`Analyzed: ${formatDate(analysis.analyzed_at)}`];
-          if (analysis.overall_score !== null && analysis.overall_score !== undefined) {
-            parts.push(`Overall: ${analysis.overall_score}`);
-          }
-          if (
-            analysis.pronunciation_score !== null &&
-            analysis.pronunciation_score !== undefined
-          ) {
-            parts.push(`Pronunciation: ${analysis.pronunciation_score}`);
-          }
-          if (analysis.fluency_score !== null && analysis.fluency_score !== undefined) {
-            parts.push(`Fluency: ${analysis.fluency_score}`);
-          }
-          if (analysis.transcript) {
-            parts.push(`Transcript: ${analysis.transcript}`);
-          }
-          return parts.join(" | ");
-        })
+        context.speechAnalyses.map((analysis) =>
+          formatSpeechAnalysisSummaryLine(analysis)
+        )
       );
     }
 
@@ -360,6 +420,8 @@ module.exports = {
   ensureReportsDir,
   formatDate,
   formatText,
+  formatSpeechAnalysisSummaryLine,
+  formatAnalysisReliabilityLabel,
   addSectionTitle,
   addParagraph,
   addBulletList,

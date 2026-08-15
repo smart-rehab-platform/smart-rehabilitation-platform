@@ -104,10 +104,17 @@ class SpeechAnalysisScoreGrid extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            l10n.specialistSpeechAnalysisScores,
+            'Automated Speech Scores',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.25),
+          Text(
+            'Legacy heuristic scores. Use alongside transcript, word accuracy, timing metrics, and specialist review.',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
             ),
           ),
           SizedBox(height: context.dashSpacing * 0.65),
@@ -259,6 +266,243 @@ class SpeechAnalysisTranscriptCard extends StatelessWidget {
               height: 1.45,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class SpeechAnalysisWordAnalysisCard extends StatelessWidget {
+  const SpeechAnalysisWordAnalysisCard({
+    super.key,
+    required this.expectedSpeech,
+    required this.wordAnalysis,
+    this.detectedTranscript,
+  });
+
+  final SpeechExpectedSpeech expectedSpeech;
+  final SpeechWordAnalysis wordAnalysis;
+  final String? detectedTranscript;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final expectedText = expectedSpeech.expectedText?.trim();
+    final detectedText = detectedTranscript?.trim();
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Expected vs Spoken',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.5),
+          _WordAnalysisLine(
+            label: 'Expected',
+            value: expectedText?.isNotEmpty == true ? expectedText! : '—',
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          _WordAnalysisLine(
+            label: 'Detected',
+            value: detectedText?.isNotEmpty == true ? detectedText! : '—',
+          ),
+          if (expectedSpeech.targetWord?.trim().isNotEmpty ?? false) ...[
+            SizedBox(height: context.dashSpacing * 0.35),
+            _WordAnalysisLine(
+              label: 'Target word',
+              value: expectedSpeech.targetWord!.trim(),
+            ),
+          ],
+          SizedBox(height: context.dashSpacing * 0.5),
+          Text(
+            'Word accuracy: ${formatSpeechScore(wordAnalysis.wordAccuracyPercentage)}',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _WordAnalysisChip(
+                label: l10n.specialistSpeechAnalysisWordCorrect,
+                value: wordAnalysis.correctWords,
+              ),
+              _WordAnalysisChip(
+                label: l10n.specialistSpeechAnalysisAsrMismatches,
+                value: wordAnalysis.substitutions,
+              ),
+              _WordAnalysisChip(
+                label: l10n.specialistSpeechAnalysisWordOmissions,
+                value: wordAnalysis.omissions,
+              ),
+              _WordAnalysisChip(
+                label: l10n.specialistSpeechAnalysisWordInsertions,
+                value: wordAnalysis.insertions,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WordAnalysisLine extends StatelessWidget {
+  const _WordAnalysisLine({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return RichText(
+      text: TextSpan(
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: DashboardColors.textPrimary,
+          height: 1.4,
+        ),
+        children: [
+          TextSpan(
+            text: '$label: ',
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          TextSpan(text: value),
+        ],
+      ),
+    );
+  }
+}
+
+class _WordAnalysisChip extends StatelessWidget {
+  const _WordAnalysisChip({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final int? value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: DashboardColors.brandSoft,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '$label: ${value ?? '—'}',
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: DashboardColors.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class SpeechAnalysisTimingCard extends StatelessWidget {
+  const SpeechAnalysisTimingCard({
+    super.key,
+    required this.fluencyMetrics,
+    this.asrConfidence,
+  });
+
+  final SpeechFluencyMetrics fluencyMetrics;
+  final SpeechAsrConfidence? asrConfidence;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Speech Timing & Fluency',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          Text(
+            'Objective timing measurements from audio transcription timestamps.',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.5),
+          _WordAnalysisLine(
+            label: 'Speaking Rate',
+            value: fluencyMetrics.wordsPerMinute != null
+                ? '${fluencyMetrics.wordsPerMinute!.toStringAsFixed(1)} words/min'
+                : '—',
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          _WordAnalysisLine(
+            label: 'Speech Duration',
+            value: fluencyMetrics.speechDurationSeconds != null
+                ? '${fluencyMetrics.speechDurationSeconds!.toStringAsFixed(1)} sec'
+                : '—',
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          _WordAnalysisLine(
+            label: 'Pauses',
+            value: fluencyMetrics.pauseCount?.toString() ?? '—',
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          _WordAnalysisLine(
+            label: 'Total Pause Time',
+            value: fluencyMetrics.totalPauseDurationSeconds != null
+                ? '${fluencyMetrics.totalPauseDurationSeconds!.toStringAsFixed(2)} sec'
+                : '—',
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          _WordAnalysisLine(
+            label: 'Longest Pause',
+            value: fluencyMetrics.longestPauseSeconds != null
+                ? '${fluencyMetrics.longestPauseSeconds!.toStringAsFixed(2)} sec'
+                : '—',
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          _WordAnalysisLine(
+            label: 'Pause Ratio',
+            value: fluencyMetrics.pauseRatioPercentage != null
+                ? '${fluencyMetrics.pauseRatioPercentage!.toStringAsFixed(1)}%'
+                : '—',
+          ),
+          if (asrConfidence?.hasContent ?? false) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            Text(
+              'ASR Transcription Confidence',
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: DashboardColors.textSecondary,
+              ),
+            ),
+            SizedBox(height: context.dashSpacing * 0.25),
+            _WordAnalysisLine(
+              label: 'Average word probability',
+              value: asrConfidence!.averageWordProbability!
+                  .toStringAsFixed(2),
+            ),
+          ],
         ],
       ),
     );
@@ -515,6 +759,698 @@ class _FeedbackSection extends StatelessWidget {
   }
 }
 
+class SpeechAnalysisPhonemeCard extends StatelessWidget {
+  const SpeechAnalysisPhonemeCard({
+    super.key,
+    required this.phonemeAnalysis,
+  });
+
+  final SpeechPhonemeAnalysis phonemeAnalysis;
+
+  String _formatSeconds(double? value) {
+    if (value == null) {
+      return '—';
+    }
+    return '${value.toStringAsFixed(2)}s';
+  }
+
+  String _formatDurationMs(double? seconds) {
+    if (seconds == null) {
+      return '—';
+    }
+    return '${(seconds * 1000).round()} ms';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final targetPhone = phonemeAnalysis.targetPhone;
+    final displayLabel = targetPhone?.display?.trim();
+    final ipaLabel = targetPhone?.ipa?.trim();
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Target Sound Alignment',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          Text(
+            'Target-sound timing is estimated using forced alignment and does not by itself indicate pronunciation correctness.',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
+              height: 1.45,
+            ),
+          ),
+          if (displayLabel != null && displayLabel.isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            _WordAnalysisLine(
+              label: 'Target Sound',
+              value: ipaLabel != null && ipaLabel.isNotEmpty
+                  ? '$displayLabel (/$ipaLabel/)'
+                  : displayLabel,
+            ),
+          ],
+          if (phonemeAnalysis.expectedText?.trim().isNotEmpty ?? false) ...[
+            SizedBox(height: context.dashSpacing * 0.35),
+            _WordAnalysisLine(
+              label: 'Expected phrase',
+              value: phonemeAnalysis.expectedText!.trim(),
+            ),
+          ],
+          if ((displayLabel == null || displayLabel.isEmpty) &&
+              phonemeAnalysis.targetOccurrences.isEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            Text(
+              'No target sound was configured on this exercise, so aligned target occurrences and acoustic measurements are not available.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: DashboardColors.textSecondary,
+                height: 1.45,
+              ),
+            ),
+          ],
+          if (phonemeAnalysis.targetOccurrences.isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            Text(
+              'Aligned Occurrences',
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: DashboardColors.textPrimary,
+              ),
+            ),
+            SizedBox(height: context.dashSpacing * 0.35),
+            ...phonemeAnalysis.targetOccurrences.map(
+              (occurrence) => Padding(
+                padding: EdgeInsets.only(bottom: context.dashSpacing * 0.35),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      occurrence.word?.trim().isNotEmpty ?? false
+                          ? occurrence.word!.trim()
+                          : '—',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: DashboardColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: context.dashSpacing * 0.15),
+                    Text(
+                      '${_formatSeconds(occurrence.start)} – ${_formatSeconds(occurrence.end)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      'Duration ${_formatDurationMs(occurrence.durationSeconds)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textMuted,
+                      ),
+                    ),
+                    if (occurrence.acousticMeasurements != null &&
+                        occurrence.acousticMeasurements!.hasAnyMeasurement) ...[
+                      SizedBox(height: context.dashSpacing * 0.35),
+                      Text(
+                        'Acoustic Measurements',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: DashboardColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: context.dashSpacing * 0.15),
+                      if (occurrence.acousticMeasurements!.durationMs != null)
+                        _WordAnalysisLine(
+                          label: 'Duration',
+                          value:
+                              '${occurrence.acousticMeasurements!.durationMs!.round()} ms',
+                        ),
+                      if (occurrence.acousticMeasurements!.meanF0Hz != null)
+                        _WordAnalysisLine(
+                          label: 'Mean Pitch',
+                          value:
+                              '${occurrence.acousticMeasurements!.meanF0Hz!.toStringAsFixed(1)} Hz',
+                        ),
+                      if (occurrence.acousticMeasurements!.meanIntensityDb !=
+                          null)
+                        _WordAnalysisLine(
+                          label: 'Mean Intensity',
+                          value:
+                              '${occurrence.acousticMeasurements!.meanIntensityDb!.toStringAsFixed(1)} dB',
+                        ),
+                      if (occurrence.acousticMeasurements!.meanF1Hz != null)
+                        _WordAnalysisLine(
+                          label: 'F1',
+                          value:
+                              '${occurrence.acousticMeasurements!.meanF1Hz!.toStringAsFixed(1)} Hz',
+                        ),
+                      if (occurrence.acousticMeasurements!.meanF2Hz != null)
+                        _WordAnalysisLine(
+                          label: 'F2',
+                          value:
+                              '${occurrence.acousticMeasurements!.meanF2Hz!.toStringAsFixed(1)} Hz',
+                        ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+          SizedBox(height: context.dashSpacing * 0.5),
+          Text(
+            'Acoustic measurements describe the recorded signal and do not determine whether pronunciation is correct.',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SpeechAnalysisQualityCard extends StatelessWidget {
+  const SpeechAnalysisQualityCard({
+    super.key,
+    required this.quality,
+  });
+
+  final SpeechAnalysisQuality quality;
+
+  Color _statusColor() {
+    return switch ((quality.status ?? '').toLowerCase()) {
+      'good' => DashboardColors.success,
+      'usable_with_caution' => DashboardColors.warning,
+      'low_quality' => const Color(0xFFEF4444),
+      _ => DashboardColors.textSecondary,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Analysis Quality',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          Text(
+            'Reliability of this analysis result — not a clinical speech rating.',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.5),
+          _WordAnalysisLine(
+            label: 'Status',
+            value: quality.statusLabel,
+          ),
+          if (quality.warnings.isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            ...quality.warnings.map(
+              (warning) => Padding(
+                padding: EdgeInsets.only(bottom: context.dashSpacing * 0.35),
+                child: Text(
+                  warning.message,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: _statusColor(),
+                    height: 1.45,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class SpeechAnalysisProgressInsightsCard extends StatelessWidget {
+  const SpeechAnalysisProgressInsightsCard({
+    super.key,
+    required this.insights,
+  });
+
+  final SpeechProgressInsights insights;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final trend = insights.wordAccuracyTrend;
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Speech Progress Insights',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          Text(
+            'Deterministic historical measurements from prior speech analyses. Not a clinical diagnosis.',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
+            ),
+          ),
+          if (trend != null && trend.hasContent) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            _WordAnalysisLine(
+              label: 'Overall Trend',
+              value: trend.trendLabel,
+            ),
+            SizedBox(height: context.dashSpacing * 0.35),
+            _WordAnalysisLine(
+              label: 'Word Accuracy',
+              value:
+                  '${formatSpeechScore(trend.firstAccuracy)} → ${formatSpeechScore(trend.latestAccuracy)}',
+            ),
+            if (trend.changePercentagePoints != null) ...[
+              SizedBox(height: context.dashSpacing * 0.35),
+              _WordAnalysisLine(
+                label: 'Change',
+                value:
+                    '${formatSpeechScoreDelta(trend.changePercentagePoints)} percentage points',
+              ),
+            ],
+          ],
+          if (insights.repeatedWordDifficulties.isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            Text(
+              'Repeated Difficulties',
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: DashboardColors.textSecondary,
+              ),
+            ),
+            ...insights.repeatedWordDifficulties.map(
+              (item) => Padding(
+                padding: EdgeInsets.only(top: context.dashSpacing * 0.35),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      item.expectedWord,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      'Correct: ${item.timesCorrect ?? 0} / ${item.timesExpected ?? 0} • Accuracy: ${formatSpeechScore(item.accuracyPercentage)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: DashboardColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          if (insights.repeatedWordSubstitutions.isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            Text(
+              l10n.specialistSpeechAnalysisRepeatedAsrMismatches,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: DashboardColors.textSecondary,
+              ),
+            ),
+            ...insights.repeatedWordSubstitutions.map(
+              (item) => Padding(
+                padding: EdgeInsets.only(top: context.dashSpacing * 0.35),
+                child: Text(
+                  '${item.expectedWord} → ${item.detectedWord} • ${l10n.specialistSpeechAnalysisAsrMismatchDetectedCount(item.count ?? 0)}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: DashboardColors.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          ],
+          if (insights.fluencyTrend?.hasContent ?? false) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            Text(
+              'Fluency Trends',
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: DashboardColors.textSecondary,
+              ),
+            ),
+            if (insights.fluencyTrend?.wordsPerMinute != null) ...[
+              SizedBox(height: context.dashSpacing * 0.35),
+              _WordAnalysisLine(
+                label: 'Speaking Rate',
+                value:
+                    '${insights.fluencyTrend!.wordsPerMinute!.first?.toStringAsFixed(1) ?? '—'} → ${insights.fluencyTrend!.wordsPerMinute!.latest?.toStringAsFixed(1) ?? '—'} words/min',
+              ),
+            ],
+            if (insights.fluencyTrend?.pauseRatioPercentage != null) ...[
+              SizedBox(height: context.dashSpacing * 0.35),
+              _WordAnalysisLine(
+                label: 'Pause Ratio',
+                value:
+                    '${insights.fluencyTrend!.pauseRatioPercentage!.first?.toStringAsFixed(1) ?? '—'}% → ${insights.fluencyTrend!.pauseRatioPercentage!.latest?.toStringAsFixed(1) ?? '—'}%',
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class SpeechAnalysisAcousticProgressCard extends StatelessWidget {
+  const SpeechAnalysisAcousticProgressCard({
+    super.key,
+    required this.progress,
+  });
+
+  final SpeechAcousticProgress progress;
+
+  String _formatMetric(double? value, {String suffix = '', int decimals = 1}) {
+    if (value == null) {
+      return 'Not available';
+    }
+    return '${value.toStringAsFixed(decimals)}$suffix';
+  }
+
+  String _formatChange(double? value, {String suffix = '', int decimals = 1}) {
+    if (value == null) {
+      return 'Not available';
+    }
+    final sign = value > 0 ? '+' : '';
+    return '$sign${value.toStringAsFixed(decimals)}$suffix';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final target = progress.targetPhone;
+    final display = target?.display?.trim();
+    final ipa = target?.ipa?.trim();
+    final duration = progress.durationTrend;
+    final f0 = progress.f0Trend;
+    final intensity = progress.intensityTrend;
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Target Sound Acoustic Progress',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.35),
+          Text(
+            'Acoustic trends describe measured signal characteristics across attempts and do not by themselves indicate pronunciation correctness.',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: DashboardColors.textMuted,
+              height: 1.45,
+            ),
+          ),
+          if (display != null && display.isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            _WordAnalysisLine(
+              label: 'Target Sound',
+              value: ipa != null && ipa.isNotEmpty ? '$display (/$ipa/)' : display,
+            ),
+          ],
+          SizedBox(height: context.dashSpacing * 0.35),
+          _WordAnalysisLine(
+            label: 'Attempts',
+            value:
+                '${progress.usableAcousticAttempts ?? 0} comparable acoustic analyses',
+          ),
+          if (duration != null && duration.hasContent) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            _WordAnalysisLine(
+              label: 'Duration',
+              value:
+                  '${_formatMetric(duration.first, suffix: ' ms', decimals: 0)} → ${_formatMetric(duration.latest, suffix: ' ms', decimals: 0)}',
+            ),
+            _WordAnalysisLine(
+              label: 'Change',
+              value: _formatChange(duration.change, suffix: ' ms', decimals: 0),
+            ),
+          ],
+          if (f0 != null && f0.hasContent) ...[
+            SizedBox(height: context.dashSpacing * 0.35),
+            _WordAnalysisLine(
+              label: 'Mean Pitch',
+              value:
+                  '${_formatMetric(f0.first, suffix: ' Hz')} → ${_formatMetric(f0.latest, suffix: ' Hz')}',
+            ),
+            _WordAnalysisLine(
+              label: 'Change',
+              value: _formatChange(f0.change, suffix: ' Hz'),
+            ),
+          ],
+          if (intensity != null && intensity.hasContent) ...[
+            SizedBox(height: context.dashSpacing * 0.35),
+            _WordAnalysisLine(
+              label: 'Mean Intensity',
+              value:
+                  '${_formatMetric(intensity.first, suffix: ' dB')} → ${_formatMetric(intensity.latest, suffix: ' dB')}',
+            ),
+            _WordAnalysisLine(
+              label: 'Change',
+              value: _formatChange(intensity.change, suffix: ' dB'),
+            ),
+          ],
+          if (progress.variability?.durationMsStddev != null) ...[
+            SizedBox(height: context.dashSpacing * 0.35),
+            _WordAnalysisLine(
+              label: 'Duration variability',
+              value: _formatMetric(
+                progress.variability!.durationMsStddev,
+                suffix: ' ms stddev',
+              ),
+            ),
+          ],
+          if (progress.historyPoints.any(
+            (point) => point.qualityStatus == 'usable_with_caution',
+          )) ...[
+            SizedBox(height: context.dashSpacing * 0.5),
+            Text(
+              'Some attempts include usable-with-caution acoustic measurements.',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: DashboardColors.textMuted,
+                height: 1.45,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class SpeechAnalysisAcousticDurationChart extends StatelessWidget {
+  const SpeechAnalysisAcousticDurationChart({
+    super.key,
+    required this.historyPoints,
+  });
+
+  final List<SpeechAcousticHistoryPoint> historyPoints;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final points = historyPoints
+        .where((point) => point.durationMs != null)
+        .toList();
+
+    if (points.length < 2) {
+      return const SizedBox.shrink();
+    }
+
+    final maxDuration = points
+        .map((item) => item.durationMs ?? 0)
+        .fold<double>(0, (prev, value) => value > prev ? value : prev);
+    final scale = maxDuration <= 0 ? 100.0 : maxDuration;
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Target Sound Duration Over Time',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.65),
+          SizedBox(
+            height: context.dashSpacing * 4.5,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: points.map((item) {
+                final heightFactor =
+                    ((item.durationMs ?? 0) / scale).clamp(0.08, 1.0);
+                final label = item.analyzedAt != null
+                    ? DateFormat('M/d').format(item.analyzedAt!)
+                    : '—';
+
+                return Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.dashSpacing * 0.12,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: FractionallySizedBox(
+                              heightFactor: heightFactor,
+                              widthFactor: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: DashboardColors.brandCyan,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.35),
+                        Text(
+                          label,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: DashboardColors.textMuted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SpeechAnalysisWordAccuracyChart extends StatelessWidget {
+  const SpeechAnalysisWordAccuracyChart({
+    super.key,
+    required this.historyPoints,
+  });
+
+  final List<SpeechHistoryPoint> historyPoints;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final points = historyPoints
+        .where((point) => point.wordAccuracyPercentage != null)
+        .toList();
+
+    if (points.length < 2) {
+      return const SizedBox.shrink();
+    }
+
+    final maxScore = points
+        .map((item) => item.wordAccuracyPercentage ?? 0)
+        .fold<double>(0, (prev, value) => value > prev ? value : prev);
+    final scale = maxScore <= 0 ? 100.0 : maxScore;
+
+    return DashboardSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Word Accuracy Over Time',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: DashboardColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.65),
+          SizedBox(
+            height: context.dashSpacing * 4.5,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: points.map((item) {
+                final heightFactor =
+                    ((item.wordAccuracyPercentage ?? 0) / scale).clamp(
+                  0.08,
+                  1.0,
+                );
+                final label = item.analyzedAt != null
+                    ? DateFormat('M/d').format(item.analyzedAt!)
+                    : '—';
+
+                return Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.dashSpacing * 0.12,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: FractionallySizedBox(
+                              heightFactor: heightFactor,
+                              widthFactor: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: DashboardColors.accent,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: context.dashSpacing * 0.35),
+                        Text(
+                          label,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: DashboardColors.textMuted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class SpeechAnalysisProgressCard extends StatelessWidget {
   const SpeechAnalysisProgressCard({super.key, required this.progressItems});
 
@@ -658,10 +1594,7 @@ class SpeechAnalysisHistoryTile extends StatelessWidget {
                   ),
                   SizedBox(height: context.dashSpacing * 0.15),
                   Text(
-                    l10n.specialistSpeechAnalysisHistorySummary(
-                      formatSpeechScore(analysis.overallScore),
-                      formatSpeechScore(analysis.pronunciationScore),
-                    ),
+                    specialistSpeechAnalysisHistorySummary(l10n, analysis),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: DashboardColors.textSecondary,
                     ),

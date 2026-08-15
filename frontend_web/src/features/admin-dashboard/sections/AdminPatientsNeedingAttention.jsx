@@ -1,5 +1,4 @@
 import { UserRound } from "lucide-react";
-import { AdminAiStatusBadge } from "../components/AdminAiStatusBadge";
 
 function AttentionRow({ patient, onSelectPatient }) {
   const handleOpen = () => onSelectPatient?.(patient.id);
@@ -23,12 +22,6 @@ function AttentionRow({ patient, onSelectPatient }) {
       <span className="pd-admin-ai-row-copy">
         <strong className="pd-admin-ai-row-title">{patient.fullName}</strong>
       </span>
-      {patient.speechScoreLabel ? (
-        <AdminAiStatusBadge
-          label={`Speech ${patient.speechScoreLabel}`}
-          tone="warning"
-        />
-      ) : null}
     </li>
   );
 }

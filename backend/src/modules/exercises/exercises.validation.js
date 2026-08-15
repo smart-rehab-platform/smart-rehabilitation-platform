@@ -4,6 +4,8 @@ const UUID_RE =
 const TITLE_MAX = 200;
 const TEXT_MAX = 10000;
 const MEDIA_URL_MAX = 1000;
+const TARGET_WORD_MAX = 100;
+const TARGET_PHONEME_MAX = 20;
 const ALLOWED_EXERCISE_LANGUAGES = new Set(["en", "ar"]);
 const DEFAULT_EXERCISE_LANGUAGE = "en";
 
@@ -107,6 +109,31 @@ const validateCreateExercise = (req, res, next) => {
     });
   }
 
+  const expectedText = trimOrNull(body.expected_text);
+  const targetWord = trimOrNull(body.target_word);
+  const targetPhoneme = trimOrNull(body.target_phoneme);
+
+  if (expectedText && expectedText.length > TEXT_MAX) {
+    return res.status(400).json({
+      success: false,
+      message: `expected_text must be at most ${TEXT_MAX} characters.`,
+    });
+  }
+
+  if (targetWord && targetWord.length > TARGET_WORD_MAX) {
+    return res.status(400).json({
+      success: false,
+      message: `target_word must be at most ${TARGET_WORD_MAX} characters.`,
+    });
+  }
+
+  if (targetPhoneme && targetPhoneme.length > TARGET_PHONEME_MAX) {
+    return res.status(400).json({
+      success: false,
+      message: `target_phoneme must be at most ${TARGET_PHONEME_MAX} characters.`,
+    });
+  }
+
   req.body = {
     category_id: categoryId,
     title,
@@ -114,6 +141,9 @@ const validateCreateExercise = (req, res, next) => {
     instructions,
     instruction_media_url: mediaUrl,
     language,
+    expected_text: expectedText,
+    target_word: targetWord,
+    target_phoneme: targetPhoneme,
   };
 
   next();
@@ -139,6 +169,9 @@ const validateUpdateExercise = (req, res, next) => {
     "instructions",
     "instruction_media_url",
     "language",
+    "expected_text",
+    "target_word",
+    "target_phoneme",
   ];
   const provided = Object.keys(body).filter((key) =>
     allowedFields.includes(key)
@@ -235,6 +268,48 @@ const validateUpdateExercise = (req, res, next) => {
       });
     }
     nextBody.language = language;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "expected_text")) {
+    const expectedText = trimOrNull(body.expected_text);
+    if (expectedText && expectedText.length > TEXT_MAX) {
+      return res.status(400).json({
+        success: false,
+        message: `expected_text must be at most ${TEXT_MAX} characters.`,
+      });
+    }
+    nextBody.expected_text =
+      body.expected_text === null || body.expected_text === undefined
+        ? undefined
+        : expectedText ?? "";
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "target_word")) {
+    const targetWord = trimOrNull(body.target_word);
+    if (targetWord && targetWord.length > TARGET_WORD_MAX) {
+      return res.status(400).json({
+        success: false,
+        message: `target_word must be at most ${TARGET_WORD_MAX} characters.`,
+      });
+    }
+    nextBody.target_word =
+      body.target_word === null || body.target_word === undefined
+        ? undefined
+        : targetWord ?? "";
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "target_phoneme")) {
+    const targetPhoneme = trimOrNull(body.target_phoneme);
+    if (targetPhoneme && targetPhoneme.length > TARGET_PHONEME_MAX) {
+      return res.status(400).json({
+        success: false,
+        message: `target_phoneme must be at most ${TARGET_PHONEME_MAX} characters.`,
+      });
+    }
+    nextBody.target_phoneme =
+      body.target_phoneme === null || body.target_phoneme === undefined
+        ? undefined
+        : targetPhoneme ?? "";
   }
 
   // Drop undefined keys so service can detect which fields were provided.

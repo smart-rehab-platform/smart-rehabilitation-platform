@@ -153,30 +153,77 @@ class _SpecialistSpeechAnalysisScreenState
                 ),
               ),
               SizedBox(height: context.dashSpacing * 0.5),
-              SpeechAnalysisScoreGrid(
-                pronunciationScore: selected.pronunciationScore,
-                fluencyScore: selected.fluencyScore,
-                overallScore: selected.overallScore,
-              ),
+              if (selected.analysisQuality != null &&
+                  selected.analysisQuality!.hasContent) ...[
+                SizedBox(height: context.dashSpacing * 0.75),
+                SpeechAnalysisQualityCard(quality: selected.analysisQuality!),
+              ],
               SizedBox(height: context.dashSpacing * 0.75),
               SpeechAnalysisTranscriptCard(
                 transcript: selected.transcript,
                 language: selected.language,
                 durationSeconds: selected.durationSeconds,
               ),
-              if (state.comparison != null &&
-                  state.comparison!.hasComparison) ...[
+              if (selected.expectedSpeech != null &&
+                  selected.wordAnalysis != null &&
+                  selected.wordAnalysis!.hasContent) ...[
                 SizedBox(height: context.dashSpacing * 0.75),
-                SpeechAnalysisComparisonCard(comparison: state.comparison!),
+                SpeechAnalysisWordAnalysisCard(
+                  expectedSpeech: selected.expectedSpeech!,
+                  wordAnalysis: selected.wordAnalysis!,
+                  detectedTranscript: selected.transcript,
+                ),
+              ],
+              if (selected.fluencyMetrics != null &&
+                  selected.fluencyMetrics!.hasContent) ...[
+                SizedBox(height: context.dashSpacing * 0.75),
+                SpeechAnalysisTimingCard(
+                  fluencyMetrics: selected.fluencyMetrics!,
+                  asrConfidence: selected.asrConfidence,
+                ),
+              ],
+              if (selected.phonemeAnalysis != null &&
+                  selected.phonemeAnalysis!.hasContent) ...[
+                SizedBox(height: context.dashSpacing * 0.75),
+                SpeechAnalysisPhonemeCard(
+                  phonemeAnalysis: selected.phonemeAnalysis!,
+                ),
+              ],
+              if (state.progressInsights != null &&
+                  state.progressInsights!.hasContent) ...[
+                SizedBox(height: context.dashSpacing * 0.75),
+                SpeechAnalysisProgressInsightsCard(
+                  insights: state.progressInsights!,
+                ),
+              ],
+              if (state.acousticProgress != null &&
+                  state.acousticProgress!.hasContent) ...[
+                SizedBox(height: context.dashSpacing * 0.75),
+                SpeechAnalysisAcousticProgressCard(
+                  progress: state.acousticProgress!,
+                ),
               ],
               if (selected.aiFeedback.hasContent) ...[
                 SizedBox(height: context.dashSpacing * 0.75),
                 SpeechAnalysisFeedbackCard(feedback: selected.aiFeedback),
               ],
             ],
-            if (state.progressItems.length >= 2) ...[
+            if (state.acousticProgress != null &&
+                state.acousticProgress!.historyPoints
+                        .where((point) => point.durationMs != null)
+                        .length >=
+                    2) ...[
               SizedBox(height: context.dashSpacing * 0.75),
-              SpeechAnalysisProgressCard(progressItems: state.progressItems),
+              SpeechAnalysisAcousticDurationChart(
+                historyPoints: state.acousticProgress!.historyPoints,
+              ),
+            ],
+            if (state.progressInsights?.historyPoints.length != null &&
+                state.progressInsights!.historyPoints.length >= 2) ...[
+              SizedBox(height: context.dashSpacing * 0.75),
+              SpeechAnalysisWordAccuracyChart(
+                historyPoints: state.progressInsights!.historyPoints,
+              ),
             ],
             SizedBox(height: context.dashSpacing * 0.75),
             Text(

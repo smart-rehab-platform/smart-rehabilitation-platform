@@ -1644,7 +1644,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminAiNoPatientsFlagged =>
-      'لا يوجد مرضى مُعلَّمون بدرجات منخفضة.';
+      'لا يوجد مرضى يحتاجون إلى اهتمام حالياً.';
 
   @override
   String get adminAiLatestSpeechAnalyses => 'أحدث تحليلات الكلام';
@@ -2444,6 +2444,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get specialistExerciseInstructionsField => 'تعليمات مفصلة';
 
   @override
+  String get specialistExerciseExpectedTextField => 'النص المتوقع';
+
+  @override
+  String get specialistExerciseExpectedTextHelper =>
+      'العبارة الدقيقة التي يجب أن يقولها المريض. تُستخدم لمحاذاة الكلمات والصوتيات.';
+
+  @override
+  String get specialistExerciseExpectedTextRequired =>
+      'النص المتوقع مطلوب لتمارين نطق الكلام.';
+
+  @override
+  String get specialistExerciseTargetSoundField => 'الصوت المستهدف';
+
+  @override
+  String get specialistExerciseTargetSoundHelper =>
+      'صوت كلام مستهدف اختياري لتحليل الصوتيات، مثل r.';
+
+  @override
+  String get specialistExerciseExpectedTextSection => 'النص المتوقع';
+
+  @override
+  String get specialistExerciseTargetSoundSection => 'الصوت المستهدف';
+
+  @override
   String get specialistExerciseInstructionMediaSection =>
       'وسائط تعليمية (اختياري)';
 
@@ -2730,6 +2754,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get specialistSpeechAnalysisDecisionSupport => 'دعم القرار';
 
   @override
+  String get specialistSpeechAnalysisWordCorrect => 'صحيح';
+
+  @override
+  String get specialistSpeechAnalysisAsrMismatches => 'اختلافات التعرف الصوتي';
+
+  @override
+  String get specialistSpeechAnalysisWordOmissions => 'حذف';
+
+  @override
+  String get specialistSpeechAnalysisWordInsertions => 'إدراج';
+
+  @override
+  String get specialistSpeechAnalysisRepeatedAsrMismatches =>
+      'اختلافات التعرف الصوتي المتكررة';
+
+  @override
+  String specialistSpeechAnalysisAsrMismatchDetectedCount(int count) {
+    return 'تم رصده $count مرات';
+  }
+
+  @override
   String specialistSpeechAnalysisSuggestedLine(String action) {
     return 'مقترح: $action';
   }
@@ -2748,6 +2793,14 @@ class AppLocalizationsAr extends AppLocalizations {
   ) {
     return 'الإجمالي $overall • النطق $pronunciation';
   }
+
+  @override
+  String specialistSpeechAnalysisHistoryWordAccuracy(String accuracy) {
+    return 'دقة الكلمات: $accuracy%';
+  }
+
+  @override
+  String get specialistSpeechAnalysisHistoryFallback => 'تحليل نطق';
 
   @override
   String get specialistSpeechAnalysisRunTitle => 'تشغيل تحليل النطق';
@@ -4568,6 +4621,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get parentExerciseAlreadySubmitted => 'تم الإرسال بالفعل';
+
+  @override
+  String get parentExerciseAwaitingReview => 'بانتظار مراجعة الأخصائي';
+
+  @override
+  String get parentExerciseReviewedStatus => 'تمت مراجعة هذا التمرين.';
+
+  @override
+  String get parentExerciseRetryRequested => 'طلب الأخصائي محاولة أخرى.';
+
+  @override
+  String get parentExerciseRetry => 'إعادة التمرين';
 
   @override
   String get parentExerciseYourSubmission => 'إرسالك';

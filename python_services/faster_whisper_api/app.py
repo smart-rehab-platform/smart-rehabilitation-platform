@@ -59,6 +59,46 @@ async def health_check():
     }
 
 
+def serialize_word(word) -> dict | None:
+    if word is None:
+        return None
+
+    token = getattr(word, "word", None)
+    start = getattr(word, "start", None)
+    end = getattr(word, "end", None)
+
+    if token is None or start is None or end is None:
+        return None
+
+    payload = {
+        "word": str(token).strip(),
+        "start": float(start),
+        "end": float(end),
+    }
+
+    probability = getattr(word, "probability", None)
+    if probability is not None:
+        payload["probability"] = float(probability)
+
+    return payload
+
+
+def serialize_segment(segment) -> dict:
+    segment_words = getattr(segment, "words", None) or []
+    words = [
+        serialized
+        for word in segment_words
+        if (serialized := serialize_word(word)) is not None
+    ]
+
+    return {
+        "start": float(segment.start),
+        "end": float(segment.end),
+        "text": str(segment.text or "").strip(),
+        "words": words,
+    }
+
+
 @app.post("/transcribe")
 async def transcribe_audio(
     audio: UploadFile = File(...),
@@ -88,8 +128,10 @@ async def transcribe_audio(
             language=resolved_language,
             task="transcribe",
             initial_prompt=initial_prompt,
+            word_timestamps=True,
         )
         segment_list = list(segments)
+        serialized_segments = [serialize_segment(segment) for segment in segment_list]
         transcript = " ".join(
             segment.text.strip() for segment in segment_list if segment.text
         ).strip()
@@ -100,7 +142,8 @@ async def transcribe_audio(
             "success": True,
             "transcript": transcript,
             "language": resolved_language,
-            "duration": float(duration)
+            "duration": float(duration),
+            "segments": serialized_segments,
         }
     except Exception as error:
         return build_error_response(str(error), 500)

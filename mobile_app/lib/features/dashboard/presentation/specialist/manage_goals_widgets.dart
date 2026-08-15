@@ -162,9 +162,16 @@ class GoalTermSelector extends StatelessWidget {
   }
 }
 
-InputDecoration goalFieldDecoration(String hint) {
+InputDecoration goalFieldDecoration(
+  String hint, {
+  String? labelText,
+  String? helperText,
+}) {
   return InputDecoration(
     hintText: hint,
+    labelText: labelText,
+    helperText: helperText,
+    helperMaxLines: 3,
     filled: true,
     fillColor: DashboardColors.surface,
     border: OutlineInputBorder(

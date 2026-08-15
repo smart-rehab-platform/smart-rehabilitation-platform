@@ -110,6 +110,9 @@ class SpecialistExerciseItem {
     this.instructions,
     this.instructionMediaUrl,
     this.language = 'en',
+    this.expectedText,
+    this.targetWord,
+    this.targetPhoneme,
     this.createdBy,
     this.createdByName,
   });
@@ -124,6 +127,9 @@ class SpecialistExerciseItem {
   final String? instructions;
   final String? instructionMediaUrl;
   final String language;
+  final String? expectedText;
+  final String? targetWord;
+  final String? targetPhoneme;
   final String? createdBy;
   final String? createdByName;
 
@@ -190,6 +196,18 @@ class SpecialistExerciseItem {
         'instructionMediaUrl',
       ]),
       language: _parseExerciseLanguage(map),
+      expectedText: ApiResponseParser.readString(map, const [
+        'expected_text',
+        'expectedText',
+      ]),
+      targetWord: ApiResponseParser.readString(map, const [
+        'target_word',
+        'targetWord',
+      ]),
+      targetPhoneme: ApiResponseParser.readString(map, const [
+        'target_phoneme',
+        'targetPhoneme',
+      ]),
       createdBy: ApiResponseParser.readString(map, const [
         'created_by',
         'createdBy',
@@ -231,6 +249,9 @@ class UpsertExerciseRequest {
     this.instructions,
     this.instructionMediaUrl,
     this.language = SpecialistExerciseItem.defaultLanguage,
+    this.expectedText,
+    this.targetWord,
+    this.targetPhoneme,
     this.clearInstructionMedia = false,
   });
 
@@ -240,6 +261,9 @@ class UpsertExerciseRequest {
   final String? instructions;
   final String? instructionMediaUrl;
   final String language;
+  final String? expectedText;
+  final String? targetWord;
+  final String? targetPhoneme;
   final bool clearInstructionMedia;
 
   String get normalizedLanguage =>
@@ -257,6 +281,12 @@ class UpsertExerciseRequest {
       if (instructionMediaUrl != null &&
           instructionMediaUrl!.trim().isNotEmpty)
         'instruction_media_url': instructionMediaUrl!.trim(),
+      if (expectedText != null && expectedText!.trim().isNotEmpty)
+        'expected_text': expectedText!.trim(),
+      if (targetWord != null && targetWord!.trim().isNotEmpty)
+        'target_word': targetWord!.trim(),
+      if (targetPhoneme != null && targetPhoneme!.trim().isNotEmpty)
+        'target_phoneme': targetPhoneme!.trim(),
     };
   }
 
@@ -270,6 +300,9 @@ class UpsertExerciseRequest {
       'instruction_media_url': clearInstructionMedia
           ? ''
           : (instructionMediaUrl?.trim() ?? ''),
+      'expected_text': expectedText?.trim() ?? '',
+      'target_word': targetWord?.trim() ?? '',
+      'target_phoneme': targetPhoneme?.trim() ?? '',
     };
   }
 }

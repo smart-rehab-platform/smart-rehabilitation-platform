@@ -78,6 +78,9 @@ const createExercise = async (data, userId) => {
     instructions,
     instruction_media_url,
     language = "en",
+    expected_text = null,
+    target_word = null,
+    target_phoneme = null,
   } = data;
 
   await assertCategoryExists(category_id);
@@ -91,9 +94,12 @@ const createExercise = async (data, userId) => {
        instructions,
        instruction_media_url,
        language,
+       expected_text,
+       target_word,
+       target_phoneme,
        created_by
      )
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
      RETURNING *`,
     [
       category_id,
@@ -102,6 +108,9 @@ const createExercise = async (data, userId) => {
       instructions,
       instruction_media_url,
       language,
+      expected_text,
+      target_word,
+      target_phoneme,
       userId
     ]
   );
@@ -210,6 +219,24 @@ const updateExercise = async (id, data, actor = {}) => {
   }
   if (Object.prototype.hasOwnProperty.call(data, "language")) {
     pushField("language", data.language);
+  }
+  if (Object.prototype.hasOwnProperty.call(data, "expected_text")) {
+    pushField(
+      "expected_text",
+      data.expected_text === "" ? null : data.expected_text
+    );
+  }
+  if (Object.prototype.hasOwnProperty.call(data, "target_word")) {
+    pushField(
+      "target_word",
+      data.target_word === "" ? null : data.target_word
+    );
+  }
+  if (Object.prototype.hasOwnProperty.call(data, "target_phoneme")) {
+    pushField(
+      "target_phoneme",
+      data.target_phoneme === "" ? null : data.target_phoneme
+    );
   }
 
   if (sets.length === 0) {

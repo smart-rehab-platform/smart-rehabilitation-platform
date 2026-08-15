@@ -355,17 +355,6 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
     return l10n.parentDashboardRehabilitationFollowUp;
   }
 
-  String? _improvementLabel(ParentDashboardState state, AppLocalizations l10n) {
-    final delta = state.speechSummary?.deltaFromPrevious;
-    if (delta == null) {
-      return null;
-    }
-    final sign = delta >= 0 ? '+' : '';
-    return l10n.parentDashboardImprovementFromPrevious(
-      '$sign${delta.round()}%',
-    );
-  }
-
   String _heroUpcomingSessionCountdown(
     AppLocalizations l10n,
     ParentDashboardState state,
@@ -567,7 +556,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                       l10n,
                     ),
                     progress: _childProgressValue(state, selectedChild.id),
-                    improvementLabel: _improvementLabel(state, l10n),
+                    improvementLabel: null,
                     upcomingSessionLabel: _heroUpcomingSessionCountdown(
                       l10n,
                       state,
@@ -618,11 +607,6 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                       action: state.nextAction,
                       onPressed: () => _handleNextAction(state.nextAction),
                     ),
-                    SizedBox(height: context.dashSpacing * 0.75),
-                  ],
-                  if (state.speechSummary != null &&
-                      state.speechSummary!.overallScore != null) ...[
-                    ParentSpeechAnalysisCard(summary: state.speechSummary!),
                     SizedBox(height: context.dashSpacing * 0.75),
                   ],
                 ],

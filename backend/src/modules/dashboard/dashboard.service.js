@@ -736,14 +736,10 @@ exports.getAdminAiCenter = async () => {
       LIMIT 1
     ) latest_progress ON true
     WHERE (
-      latest_speech.overall_score IS NOT NULL
-      AND latest_speech.overall_score < 75
-    ) OR (
       latest_progress.improvement_percentage IS NOT NULL
       AND latest_progress.improvement_percentage < 10
     )
     ORDER BY
-      COALESCE(latest_speech.overall_score, 100),
       COALESCE(latest_progress.improvement_percentage, 100)
     LIMIT 10
   `);

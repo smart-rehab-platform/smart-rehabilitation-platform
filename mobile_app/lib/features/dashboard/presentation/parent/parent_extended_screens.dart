@@ -13,6 +13,7 @@ import '../../widgets/exercise_instruction_media_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import 'parent_child_detail_widgets.dart';
+import 'parent_exercise_action_status.dart';
 import 'parent_exercise_media_picker.dart';
 export 'parent_progress_screen.dart';
 import 'parent_extended_localization_utils.dart';
@@ -276,6 +277,16 @@ class _ParentExerciseDetailScreenState
     extends ConsumerState<ParentExerciseDetailScreen> {
   final _notesController = TextEditingController();
   ParentExerciseMediaSelection? _mediaSelection;
+  ParentSpecialistFeedback? _retryFeedback;
+  bool _loadingFeedback = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadRetryFeedbackIfNeeded();
+    });
+  }
 
   @override
   void dispose() {
@@ -299,6 +310,42 @@ class _ParentExerciseDetailScreenState
       }
     }
     return null;
+  }
+
+  ParentExerciseActionState _actionState(ParentExercisesState state) {
+    final latest = latestSubmissionForAssignment(
+      state.submissions,
+      widget.assignedExerciseId,
+    );
+    return resolveParentExerciseActionState(latest);
+  }
+
+  Future<void> _loadRetryFeedbackIfNeeded() async {
+    final exercisesState = ref.read(parentExercisesProvider);
+    final latest = latestSubmissionForAssignment(
+      exercisesState.submissions,
+      widget.assignedExerciseId,
+    );
+    final actionState = resolveParentExerciseActionState(latest);
+    if (actionState != ParentExerciseActionState.needsRetry ||
+        latest == null ||
+        latest.id.isEmpty) {
+      return;
+    }
+    setState(() => _loadingFeedback = true);
+    try {
+      final feedback = await ref
+          .read(parentDashboardRepositoryProvider)
+          .fetchSubmissionReview(latest.id);
+      if (!mounted) return;
+      setState(() {
+        _retryFeedback = feedback;
+        _loadingFeedback = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loadingFeedback = false);
+    }
   }
 
   void _setMedia(ParentExerciseMediaSelection? selection) {
@@ -369,6 +416,8 @@ class _ParentExerciseDetailScreenState
     final dashboard = ref.watch(parentDashboardProvider);
     final task = _findTask(exercisesState);
     final assigned = _findAssigned(exercisesState);
+    final actionState = _actionState(exercisesState);
+    final canSubmit = parentExerciseCanSubmit(actionState);
     final title = task?.title ?? assigned?.title ?? l10n.entityExercise;
     final instructions = task?.instructions ?? assigned?.instructions;
     final instructionMediaUrl =
@@ -454,11 +503,57 @@ class _ParentExerciseDetailScreenState
                       ),
                     ),
                   ],
-                  if (task?.isCompleted == true) ...[
+                  if (actionState ==
+                      ParentExerciseActionState.awaitingReview) ...[
                     SizedBox(height: context.dashSpacing * 0.5),
                     Text(
-                      l10n.parentExerciseAlreadySubmitted,
-                      style: TextStyle(color: DashboardColors.accent),
+                      l10n.parentExerciseAwaitingReview,
+                      style: const TextStyle(color: DashboardColors.accent),
+                    ),
+                  ],
+                  if (actionState == ParentExerciseActionState.reviewed) ...[
+                    SizedBox(height: context.dashSpacing * 0.5),
+                    Text(
+                      l10n.parentExerciseReviewedStatus,
+                      style: const TextStyle(color: DashboardColors.accent),
+                    ),
+                  ],
+                  if (actionState == ParentExerciseActionState.needsRetry) ...[
+                    SizedBox(height: context.dashSpacing * 0.5),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(context.dashSpacing * 0.65),
+                      decoration: BoxDecoration(
+                        color: DashboardColors.warning.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.parentExerciseRetryRequested,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: DashboardColors.warning,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          if (_loadingFeedback) ...[
+                            SizedBox(height: context.dashSpacing * 0.35),
+                            const LinearProgressIndicator(),
+                          ] else if ((_retryFeedback?.message ?? '')
+                              .trim()
+                              .isNotEmpty) ...[
+                            SizedBox(height: context.dashSpacing * 0.35),
+                            Text(
+                              _retryFeedback!.message.trim(),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: DashboardColors.textSecondary,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ],
                 ],
@@ -471,50 +566,51 @@ class _ParentExerciseDetailScreenState
                 title: l10n.parentExerciseInstructionMedia,
               ),
             ],
-            SizedBox(height: context.dashSpacing),
-            Divider(color: DashboardColors.border),
-            SizedBox(height: context.dashSpacing),
-            Text(
-              l10n.parentExerciseYourSubmission,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: DashboardColors.textPrimary,
-              ),
-            ),
-            SizedBox(height: context.dashSpacing * 0.55),
-            TextField(
-              controller: _notesController,
-              maxLines: 3,
-              decoration: InputDecoration(
-                labelText: l10n.parentExerciseNotesForSpecialist,
-                border: const OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: context.dashSpacing * 0.75),
-            ParentExerciseMediaSection(
-              selection: _mediaSelection,
-              onAddMedia: _openAddMediaSheet,
-              onRemoveMedia: () => _setMedia(null),
-            ),
-            SizedBox(height: context.dashSpacing),
-            ElevatedButton(
-              onPressed:
-                  exercisesState.isSubmitting || task?.isCompleted == true
-                  ? null
-                  : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DashboardColors.brandCyan,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(
-                  vertical: context.dashSpacing * 0.75,
+            if (canSubmit) ...[
+              SizedBox(height: context.dashSpacing),
+              Divider(color: DashboardColors.border),
+              SizedBox(height: context.dashSpacing),
+              Text(
+                l10n.parentExerciseYourSubmission,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: DashboardColors.textPrimary,
                 ),
               ),
-              child: Text(
-                exercisesState.isSubmitting
-                    ? l10n.parentExerciseSubmitting
-                    : l10n.parentExerciseSubmit,
+              SizedBox(height: context.dashSpacing * 0.55),
+              TextField(
+                controller: _notesController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  labelText: l10n.parentExerciseNotesForSpecialist,
+                  border: const OutlineInputBorder(),
+                ),
               ),
-            ),
+              SizedBox(height: context.dashSpacing * 0.75),
+              ParentExerciseMediaSection(
+                selection: _mediaSelection,
+                onAddMedia: _openAddMediaSheet,
+                onRemoveMedia: () => _setMedia(null),
+              ),
+              SizedBox(height: context.dashSpacing),
+              ElevatedButton(
+                onPressed: exercisesState.isSubmitting ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: DashboardColors.brandCyan,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dashSpacing * 0.75,
+                  ),
+                ),
+                child: Text(
+                  exercisesState.isSubmitting
+                      ? l10n.parentExerciseSubmitting
+                      : actionState == ParentExerciseActionState.needsRetry
+                      ? l10n.parentExerciseRetry
+                      : l10n.parentExerciseSubmit,
+                ),
+              ),
+            ],
           ],
         ),
       ),

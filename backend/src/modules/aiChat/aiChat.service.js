@@ -1,5 +1,8 @@
 const pool = require("../../database/db");
 const aiProviderService = require("../../services/aiProvider.service");
+const {
+  cloneWithoutLegacySpeechScores,
+} = require("../../utils/legacySpeechScores");
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -441,7 +444,7 @@ const buildChatbotPrompt = ({
       full_name: user.full_name,
       role: user.role
     },
-    patient_context: patientContext,
+    patient_context: cloneWithoutLegacySpeechScores(patientContext),
     chat_history: chatHistory,
     latest_user_question: question
   };
@@ -459,6 +462,8 @@ const buildChatbotPrompt = ({
     "Whenever appropriate, include a short section titled 'Suggested Home Practice' with 2 to 4 practical activities a parent can do at home.",
     "Always end with a short disclaimer that medical decisions should always be made with the treating specialist.",
     "Reply in plain text only. Do not use JSON or markdown code fences.",
+    "Do not invent pronunciation, fluency, or overall speech scores.",
+    "Do not describe overall speech score improvement, decline, pronunciation score, or fluency score.",
     "",
     "Context:",
     JSON.stringify(promptContext, null, 2)
@@ -604,5 +609,6 @@ module.exports = {
   getConversationById,
   getConversationMessages,
   sendMessage,
-  ask
+  ask,
+  buildChatbotPrompt,
 };

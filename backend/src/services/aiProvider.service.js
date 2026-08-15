@@ -346,27 +346,43 @@ const normalizeChatbotReply = (
   };
 };
 
-const createJsonInstructionPrompt = (prompt) => [
-  "Return a JSON object with exactly these fields:",
-  "{",
-  '  "clinical_note": "string",',
-  '  "improvement_summary": "string",',
-  '  "detected_changes": {',
-  '    "improvements": ["string"],',
-  '    "regressions": ["string"],',
-  '    "stable_areas": ["string"]',
-  "  },",
-  '  "treatment_analysis": "string",',
-  '  "recommendations": ["string"],',
-  '  "decision_support": {',
-  '    "suggested_action": "string",',
-  '    "reason": "string"',
-  "  },",
-  '  "confidence_score": 0.5',
-  "}",
-  "Do not add any extra fields.",
-  prompt
-].join("\n");
+const createJsonInstructionPrompt = (prompt) => {
+  const lines = [
+    "Return a JSON object with exactly these fields:",
+    "{",
+    '  "clinical_note": "string",',
+    '  "improvement_summary": "string",',
+    '  "detected_changes": {',
+    '    "improvements": ["string"],',
+    '    "regressions": ["string"],',
+    '    "stable_areas": ["string"]',
+    "  },",
+    '  "treatment_analysis": "string",',
+    '  "recommendations": ["string"],',
+    '  "decision_support": {',
+    '    "suggested_action": "string",',
+    '    "reason": "string"',
+    "  },",
+    '  "confidence_score": 0.5',
+    "}",
+    "Do not add any extra fields.",
+  ];
+
+  const promptText = typeof prompt === "string" ? prompt : "";
+  if (
+    promptText.includes("expected_vs_asr_mismatch") ||
+    promptText.includes("asr_mismatches") ||
+    promptText.includes("repeated_asr_word_mismatches")
+  ) {
+    lines.push(
+      "Speech ASR safety: when expected-vs-ASR mismatch fields are present, never describe them as patient substitution, substituted, persistent substitution, consistent substitution, or articulation substitution.",
+      "Prefer: The ASR transcript differed from the expected word. Low ASR confidence means uncertain ASR evidence only, not confirmed mispronunciation."
+    );
+  }
+
+  lines.push(promptText);
+  return lines.join("\n");
+};
 
 const createRecommendationInstructionPrompt = (prompt) => [
   "Return a JSON object with exactly these fields:",
