@@ -195,6 +195,20 @@ class _SpecialistExerciseDetailsScreenState
                 ? instructions
                 : l10n.specialistExerciseNoInstructions,
           ),
+          if ((exercise.expectedText ?? '').trim().isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.65),
+            _DetailSection(
+              title: l10n.specialistExerciseExpectedTextSection,
+              body: exercise.expectedText!.trim(),
+            ),
+          ],
+          if ((exercise.targetPhoneme ?? '').trim().isNotEmpty) ...[
+            SizedBox(height: context.dashSpacing * 0.65),
+            _DetailSection(
+              title: l10n.specialistExerciseTargetSoundSection,
+              body: exercise.targetPhoneme!.trim(),
+            ),
+          ],
           if (exercise.hasMedia) ...[
             SizedBox(height: context.dashSpacing * 0.65),
             ExerciseInstructionMediaCard(

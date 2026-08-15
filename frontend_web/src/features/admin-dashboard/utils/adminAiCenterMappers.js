@@ -64,15 +64,6 @@ function mapList(value, mapper) {
   return value.map(mapper).filter(Boolean);
 }
 
-export function formatSpeechAverageScore(value) {
-  const numeric = readNumber(value);
-  if (numeric == null) {
-    return "0.0";
-  }
-
-  return numeric.toFixed(1);
-}
-
 export function formatSpeechScoreValue(value) {
   const numeric = readNumber(value);
   if (numeric == null) {
@@ -153,13 +144,9 @@ function mapPatientNeedingAttention(patient) {
     return null;
   }
 
-  const speechScore = readNumber(patient.speech_score ?? patient.speechScore);
-
   return {
     id,
     fullName: readString(patient.full_name ?? patient.fullName) ?? "Patient",
-    speechScore,
-    speechScoreLabel: speechScore == null ? null : formatSpeechScoreValue(speechScore),
   };
 }
 
@@ -173,16 +160,14 @@ function mapLatestSpeechAnalysis(record) {
     return null;
   }
 
-  const overallScoreLabel = formatSpeechScoreValue(record.overall_score ?? record.overallScore);
   const analyzedAtLabel = formatAdminDateLabel(record.analyzed_at ?? record.analyzedAt) ?? "Recently";
 
   return {
     id: readId(record.id),
     patientId,
     patientName: readString(record.patient_name ?? record.patientName) ?? "Patient",
-    overallScoreLabel,
     analyzedAtLabel,
-    detailLabel: `Score ${overallScoreLabel} • ${analyzedAtLabel}`,
+    detailLabel: analyzedAtLabel,
   };
 }
 

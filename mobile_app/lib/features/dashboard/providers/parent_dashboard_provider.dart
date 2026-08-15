@@ -7,6 +7,7 @@ import '../../auth/models/auth_user.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/parent_dashboard_repository.dart';
 import '../models/parent_dashboard_models.dart';
+import '../presentation/parent/parent_exercise_action_status.dart';
 import 'parent_features_provider.dart';
 
 final parentDashboardRepositoryProvider = Provider<ParentDashboardRepository>((
@@ -504,26 +505,7 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
     List<ParentDailyTask> tasks,
     List<ParentSubmissionItem> submissions,
   ) {
-    final submittedIds = submissions
-        .map((item) => item.assignedExerciseId)
-        .toSet();
-    return tasks
-        .map(
-          (task) => ParentDailyTask(
-            id: task.id,
-            title: task.title,
-            dueTime: task.dueTime,
-            status: task.isCompleted || submittedIds.contains(task.id)
-                ? 'completed'
-                : task.status,
-            isCompleted: task.isCompleted || submittedIds.contains(task.id),
-            instructions: task.instructions,
-            frequency: task.frequency,
-            dueDate: task.dueDate,
-            exerciseId: task.exerciseId,
-          ),
-        )
-        .toList();
+    return applyLatestSubmissionToTasks(tasks, submissions);
   }
 
   ParentStreakInfo _computeStreak(

@@ -1,14 +1,92 @@
 const pool = require("../../database/db");
 
+const createError = (message, statusCode) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
+
+/**
+ * Returns the latest submission for an assignment, or null.
+ */
+const getLatestSubmissionForAssignment = async (assignedExerciseId) => {
+  const result = await pool.query(
+    `SELECT *
+     FROM exercise_submissions
+     WHERE assigned_exercise_id = $1
+     ORDER BY submitted_at DESC, id DESC
+     LIMIT 1`,
+    [assignedExerciseId]
+  );
+  return result.rows[0] || null;
+};
+
+/**
+ * Specialist-requested retry eligibility:
+ * - first submission always allowed
+ * - additional submissions only when latest status is needs_retry
+ *
+ * Does not redesign daily/weekly recurrence.
+ */
+const assertSubmissionEligibility = async (assignedExerciseId) => {
+  const latest = await getLatestSubmissionForAssignment(assignedExerciseId);
+  if (!latest) {
+    return { allowed: true, latest: null };
+  }
+
+  const status = String(latest.status || "").trim().toLowerCase();
+  if (status === "needs_retry") {
+    return { allowed: true, latest };
+  }
+
+  if (status === "pending") {
+    throw createError(
+      "This exercise already has a submission awaiting specialist review.",
+      409
+    );
+  }
+
+  if (status === "reviewed") {
+    throw createError(
+      "This exercise was already reviewed. Wait for a specialist retry request before submitting again.",
+      409
+    );
+  }
+
+  throw createError(
+    "A new submission is not allowed for this exercise right now.",
+    409
+  );
+};
+
 const createExerciseSubmission = async (data, submittedBy) => {
   const { assigned_exercise_id, parent_notes } = data;
+  const assignedExerciseId = String(assigned_exercise_id || "").trim();
+  if (!assignedExerciseId) {
+    throw createError("assigned_exercise_id is required.", 400);
+  }
+
+  const assignment = await pool.query(
+    `SELECT id, is_active
+     FROM assigned_exercises
+     WHERE id = $1`,
+    [assignedExerciseId]
+  );
+  if (!assignment.rows[0]) {
+    throw createError("Assigned exercise not found.", 404);
+  }
+  if (assignment.rows[0].is_active === false) {
+    throw createError("This assigned exercise is no longer active.", 409);
+  }
+
+  await assertSubmissionEligibility(assignedExerciseId);
 
   const result = await pool.query(
     `INSERT INTO exercise_submissions
      (assigned_exercise_id, submitted_by, parent_notes)
      VALUES ($1, $2, $3)
      RETURNING *`,
-    [assigned_exercise_id, submittedBy, parent_notes]
+    [assignedExerciseId, submittedBy, parent_notes]
   );
 
   return result.rows[0];
@@ -140,5 +218,7 @@ module.exports = {
   addSubmissionMedia,
   getSubmissionMedia,
   getAssignedExerciseSubmissions,
-  getPatientSubmissions
+  getPatientSubmissions,
+  getLatestSubmissionForAssignment,
+  assertSubmissionEligibility,
 };

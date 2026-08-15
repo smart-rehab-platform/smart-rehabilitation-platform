@@ -11,9 +11,17 @@ import 'specialist_scoped_localization_utils.dart';
 
 const specialistExerciseAllCategoryLabel = 'All';
 
+/// Canonical Speech Articulation category name used for V2/V3 metadata UI.
+const specialistSpeechArticulationCategoryName = 'Speech Articulation';
+
+bool isSpeechArticulationCategoryName(String? categoryName) {
+  final normalized = categoryName?.trim().toLowerCase() ?? '';
+  return normalized == specialistSpeechArticulationCategoryName.toLowerCase();
+}
+
 /// Preferred chip order only. Filters are always built from live API data.
 const _knownCategoryOrder = [
-  'Speech Articulation',
+  specialistSpeechArticulationCategoryName,
   'Fluency',
   'Language Development',
   'Voice & Breathing',

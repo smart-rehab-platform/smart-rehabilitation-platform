@@ -37,7 +37,8 @@ const analyzeSpeech = async (req, res) => {
 const getSpeechAnalysisById = async (req, res) => {
   try {
     const analysis = await speechAnalysesService.getSpeechAnalysisById(
-      req.params.id
+      req.params.id,
+      { actor: req.user }
     );
 
     if (!analysis) {
@@ -52,7 +53,8 @@ const getSpeechAnalysisById = async (req, res) => {
       data: analysis,
     });
   } catch (error) {
-    res.status(500).json({
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
       success: false,
       message: error.message,
     });
@@ -62,7 +64,9 @@ const getSpeechAnalysisById = async (req, res) => {
 const getSpeechAnalysesByPatient = async (req, res) => {
   try {
     const analyses =
-      await speechAnalysesService.getSpeechAnalysesByPatient(req.params.id);
+      await speechAnalysesService.getSpeechAnalysesByPatient(req.params.id, {
+        actor: req.user,
+      });
 
     res.status(200).json({
       success: true,
@@ -70,7 +74,8 @@ const getSpeechAnalysesByPatient = async (req, res) => {
       data: analyses,
     });
   } catch (error) {
-    res.status(500).json({
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
       success: false,
       message: error.message,
     });
@@ -80,7 +85,9 @@ const getSpeechAnalysesByPatient = async (req, res) => {
 const getSpeechAnalysisBySubmission = async (req, res) => {
   try {
     const analysis =
-      await speechAnalysesService.getSpeechAnalysisBySubmission(req.params.id);
+      await speechAnalysesService.getSpeechAnalysisBySubmission(req.params.id, {
+        actor: req.user,
+      });
 
     if (!analysis) {
       return res.status(404).json({
@@ -94,7 +101,8 @@ const getSpeechAnalysisBySubmission = async (req, res) => {
       data: analysis,
     });
   } catch (error) {
-    res.status(500).json({
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
       success: false,
       message: error.message,
     });
@@ -103,16 +111,34 @@ const getSpeechAnalysisBySubmission = async (req, res) => {
 
 const getSpeechProgressByPatient = async (req, res) => {
   try {
-    const progress =
-      await speechAnalysesService.getSpeechProgressByPatient(req.params.id);
+    const includeInsights =
+      String(req.query.include_insights || "").toLowerCase() === "true";
+    const progress = await speechAnalysesService.getSpeechProgressByPatient(
+      req.params.id,
+      {
+        actor: req.user,
+        includeInsights,
+        exerciseId: req.query.exercise_id || null,
+        expectedText: req.query.expected_text || null,
+        targetPhoneme: req.query.target_phoneme || null,
+      }
+    );
 
-    res.status(200).json({
+    const response = {
       success: true,
-      count: progress.length,
-      data: progress,
-    });
+      count: progress.progressPoints.length,
+      data: progress.progressPoints,
+    };
+
+    if (includeInsights) {
+      response.insights = progress.insights;
+      response.acoustic_progress = progress.acousticProgress;
+    }
+
+    res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
       success: false,
       message: error.message,
     });

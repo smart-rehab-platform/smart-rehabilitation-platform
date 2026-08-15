@@ -18,6 +18,7 @@ import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import 'manage_goals_widgets.dart';
 import 'specialist_exercises_localization_utils.dart';
+import 'specialist_exercises_widgets.dart';
 
 class SpecialistUpsertExerciseScreen extends ConsumerStatefulWidget {
   const SpecialistUpsertExerciseScreen({
@@ -75,6 +76,8 @@ class _SpecialistUpsertExerciseScreenState
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _instructionsController = TextEditingController();
+  final _expectedTextController = TextEditingController();
+  final _targetPhonemeController = TextEditingController();
 
   List<ExerciseCategoryItem> _categories = const [];
   String? _selectedCategoryId;
@@ -90,6 +93,16 @@ class _SpecialistUpsertExerciseScreenState
   double? _uploadProgress;
   String? _errorMessage;
   String? _categoriesError;
+
+  bool get _isSpeechArticulationSelected {
+    final selected = _categories
+        .where((category) => category.id == _selectedCategoryId)
+        .toList();
+    if (selected.isEmpty) {
+      return false;
+    }
+    return isSpeechArticulationCategoryName(selected.first.name);
+  }
 
   @override
   void initState() {
@@ -107,6 +120,8 @@ class _SpecialistUpsertExerciseScreenState
     _titleController.dispose();
     _descriptionController.dispose();
     _instructionsController.dispose();
+    _expectedTextController.dispose();
+    _targetPhonemeController.dispose();
     super.dispose();
   }
 
@@ -162,6 +177,8 @@ class _SpecialistUpsertExerciseScreenState
         _titleController.text = exercise.title;
         _descriptionController.text = exercise.description ?? '';
         _instructionsController.text = exercise.instructions ?? '';
+        _expectedTextController.text = exercise.expectedText ?? '';
+        _targetPhonemeController.text = exercise.targetPhoneme ?? '';
         _selectedCategoryId = exercise.categoryId ?? _selectedCategoryId;
         _selectedLanguage = exercise.normalizedLanguage;
         _existingMediaUrl = exercise.instructionMediaUrl;
@@ -309,6 +326,16 @@ class _SpecialistUpsertExerciseScreenState
       return;
     }
 
+    final isSpeechArticulation = _isSpeechArticulationSelected;
+    final expectedText = _expectedTextController.text.trim();
+    final targetPhoneme = _targetPhonemeController.text.trim();
+    if (isSpeechArticulation && expectedText.isEmpty) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.specialistExerciseExpectedTextRequired)),
+      );
+      return;
+    }
+
     setState(() {
       _saving = true;
       _errorMessage = null;
@@ -348,6 +375,8 @@ class _SpecialistUpsertExerciseScreenState
         instructions: _instructionsController.text,
         instructionMediaUrl: mediaUrl,
         language: _selectedLanguage,
+        expectedText: isSpeechArticulation ? expectedText : '',
+        targetPhoneme: isSpeechArticulation ? targetPhoneme : '',
         clearInstructionMedia: _clearExistingMedia && mediaUrl == null,
       );
 
@@ -505,6 +534,31 @@ class _SpecialistUpsertExerciseScreenState
               l10n.specialistExerciseInstructionsField,
             ),
           ),
+          if (_isSpeechArticulationSelected) ...[
+            SizedBox(height: context.dashSpacing * 0.75),
+            TextField(
+              controller: _expectedTextController,
+              enabled: !busy,
+              maxLines: 4,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: goalFieldDecoration(
+                'hello world',
+                labelText: l10n.specialistExerciseExpectedTextField,
+                helperText: l10n.specialistExerciseExpectedTextHelper,
+              ),
+            ),
+            SizedBox(height: context.dashSpacing * 0.75),
+            TextField(
+              controller: _targetPhonemeController,
+              enabled: !busy,
+              maxLines: 1,
+              decoration: goalFieldDecoration(
+                'r',
+                labelText: l10n.specialistExerciseTargetSoundField,
+                helperText: l10n.specialistExerciseTargetSoundHelper,
+              ),
+            ),
+          ],
           SizedBox(height: context.dashSpacing),
           Text(
             l10n.specialistExerciseInstructionMediaSection,

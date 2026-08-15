@@ -363,6 +363,24 @@ const getPatientAssignedExercises = async (patientId) => {
   return result.rows;
 };
 
+/**
+ * Latest submission for an assignment is needs_retry.
+ * Used to keep specialist-requested retries visible past due_date.
+ */
+const latestNeedsRetryExistsSql = `
+  EXISTS (
+    SELECT 1
+    FROM exercise_submissions es
+    WHERE es.assigned_exercise_id = ae.id
+      AND es.status = 'needs_retry'
+      AND es.submitted_at = (
+        SELECT MAX(es2.submitted_at)
+        FROM exercise_submissions es2
+        WHERE es2.assigned_exercise_id = ae.id
+      )
+  )
+`;
+
 const getDailyTasks = async (patientId) => {
   const result = await pool.query(
     `SELECT ae.*,
@@ -375,7 +393,11 @@ const getDailyTasks = async (patientId) => {
        AND ae.is_active = true
        AND ae.frequency = 'daily'
        AND ae.start_date <= CURRENT_DATE
-       AND (ae.due_date IS NULL OR ae.due_date >= CURRENT_DATE)
+       AND (
+         ae.due_date IS NULL
+         OR ae.due_date >= CURRENT_DATE
+         OR ${latestNeedsRetryExistsSql}
+       )
      ORDER BY ae.created_at DESC`,
     [patientId]
   );
@@ -395,7 +417,11 @@ const getWeeklyTasks = async (patientId) => {
        AND ae.is_active = true
        AND ae.frequency = 'weekly'
        AND ae.start_date <= CURRENT_DATE
-       AND (ae.due_date IS NULL OR ae.due_date >= CURRENT_DATE)
+       AND (
+         ae.due_date IS NULL
+         OR ae.due_date >= CURRENT_DATE
+         OR ${latestNeedsRetryExistsSql}
+       )
      ORDER BY ae.created_at DESC`,
     [patientId]
   );

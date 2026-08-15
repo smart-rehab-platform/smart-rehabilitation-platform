@@ -1,5 +1,8 @@
 const pool = require("../../database/db");
 const aiProviderService = require("../../services/aiProvider.service");
+const {
+  cloneWithoutLegacySpeechScores,
+} = require("../../utils/legacySpeechScores");
 
 const formatAiProgressNote = (row) => ({
   id: row.id,
@@ -377,7 +380,7 @@ const buildAiSummaryPrompt = ({ patient, noteType, context }) => {
 
   const promptContext = {
     patient_profile: patient,
-    speech_analyses: context.speechAnalyses,
+    speech_analyses: cloneWithoutLegacySpeechScores(context.speechAnalyses),
     progress_snapshots: context.progressSnapshots,
     specialist_notes: context.specialistNotes,
     exercise_reviews: context.exerciseReviews,
@@ -397,6 +400,8 @@ const buildAiSummaryPrompt = ({ patient, noteType, context }) => {
     "Provide decision support for the specialist, not final medical decisions.",
     "Keep recommendations practical and related to therapy progress.",
     "Return concise, clinically useful content.",
+    "Do not invent pronunciation, fluency, or overall speech scores.",
+    "Do not describe overall speech score improvement, decline, pronunciation score, or fluency score.",
     "",
     "Patient context:",
     JSON.stringify(promptContext, null, 2)
@@ -409,7 +414,6 @@ const buildRuleBasedClinicalSummary = (patient, context) => {
   const stableAreas = [];
 
   const latestSpeech = context.speechAnalyses[0] || null;
-  const previousSpeech = context.speechAnalyses[1] || null;
   const latestSnapshot = context.progressSnapshots[0] || null;
   const reviewRetryCount = context.exerciseReviews.filter(
     (review) => review.requires_retry
@@ -428,25 +432,10 @@ const buildRuleBasedClinicalSummary = (patient, context) => {
     return completion !== null && completion >= 75;
   }).length;
 
-  if (latestSpeech && previousSpeech) {
-    const latestOverall = toNumber(latestSpeech.overall_score);
-    const previousOverall = toNumber(previousSpeech.overall_score);
-
-    if (latestOverall !== null && previousOverall !== null) {
-      if (latestOverall > previousOverall) {
-        improvements.push(
-          `Recent speech analysis improved from ${previousOverall.toFixed(2)} to ${latestOverall.toFixed(2)} overall score.`
-        );
-      } else if (latestOverall < previousOverall) {
-        regressions.push(
-          `Recent speech analysis decreased from ${previousOverall.toFixed(2)} to ${latestOverall.toFixed(2)} overall score.`
-        );
-      } else {
-        stableAreas.push("Recent speech analysis scores appear stable across the latest two sessions.");
-      }
-    }
-  } else if (latestSpeech) {
-    stableAreas.push("A recent speech analysis is available, but more sessions are needed to confirm a trend.");
+  if (latestSpeech) {
+    stableAreas.push(
+      "A recent speech analysis is available, but there is insufficient modern speech evidence for a deterministic speech-score trend."
+    );
   }
 
   if (latestSnapshot) {
@@ -560,9 +549,6 @@ const buildScoreTrends = ({ speechAnalyses, progressSnapshots, goalProgress }) =
     .slice(0, 5)
     .map((analysis) => ({
       analyzed_at: analysis.analyzed_at,
-      overall_score: toNumber(analysis.overall_score),
-      pronunciation_score: toNumber(analysis.pronunciation_score),
-      fluency_score: toNumber(analysis.fluency_score)
     })),
   progress_snapshots: progressSnapshots
     .slice(0, 5)
@@ -590,31 +576,13 @@ const buildChangeAnalysis = (context) => {
   const importantChanges = [];
 
   const latestSpeech = context.speechAnalyses[0] || null;
-  const previousSpeech = context.speechAnalyses[1] || null;
   const latestSnapshot = context.progressSnapshots[0] || null;
   const previousSnapshot = context.progressSnapshots[1] || null;
 
-  if (latestSpeech && previousSpeech) {
-    const latestOverall = toNumber(latestSpeech.overall_score);
-    const previousOverall = toNumber(previousSpeech.overall_score);
-
-    if (latestOverall !== null && previousOverall !== null) {
-      const diff = latestOverall - previousOverall;
-
-      if (diff > 0) {
-        detectedImprovements.push(
-          `Speech overall score increased by ${diff.toFixed(2)} points.`
-        );
-        importantChanges.push("Speech analysis indicates an upward performance trend.");
-      } else if (diff < 0) {
-        detectedRegressions.push(
-          `Speech overall score decreased by ${Math.abs(diff).toFixed(2)} points.`
-        );
-        importantChanges.push("Speech analysis indicates a recent decline that may require review.");
-      } else {
-        stableAreas.push("Speech overall score remained stable across the latest two analyses.");
-      }
-    }
+  if (latestSpeech) {
+    stableAreas.push(
+      "A recent speech analysis is available, but there is insufficient modern speech evidence for a deterministic speech-score trend."
+    );
   }
 
   if (latestSnapshot && previousSnapshot) {
@@ -705,7 +673,6 @@ const buildTreatmentEffectiveness = (patient, context) => {
   });
 
   const latestSnapshot = context.progressSnapshots[0] || null;
-  const latestSpeech = context.speechAnalyses[0] || null;
   const achievedGoals = context.goals.filter((goal) => goal.is_achieved).length;
 
   if (latestSnapshot) {
@@ -724,20 +691,6 @@ const buildTreatmentEffectiveness = (patient, context) => {
     } else if (improvementPercentage !== null && improvementPercentage < 0) {
       ineffectiveOrUnclearAdjustments.push(
         `Recent ${latestSnapshot.period} snapshot shows a ${Math.abs(improvementPercentage).toFixed(2)}% decline.`
-      );
-    }
-  }
-
-  if (latestSpeech) {
-    const overallScore = toNumber(latestSpeech.overall_score);
-
-    if (overallScore !== null && overallScore >= 70) {
-      effectiveAdjustments.push(
-        `Latest speech analysis overall score (${overallScore.toFixed(2)}) is in a favorable range.`
-      );
-    } else if (overallScore !== null) {
-      ineffectiveOrUnclearAdjustments.push(
-        `Latest speech analysis overall score (${overallScore.toFixed(2)}) suggests progress remains limited.`
       );
     }
   }
@@ -774,7 +727,6 @@ const buildDecisionSupport = (patient, context) => {
   const recommendations = [];
   const riskFlags = [];
 
-  const latestSpeech = context.speechAnalyses[0] || null;
   const latestSnapshot = context.progressSnapshots[0] || null;
   const retryCount = context.exerciseReviews.filter((review) => review.requires_retry).length;
   const latestAiNote = context.aiNotes[0] || null;
@@ -782,15 +734,6 @@ const buildDecisionSupport = (patient, context) => {
     const completion = toNumber(goal.completion_percentage);
     return completion !== null && completion < 40 && !goal.is_achieved;
   }).length;
-
-  if (latestSpeech) {
-    const overallScore = toNumber(latestSpeech.overall_score);
-    if (overallScore !== null && overallScore < 60) {
-      riskFlags.push("Latest speech analysis score is below the desired range.");
-    } else if (overallScore !== null && overallScore >= 75) {
-      recommendations.push("Maintain current speech-focused interventions because recent scores are encouraging.");
-    }
-  }
 
   if (latestSnapshot) {
     const improvementPercentage = toNumber(latestSnapshot.improvement_percentage);
@@ -869,16 +812,9 @@ const buildPeriodicSummary = (patient, context, period) => {
   }
 
   if (latestSpeech) {
-    const overallScore = toNumber(latestSpeech.overall_score);
-    if (overallScore !== null && overallScore >= 70) {
-      improvements.push(
-        `Recent speech analysis overall score (${overallScore.toFixed(2)}) supports continued progress.`
-      );
-    } else if (overallScore !== null && overallScore < 60) {
-      regressions.push(
-        `Recent speech analysis overall score (${overallScore.toFixed(2)}) remains below the desired range.`
-      );
-    }
+    stableAreas.push(
+      `A recent speech analysis is available, but there is insufficient modern speech evidence for a deterministic ${periodLabel} speech-score conclusion.`
+    );
   }
 
   if (retryCount > 0) {
@@ -1157,5 +1093,11 @@ module.exports = {
   getTreatmentEffectiveness,
   getDecisionSupport,
   generateWeeklySummary,
-  generateMonthlySummary
+  generateMonthlySummary,
+  buildAiSummaryPrompt,
+  buildRuleBasedClinicalSummary,
+  buildChangeAnalysis,
+  buildTreatmentEffectiveness,
+  buildDecisionSupport,
+  buildPeriodicSummary,
 };

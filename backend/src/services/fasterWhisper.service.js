@@ -119,7 +119,8 @@ const validateTranscriptionResponse = (payload, expectedLanguage) => {
     language: resolveTranscriptionLanguage(
       payload.language || expectedLanguage
     ),
-    duration: payload.duration
+    duration: payload.duration,
+    segments: Array.isArray(payload.segments) ? payload.segments : null,
   };
 };
 

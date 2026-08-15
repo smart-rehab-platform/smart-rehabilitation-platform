@@ -1,5 +1,8 @@
 const pool = require("../../database/db");
 const aiProviderService = require("../../services/aiProvider.service");
+const {
+  cloneWithoutLegacySpeechScores,
+} = require("../../utils/legacySpeechScores");
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -289,7 +292,7 @@ const buildRecommendationPrompt = ({ patient, relatedPlan, type, context }) => {
     treatment_plans: context.treatmentPlans,
     exercise_submissions: context.exerciseSubmissions,
     exercise_reviews: context.exerciseReviews,
-    speech_analyses: context.speechAnalyses,
+    speech_analyses: cloneWithoutLegacySpeechScores(context.speechAnalyses),
     previous_ai_progress_notes: context.aiProgressNotes,
     available_exercises: context.availableExercises
   };
@@ -301,6 +304,8 @@ const buildRecommendationPrompt = ({ patient, relatedPlan, type, context }) => {
     "If the available data is limited, explicitly say the context is limited.",
     "Do not make a medical diagnosis.",
     "Provide specialist decision support, not final medical decisions.",
+    "Do not invent pronunciation, fluency, or overall speech scores.",
+    "Do not describe overall speech score improvement, decline, pronunciation score, or fluency score.",
     "Include clinical analysis, suggested exercises, treatment plan adjustments, clinical reasoning, priority level, and estimated confidence.",
     "Use only exercises from available_exercises when possible. If an exact exercise match is not available, set exercise_id to null and use a descriptive title.",
     type === "exercise_suggestion"
@@ -387,7 +392,9 @@ const buildRuleBasedRecommendationFallback = ({ patient, type, context }) => {
 
   if (latestSpeech) {
     clinicalSignals.push(
-      `Latest speech analysis overall score is ${latestSpeech.overall_score}.`
+      latestSpeech.transcript
+        ? "A recent speech analysis transcript is available for specialist review."
+        : "A recent speech analysis is available for specialist review."
     );
   }
 
@@ -579,4 +586,6 @@ module.exports = {
   getRecommendationById,
   getRecommendationsByPatient,
   updateRecommendationStatus,
+  buildRecommendationPrompt,
+  buildRuleBasedRecommendationFallback,
 };

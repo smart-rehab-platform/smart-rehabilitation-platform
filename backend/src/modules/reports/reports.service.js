@@ -230,6 +230,9 @@ const fetchReportPdfContext = async (report) => {
     ),
     pool.query(
       `SELECT sa.transcript,
+              sa.expected_text,
+              sa.word_accuracy_percentage,
+              sa.speech_analysis_quality,
               sa.pronunciation_score,
               sa.fluency_score,
               sa.overall_score,

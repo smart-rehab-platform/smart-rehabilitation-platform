@@ -61,6 +61,63 @@ class SpecialistSpeechAnalysisRepository {
         .toList();
   }
 
+  Future<SpeechProgressInsights?> fetchPatientSpeechProgressInsights(
+    String patientId, {
+    String? exerciseId,
+    String? expectedText,
+    String? targetPhoneme,
+  }) async {
+    final bundle = await fetchPatientSpeechProgressBundle(
+      patientId,
+      exerciseId: exerciseId,
+      expectedText: expectedText,
+      targetPhoneme: targetPhoneme,
+    );
+    return bundle.insights;
+  }
+
+  Future<({SpeechProgressInsights? insights, SpeechAcousticProgress? acousticProgress})>
+      fetchPatientSpeechProgressBundle(
+    String patientId, {
+    String? exerciseId,
+    String? expectedText,
+    String? targetPhoneme,
+  }) async {
+    final queryParameters = <String, dynamic>{
+      'include_insights': 'true',
+    };
+    if (exerciseId != null && exerciseId.isNotEmpty) {
+      queryParameters['exercise_id'] = exerciseId;
+    }
+    if (expectedText != null && expectedText.trim().isNotEmpty) {
+      queryParameters['expected_text'] = expectedText.trim();
+    }
+    if (targetPhoneme != null && targetPhoneme.trim().isNotEmpty) {
+      queryParameters['target_phoneme'] = targetPhoneme.trim();
+    }
+
+    final response = await _dio.get(
+      '/speech-analyses/patients/$patientId/progress',
+      queryParameters: queryParameters,
+    );
+    final root = response.data;
+    if (root is! Map) {
+      return (insights: null, acousticProgress: null);
+    }
+
+    final map = root.map((key, value) => MapEntry(key.toString(), value));
+    return (
+      insights: SpeechProgressInsights.fromMap(
+        ApiResponseParser.asMap(map['insights']),
+      ),
+      acousticProgress: SpeechAcousticProgress.fromMap(
+        ApiResponseParser.asMap(
+          map['acoustic_progress'] ?? map['acousticProgress'],
+        ),
+      ),
+    );
+  }
+
   Future<SpecialistSpeechAnalysisItem?> fetchSubmissionSpeechAnalysis(
     String submissionId, {
     String? patientId,

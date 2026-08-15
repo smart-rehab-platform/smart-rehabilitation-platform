@@ -2981,7 +2981,7 @@ abstract class AppLocalizations {
   /// Empty state when no patients need attention.
   ///
   /// In en, this message translates to:
-  /// **'No patients flagged for low scores.'**
+  /// **'No patients currently need attention.'**
   String get adminAiNoPatientsFlagged;
 
   /// Section heading for latest speech analyses.
@@ -4376,6 +4376,48 @@ abstract class AppLocalizations {
   /// **'Detailed instructions'**
   String get specialistExerciseInstructionsField;
 
+  /// Label for expected speech text used by analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Text'**
+  String get specialistExerciseExpectedTextField;
+
+  /// Helper text for expected speech text.
+  ///
+  /// In en, this message translates to:
+  /// **'The exact phrase the patient should say. Used for word and phoneme alignment.'**
+  String get specialistExerciseExpectedTextHelper;
+
+  /// Validation when expected text is missing for speech exercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Text is required for Speech Articulation exercises.'**
+  String get specialistExerciseExpectedTextRequired;
+
+  /// Label for optional target phoneme.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Sound'**
+  String get specialistExerciseTargetSoundField;
+
+  /// Helper text for target phoneme.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional target speech sound for phoneme-level analysis, e.g. r.'**
+  String get specialistExerciseTargetSoundHelper;
+
+  /// Detail section heading for expected text.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Text'**
+  String get specialistExerciseExpectedTextSection;
+
+  /// Detail section heading for target sound.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Sound'**
+  String get specialistExerciseTargetSoundSection;
+
   /// Section heading for instructional media.
   ///
   /// In en, this message translates to:
@@ -4880,6 +4922,42 @@ abstract class AppLocalizations {
   /// **'Decision Support'**
   String get specialistSpeechAnalysisDecisionSupport;
 
+  /// Word-analysis chip for correct expected-vs-ASR matches.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get specialistSpeechAnalysisWordCorrect;
+
+  /// Word-analysis chip for expected-vs-ASR mismatches (not clinical substitution).
+  ///
+  /// In en, this message translates to:
+  /// **'ASR Mismatches'**
+  String get specialistSpeechAnalysisAsrMismatches;
+
+  /// Word-analysis chip for omitted expected words.
+  ///
+  /// In en, this message translates to:
+  /// **'Omissions'**
+  String get specialistSpeechAnalysisWordOmissions;
+
+  /// Word-analysis chip for ASR insertions.
+  ///
+  /// In en, this message translates to:
+  /// **'Insertions'**
+  String get specialistSpeechAnalysisWordInsertions;
+
+  /// Progress insights heading for repeated expected-vs-ASR mismatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated ASR Mismatches'**
+  String get specialistSpeechAnalysisRepeatedAsrMismatches;
+
+  /// Count line for a repeated expected→ASR mismatch pair.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {count} times'**
+  String specialistSpeechAnalysisAsrMismatchDetectedCount(int count);
+
   /// Suggested action prefix before AI-generated action text.
   ///
   /// In en, this message translates to:
@@ -4898,7 +4976,7 @@ abstract class AppLocalizations {
   /// **'Unknown date'**
   String get specialistSpeechAnalysisUnknownDate;
 
-  /// Summary line on speech analysis history tile.
+  /// Deprecated legacy history summary; kept for compatibility.
   ///
   /// In en, this message translates to:
   /// **'Overall {overall} • Pronunciation {pronunciation}'**
@@ -4906,6 +4984,18 @@ abstract class AppLocalizations {
     String overall,
     String pronunciation,
   );
+
+  /// History tile summary using deterministic word accuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Word Accuracy: {accuracy}%'**
+  String specialistSpeechAnalysisHistoryWordAccuracy(String accuracy);
+
+  /// History tile summary when word accuracy is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech analysis'**
+  String get specialistSpeechAnalysisHistoryFallback;
 
   /// Analyze card title.
   ///
@@ -8002,6 +8092,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Already submitted'**
   String get parentExerciseAlreadySubmitted;
+
+  /// Status when submission is pending review.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting specialist review'**
+  String get parentExerciseAwaitingReview;
+
+  /// Status when latest submission is reviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'This exercise has been reviewed.'**
+  String get parentExerciseReviewedStatus;
+
+  /// Message when specialist requested a retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Your specialist requested another attempt.'**
+  String get parentExerciseRetryRequested;
+
+  /// Button label to submit a retry attempt.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry Exercise'**
+  String get parentExerciseRetry;
 
   /// Submission section title on exercise detail.
   ///

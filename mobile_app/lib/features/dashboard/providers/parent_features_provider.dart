@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/parent_dashboard_repository.dart';
 import '../models/parent_dashboard_models.dart';
+import '../presentation/parent/parent_exercise_action_status.dart';
 import '../utils/notification_message_utils.dart';
 import 'parent_dashboard_provider.dart';
 
@@ -249,6 +250,7 @@ class ParentExercisesState {
     this.dailyTasks = const [],
     this.weeklyTasks = const [],
     this.assignedExercises = const [],
+    this.submissions = const [],
     this.selectedTab = 0,
   });
 
@@ -258,6 +260,7 @@ class ParentExercisesState {
   final List<ParentDailyTask> dailyTasks;
   final List<ParentDailyTask> weeklyTasks;
   final List<ParentAssignedExercise> assignedExercises;
+  final List<ParentSubmissionItem> submissions;
   final int selectedTab;
 
   ParentExercisesState copyWith({
@@ -267,6 +270,7 @@ class ParentExercisesState {
     List<ParentDailyTask>? dailyTasks,
     List<ParentDailyTask>? weeklyTasks,
     List<ParentAssignedExercise>? assignedExercises,
+    List<ParentSubmissionItem>? submissions,
     int? selectedTab,
   }) {
     return ParentExercisesState(
@@ -278,6 +282,7 @@ class ParentExercisesState {
       dailyTasks: dailyTasks ?? this.dailyTasks,
       weeklyTasks: weeklyTasks ?? this.weeklyTasks,
       assignedExercises: assignedExercises ?? this.assignedExercises,
+      submissions: submissions ?? this.submissions,
       selectedTab: selectedTab ?? this.selectedTab,
     );
   }
@@ -308,26 +313,19 @@ class ParentExercisesNotifier extends StateNotifier<ParentExercisesState> {
         _repository.fetchSubmissions(patientId),
       ]);
       final submissions = results[3] as List<ParentSubmissionItem>;
-      final submittedIds = submissions
-          .map((item) => item.assignedExerciseId)
-          .toSet();
-      ParentDailyTask mark(ParentDailyTask task) => ParentDailyTask(
-        id: task.id,
-        title: task.title,
-        dueTime: task.dueTime,
-        status: submittedIds.contains(task.id) ? 'completed' : task.status,
-        isCompleted: task.isCompleted || submittedIds.contains(task.id),
-        instructions: task.instructions,
-        frequency: task.frequency,
-        dueDate: task.dueDate,
-        exerciseId: task.exerciseId,
-      );
 
       state = state.copyWith(
         isLoading: false,
-        dailyTasks: (results[0] as List<ParentDailyTask>).map(mark).toList(),
-        weeklyTasks: (results[1] as List<ParentDailyTask>).map(mark).toList(),
+        dailyTasks: applyLatestSubmissionToTasks(
+          results[0] as List<ParentDailyTask>,
+          submissions,
+        ),
+        weeklyTasks: applyLatestSubmissionToTasks(
+          results[1] as List<ParentDailyTask>,
+          submissions,
+        ),
         assignedExercises: results[2] as List<ParentAssignedExercise>,
+        submissions: submissions,
       );
     } catch (error) {
       state = state.copyWith(

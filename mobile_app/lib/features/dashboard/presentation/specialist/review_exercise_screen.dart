@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../models/specialist_exercise_review_models.dart';
 import '../../providers/specialist_exercise_review_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
@@ -231,6 +232,15 @@ class _SpecialistReviewExerciseScreenState
                   )
                   .setDecision,
             ),
+            if (state.decision == ReviewDecision.needsRetry) ...[
+              SizedBox(height: context.dashSpacing * 0.35),
+              Text(
+                'Needs Retry — allows the parent to submit another attempt.',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: DashboardColors.textMuted,
+                ),
+              ),
+            ],
             if (state.errorMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.65),
               DashboardErrorCard(

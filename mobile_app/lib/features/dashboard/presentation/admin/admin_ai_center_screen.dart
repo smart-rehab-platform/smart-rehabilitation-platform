@@ -7,7 +7,6 @@ import '../../../../core/routes/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/admin_features_repository.dart';
 import '../../providers/admin_features_provider.dart';
-import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/admin_status_badge.dart';
 import '../../widgets/admin_ui_components.dart';
@@ -140,9 +139,6 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                         AdminMetricCard(
                           label: l10n.adminAiSpeechAnalyses,
                           value: '${_data.speechTotal}',
-                          subtitle: l10n.adminAiAvgScore(
-                            _data.speechAverageScore.toStringAsFixed(1),
-                          ),
                           icon: Icons.mic_outlined,
                           iconColor: DashboardColors.primary,
                           iconBackground: DashboardColors.blueSoft,
@@ -234,19 +230,6 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                                                 ),
                                           ),
                                         ),
-                                        if (patient['speech_score'] !=
-                                            null) ...[
-                                          const SizedBox(width: 8),
-                                          Flexible(
-                                            child: AdminStatusBadge(
-                                              label: l10n.adminAiSpeechScore(
-                                                '${patient['speech_score']}',
-                                              ),
-                                              color:
-                                                  DashboardColors.highPriority,
-                                            ),
-                                          ),
-                                        ],
                                       ],
                                     ),
                                   )
@@ -272,7 +255,7 @@ class _AdminAiCenterScreenState extends ConsumerState<AdminAiCenterScreen> {
                             iconBackground: DashboardColors.blueSoft,
                             titleKey: 'patient_name',
                             subtitleBuilder: (item) =>
-                                'Score ${item['overall_score'] ?? '—'} • ${_formatDate(item['analyzed_at'])}',
+                                _formatDate(item['analyzed_at']),
                             resolveTap: (item) {
                               final patientId = _readId(item, const [
                                 'patient_id',

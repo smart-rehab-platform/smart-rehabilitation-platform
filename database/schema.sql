@@ -367,6 +367,9 @@ CREATE TABLE exercises (
     instruction_media_url   TEXT,         -- demo video/audio for the exercise itself
     language                VARCHAR(2) NOT NULL DEFAULT 'en'
                             CHECK (language IN ('en', 'ar')),
+    expected_text           TEXT,
+    target_word             VARCHAR(100),
+    target_phoneme          VARCHAR(20),
     created_by              UUID REFERENCES users(id),
     created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -569,6 +572,12 @@ CREATE TABLE speech_analyses (
     overall_score           NUMERIC(5,2),
     compared_to_analysis_id UUID REFERENCES speech_analyses(id),  -- self-reference for 
     raw_ai_output           JSONB,          -- full model output, kept for debugging/audit
+    expected_text           TEXT,
+    word_accuracy_percentage NUMERIC(5,2),
+    word_error_details      JSONB,
+    speech_timing_metrics   JSONB,
+    speech_analysis_quality JSONB,
+    speech_phoneme_analysis JSONB,
     analyzed_at             TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -731,7 +740,8 @@ CREATE UNIQUE INDEX idx_session_requests_one_pending
     ON session_requests(patient_id, parent_id, specialist_id)
     WHERE status = 'pending';
 CREATE INDEX idx_notifications_user_unread      ON notifications(user_id, is_read);
-CREATE INDEX idx_speech_analyses_submission     ON speech_analyses(submission_id);
+CREATE UNIQUE INDEX idx_speech_analyses_submission_id_unique
+    ON speech_analyses(submission_id);
 CREATE INDEX idx_ai_recommendations_patient     ON ai_recommendations(patient_id);
 CREATE INDEX idx_progress_snapshots_patient     ON progress_snapshots(patient_id, period);
 

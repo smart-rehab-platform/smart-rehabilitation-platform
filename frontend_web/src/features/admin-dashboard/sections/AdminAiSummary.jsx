@@ -1,13 +1,10 @@
 import { AlertTriangle, FileText, Mic, Sparkles } from "lucide-react";
-import { formatSpeechAverageScore } from "../utils/adminAiCenterMappers";
 
 const SUMMARY_CARDS = [
   {
     key: "speech",
     label: "Speech Analyses",
     valueKey: "speechTotal",
-    subtitleKey: "speechAverageScore",
-    subtitlePrefix: "Avg score ",
     icon: Mic,
     tone: "blue",
     sectionId: "admin-ai-speech-analyses",
@@ -73,11 +70,6 @@ function resolveCardValue(data, card) {
 }
 
 function resolveCardSubtitle(data, card) {
-  if (card.subtitleKey === "speechAverageScore") {
-    const average = formatSpeechAverageScore(data?.speechAverageScore ?? 0);
-    return `${card.subtitlePrefix}${average}`;
-  }
-
   if (card.subtitleKey === "pendingRecommendations") {
     const count = data?.pendingRecommendations ?? 0;
     return `${count}${card.subtitleSuffix}`;

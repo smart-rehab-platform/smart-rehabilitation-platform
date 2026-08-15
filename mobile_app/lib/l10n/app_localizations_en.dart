@@ -1657,7 +1657,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminAiPatientsNeedingAttention => 'Patients Needing Attention';
 
   @override
-  String get adminAiNoPatientsFlagged => 'No patients flagged for low scores.';
+  String get adminAiNoPatientsFlagged => 'No patients currently need attention.';
 
   @override
   String get adminAiLatestSpeechAnalyses => 'Latest Speech Analyses';
@@ -2469,6 +2469,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get specialistExerciseInstructionsField => 'Detailed instructions';
 
   @override
+  String get specialistExerciseExpectedTextField => 'Expected Text';
+
+  @override
+  String get specialistExerciseExpectedTextHelper =>
+      'The exact phrase the patient should say. Used for word and phoneme alignment.';
+
+  @override
+  String get specialistExerciseExpectedTextRequired =>
+      'Expected Text is required for Speech Articulation exercises.';
+
+  @override
+  String get specialistExerciseTargetSoundField => 'Target Sound';
+
+  @override
+  String get specialistExerciseTargetSoundHelper =>
+      'Optional target speech sound for phoneme-level analysis, e.g. r.';
+
+  @override
+  String get specialistExerciseExpectedTextSection => 'Expected Text';
+
+  @override
+  String get specialistExerciseTargetSoundSection => 'Target Sound';
+
+  @override
   String get specialistExerciseInstructionMediaSection =>
       'Instructional media (optional)';
 
@@ -2767,6 +2791,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get specialistSpeechAnalysisDecisionSupport => 'Decision Support';
 
   @override
+  String get specialistSpeechAnalysisWordCorrect => 'Correct';
+
+  @override
+  String get specialistSpeechAnalysisAsrMismatches => 'ASR Mismatches';
+
+  @override
+  String get specialistSpeechAnalysisWordOmissions => 'Omissions';
+
+  @override
+  String get specialistSpeechAnalysisWordInsertions => 'Insertions';
+
+  @override
+  String get specialistSpeechAnalysisRepeatedAsrMismatches =>
+      'Repeated ASR Mismatches';
+
+  @override
+  String specialistSpeechAnalysisAsrMismatchDetectedCount(int count) {
+    return 'Detected $count times';
+  }
+
+  @override
   String specialistSpeechAnalysisSuggestedLine(String action) {
     return 'Suggested: $action';
   }
@@ -2784,6 +2829,14 @@ class AppLocalizationsEn extends AppLocalizations {
   ) {
     return 'Overall $overall • Pronunciation $pronunciation';
   }
+
+  @override
+  String specialistSpeechAnalysisHistoryWordAccuracy(String accuracy) {
+    return 'Word Accuracy: $accuracy%';
+  }
+
+  @override
+  String get specialistSpeechAnalysisHistoryFallback => 'Speech analysis';
 
   @override
   String get specialistSpeechAnalysisRunTitle => 'Run Speech Analysis';
@@ -4638,6 +4691,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get parentExerciseAlreadySubmitted => 'Already submitted';
+
+  @override
+  String get parentExerciseAwaitingReview => 'Awaiting specialist review';
+
+  @override
+  String get parentExerciseReviewedStatus => 'This exercise has been reviewed.';
+
+  @override
+  String get parentExerciseRetryRequested =>
+      'Your specialist requested another attempt.';
+
+  @override
+  String get parentExerciseRetry => 'Retry Exercise';
 
   @override
   String get parentExerciseYourSubmission => 'Your Submission';

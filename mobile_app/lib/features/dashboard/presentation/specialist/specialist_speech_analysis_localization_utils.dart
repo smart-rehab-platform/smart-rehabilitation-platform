@@ -1,4 +1,5 @@
 import '../../../../l10n/app_localizations.dart';
+import '../../models/specialist_speech_analysis_models.dart';
 import 'specialist_exercises_localization_utils.dart';
 
 String mapSpecialistSpeechAnalysisError(AppLocalizations l10n, String message) {
@@ -74,4 +75,19 @@ String localizedSpeechAnalysisStatus(AppLocalizations l10n, String status) {
     'recorded' => l10n.specialistSpeechAnalysisSourceRecorded,
     _ => status,
   };
+}
+
+String specialistSpeechAnalysisHistorySummary(
+  AppLocalizations l10n,
+  SpecialistSpeechAnalysisItem analysis,
+) {
+  final accuracy = analysis.wordAnalysis?.wordAccuracyPercentage;
+  if (accuracy == null) {
+    return l10n.specialistSpeechAnalysisHistoryFallback;
+  }
+
+  final display = accuracy == accuracy.roundToDouble()
+      ? '${accuracy.round()}'
+      : accuracy.toStringAsFixed(1);
+  return l10n.specialistSpeechAnalysisHistoryWordAccuracy(display);
 }

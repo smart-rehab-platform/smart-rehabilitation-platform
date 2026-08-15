@@ -27,6 +27,8 @@ class SpecialistSpeechAnalysisState {
     this.analyses = const [],
     this.latestAnalysis,
     this.progressItems = const [],
+    this.progressInsights,
+    this.acousticProgress,
     this.selectedAnalysis,
     this.successMessage,
     this.comparison,
@@ -42,6 +44,8 @@ class SpecialistSpeechAnalysisState {
   final List<SpecialistSpeechAnalysisItem> analyses;
   final SpecialistSpeechAnalysisItem? latestAnalysis;
   final List<SpecialistSpeechProgressPoint> progressItems;
+  final SpeechProgressInsights? progressInsights;
+  final SpeechAcousticProgress? acousticProgress;
   final SpecialistSpeechAnalysisItem? selectedAnalysis;
   final String? successMessage;
   final SpeechAnalysisComparison? comparison;
@@ -57,6 +61,8 @@ class SpecialistSpeechAnalysisState {
     List<SpecialistSpeechAnalysisItem>? analyses,
     Object? latestAnalysis = _sentinel,
     List<SpecialistSpeechProgressPoint>? progressItems,
+    Object? progressInsights = _sentinel,
+    Object? acousticProgress = _sentinel,
     Object? selectedAnalysis = _sentinel,
     Object? successMessage = _sentinel,
     Object? comparison = _sentinel,
@@ -78,6 +84,12 @@ class SpecialistSpeechAnalysisState {
           ? this.latestAnalysis
           : latestAnalysis as SpecialistSpeechAnalysisItem?,
       progressItems: progressItems ?? this.progressItems,
+      progressInsights: identical(progressInsights, _sentinel)
+          ? this.progressInsights
+          : progressInsights as SpeechProgressInsights?,
+      acousticProgress: identical(acousticProgress, _sentinel)
+          ? this.acousticProgress
+          : acousticProgress as SpeechAcousticProgress?,
       selectedAnalysis: identical(selectedAnalysis, _sentinel)
           ? this.selectedAnalysis
           : selectedAnalysis as SpecialistSpeechAnalysisItem?,
@@ -202,6 +214,8 @@ class SpecialistSpeechAnalysisNotifier
     }
     selected ??= latest;
 
+    final progressBundle = await _fetchProgressBundleForSelection(selected);
+
     final comparison = _buildComparison(selected, mergedAnalyses);
 
     state = state.copyWith(
@@ -209,8 +223,27 @@ class SpecialistSpeechAnalysisNotifier
       analyses: mergedAnalyses,
       latestAnalysis: latest,
       progressItems: progress,
+      progressInsights: progressBundle.insights ?? selected?.progressInsights,
+      acousticProgress: progressBundle.acousticProgress,
       selectedAnalysis: selected,
       comparison: comparison,
+    );
+  }
+
+  Future<({SpeechProgressInsights? insights, SpeechAcousticProgress? acousticProgress})>
+      _fetchProgressBundleForSelection(
+    SpecialistSpeechAnalysisItem? selected,
+  ) async {
+    if (selected == null) {
+      return (insights: null, acousticProgress: null);
+    }
+
+    return _repository.fetchPatientSpeechProgressBundle(
+      _args.patientId,
+      exerciseId: selected.exerciseId,
+      expectedText: selected.expectedSpeech?.expectedText,
+      targetPhoneme: selected.phonemeAnalysis?.targetPhone?.requested ??
+          selected.expectedSpeech?.targetPhoneme,
     );
   }
 
@@ -273,7 +306,7 @@ class SpecialistSpeechAnalysisNotifier
     return analyses[index + 1];
   }
 
-  void selectAnalysis(String analysisId) {
+  Future<void> selectAnalysis(String analysisId) async {
     final selected = state.analyses
         .where((item) => item.id == analysisId)
         .cast<SpecialistSpeechAnalysisItem?>()
@@ -282,8 +315,12 @@ class SpecialistSpeechAnalysisNotifier
       return;
     }
 
+    final progressBundle = await _fetchProgressBundleForSelection(selected);
+
     state = state.copyWith(
       selectedAnalysis: selected,
+      progressInsights: progressBundle.insights ?? selected.progressInsights,
+      acousticProgress: progressBundle.acousticProgress,
       comparison: _buildComparison(selected, state.analyses),
       error: null,
     );
@@ -322,10 +359,14 @@ class SpecialistSpeechAnalysisNotifier
             await _repository.fetchPatientSpeechProgress(state.patientId);
         final merged = _mergeAnalyses(refreshedAnalyses, existing);
         final comparison = _buildComparison(existing, merged);
+        final progressBundle =
+            await _fetchProgressBundleForSelection(existing);
         state = state.copyWith(
           isAnalyzing: false,
           analyses: merged,
           progressItems: refreshedProgress,
+          progressInsights: progressBundle.insights ?? existing.progressInsights,
+          acousticProgress: progressBundle.acousticProgress,
           latestAnalysis: merged.isNotEmpty ? merged.first : existing,
           selectedAnalysis: existing.withComparison(comparison),
           comparison: comparison,
@@ -346,11 +387,15 @@ class SpecialistSpeechAnalysisNotifier
           await _repository.fetchPatientSpeechProgress(state.patientId);
       final merged = _mergeAnalyses(refreshedAnalyses, analysis);
       final comparison = _buildComparison(analysis, merged);
+      final progressBundle = await _fetchProgressBundleForSelection(analysis);
 
       state = state.copyWith(
         isAnalyzing: false,
         analyses: merged,
         progressItems: refreshedProgress,
+        progressInsights:
+            analysis.progressInsights ?? progressBundle.insights,
+        acousticProgress: progressBundle.acousticProgress,
         latestAnalysis: merged.isNotEmpty ? merged.first : analysis,
         selectedAnalysis: analysis.withComparison(comparison),
         comparison: comparison,

@@ -2,6 +2,9 @@ const db = require("../../database/db");
 const aiProviderService = require("../../services/aiProvider.service");
 const { isSpecialistAssignedToPatient } = require("../../utils/patientAccess");
 const { generateAiReportPdfFile } = require("./aiReportPdf.generator");
+const {
+  cloneWithoutLegacySpeechScores,
+} = require("../../utils/legacySpeechScores");
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -402,7 +405,7 @@ const buildReportPrompt = ({ patient, context, type, periodStart, periodEnd }) =
     exercise_submissions: context.exerciseSubmissions,
     exercise_reviews: context.exerciseReviews,
     progress_snapshots: context.progressSnapshots,
-    speech_analyses: context.speechAnalyses,
+    speech_analyses: cloneWithoutLegacySpeechScores(context.speechAnalyses),
     ai_recommendations: context.aiRecommendations,
     ai_progress_notes: context.aiProgressNotes
   };
@@ -414,6 +417,8 @@ const buildReportPrompt = ({ patient, context, type, periodStart, periodEnd }) =
     "If data is limited, explicitly say that data is limited.",
     "Do not provide a medical diagnosis.",
     "Provide clinically useful decision support, not final medical decisions.",
+    "Do not invent pronunciation, fluency, or overall speech scores.",
+    "Do not describe overall speech score improvement, decline, pronunciation score, or fluency score.",
     "Focus on recent progress, speech status if available, adherence, goals, risks, and practical next steps.",
     "",
     "Patient context:",
@@ -478,7 +483,9 @@ const buildRuleBasedReportFallback = ({ patient, context, type }) => {
 
   if (latestSpeech) {
     clinicalInsights.push(
-      `Latest speech analysis overall score was ${latestSpeech.overall_score} with transcript data available for specialist review.`
+      latestSpeech.transcript
+        ? "Latest speech analysis transcript data is available for specialist review."
+        : "Speech analysis data is available for the reporting period for specialist review."
     );
   } else {
     clinicalInsights.push("No speech analysis was available in the requested reporting period.");
@@ -550,7 +557,7 @@ const buildRuleBasedReportFallback = ({ patient, context, type }) => {
       ? `The latest ${type} progress snapshot recorded ${latestProgress.exercises_completed} completed exercises and an improvement percentage of ${latestProgress.improvement_percentage}%.`
       : `No ${type} progress snapshot was available in the requested reporting period, so progress interpretation is limited.`,
     speech_analysis_summary: latestSpeech
-      ? `Speech analysis data is available for the reporting period, with the latest overall score recorded at ${latestSpeech.overall_score}.`
+      ? "Speech analysis data is available for the reporting period for specialist review."
       : "No speech analysis data was available in the requested reporting period.",
     exercise_adherence_summary:
       totalSubmissions > 0
@@ -802,4 +809,6 @@ module.exports = {
   getReportsByPatient,
   exportReportPdf,
   assertActorCanReadPatientAiReports,
+  buildReportPrompt,
+  buildRuleBasedReportFallback,
 };
