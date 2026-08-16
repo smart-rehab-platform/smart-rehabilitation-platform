@@ -1,12 +1,13 @@
+import { formatAppDate } from "../../../i18n/formatters.js";
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
 
 export const SPECIALIST_REPORT_FILTERS = [
-  { id: "all", label: "All" },
-  { id: "weekly", label: "Weekly" },
-  { id: "monthly", label: "Monthly" },
-  { id: "assessment", label: "Assessment" },
-  { id: "aiReports", label: "AI Reports" },
-  { id: "recent", label: "Recent" },
+  { id: "all" },
+  { id: "weekly" },
+  { id: "monthly" },
+  { id: "assessment" },
+  { id: "aiReports" },
+  { id: "recent" },
 ];
 
 function readString(record, keys) {
@@ -191,16 +192,12 @@ export function matchesReportFilter(report, filterId) {
   }
 }
 
-export function formatReportDateLabel(dateValue) {
+export function formatReportDateLabel(dateValue, locale = "en") {
   const date = parseDateValue(dateValue);
   if (!date) {
     return "—";
   }
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
+  return formatAppDate(date, locale) ?? "—";
 }
 
 export function mapRegularReportRow(row, patientNameMap = null) {
@@ -334,7 +331,8 @@ export function filterVisibleReports(reports, { filterId, searchQuery }) {
     if (!query) {
       return true;
     }
-    return report.title.toLowerCase().includes(query)
+    const searchableTitle = (report.titleLabel || report.title || "").toLowerCase();
+    return searchableTitle.includes(query)
       || (report.patientName || "").toLowerCase().includes(query);
   });
 }

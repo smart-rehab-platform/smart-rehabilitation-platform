@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Download } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 import { PlatformMaterialIcon } from "../../../../components/platform/PlatformMaterialIcon";
 import {
   getAttachmentDisplayName,
   getMessageAttachmentKind,
 } from "../../utils/specialistMessageAttachmentUtils";
+import { getSpecialistMessageAttachmentLabels } from "../../utils/specialistMessagesLocalization.js";
 import { SpecialistMessageImageLightbox } from "./SpecialistMessageImageLightbox";
 
-function MessageImageAttachment({ attachment }) {
+function MessageImageAttachment({ attachment, labels }) {
   const [broken, setBroken] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const label = getAttachmentDisplayName(attachment.fileUrl, attachment.fileType);
 
   if (!attachment.fileUrl || broken) {
-    return <p className="pd-message-attachment-fallback">Image unavailable</p>;
+    return <p className="pd-message-attachment-fallback">{labels.imageUnavailable}</p>;
   }
 
   return (
@@ -22,7 +24,7 @@ function MessageImageAttachment({ attachment }) {
         type="button"
         className="pd-message-attachment-image-button"
         onClick={() => setLightboxOpen(true)}
-        aria-label={`View image: ${label}`}
+        aria-label={labels.viewImage(label)}
       >
         <img
           src={attachment.fileUrl}
@@ -42,18 +44,18 @@ function MessageImageAttachment({ attachment }) {
   );
 }
 
-function MessageVideoAttachment({ attachment }) {
+function MessageVideoAttachment({ attachment, labels }) {
   const label = getAttachmentDisplayName(attachment.fileUrl, attachment.fileType);
 
   if (!attachment.fileUrl) {
-    return <p className="pd-message-attachment-fallback">Video unavailable</p>;
+    return <p className="pd-message-attachment-fallback">{labels.videoUnavailable}</p>;
   }
 
   return (
     <div className="pd-message-attachment-video">
       <video controls preload="metadata" src={attachment.fileUrl}>
         <a href={attachment.fileUrl} target="_blank" rel="noreferrer">
-          Download video
+          {labels.downloadVideo}
         </a>
       </video>
       <a
@@ -63,28 +65,28 @@ function MessageVideoAttachment({ attachment }) {
         className="pd-message-attachment-download"
       >
         <Download size={14} aria-hidden="true" />
-        {label}
+        <span dir="auto">{label}</span>
       </a>
     </div>
   );
 }
 
-function MessageAudioAttachment({ attachment }) {
+function MessageAudioAttachment({ attachment, labels }) {
   const label = getAttachmentDisplayName(attachment.fileUrl, attachment.fileType);
 
   if (!attachment.fileUrl) {
-    return <p className="pd-message-attachment-fallback">Audio unavailable</p>;
+    return <p className="pd-message-attachment-fallback">{labels.audioUnavailable}</p>;
   }
 
   return (
     <div className="pd-message-attachment-audio">
       <audio controls preload="metadata" src={attachment.fileUrl} />
-      <span className="pd-message-attachment-label">{label}</span>
+      <span className="pd-message-attachment-label" dir="auto">{label}</span>
     </div>
   );
 }
 
-function MessageFileAttachment({ attachment }) {
+function MessageFileAttachment({ attachment, labels }) {
   const label = getAttachmentDisplayName(attachment.fileUrl, attachment.fileType);
   const kind = getMessageAttachmentKind(attachment.fileType);
 
@@ -96,26 +98,28 @@ function MessageFileAttachment({ attachment }) {
       className="pd-message-attachment-file"
     >
       <PlatformMaterialIcon icon="report" size={16} />
-      <span>{kind === "pdf" ? "PDF document" : label}</span>
+      <span dir="auto">{kind === "pdf" ? labels.pdfDocument : label}</span>
       <Download size={14} aria-hidden="true" />
     </a>
   );
 }
 
 export function SpecialistMessageAttachmentDisplay({ attachment }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getSpecialistMessageAttachmentLabels(t), [t]);
   const kind = getMessageAttachmentKind(attachment.fileType);
 
   if (kind === "image") {
-    return <MessageImageAttachment attachment={attachment} />;
+    return <MessageImageAttachment attachment={attachment} labels={labels} />;
   }
 
   if (kind === "video") {
-    return <MessageVideoAttachment attachment={attachment} />;
+    return <MessageVideoAttachment attachment={attachment} labels={labels} />;
   }
 
   if (kind === "audio") {
-    return <MessageAudioAttachment attachment={attachment} />;
+    return <MessageAudioAttachment attachment={attachment} labels={labels} />;
   }
 
-  return <MessageFileAttachment attachment={attachment} />;
+  return <MessageFileAttachment attachment={attachment} labels={labels} />;
 }

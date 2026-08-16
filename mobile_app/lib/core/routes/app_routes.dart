@@ -182,6 +182,36 @@ class AppRoutes {
   static const String adminAiCenter = '/dashboard/admin/ai-center';
   static const String adminAuditLogs = '/dashboard/admin/audit-logs';
   static const String adminUsers = '/dashboard/admin/users';
+
+  static const List<String> adminUsersRoleFilterValues = [
+    'admin',
+    'specialist',
+    'parent',
+  ];
+
+  /// Parses the Admin Users `?role=` query param into a supported raw filter value.
+  static String? parseAdminUsersRoleParam(String? value) {
+    if (value == null) {
+      return null;
+    }
+
+    final normalized = value.trim().toLowerCase();
+    return adminUsersRoleFilterValues.contains(normalized) ? normalized : null;
+  }
+
+  /// Opens Admin Users with an optional preselected role filter.
+  static String adminUsersWithRole({String? role}) {
+    final parsedRole = parseAdminUsersRoleParam(role);
+    if (parsedRole == null) {
+      return adminUsers;
+    }
+
+    return Uri(
+      path: adminUsers,
+      queryParameters: {'role': parsedRole},
+    ).toString();
+  }
+
   static const String adminExercises = '/dashboard/admin/exercises';
   static const String adminAddExercise = '/dashboard/admin/exercises/new';
   static const String adminEditExercisePath =
@@ -207,6 +237,7 @@ class AppRoutes {
 
   static const String adminNotifications = '/dashboard/admin/notifications';
   static const String adminProfile = '/dashboard/admin/profile';
+  static const String adminEditProfile = '/dashboard/admin/profile/edit';
   static const String adminMore = '/dashboard/admin/more';
   static const String adminCaseRequests = '/dashboard/admin/case-requests';
   static const String adminCaseRequestDetailPath =
@@ -277,4 +308,21 @@ class AppRoutes {
 
   static String adminComplaintDetail(String complaintId) =>
       '/dashboard/admin/complaints/$complaintId';
+
+  static const String specialistSupportRequests =
+      '/dashboard/specialist/support-requests';
+  static const String specialistSupportRequestNew =
+      '/dashboard/specialist/support-requests/new';
+  static const String specialistSupportRequestDetailPath =
+      '/dashboard/specialist/support-requests/:requestId';
+
+  static String specialistSupportRequestDetail(String requestId) =>
+      '/dashboard/specialist/support-requests/$requestId';
+
+  static const String adminSupportRequests = '/dashboard/admin/support-requests';
+  static const String adminSupportRequestDetailPath =
+      '/dashboard/admin/support-requests/:requestId';
+
+  static String adminSupportRequestDetail(String requestId) =>
+      '/dashboard/admin/support-requests/$requestId';
 }

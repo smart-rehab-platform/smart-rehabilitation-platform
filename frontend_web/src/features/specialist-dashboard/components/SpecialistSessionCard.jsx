@@ -1,9 +1,12 @@
 import { ExternalLink, MapPin } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { getInitials } from "../utils/specialistScheduleUtils";
 
 export function SpecialistSessionCard({ session }) {
+  const { t } = useLocale();
+
   return (
     <article className="pd-card pd-card-pad pd-specialist-session-card">
       <div className="pd-specialist-session-card-main">
@@ -17,10 +20,10 @@ export function SpecialistSessionCard({ session }) {
         />
         <div className="pd-specialist-session-card-copy">
           <div className="pd-specialist-session-card-heading">
-            <strong className="pd-specialist-session-card-patient">{session.patientName}</strong>
+            <strong className="pd-specialist-session-card-patient" dir="auto">{session.patientName}</strong>
             <StatusBadge label={session.displayStatus.label} tone={session.displayStatus.tone} />
           </div>
-          <p className="pd-specialist-session-card-type">{session.sessionType}</p>
+          <p className="pd-specialist-session-card-type" dir="auto">{session.sessionType}</p>
           <div className="pd-specialist-session-card-meta">
             <span>{session.dateLabel}</span>
             <span>{session.timeLabel}</span>
@@ -35,13 +38,13 @@ export function SpecialistSessionCard({ session }) {
                       rel="noopener noreferrer"
                       onClick={(event) => event.stopPropagation()}
                     >
-                      Meeting link
+                      {t("specialist.sessions.meetingLink")}
                     </a>
                   </>
                 ) : (
                   <>
                     <MapPin size={14} aria-hidden="true" />
-                    {session.physicalLocation}
+                    <span dir="auto">{session.physicalLocation}</span>
                   </>
                 )}
               </span>

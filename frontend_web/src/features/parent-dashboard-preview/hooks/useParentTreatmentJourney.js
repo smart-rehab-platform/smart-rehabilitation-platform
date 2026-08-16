@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { getTreatmentJourney } from "../../../services/parentDashboardService";
 import {
   normalizeJourneyPeriod,
@@ -6,6 +7,7 @@ import {
 } from "../utils/parentTreatmentJourneyUtils";
 
 export function useParentTreatmentJourney(patientId) {
+  const { t } = useLocale();
   const [journey, setJourney] = useState(null);
   const [period, setPeriodState] = useState("weekly");
   const [isLoading, setIsLoading] = useState(false);
@@ -60,28 +62,21 @@ export function useParentTreatmentJourney(patientId) {
         return;
       }
 
-      setError(resolveTreatmentJourneyError(loadError));
-    } finally {
-      if (requestIdRef.current !== requestId) {
-        return;
-      }
+      setError(resolveTreatmentJourneyError(loadError, t));
+    }
 
+    if (requestIdRef.current === requestId) {
       setIsLoading(false);
       setIsRefreshing(false);
       setIsPeriodLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
+    requestIdRef.current += 1;
+
     if (!patientId) {
-      requestIdRef.current += 1;
       patientIdRef.current = null;
-      setJourney(null);
-      setPeriodState("weekly");
-      setError(null);
-      setIsLoading(false);
-      setIsRefreshing(false);
-      setIsPeriodLoading(false);
       return undefined;
     }
 
@@ -94,6 +89,8 @@ export function useParentTreatmentJourney(patientId) {
       setError(null);
     }
 
+    // Data fetch intentionally sets loading state when the active child changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync loading flags before async fetch
     loadTreatmentJourney(patientId, "weekly", {
       periodChange: false,
     });
@@ -147,12 +144,12 @@ export function useParentTreatmentJourney(patientId) {
   }, [patientId, period, journey, loadTreatmentJourney]);
 
   return {
-    journey,
-    period,
-    isLoading,
-    isRefreshing,
-    isPeriodLoading,
-    error,
+    journey: patientId ? journey : null,
+    period: patientId ? period : "weekly",
+    isLoading: patientId ? isLoading : false,
+    isRefreshing: patientId ? isRefreshing : false,
+    isPeriodLoading: patientId ? isPeriodLoading : false,
+    error: patientId ? error : null,
     setPeriod,
     retry,
     refresh,

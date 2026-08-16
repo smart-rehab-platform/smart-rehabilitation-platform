@@ -1,10 +1,29 @@
 import { readString, resolveReportFileUrl } from "./parentDashboardMappers";
+import { resolveMapperContext } from "./parentLocalizationCore";
+import {
+  EMPTY_VALUE,
+  formatOptionalProfileValue,
+  formatProfileMemberSince,
+  getDefaultParentName,
+  getProfileEmptyMessages,
+  getProfileRoleLabel,
+  getProfileValidationMessages,
+  PROFILE_EMPTY_MESSAGES,
+  PROFILE_ROLE_LABEL,
+} from "./parentProfileLocalization";
 
-export const PROFILE_ROLE_LABEL = "Parent";
-
-export const PROFILE_EMPTY_MESSAGES = {
-  loadError: "We couldn't load your profile right now.",
+export {
+  EMPTY_VALUE,
+  formatOptionalProfileValue,
+  getProfileEmptyMessages,
+  getProfileRoleLabel,
+  PROFILE_EMPTY_MESSAGES,
+  PROFILE_ROLE_LABEL,
 };
+
+export function resolveProfileImageUrl(fileUrl) {
+  return resolveReportFileUrl(fileUrl);
+}
 
 function normalizeOptionalText(value) {
   if (typeof value !== "string") {
@@ -18,32 +37,6 @@ function nullableTrim(value) {
   return trimmed || null;
 }
 
-export const EMPTY_VALUE = "—";
-
-export function formatOptionalProfileValue(value) {
-  if (value == null || value === "") {
-    return EMPTY_VALUE;
-  }
-  return String(value);
-}
-
-export function resolveProfileImageUrl(fileUrl) {
-  return resolveReportFileUrl(fileUrl);
-}
-
-function formatDisplayDate(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString(undefined, {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 export function findParentProfileRow(rows, userId) {
   if (!userId || !Array.isArray(rows)) {
     return null;
@@ -52,9 +45,10 @@ export function findParentProfileRow(rows, userId) {
   return rows.find((row) => readString(row, ["user_id", "userId"]) === userId) ?? null;
 }
 
-export function mapProfileBundle(userRow, parentRow) {
+export function mapProfileBundle(userRow, parentRow, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const userId = readString(userRow, ["id", "_id"]);
-  const fullName = readString(userRow, ["full_name", "fullName"]) || "Parent";
+  const fullName = readString(userRow, ["full_name", "fullName"]) || getDefaultParentName(t);
   const profileImageUrl = resolveProfileImageUrl(
     readString(userRow, ["profile_image_url", "profileImageUrl"]),
   );
@@ -69,13 +63,13 @@ export function mapProfileBundle(userRow, parentRow) {
     email: readString(userRow, ["email"]) || "",
     phone: readString(userRow, ["phone"]) || "",
     role: readString(userRow, ["role"]) || "parent",
-    roleLabel: PROFILE_ROLE_LABEL,
+    roleLabel: getProfileRoleLabel(t),
     isEmailVerified: Boolean(userRow?.is_email_verified ?? userRow?.isEmailVerified),
     profileImageUrl,
     address: readString(parentRow, ["address"]) || "",
     relationshipNotes: readString(parentRow, ["relationship_notes", "relationshipNotes"]) || "",
     createdAt: memberSinceRaw,
-    memberSince: formatDisplayDate(memberSinceRaw),
+    memberSince: formatProfileMemberSince(memberSinceRaw, locale, t),
     initials: fullName
       .split(/\s+/)
       .filter(Boolean)
@@ -116,12 +110,14 @@ export function buildParentUpdatePayload(formValues) {
   };
 }
 
-export function validateProfileForm(formValues) {
+export function validateProfileForm(formValues, options = {}) {
+  const { t } = resolveMapperContext(options);
+  const messages = getProfileValidationMessages(t);
   const errors = {};
   const fullName = normalizeOptionalText(formValues.fullName);
 
   if (!fullName) {
-    errors.fullName = "Full name is required.";
+    errors.fullName = messages.fullNameRequired;
   }
 
   return errors;
@@ -165,13 +161,16 @@ export function hasParentFieldChanges(formValues, persistedProfile) {
     || normalizeOptionalText(formValues.relationshipNotes) !== normalizeOptionalText(persistedProfile?.relationshipNotes ?? "");
 }
 
-export function validateProfileImageFile(file) {
+export function validateProfileImageFile(file, options = {}) {
+  const { t } = resolveMapperContext(options);
+  const messages = getProfileValidationMessages(t);
+
   if (!file) {
     return null;
   }
 
   if (!file.type.startsWith("image/")) {
-    return "Please choose an image file.";
+    return messages.imageRequired;
   }
 
   return null;

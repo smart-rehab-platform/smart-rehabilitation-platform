@@ -1,9 +1,14 @@
-import { SESSION_LIST_TABS } from "../../utils/parentSessionsUtils";
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
+import { buildSessionListTabOptions } from "../../utils/parentSessionsUtils";
 
 export function SessionsListTabs({ activeTab, onChange, counts }) {
+  const { t } = useLocale();
+  const tabs = useMemo(() => buildSessionListTabOptions(t), [t]);
+
   return (
-    <div className="pd-sessions-subtabs" role="tablist" aria-label="Session lists">
-      {SESSION_LIST_TABS.map((tab) => (
+    <div className="pd-sessions-subtabs" role="tablist" aria-label={t("parent.sessions.listTabsAriaLabel")}>
+      {tabs.map((tab) => (
         <button
           key={tab.id}
           type="button"

@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadAdminReportDetails } from "../../../services/adminReportsService";
-import { mapAdminReport } from "../utils/adminReportsMappers";
+import {
+  applyAdminReportDetailsLocalization,
+  getAdminReportsLabels,
+} from "../utils/adminReportsLocalization.js";
+import { mapAdminReport } from "../utils/adminReportsMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -11,6 +16,9 @@ function resolveErrorMessage(error, fallback) {
  * @param {boolean|null|undefined} isAiReport
  */
 export function useAdminReportDetails(reportId, isAiReport) {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminReportsLabels(t), [t]);
   const [report, setReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +40,7 @@ export function useAdminReportDetails(reportId, isAiReport) {
     async function loadDetail() {
       if (!normalizedId) {
         setReport(null);
-        setError("Report not found.");
+        setError(labels.notFound);
         setErrorStatus(404);
         setIsLoading(false);
         return;
@@ -40,7 +48,7 @@ export function useAdminReportDetails(reportId, isAiReport) {
 
       if (!hasValidSource) {
         setReport(null);
-        setError("Report source is missing or invalid.");
+        setError(labels.notFound);
         setErrorStatus(400);
         setIsLoading(false);
         return;
@@ -59,12 +67,12 @@ export function useAdminReportDetails(reportId, isAiReport) {
         const mapped = mapAdminReport(row, isAiReport);
         if (!mapped) {
           setReport(null);
-          setError("Report not found.");
+          setError(labels.notFound);
           setErrorStatus(404);
           return;
         }
 
-        setReport(mapped);
+        setReport(applyAdminReportDetailsLocalization(mapped, mapperContext));
         setError(null);
         setErrorStatus(null);
       } catch (loadError) {
@@ -72,7 +80,7 @@ export function useAdminReportDetails(reportId, isAiReport) {
           return;
         }
 
-        const message = resolveErrorMessage(loadError, "Failed to load report details.");
+        const message = resolveErrorMessage(loadError, labels.loadFailed);
         const status = typeof loadError?.status === "number" ? loadError.status : null;
         setReport(null);
         setError(message);
@@ -89,7 +97,7 @@ export function useAdminReportDetails(reportId, isAiReport) {
     return () => {
       cancelled = true;
     };
-  }, [reportId, isAiReport, refreshToken]);
+  }, [isAiReport, labels, mapperContext, reportId, refreshToken]);
 
   return {
     report,
@@ -97,5 +105,6 @@ export function useAdminReportDetails(reportId, isAiReport) {
     error,
     errorStatus,
     refresh,
+    labels,
   };
 }

@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../../context/useAuth";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   loadAdminNotifications,
   loadAdminUnreadNotifications,
   markAdminNotificationRead,
   markAllAdminNotificationsRead,
 } from "../../../services/adminNotificationsService";
+import {
+  applyAdminNotificationsLocalization,
+  getAdminNotificationsLabels,
+} from "../utils/adminNotificationsLocalization.js";
 import { mapAdminNotifications } from "../utils/adminNotificationsMappers";
-
-const SIGNED_OUT_ERROR = "Please sign in to view notifications.";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -16,6 +19,9 @@ function resolveErrorMessage(error, fallback) {
 
 export function useAdminNotifications() {
   const { user, isInitializing } = useAuth();
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminNotificationsLabels(t), [t]);
   const adminUserId = isInitializing ? null : user?.id ?? null;
 
   const [notifications, setNotifications] = useState([]);
@@ -34,6 +40,11 @@ export function useAdminNotifications() {
   const unreadCount = useMemo(
     () => unreadNotifications.length,
     [unreadNotifications],
+  );
+
+  const localizedNotifications = useMemo(
+    () => applyAdminNotificationsLocalization(notifications, mapperContext),
+    [notifications, mapperContext],
   );
 
   const refresh = useCallback(() => {
@@ -73,7 +84,7 @@ export function useAdminNotifications() {
 
         setNotifications([]);
         setUnreadNotifications([]);
-        setError(resolveErrorMessage(loadError, "Failed to load notifications."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -86,7 +97,7 @@ export function useAdminNotifications() {
     return () => {
       cancelled = true;
     };
-  }, [adminUserId, refreshToken]);
+  }, [adminUserId, labels.loadFailed, refreshToken]);
 
   const markAsRead = useCallback(async (notificationId) => {
     const id = typeof notificationId === "string" ? notificationId.trim() : "";
@@ -120,7 +131,7 @@ export function useAdminNotifications() {
       return true;
     } catch (markError) {
       setMutationError(
-        resolveErrorMessage(markError, "Failed to mark notification as read."),
+        resolveErrorMessage(markError, labels.markReadFailed),
       );
       return false;
     } finally {
@@ -128,7 +139,7 @@ export function useAdminNotifications() {
       setUpdatingNotificationId((current) => (current === id ? null : current));
       setIsUpdating(markingIdsRef.current.size > 0 || markAllInFlightRef.current);
     }
-  }, [notifications]);
+  }, [labels.markReadFailed, notifications]);
 
   const markAllAsRead = useCallback(async () => {
     if (unreadCount === 0) {
@@ -153,14 +164,14 @@ export function useAdminNotifications() {
       return true;
     } catch (markError) {
       setMutationError(
-        resolveErrorMessage(markError, "Failed to mark all notifications as read."),
+        resolveErrorMessage(markError, labels.markAllReadFailed),
       );
       return false;
     } finally {
       markAllInFlightRef.current = false;
       setIsUpdating(markingIdsRef.current.size > 0);
     }
-  }, [unreadCount]);
+  }, [labels.markAllReadFailed, unreadCount]);
 
   if (!adminUserId) {
     return {
@@ -168,10 +179,11 @@ export function useAdminNotifications() {
       unreadNotifications: [],
       unreadCount: 0,
       isLoading: isInitializing,
-      error: isInitializing ? null : SIGNED_OUT_ERROR,
+      error: isInitializing ? null : labels.signedOut,
       mutationError: null,
       isUpdating: false,
       updatingNotificationId: null,
+      labels,
       refresh,
       markAsRead,
       markAllAsRead,
@@ -179,7 +191,7 @@ export function useAdminNotifications() {
   }
 
   return {
-    notifications,
+    notifications: localizedNotifications,
     unreadNotifications,
     unreadCount,
     isLoading,
@@ -187,6 +199,7 @@ export function useAdminNotifications() {
     mutationError,
     isUpdating,
     updatingNotificationId,
+    labels,
     refresh,
     markAsRead,
     markAllAsRead,

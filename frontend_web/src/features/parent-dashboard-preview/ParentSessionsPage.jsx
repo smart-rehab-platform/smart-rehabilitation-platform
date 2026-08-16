@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { SessionCard } from "./components/sessions/SessionCard";
 import { SessionEmptyState } from "./components/sessions/SessionEmptyState";
@@ -18,7 +18,7 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  SESSION_EMPTY_MESSAGES,
+  getSessionEmptyMessages,
   filterSessionHubItems,
   sortSessionHubItems,
 } from "./utils/parentSessionsUtils";
@@ -27,6 +27,7 @@ import "./styles/parentDashboardTokens.css";
 export default function ParentSessionsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
   const notificationUserId = parentUserId;
@@ -141,19 +142,21 @@ export default function ParentSessionsPage() {
     [filteredSessions, listTab],
   );
 
+  const sessionEmptyMessages = useMemo(() => getSessionEmptyMessages(t), [t]);
+
   const sessionsEmptyMessage = useMemo(() => {
     const baseCount = listTab === "upcoming" ? counts.upcoming : counts.history;
 
     if (baseCount === 0) {
-      return SESSION_EMPTY_MESSAGES[listTab];
+      return sessionEmptyMessages[listTab];
     }
 
     if (visibleSessions.length === 0) {
-      return SESSION_EMPTY_MESSAGES.filtered;
+      return sessionEmptyMessages.filtered;
     }
 
     return null;
-  }, [listTab, counts, visibleSessions.length]);
+  }, [listTab, counts, visibleSessions.length, sessionEmptyMessages]);
 
   const badges = useMemo(() => ({
     notifications:
@@ -184,10 +187,10 @@ export default function ParentSessionsPage() {
   const handleSubmitRequest = useCallback(async () => {
     const result = await submitRequest();
     if (result.ok) {
-      showToast("Session request submitted.");
+      showToast(t("parent.pages.sessions.requestSubmitted"));
       setActiveArea("requests");
     }
-  }, [submitRequest, showToast]);
+  }, [submitRequest, showToast, t]);
 
   const handleResetForm = useCallback(() => {
     resetForm(childFilter !== "all" ? childFilter : "");
@@ -197,7 +200,7 @@ export default function ParentSessionsPage() {
     if (isLoadingSessions) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading sessions...</p>
+          <p className="pd-inline-loading">{t("parent.pages.sessions.loading")}</p>
         </section>
       );
     }
@@ -207,7 +210,7 @@ export default function ParentSessionsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{sessionsError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetchSessions}>
-            Retry
+            {t("parent.common.retry")}
           </button>
         </section>
       );
@@ -249,12 +252,12 @@ export default function ParentSessionsPage() {
 
       <section className="pd-sessions-my-requests" aria-label="My session requests">
         <header className="pd-sessions-my-requests-head">
-          <h2 className="pd-section-title">My Requests</h2>
+          <h2 className="pd-section-title">{t("parent.pages.sessions.myRequests")}</h2>
         </header>
 
         {isLoadingRequests ? (
           <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-            <p className="pd-inline-loading">Loading session requests...</p>
+            <p className="pd-inline-loading">{t("parent.pages.sessions.loadingRequests")}</p>
           </section>
         ) : null}
 
@@ -262,13 +265,13 @@ export default function ParentSessionsPage() {
           <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
             <p className="pd-inline-error">{requestsError}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refetchRequests}>
-              Retry
+              {t("parent.common.retry")}
             </button>
           </section>
         ) : null}
 
         {!isLoadingRequests && !requestsError && requests.length === 0 ? (
-          <SessionEmptyState message={SESSION_EMPTY_MESSAGES.requests} />
+          <SessionEmptyState message={sessionEmptyMessages.requests} />
         ) : null}
 
         {!isLoadingRequests && !requestsError && requests.length > 0 ? (
@@ -287,7 +290,6 @@ export default function ParentSessionsPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -309,14 +311,14 @@ export default function ParentSessionsPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Dashboard
+              {t("parent.common.backToDashboard")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Sessions</h1>
+            <h1 className="pd-task-hub-title">{t("parent.pages.sessions.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              View therapy sessions and request new appointments for your children.
+              {t("parent.pages.sessions.subtitle")}
             </p>
           </header>
 

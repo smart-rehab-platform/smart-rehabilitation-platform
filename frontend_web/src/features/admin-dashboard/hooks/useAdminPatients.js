@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   buildConditionFilterOptions,
   filterAdminPatients,
   mapAdminPatientRecord,
   mapCaseCategory,
 } from "../utils/adminPatientsMappers";
+import {
+  applyAdminPatientsLocalization,
+  getAdminPatientsLabels,
+} from "../utils/adminPatientsLocalization.js";
 import {
   fetchAdminPatients,
   fetchCaseCategories,
@@ -15,6 +20,9 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useAdminPatients() {
+  const { t, locale } = useLocale();
+  const labels = useMemo(() => getAdminPatientsLabels(t), [t]);
+
   const [patients, setPatients] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,9 +32,14 @@ export function useAdminPatients() {
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
 
+  const localizedPatients = useMemo(
+    () => applyAdminPatientsLocalization(patients, { t, locale }),
+    [patients, t, locale],
+  );
+
   const conditionOptions = useMemo(
-    () => buildConditionFilterOptions(categories, patients),
-    [categories, patients],
+    () => buildConditionFilterOptions(categories, localizedPatients),
+    [categories, localizedPatients],
   );
 
   const effectiveConditionFilter = useMemo(() => {
@@ -38,11 +51,11 @@ export function useAdminPatients() {
   }, [conditionFilter, conditionOptions]);
 
   const filteredPatients = useMemo(
-    () => filterAdminPatients(patients, {
+    () => filterAdminPatients(localizedPatients, {
       search: searchQuery,
       conditionFilter: effectiveConditionFilter,
     }),
-    [patients, searchQuery, effectiveConditionFilter],
+    [localizedPatients, searchQuery, effectiveConditionFilter],
   );
 
   const reload = useCallback(() => {
@@ -84,7 +97,7 @@ export function useAdminPatients() {
 
         setPatients([]);
         setCategories([]);
-        setError(resolveErrorMessage(loadError, "Failed to load patients."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -97,10 +110,10 @@ export function useAdminPatients() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [refreshToken, labels.loadFailed]);
 
   return {
-    patients,
+    patients: localizedPatients,
     filteredPatients,
     conditionOptions,
     isLoading,
@@ -111,5 +124,6 @@ export function useAdminPatients() {
     setSearchQuery,
     setConditionFilter,
     reload,
+    labels,
   };
 }

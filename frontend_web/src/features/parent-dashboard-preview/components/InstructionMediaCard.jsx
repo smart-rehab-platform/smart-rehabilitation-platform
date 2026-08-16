@@ -1,7 +1,11 @@
 import { ExternalLink } from "lucide-react";
 import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
+import { useLocale } from "../../../context/useLocale.js";
 
-export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = "Instructional Media" }) {
+export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = null }) {
+  const { t } = useLocale();
+  const cardTitle = title || t("parent.instructionMedia.title");
+
   if (!mediaUrl) {
     return null;
   }
@@ -9,8 +13,8 @@ export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = 
   const kind = mediaKind || "unknown";
 
   return (
-    <section className="pd-card pd-card-pad pd-instruction-media pd-section-enter" aria-label={title}>
-      <h2 className="pd-section-title">{title}</h2>
+    <section className="pd-card pd-card-pad pd-instruction-media pd-section-enter" aria-label={cardTitle}>
+      <h2 className="pd-section-title">{cardTitle}</h2>
 
       {kind === "image" ? (
         <div className="pd-instruction-media-frame">
@@ -23,7 +27,7 @@ export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = 
               event.currentTarget.closest(".pd-instruction-media-frame")?.classList.add("is-broken");
             }}
           />
-          <p className="pd-instruction-media-fallback">Unable to load image preview.</p>
+          <p className="pd-instruction-media-fallback">{t("parent.instructionMedia.imageLoadFailed")}</p>
         </div>
       ) : null}
 
@@ -35,7 +39,7 @@ export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = 
             preload="metadata"
             src={mediaUrl}
           >
-            Your browser does not support video playback.
+            {t("parent.instructionMedia.videoUnsupported")}
           </video>
         </div>
       ) : null}
@@ -43,7 +47,7 @@ export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = 
       {kind === "audio" ? (
         <div className="pd-instruction-media-frame pd-instruction-media-audio">
           <audio className="pd-instruction-media-audio-player" controls preload="metadata" src={mediaUrl}>
-            Your browser does not support audio playback.
+            {t("parent.instructionMedia.audioUnsupported")}
           </audio>
         </div>
       ) : null}
@@ -54,8 +58,8 @@ export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = 
             <PlatformMaterialIcon icon="report" size={20} />
           </span>
           <div className="pd-instruction-media-file-copy">
-            <strong>{kind === "pdf" ? "PDF document" : "Media file"}</strong>
-            <span>Open the specialist-provided file in a new tab.</span>
+            <strong>{kind === "pdf" ? t("parent.instructionMedia.pdfDocument") : t("parent.instructionMedia.mediaFile")}</strong>
+            <span>{t("parent.instructionMedia.openHint")}</span>
           </div>
           <a
             className="pd-btn pd-btn-soft pd-btn-sm"
@@ -63,7 +67,7 @@ export function InstructionMediaCard({ mediaUrl, mediaKind = "unknown", title = 
             target="_blank"
             rel="noopener noreferrer"
           >
-            Open
+            {t("parent.instructionMedia.open")}
             <ExternalLink size={14} aria-hidden="true" />
           </a>
         </div>

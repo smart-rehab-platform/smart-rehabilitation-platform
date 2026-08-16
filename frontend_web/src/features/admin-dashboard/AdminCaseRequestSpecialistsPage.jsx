@@ -47,7 +47,10 @@ export default function AdminCaseRequestSpecialistsPage() {
     selectSpecialist,
     assignSelectedSpecialist,
     clearAssignmentError,
+    labels,
   } = useAdminCaseRequestSpecialists(requestId);
+
+  const { specialistsPage, retry, dialogs } = labels;
 
   const handleBack = useCallback(() => {
     if (requestId) {
@@ -98,15 +101,15 @@ export default function AdminCaseRequestSpecialistsPage() {
       <div className="pd-admin-case-request-specialists-page">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-case-request-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Case Request
+          {specialistsPage.back}
         </button>
         <div className="pd-admin-case-request-specialists-shell">
           <section className="pd-admin-case-request-specialists-header pd-section-enter">
-            <h1 className="pd-section-title">Assign Specialist</h1>
-            <p className="pd-section-sub">Select a specialist to assign to this case.</p>
+            <h1 className="pd-section-title">{specialistsPage.title}</h1>
+            <p className="pd-section-sub">{specialistsPage.subtitle}</p>
           </section>
           <div className="pd-card pd-card-pad">
-            <p className="pd-admin-case-request-empty-copy">Loading matching specialists...</p>
+            <p className="pd-admin-case-request-empty-copy">{specialistsPage.loading}</p>
           </div>
         </div>
       </div>
@@ -116,17 +119,17 @@ export default function AdminCaseRequestSpecialistsPage() {
       <div className="pd-admin-case-request-specialists-page">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-case-request-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Case Request
+          {specialistsPage.back}
         </button>
         <div className="pd-admin-case-request-specialists-shell">
           <section className="pd-admin-case-request-specialists-header pd-section-enter">
-            <h1 className="pd-section-title">Assign Specialist</h1>
-            <p className="pd-section-sub">Select a specialist to assign to this case.</p>
+            <h1 className="pd-section-title">{specialistsPage.title}</h1>
+            <p className="pd-section-sub">{specialistsPage.subtitle}</p>
           </section>
           <div className="pd-card pd-card-pad pd-admin-case-requests-error">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-              Retry
+              {retry}
             </button>
           </div>
         </div>
@@ -137,18 +140,19 @@ export default function AdminCaseRequestSpecialistsPage() {
       <div className="pd-admin-case-request-specialists-page">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-case-request-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Case Request
+          {specialistsPage.back}
         </button>
 
         <div className="pd-admin-case-request-specialists-shell">
           <section className="pd-admin-case-request-specialists-header pd-section-enter">
-            <h1 className="pd-section-title">Assign Specialist</h1>
-            <p className="pd-section-sub">Select a specialist to assign to this case.</p>
+            <h1 className="pd-section-title">{specialistsPage.title}</h1>
+            <p className="pd-section-sub">{specialistsPage.subtitle}</p>
           </section>
 
           <AdminMatchingSpecialistsGrid
             specialists={specialists}
             selectedSpecialistId={selectedSpecialistId}
+            labels={labels}
             onSelectSpecialist={selectSpecialist}
           />
 
@@ -159,7 +163,7 @@ export default function AdminCaseRequestSpecialistsPage() {
               onClick={handleContinue}
               disabled={!selectedSpecialistId || isAssigning}
             >
-              Continue
+              {specialistsPage.continue}
             </button>
           </div>
         </div>
@@ -200,6 +204,7 @@ export default function AdminCaseRequestSpecialistsPage() {
         specialistName={selectedSpecialist?.fullName ?? ""}
         isSubmitting={isAssigning}
         error={assignmentError}
+        labels={dialogs}
         onClose={closeConfirm}
         onConfirm={handleConfirmAssign}
       />

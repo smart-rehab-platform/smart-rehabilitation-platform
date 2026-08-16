@@ -1,3 +1,4 @@
+import { useLocale } from "../../../context/useLocale.js";
 import { PlatformNotificationIcon } from "../components/PlatformNotificationIcon";
 
 function toneForIcon(type) {
@@ -13,12 +14,14 @@ function toneForIcon(type) {
 }
 
 export function RecentUpdates({ updates = [], onItemAction, onViewAll }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-card pd-card-pad pd-recent-updates">
       <div className="pd-card-header">
-        <h2 className="pd-section-title">Recent Updates</h2>
+        <h2 className="pd-section-title">{t("parent.home.recentUpdates.title")}</h2>
         <button type="button" className="pd-link" onClick={onViewAll}>
-          View All
+          {t("parent.home.recentUpdates.viewAll")}
         </button>
       </div>
 
@@ -43,7 +46,9 @@ export function RecentUpdates({ updates = [], onItemAction, onViewAll }) {
                 <strong>{item.title}</strong>
                 <small>{item.meta}</small>
               </span>
-              {item.unread ? <span className="pd-unread-dot" aria-label="Unread" /> : null}
+              {item.unread ? (
+                <span className="pd-unread-dot" aria-label={t("parent.home.recentUpdates.unread")} />
+              ) : null}
               <span className="pd-update-action">{item.actionLabel}</span>
             </button>
           </li>

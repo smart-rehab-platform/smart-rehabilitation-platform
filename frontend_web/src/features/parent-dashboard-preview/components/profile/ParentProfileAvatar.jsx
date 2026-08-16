@@ -1,3 +1,4 @@
+import { useLocale } from "../../../../context/useLocale.js";
 import { UserProfileAvatar } from "./UserProfileAvatar";
 
 export function ParentProfileAvatar({
@@ -7,7 +8,9 @@ export function ParentProfileAvatar({
   disabled = false,
   error = null,
 }) {
+  const { t } = useLocale();
   const displayUrl = previewUrl || profile?.profileImageUrl || null;
+  const fullName = profile?.fullName || t("roles.parent");
 
   return (
     <div className="pd-profile-avatar-block">
@@ -22,7 +25,7 @@ export function ParentProfileAvatar({
           <UserProfileAvatar
             imageUrl={displayUrl}
             initials={profile?.initials || "P"}
-            alt={`${profile?.fullName || "Parent"} profile photo`}
+            alt={t("parent.profile.profilePhotoAlt", { name: fullName })}
             className="pd-avatar-photo pd-profile-avatar-photo"
             fallbackClassName="pd-avatar pd-avatar-lg"
           />
@@ -31,7 +34,7 @@ export function ParentProfileAvatar({
 
       <div className="pd-profile-avatar-actions">
         <label className="pd-btn pd-btn-soft pd-profile-avatar-upload">
-          Change photo
+          {t("parent.profile.changePhoto")}
           <input
             type="file"
             accept="image/*"
@@ -46,7 +49,7 @@ export function ParentProfileAvatar({
             }}
           />
         </label>
-        <p className="pd-profile-avatar-hint">JPG or PNG image files are supported.</p>
+        <p className="pd-profile-avatar-hint">{t("parent.profile.avatarHint")}</p>
         {error ? <p className="pd-form-error">{error}</p> : null}
       </div>
     </div>

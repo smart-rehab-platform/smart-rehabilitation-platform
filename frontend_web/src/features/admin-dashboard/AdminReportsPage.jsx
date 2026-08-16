@@ -32,6 +32,7 @@ export default function AdminReportsPage() {
   } = useAdminShell();
 
   const {
+    labels,
     reports,
     filteredReports,
     query,
@@ -107,31 +108,31 @@ export default function AdminReportsPage() {
           <section className="pd-card pd-card-pad pd-admin-reports-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-              Retry
+              {labels.retry}
             </button>
           </section>
         ) : (
           <>
             {aiError ? (
               <div className="pd-admin-reports-ai-warning pd-section-enter" role="status">
-                <p>Some AI reports could not be loaded.</p>
+                <p>{labels.aiLoadWarning}</p>
                 <button type="button" className="pd-btn pd-btn-soft pd-btn-compact" onClick={refresh}>
-                  Retry
+                  {labels.retry}
                 </button>
               </div>
             ) : null}
 
             {emptyKind === "no-reports" ? (
               <section className="pd-card pd-card-pad pd-admin-reports-empty pd-section-enter">
-                <p className="pd-admin-reports-empty-copy">No reports available yet.</p>
+                <p className="pd-admin-reports-empty-copy">{labels.empty}</p>
               </section>
             ) : null}
 
             {emptyKind === "no-matches" ? (
               <section className="pd-card pd-card-pad pd-admin-reports-empty pd-section-enter">
-                <p className="pd-admin-reports-empty-copy">No reports match your search or filter.</p>
+                <p className="pd-admin-reports-empty-copy">{labels.emptyFiltered}</p>
                 <button type="button" className="pd-btn pd-btn-soft" onClick={handleClearFilters}>
-                  Clear filters
+                  {labels.clearFilters}
                 </button>
               </section>
             ) : null}
@@ -140,6 +141,7 @@ export default function AdminReportsPage() {
               <AdminReportsGrid
                 reports={filteredReports}
                 isLoading={isLoading}
+                labels={labels}
                 onOpenReport={handleOpenReport}
               />
             ) : null}

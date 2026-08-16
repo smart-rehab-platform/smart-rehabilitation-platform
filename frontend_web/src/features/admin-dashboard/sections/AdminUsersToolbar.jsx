@@ -1,9 +1,9 @@
-const ROLE_FILTERS = [
-  { id: "all", label: "All", value: null },
-  { id: "admin", label: "Admin", value: "admin" },
-  { id: "specialist", label: "Specialist", value: "specialist" },
-  { id: "parent", label: "Parent", value: "parent" },
-];
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
+import {
+  getAdminUsersLabels,
+  getAdminUsersRoleFilterOptions,
+} from "../utils/adminUsersLocalization.js";
 
 export function AdminUsersToolbar({
   searchQuery,
@@ -12,32 +12,36 @@ export function AdminUsersToolbar({
   onRoleFilterChange,
   onAddUser,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminUsersLabels(t), [t]);
+  const roleFilters = useMemo(() => getAdminUsersRoleFilterOptions(t), [t]);
+
   return (
-    <section className="pd-admin-users-toolbar pd-section-enter" aria-label="Users toolbar">
+    <section className="pd-admin-users-toolbar pd-section-enter" aria-label={labels.toolbarAriaLabel}>
       <div className="pd-admin-users-toolbar-top">
         <div className="pd-admin-users-heading">
-          <h1 className="pd-section-title">Users</h1>
-          <p className="pd-section-sub">Manage platform user accounts</p>
+          <h1 className="pd-section-title">{labels.title}</h1>
+          <p className="pd-section-sub">{labels.subtitle}</p>
         </div>
         <button type="button" className="pd-btn pd-btn-primary" onClick={onAddUser}>
-          + Add User
+          + {labels.addUser}
         </button>
       </div>
 
       <div className="pd-admin-users-controls">
         <label className="pd-admin-users-search-wrap">
-          <span className="pd-sr-only">Search users</span>
+          <span className="pd-sr-only">{labels.searchAriaLabel}</span>
           <input
             type="search"
             className="pd-admin-users-search"
-            placeholder="Search by name, email, or role"
+            placeholder={labels.searchPlaceholder}
             value={searchQuery}
             onChange={(event) => onSearchChange(event.target.value)}
           />
         </label>
 
-        <div className="pd-admin-users-filters" role="tablist" aria-label="Role filters">
-          {ROLE_FILTERS.map((filter) => {
+        <div className="pd-admin-users-filters" role="tablist" aria-label={labels.roleFiltersAriaLabel}>
+          {roleFilters.map((filter) => {
             const selected = roleFilter === filter.value;
             return (
               <button

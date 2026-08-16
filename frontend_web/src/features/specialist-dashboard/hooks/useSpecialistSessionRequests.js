@@ -1,21 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { loadSpecialistSessionRequestsInbox } from "../../../services/specialistSessionService";
 import {
-  filterVisibleSessionRequests,
+  applySessionRequestLocalization,
   getSessionRequestEmptyMessage,
-} from "../utils/specialistSessionMappers";
+} from "../utils/specialistSessionsLocalization";
+import { filterVisibleSessionRequests } from "../utils/specialistSessionMappers";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useSpecialistSessionRequests(enabled) {
+  const { t, locale } = useLocale();
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filterId, setFilterId] = useState("pending");
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+  const loadFailedError = t("specialist.sessions.errors.loadRequestsFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -45,7 +49,7 @@ export function useSpecialistSessionRequests(enabled) {
           return;
         }
         setRequests([]);
-        setError(resolveErrorMessage(loadError, "Failed to load session requests."));
+        setError(resolveErrorMessage(loadError, loadFailedError));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -58,23 +62,28 @@ export function useSpecialistSessionRequests(enabled) {
     return () => {
       cancelled = true;
     };
-  }, [enabled, refreshToken]);
+  }, [enabled, refreshToken, loadFailedError]);
+
+  const localizedRequests = useMemo(
+    () => requests.map((request) => applySessionRequestLocalization(request, { t, locale })),
+    [requests, t, locale],
+  );
 
   const visibleRequests = useMemo(
-    () => filterVisibleSessionRequests(requests, filterId),
-    [requests, filterId],
+    () => filterVisibleSessionRequests(localizedRequests, filterId),
+    [localizedRequests, filterId],
   );
 
   const emptyMessage = useMemo(
     () => getSessionRequestEmptyMessage(filterId, {
-      totalCount: requests.length,
+      totalCount: localizedRequests.length,
       visibleCount: visibleRequests.length,
-    }),
-    [filterId, requests.length, visibleRequests.length],
+    }, t),
+    [filterId, localizedRequests.length, visibleRequests.length, t],
   );
 
   return {
-    requests,
+    requests: localizedRequests,
     visibleRequests,
     isLoading,
     error,

@@ -1,4 +1,7 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { useAdminDialogEscape } from "../hooks/useAdminDialogEscape";
+import { getAdminExercisesLabels } from "../utils/adminExercisesLocalization.js";
 
 export function AdminExerciseDeleteDialog({
   open,
@@ -8,13 +11,15 @@ export function AdminExerciseDeleteDialog({
   onClose,
   onConfirm,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminExercisesLabels(t), [t]);
   useAdminDialogEscape(open, onClose, { disabled: isSubmitting });
 
   if (!open) {
     return null;
   }
 
-  const title = exerciseTitle?.trim() || "this exercise";
+  const title = exerciseTitle?.trim() || labels.emptyDisplay;
 
   return (
     <div
@@ -30,12 +35,11 @@ export function AdminExerciseDeleteDialog({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="admin-exercise-delete-title" className="pd-admin-modal-title">
-          Delete Exercise
+          {labels.dialogs.deleteTitle}
         </h2>
         <p className="pd-admin-modal-copy">
-          Are you sure you want to delete &quot;{title}&quot;?
+          {labels.dialogs.deleteBody(title)}
         </p>
-        <p className="pd-admin-modal-copy">This action cannot be undone.</p>
 
         {error ? <p className="pd-inline-error" role="alert">{error}</p> : null}
 
@@ -46,16 +50,16 @@ export function AdminExerciseDeleteDialog({
             onClick={() => onClose?.()}
             disabled={isSubmitting}
           >
-            Cancel
+            {labels.dialogs.cancel}
           </button>
           <button
             type="button"
             className="pd-btn pd-btn-danger"
             onClick={() => onConfirm?.()}
             disabled={isSubmitting}
-            aria-label={`Delete exercise ${title}`}
+            aria-label={`${labels.dialogs.confirm} ${title}`}
           >
-            {isSubmitting ? "Deleting..." : "Delete Exercise"}
+            {isSubmitting ? labels.dialogs.deleting : labels.dialogs.confirm}
           </button>
         </div>
       </div>

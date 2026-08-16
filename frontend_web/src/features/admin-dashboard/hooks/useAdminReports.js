@@ -1,21 +1,30 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   loadAdminAiReports,
   loadAdminRegularReports,
 } from "../../../services/adminReportsService";
 import {
-  ADMIN_REPORT_FILTERS,
+  applyAdminReportsLocalization,
+  buildAdminReportFilterOptions,
+  getAdminReportsLabels,
+} from "../utils/adminReportsLocalization.js";
+import {
   filterAdminReports,
   mapAdminAiReport,
   mapAdminRegularReport,
   mergeAndSortAdminReports,
-} from "../utils/adminReportsMappers";
+} from "../utils/adminReportsMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminReports() {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminReportsLabels(t), [t]);
+  const filterOptions = useMemo(() => buildAdminReportFilterOptions(t), [t]);
   const [reports, setReports] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -70,7 +79,7 @@ export function useAdminReports() {
         regularFailed = true;
         regularErrorMessage = resolveErrorMessage(
           regularResult.reason,
-          "Failed to load reports.",
+          labels.loadFailed,
         );
       }
 
@@ -79,7 +88,7 @@ export function useAdminReports() {
       } else {
         aiErrorMessage = resolveErrorMessage(
           aiResult.reason,
-          "Failed to load AI reports.",
+          labels.loadFailed,
         );
       }
 
@@ -103,7 +112,10 @@ export function useAdminReports() {
         .map(mapAdminAiReport)
         .filter(Boolean);
 
-      setReports(mergeAndSortAdminReports(mappedRegular, mappedAi));
+      setReports(applyAdminReportsLocalization(
+        mergeAndSortAdminReports(mappedRegular, mappedAi),
+        mapperContext,
+      ));
       setError(null);
       setAiError(aiErrorMessage);
       hasLoadedOnceRef.current = true;
@@ -120,24 +132,28 @@ export function useAdminReports() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [labels.loadFailed, mapperContext, refreshToken]);
 
   const filteredReports = useMemo(
-    () => filterAdminReports(reports, {
-      query,
-      filter: selectedFilter,
-    }),
-    [reports, query, selectedFilter],
+    () => applyAdminReportsLocalization(
+      filterAdminReports(reports, {
+        query,
+        filter: selectedFilter,
+      }),
+      mapperContext,
+    ),
+    [mapperContext, query, reports, selectedFilter],
   );
 
   return {
+    labels,
     reports,
     filteredReports,
     query,
     setQuery,
     selectedFilter,
     setSelectedFilter,
-    filterOptions: ADMIN_REPORT_FILTERS,
+    filterOptions,
     isLoading,
     isRefreshing,
     error,

@@ -1,10 +1,13 @@
+import { useLocale } from "../../../context/useLocale.js";
 import { PlatformNotificationIcon } from "../components/PlatformNotificationIcon";
 
 export function RecentNotificationsCard({ notifications, onMarkRead, onViewAll }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-card pd-card-pad pd-equal-card">
       <div className="pd-card-header">
-        <h2 className="pd-section-title">Recent Notifications</h2>
+        <h2 className="pd-section-title">{t("parent.home.recentNotifications.title")}</h2>
       </div>
 
       <ul className="pd-notif-list">
@@ -14,7 +17,7 @@ export function RecentNotificationsCard({ notifications, onMarkRead, onViewAll }
               type="button"
               className={`pd-notif-item${item.unread ? " is-unread" : ""}`}
               onClick={() => onMarkRead(item.id)}
-              aria-label={`${item.title}. ${item.timeAgo}.${item.unread ? " Unread. Activate to mark as read." : ""}`}
+              aria-label={`${item.title}. ${item.timeAgo}.${item.unread ? ` ${t("parent.home.recentNotifications.unreadActivate")}` : ""}`}
             >
               <span className={`pd-notif-icon pd-tone-${item.tone}`} aria-hidden="true">
                 <PlatformNotificationIcon type={item.icon} size={16} />
@@ -32,7 +35,7 @@ export function RecentNotificationsCard({ notifications, onMarkRead, onViewAll }
       <div className="pd-card-footer">
         <span />
         <button type="button" className="pd-link" onClick={onViewAll}>
-          View All Notifications →
+          {t("parent.home.recentNotifications.viewAll")} →
         </button>
       </div>
     </section>

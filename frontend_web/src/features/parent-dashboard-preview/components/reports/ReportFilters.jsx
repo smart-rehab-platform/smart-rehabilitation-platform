@@ -1,4 +1,6 @@
-import { REPORT_SORT_OPTIONS } from "../../utils/parentReportsUtils";
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
+import { buildReportSortOptions } from "../../utils/parentReportsUtils";
 
 export function ReportFilters({
   search,
@@ -12,17 +14,20 @@ export function ReportFilters({
   children = [],
   reportTypeOptions = [],
 }) {
+  const { t } = useLocale();
+  const sortOptions = useMemo(() => buildReportSortOptions(t), [t]);
+
   return (
     <div className="pd-task-hub-filters">
       <div className="pd-task-hub-filter pd-task-hub-filter-search">
         <label className="pd-form-label" htmlFor="pd-reports-hub-search">
-          Search
+          {t("parent.common.search")}
         </label>
         <input
           id="pd-reports-hub-search"
           type="search"
           className="pd-form-input"
-          placeholder="Search by title, child, specialist, or summary"
+          placeholder={t("parent.reports.searchPlaceholder")}
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
         />
@@ -30,7 +35,7 @@ export function ReportFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-reports-hub-child">
-          Child
+          {t("parent.common.child")}
         </label>
         <select
           id="pd-reports-hub-child"
@@ -38,7 +43,7 @@ export function ReportFilters({
           value={childId}
           onChange={(event) => onChildChange(event.target.value)}
         >
-          <option value="all">All children</option>
+          <option value="all">{t("parent.common.allChildren")}</option>
           {children.map((child) => (
             <option key={child.id} value={child.id}>
               {child.fullName}
@@ -49,7 +54,7 @@ export function ReportFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-reports-hub-type">
-          Report type
+          {t("parent.common.reportType")}
         </label>
         <select
           id="pd-reports-hub-type"
@@ -67,7 +72,7 @@ export function ReportFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-reports-hub-sort">
-          Sort by
+          {t("parent.common.sortBy")}
         </label>
         <select
           id="pd-reports-hub-sort"
@@ -75,7 +80,7 @@ export function ReportFilters({
           value={sortKey}
           onChange={(event) => onSortChange(event.target.value)}
         >
-          {REPORT_SORT_OPTIONS.map((option) => (
+          {sortOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>

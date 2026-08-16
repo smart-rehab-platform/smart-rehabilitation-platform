@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistReportDetailsPath,
@@ -18,6 +19,7 @@ export default function SpecialistReportsPage() {
   const [searchParams] = useSearchParams();
   const patientId = searchParams.get("patientId");
   const { user, isInitializing } = useAuth();
+  const { t } = useLocale();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
   const {
@@ -60,10 +62,10 @@ export default function SpecialistReportsPage() {
 
   const pageSubtitle = useMemo(() => {
     if (isPatientScoped && patientName) {
-      return `Reports for ${patientName}`;
+      return t("specialist.reports.subtitleForPatient", { name: patientName });
     }
-    return "View reports across your active patients.";
-  }, [isPatientScoped, patientName]);
+    return t("specialist.reports.subtitle");
+  }, [isPatientScoped, patientName, t]);
 
   const handleBack = useCallback(() => {
     if (isPatientScoped && patientId) {
@@ -114,14 +116,14 @@ export default function SpecialistReportsPage() {
             <div className="pd-task-hub-toolbar">
               <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
                 <ArrowLeft size={18} aria-hidden="true" />
-                Back to Patient
+                {t("specialist.reports.backToPatient")}
               </button>
             </div>
           ) : null}
           <div className="pd-task-hub-panel pd-specialist-reports-page">
             <header className="pd-specialist-page-header">
               <h1 className="pd-section-title">
-                {isPatientScoped ? "Patient Reports" : "Reports"}
+                {isPatientScoped ? t("specialist.reports.patientTitle") : t("specialist.reports.title")}
               </h1>
               <p className="pd-section-sub">{pageSubtitle}</p>
             </header>

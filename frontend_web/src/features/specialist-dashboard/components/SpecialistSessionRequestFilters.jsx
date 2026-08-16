@@ -1,12 +1,21 @@
-import { SESSION_REQUEST_FILTERS } from "../utils/specialistSessionMappers";
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale";
+import { buildSessionRequestFilterOptions } from "../utils/specialistSessionsLocalization";
 
 export function SpecialistSessionRequestFilters({
   filterId,
   onFilterChange,
 }) {
+  const { t } = useLocale();
+  const filters = useMemo(() => buildSessionRequestFilterOptions(t), [t]);
+
   return (
-    <div className="pd-specialist-session-filter-row" role="tablist" aria-label="Session request filters">
-      {SESSION_REQUEST_FILTERS.map((filter) => {
+    <div
+      className="pd-specialist-session-filter-row"
+      role="tablist"
+      aria-label={t("specialist.sessions.filters.requestAriaLabel")}
+    >
+      {filters.map((filter) => {
         const isActive = filterId === filter.id;
         return (
           <button

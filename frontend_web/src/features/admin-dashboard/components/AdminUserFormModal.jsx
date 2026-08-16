@@ -1,16 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { getPasswordStrength } from "../../../components/auth/authHelpers";
+import { useLocale } from "../../../context/useLocale.js";
 import { AdminPasswordRequirements } from "./AdminPasswordRequirements";
 import {
-  validateAddUserForm,
-  validateEditUserForm,
-} from "../utils/adminUsersMappers";
-
-const ROLE_OPTIONS = [
-  { value: "admin", label: "Admin" },
-  { value: "specialist", label: "Specialist" },
-  { value: "parent", label: "Parent" },
-];
+  getAdminUserRoleOptions,
+  getAdminUsersLabels,
+  validateAddUserFormLocalized,
+  validateEditUserFormLocalized,
+} from "../utils/adminUsersLocalization.js";
 
 const EMPTY_ADD_FORM = {
   fullName: "",
@@ -41,9 +38,13 @@ function AdminUserFormModalInner({
   onClose,
   onSubmit,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminUsersLabels(t), [t]);
+  const roleOptions = useMemo(() => getAdminUserRoleOptions(t), [t]);
   const isEdit = mode === "edit";
   const [form, setForm] = useState(() => buildInitialForm(mode, user));
   const [error, setError] = useState(null);
+  const mapperContext = useMemo(() => ({ t }), [t]);
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -56,10 +57,10 @@ function AdminUserFormModalInner({
     event.preventDefault();
 
     const validationError = isEdit
-      ? validateEditUserForm(form)
-      : validateAddUserForm(form, {
-          isPasswordValid: (password) => getPasswordStrength(password).isStrong,
-        });
+      ? validateEditUserFormLocalized(form, mapperContext)
+      : validateAddUserFormLocalized(form, {
+        isPasswordValid: (password) => getPasswordStrength(password).isStrong,
+      }, mapperContext);
 
     if (validationError) {
       setError(validationError);
@@ -85,12 +86,12 @@ function AdminUserFormModalInner({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="admin-user-form-title" className="pd-admin-modal-title">
-          {isEdit ? "Edit User" : "Add User"}
+          {isEdit ? labels.form.editTitle : labels.form.addTitle}
         </h2>
 
         <form className="pd-admin-form" onSubmit={handleSubmit}>
           <label className="pd-admin-field">
-            <span className="pd-admin-field-label">Full Name</span>
+            <span className="pd-admin-field-label">{labels.form.fullName}</span>
             <input
               type="text"
               className="pd-admin-input"
@@ -102,7 +103,7 @@ function AdminUserFormModalInner({
           </label>
 
           <label className="pd-admin-field">
-            <span className="pd-admin-field-label">Email</span>
+            <span className="pd-admin-field-label">{labels.form.email}</span>
             <input
               type="email"
               className="pd-admin-input"
@@ -116,7 +117,7 @@ function AdminUserFormModalInner({
           {!isEdit ? (
             <>
               <label className="pd-admin-field">
-                <span className="pd-admin-field-label">Password</span>
+                <span className="pd-admin-field-label">{labels.form.password}</span>
                 <input
                   type="password"
                   className="pd-admin-input"
@@ -133,7 +134,7 @@ function AdminUserFormModalInner({
           ) : null}
 
           <label className="pd-admin-field">
-            <span className="pd-admin-field-label">Phone (optional)</span>
+            <span className="pd-admin-field-label">{labels.form.phoneOptional}</span>
             <input
               type="tel"
               className="pd-admin-input"
@@ -145,14 +146,14 @@ function AdminUserFormModalInner({
           </label>
 
           <label className="pd-admin-field">
-            <span className="pd-admin-field-label">Role</span>
+            <span className="pd-admin-field-label">{labels.form.role}</span>
             <select
               className="pd-admin-select"
               value={form.role}
               onChange={(event) => updateField("role", event.target.value)}
               disabled={isSubmitting}
             >
-              {ROLE_OPTIONS.map((option) => (
+              {roleOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -169,10 +170,10 @@ function AdminUserFormModalInner({
               onClick={() => onClose?.()}
               disabled={isSubmitting}
             >
-              Cancel
+              {labels.form.cancel}
             </button>
             <button type="submit" className="pd-btn pd-btn-primary" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : isEdit ? "Save" : "Create"}
+              {isSubmitting ? labels.form.saving : isEdit ? labels.form.save : labels.form.create}
             </button>
           </div>
         </form>

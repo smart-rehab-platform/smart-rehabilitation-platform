@@ -1,4 +1,5 @@
 import { Calendar, Clock } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 import {
   getMaxScheduleDateValue,
   getTodayDateInputValue,
@@ -32,6 +33,7 @@ export function SpecialistScheduleSessionForm({
   onSubmit,
   onCancel,
 }) {
+  const { t } = useLocale();
   const minDate = getTodayDateInputValue();
   const maxDate = getMaxScheduleDateValue();
   const submitDisabled = isSaving || isLoadingPatients || patients.length === 0;
@@ -47,13 +49,13 @@ export function SpecialistScheduleSessionForm({
     >
       <section className="pd-card pd-specialist-schedule-session-card">
         {isLoadingPatients ? (
-          <p className="pd-inline-loading">Loading patients...</p>
+          <p className="pd-inline-loading">{t("specialist.sessions.schedule.loadingPatients")}</p>
         ) : null}
 
         {!isLoadingPatients && patients.length === 0 ? (
           <div className="pd-specialist-schedule-session-empty">
             <p className="pd-section-sub">
-              No assigned patients found. Assign a patient before scheduling.
+              {t("specialist.sessions.schedule.noAssignedPatients")}
             </p>
           </div>
         ) : null}
@@ -63,7 +65,7 @@ export function SpecialistScheduleSessionForm({
             <div className="pd-specialist-schedule-session-column">
               <div className={fieldClassName("pd-specialist-schedule-session-field", fieldErrors.patientId)}>
                 <label className="pd-specialist-schedule-session-label" htmlFor="schedule-session-patient">
-                  Patient
+                  {t("specialist.sessions.schedule.patient")}
                 </label>
                 <SpecialistScheduleSessionPatientSelect
                   patients={patients}
@@ -76,7 +78,7 @@ export function SpecialistScheduleSessionForm({
 
               <div className={fieldClassName("pd-specialist-schedule-session-field", fieldErrors.title)}>
                 <label className="pd-specialist-schedule-session-label" htmlFor="schedule-session-title">
-                  Session type / title
+                  {t("specialist.sessions.schedule.sessionTypeTitle")}
                 </label>
                 <input
                   id="schedule-session-title"
@@ -84,9 +86,10 @@ export function SpecialistScheduleSessionForm({
                   className="pd-specialist-schedule-session-control"
                   value={title}
                   onChange={(event) => onTitleChange?.(event.target.value)}
-                  placeholder="Therapy Session"
+                  placeholder={t("specialist.sessions.schedule.sessionTypePlaceholder")}
                   disabled={isSaving}
                   aria-invalid={Boolean(fieldErrors.title)}
+                  dir="auto"
                 />
                 {fieldErrors.title ? (
                   <p className="pd-specialist-schedule-session-error">{fieldErrors.title}</p>
@@ -95,7 +98,7 @@ export function SpecialistScheduleSessionForm({
 
               <div className={fieldClassName("pd-specialist-schedule-session-field", fieldErrors.duration)}>
                 <label className="pd-specialist-schedule-session-label" htmlFor="schedule-session-duration">
-                  Duration (minutes)
+                  {t("specialist.sessions.schedule.duration")}
                 </label>
                 <div className="pd-specialist-schedule-session-duration-wrap">
                   <input
@@ -112,7 +115,7 @@ export function SpecialistScheduleSessionForm({
                     aria-invalid={Boolean(fieldErrors.duration)}
                   />
                   <span className="pd-specialist-schedule-session-duration-suffix" aria-hidden="true">
-                    minutes
+                    {t("specialist.sessions.schedule.durationUnit")}
                   </span>
                 </div>
                 {fieldErrors.duration ? (
@@ -124,7 +127,7 @@ export function SpecialistScheduleSessionForm({
             <div className="pd-specialist-schedule-session-column">
               <div className={fieldClassName("pd-specialist-schedule-session-field", hasDateTimeError)}>
                 <label className="pd-specialist-schedule-session-label" htmlFor="schedule-session-date">
-                  Date
+                  {t("specialist.sessions.schedule.date")}
                 </label>
                 <div className="pd-specialist-schedule-session-input-wrap">
                   <input
@@ -148,7 +151,7 @@ export function SpecialistScheduleSessionForm({
 
               <div className={fieldClassName("pd-specialist-schedule-session-field", hasDateTimeError)}>
                 <label className="pd-specialist-schedule-session-label" htmlFor="schedule-session-time">
-                  Start time
+                  {t("specialist.sessions.schedule.startTime")}
                 </label>
                 <div className="pd-specialist-schedule-session-input-wrap">
                   <input
@@ -173,7 +176,7 @@ export function SpecialistScheduleSessionForm({
 
               <div className="pd-specialist-schedule-session-field">
                 <label className="pd-specialist-schedule-session-label" htmlFor="schedule-session-location">
-                  Location or meeting link
+                  {t("specialist.sessions.schedule.locationOrLink")}
                 </label>
                 <input
                   id="schedule-session-location"
@@ -181,8 +184,9 @@ export function SpecialistScheduleSessionForm({
                   className="pd-specialist-schedule-session-control"
                   value={locationOrLink}
                   onChange={(event) => onLocationOrLinkChange?.(event.target.value)}
-                  placeholder="Clinic room or https://…"
+                  placeholder={t("specialist.sessions.schedule.locationHint")}
                   disabled={isSaving}
+                  dir="auto"
                 />
               </div>
             </div>
@@ -191,7 +195,7 @@ export function SpecialistScheduleSessionForm({
 
         <div className="pd-specialist-schedule-session-field pd-specialist-schedule-session-notes">
           <label className="pd-specialist-schedule-session-label" htmlFor="schedule-session-notes">
-            Notes (optional)
+            {t("specialist.sessions.schedule.notesOptional")}
           </label>
           <textarea
             id="schedule-session-notes"
@@ -199,11 +203,12 @@ export function SpecialistScheduleSessionForm({
             rows={4}
             value={sessionNotes}
             onChange={(event) => onSessionNotesChange?.(event.target.value)}
-            placeholder="Additional details for this session"
+            placeholder={t("specialist.sessions.schedule.notesPlaceholder")}
             disabled={isSaving}
+            dir="auto"
           />
           <p className="pd-specialist-schedule-session-helper">
-            Review the session details before scheduling.
+            {t("specialist.sessions.schedule.formHelper")}
           </p>
         </div>
 
@@ -218,14 +223,16 @@ export function SpecialistScheduleSessionForm({
             onClick={onCancel}
             disabled={isSaving}
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
             className="pd-btn pd-btn-primary pd-specialist-schedule-session-submit"
             disabled={submitDisabled}
           >
-            {isSaving ? "Scheduling..." : "Schedule Session"}
+            {isSaving
+              ? t("specialist.sessions.schedule.scheduling")
+              : t("specialist.sessions.schedule.scheduleSession")}
           </button>
         </div>
       </section>

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { loadSpecialistPatients } from "../../../services/specialistPatientService";
 import { createSpecialistSession } from "../../../services/specialistSessionService";
 import { mapSpecialistPatientList } from "../utils/specialistPatientMappers";
@@ -10,6 +11,7 @@ import {
   getDefaultScheduleDateValue,
   validateScheduleSessionForm,
 } from "../utils/specialistScheduleSessionMappers";
+import { resolveScheduleSessionFieldErrors } from "../utils/specialistSessionsLocalization";
 import { notifySpecialistSessionRefresh } from "../utils/specialistSessionRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -20,6 +22,7 @@ export function useSpecialistScheduleSessionCreate(
   specialistUserId,
   { patientId = "", notes = "" } = {},
 ) {
+  const { t } = useLocale();
   const scopedPatientId = patientId?.trim() || "";
   const initialNotes = notes?.trim() || "";
 
@@ -36,6 +39,12 @@ export function useSpecialistScheduleSessionCreate(
   const [locationOrLink, setLocationOrLink] = useState("");
   const [sessionNotes, setSessionNotes] = useState(initialNotes);
   const loadTokenRef = useRef(0);
+
+  const loadPatientsFailedError = t("specialist.sessions.errors.loadPatientsFailed");
+  const createFailedError = t("specialist.sessions.errors.createFailed");
+  const signInRequiredError = t("specialist.sessions.errors.signInRequiredCreate");
+  const scheduleSignInRequiredError = t("specialist.sessions.schedule.signInRequired");
+  const pleaseWaitMessage = t("specialist.sessions.schedule.pleaseWait");
 
   const effectivePatientId = scopedPatientId || selectedPatientId;
 
@@ -61,7 +70,7 @@ export function useSpecialistScheduleSessionCreate(
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setError(resolveErrorMessage(loadError, "Failed to load patients."));
+        setError(resolveErrorMessage(loadError, loadPatientsFailedError));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoadingPatients(false);
@@ -74,7 +83,7 @@ export function useSpecialistScheduleSessionCreate(
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId]);
+  }, [specialistUserId, loadPatientsFailedError]);
 
   const selectedPatient = patients.find((patient) => patient.id === effectivePatientId) || null;
 
@@ -109,6 +118,11 @@ export function useSpecialistScheduleSessionCreate(
     return result;
   }, [title, effectivePatientId, scheduledDate, scheduledTime, duration]);
 
+  const localizedFieldErrors = useMemo(
+    () => resolveScheduleSessionFieldErrors(fieldErrors, t),
+    [fieldErrors, t],
+  );
+
   const create = useCallback(async () => {
     const validation = validate();
     if (!validation.isValid) {
@@ -116,13 +130,12 @@ export function useSpecialistScheduleSessionCreate(
     }
 
     if (!specialistUserId?.trim()) {
-      const message = "Please sign in to continue.";
-      setError(message);
-      return { ok: false, message };
+      setError(signInRequiredError);
+      return { ok: false, message: signInRequiredError };
     }
 
     if (isSaving) {
-      return { ok: false, message: "Please wait…" };
+      return { ok: false, message: pleaseWaitMessage };
     }
 
     setIsSaving(true);
@@ -141,7 +154,7 @@ export function useSpecialistScheduleSessionCreate(
       notifySpecialistSessionRefresh();
       return { ok: true };
     } catch (createError) {
-      const message = resolveErrorMessage(createError, "Failed to create session. Please try again.");
+      const message = resolveErrorMessage(createError, createFailedError);
       setError(message);
       return { ok: false, message };
     } finally {
@@ -153,6 +166,9 @@ export function useSpecialistScheduleSessionCreate(
     isSaving,
     effectivePatientId,
     locationOrLink,
+    signInRequiredError,
+    pleaseWaitMessage,
+    createFailedError,
   ]);
 
   if (!specialistUserId) {
@@ -161,7 +177,7 @@ export function useSpecialistScheduleSessionCreate(
       selectedPatient: null,
       isLoadingPatients: false,
       isSaving: false,
-      error: "Please sign in to schedule a session.",
+      error: scheduleSignInRequiredError,
       fieldErrors: {},
       title,
       scheduledDate,
@@ -186,7 +202,7 @@ export function useSpecialistScheduleSessionCreate(
     isLoadingPatients,
     isSaving,
     error,
-    fieldErrors,
+    fieldErrors: localizedFieldErrors,
     title,
     scheduledDate,
     scheduledTime,

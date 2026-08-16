@@ -1,26 +1,25 @@
 import { CheckCircle2, Circle } from "lucide-react";
-import { getPasswordStrength } from "./authHelpers";
+import { getPasswordStrength, getPasswordStrengthLabel } from "./authLocalization";
+import { useLocale } from "../../context/useLocale.js";
 
 const levelStyles = {
   weak: {
-    label: "Weak",
     color: "#E07A7A",
     track: "rgba(198, 107, 107, 0.22)",
   },
   medium: {
-    label: "Medium",
     color: "#E0A050",
     track: "rgba(200, 132, 45, 0.22)",
   },
   strong: {
-    label: "Strong",
     color: "#5FD49A",
     track: "rgba(47, 138, 93, 0.22)",
   },
 };
 
 export function PasswordRequirementsChecklist({ password }) {
-  const strength = getPasswordStrength(password);
+  const { t } = useLocale();
+  const strength = getPasswordStrength(password, t);
   const style = levelStyles[strength.level];
   const fillPercent = (strength.satisfiedCount / strength.rules.length) * 100;
 
@@ -32,13 +31,13 @@ export function PasswordRequirementsChecklist({ password }) {
             className="text-xs font-semibold"
             style={{ color: "rgba(255, 255, 255, 0.94)" }}
           >
-            Password strength
+            {t("auth.password.strengthTitle")}
           </p>
           <p
             className="password-strength-label text-xs font-semibold transition-colors duration-200"
             style={{ color: style.color }}
           >
-            {style.label}
+            {getPasswordStrengthLabel(strength.level, t)}
           </p>
         </div>
 

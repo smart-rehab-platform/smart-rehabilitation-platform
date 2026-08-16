@@ -15,9 +15,9 @@ import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/adminDashboardSections.css";
 import "./styles/adminReportsSections.css";
 
-function DetailsSkeleton() {
+function DetailsSkeleton({ labels }) {
   return (
-    <div className="pd-admin-report-details" aria-busy="true" aria-label="Report details loading">
+    <div className="pd-admin-report-details" aria-busy="true" aria-label={labels?.loadingDetails}>
       <div className="pd-card pd-card-pad pd-admin-report-details-hero">
         <span className="pd-admin-report-skeleton-line is-title" />
         <span className="pd-admin-report-skeleton-line is-sub" />
@@ -48,6 +48,15 @@ function DetailsSkeleton() {
         </div>
       </div>
     </div>
+  );
+}
+
+function BackButton({ labels, onClick }) {
+  return (
+    <button type="button" className="pd-btn pd-btn-soft pd-admin-report-back" onClick={onClick}>
+      <ArrowLeft size={16} aria-hidden="true" />
+      {labels.back}
+    </button>
   );
 }
 
@@ -84,6 +93,7 @@ export default function AdminReportDetailsPage() {
     error,
     errorStatus,
     refresh,
+    labels,
   } = useAdminReportDetails(
     hasValidSource ? reportId : "",
     hasValidSource ? isAiReport : null,
@@ -118,14 +128,11 @@ export default function AdminReportDetailsPage() {
   if (!hasValidSource) {
     body = (
       <div className="pd-admin-report-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-report-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Reports
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
         <section className="pd-card pd-card-pad pd-section-enter">
-          <p className="pd-admin-report-empty-copy" role="alert">Invalid report source.</p>
+          <p className="pd-admin-report-empty-copy" role="alert">{labels.invalidSource}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
-            Back to Reports
+            {labels.back}
           </button>
         </section>
       </div>
@@ -133,24 +140,18 @@ export default function AdminReportDetailsPage() {
   } else if (isLoading) {
     body = (
       <>
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-report-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Reports
-        </button>
-        <DetailsSkeleton />
+        <BackButton labels={labels} onClick={handleBack} />
+        <DetailsSkeleton labels={labels} />
       </>
     );
   } else if (isNotFound) {
     body = (
       <div className="pd-admin-report-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-report-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Reports
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
         <section className="pd-card pd-card-pad pd-section-enter">
-          <p className="pd-admin-report-empty-copy" role="alert">Report not found.</p>
+          <p className="pd-admin-report-empty-copy" role="alert">{labels.notFound}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
-            Back to Reports
+            {labels.back}
           </button>
         </section>
       </div>
@@ -158,14 +159,11 @@ export default function AdminReportDetailsPage() {
   } else if (error) {
     body = (
       <div className="pd-admin-report-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-report-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Reports
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
         <section className="pd-card pd-card-pad pd-admin-reports-error pd-section-enter">
           <p className="pd-inline-error" role="alert">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={handleRefresh}>
-            Retry
+            {labels.retry}
           </button>
         </section>
       </div>
@@ -173,14 +171,11 @@ export default function AdminReportDetailsPage() {
   } else if (!report) {
     body = (
       <div className="pd-admin-report-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-report-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Reports
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
         <section className="pd-card pd-card-pad pd-section-enter">
-          <p className="pd-admin-report-empty-copy" role="alert">Report not found.</p>
+          <p className="pd-admin-report-empty-copy" role="alert">{labels.notFound}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
-            Back to Reports
+            {labels.back}
           </button>
         </section>
       </div>
@@ -188,26 +183,25 @@ export default function AdminReportDetailsPage() {
   } else {
     body = (
       <div className="pd-admin-report-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-report-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Reports
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
 
-        <AdminReportDetailsHero report={report} />
+        <AdminReportDetailsHero report={report} labels={labels} />
 
         <div className="pd-admin-report-details-grid">
           <div className="pd-admin-report-details-main">
-            <AdminReportInformation report={report} />
+            <AdminReportInformation report={report} labels={labels} />
             <AdminReportSummary
               summary={report.summary}
               isAiReport={Boolean(report.isAiReport)}
+              labels={labels}
             />
           </div>
 
           <div className="pd-admin-report-details-side">
-            <AdminReportAttachment report={report} />
+            <AdminReportAttachment report={report} labels={labels} />
             <AdminReportPdfActions
               report={report}
+              labels={labels}
               onReportUpdated={handleReportUpdated}
               onRefresh={handleRefresh}
               showToast={showToast}

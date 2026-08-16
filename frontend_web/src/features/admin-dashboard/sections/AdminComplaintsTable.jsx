@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import { ChevronRight } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { AdminComplaintStatusBadge } from "../components/AdminComplaintStatusBadge";
-import { formatComplaintSubmittedLabel } from "../utils/adminComplaintsMappers";
+import { getAdminComplaintsLabels } from "../utils/adminComplaintsLocalization.js";
 
-function ViewAction({ onView }) {
+function ViewAction({ onView, label }) {
   return (
     <button
       type="button"
@@ -12,8 +14,8 @@ function ViewAction({ onView }) {
         onView?.();
       }}
     >
-      View
-      <ChevronRight size={16} aria-hidden="true" />
+      {label}
+      <ChevronRight size={16} aria-hidden="true" className="pd-admin-complaints-view-chevron" />
     </button>
   );
 }
@@ -36,26 +38,28 @@ function SkeletonRows() {
   );
 }
 
-function ComplaintRow({ complaint, onView }) {
+function ComplaintRow({ complaint, labels, onView }) {
+  const emptyDisplay = labels.emptyDisplay;
+
   return (
     <tr className="pd-admin-complaints-row">
-      <td data-label="Category">
+      <td data-label={labels.columns.category}>
         <strong className="pd-admin-complaints-category">{complaint.categoryLabel}</strong>
       </td>
-      <td data-label="Status">
+      <td data-label={labels.columns.status}>
         <AdminComplaintStatusBadge
           label={complaint.statusLabel}
           tone={complaint.statusTone}
         />
       </td>
-      <td data-label="Parent">{complaint.parentName || "—"}</td>
-      <td data-label="Child">{complaint.patientName || "—"}</td>
-      <td data-label="Specialist">{complaint.specialistName || "—"}</td>
-      <td data-label="Submitted">
-        {formatComplaintSubmittedLabel(complaint.createdAt)}
+      <td data-label={labels.columns.parent} dir="auto">{complaint.parentName || emptyDisplay}</td>
+      <td data-label={labels.columns.patient} dir="auto">{complaint.patientName || emptyDisplay}</td>
+      <td data-label={labels.columns.specialist} dir="auto">{complaint.specialistName || emptyDisplay}</td>
+      <td data-label={labels.columns.submitted}>
+        {complaint.createdAtLabel || emptyDisplay}
       </td>
-      <td data-label="View">
-        <ViewAction onView={() => onView?.(complaint.id)} />
+      <td data-label={labels.columns.view}>
+        <ViewAction label={labels.view} onView={() => onView?.(complaint.id)} />
       </td>
     </tr>
   );
@@ -66,21 +70,23 @@ export function AdminComplaintsTable({
   isLoading = false,
   emptyKind = null,
   onViewComplaint,
-  onClearFilters,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminComplaintsLabels(t), [t]);
+
   if (isLoading) {
     return (
       <section className="pd-card pd-admin-complaints-table-wrap pd-section-enter" aria-busy="true">
         <table className="pd-admin-complaints-table">
           <thead>
             <tr>
-              <th scope="col">Category</th>
-              <th scope="col">Status</th>
-              <th scope="col">Parent</th>
-              <th scope="col">Child</th>
-              <th scope="col">Specialist</th>
-              <th scope="col">Submitted</th>
-              <th scope="col"><span className="pd-sr-only">View</span></th>
+              <th scope="col">{labels.columns.category}</th>
+              <th scope="col">{labels.columns.status}</th>
+              <th scope="col">{labels.columns.parent}</th>
+              <th scope="col">{labels.columns.patient}</th>
+              <th scope="col">{labels.columns.specialist}</th>
+              <th scope="col">{labels.columns.submitted}</th>
+              <th scope="col"><span className="pd-sr-only">{labels.columns.view}</span></th>
             </tr>
           </thead>
           <tbody>
@@ -94,9 +100,7 @@ export function AdminComplaintsTable({
   if (emptyKind === "no-complaints") {
     return (
       <section className="pd-card pd-card-pad pd-admin-complaints-empty pd-section-enter">
-        <p className="pd-admin-complaints-empty-copy">
-          No complaints have been submitted yet.
-        </p>
+        <p className="pd-admin-complaints-empty-copy">{labels.empty}</p>
       </section>
     );
   }
@@ -104,30 +108,23 @@ export function AdminComplaintsTable({
   if (emptyKind === "no-matches") {
     return (
       <section className="pd-card pd-card-pad pd-admin-complaints-empty pd-section-enter">
-        <p className="pd-admin-complaints-empty-copy">
-          No complaints match your filters.
-        </p>
-        {onClearFilters ? (
-          <button type="button" className="pd-btn pd-btn-soft" onClick={onClearFilters}>
-            Clear filters
-          </button>
-        ) : null}
+        <p className="pd-admin-complaints-empty-copy">{labels.emptyFiltered}</p>
       </section>
     );
   }
 
   return (
-    <section className="pd-card pd-admin-complaints-table-wrap pd-section-enter" aria-label="Complaints list">
+    <section className="pd-card pd-admin-complaints-table-wrap pd-section-enter" aria-label={labels.tableAriaLabel}>
       <table className="pd-admin-complaints-table">
         <thead>
           <tr>
-            <th scope="col">Category</th>
-            <th scope="col">Status</th>
-            <th scope="col">Parent</th>
-            <th scope="col">Child</th>
-            <th scope="col">Specialist</th>
-            <th scope="col">Submitted</th>
-            <th scope="col"><span className="pd-sr-only">View</span></th>
+            <th scope="col">{labels.columns.category}</th>
+            <th scope="col">{labels.columns.status}</th>
+            <th scope="col">{labels.columns.parent}</th>
+            <th scope="col">{labels.columns.patient}</th>
+            <th scope="col">{labels.columns.specialist}</th>
+            <th scope="col">{labels.columns.submitted}</th>
+            <th scope="col"><span className="pd-sr-only">{labels.columns.view}</span></th>
           </tr>
         </thead>
         <tbody>
@@ -135,6 +132,7 @@ export function AdminComplaintsTable({
             <ComplaintRow
               key={complaint.id}
               complaint={complaint}
+              labels={labels}
               onView={onViewComplaint}
             />
           ))}

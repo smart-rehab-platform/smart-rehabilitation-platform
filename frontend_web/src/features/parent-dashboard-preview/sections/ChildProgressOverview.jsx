@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
+import { useLocale } from "../../../context/useLocale.js";
 import { DonutChart } from "../components/DonutChart";
 import { StatusBadge } from "../components/StatusBadge";
 import { UserProfileAvatar } from "../components/profile/UserProfileAvatar";
@@ -16,6 +17,7 @@ export function ChildProgressOverview({
   animationKey,
   onViewFull,
 }) {
+  const { t } = useLocale();
   const [replayToken, setReplayToken] = useState(0);
 
   const handleRingHover = () => {
@@ -25,19 +27,24 @@ export function ChildProgressOverview({
   const completedToday = summary?.completed ?? 0;
   const totalToday = summary?.todaysExercises ?? 0;
   const completedLine = totalToday > 0
-    ? `${completedToday} of ${totalToday} exercises completed today`
+    ? t("parent.home.exercisesCompletedToday", {
+      completed: completedToday,
+      total: totalToday,
+    })
     : weeklyProgress?.completedCount > 0
-      ? `${weeklyProgress.completedCount} exercises completed this week`
+      ? t("parent.home.exercisesCompletedThisWeek", {
+        count: weeklyProgress.completedCount,
+      })
       : null;
 
   const nextSessionLine = upcomingSession
-    ? `${upcomingSession.dateLabel || upcomingSession.whenLabel?.split(" · ")[0] || "Upcoming"} · ${upcomingSession.timeLabel || upcomingSession.whenLabel?.split(" · ")[1] || ""}`.replace(/ · $/, "")
-    : summary?.nextSessionDetail || summary?.nextSessionLabel || "No session scheduled";
+    ? `${upcomingSession.dateLabel || upcomingSession.whenLabel?.split(" · ")[0] || t("parent.home.upcomingSession")} · ${upcomingSession.timeLabel || upcomingSession.whenLabel?.split(" · ")[1] || ""}`.replace(/ · $/, "")
+    : summary?.nextSessionDetail || summary?.nextSessionLabel || t("parent.home.noSessionScheduled");
 
   const nextSessionSpecialist = upcomingSession?.specialistName || null;
 
   return (
-    <section className="pd-section-enter" aria-label="Overall progress">
+    <section className="pd-section-enter" aria-label={t("parent.home.overallProgressAriaLabel")}>
       <div className="pd-progress-hero-card pd-progress-hero-card-static">
         <div className="pd-progress-hero-body">
           <div className="pd-progress-hero-profile">
@@ -51,15 +58,15 @@ export function ChildProgressOverview({
             />
 
             <div className="pd-progress-child-identity">
-              <h2 className="pd-progress-child-name">{child?.fullName || "Child"}</h2>
-              <StatusBadge label="Rehabilitation Follow-up" tone="blue" />
+              <h2 className="pd-progress-child-name">{child?.fullName || t("parent.common.child")}</h2>
+              <StatusBadge label={t("parent.home.rehabilitationFollowUp")} tone="blue" />
             </div>
 
             <ul className="pd-progress-profile-info">
               <li>
                 <PlatformMaterialIcon icon="trendingUp" size={15} />
                 <span>
-                  <strong>Overall Progress</strong>
+                  <strong>{t("parent.home.overallProgress")}</strong>
                   {progress?.overallPercent ?? 0}%
                 </span>
               </li>
@@ -72,14 +79,14 @@ export function ChildProgressOverview({
               <li>
                 <PlatformMaterialIcon icon="calendarDays" size={15} />
                 <span>
-                  <strong>Next session:</strong> {nextSessionLine}
+                  <strong>{t("parent.home.nextSessionLabel")}</strong> {nextSessionLine}
                   {nextSessionSpecialist ? ` · ${nextSessionSpecialist}` : ""}
                 </span>
               </li>
             </ul>
 
             <button type="button" className="pd-btn pd-btn-primary pd-progress-view-btn" onClick={onViewFull}>
-              View Details
+              {t("parent.home.viewDetails")}
               <ArrowRight size={14} aria-hidden="true" />
             </button>
           </div>
@@ -89,7 +96,9 @@ export function ChildProgressOverview({
               className="pd-progress-hero-ring"
               onMouseEnter={handleRingHover}
               role="img"
-              aria-label={`Overall progress ${progress?.overallPercent ?? 0} percent`}
+              aria-label={t("parent.home.overallProgressPercentAria", {
+                percent: progress?.overallPercent ?? 0,
+              })}
             >
               <DonutChart
                 key={`${animationKey}-${replayToken}`}
@@ -102,7 +111,7 @@ export function ChildProgressOverview({
               />
             </div>
             <div className="pd-progress-ring-caption">
-              <span className="pd-progress-ring-label">Overall Progress</span>
+              <span className="pd-progress-ring-label">{t("parent.home.overallProgress")}</span>
               <strong className="pd-progress-ring-value">{progress?.overallPercent ?? 0}%</strong>
               {progress.trendDelta ? (
                 <em className="pd-progress-ring-delta">{progress.trendDelta}</em>

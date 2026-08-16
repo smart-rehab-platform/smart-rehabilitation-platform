@@ -21,6 +21,7 @@ function SkeletonRows() {
 
 export function AdminNotificationsList({
   notifications = [],
+  labels,
   isLoading = false,
   updatingNotificationId = null,
   onMarkAsRead,
@@ -30,7 +31,7 @@ export function AdminNotificationsList({
       <section
         className="pd-card pd-admin-notif-panel pd-section-enter"
         aria-busy="true"
-        aria-label="Notifications loading"
+        aria-label={labels.listLoadingAriaLabel}
       >
         <SkeletonRows />
       </section>
@@ -40,13 +41,14 @@ export function AdminNotificationsList({
   return (
     <section
       className="pd-card pd-admin-notif-panel pd-section-enter"
-      aria-label="Notifications list"
+      aria-label={labels.listAriaLabel}
     >
       <ul className="pd-admin-notif-list">
         {notifications.map((notification) => (
           <AdminNotificationCard
             key={notification.id}
             notification={notification}
+            labels={labels}
             isUpdating={updatingNotificationId === notification.id}
             onMarkAsRead={onMarkAsRead}
           />

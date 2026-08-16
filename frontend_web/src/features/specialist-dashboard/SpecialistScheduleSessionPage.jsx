@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import { SPECIALIST_WEB_ROUTES } from "../../routes/specialistDashboardRoutes";
 import { SpecialistScheduleSessionForm } from "./components/SpecialistScheduleSessionForm";
 import { useSpecialistScheduleSessionCreate } from "./hooks/useSpecialistScheduleSessionCreate";
@@ -12,6 +13,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistScheduleSessionPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [searchParams] = useSearchParams();
   const patientId = searchParams.get("patientId") || "";
   const notes = searchParams.get("notes") || "";
@@ -76,14 +78,14 @@ export default function SpecialistScheduleSessionPage() {
   const handleCreate = useCallback(async () => {
     const result = await create();
     if (result.ok) {
-      showToast("Session scheduled successfully.");
+      showToast(t("specialist.sessions.schedule.scheduledSuccess"));
       handleBack();
       return;
     }
     if (result.message) {
       showToast(result.message);
     }
-  }, [create, showToast, handleBack]);
+  }, [create, showToast, handleBack, t]);
 
   return (
     <div className="pd-preview">
@@ -119,12 +121,12 @@ export default function SpecialistScheduleSessionPage() {
                 onClick={handleBack}
               >
                 <ArrowLeft size={18} aria-hidden="true" />
-                Back
+                {t("specialist.sessions.schedule.back")}
               </button>
               <div className="pd-specialist-schedule-session-heading">
-                <h1 className="pd-section-title">Schedule Session</h1>
+                <h1 className="pd-section-title">{t("specialist.sessions.schedule.title")}</h1>
                 <p className="pd-section-sub">
-                  Schedule a session for one of your assigned patients.
+                  {t("specialist.sessions.schedule.subtitle")}
                 </p>
               </div>
             </header>

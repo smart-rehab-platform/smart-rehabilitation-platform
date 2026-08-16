@@ -1,10 +1,12 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { AdminExerciseMediaPicker } from "../components/AdminExerciseMediaPicker";
+import {
+  getAdminExercisesLabels,
+  getExerciseCategoryLabel,
+  getExerciseLanguageLabel,
+} from "../utils/adminExercisesLocalization.js";
 import { EXERCISE_TEXT_MAX, EXERCISE_TITLE_MAX } from "../utils/adminExerciseMediaUtils";
-
-const LANGUAGE_OPTIONS = [
-  { value: "en", label: "English" },
-  { value: "ar", label: "Arabic" },
-];
 
 function FieldError({ message }) {
   if (!message) {
@@ -47,9 +49,12 @@ export function AdminExerciseForm({
   onCancel,
   onSubmit,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminExercisesLabels(t), [t]);
+
   const submitLabel = isEdit
-    ? (isUploading ? "Uploading media..." : isSubmitting ? "Saving..." : "Save Changes")
-    : (isUploading ? "Uploading media..." : isSubmitting ? "Creating..." : "Create Exercise");
+    ? (isUploading ? labels.form.uploadingMedia : isSubmitting ? labels.form.saving : labels.form.saveChanges)
+    : (isUploading ? labels.form.uploadingMedia : isSubmitting ? labels.form.creating : labels.form.create);
 
   return (
     <form
@@ -63,7 +68,7 @@ export function AdminExerciseForm({
       <div className="pd-admin-exercise-form-grid">
         <div className="pd-admin-exercise-form-field">
           <label className="pd-admin-exercise-form-label" htmlFor="admin-exercise-category">
-            Category
+            {labels.form.category}
           </label>
           {isLoadingCategories ? (
             <span className="pd-admin-exercises-skeleton-line is-field" aria-hidden="true" />
@@ -71,7 +76,7 @@ export function AdminExerciseForm({
             <div className="pd-admin-exercise-form-inline-error">
               <p className="pd-admin-exercise-form-error">{categoriesError}</p>
               <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onRetryCategories}>
-                Retry
+                {labels.retry}
               </button>
             </div>
           ) : (
@@ -84,11 +89,11 @@ export function AdminExerciseForm({
               required
             >
               {categories.length === 0 ? (
-                <option value="">No categories available</option>
+                <option value="">{labels.form.noCategories}</option>
               ) : (
                 categories.map((category) => (
                   <option key={category.id} value={category.id}>
-                    {category.name}
+                    {category.displayName ?? getExerciseCategoryLabel(category.name, t)}
                   </option>
                 ))
               )}
@@ -99,7 +104,7 @@ export function AdminExerciseForm({
 
         <div className="pd-admin-exercise-form-field">
           <label className="pd-admin-exercise-form-label" htmlFor="admin-exercise-language">
-            Language
+            {labels.form.language}
           </label>
           <select
             id="admin-exercise-language"
@@ -109,18 +114,15 @@ export function AdminExerciseForm({
             onChange={(event) => onLanguageChange(event.target.value)}
             required
           >
-            {LANGUAGE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
+            <option value="en">{getExerciseLanguageLabel("en", t)}</option>
+            <option value="ar">{getExerciseLanguageLabel("ar", t)}</option>
           </select>
         </div>
       </div>
 
       <div className="pd-admin-exercise-form-field">
         <label className="pd-admin-exercise-form-label" htmlFor="admin-exercise-title">
-          Title
+          {labels.form.title}
         </label>
         <input
           id="admin-exercise-title"
@@ -129,6 +131,7 @@ export function AdminExerciseForm({
           value={title}
           disabled={isBusy}
           maxLength={EXERCISE_TITLE_MAX + 1}
+          placeholder={labels.form.titlePlaceholder}
           onChange={(event) => onTitleChange(event.target.value)}
           required
         />
@@ -137,7 +140,7 @@ export function AdminExerciseForm({
 
       <div className="pd-admin-exercise-form-field">
         <label className="pd-admin-exercise-form-label" htmlFor="admin-exercise-description">
-          Description (optional)
+          {labels.form.descriptionOptional}
         </label>
         <textarea
           id="admin-exercise-description"
@@ -146,6 +149,7 @@ export function AdminExerciseForm({
           disabled={isBusy}
           rows={4}
           maxLength={EXERCISE_TEXT_MAX + 1}
+          placeholder={labels.form.descriptionPlaceholder}
           onChange={(event) => onDescriptionChange(event.target.value)}
         />
         <FieldError message={fieldErrors.description} />
@@ -153,7 +157,7 @@ export function AdminExerciseForm({
 
       <div className="pd-admin-exercise-form-field">
         <label className="pd-admin-exercise-form-label" htmlFor="admin-exercise-instructions">
-          Detailed instructions
+          {labels.form.instructionsDetailed}
         </label>
         <textarea
           id="admin-exercise-instructions"
@@ -162,6 +166,7 @@ export function AdminExerciseForm({
           disabled={isBusy}
           rows={8}
           maxLength={EXERCISE_TEXT_MAX + 1}
+          placeholder={labels.form.instructionsPlaceholder}
           onChange={(event) => onInstructionsChange(event.target.value)}
         />
         <FieldError message={fieldErrors.instructions} />
@@ -188,7 +193,7 @@ export function AdminExerciseForm({
 
       <div className="pd-admin-exercise-form-actions">
         <button type="button" className="pd-btn pd-btn-soft" onClick={onCancel} disabled={isSubmitting || isUploading}>
-          Cancel
+          {labels.form.cancel}
         </button>
         <button type="submit" className="pd-btn pd-btn-primary" disabled={!canSubmit}>
           {submitLabel}

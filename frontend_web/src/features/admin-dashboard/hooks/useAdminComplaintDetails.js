@@ -1,12 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadAdminComplaintDetails } from "../../../services/adminComplaintsService";
-import { mapAdminComplaintDetails } from "../utils/adminComplaintsMappers";
+import {
+  applyAdminComplaintDetailsLocalization,
+  getAdminComplaintsLabels,
+} from "../utils/adminComplaintsLocalization.js";
+import { mapAdminComplaintDetails } from "../utils/adminComplaintsMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminComplaintDetails(complaintId) {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminComplaintsLabels(t), [t]);
   const [complaint, setComplaint] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +35,7 @@ export function useAdminComplaintDetails(complaintId) {
     async function loadDetail() {
       if (!normalizedId) {
         setComplaint(null);
-        setError("Complaint not found.");
+        setError(labels.notFound);
         setErrorStatus(404);
         setIsLoading(false);
         return;
@@ -46,12 +54,12 @@ export function useAdminComplaintDetails(complaintId) {
         const mapped = mapAdminComplaintDetails(row);
         if (!mapped) {
           setComplaint(null);
-          setError("Complaint not found.");
+          setError(labels.notFound);
           setErrorStatus(404);
           return;
         }
 
-        setComplaint(mapped);
+        setComplaint(applyAdminComplaintDetailsLocalization(mapped, mapperContext));
         setError(null);
         setErrorStatus(null);
       } catch (loadError) {
@@ -59,7 +67,7 @@ export function useAdminComplaintDetails(complaintId) {
           return;
         }
 
-        const message = resolveErrorMessage(loadError, "Failed to load complaint details.");
+        const message = resolveErrorMessage(loadError, labels.loadFailed);
         const status = typeof loadError?.status === "number" ? loadError.status : null;
         setComplaint(null);
         setError(message);
@@ -76,7 +84,7 @@ export function useAdminComplaintDetails(complaintId) {
     return () => {
       cancelled = true;
     };
-  }, [complaintId, refreshToken]);
+  }, [complaintId, labels, mapperContext, refreshToken]);
 
   return {
     complaint,
@@ -84,5 +92,6 @@ export function useAdminComplaintDetails(complaintId) {
     error,
     errorStatus,
     refresh,
+    labels,
   };
 }

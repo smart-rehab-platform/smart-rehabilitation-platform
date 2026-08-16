@@ -10135,6 +10135,438 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This status change is not allowed for the current complaint.'**
   String get adminComplaintInvalidTransition;
+
+  /// Specialist More item and support requests list title.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get supportRequestTitle;
+
+  /// Admin More item and support requests inbox title.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Requests'**
+  String get supportRequestAdminTitle;
+
+  /// Intro text on admin support requests list.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and respond to specialist support requests.'**
+  String get supportRequestAdminDescription;
+
+  /// Button to create a new support request.
+  ///
+  /// In en, this message translates to:
+  /// **'New Request'**
+  String get supportRequestNewRequest;
+
+  /// Specialist support request details screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Request'**
+  String get supportRequestDetailsTitle;
+
+  /// Admin support request details screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Request Details'**
+  String get supportRequestAdminDetailsTitle;
+
+  /// Category field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get supportRequestCategoryLabel;
+
+  /// Subject field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject'**
+  String get supportRequestSubjectLabel;
+
+  /// Description field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get supportRequestDescriptionLabel;
+
+  /// Description field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your issue in detail (minimum 20 characters)'**
+  String get supportRequestDescriptionHint;
+
+  /// Character counter for support request description.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/2000'**
+  String supportRequestDescriptionCounter(int count);
+
+  /// Attachment section label.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment (optional)'**
+  String get supportRequestAttachmentLabel;
+
+  /// Button to pick an attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add attachment'**
+  String get supportRequestAddAttachment;
+
+  /// Submit support request button.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Request'**
+  String get supportRequestSubmitRequest;
+
+  /// Submit in progress label.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get supportRequestSubmitting;
+
+  /// Reply button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get supportRequestReply;
+
+  /// Reply composer field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reply'**
+  String get supportRequestReplyLabel;
+
+  /// Reply composer hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your message...'**
+  String get supportRequestReplyHint;
+
+  /// Validation when reply is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a message or add an attachment.'**
+  String get supportRequestReplyRequired;
+
+  /// Reply send in progress label.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get supportRequestSending;
+
+  /// Admin action to mark request in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark In Progress'**
+  String get supportRequestMarkInProgress;
+
+  /// Admin action to mark request resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Resolved'**
+  String get supportRequestMarkResolved;
+
+  /// Confirmation dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark in progress?'**
+  String get supportRequestMarkInProgressTitle;
+
+  /// Confirmation dialog message.
+  ///
+  /// In en, this message translates to:
+  /// **'This support request will be marked as in progress.'**
+  String get supportRequestMarkInProgressMessage;
+
+  /// Success message after marking in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Support request marked as in progress.'**
+  String get supportRequestMarkInProgressSuccess;
+
+  /// Confirmation dialog title for resolve.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark resolved?'**
+  String get supportRequestMarkResolvedTitle;
+
+  /// Confirmation dialog message for resolve.
+  ///
+  /// In en, this message translates to:
+  /// **'This support request will be marked as resolved and become read-only.'**
+  String get supportRequestMarkResolvedMessage;
+
+  /// Success message after resolving.
+  ///
+  /// In en, this message translates to:
+  /// **'Support request marked as resolved.'**
+  String get supportRequestMarkResolvedSuccess;
+
+  /// Empty state when no support requests exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No support requests yet.'**
+  String get supportRequestEmpty;
+
+  /// Empty state when filters hide all requests.
+  ///
+  /// In en, this message translates to:
+  /// **'No support requests match the selected filters.'**
+  String get supportRequestNoMatch;
+
+  /// Loading message.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading support requests...'**
+  String get supportRequestLoading;
+
+  /// Resolved banner title.
+  ///
+  /// In en, this message translates to:
+  /// **'This request is resolved'**
+  String get supportRequestResolvedTitle;
+
+  /// Resolved read-only message.
+  ///
+  /// In en, this message translates to:
+  /// **'The conversation is now read-only.'**
+  String get supportRequestResolvedReadOnly;
+
+  /// Thread section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get supportRequestConversationTitle;
+
+  /// Created date label.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get supportRequestCreatedLabel;
+
+  /// Last activity label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last activity'**
+  String get supportRequestLastActivityLabel;
+
+  /// Resolved date label.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get supportRequestResolvedDateLabel;
+
+  /// Fallback when date is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Date unavailable'**
+  String get supportRequestDateUnavailable;
+
+  /// Last activity line on list cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Last activity: {date}'**
+  String supportRequestLastActivity(String date);
+
+  /// Created date line on list cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Created: {date}'**
+  String supportRequestCreatedDate(String date);
+
+  /// Specialist name on admin list card.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist: {name}'**
+  String supportRequestSpecialistLabel(String name);
+
+  /// Specialist field label on details.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist'**
+  String get supportRequestSpecialistFieldLabel;
+
+  /// Specialist email field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist email'**
+  String get supportRequestSpecialistEmailLabel;
+
+  /// Admin message bubble label.
+  ///
+  /// In en, this message translates to:
+  /// **'Administration'**
+  String get supportRequestSenderAdmin;
+
+  /// Specialist message bubble label.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist'**
+  String get supportRequestSenderSpecialist;
+
+  /// Admin ticket status action row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Request status'**
+  String get supportRequestRequestStatusLabel;
+
+  /// Status filter option.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get supportRequestAllStatuses;
+
+  /// Category filter option.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get supportRequestAllCategories;
+
+  /// Specialist filter option.
+  ///
+  /// In en, this message translates to:
+  /// **'All Specialists'**
+  String get supportRequestAllSpecialists;
+
+  /// Validation when category missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category.'**
+  String get supportRequestSelectCategory;
+
+  /// Subject validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject must be at least 3 characters.'**
+  String get supportRequestSubjectTooShort;
+
+  /// Subject validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject must not exceed 200 characters.'**
+  String get supportRequestSubjectTooLong;
+
+  /// Description validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Description must be at least 20 characters.'**
+  String get supportRequestDescriptionTooShort;
+
+  /// Description validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Description must not exceed 2000 characters.'**
+  String get supportRequestDescriptionTooLong;
+
+  /// File picker failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the selected file.'**
+  String get supportRequestAttachmentPickFailed;
+
+  /// Upload failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload attachment.'**
+  String get supportRequestAttachmentUploadFailed;
+
+  /// Invalid attachment type.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported attachment type. Allowed: JPEG, PNG, WebP, and PDF.'**
+  String get supportRequestAttachmentInvalidType;
+
+  /// Attachment too large.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment is too large. Maximum allowed size is 10 MB.'**
+  String get supportRequestAttachmentTooLarge;
+
+  /// PDF attachment link label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open PDF attachment'**
+  String get supportRequestAttachmentOpenPdf;
+
+  /// Image attachment fallback label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open image attachment'**
+  String get supportRequestAttachmentOpenImage;
+
+  /// Error when acting on resolved request.
+  ///
+  /// In en, this message translates to:
+  /// **'This support request is resolved and cannot be updated.'**
+  String get supportRequestErrorResolved;
+
+  /// 404 error message.
+  ///
+  /// In en, this message translates to:
+  /// **'Support request not found.'**
+  String get supportRequestErrorNotFound;
+
+  /// 403 error message.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authorized to access this support request.'**
+  String get supportRequestErrorForbidden;
+
+  /// Support request category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Issue'**
+  String get supportRequestCategoryTechnicalIssue;
+
+  /// Support request category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient / Case Issue'**
+  String get supportRequestCategoryPatientCaseIssue;
+
+  /// Support request category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Session / Scheduling Issue'**
+  String get supportRequestCategorySessionSchedulingIssue;
+
+  /// Support request category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Account / Profile Issue'**
+  String get supportRequestCategoryAccountProfileIssue;
+
+  /// Support request category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise / Content Issue'**
+  String get supportRequestCategoryExerciseContentIssue;
+
+  /// Support request category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get supportRequestCategoryOther;
+
+  /// Support request status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get supportRequestStatusPending;
+
+  /// Support request status label.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get supportRequestStatusInProgress;
+
+  /// Support request status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get supportRequestStatusResolved;
 }
 
 class _AppLocalizationsDelegate

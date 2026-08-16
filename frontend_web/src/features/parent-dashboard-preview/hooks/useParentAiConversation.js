@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getAiConversation,
   getAiConversationMessages,
@@ -14,6 +15,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useParentAiConversation(conversationId, patientId = null) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [messages, setMessages] = useState([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(Boolean(conversationId));
   const [messagesError, setMessagesError] = useState(null);
@@ -65,7 +68,7 @@ export function useParentAiConversation(conversationId, patientId = null) {
         const storedPatientId = getConversationPatientId(conversationId);
         if (storedPatientId && patientId && storedPatientId !== patientId) {
           setMessages([]);
-          setMessagesError("This conversation belongs to another child.");
+          setMessagesError(t("parent.hooks.aiConversationWrongChild"));
           return;
         }
 
@@ -78,11 +81,11 @@ export function useParentAiConversation(conversationId, patientId = null) {
           return;
         }
 
-        setMessages(mapMessageRowsToHubItems(rows));
+        setMessages(mapMessageRowsToHubItems(rows, mapperOptions));
       } catch (error) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setMessages([]);
-          setMessagesError(resolveErrorMessage(error, "Failed to load message history."));
+          setMessagesError(resolveErrorMessage(error, t("parent.hooks.loadAiMessagesFailed")));
         }
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -96,7 +99,7 @@ export function useParentAiConversation(conversationId, patientId = null) {
     return () => {
       cancelled = true;
     };
-  }, [conversationId, patientId, refreshToken]);
+  }, [conversationId, patientId, refreshToken, mapperOptions, t]);
 
   return {
     messages: conversationId ? messages : [],

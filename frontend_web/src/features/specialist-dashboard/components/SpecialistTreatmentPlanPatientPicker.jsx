@@ -1,4 +1,5 @@
 import { Lock } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 
 export function SpecialistTreatmentPlanPatientPicker({
   open,
@@ -7,6 +8,8 @@ export function SpecialistTreatmentPlanPatientPicker({
   onClose,
   onSelect,
 }) {
+  const { t } = useLocale();
+
   if (!open) {
     return null;
   }
@@ -21,10 +24,10 @@ export function SpecialistTreatmentPlanPatientPicker({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="specialist-treatment-plan-picker-title" className="pd-modal-title">
-          Select patient
+          {t("specialist.treatmentPlans.picker.title")}
         </h2>
         {patients.length === 0 ? (
-          <p className="pd-section-sub">No assigned patients available.</p>
+          <p className="pd-section-sub">{t("specialist.treatmentPlans.picker.noPatients")}</p>
         ) : (
           <ul className="pd-specialist-treatment-plan-picker-list">
             {patients.map((patient) => {
@@ -38,11 +41,11 @@ export function SpecialistTreatmentPlanPatientPicker({
                     onClick={() => onSelect?.(patient)}
                   >
                     <span className="pd-specialist-treatment-plan-picker-copy">
-                      <strong>{patient.name}</strong>
+                      <strong dir="auto">{patient.name}</strong>
                       <span className="pd-section-sub">
                         {hasActive
-                          ? "This patient already has an active treatment plan."
-                          : "No active plan"}
+                          ? t("specialist.treatmentPlans.picker.hasActivePlan")
+                          : t("specialist.treatmentPlans.picker.noActivePlan")}
                       </span>
                     </span>
                     {hasActive ? (
@@ -58,7 +61,7 @@ export function SpecialistTreatmentPlanPatientPicker({
         )}
         <div className="pd-modal-actions">
           <button type="button" className="pd-btn pd-btn-soft" onClick={() => onClose?.()}>
-            Cancel
+            {t("common.cancel")}
           </button>
         </div>
       </div>

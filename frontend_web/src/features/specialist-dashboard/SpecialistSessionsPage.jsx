@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   buildSpecialistCreateSessionPath,
 } from "../../routes/specialistDashboardRoutes";
@@ -13,6 +14,10 @@ import { SpecialistSessionRequestsList } from "./sections/SpecialistSessionReque
 import { SpecialistSessionsCalendarView } from "./sections/SpecialistSessionsCalendarView";
 import { SpecialistSessionsList } from "./sections/SpecialistSessionsList";
 import {
+  buildSessionSectionTabs,
+  buildSessionViewTabs,
+} from "./utils/specialistSessionsLocalization";
+import {
   normalizeCalendarDate,
   normalizeSessionListFilterId,
   startOfMonth,
@@ -20,18 +25,9 @@ import {
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
 
-const SECTION_TABS = [
-  { id: "sessions", label: "Sessions" },
-  { id: "requests", label: "Requests" },
-];
-
-const VIEW_TABS = [
-  { id: "list", label: "List" },
-  { id: "calendar", label: "Calendar" },
-];
-
 export default function SpecialistSessionsPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [searchParams] = useSearchParams();
   const initialView = searchParams.get("view") === "calendar" ? "calendar" : "list";
   const initialFilterId = normalizeSessionListFilterId(searchParams.get("filter"));
@@ -43,6 +39,9 @@ export default function SpecialistSessionsPage() {
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(new Date()));
   const [selectedDate, setSelectedDate] = useState(() => normalizeCalendarDate(new Date()));
   const today = useMemo(() => normalizeCalendarDate(new Date()), []);
+
+  const sectionTabs = useMemo(() => buildSessionSectionTabs(t), [t]);
+  const viewTabs = useMemo(() => buildSessionViewTabs(t), [t]);
 
   const {
     specialist,
@@ -115,7 +114,7 @@ export default function SpecialistSessionsPage() {
     if (isSessionsLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading sessions...</p>
+          <p className="pd-inline-loading">{t("specialist.sessions.loading")}</p>
         </section>
       );
     }
@@ -125,7 +124,7 @@ export default function SpecialistSessionsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{sessionsError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={reloadSessions}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -161,7 +160,7 @@ export default function SpecialistSessionsPage() {
     if (isRequestsLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading session requests...</p>
+          <p className="pd-inline-loading">{t("specialist.sessions.loadingRequests")}</p>
         </section>
       );
     }
@@ -207,8 +206,8 @@ export default function SpecialistSessionsPage() {
           <div className="pd-task-hub-panel pd-specialist-sessions-page">
             <header className="pd-specialist-sessions-header">
               <div>
-                <h1 className="pd-section-title">Sessions</h1>
-                <p className="pd-section-sub">Manage your therapy sessions and parent requests.</p>
+                <h1 className="pd-section-title">{t("specialist.sessions.title")}</h1>
+                <p className="pd-section-sub">{t("specialist.sessions.subtitle")}</p>
               </div>
               {sectionTab === "sessions" ? (
                 <button
@@ -217,13 +216,17 @@ export default function SpecialistSessionsPage() {
                   onClick={handleScheduleSession}
                 >
                   <Plus size={18} aria-hidden="true" />
-                  Schedule Session
+                  {t("specialist.sessions.scheduleSession")}
                 </button>
               ) : null}
             </header>
 
-            <div className="pd-specialist-sessions-segmented" role="tablist" aria-label="Sessions sections">
-              {SECTION_TABS.map((tab) => (
+            <div
+              className="pd-specialist-sessions-segmented"
+              role="tablist"
+              aria-label={t("specialist.sessions.tabs.sectionsAriaLabel")}
+            >
+              {sectionTabs.map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
@@ -239,8 +242,12 @@ export default function SpecialistSessionsPage() {
 
             {sectionTab === "sessions" ? (
               <>
-                <div className="pd-specialist-sessions-view-toggle" role="tablist" aria-label="Sessions view">
-                  {VIEW_TABS.map((tab) => (
+                <div
+                  className="pd-specialist-sessions-view-toggle"
+                  role="tablist"
+                  aria-label={t("specialist.sessions.view.ariaLabel")}
+                >
+                  {viewTabs.map((tab) => (
                     <button
                       key={tab.id}
                       type="button"

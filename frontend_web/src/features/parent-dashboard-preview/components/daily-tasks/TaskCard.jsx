@@ -1,19 +1,22 @@
 import { Paperclip } from "lucide-react";
-import { exerciseStatusMeta } from "../../mock/parentDashboardMock";
+import { useLocale } from "../../../../context/useLocale.js";
 import { StatusBadge } from "../StatusBadge";
-import { getTaskHubActionLabel } from "../../utils/parentDailyTasksUtils";
+import { getTaskHubActionLabel, getTaskStatusMeta } from "../../utils/parentDailyTasksUtils";
 
 export function TaskCard({ task, onOpen }) {
-  const statusMeta = exerciseStatusMeta[task.status] || exerciseStatusMeta.todo;
-  const actionLabel = getTaskHubActionLabel(task.status);
+  const { t } = useLocale();
+  const statusMeta = getTaskStatusMeta(task.status, t);
+  const actionLabel = getTaskHubActionLabel(task.status, t);
 
   return (
     <article className="pd-card pd-card-pad pd-task-hub-card pd-section-enter">
       <div className="pd-task-hub-card-head">
         <div className="pd-task-hub-card-copy">
-          <h3 className="pd-task-hub-card-title">{task.title}</h3>
+          <h3 className="pd-task-hub-card-title" dir="auto">{task.title}</h3>
           {task.childName ? (
-            <p className="pd-task-hub-card-child">For {task.childName}</p>
+            <p className="pd-task-hub-card-child">
+              {t("parent.pages.exerciseDetail.forChild", { name: task.childName })}
+            </p>
           ) : null}
         </div>
         <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
@@ -23,13 +26,13 @@ export function TaskCard({ task, onOpen }) {
         <ul className="pd-task-hub-card-meta">
           {task.frequency ? (
             <li>
-              <strong>Frequency</strong>
+              <strong>{t("parent.pages.exerciseDetail.frequency")}</strong>
               <span>{task.frequency}</span>
             </li>
           ) : null}
           {task.dueDate ? (
             <li>
-              <strong>Due date</strong>
+              <strong>{t("parent.pages.exerciseDetail.dueDate")}</strong>
               <span>{task.dueDate}</span>
             </li>
           ) : null}
@@ -37,13 +40,13 @@ export function TaskCard({ task, onOpen }) {
       ) : null}
 
       {task.instructionPreview ? (
-        <p className="pd-task-hub-card-preview">{task.instructionPreview}</p>
+        <p className="pd-task-hub-card-preview" dir="auto">{task.instructionPreview}</p>
       ) : null}
 
       {task.hasInstructionMedia ? (
         <p className="pd-task-hub-card-media">
           <Paperclip size={14} aria-hidden="true" />
-          Instruction media included
+          {t("parent.exercises.instructionMediaIncluded", "Instruction media included")}
         </p>
       ) : null}
 

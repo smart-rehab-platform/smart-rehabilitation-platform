@@ -1,35 +1,37 @@
 import { useMemo, useState } from "react";
 import { Calendar, MapPin, Video } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import {
+  formatSpecialistDurationMinutes,
+  formatSpecialistSessionScheduleLabel,
+  getDashboardWeekdayLabels,
+  getSpecialistSessionStatusLabel,
+} from "../utils/specialistDashboardLocalization";
+import {
   buildWeeklyScheduleViewModel,
-  formatSessionScheduleLabel,
   getInitials,
   isSameDay,
 } from "../utils/specialistScheduleUtils";
 
-const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
 function SessionPreview({
   session,
   onViewSession,
+  t,
+  locale,
 }) {
   if (!session) {
     return (
       <div className="pd-specialist-schedule-empty">
-        <strong>No sessions scheduled for this day.</strong>
-        <p>Scheduled sessions will appear here when assigned.</p>
+        <strong>{t("specialist.dashboard.schedule.noSessionsThisDayTitle")}</strong>
+        <p>{t("specialist.dashboard.schedule.noSessionsThisDayHint")}</p>
       </div>
     );
   }
 
-  const scheduleLabel = formatSessionScheduleLabel(session);
-  const durationLabel = session.durationMinutes
-    ? `${session.durationMinutes} min`
-    : null;
-  const statusLabel = session.status
-    ? session.status.replace(/_/g, " ")
-    : "scheduled";
+  const scheduleLabel = formatSpecialistSessionScheduleLabel(session, new Date(), { t, locale });
+  const durationLabel = formatSpecialistDurationMinutes(session.durationMinutes, t);
+  const statusLabel = getSpecialistSessionStatusLabel(session.status, t);
 
   return (
     <div className="pd-specialist-schedule-preview">
@@ -37,14 +39,14 @@ function SessionPreview({
         <UserProfileAvatar
           imageUrl={session.patientProfileImageUrl}
           initials={getInitials(session.patientName)}
-          alt={`${session.patientName} profile photo`}
+          alt={t("specialist.dashboard.schedule.patientPhotoAlt", { name: session.patientName })}
           shellClassName="pd-avatar pd-specialist-schedule-avatar"
           fallbackClassName="pd-avatar pd-specialist-schedule-avatar"
           className="pd-avatar-photo"
         />
 
         <div className="pd-specialist-schedule-copy">
-          <span className="pd-specialist-schedule-eyebrow">Next Session</span>
+          <span className="pd-specialist-schedule-eyebrow">{t("specialist.dashboard.schedule.nextSession")}</span>
           <strong className="pd-specialist-schedule-patient">{session.patientName}</strong>
           <span className="pd-specialist-schedule-time">{scheduleLabel}</span>
           <div className="pd-specialist-schedule-meta">
@@ -54,7 +56,7 @@ function SessionPreview({
           {session.isOnline ? (
             <span className="pd-schedule-mode">
               <Video size={12} aria-hidden="true" />
-              Online meeting
+              {t("specialist.dashboard.schedule.onlineMeeting")}
             </span>
           ) : session.physicalLocation ? (
             <span className="pd-schedule-mode">
@@ -70,7 +72,7 @@ function SessionPreview({
         className="pd-btn pd-btn-soft pd-btn-sm"
         onClick={() => onViewSession?.(session)}
       >
-        View Session
+        {t("specialist.dashboard.schedule.viewSession")}
       </button>
     </div>
   );
@@ -84,37 +86,39 @@ export function SpecialistWeeklySchedule({
   onViewCalendar,
   onViewSession,
 }) {
+  const { t, locale } = useLocale();
+  const weekdayLabels = useMemo(() => getDashboardWeekdayLabels(locale), [locale]);
   const [selectedDay, setSelectedDay] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
   });
 
   const viewModel = useMemo(
-    () => buildWeeklyScheduleViewModel(sessions, selectedDay),
-    [sessions, selectedDay],
+    () => buildWeeklyScheduleViewModel(sessions, selectedDay, new Date(), { t, locale }),
+    [sessions, selectedDay, t, locale],
   );
 
   return (
     <section
       className="pd-card pd-card-pad pd-specialist-weekly-schedule pd-section-enter"
-      aria-label="Weekly schedule"
+      aria-label={t("specialist.dashboard.schedule.ariaLabel")}
     >
       <div className="pd-specialist-weekly-header">
         <div>
-          <h2 className="pd-section-title">Weekly Schedule</h2>
-          <p className="pd-section-sub">Your sessions for this week</p>
+          <h2 className="pd-section-title">{t("specialist.dashboard.schedule.title")}</h2>
+          <p className="pd-section-sub">{t("specialist.dashboard.schedule.subtitle")}</p>
         </div>
         <button
           type="button"
           className="pd-link"
           onClick={onViewCalendar}
         >
-          View Calendar →
+          {t("specialist.dashboard.schedule.viewCalendar")}
         </button>
       </div>
 
       {isLoading ? (
-        <p className="pd-inline-loading pd-specialist-weekly-loading">Loading schedule...</p>
+        <p className="pd-inline-loading pd-specialist-weekly-loading">{t("specialist.dashboard.schedule.loading")}</p>
       ) : error ? (
         <div className="pd-specialist-weekly-error">
           <p className="pd-inline-error">{error}</p>
@@ -123,12 +127,12 @@ export function SpecialistWeeklySchedule({
             className="pd-btn pd-btn-soft"
             onClick={onRetry}
           >
-            Retry
+            {t("common.retry")}
           </button>
         </div>
       ) : (
         <>
-          <div className="pd-specialist-week-strip" role="group" aria-label="Current week">
+          <div className="pd-specialist-week-strip" role="group" aria-label={t("specialist.dashboard.schedule.currentWeekAriaLabel")}>
             {viewModel.weekDays.map((day, index) => {
               const isSelected = isSameDay(day, selectedDay);
               const isToday = isSameDay(day, viewModel.today);
@@ -140,10 +144,16 @@ export function SpecialistWeeklySchedule({
                   type="button"
                   className={`pd-specialist-week-day${isSelected ? " is-selected" : ""}${isToday ? " is-today" : ""}`}
                   aria-pressed={isSelected}
-                  aria-label={`${WEEKDAY_LABELS[index]} ${day.getDate()}${hasSession ? ", has sessions" : ""}`}
+                  aria-label={t("specialist.dashboard.schedule.weekDayAriaLabel", {
+                    weekday: weekdayLabels[index],
+                    day: day.getDate(),
+                    hasSessions: hasSession
+                      ? t("specialist.dashboard.schedule.weekDayHasSessions")
+                      : "",
+                  })}
                   onClick={() => setSelectedDay(new Date(day))}
                 >
-                  <span className="pd-specialist-week-day-label">{WEEKDAY_LABELS[index]}</span>
+                  <span className="pd-specialist-week-day-label">{weekdayLabels[index]}</span>
                   <span className="pd-specialist-week-day-num">{day.getDate()}</span>
                   <span
                     className={`pd-specialist-week-day-dot${hasSession ? "" : " is-empty"}`}
@@ -156,7 +166,7 @@ export function SpecialistWeeklySchedule({
 
           {!viewModel.hasWeekSessions ? (
             <p className="pd-specialist-week-empty">
-              No sessions are scheduled this week.
+              {t("specialist.dashboard.schedule.emptyWeek")}
             </p>
           ) : null}
 
@@ -165,6 +175,8 @@ export function SpecialistWeeklySchedule({
           <SessionPreview
             session={viewModel.previewSession}
             onViewSession={onViewSession}
+            t={t}
+            locale={locale}
           />
 
           <div className="pd-specialist-week-divider" aria-hidden="true" />

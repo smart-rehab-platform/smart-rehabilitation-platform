@@ -4,6 +4,7 @@ import analyticsIcon from "../../assets/icons/analytics.svg";
 import autoAwesomeMotionIcon from "../../assets/icons/auto_awesome_motion.svg";
 import descriptionIcon from "../../assets/icons/description.svg";
 import neurologyIcon from "../../assets/icons/neurology.svg";
+import { useLocale } from "../../context/useLocale.js";
 import { L } from "./landingTokens";
 
 const AI_SECTION_BG = "#0F213D";
@@ -96,7 +97,7 @@ function AiCardShell({ accent, iconSrc, title, description, index, visible, chil
   );
 }
 
-function SpeechScoreWidget({ accent }) {
+function SpeechScoreWidget({ accent, t }) {
   const size = 120;
   const stroke = 8;
   const radius = (size - stroke) / 2;
@@ -136,7 +137,7 @@ function SpeechScoreWidget({ accent }) {
             {value}%
           </span>
           <span className="text-[11px]" style={{ color: L.textLight, fontFamily: "'Inter', sans-serif" }}>
-            Speech Score
+            {t("landing.ai.cards.speechAnalysis.widget.speechScore")}
           </span>
         </div>
       </div>
@@ -145,17 +146,21 @@ function SpeechScoreWidget({ accent }) {
         style={{ background: `${accent}18`, color: accent, fontFamily: "'Inter', sans-serif" }}
       >
         <TrendingUp size={14} />
-        Trend ↑
+        {t("landing.ai.cards.speechAnalysis.widget.trend")}
       </div>
       <p className="mt-2 text-[11px]" style={{ color: L.textLight, fontFamily: "'Inter', sans-serif" }}>
-        Compared to previous session
+        {t("landing.ai.cards.speechAnalysis.widget.comparedToPrevious")}
       </p>
     </div>
   );
 }
 
-function ClinicalSummaryWidget({ accent }) {
-  const items = ["Goal completion +23%", "Speech clarity +18%", "Fluency improved"];
+function ClinicalSummaryWidget({ accent, t }) {
+  const items = [
+    t("landing.ai.cards.clinicalSummary.widget.goalCompletion"),
+    t("landing.ai.cards.clinicalSummary.widget.speechClarity"),
+    t("landing.ai.cards.clinicalSummary.widget.fluencyImproved"),
+  ];
 
   return (
     <div
@@ -166,7 +171,7 @@ function ClinicalSummaryWidget({ accent }) {
         className="mb-3 text-[12px] font-semibold uppercase tracking-wide"
         style={{ color: accent, fontFamily: "'Inter', sans-serif" }}
       >
-        Weekly Summary
+        {t("landing.ai.cards.clinicalSummary.widget.title")}
       </p>
       <ul className="mb-3 space-y-2">
         {items.map((item) => (
@@ -181,13 +186,13 @@ function ClinicalSummaryWidget({ accent }) {
         ))}
       </ul>
       <p className="text-[11px]" style={{ color: L.textLight, fontFamily: "'Inter', sans-serif" }}>
-        Generated Today
+        {t("landing.ai.cards.clinicalSummary.widget.generatedToday")}
       </p>
     </div>
   );
 }
 
-function RecommendationsWidget({ accent }) {
+function RecommendationsWidget({ accent, t }) {
   return (
     <div
       className="rounded-2xl border p-4"
@@ -197,12 +202,12 @@ function RecommendationsWidget({ accent }) {
         className="mb-2 text-[11px] font-semibold uppercase tracking-wide"
         style={{ color: accent, fontFamily: "'Inter', sans-serif" }}
       >
-        Suggested Exercise
+        {t("landing.ai.cards.recommendations.widget.suggestedExercise")}
       </p>
       <p className="mb-4 text-[13px] leading-relaxed" style={{ color: L.textMuted, fontFamily: "'Inter', sans-serif" }}>
-        Increase oral motor warm-up
+        {t("landing.ai.cards.recommendations.widget.increaseWarmUp")}
         <br />
-        from 10 → 15 minutes.
+        {t("landing.ai.cards.recommendations.widget.durationChange")}
       </p>
       <div className="flex gap-2">
         <button
@@ -215,7 +220,7 @@ function RecommendationsWidget({ accent }) {
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          Approve
+          {t("landing.ai.cards.recommendations.widget.approve")}
         </button>
         <button
           type="button"
@@ -227,14 +232,14 @@ function RecommendationsWidget({ accent }) {
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          Reject
+          {t("landing.ai.cards.recommendations.widget.reject")}
         </button>
       </div>
     </div>
   );
 }
 
-function ReportGeneratorWidget({ accent }) {
+function ReportGeneratorWidget({ accent, t }) {
   return (
     <div
       className="rounded-2xl border p-4"
@@ -243,16 +248,16 @@ function ReportGeneratorWidget({ accent }) {
       <div className="mb-3 flex items-center gap-2">
         <FileText size={16} style={{ color: accent }} />
         <span className="text-[13px] font-semibold" style={{ color: L.text, fontFamily: "'Inter', sans-serif" }}>
-          Omar_Progress_Report.pdf
+          {t("landing.ai.cards.reportGenerator.widget.filename")}
         </span>
       </div>
       <p className="mb-2 text-[11px]" style={{ color: L.textLight, fontFamily: "'Inter', sans-serif" }}>
-        Progress
+        {t("landing.ai.cards.reportGenerator.widget.progress")}
       </p>
       <div className="mb-1 h-2 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
         <div className="h-full rounded-full" style={{ width: "82%", background: accent }} />
       </div>
-      <p className="mb-4 text-right text-[11px] font-medium" style={{ color: accent, fontFamily: "'Inter', sans-serif" }}>
+      <p className="mb-4 text-end text-[11px] font-medium" style={{ color: accent, fontFamily: "'Inter', sans-serif" }}>
         82%
       </p>
       <button
@@ -265,13 +270,14 @@ function ReportGeneratorWidget({ accent }) {
           fontFamily: "'Inter', sans-serif",
         }}
       >
-        Export PDF
+        {t("landing.ai.cards.reportGenerator.widget.exportPdf")}
       </button>
     </div>
   );
 }
 
 export function ArtificialIntelligenceSection() {
+  const { t } = useLocale();
   const { ref, visible } = useInViewOnce(0.12);
 
   return (
@@ -288,14 +294,14 @@ export function ArtificialIntelligenceSection() {
             className="mb-4 text-[13px] font-semibold uppercase tracking-[0.2em]"
             style={{ color: L.primary, fontFamily: "'Inter', sans-serif" }}
           >
-            ARTIFICIAL INTELLIGENCE
+            {t("landing.ai.eyebrow")}
           </p>
           <h2
             id="ai-section-heading"
             className="text-[2.125rem] leading-[1.15] tracking-tight sm:text-[2.5rem] md:text-[3rem] lg:text-[3.25rem]"
             style={{ color: L.text, fontFamily: "'Playfair Display', serif" }}
           >
-            AI That Supports —
+            {t("landing.ai.heading.line1")}
             <br />
             <span
               style={{
@@ -305,17 +311,16 @@ export function ArtificialIntelligenceSection() {
                 backgroundClip: "text",
               }}
             >
-              Not Replaces
+              {t("landing.ai.heading.highlight")}
             </span>
-            <br />— Specialists
+            <br />
+            {t("landing.ai.heading.line2")}
           </h2>
           <p
             className="mx-auto mt-6 max-w-[720px] text-[16px] leading-relaxed md:text-[17px]"
             style={{ color: L.textMuted, fontFamily: "'Inter', sans-serif" }}
           >
-            AI transforms rehabilitation data into useful summaries, speech analysis, reports and
-            intelligent recommendations while keeping clinical decisions completely under specialist
-            control.
+            {t("landing.ai.description")}
           </p>
         </header>
 
@@ -323,45 +328,45 @@ export function ArtificialIntelligenceSection() {
           <AiCardShell
             accent="#2AA4C9"
             iconSrc={neurologyIcon}
-            title="AI Speech Analysis"
-            description="Analyze pronunciation, fluency and speech quality from uploaded recordings."
+            title={t("landing.ai.cards.speechAnalysis.title")}
+            description={t("landing.ai.cards.speechAnalysis.description")}
             index={0}
             visible={visible}
           >
-            <SpeechScoreWidget accent="#2AA4C9" />
+            <SpeechScoreWidget accent="#2AA4C9" t={t} />
           </AiCardShell>
 
           <AiCardShell
             accent="#7C6CF7"
             iconSrc={descriptionIcon}
-            title="Clinical Summary"
-            description="Generate structured weekly and monthly rehabilitation summaries."
+            title={t("landing.ai.cards.clinicalSummary.title")}
+            description={t("landing.ai.cards.clinicalSummary.description")}
             index={1}
             visible={visible}
           >
-            <ClinicalSummaryWidget accent="#7C6CF7" />
+            <ClinicalSummaryWidget accent="#7C6CF7" t={t} />
           </AiCardShell>
 
           <AiCardShell
             accent="#F5C84B"
             iconSrc={autoAwesomeMotionIcon}
-            title="AI Recommendations"
-            description="The AI suggests treatment adjustments while specialists always make the final decision."
+            title={t("landing.ai.cards.recommendations.title")}
+            description={t("landing.ai.cards.recommendations.description")}
             index={2}
             visible={visible}
           >
-            <RecommendationsWidget accent="#F5C84B" />
+            <RecommendationsWidget accent="#F5C84B" t={t} />
           </AiCardShell>
 
           <AiCardShell
             accent="#38D39F"
             iconSrc={analyticsIcon}
-            title="AI Report Generator"
-            description="Automatically generate structured progress reports ready for export."
+            title={t("landing.ai.cards.reportGenerator.title")}
+            description={t("landing.ai.cards.reportGenerator.description")}
             index={3}
             visible={visible}
           >
-            <ReportGeneratorWidget accent="#38D39F" />
+            <ReportGeneratorWidget accent="#38D39F" t={t} />
           </AiCardShell>
         </div>
       </div>
@@ -412,6 +417,14 @@ export function ArtificialIntelligenceSection() {
         .ai-card-hidden-bottom {
           opacity: 0;
           transform: translateY(48px);
+        }
+
+        [dir=rtl] .ai-card-hidden-left {
+          transform: translateX(48px);
+        }
+
+        [dir=rtl] .ai-card-hidden-right {
+          transform: translateX(-48px);
         }
 
         .ai-card-visible {

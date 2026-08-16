@@ -12,8 +12,8 @@ export function SpecialistTreatmentPlanCard({ plan, onClick }) {
         <ClipboardList size={20} aria-hidden="true" />
       </span>
       <span className="pd-specialist-treatment-plan-card-copy">
-        <strong>{plan.title}</strong>
-        <span className="pd-specialist-treatment-plan-card-patient">{plan.patientName}</span>
+        <strong dir="auto">{plan.title}</strong>
+        <span className="pd-specialist-treatment-plan-card-patient" dir="auto">{plan.patientName}</span>
         <span className="pd-specialist-treatment-plan-card-meta">
           <StatusBadge label={plan.statusLabel} tone={plan.statusTone} />
           <span className="pd-section-sub">{plan.dateRangeLabel}</span>

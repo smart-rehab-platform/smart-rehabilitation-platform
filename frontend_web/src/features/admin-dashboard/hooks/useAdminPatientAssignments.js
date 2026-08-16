@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { fetchAdminPatients } from "../../../services/adminPatientsService";
 import {
   assignPatientSpecialist,
@@ -10,8 +11,13 @@ import {
 } from "../../../services/adminPatientAssignmentsService";
 import { fetchAdminUsers } from "../../../services/adminUsersService";
 import { mapAdminPatientRecord } from "../utils/adminPatientsMappers";
+import { applyAdminPatientsLocalization } from "../utils/adminPatientsLocalization.js";
 import {
-  friendlyAssignmentError,
+  friendlyAssignmentErrorLocalized,
+  getAdminAssignmentsLabels,
+  applyAdminGuardianLinksLocalization,
+} from "../utils/adminPatientAssignmentsLocalization.js";
+import {
   mapParentUserOption,
   mapPatientGuardianLink,
   mapPatientSpecialistLink,
@@ -19,9 +25,9 @@ import {
   sortByName,
 } from "../utils/adminPatientAssignmentsMappers";
 
-function resolveErrorMessage(error, fallback) {
+function resolveErrorMessage(error, fallback, context = {}) {
   if (error instanceof Error && error.message) {
-    return friendlyAssignmentError(error.message);
+    return friendlyAssignmentErrorLocalized(error.message, context);
   }
 
   return fallback;
@@ -40,6 +46,9 @@ function resolveDefaultUserId(users) {
 }
 
 export function useAdminPatientAssignments(preferredPatientId = null) {
+  const { t, locale } = useLocale();
+  const labels = useMemo(() => getAdminAssignmentsLabels(t), [t]);
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
   const [patients, setPatients] = useState([]);
   const [specialists, setSpecialists] = useState([]);
   const [parents, setParents] = useState([]);
@@ -121,7 +130,10 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
         specialistRows.map(mapPatientSpecialistLink).filter(Boolean),
       );
       setLinkedParents(
-        guardianRows.map(mapPatientGuardianLink).filter(Boolean),
+        applyAdminGuardianLinksLocalization(
+          guardianRows.map(mapPatientGuardianLink).filter(Boolean),
+          mapperContext,
+        ),
       );
     } catch (loadError) {
       if (relationshipsTokenRef.current !== loadToken) {
@@ -130,13 +142,13 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
 
       setAssignedSpecialists([]);
       setLinkedParents([]);
-      setRelationshipsError(resolveErrorMessage(loadError, "Failed to load patient assignments."));
+      setRelationshipsError(resolveErrorMessage(loadError, labels.loadRelationshipsFailed, mapperContext));
     } finally {
       if (relationshipsTokenRef.current === loadToken) {
         setIsLoadingRelationships(false);
       }
     }
-  }, []);
+  }, [mapperContext, labels.loadRelationshipsFailed]);
 
   const selectPatient = useCallback((patientId) => {
     setSelectedPatientId(patientId || null);
@@ -169,7 +181,10 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
           return;
         }
 
-        const nextPatients = patientRows.map(mapAdminPatientRecord).filter(Boolean);
+        const nextPatients = applyAdminPatientsLocalization(
+          patientRows.map(mapAdminPatientRecord).filter(Boolean),
+          mapperContext,
+        );
         const nextSpecialists = sortByName(
           userRows.map(mapSpecialistUserOption).filter(Boolean),
         );
@@ -210,7 +225,7 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
         setSelectedPatientId(null);
         setAssignedSpecialists([]);
         setLinkedParents([]);
-        setInitError(resolveErrorMessage(loadError, "Failed to load assignment data."));
+        setInitError(resolveErrorMessage(loadError, labels.loadFailed, mapperContext));
       } finally {
         if (!cancelled && initTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -223,16 +238,16 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken, loadRelationships]);
+  }, [refreshToken, loadRelationships, labels.loadFailed, mapperContext]);
 
   const assignSpecialist = useCallback(async () => {
     if (!selectedPatientId) {
-      setSpecialistFormError("Please select a patient.");
+      setSpecialistFormError(labels.selectPatientRequired);
       return { ok: false };
     }
 
     if (!selectedSpecialistId) {
-      setSpecialistFormError("Please select a specialist.");
+      setSpecialistFormError(labels.selectSpecialistRequired);
       return { ok: false };
     }
 
@@ -245,9 +260,9 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
         is_primary: isPrimarySpecialist,
       });
       await loadRelationships(selectedPatientId);
-      return { ok: true, message: "Specialist assigned to patient successfully." };
+      return { ok: true, message: labels.assignSpecialistSuccess };
     } catch (submitError) {
-      const message = resolveErrorMessage(submitError, "Failed to assign specialist.");
+      const message = resolveErrorMessage(submitError, labels.assignSpecialistFailed, mapperContext);
       setSpecialistFormError(message);
       return { ok: false, message };
     } finally {
@@ -255,19 +270,21 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
     }
   }, [
     isPrimarySpecialist,
+    labels,
     loadRelationships,
+    mapperContext,
     selectedPatientId,
     selectedSpecialistId,
   ]);
 
   const linkParent = useCallback(async () => {
     if (!selectedPatientId) {
-      setParentFormError("Please select a patient.");
+      setParentFormError(labels.selectPatientRequired);
       return { ok: false };
     }
 
     if (!selectedParentId) {
-      setParentFormError("Please select a parent.");
+      setParentFormError(labels.selectParentRequired);
       return { ok: false };
     }
 
@@ -281,9 +298,9 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
         is_primary_contact: isPrimaryContact,
       });
       await loadRelationships(selectedPatientId);
-      return { ok: true, message: "Parent linked to patient successfully." };
+      return { ok: true, message: labels.linkParentSuccess };
     } catch (submitError) {
-      const message = resolveErrorMessage(submitError, "Failed to link parent.");
+      const message = resolveErrorMessage(submitError, labels.linkParentFailed, mapperContext);
       setParentFormError(message);
       return { ok: false, message };
     } finally {
@@ -291,7 +308,9 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
     }
   }, [
     isPrimaryContact,
+    labels,
     loadRelationships,
+    mapperContext,
     selectedParentId,
     selectedPatientId,
     selectedRelationship,
@@ -299,15 +318,15 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
 
   const unlinkSpecialist = useCallback(async (specialistId) => {
     if (!selectedPatientId) {
-      return { ok: false, message: "Please select a patient." };
+      return { ok: false, message: labels.selectPatientRequired };
     }
 
     if (!specialistId) {
-      return { ok: false, message: "Specialist id is missing." };
+      return { ok: false, message: labels.specialistIdMissing };
     }
 
     if (isUnlinking) {
-      return { ok: false, message: "An unlink is already in progress." };
+      return { ok: false, message: labels.unlinkInProgress };
     }
 
     setIsUnlinking(true);
@@ -315,28 +334,28 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
     try {
       await unlinkPatientSpecialist(selectedPatientId, specialistId);
       await loadRelationships(selectedPatientId);
-      return { ok: true, message: "Specialist unlinked successfully." };
+      return { ok: true, message: labels.unlinkSpecialistSuccess };
     } catch (submitError) {
       return {
         ok: false,
-        message: resolveErrorMessage(submitError, "Failed to unlink specialist."),
+        message: resolveErrorMessage(submitError, labels.unlinkSpecialistFailed, mapperContext),
       };
     } finally {
       setIsUnlinking(false);
     }
-  }, [isUnlinking, loadRelationships, selectedPatientId]);
+  }, [isUnlinking, labels, loadRelationships, mapperContext, selectedPatientId]);
 
   const unlinkParent = useCallback(async (parentId) => {
     if (!selectedPatientId) {
-      return { ok: false, message: "Please select a patient." };
+      return { ok: false, message: labels.selectPatientRequired };
     }
 
     if (!parentId) {
-      return { ok: false, message: "Parent id is missing." };
+      return { ok: false, message: labels.parentIdMissing };
     }
 
     if (isUnlinking) {
-      return { ok: false, message: "An unlink is already in progress." };
+      return { ok: false, message: labels.unlinkInProgress };
     }
 
     setIsUnlinking(true);
@@ -344,16 +363,16 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
     try {
       await unlinkPatientGuardian(selectedPatientId, parentId);
       await loadRelationships(selectedPatientId);
-      return { ok: true, message: "Parent unlinked successfully." };
+      return { ok: true, message: labels.unlinkParentSuccess };
     } catch (submitError) {
       return {
         ok: false,
-        message: resolveErrorMessage(submitError, "Failed to unlink parent."),
+        message: resolveErrorMessage(submitError, labels.unlinkParentFailed, mapperContext),
       };
     } finally {
       setIsUnlinking(false);
     }
-  }, [isUnlinking, loadRelationships, selectedPatientId]);
+  }, [isUnlinking, labels, loadRelationships, mapperContext, selectedPatientId]);
 
   const canAssignSpecialist = Boolean(
     selectedPatientId
@@ -404,6 +423,7 @@ export function useAdminPatientAssignments(preferredPatientId = null) {
     linkParent,
     unlinkSpecialist,
     unlinkParent,
+    labels,
     retryRelationships: () => {
       if (selectedPatientId) {
         loadRelationships(selectedPatientId);

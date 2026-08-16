@@ -38,9 +38,10 @@ export default function AdminExercisesPage() {
   } = useAdminShell();
 
   const {
+    labels,
     exercises,
     filteredExercises,
-    categoryFilters,
+    categoryFilterOptions,
     searchQuery,
     setSearchQuery,
     selectedCategory,
@@ -115,7 +116,7 @@ export default function AdminExercisesPage() {
       >
         <AdminExercisesToolbar
           searchQuery={searchQuery}
-          categoryFilters={categoryFilters}
+          categoryFilterOptions={categoryFilterOptions}
           selectedCategory={selectedCategory}
           onSearchChange={setSearchQuery}
           onCategoryChange={setSelectedCategory}
@@ -126,11 +127,12 @@ export default function AdminExercisesPage() {
           <div className="pd-admin-exercises-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : (
           <AdminExercisesGrid
+            labels={labels}
             exercises={filteredExercises}
             isLoading={isLoading}
             emptyKind={emptyKind}

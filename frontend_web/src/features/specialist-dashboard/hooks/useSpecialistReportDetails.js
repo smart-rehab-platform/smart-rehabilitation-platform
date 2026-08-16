@@ -1,20 +1,26 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   exportReportPdf,
   loadReportDetail,
 } from "../../../services/specialistReportService";
+import { applyReportDetailLocalization } from "../utils/specialistReportsLocalization";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useSpecialistReportDetails(reportId, isAiReport) {
+  const { t, locale } = useLocale();
   const [detail, setDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadDetailFailedError = t("specialist.reports.errors.loadDetailFailed");
+  const generatePdfFailedError = t("specialist.reports.errors.generatePdfFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -45,7 +51,7 @@ export function useSpecialistReportDetails(reportId, isAiReport) {
           return;
         }
         setDetail(null);
-        setError(resolveErrorMessage(loadError, "Failed to load report."));
+        setError(resolveErrorMessage(loadError, loadDetailFailedError));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -58,7 +64,12 @@ export function useSpecialistReportDetails(reportId, isAiReport) {
     return () => {
       cancelled = true;
     };
-  }, [reportId, isAiReport, refreshToken]);
+  }, [reportId, isAiReport, refreshToken, loadDetailFailedError]);
+
+  const localizedDetail = useMemo(
+    () => (detail ? applyReportDetailLocalization(detail, { t, locale }) : null),
+    [detail, t, locale],
+  );
 
   const generatePdf = useCallback(async () => {
     if (!reportId || isExporting) {
@@ -73,15 +84,15 @@ export function useSpecialistReportDetails(reportId, isAiReport) {
       setDetail(nextDetail);
       return true;
     } catch (exportError) {
-      setError(resolveErrorMessage(exportError, "Failed to generate PDF."));
+      setError(resolveErrorMessage(exportError, generatePdfFailedError));
       return false;
     } finally {
       setIsExporting(false);
     }
-  }, [reportId, isAiReport, isExporting]);
+  }, [reportId, isAiReport, isExporting, generatePdfFailedError]);
 
   return {
-    detail,
+    detail: localizedDetail,
     isLoading,
     isExporting,
     error,

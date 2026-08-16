@@ -23,6 +23,7 @@ import 'specialist_dashboard_localization_utils.dart';
 import 'specialist_exercise_review_localization_utils.dart';
 import 'specialist_exercises_widgets.dart';
 import 'specialist_scoped_localization_utils.dart';
+import '../../utils/support_request_notification_navigation.dart';
 import 'treatment_plans_list_widgets.dart';
 
 class SpecialistPatientsScreen extends ConsumerStatefulWidget {
@@ -589,6 +590,21 @@ class _SpecialistNotificationsScreenState
     });
   }
 
+  Future<void> _onNotificationTap(SpecialistNotificationItem item) async {
+    if (!item.isRead) {
+      await ref.read(specialistNotificationsProvider.notifier).markAsRead(item.id);
+    }
+    if (!mounted) return;
+
+    final destination = resolveSupportRequestNotificationDestination(
+      item,
+      isAdmin: false,
+    );
+    if (destination != null) {
+      await context.push(destination);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(specialistNotificationsProvider);
@@ -655,9 +671,7 @@ class _SpecialistNotificationsScreenState
                   (item) => Padding(
                     padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
                     child: DashboardSurfaceCard(
-                      onTap: () => ref
-                          .read(specialistNotificationsProvider.notifier)
-                          .markAsRead(item.id),
+                      onTap: () => _onNotificationTap(item),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -792,6 +806,11 @@ class SpecialistMoreScreen extends ConsumerWidget {
             icon: Icons.notifications_none_rounded,
             label: l10n.navNotifications,
             onTap: () => context.push(AppRoutes.specialistNotifications),
+          ),
+          _MoreTile(
+            icon: Icons.support_agent_outlined,
+            label: l10n.supportRequestTitle,
+            onTap: () => context.push(AppRoutes.specialistSupportRequests),
           ),
           _MoreTile(
             icon: Icons.rate_review_outlined,

@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { ReviewCard } from "./components/feedback/ReviewCard";
 import { ReviewEmptyState } from "./components/feedback/ReviewEmptyState";
@@ -13,8 +13,8 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  FEEDBACK_EMPTY_MESSAGES,
   filterFeedbackReviews,
+  getFeedbackEmptyMessages,
   sortFeedbackReviews,
 } from "./utils/parentFeedbackUtils";
 import "./styles/parentDashboardTokens.css";
@@ -22,6 +22,7 @@ import "./styles/parentDashboardTokens.css";
 export default function ParentFeedbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
   const notificationUserId = parentUserId;
@@ -110,17 +111,19 @@ export default function ParentFeedbackPage() {
     [filteredReviews, sortKey],
   );
 
+  const emptyMessages = useMemo(() => getFeedbackEmptyMessages(t), [t]);
+
   const emptyMessage = useMemo(() => {
     if (reviews.length === 0) {
-      return FEEDBACK_EMPTY_MESSAGES.none;
+      return emptyMessages.none;
     }
 
     if (visibleReviews.length === 0) {
-      return FEEDBACK_EMPTY_MESSAGES.filtered;
+      return emptyMessages.filtered;
     }
 
     return null;
-  }, [reviews.length, visibleReviews.length]);
+  }, [reviews.length, visibleReviews.length, emptyMessages]);
 
   const badges = useMemo(() => ({
     notifications:
@@ -145,7 +148,7 @@ export default function ParentFeedbackPage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading exercise feedback...</p>
+          <p className="pd-inline-loading">{t("parent.pages.feedback.loading")}</p>
         </section>
       );
     }
@@ -155,7 +158,7 @@ export default function ParentFeedbackPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -179,7 +182,6 @@ export default function ParentFeedbackPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -201,14 +203,14 @@ export default function ParentFeedbackPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Dashboard
+              {t("parent.common.backToDashboard")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Exercise Feedback</h1>
+            <h1 className="pd-task-hub-title">{t("parent.pages.feedback.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              Specialist reviews for submitted exercises across your children.
+              {t("parent.pages.feedback.subtitle")}
             </p>
           </header>
 

@@ -1,13 +1,13 @@
 import { Bell, BellRing, LoaderCircle } from "lucide-react";
-import { formatAdminNotificationMeta } from "../utils/adminNotificationsMappers";
 
 export function AdminNotificationCard({
   notification,
+  labels,
   isUpdating = false,
   onMarkAsRead,
 }) {
   const unread = !notification.isRead;
-  const metaLabel = formatAdminNotificationMeta(notification);
+  const metaLabel = notification.metaLabel;
   const Icon = unread ? BellRing : Bell;
 
   const className = [
@@ -26,10 +26,10 @@ export function AdminNotificationCard({
       </span>
 
       <span className="pd-admin-notif-copy">
-        <span className="pd-admin-notif-title">{notification.title}</span>
+        <span className="pd-admin-notif-title" dir="auto">{notification.title}</span>
 
         {notification.body ? (
-          <span className="pd-admin-notif-body">{notification.body}</span>
+          <span className="pd-admin-notif-body" dir="auto">{notification.body}</span>
         ) : null}
 
         <span className="pd-admin-notif-meta">{metaLabel}</span>
@@ -42,7 +42,7 @@ export function AdminNotificationCard({
       {isUpdating ? (
         <span className="pd-admin-notif-updating" aria-live="polite">
           <LoaderCircle size={16} className="pd-admin-notif-spinner" aria-hidden="true" />
-          <span className="pd-sr-only">Marking as read</span>
+          <span className="pd-sr-only">{labels.markingAsRead}</span>
         </span>
       ) : null}
     </>
@@ -53,7 +53,7 @@ export function AdminNotificationCard({
       <li className="pd-admin-notif-entry">
         <article
           className={className}
-          aria-label={`Notification: ${notification.title}`}
+          aria-label={labels.notification(notification.title)}
         >
           {content}
         </article>
@@ -68,7 +68,7 @@ export function AdminNotificationCard({
         className={className}
         onClick={() => onMarkAsRead?.(notification.id)}
         disabled={isUpdating}
-        aria-label={`Unread notification: ${notification.title}. Mark as read.`}
+        aria-label={labels.unreadNotification(notification.title)}
       >
         {content}
       </button>

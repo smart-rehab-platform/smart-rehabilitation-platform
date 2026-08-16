@@ -1,0 +1,523 @@
+.pd-preview .pd-support-request-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1080px;
+}
+
+.pd-preview .pd-support-request-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-support-request-page-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.pd-preview .pd-support-request-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 180px));
+  gap: 12px;
+}
+
+.pd-preview .pd-support-request-list {
+  display: grid;
+  gap: 12px;
+}
+
+.pd-preview .pd-support-request-list-item {
+  display: grid;
+  gap: 10px;
+  text-align: start;
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 16px;
+  background: var(--pd-surface);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.pd-preview .pd-support-request-list-item:hover {
+  border-color: rgba(42, 164, 201, 0.45);
+  box-shadow: 0 10px 24px rgba(15, 35, 66, 0.08);
+}
+
+.pd-preview .pd-support-request-list-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-support-request-list-item-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-support-request-list-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  color: var(--pd-text-secondary);
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-support-request-detail-page,
+.pd-preview .pd-admin-support-request-detail-layout,
+.pd-preview .pd-support-request-ticket {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+.pd-preview .pd-support-request-ticket-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pd-preview .pd-support-request-ticket-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.pd-preview .pd-support-request-ticket-title-row {
+  display: block;
+}
+
+.pd-preview .pd-support-request-ticket-title-group {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pd-preview .pd-support-request-ticket-category-row {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-preview .pd-support-request-ticket-title {
+  margin: 0;
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-support-request-ticket-category {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-support-request-ticket-requester {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  font-size: 0.875rem;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-support-request-ticket-requester-name {
+  font-weight: 600;
+}
+
+.pd-preview .pd-support-request-ticket-requester-email {
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-support-request-ticket-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-support-request-ticket-meta-sep {
+  color: rgba(148, 163, 184, 0.85);
+}
+
+.pd-preview .pd-support-request-ticket-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  flex-wrap: wrap;
+  padding: 12px 0 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.pd-preview .pd-support-request-ticket-actions-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-support-request-ticket-actions-label {
+  font-size: 0.8125rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-support-request-ticket-actions-value {
+  font-size: 0.875rem;
+  font-weight: 650;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-support-request-conversation-shell {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 12px;
+  background: var(--pd-surface);
+  overflow: hidden;
+}
+
+.pd-preview .pd-support-request-section-title {
+  margin: 0 0 12px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-support-request-thread {
+  padding: 16px 18px 14px;
+}
+
+.pd-preview .pd-support-request-thread-empty {
+  padding-bottom: 18px;
+}
+
+.pd-preview .pd-support-request-thread-empty-copy {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-support-request-thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pd-preview .pd-support-request-message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: min(72%, 640px);
+}
+
+.pd-preview .pd-support-request-message.is-own {
+  align-self: flex-end;
+}
+
+.pd-preview .pd-support-request-message.is-other {
+  align-self: flex-start;
+}
+
+.pd-preview .pd-support-request-message-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-support-request-message.is-own .pd-support-request-message-meta {
+  justify-content: flex-end;
+}
+
+.pd-preview .pd-support-request-message-meta strong {
+  color: var(--pd-text);
+  font-weight: 650;
+}
+
+.pd-preview .pd-support-request-message-body {
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(241, 245, 249, 0.95);
+  color: var(--pd-text);
+  line-height: 1.55;
+  text-align: start;
+}
+
+.pd-preview .pd-support-request-message-body p {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.pd-preview .pd-support-request-message.is-own .pd-support-request-message-body {
+  background: rgba(42, 164, 201, 0.1);
+}
+
+.pd-preview .pd-support-request-message.is-admin .pd-support-request-message-body {
+  background: rgba(79, 166, 248, 0.1);
+}
+
+.pd-preview .pd-support-request-reply {
+  display: grid;
+  gap: 12px;
+  padding: 14px 18px 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(248, 250, 252, 0.72);
+}
+
+.pd-preview .pd-support-request-reply-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-support-request-resolved-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 18px 14px;
+  border-top: 1px solid rgba(34, 197, 94, 0.16);
+  background: rgba(34, 197, 94, 0.05);
+  color: var(--pd-text);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.pd-preview .pd-support-request-resolved-notice svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #16a34a;
+}
+
+.pd-preview .pd-support-request-resolved-notice strong {
+  font-weight: 700;
+  color: #15803d;
+}
+
+.pd-preview .pd-support-request-resolved-notice-copy {
+  display: block;
+  margin-top: 2px;
+  color: var(--pd-text-secondary);
+}
+
+/* Legacy summary aliases kept for list/other pages if referenced */
+.pd-preview .pd-support-request-summary {
+  display: grid;
+  gap: 14px;
+}
+
+.pd-preview .pd-support-request-summary-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-support-request-summary-title {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-weight: 600;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-support-request-summary-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-preview .pd-support-request-summary-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+}
+
+.pd-preview .pd-support-request-summary-meta dt {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--auth-placeholder);
+}
+
+.pd-preview .pd-support-request-summary-meta dd {
+  margin: 4px 0 0;
+  color: var(--pd-text);
+  font-weight: 500;
+}
+
+.pd-preview .pd-support-request-attachment-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--pd-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pd-preview .pd-support-request-attachment-link:hover {
+  text-decoration: underline;
+}
+
+.pd-preview .pd-support-request-attachment-field {
+  display: grid;
+  gap: 14px;
+}
+
+.pd-preview .pd-support-request-composer {
+  display: contents;
+}
+
+.pd-preview .pd-support-request-attachment-head p,
+.pd-preview .pd-support-request-form-intro {
+  margin: 4px 0 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-support-request-attachment-selected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pd-preview .pd-support-request-attachment-name {
+  font-weight: 600;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-support-request-form {
+  display: grid;
+  gap: 18px;
+  max-width: 760px;
+}
+
+.pd-preview .pd-support-request-form-actions,
+.pd-preview .pd-support-request-composer-actions,
+.pd-preview .pd-support-request-status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pd-preview .pd-support-request-ticket-actions .pd-support-request-status-actions {
+  justify-content: flex-end;
+  margin-inline-start: auto;
+}
+
+.pd-preview .pd-admin-support-requests-toolbar {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.pd-preview .pd-admin-support-requests-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pd-preview .pd-admin-support-requests-table-wrap {
+  overflow-x: auto;
+}
+
+.pd-preview .pd-admin-support-requests-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pd-preview .pd-admin-support-requests-table th,
+.pd-preview .pd-admin-support-requests-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  text-align: start;
+  vertical-align: top;
+}
+
+.pd-preview .pd-admin-support-requests-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-admin-support-request-detail-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+@media (max-width: 900px) {
+  .pd-preview .pd-support-request-summary-meta,
+  .pd-preview .pd-admin-support-requests-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-support-request-message {
+    max-width: 88%;
+  }
+
+  .pd-preview .pd-support-request-ticket-actions {
+    align-items: flex-start;
+  }
+
+  .pd-preview .pd-support-request-ticket-actions .pd-support-request-status-actions {
+    width: 100%;
+    margin-inline-start: 0;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .pd-preview .pd-admin-support-requests-table thead {
+    display: none;
+  }
+
+  .pd-preview .pd-admin-support-requests-table tr {
+    display: grid;
+    gap: 8px;
+    padding: 14px 0;
+  }
+
+  .pd-preview .pd-admin-support-requests-table td {
+    display: grid;
+    gap: 4px;
+    border-bottom: none;
+    padding: 0;
+  }
+
+  .pd-preview .pd-admin-support-requests-table td::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--pd-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}

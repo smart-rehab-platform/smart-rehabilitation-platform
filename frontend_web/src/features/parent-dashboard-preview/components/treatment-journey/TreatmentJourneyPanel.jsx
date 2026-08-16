@@ -1,25 +1,28 @@
 import { LineChart, RefreshCw } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 import {
-  JOURNEY_PERIOD_OPTIONS,
+  buildJourneyPeriodOptions,
   buildTreatmentJourneyInterpretation,
   formatTreatmentJourneyDisplayDate,
   formatTreatmentJourneyPercent,
   formatTreatmentJourneyScoreChange,
+  getJourneyPeriodLabel,
+  getTreatmentJourneyTrendLabel,
   journeyHasData,
-  journeyPeriodLabel,
   treatmentJourneyTrendClass,
-  treatmentJourneyTrendLabel,
 } from "../../utils/parentTreatmentJourneyUtils";
 import { TreatmentJourneyChart } from "./TreatmentJourneyChart";
 
-function JourneyPeriodSelector({ selectedPeriod, onSelected, disabled = false }) {
+function JourneyPeriodSelector({ selectedPeriod, onSelected, disabled = false, t }) {
+  const options = buildJourneyPeriodOptions(t);
+
   return (
     <div
       className="pd-tj-period-selector"
       role="tablist"
-      aria-label="Treatment journey period"
+      aria-label={t("parent.treatmentJourney.periodSelectorAria")}
     >
-      {JOURNEY_PERIOD_OPTIONS.map((option) => {
+      {options.map((option) => {
         const isSelected = option.value === selectedPeriod;
 
         return (
@@ -49,63 +52,64 @@ function JourneySummarySkeleton() {
   );
 }
 
-function SummaryMetric({ label, value, trend, emphasized = false }) {
+function SummaryMetric({ label, value, trend, trendLabel, emphasized = false }) {
   return (
     <div className={emphasized ? "pd-tj-summary-metric is-primary" : "pd-tj-summary-metric"}>
       <span className="pd-tj-metric-label">{label}</span>
       <strong>{value}</strong>
       {trend ? (
         <span className={`pd-tj-trend-badge ${treatmentJourneyTrendClass(trend)}`}>
-          {treatmentJourneyTrendLabel(trend)}
+          {trendLabel}
         </span>
       ) : null}
     </div>
   );
 }
 
-function JourneySummarySection({ journey }) {
+function JourneySummarySection({ journey, t, locale }) {
   const trend = journey?.trend ?? "stable";
 
   return (
-    <section className="pd-card pd-card-pad pd-tj-summary" aria-label="Treatment journey summary">
+    <section className="pd-card pd-card-pad pd-tj-summary" aria-label={t("parent.treatmentJourney.summaryAria")}>
       <div className="pd-tj-summary-grid">
         <SummaryMetric
-          label="Started At"
-          value={formatTreatmentJourneyPercent(journey?.startingScore)}
+          label={t("parent.treatmentJourney.startedAt")}
+          value={formatTreatmentJourneyPercent(journey?.startingScore, { t, locale })}
         />
         <SummaryMetric
-          label="Current Progress"
-          value={formatTreatmentJourneyPercent(journey?.currentScore)}
+          label={t("parent.treatmentJourney.currentProgress")}
+          value={formatTreatmentJourneyPercent(journey?.currentScore, { t, locale })}
           trend={trend}
+          trendLabel={getTreatmentJourneyTrendLabel(trend, t)}
           emphasized
         />
         <SummaryMetric
-          label="Score Change"
-          value={formatTreatmentJourneyScoreChange(journey?.scoreChange)}
+          label={t("parent.treatmentJourney.scoreChange")}
+          value={formatTreatmentJourneyScoreChange(journey?.scoreChange, t)}
         />
       </div>
     </section>
   );
 }
 
-function JourneyErrorBanner({ message, onRetry }) {
+function JourneyErrorBanner({ message, onRetry, t }) {
   return (
     <div className="pd-inline-error-banner pd-tj-error-banner" role="alert">
-      <p className="pd-inline-error">{message || "Couldn't load the treatment journey."}</p>
+      <p className="pd-inline-error">{message || t("parent.treatmentJourney.loadFailedDefault")}</p>
       {onRetry ? (
         <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-          Retry
+          {t("parent.common.retry")}
         </button>
       ) : null}
     </div>
   );
 }
 
-function JourneyInterpretationCard({ journey }) {
-  const interpretation = buildTreatmentJourneyInterpretation(journey);
+function JourneyInterpretationCard({ journey, t }) {
+  const interpretation = buildTreatmentJourneyInterpretation(journey, t);
 
   return (
-    <section className="pd-card pd-card-pad pd-tj-interpretation" aria-label="Treatment journey interpretation">
+    <section className="pd-card pd-card-pad pd-tj-interpretation" aria-label={t("parent.treatmentJourney.interpretationAria")}>
       <div className="pd-tj-interpretation-heading">
         <span className="pd-tj-interpretation-icon" aria-hidden="true">
           <LineChart size={18} />
@@ -117,29 +121,30 @@ function JourneyInterpretationCard({ journey }) {
   );
 }
 
-function TreatmentPeriodInfo({ journey, period }) {
-  const startLabel = formatTreatmentJourneyDisplayDate(journey?.treatmentStart);
-  const endLabel = formatTreatmentJourneyDisplayDate(journey?.treatmentEnd);
+function TreatmentPeriodInfo({ journey, period, t, locale }) {
+  const startLabel = formatTreatmentJourneyDisplayDate(journey?.treatmentStart, locale, t);
+  const endLabel = formatTreatmentJourneyDisplayDate(journey?.treatmentEnd, locale, t);
+  const emptyDisplay = t("parent.common.emptyDisplay");
 
-  if (startLabel === "—" && endLabel === "—") {
+  if (startLabel === emptyDisplay && endLabel === emptyDisplay) {
     return null;
   }
 
   return (
-    <section className="pd-card pd-card-pad pd-tj-period-info" aria-label="Treatment period information">
-      <h3 className="pd-section-title">Treatment Period</h3>
+    <section className="pd-card pd-card-pad pd-tj-period-info" aria-label={t("parent.treatmentJourney.periodInfoAria")}>
+      <h3 className="pd-section-title">{t("parent.treatmentJourney.treatmentPeriod")}</h3>
       <dl className="pd-tj-period-info-list">
         <div>
-          <dt>Start</dt>
+          <dt>{t("parent.treatmentJourney.periodStart")}</dt>
           <dd>{startLabel}</dd>
         </div>
         <div>
-          <dt>End</dt>
+          <dt>{t("parent.treatmentJourney.periodEnd")}</dt>
           <dd>{endLabel}</dd>
         </div>
         <div>
-          <dt>Selected view</dt>
-          <dd>{journeyPeriodLabel(period)}</dd>
+          <dt>{t("parent.treatmentJourney.selectedView")}</dt>
+          <dd>{getJourneyPeriodLabel(period, t)}</dd>
         </div>
       </dl>
     </section>
@@ -159,12 +164,14 @@ export function TreatmentJourneyPanel({
   onRetry,
   onRefresh,
 }) {
+  const { t, locale } = useLocale();
   const hasData = journeyHasData(journey);
   const showInitialSkeleton = isLoading && !journey;
-  const childName = child?.fullName || "Treatment Journey";
+  const childName = child?.fullName || t("parent.pages.progress.title");
+  const firstName = childName.split(" ")[0] || t("parent.common.child");
   const avatarAlt = child?.fullName
-    ? `${child.fullName}'s profile photo`
-    : "Child profile photo";
+    ? `${child.fullName} profile photo`
+    : t("parent.treatmentJourney.childPhotoAlt");
 
   return (
     <div className="pd-tj-panel pd-section-enter">
@@ -183,12 +190,12 @@ export function TreatmentJourneyPanel({
           )}
           <div>
             <h2 className="pd-section-title">
-              {hasMultipleChildren ? "Treatment Journey" : childName}
+              {hasMultipleChildren ? t("parent.pages.progress.title") : childName}
             </h2>
             <p className="pd-section-sub">
               {hasMultipleChildren
-                ? `See how ${childName.split(" ")[0] || "your child"}'s progress has changed over time`
-                : "See how your child's progress has changed over time"}
+                ? t("parent.treatmentJourney.subtitleNamed", { name: firstName })
+                : t("parent.treatmentJourney.subtitleGeneric")}
             </p>
           </div>
         </div>
@@ -198,10 +205,10 @@ export function TreatmentJourneyPanel({
           className="pd-btn pd-btn-soft pd-tj-refresh-btn"
           onClick={onRefresh}
           disabled={isRefreshing || isLoading}
-          aria-label="Refresh treatment journey"
+          aria-label={t("parent.treatmentJourney.refreshAria")}
         >
           <RefreshCw size={16} aria-hidden="true" className={isRefreshing ? "is-spinning" : ""} />
-          Refresh
+          {t("parent.treatmentJourney.refresh")}
         </button>
       </header>
 
@@ -209,11 +216,16 @@ export function TreatmentJourneyPanel({
         selectedPeriod={period}
         onSelected={onPeriodChange}
         disabled={isLoading && !journey}
+        t={t}
       />
 
-      {error ? <JourneyErrorBanner message={error} onRetry={onRetry} /> : null}
+      {error ? <JourneyErrorBanner message={error} onRetry={onRetry} t={t} /> : null}
 
-      {showInitialSkeleton ? <JourneySummarySkeleton /> : <JourneySummarySection journey={journey} />}
+      {showInitialSkeleton ? (
+        <JourneySummarySkeleton />
+      ) : (
+        <JourneySummarySection journey={journey} t={t} locale={locale} />
+      )}
 
       <TreatmentJourneyChart
         points={journey?.chartPoints ?? []}
@@ -222,11 +234,11 @@ export function TreatmentJourneyPanel({
       />
 
       {!hasData && !showInitialSkeleton && !error ? (
-        <p className="pd-tj-empty-copy">Progress will appear after exercises are reviewed.</p>
+        <p className="pd-tj-empty-copy">{t("parent.treatmentJourney.emptyProgress")}</p>
       ) : null}
 
-      <JourneyInterpretationCard journey={journey} />
-      <TreatmentPeriodInfo journey={journey} period={period} />
+      <JourneyInterpretationCard journey={journey} t={t} />
+      <TreatmentPeriodInfo journey={journey} period={period} t={t} locale={locale} />
     </div>
   );
 }

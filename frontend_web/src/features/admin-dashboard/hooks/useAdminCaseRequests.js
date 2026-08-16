@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { fetchCaseCategories } from "../../../services/adminPatientsService";
 import { fetchAdminCaseRequestsInbox } from "../../../services/adminCaseRequestsService";
+import {
+  applyAdminCaseInboxItemsLocalization,
+  getAdminCaseRequestsLabels,
+} from "../utils/adminCaseRequestsLocalization.js";
 import {
   mapAdminCaseInboxItem,
   mapCaseCategoryOption,
   mapInboxPagination,
-} from "../utils/adminCaseRequestsMappers";
+} from "../utils/adminCaseRequestsMappers.js";
 
 const PAGE_LIMIT = 20;
 const SEARCH_DEBOUNCE_MS = 400;
@@ -29,6 +34,9 @@ function mergeItems(existing, incoming) {
 }
 
 export function useAdminCaseRequests() {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminCaseRequestsLabels(t), [t]);
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [pagination, setPagination] = useState(() => mapInboxPagination(null, PAGE_LIMIT));
@@ -111,7 +119,10 @@ export function useAdminCaseRequests() {
         return;
       }
 
-      const mappedItems = result.items.map(mapAdminCaseInboxItem).filter(Boolean);
+      const mappedItems = applyAdminCaseInboxItemsLocalization(
+        result.items.map(mapAdminCaseInboxItem).filter(Boolean),
+        mapperContext,
+      );
       setItems((current) => (mode === "loadMore" ? mergeItems(current, mappedItems) : mappedItems));
       setPagination(mapInboxPagination(result.pagination, PAGE_LIMIT));
       setError(null);
@@ -121,7 +132,7 @@ export function useAdminCaseRequests() {
         return;
       }
 
-      const message = resolveErrorMessage(loadError, "Failed to load case requests.");
+      const message = resolveErrorMessage(loadError, labels.loadFailed);
       if (mode === "loadMore") {
         setLoadMoreError(message);
       } else {
@@ -134,7 +145,7 @@ export function useAdminCaseRequests() {
         setIsLoadingMore(false);
       }
     }
-  }, [categoryFilter, debouncedSearch, statusFilter]);
+  }, [categoryFilter, debouncedSearch, labels.loadFailed, mapperContext, statusFilter]);
 
   useEffect(() => {
     let cancelled = false;
@@ -190,7 +201,10 @@ export function useAdminCaseRequests() {
           return;
         }
 
-        const mappedItems = result.items.map(mapAdminCaseInboxItem).filter(Boolean);
+        const mappedItems = applyAdminCaseInboxItemsLocalization(
+          result.items.map(mapAdminCaseInboxItem).filter(Boolean),
+          mapperContext,
+        );
         setItems(mappedItems);
         setPagination(mapInboxPagination(result.pagination, PAGE_LIMIT));
         setError(null);
@@ -201,7 +215,7 @@ export function useAdminCaseRequests() {
         }
 
         setItems([]);
-        setError(resolveErrorMessage(loadError, "Failed to load case requests."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && requestSerialRef.current === serial) {
           setIsLoading(false);
@@ -215,7 +229,7 @@ export function useAdminCaseRequests() {
     return () => {
       cancelled = true;
     };
-  }, [categoryFilter, debouncedSearch, refreshToken, statusFilter]);
+  }, [categoryFilter, debouncedSearch, labels.loadFailed, mapperContext, refreshToken, statusFilter]);
 
   const loadMore = useCallback(() => {
     if (!pagination.hasNextPage || isLoading || isLoadingMore) {
@@ -242,6 +256,7 @@ export function useAdminCaseRequests() {
   }, [error, hasActiveFilters, isLoading, items.length]);
 
   return {
+    labels,
     items,
     categoryOptions,
     pagination,

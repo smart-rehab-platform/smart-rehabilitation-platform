@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   loadPatientScopedReports,
   loadSpecialistScopedReports,
 } from "../../../services/specialistReportService";
 import { filterVisibleReports } from "../utils/specialistReportMappers";
+import { applyReportListItemLocalization } from "../utils/specialistReportsLocalization";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useSpecialistReports(specialistUserId, patientId = null) {
+  const { t, locale } = useLocale();
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -21,6 +24,8 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
 
   const scopedPatientId = patientId?.trim() || null;
   const isPatientScoped = Boolean(scopedPatientId);
+  const loadFailedError = t("specialist.reports.errors.loadFailed");
+  const signInRequiredError = t("specialist.reports.errors.signInRequired");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -59,7 +64,7 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
           return;
         }
         setReports([]);
-        setError(resolveErrorMessage(loadError, "Failed to load reports."));
+        setError(resolveErrorMessage(loadError, loadFailedError));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -72,11 +77,16 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, scopedPatientId, isPatientScoped, refreshToken]);
+  }, [specialistUserId, scopedPatientId, isPatientScoped, refreshToken, loadFailedError]);
+
+  const localizedReports = useMemo(
+    () => reports.map((report) => applyReportListItemLocalization(report, { t, locale })),
+    [reports, t, locale],
+  );
 
   const visibleReports = useMemo(
-    () => filterVisibleReports(reports, { filterId, searchQuery }),
-    [reports, filterId, searchQuery],
+    () => filterVisibleReports(localizedReports, { filterId, searchQuery }),
+    [localizedReports, filterId, searchQuery],
   );
 
   const hasAiReports = useMemo(
@@ -89,7 +99,7 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
       reports: [],
       visibleReports: [],
       isLoading: false,
-      error: "Please sign in to view reports.",
+      error: signInRequiredError,
       searchQuery,
       setSearchQuery,
       filterId,
@@ -102,7 +112,7 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
   }
 
   return {
-    reports,
+    reports: localizedReports,
     visibleReports,
     isLoading,
     error,

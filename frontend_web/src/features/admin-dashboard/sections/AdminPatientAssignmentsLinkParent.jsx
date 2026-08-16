@@ -1,4 +1,6 @@
-import { PARENT_RELATIONSHIP_OPTIONS, formatRelationshipLabel } from "../utils/adminPatientAssignmentsMappers";
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
+import { getAdminRelationshipOptions } from "../utils/adminPatientAssignmentsLocalization.js";
 
 export function AdminPatientAssignmentsLinkParent({
   parents,
@@ -12,16 +14,22 @@ export function AdminPatientAssignmentsLinkParent({
   onSelectRelationship,
   onPrimaryChange,
   onSubmit,
+  labels,
 }) {
+  const { t, locale } = useLocale();
+  const relationshipOptions = useMemo(
+    () => getAdminRelationshipOptions({ t, locale }),
+    [t, locale],
+  );
   const hasParents = parents.length > 0;
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-assignments-form-card" aria-label="Link parent">
-      <h2 className="pd-admin-assignments-card-title">Link Parent</h2>
+    <section className="pd-card pd-card-pad pd-admin-assignments-form-card" aria-label={labels.linkParent}>
+      <h2 className="pd-admin-assignments-card-title">{labels.linkParent}</h2>
 
       <div className="pd-admin-form">
         <label className="pd-admin-field">
-          <span className="pd-admin-field-label">Parent</span>
+          <span className="pd-admin-field-label">{labels.parentLabel}</span>
           <select
             className="pd-admin-select"
             value={selectedParentId ?? ""}
@@ -29,10 +37,10 @@ export function AdminPatientAssignmentsLinkParent({
             disabled={!hasParents || isSubmitting}
           >
             {!hasParents ? (
-              <option value="">No parents available</option>
+              <option value="">{labels.noParents}</option>
             ) : (
               <>
-                <option value="">Select a parent</option>
+                <option value="">{labels.selectParent}</option>
                 {parents.map((parent) => (
                   <option key={parent.userId} value={parent.userId}>
                     {parent.name}
@@ -45,16 +53,16 @@ export function AdminPatientAssignmentsLinkParent({
         </label>
 
         <label className="pd-admin-field">
-          <span className="pd-admin-field-label">Relationship</span>
+          <span className="pd-admin-field-label">{labels.relationship}</span>
           <select
             className="pd-admin-select"
             value={selectedRelationship}
             onChange={(event) => onSelectRelationship(event.target.value)}
             disabled={!hasParents || isSubmitting}
           >
-            {PARENT_RELATIONSHIP_OPTIONS.map((relationship) => (
-              <option key={relationship} value={relationship}>
-                {formatRelationshipLabel(relationship)}
+            {relationshipOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
           </select>
@@ -67,7 +75,7 @@ export function AdminPatientAssignmentsLinkParent({
             onChange={(event) => onPrimaryChange(event.target.checked)}
             disabled={!hasParents || isSubmitting}
           />
-          <span>Primary contact</span>
+          <span>{labels.primaryContact}</span>
         </label>
 
         {error ? <p className="pd-inline-error">{error}</p> : null}
@@ -78,7 +86,7 @@ export function AdminPatientAssignmentsLinkParent({
           onClick={onSubmit}
           disabled={!canSubmit}
         >
-          {isSubmitting ? "Linking..." : "Link Parent to Patient"}
+          {isSubmitting ? labels.linking : labels.linkParentAction}
         </button>
       </div>
     </section>

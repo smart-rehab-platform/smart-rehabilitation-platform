@@ -3,16 +3,18 @@ import { AdminAiInsightList } from "../components/AdminAiInsightList";
 
 export function AdminLatestAiRecommendations({
   records = [],
+  labels,
   isLoading = false,
   onSelectPatient,
 }) {
   return (
     <AdminAiInsightList
       sectionId="admin-ai-recommendations"
-      title="Latest AI Recommendations"
+      title={labels.recommendations.title}
       records={records}
+      labels={labels}
       isLoading={isLoading}
-      emptyMessage="No AI recommendations yet."
+      emptyMessage={labels.recommendations.empty}
       icon={Lightbulb}
       iconTone="teal"
       onSelectPatient={onSelectPatient}

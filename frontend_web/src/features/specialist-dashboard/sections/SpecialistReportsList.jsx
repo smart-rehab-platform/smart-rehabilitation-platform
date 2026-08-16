@@ -1,6 +1,8 @@
+import { useLocale } from "../../../context/useLocale";
 import { SpecialistReportCard } from "../components/SpecialistReportCard";
 import { SpecialistReportFilters } from "../components/SpecialistReportFilters";
 import { SpecialistReportSearch } from "../components/SpecialistReportSearch";
+import { getReportsEmptyMessage } from "../utils/specialistReportsLocalization";
 
 export function SpecialistReportsList({
   reports,
@@ -15,10 +17,12 @@ export function SpecialistReportsList({
   onRetry,
   onReportClick,
 }) {
+  const { t } = useLocale();
+
   if (isLoading) {
     return (
       <section className="pd-card pd-card-pad pd-task-hub-state">
-        <p className="pd-inline-loading">Loading reports...</p>
+        <p className="pd-inline-loading">{t("specialist.reports.loading")}</p>
       </section>
     );
   }
@@ -28,16 +32,14 @@ export function SpecialistReportsList({
       <section className="pd-card pd-card-pad pd-task-hub-state">
         <p className="pd-inline-error">{error}</p>
         <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-          Retry
+          {t("common.retry")}
         </button>
       </section>
     );
   }
 
-  const emptyMessage = isPatientScoped
-    ? "No reports available for this patient yet."
-    : "No reports available yet.";
-  const filteredEmptyMessage = "No reports match your current search or filter.";
+  const emptyMessage = getReportsEmptyMessage({ isPatientScoped, hasFilter: false }, t);
+  const filteredEmptyMessage = getReportsEmptyMessage({ isPatientScoped, hasFilter: true }, t);
 
   return (
     <div className="pd-specialist-reports-panel">
@@ -48,7 +50,7 @@ export function SpecialistReportsList({
         <div className="pd-specialist-report-inline-error">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onRetry}>
-            Retry
+            {t("common.retry")}
           </button>
         </div>
       ) : null}

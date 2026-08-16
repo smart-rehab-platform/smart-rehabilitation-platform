@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { loadSpecialistScopedTreatmentPlans } from "../../../services/specialistTreatmentPlanService";
-import {
-  filterVisibleTreatmentPlans,
-  getActivePatientIds,
-} from "../utils/specialistTreatmentPlanMappers";
+import { filterVisibleTreatmentPlans, getActivePatientIds } from "../utils/specialistTreatmentPlanMappers";
+import { applyTreatmentPlanListItemLocalization } from "../utils/specialistTreatmentPlansLocalization";
 import { subscribeSpecialistTreatmentPlanRefresh } from "../utils/specialistTreatmentPlanRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -11,6 +10,7 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistTreatmentPlans(specialistUserId) {
+  const { t, locale } = useLocale();
   const [plans, setPlans] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,6 +18,9 @@ export function useSpecialistTreatmentPlans(specialistUserId) {
   const [filterId, setFilterId] = useState("all");
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadFailedMessage = t("specialist.treatmentPlans.errors.loadFailed");
+  const signInRequiredMessage = t("specialist.treatmentPlans.errors.signInRequired");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -49,7 +52,7 @@ export function useSpecialistTreatmentPlans(specialistUserId) {
           return;
         }
         setPlans([]);
-        setError(resolveErrorMessage(loadError, "Failed to load treatment plans."));
+        setError(resolveErrorMessage(loadError, loadFailedMessage));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -62,12 +65,12 @@ export function useSpecialistTreatmentPlans(specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, refreshToken]);
+  }, [specialistUserId, refreshToken, loadFailedMessage]);
 
-  const visiblePlans = useMemo(
-    () => filterVisibleTreatmentPlans(plans, { filterId, searchQuery }),
-    [plans, filterId, searchQuery],
-  );
+  const visiblePlans = useMemo(() => {
+    const filtered = filterVisibleTreatmentPlans(plans, { filterId, searchQuery });
+    return filtered.map((plan) => applyTreatmentPlanListItemLocalization(plan, { t, locale }));
+  }, [plans, filterId, searchQuery, t, locale]);
 
   const activePatientIds = useMemo(() => getActivePatientIds(plans), [plans]);
 
@@ -77,7 +80,7 @@ export function useSpecialistTreatmentPlans(specialistUserId) {
       visiblePlans: [],
       activePatientIds: new Set(),
       isLoading: false,
-      error: "Please sign in to view treatment plans.",
+      error: signInRequiredMessage,
       searchQuery,
       setSearchQuery,
       filterId,

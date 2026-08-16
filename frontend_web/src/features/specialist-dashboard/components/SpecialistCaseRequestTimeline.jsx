@@ -1,4 +1,5 @@
 import { CheckCircle2, Circle, CircleDot } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 
 function TimelineIcon({ state }) {
   if (state === "completed") {
@@ -11,13 +12,15 @@ function TimelineIcon({ state }) {
 }
 
 export function SpecialistCaseRequestTimeline({ steps = [] }) {
+  const { t } = useLocale();
+
   if (!Array.isArray(steps) || steps.length === 0) {
     return null;
   }
 
   return (
     <section className="pd-card pd-card-pad pd-specialist-case-section">
-      <h2 className="pd-specialist-case-section-title">Status Timeline</h2>
+      <h2 className="pd-specialist-case-section-title">{t("specialist.caseRequests.statusTimeline")}</h2>
       <ol className="pd-specialist-case-timeline">
         {steps.map((step, index) => (
           <li

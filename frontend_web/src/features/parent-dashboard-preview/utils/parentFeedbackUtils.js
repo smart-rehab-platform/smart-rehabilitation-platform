@@ -1,19 +1,15 @@
-export const FEEDBACK_SORT_OPTIONS = [
-  { id: "newest", label: "Newest review" },
-  { id: "oldest", label: "Oldest review" },
-  { id: "alphabetical", label: "Alphabetical" },
-  { id: "retryFirst", label: "Requires retry first" },
-];
+import {
+  buildFeedbackSortOptions,
+  buildFeedbackStatusFilterOptions,
+  getFeedbackEmptyMessages,
+  getFeedbackStatusMeta,
+} from "./parentFeedbackLocalization";
 
-export const FEEDBACK_STATUS_FILTER_OPTIONS = [
-  { id: "all", label: "All statuses" },
-  { id: "needs_retry", label: "Needs Retry" },
-  { id: "reviewed", label: "Reviewed" },
-];
-
-export const FEEDBACK_EMPTY_MESSAGES = {
-  none: "No exercise feedback yet.",
-  filtered: "No reviews match your filters.",
+export {
+  buildFeedbackSortOptions,
+  buildFeedbackStatusFilterOptions,
+  getFeedbackEmptyMessages,
+  getFeedbackStatusMeta,
 };
 
 /**

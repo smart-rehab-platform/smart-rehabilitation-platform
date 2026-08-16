@@ -1,8 +1,12 @@
+import { useLocale } from "../../../context/useLocale";
+
 export function SpecialistAiRecommendationActions({
   isUpdating,
   onAccept,
   onReject,
 }) {
+  const { t } = useLocale();
+
   return (
     <div className="pd-specialist-ai-recommendation-actions">
       <button
@@ -11,7 +15,7 @@ export function SpecialistAiRecommendationActions({
         onClick={onAccept}
         disabled={isUpdating}
       >
-        {isUpdating ? "Saving..." : "Accept"}
+        {isUpdating ? t("specialist.aiRecommendations.actions.saving") : t("specialist.aiRecommendations.actions.accept")}
       </button>
       <button
         type="button"
@@ -19,7 +23,7 @@ export function SpecialistAiRecommendationActions({
         onClick={onReject}
         disabled={isUpdating}
       >
-        Reject
+        {t("specialist.aiRecommendations.actions.reject")}
       </button>
     </div>
   );

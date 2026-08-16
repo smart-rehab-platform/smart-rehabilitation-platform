@@ -1,6 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { buildSpecialistEditProfilePath } from "../../routes/specialistDashboardRoutes";
 import { SpecialistPersonalInfo, SpecialistProfessionalInfo } from "./components/SpecialistProfileInfoCards";
 import { SpecialistProfileHeader } from "./components/SpecialistProfileHeader";
@@ -8,11 +9,14 @@ import { useSpecialistPresence } from "./hooks/useSpecialistPresence";
 import { useSpecialistProfile } from "./hooks/useSpecialistProfile";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
+import { getSpecialistProfilePageLabels } from "./utils/specialistProfileLocalization.js";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistProfilePage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
+  const pageLabels = useMemo(() => getSpecialistProfilePageLabels(t), [t]);
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -56,7 +60,7 @@ export default function SpecialistProfilePage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading profile...</p>
+          <p className="pd-inline-loading">{pageLabels.loading}</p>
         </section>
       );
     }
@@ -66,7 +70,7 @@ export default function SpecialistProfilePage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {pageLabels.retry}
           </button>
         </section>
       );
@@ -75,9 +79,9 @@ export default function SpecialistProfilePage() {
     if (!profile) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-error">Profile unavailable.</p>
+          <p className="pd-inline-error">{pageLabels.unavailable}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {pageLabels.retry}
           </button>
         </section>
       );
@@ -125,9 +129,9 @@ export default function SpecialistProfilePage() {
       >
         <div className="pd-specialist-profile-page pd-section-enter">
           <header className="pd-specialist-profile-page-header">
-            <h1 className="pd-task-hub-title">Profile</h1>
+            <h1 className="pd-task-hub-title">{pageLabels.title}</h1>
             <p className="pd-task-hub-subtitle">
-              Manage your personal and professional information.
+              {pageLabels.subtitle}
             </p>
           </header>
 

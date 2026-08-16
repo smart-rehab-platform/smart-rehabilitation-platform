@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock, exerciseStatusMeta } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { InstructionMediaCard } from "./components/InstructionMediaCard";
 import { ExerciseSubmissionForm } from "./components/ExerciseSubmissionForm";
@@ -17,15 +17,22 @@ import {
   isExerciseActionable,
   mapParentFromAuth,
 } from "./utils/parentDashboardMappers";
+import { getTaskStatusMeta } from "./utils/parentDailyTasksUtils";
 import "./styles/parentDashboardTokens.css";
 
-function formatFrequencyLabel(frequency) {
+function formatFrequencyLabel(frequency, t) {
   if (!frequency) {
     return null;
   }
 
   if (frequency === "one_time") {
-    return "One time";
+    return t("parent.dashboard.frequency.oneTime");
+  }
+
+  const periodKey = `parent.progress.period.${frequency}`;
+  const localized = t(periodKey);
+  if (localized !== periodKey) {
+    return localized;
   }
 
   return frequency.charAt(0).toUpperCase() + frequency.slice(1);
@@ -42,6 +49,7 @@ function ExerciseDetailState({ message, isError = false }) {
 export default function ParentExerciseDetailPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const assignedExerciseId = searchParams.get("assignedExerciseId")?.trim() || null;
   const patientId = searchParams.get("patientId")?.trim() || null;
@@ -61,10 +69,10 @@ export default function ParentExerciseDetailPage() {
       state: {
         selectedChildId: patientId || viewModel?.patientId || undefined,
         refreshDashboard: true,
-        toastMessage: "Exercise submitted successfully.",
+        toastMessage: t("parent.pages.exerciseDetail.submittedSuccess"),
       },
     });
-  }, [navigate, patientId, viewModel?.patientId]);
+  }, [navigate, patientId, viewModel?.patientId, t]);
 
   const submission = useExerciseSubmission({
     assignedExerciseId,
@@ -119,7 +127,7 @@ export default function ParentExerciseDetailPage() {
   ]);
 
   const statusMeta = viewModel?.status
-    ? exerciseStatusMeta[viewModel.status] || exerciseStatusMeta.todo
+    ? getTaskStatusMeta(viewModel.status, t)
     : null;
 
   const handleBack = useCallback(() => {
@@ -158,14 +166,14 @@ export default function ParentExerciseDetailPage() {
     if (!assignedExerciseId) {
       return (
         <ExerciseDetailState
-          message="No exercise was specified. Return to the dashboard and select a task."
+          message={t("parent.pages.exerciseDetail.noExerciseSpecified")}
           isError
         />
       );
     }
 
     if (isLoading) {
-      return <ExerciseDetailState message="Loading exercise details..." />;
+      return <ExerciseDetailState message={t("parent.pages.exerciseDetail.loading")} />;
     }
 
     if (error) {
@@ -175,28 +183,30 @@ export default function ParentExerciseDetailPage() {
     if (!viewModel) {
       return (
         <ExerciseDetailState
-          message="Exercise details are unavailable."
+          message={t("parent.pages.exerciseDetail.unavailable")}
           isError
         />
       );
     }
 
-    const frequencyLabel = formatFrequencyLabel(viewModel.frequency);
-    const submissionStateMessage = getExerciseSubmissionStateMessage(viewModel.status);
+    const frequencyLabel = formatFrequencyLabel(viewModel.frequency, t);
+    const submissionStateMessage = getExerciseSubmissionStateMessage(viewModel.status, t);
     const showSubmissionForm = isActionable || submission.partialFailure;
 
     return (
       <div className="pd-exercise-detail-grid pd-section-enter">
-        <section className="pd-card pd-card-pad pd-exercise-detail-hero" aria-label="Exercise overview">
+        <section className="pd-card pd-card-pad pd-exercise-detail-hero" aria-label={t("parent.exercises.detailTitle")}>
           <div className="pd-exercise-detail-head">
             <div className="pd-exercise-detail-title-row">
-              <h1 className="pd-exercise-detail-title">{viewModel.title}</h1>
+              <h1 className="pd-exercise-detail-title" dir="auto">{viewModel.title}</h1>
               {statusMeta ? (
                 <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
               ) : null}
             </div>
             {viewModel.childName ? (
-              <p className="pd-exercise-detail-child">For {viewModel.childName}</p>
+              <p className="pd-exercise-detail-child">
+                {t("parent.pages.exerciseDetail.forChild", { name: viewModel.childName })}
+              </p>
             ) : null}
           </div>
 
@@ -204,13 +214,13 @@ export default function ParentExerciseDetailPage() {
             <ul className="pd-exercise-detail-meta">
               {frequencyLabel ? (
                 <li>
-                  <strong>Frequency</strong>
+                  <strong>{t("parent.pages.exerciseDetail.frequency")}</strong>
                   <span>{frequencyLabel}</span>
                 </li>
               ) : null}
               {viewModel.dueDate ? (
                 <li>
-                  <strong>Due date</strong>
+                  <strong>{t("parent.pages.exerciseDetail.dueDate")}</strong>
                   <span>{viewModel.dueDate}</span>
                 </li>
               ) : null}
@@ -222,13 +232,13 @@ export default function ParentExerciseDetailPage() {
           ) : null}
         </section>
 
-        <section className="pd-card pd-card-pad pd-exercise-detail-instructions" aria-label="Instructions">
-          <h2 className="pd-section-title">Instructions</h2>
+        <section className="pd-card pd-card-pad pd-exercise-detail-instructions" aria-label={t("parent.pages.exerciseDetail.instructions")}>
+          <h2 className="pd-section-title">{t("parent.pages.exerciseDetail.instructions")}</h2>
           {viewModel.instructions ? (
-            <p className="pd-exercise-detail-instructions-body">{viewModel.instructions}</p>
+            <p className="pd-exercise-detail-instructions-body" dir="auto">{viewModel.instructions}</p>
           ) : (
             <p className="pd-exercise-detail-instructions-empty">
-              Follow the specialist instructions for this exercise.
+              {t("parent.pages.exerciseDetail.instructionsEmpty")}
             </p>
           )}
         </section>
@@ -256,8 +266,8 @@ export default function ParentExerciseDetailPage() {
             onSubmit={submission.submitExercise}
           />
         ) : submissionStateMessage ? (
-          <section className="pd-card pd-card-pad pd-exercise-submission-closed pd-section-enter" aria-label="Submission status">
-            <h2 className="pd-section-title">Submission</h2>
+          <section className="pd-card pd-card-pad pd-exercise-submission-closed pd-section-enter" aria-label={t("parent.pages.exerciseDetail.submission")}>
+            <h2 className="pd-section-title">{t("parent.pages.exerciseDetail.submission")}</h2>
             <p className="pd-exercise-submission-state">{submissionStateMessage}</p>
           </section>
         ) : null}
@@ -270,7 +280,6 @@ export default function ParentExerciseDetailPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -297,7 +306,7 @@ export default function ParentExerciseDetailPage() {
               disabled={submission.isSubmitting}
             >
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Dashboard
+              {t("parent.common.backToDashboard")}
             </button>
           </div>
 

@@ -1,5 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { parseAdminUsersRoleParam } from "../../routes/adminDashboardRoutes.js";
 import { AdminUserDeleteDialog } from "./components/AdminUserDeleteDialog";
 import { AdminUserFormModal } from "./components/AdminUserFormModal";
 import { AdminUserStatusDialog } from "./components/AdminUserStatusDialog";
@@ -13,6 +15,12 @@ import "./styles/adminDashboardSections.css";
 import "./styles/adminUsersSections.css";
 
 export default function AdminUsersPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const roleFromUrl = useMemo(
+    () => parseAdminUsersRoleParam(searchParams.get("role")),
+    [searchParams],
+  );
+
   const { user } = useAuth();
   const {
     adminUser,
@@ -51,7 +59,25 @@ export default function AdminUsersPage() {
     isUpdating,
     isUpdatingStatus,
     isDeleting,
+    labels,
   } = useAdminUsers();
+
+  useEffect(() => {
+    setRoleFilter(roleFromUrl);
+  }, [roleFromUrl, setRoleFilter]);
+
+  const handleRoleFilterChange = useCallback((nextRole) => {
+    setRoleFilter(nextRole);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (nextRole) {
+        next.set("role", nextRole);
+      } else {
+        next.delete("role");
+      }
+      return next;
+    }, { replace: true });
+  }, [setRoleFilter, setSearchParams]);
 
   const [formModal, setFormModal] = useState({ open: false, mode: "add", user: null });
   const [statusDialog, setStatusDialog] = useState({ open: false, user: null, error: null });
@@ -93,17 +119,17 @@ export default function AdminUsersPage() {
     if (formModal.mode === "edit" && formModal.user) {
       const submitError = await updateUser(formModal.user.id, form);
       if (!submitError) {
-        showToast("User updated successfully.");
+        showToast(labels.updatedSuccess);
       }
       return submitError;
     }
 
     const submitError = await createUser(form);
     if (!submitError) {
-      showToast("User created successfully.");
+      showToast(labels.createdSuccess);
     }
     return submitError;
-  }, [formModal.mode, formModal.user, updateUser, createUser, showToast]);
+  }, [formModal.mode, formModal.user, updateUser, createUser, showToast, labels]);
 
   const openStatusDialog = useCallback((selectedUser) => {
     setStatusDialog({ open: true, user: selectedUser, error: null });
@@ -130,9 +156,9 @@ export default function AdminUsersPage() {
       return;
     }
 
-    showToast(nextActive ? "User activated." : "User deactivated.");
+    showToast(nextActive ? labels.activatedSuccess : labels.deactivatedSuccess);
     setStatusDialog({ open: false, user: null, error: null });
-  }, [statusDialog.user, updateUserStatus, showToast]);
+  }, [statusDialog.user, updateUserStatus, showToast, labels]);
 
   const openDeleteDialog = useCallback((selectedUser) => {
     setDeleteDialog({ open: true, user: selectedUser, error: null });
@@ -158,9 +184,9 @@ export default function AdminUsersPage() {
       return;
     }
 
-    showToast("User deleted successfully.");
+    showToast(labels.deletedSuccess);
     setDeleteDialog({ open: false, user: null, error: null });
-  }, [deleteDialog.user, deleteUser, showToast]);
+  }, [deleteDialog.user, deleteUser, showToast, labels]);
 
   return (
     <div className="pd-preview">
@@ -185,7 +211,7 @@ export default function AdminUsersPage() {
           searchQuery={searchQuery}
           roleFilter={roleFilter}
           onSearchChange={setSearchQuery}
-          onRoleFilterChange={setRoleFilter}
+          onRoleFilterChange={handleRoleFilterChange}
           onAddUser={openAddUser}
         />
 
@@ -193,7 +219,7 @@ export default function AdminUsersPage() {
           <div className="pd-admin-users-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : (

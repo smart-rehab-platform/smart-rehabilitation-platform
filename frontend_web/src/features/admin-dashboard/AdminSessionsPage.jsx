@@ -10,10 +10,10 @@ import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/adminDashboardSections.css";
 import "./styles/adminSessionsSections.css";
 
-const ACTION_SUCCESS_MESSAGES = {
-  complete: "Session marked as completed.",
-  cancel: "Session cancelled.",
-  noShow: "Session marked as no-show.",
+const ACTION_SUCCESS_TOAST_KEYS = {
+  complete: "completeSuccess",
+  cancel: "cancelSuccess",
+  noShow: "noShowSuccess",
 };
 
 export default function AdminSessionsPage() {
@@ -36,6 +36,7 @@ export default function AdminSessionsPage() {
   } = useAdminShell();
 
   const {
+    labels,
     sessions,
     filteredSessions,
     searchQuery,
@@ -82,9 +83,9 @@ export default function AdminSessionsPage() {
 
   const handleEditSuccess = useCallback(() => {
     setEditingSession(null);
-    showToast("Session updated successfully.");
+    showToast(labels.toast.updateSuccess);
     refresh();
-  }, [refresh, showToast]);
+  }, [labels.toast.updateSuccess, refresh, showToast]);
 
   const handleEditErrorRefresh = useCallback(async () => {
     refresh();
@@ -108,11 +109,12 @@ export default function AdminSessionsPage() {
 
   const handleActionSuccess = useCallback((actionType) => {
     setActionState(null);
-    if (actionType && ACTION_SUCCESS_MESSAGES[actionType]) {
-      showToast(ACTION_SUCCESS_MESSAGES[actionType]);
+    const toastKey = actionType && ACTION_SUCCESS_TOAST_KEYS[actionType];
+    if (toastKey) {
+      showToast(labels.toast[toastKey]);
     }
     refresh();
-  }, [refresh, showToast]);
+  }, [labels.toast, refresh, showToast]);
 
   const handleActionErrorRefresh = useCallback(async () => {
     refresh();
@@ -148,7 +150,7 @@ export default function AdminSessionsPage() {
           <div className="pd-admin-sessions-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : (

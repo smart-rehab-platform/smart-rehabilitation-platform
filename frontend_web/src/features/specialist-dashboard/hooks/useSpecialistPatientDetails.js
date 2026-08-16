@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   createPatientNote,
   createSpecialistConversation,
@@ -11,6 +12,12 @@ import {
   loadSpecialistPatientDetailsBundle,
   loadSpecialistPatients,
 } from "../../../services/specialistPatientService";
+import {
+  applyPatientDetailsLocalization,
+  getPatientFamilyPatternErrorMessage,
+  getPatientLoadErrorMessage,
+  getPatientMessageParentErrorMessage,
+} from "../utils/specialistPatientsLocalization.js";
 import {
   buildPatientDetailsBundle,
   buildRecentSubmissionsWithMedia,
@@ -30,7 +37,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistPatientDetails(patientId, specialistUserId) {
-  const [details, setDetails] = useState(null);
+  const { t, locale } = useLocale();
+  const [baseDetails, setBaseDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isSavingNote, setIsSavingNote] = useState(false);
@@ -41,6 +49,13 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
   const [isOpeningConversation, setIsOpeningConversation] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+
+  const details = useMemo(
+    () => applyPatientDetailsLocalization(baseDetails, mapperContext),
+    [baseDetails, mapperContext],
+  );
 
   const refetch = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -58,11 +73,13 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
       setFamilyPattern(mapFamilyPatternInsight(row));
     } catch (loadError) {
       setFamilyPattern(null);
-      setFamilyPatternError(resolveErrorMessage(loadError, "Failed to load family pattern insight."));
+      setFamilyPatternError(
+        resolveErrorMessage(loadError, getPatientFamilyPatternErrorMessage(t)),
+      );
     } finally {
       setIsLoadingFamilyPattern(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (!patientId || !specialistUserId) {
@@ -76,7 +93,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
     async function loadDetails() {
       setIsLoading(true);
       setError(null);
-      setDetails(null);
+      setBaseDetails(null);
 
       try {
         const assignedRows = await loadSpecialistPatients(specialistUserId);
@@ -116,14 +133,14 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
           return;
         }
 
-        setDetails(bundle);
+        setBaseDetails(bundle);
         loadFamilyPattern(patientId);
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setDetails(null);
-        setError(resolveErrorMessage(loadError, "Failed to load patient details."));
+        setBaseDetails(null);
+        setError(getPatientLoadErrorMessage(loadError, t));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -136,7 +153,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [patientId, specialistUserId, refreshToken, loadFamilyPattern]);
+  }, [patientId, specialistUserId, refreshToken, loadFamilyPattern, t]);
 
   const addNote = useCallback(async (noteText) => {
     if (!patientId) {
@@ -225,5 +242,6 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
     openMessageParent,
     loadFamilyPatternDetailsPanel,
     retryFamilyPattern: () => loadFamilyPattern(patientId),
+    getMessageParentError: (messageError) => getPatientMessageParentErrorMessage(messageError, t),
   };
 }

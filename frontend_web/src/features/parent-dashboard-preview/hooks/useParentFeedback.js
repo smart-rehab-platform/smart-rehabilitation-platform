@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getChildren,
   getChildrenProgress,
@@ -19,6 +20,7 @@ async function loadChildReviews(child) {
 }
 
 export function useParentFeedback(parentUserId) {
+  const { t } = useLocale();
   const [children, setChildren] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(Boolean(parentUserId));
@@ -72,7 +74,7 @@ export function useParentFeedback(parentUserId) {
         setReviews(reviewGroups.flat());
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setError(resolveErrorMessage(loadError, "Failed to load exercise feedback."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadFeedbackFailed")));
           setReviews([]);
         }
       } finally {
@@ -87,7 +89,7 @@ export function useParentFeedback(parentUserId) {
     return () => {
       cancelled = true;
     };
-  }, [parentUserId, refreshToken]);
+  }, [parentUserId, refreshToken, t]);
 
   const reviewCount = useMemo(() => reviews.length, [reviews]);
 
@@ -97,7 +99,7 @@ export function useParentFeedback(parentUserId) {
       reviews: [],
       reviewCount: 0,
       isLoading: false,
-      error: "Please sign in to view exercise feedback.",
+      error: t("parent.hooks.signInFeedback"),
       refetch,
     };
   }

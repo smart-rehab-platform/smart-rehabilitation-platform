@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
-import '../../../../core/locale/language_selector.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_profile_models.dart';
@@ -114,13 +113,7 @@ class _SpecialistProfileScreenState
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const LanguageSelector(
-                presentation: LanguageSelectorPresentation.settingsTile,
-              ),
-              SharedProfileCard(
+          child: SharedProfileCard(
                 initials: bundle.fullName,
                 initialsFallback: 'SP',
                 imageUrl: bundle.profileImageUrl,
@@ -132,8 +125,6 @@ class _SpecialistProfileScreenState
                     context.push(AppRoutes.specialistEditProfile),
                 onLogout: () => SpecialistNavigation.logout(context, ref),
               ),
-            ],
-          ),
         ),
       );
     }

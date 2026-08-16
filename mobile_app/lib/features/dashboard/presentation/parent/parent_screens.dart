@@ -554,13 +554,7 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const LanguageSelector(
-                presentation: LanguageSelectorPresentation.settingsTile,
-              ),
-              SharedProfileCard(
+          child: SharedProfileCard(
                 initials: bundle.fullName,
                 initialsFallback: 'PR',
                 imageUrl: bundle.profileImageUrl,
@@ -574,8 +568,6 @@ class _ParentProfileScreenState extends ConsumerState<ParentProfileScreen> {
                 onEditPressed: () => context.push(AppRoutes.parentEditProfile),
                 onLogout: () => ParentNavigation.logout(context, ref),
               ),
-            ],
-          ),
         ),
       );
     }

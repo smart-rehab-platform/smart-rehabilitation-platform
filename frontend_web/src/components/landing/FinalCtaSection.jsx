@@ -1,18 +1,17 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 import arrowRightAltIcon from "../../assets/icons/arrow_right_alt.svg";
+import { useLocale } from "../../context/useLocale.js";
+import { buildLandingFinalCtaBenefits } from "./landingLocalization.js";
 import { L } from "./landingTokens";
-
-const BENEFITS = [
-  "Get Started in Minutes",
-  "AI-Assisted Rehabilitation",
-  "Mobile & Web Access",
-  "Secure Role-Based Platform",
-];
 
 const CTA_BG = "#102847";
 
 export function FinalCtaSection() {
+  const { t } = useLocale();
+  const benefits = useMemo(() => buildLandingFinalCtaBenefits(t), [t]);
+
   return (
     <section
       id="join-us"
@@ -39,7 +38,7 @@ export function FinalCtaSection() {
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          JOIN THE PLATFORM
+          {t("landing.finalCta.eyebrow")}
         </div>
 
         <h2
@@ -47,25 +46,24 @@ export function FinalCtaSection() {
           className="mt-8 text-[2.125rem] leading-[1.1] tracking-tight sm:text-[2.5rem] md:mt-10 md:text-[3rem] lg:text-[3.75rem] lg:leading-[1.08]"
           style={{ fontFamily: "'Playfair Display', serif", color: L.text }}
         >
-          Ready to Start the Rehabilitation Journey?
+          {t("landing.finalCta.heading")}
         </h2>
 
         <p
           className="mx-auto mt-6 max-w-[700px] px-2 text-base leading-relaxed md:mt-7 md:text-[17px]"
           style={{ color: L.textMuted, fontFamily: "'Inter', sans-serif" }}
         >
-          Join one connected platform that empowers families, specialists, and administrators to
-          deliver better rehabilitation outcomes through collaboration and AI-powered support.
+          {t("landing.finalCta.description")}
         </p>
 
         <ul
           className="mx-auto mt-8 grid max-w-[720px] grid-cols-2 gap-x-6 gap-y-4 md:mt-10 md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-8 lg:gap-x-8"
-          aria-label="Platform benefits"
+          aria-label={t("landing.finalCta.benefits.ariaLabel")}
         >
-          {BENEFITS.map((benefit) => (
+          {benefits.map((benefit) => (
             <li
               key={benefit}
-              className="flex items-center justify-center gap-2 text-left md:justify-start"
+              className="flex items-center justify-center gap-2 text-start md:justify-start"
             >
               <Check
                 size={16}
@@ -94,12 +92,12 @@ export function FinalCtaSection() {
               boxShadow: `0 4px 24px ${L.hoverGlow}`,
             }}
           >
-            Get Started
+            {t("landing.finalCta.getStarted")}
             <img
               src={arrowRightAltIcon}
               alt=""
               aria-hidden="true"
-              className="final-cta-primary-arrow h-5 w-5 shrink-0 object-contain brightness-0 invert"
+              className="final-cta-primary-arrow h-5 w-5 shrink-0 object-contain brightness-0 invert rtl:rotate-180"
             />
           </Link>
           <Link
@@ -112,7 +110,7 @@ export function FinalCtaSection() {
               fontFamily: "'Inter', sans-serif",
             }}
           >
-            Sign In
+            {t("landing.finalCta.signIn")}
           </Link>
         </div>
       </div>
@@ -126,11 +124,19 @@ export function FinalCtaSection() {
           .final-cta-primary:hover .final-cta-primary-arrow {
             transform: translateX(3px);
           }
+
+          [dir=rtl] .final-cta-primary:hover .final-cta-primary-arrow {
+            transform: translateX(-3px) rotate(180deg);
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
           .final-cta-primary:hover .final-cta-primary-arrow {
             transform: none;
+          }
+
+          [dir=rtl] .final-cta-primary:hover .final-cta-primary-arrow {
+            transform: rotate(180deg);
           }
         }
 

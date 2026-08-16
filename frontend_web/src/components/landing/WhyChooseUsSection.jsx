@@ -1,32 +1,9 @@
+import { useMemo } from "react";
 import closeIcon from "../../assets/icons/close.svg";
 import taskAltIcon from "../../assets/icons/task_alt.svg";
+import { useLocale } from "../../context/useLocale.js";
+import { buildLandingComparisons } from "./landingLocalization.js";
 import { L } from "./landingTokens";
-const COMPARISONS = [
-  {
-    traditional: "Scattered communication",
-    smart: "One connected platform",
-  },
-  {
-    traditional: "Paper-based progress",
-    smart: "Visual progress analytics",
-  },
-  {
-    traditional: "Limited home guidance",
-    smart: "Guided daily exercises",
-  },
-  {
-    traditional: "Delayed feedback",
-    smart: "Direct specialist reviews",
-  },
-  {
-    traditional: "Manual summaries",
-    smart: "AI-assisted summaries",
-  },
-  {
-    traditional: "Separate tools",
-    smart: "Mobile + Web + AI ecosystem",
-  },
-];
 
 const TRADITIONAL_HEADER = {
   background: "#FFF9F1",
@@ -57,7 +34,7 @@ const SMART_ROW = {
   hoverBorder: "rgba(42, 164, 201, 0.32)",
 };
 
-function ColumnHeader({ variant }) {
+function ColumnHeader({ variant, label }) {
   const isTraditional = variant === "traditional";
   const styles = isTraditional ? TRADITIONAL_HEADER : SMART_HEADER;
 
@@ -71,7 +48,7 @@ function ColumnHeader({ variant }) {
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {isTraditional ? "Traditional Follow-Up" : "Smart Rehabilitation"}
+      {label}
     </div>
   );
 }
@@ -110,7 +87,7 @@ function ComparisonRow({ variant, text }) {
         />
       </span>
       <span
-        className="text-left text-[14px] leading-snug"
+        className="text-start text-[14px] leading-snug"
         style={{ color: styles.text, fontFamily: "'Inter', sans-serif" }}
       >
         {text}
@@ -120,6 +97,9 @@ function ComparisonRow({ variant, text }) {
 }
 
 export function WhyChooseUsSection() {
+  const { t } = useLocale();
+  const comparisons = useMemo(() => buildLandingComparisons(t), [t]);
+
   return (
     <section
       id="about"
@@ -133,25 +113,25 @@ export function WhyChooseUsSection() {
             className="mb-3 text-[12px] font-semibold uppercase tracking-[0.18em] md:mb-4 md:text-[13px]"
             style={{ color: L.primary, fontFamily: "'Inter', sans-serif" }}
           >
-            WHY CHOOSE US
+            {t("landing.whyChooseUs.eyebrow")}
           </p>
           <h2
             id="why-choose-us-heading"
             className="text-[2rem] leading-[1.15] tracking-tight sm:text-[2.5rem] md:text-[2.75rem] lg:text-[3.25rem]"
             style={{ color: L.sectionHeading, fontFamily: "'Playfair Display', serif" }}
           >
-            Why Smart Rehabilitation?
+            {t("landing.whyChooseUs.heading")}
           </h2>
         </header>
 
         <div className="hidden md:block">
           <div className="mb-3 grid grid-cols-2 gap-4">
-            <ColumnHeader variant="traditional" />
-            <ColumnHeader variant="smart" />
+            <ColumnHeader variant="traditional" label={t("landing.whyChooseUs.columns.traditional")} />
+            <ColumnHeader variant="smart" label={t("landing.whyChooseUs.columns.smart")} />
           </div>
           <div className="flex flex-col gap-2.5">
-            {COMPARISONS.map((row) => (
-              <div key={row.traditional} className="grid grid-cols-2 gap-4">
+            {comparisons.map((row) => (
+              <div key={row.key} className="grid grid-cols-2 gap-4">
                 <ComparisonRow variant="traditional" text={row.traditional} />
                 <ComparisonRow variant="smart" text={row.smart} />
               </div>
@@ -160,8 +140,8 @@ export function WhyChooseUsSection() {
         </div>
 
         <div className="flex flex-col gap-4 md:hidden">
-          {COMPARISONS.map((row) => (
-            <div key={row.traditional} className="flex flex-col gap-2">
+          {comparisons.map((row) => (
+            <div key={row.key} className="flex flex-col gap-2">
               <ComparisonRow variant="traditional" text={row.traditional} />
               <ComparisonRow variant="smart" text={row.smart} />
             </div>

@@ -1,4 +1,6 @@
-import { getComplaintStatusActions } from "../utils/adminComplaintsMappers";
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
+import { getAdminComplaintsLabels } from "../utils/adminComplaintsLocalization.js";
 
 export function AdminComplaintActions({
   complaint,
@@ -6,40 +8,44 @@ export function AdminComplaintActions({
   onResolve,
   onReject,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminComplaintsLabels(t), [t]);
+
   if (!complaint) {
     return null;
   }
 
-  const actions = getComplaintStatusActions(complaint.status);
-  if (!actions.canStartReview && !actions.canResolve && !actions.canReject) {
+  const { canStartReview, canResolve, canReject } = complaint;
+  if (!canStartReview && !canResolve && !canReject) {
     return null;
   }
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-complaint-actions pd-section-enter" aria-label="Complaint actions">
+    <section
+      className="pd-card pd-card-pad pd-admin-complaint-actions pd-section-enter"
+      aria-label={labels.reviewActionsAriaLabel}
+    >
       <div className="pd-admin-complaint-actions-copy">
-        <h2 className="pd-admin-complaint-section-title">Review Actions</h2>
-        <p className="pd-admin-complaint-empty-copy">
-          Update this complaint status according to your review outcome.
-        </p>
+        <h2 className="pd-admin-complaint-section-title">{labels.reviewActions}</h2>
+        <p className="pd-admin-complaint-empty-copy">{labels.reviewActionsHint}</p>
       </div>
 
       <div className="pd-admin-complaint-actions-buttons">
-        {actions.canStartReview ? (
+        {canStartReview ? (
           <button type="button" className="pd-btn pd-btn-primary" onClick={onStartReview}>
-            Start Review
+            {labels.actions.startReview}
           </button>
         ) : null}
 
-        {actions.canResolve ? (
+        {canResolve ? (
           <button type="button" className="pd-btn pd-btn-success" onClick={onResolve}>
-            Resolve Complaint
+            {labels.actions.resolve}
           </button>
         ) : null}
 
-        {actions.canReject ? (
+        {canReject ? (
           <button type="button" className="pd-btn pd-btn-danger" onClick={onReject}>
-            Reject Complaint
+            {labels.actions.reject}
           </button>
         ) : null}
       </div>

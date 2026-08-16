@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { CheckCircle2, ChevronRight } from "lucide-react";
 import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
-import { exerciseStatusMeta } from "../mock/parentDashboardMock";
+import { useLocale } from "../../../context/useLocale.js";
 import { StatusBadge } from "../components/StatusBadge";
 import { getDashboardPriorityTasks } from "../utils/parentDashboardMappers";
 
@@ -22,12 +22,19 @@ function resolveTodayTasks(exercises) {
   return todayTasks.length > 0 ? todayTasks : exercises;
 }
 
+function resolveExerciseStatusLabel(status, t) {
+  const key = `parent.exercises.status.${status}`;
+  const label = t(key);
+  return label || t("parent.common.unknown");
+}
+
 export function TodaysExercisesSection({
   childName,
   exercises = [],
   onViewAll,
   onExerciseClick,
 }) {
+  const { t } = useLocale();
   const todaySource = useMemo(() => resolveTodayTasks(exercises), [exercises]);
 
   const tasks = useMemo(
@@ -44,14 +51,17 @@ export function TodaysExercisesSection({
   }, [todaySource]);
 
   const completionLabel = completion.total > 0
-    ? `${completion.completed} of ${completion.total} completed`
+    ? t("parent.home.completedCount", {
+      completed: completion.completed,
+      total: completion.total,
+    })
     : null;
 
   return (
-    <section className="pd-card pd-card-pad pd-today-tasks pd-section-enter" aria-label="Today's tasks">
+    <section className="pd-card pd-card-pad pd-today-tasks pd-section-enter" aria-label={t("parent.home.todaysTasks")}>
       <div className="pd-card-header pd-today-tasks-header">
         <div className="pd-today-tasks-heading">
-          <h2 className="pd-section-title">Today&apos;s Tasks</h2>
+          <h2 className="pd-section-title">{t("parent.home.todaysTasks")}</h2>
           {completionLabel ? (
             <p className="pd-today-tasks-summary">{completionLabel}</p>
           ) : null}
@@ -62,26 +72,29 @@ export function TodaysExercisesSection({
               aria-valuenow={completion.percent}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label={`${completion.completed} of ${completion.total} tasks completed`}
+              aria-label={t("parent.home.tasksProgressAria", {
+                completed: completion.completed,
+                total: completion.total,
+              })}
             >
               <span className="pd-today-tasks-progress-fill" style={{ "--pd-task-progress": `${completion.percent}%` }} />
             </div>
           ) : null}
         </div>
         <button type="button" className="pd-link" onClick={onViewAll}>
-          See All
+          {t("parent.home.seeAll")}
         </button>
       </div>
 
       {tasks.length === 0 ? (
-        <p className="pd-today-tasks-empty">No tasks assigned for today.</p>
+        <p className="pd-today-tasks-empty">{t("parent.home.noTasksToday")}</p>
       ) : (
         <ul className="pd-today-tasks-list">
           {tasks.map((task, index) => {
             const completed = isCompletedStatus(task.status);
             const iconDescriptor = completed ? null : taskIconDescriptor();
             const tone = TASK_COLORS[index % TASK_COLORS.length];
-            const statusMeta = exerciseStatusMeta[task.status] || exerciseStatusMeta.todo;
+            const statusLabel = resolveExerciseStatusLabel(task.status, t);
             const subtitle = [childName, task.duration, task.category].filter(Boolean).join(" · ");
 
             return (
@@ -90,7 +103,7 @@ export function TodaysExercisesSection({
                   type="button"
                   className={`pd-today-task-row${completed ? " is-completed" : ""}`}
                   onClick={() => onExerciseClick?.(task)}
-                  aria-label={`${task.title}. ${statusMeta.label}.`}
+                  aria-label={`${task.title}. ${statusLabel}.`}
                 >
                   <span className={`pd-today-task-icon pd-tone-${tone}${completed ? " is-completed" : ""}`} aria-hidden="true">
                     {completed ? (
@@ -103,7 +116,7 @@ export function TodaysExercisesSection({
                     <strong>{task.title}</strong>
                     <span>{subtitle}</span>
                   </span>
-                  <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
+                  <StatusBadge label={statusLabel} tone={completed ? "success" : task.status === "needs_retry" ? "danger" : task.status === "reviewed" ? "purple" : "gray"} />
                   <ChevronRight size={16} className="pd-today-task-chevron" aria-hidden="true" />
                 </button>
               </li>

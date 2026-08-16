@@ -1,3 +1,4 @@
+import { useLocale } from "../../../context/useLocale";
 import clipboardCheckMultipleIcon from "../../../assets/icons/clipboard-check-multiple.svg";
 import descriptionIcon from "../../../assets/icons/description.svg";
 import dumbbellIcon from "../../../assets/icons/dumbbell.svg";
@@ -5,25 +6,25 @@ import flagIcon from "../../../assets/icons/flag.svg";
 
 const STAT_CARD_META = {
   activeGoals: {
-    label: "Active Goals",
+    labelKey: "specialist.patientDetails.stats.activeGoals",
     icon: flagIcon,
     tone: "blue",
     target: "goals",
   },
   assignedExercises: {
-    label: "Assigned Exercises",
+    labelKey: "specialist.patientDetails.stats.assignedExercises",
     icon: dumbbellIcon,
     tone: "teal",
     target: "exercises",
   },
   pendingReviews: {
-    label: "Pending Reviews",
+    labelKey: "specialist.patientDetails.stats.pendingReviews",
     icon: clipboardCheckMultipleIcon,
     tone: "orange",
     target: "submissions",
   },
   reports: {
-    label: "Reports",
+    labelKey: "specialist.patientDetails.stats.reports",
     icon: descriptionIcon,
     tone: "navy",
     target: "reports",
@@ -38,9 +39,11 @@ const STAT_KEYS = [
 ];
 
 export function SpecialistPatientQuickStats({ stats, onStatClick }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-specialist-patient-section">
-      <h2 className="pd-section-title">Quick Statistics</h2>
+      <h2 className="pd-section-title">{t("specialist.patientDetails.quickStatistics")}</h2>
       <div className="pd-specialist-patient-quick-stats">
         {STAT_KEYS.map((key) => {
           const meta = STAT_CARD_META[key];
@@ -64,7 +67,7 @@ export function SpecialistPatientQuickStats({ stats, onStatClick }) {
                 />
               </span>
               <strong>{stats[key]}</strong>
-              <span>{meta.label}</span>
+              <span>{t(meta.labelKey)}</span>
             </button>
           );
         })}

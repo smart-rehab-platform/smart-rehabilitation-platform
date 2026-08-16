@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   createSessionRequest,
   getMySessionRequests,
@@ -26,21 +27,21 @@ const EMPTY_FORM = {
   notes: "",
 };
 
-async function enrichApprovedRequests(requestRows) {
+async function enrichApprovedRequests(requestRows, mapperOptions) {
   const enriched = await Promise.all(
     requestRows.map(async (row) => {
       const approvedSessionId = readString(row, ["approved_session_id", "approvedSessionId"]);
       const status = readString(row, ["status"])?.toLowerCase();
 
       if (status !== "approved" || !approvedSessionId) {
-        return mapSessionRequestRowToHubItem(row);
+        return mapSessionRequestRowToHubItem(row, null, mapperOptions);
       }
 
       try {
         const sessionRow = await getSessionById(approvedSessionId);
-        return mapSessionRequestRowToHubItem(row, sessionRow);
+        return mapSessionRequestRowToHubItem(row, sessionRow, mapperOptions);
       } catch {
-        return mapSessionRequestRowToHubItem(row);
+        return mapSessionRequestRowToHubItem(row, null, mapperOptions);
       }
     }),
   );
@@ -49,6 +50,8 @@ async function enrichApprovedRequests(requestRows) {
 }
 
 export function useParentSessionRequests(parentUserId) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [requests, setRequests] = useState([]);
   const [specialists, setSpecialists] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -116,13 +119,13 @@ export function useParentSessionRequests(parentUserId) {
           return;
         }
 
-        const mapped = await enrichApprovedRequests(rows);
+        const mapped = await enrichApprovedRequests(rows, mapperOptions);
         if (!cancelled && loadTokenRef.current === loadToken) {
           setRequests(mapped);
         }
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setError(resolveErrorMessage(loadError, "Failed to load session requests."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadSessionRequestsFailed")));
           setRequests([]);
         }
       } finally {
@@ -137,7 +140,7 @@ export function useParentSessionRequests(parentUserId) {
     return () => {
       cancelled = true;
     };
-  }, [parentUserId, refreshToken]);
+  }, [parentUserId, refreshToken, mapperOptions, t]);
 
   useEffect(() => {
     if (!form.patientId) {
@@ -190,7 +193,7 @@ export function useParentSessionRequests(parentUserId) {
       return { ok: false };
     }
 
-    const validationErrors = validateSessionRequestForm(form);
+    const validationErrors = validateSessionRequestForm(form, mapperOptions);
     setFormErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
@@ -224,13 +227,13 @@ export function useParentSessionRequests(parentUserId) {
       refetch();
       return { ok: true };
     } catch (submitFailure) {
-      setSubmitError(resolveErrorMessage(submitFailure, "Unable to submit session request."));
+      setSubmitError(resolveErrorMessage(submitFailure, t("parent.hooks.submitSessionRequestFailed")));
       return { ok: false };
     } finally {
       submittingRef.current = false;
       setIsSubmitting(false);
     }
-  }, [form, refetch, resetForm]);
+  }, [form, mapperOptions, refetch, resetForm, t]);
 
   if (!parentUserId) {
     return {
@@ -241,7 +244,7 @@ export function useParentSessionRequests(parentUserId) {
       isLoading: false,
       isSubmitting: false,
       isLoadingSpecialists: false,
-      error: "Please sign in to view session requests.",
+      error: t("parent.hooks.signInSessionRequests"),
       submitError: null,
       updateFormField,
       resetForm,

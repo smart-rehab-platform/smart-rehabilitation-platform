@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getChildren,
   getChildrenProgress,
@@ -28,6 +29,8 @@ function buildChildNameLookup(children) {
 }
 
 export function useParentAiConversations(parentUserId, selectedChildId) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [children, setChildren] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [isLoadingChildren, setIsLoadingChildren] = useState(Boolean(parentUserId));
@@ -66,7 +69,7 @@ export function useParentAiConversations(parentUserId, selectedChildId) {
       } catch (error) {
         if (!cancelled) {
           setChildren([]);
-          setChildrenError(resolveErrorMessage(error, "Failed to load children."));
+          setChildrenError(resolveErrorMessage(error, t("parent.hooks.loadAiChildrenFailed")));
         }
       } finally {
         if (!cancelled) {
@@ -80,7 +83,7 @@ export function useParentAiConversations(parentUserId, selectedChildId) {
     return () => {
       cancelled = true;
     };
-  }, [parentUserId]);
+  }, [parentUserId, t]);
 
   useEffect(() => {
     if (!parentUserId || isLoadingChildren) {
@@ -102,11 +105,11 @@ export function useParentAiConversations(parentUserId, selectedChildId) {
         }
 
         const childNameByPatientId = buildChildNameLookup(children);
-        setConversations(mapConversationRowsToHubItems(rows, childNameByPatientId));
+        setConversations(mapConversationRowsToHubItems(rows, childNameByPatientId, mapperOptions));
       } catch (error) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setConversations([]);
-          setConversationsError(resolveErrorMessage(error, "Failed to load conversations."));
+          setConversationsError(resolveErrorMessage(error, t("parent.hooks.loadAiConversationsFailed")));
         }
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -120,7 +123,7 @@ export function useParentAiConversations(parentUserId, selectedChildId) {
     return () => {
       cancelled = true;
     };
-  }, [parentUserId, refreshToken, isLoadingChildren, children]);
+  }, [parentUserId, refreshToken, isLoadingChildren, children, mapperOptions, t]);
 
   const childNameByPatientId = useMemo(
     () => buildChildNameLookup(children),
@@ -172,7 +175,7 @@ export function useParentAiConversations(parentUserId, selectedChildId) {
       }
 
       rememberConversationPatient(row?.id, validChildId);
-      const mapped = mapConversationRowsToHubItems([row], childNameByPatientId)[0];
+      const mapped = mapConversationRowsToHubItems([row], childNameByPatientId, mapperOptions)[0];
       if (mapped) {
         const enriched = {
           ...mapped,
@@ -187,7 +190,7 @@ export function useParentAiConversations(parentUserId, selectedChildId) {
       return mapped;
     } catch (error) {
       if (createTokenRef.current === createToken) {
-        setConversationsError(resolveErrorMessage(error, "Failed to create conversation."));
+        setConversationsError(resolveErrorMessage(error, t("parent.hooks.createAiConversationFailed")));
       }
       return null;
     } finally {
@@ -199,8 +202,10 @@ export function useParentAiConversations(parentUserId, selectedChildId) {
     validChildId,
     isCreatingConversation,
     childNameByPatientId,
+    mapperOptions,
     refetchConversations,
     upsertConversation,
+    t,
   ]);
 
   return {

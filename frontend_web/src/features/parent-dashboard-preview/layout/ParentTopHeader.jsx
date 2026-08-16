@@ -1,3 +1,4 @@
+import { useLocale } from "../../../context/useLocale.js";
 import { DashboardTopHeader } from "../../shared-dashboard/layout/DashboardTopHeader";
 import { ProfileMenu } from "../components/ProfileMenu";
 import { NotificationPopover } from "../components/NotificationPopover";
@@ -17,13 +18,14 @@ export function ParentTopHeader({
   onViewProfile,
   onSignOut,
 }) {
+  const { t } = useLocale();
   const messageBadge = badges?.messages;
 
   return (
     <DashboardTopHeader
       onOpenMobileNav={onOpenMobileNav}
-      searchPlaceholder="Search exercises, reports, sessions..."
-      searchAriaLabel="Search exercises, reports, sessions"
+      searchPlaceholder={t("parent.header.searchPlaceholder")}
+      searchAriaLabel={t("parent.header.searchAriaLabel")}
       onMessages={onMessages}
       messagesBadge={messageBadge ?? null}
       notificationPopover={

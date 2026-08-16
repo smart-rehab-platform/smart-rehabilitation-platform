@@ -115,7 +115,7 @@
 }
 
 .pd-preview .pd-admin-complaints-table thead th {
-  text-align: left;
+  text-align: start;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--pd-text-muted);
@@ -148,7 +148,7 @@
 .pd-preview .pd-admin-complaints-empty {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: start;
   gap: 12px;
 }
 
@@ -191,11 +191,11 @@
 
 @keyframes pd-admin-complaints-progress {
   0% {
-    left: -40%;
+    inset-inline-start: -40%;
   }
 
   100% {
-    left: 100%;
+    inset-inline-start: 100%;
   }
 }
 
@@ -262,11 +262,11 @@
 
   .pd-preview .pd-admin-complaints-row td[data-label="Category"] {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: start;
   }
 
   .pd-preview .pd-admin-complaints-row td[data-label="View"] {
-    justify-content: flex-end;
+    justify-content: end;
   }
 
   .pd-preview .pd-admin-complaints-row td[data-label="View"]::before {
@@ -295,10 +295,14 @@
 }
 
 .pd-preview .pd-admin-complaint-back {
-  align-self: flex-start;
+  align-self: start;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+[dir="rtl"] .pd-preview .pd-admin-complaint-back svg {
+  transform: scaleX(-1);
 }
 
 .pd-preview .pd-admin-complaint-summary-top {
@@ -516,7 +520,7 @@
 
 .pd-preview .pd-admin-modal-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: end;
   gap: 10px;
   flex-wrap: wrap;
   margin-top: 16px;
@@ -619,4 +623,8 @@
   .pd-preview .pd-admin-modal-actions .pd-btn {
     width: 100%;
   }
+}
+
+[dir="rtl"] .pd-preview .pd-admin-complaints-view-chevron {
+  transform: scaleX(-1);
 }

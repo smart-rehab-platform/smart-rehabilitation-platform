@@ -1,17 +1,25 @@
 import { useCallback } from "react";
 import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  buildAdminComplaintDetailsPath,
+  buildAdminSupportRequestDetailsPath,
+} from "../../routes/adminDashboardRoutes";
 import { useAdminNotificationsContext } from "./context/adminNotificationsContextValue";
 import { useAdminShell } from "./hooks/useAdminShell";
 import { AdminDashboardShell } from "./layout/AdminDashboardShell";
 import { AdminNotificationsList } from "./sections/AdminNotificationsList";
+import { resolveAdminNotificationRoute } from "./utils/adminNotificationsMappers";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/adminDashboardSections.css";
 import "./styles/adminNotificationsSections.css";
 
 function AdminNotificationsPageContent() {
+  const navigate = useNavigate();
   const {
     notifications,
     unreadCount,
+    labels,
     isLoading,
     error,
     isUpdating,
@@ -23,8 +31,18 @@ function AdminNotificationsPageContent() {
   } = useAdminNotificationsContext();
 
   const handleMarkAsRead = useCallback(async (notificationId) => {
+    const notification = notifications.find((entry) => entry.id === notificationId);
     await markAsRead(notificationId);
-  }, [markAsRead]);
+
+    const route = resolveAdminNotificationRoute(notification, {
+      buildSupportRequestDetailPath: buildAdminSupportRequestDetailsPath,
+      buildComplaintDetailPath: buildAdminComplaintDetailsPath,
+    });
+
+    if (route) {
+      navigate(route);
+    }
+  }, [markAsRead, navigate, notifications]);
 
   const handleMarkAllAsRead = useCallback(async () => {
     await markAllAsRead();
@@ -37,21 +55,32 @@ function AdminNotificationsPageContent() {
 
   return (
     <>
-      <section className="pd-admin-notif-toolbar pd-section-enter" aria-label="Notifications header">
+      <section className="pd-admin-notif-toolbar pd-section-enter" aria-label={labels.toolbarAriaLabel}>
         <div className="pd-admin-notif-heading">
-          <h1 className="pd-section-title">Notifications</h1>
+          <h1 className="pd-section-title">{labels.title}</h1>
         </div>
 
-        {unreadCount > 0 ? (
+        <div className="pd-admin-notif-toolbar-actions">
           <button
             type="button"
-            className="pd-btn pd-btn-soft"
-            onClick={handleMarkAllAsRead}
-            disabled={isUpdating}
+            className="pd-btn pd-btn-soft pd-btn-sm"
+            onClick={refresh}
+            disabled={isLoading}
           >
-            Mark all as read
+            {labels.refresh}
           </button>
-        ) : null}
+
+          {unreadCount > 0 ? (
+            <button
+              type="button"
+              className="pd-btn pd-btn-soft pd-btn-sm"
+              onClick={handleMarkAllAsRead}
+              disabled={isUpdating}
+            >
+              {labels.markAllRead}
+            </button>
+          ) : null}
+        </div>
       </section>
 
       {mutationError ? (
@@ -64,7 +93,7 @@ function AdminNotificationsPageContent() {
         <section className="pd-card pd-card-pad pd-admin-notif-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-            Retry
+            {labels.retry}
           </button>
         </section>
       ) : null}
@@ -74,13 +103,14 @@ function AdminNotificationsPageContent() {
           <span className="pd-admin-notif-empty-icon" aria-hidden="true">
             <Bell size={22} strokeWidth={2} />
           </span>
-          <p className="pd-admin-notif-empty-copy">No notifications yet.</p>
+          <p className="pd-admin-notif-empty-copy">{labels.empty}</p>
         </section>
       ) : null}
 
       {showList ? (
         <AdminNotificationsList
           notifications={notifications}
+          labels={labels}
           isLoading={showInitialSkeleton}
           updatingNotificationId={updatingNotificationId}
           onMarkAsRead={handleMarkAsRead}

@@ -5746,4 +5746,244 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get adminComplaintInvalidTransition =>
       'لا يُسمح بهذا التغيير في الحالة للشكوى الحالية.';
+
+  @override
+  String get supportRequestTitle => 'الدعم';
+
+  @override
+  String get supportRequestAdminTitle => 'طلبات الدعم';
+
+  @override
+  String get supportRequestAdminDescription =>
+      'راجع طلبات دعم الأخصائيين ورد عليها.';
+
+  @override
+  String get supportRequestNewRequest => 'طلب جديد';
+
+  @override
+  String get supportRequestDetailsTitle => 'طلب الدعم';
+
+  @override
+  String get supportRequestAdminDetailsTitle => 'تفاصيل طلب الدعم';
+
+  @override
+  String get supportRequestCategoryLabel => 'الفئة';
+
+  @override
+  String get supportRequestSubjectLabel => 'الموضوع';
+
+  @override
+  String get supportRequestDescriptionLabel => 'الوصف';
+
+  @override
+  String get supportRequestDescriptionHint =>
+      'صف مشكلتك بالتفصيل (20 حرفًا على الأقل)';
+
+  @override
+  String supportRequestDescriptionCounter(int count) {
+    return '$count/2000';
+  }
+
+  @override
+  String get supportRequestAttachmentLabel => 'مرفق (اختياري)';
+
+  @override
+  String get supportRequestAddAttachment => 'إضافة مرفق';
+
+  @override
+  String get supportRequestSubmitRequest => 'إرسال الطلب';
+
+  @override
+  String get supportRequestSubmitting => 'جارٍ الإرسال...';
+
+  @override
+  String get supportRequestReply => 'رد';
+
+  @override
+  String get supportRequestReplyLabel => 'ردك';
+
+  @override
+  String get supportRequestReplyHint => 'اكتب رسالتك...';
+
+  @override
+  String get supportRequestReplyRequired => 'أدخل رسالة أو أضف مرفقًا.';
+
+  @override
+  String get supportRequestSending => 'جارٍ الإرسال...';
+
+  @override
+  String get supportRequestMarkInProgress => 'وضع قيد المعالجة';
+
+  @override
+  String get supportRequestMarkResolved => 'وضع محلول';
+
+  @override
+  String get supportRequestMarkInProgressTitle => 'وضع قيد المعالجة؟';
+
+  @override
+  String get supportRequestMarkInProgressMessage =>
+      'سيُعلَّم طلب الدعم هذا على أنه قيد المعالجة.';
+
+  @override
+  String get supportRequestMarkInProgressSuccess =>
+      'تم وضع طلب الدعم قيد المعالجة.';
+
+  @override
+  String get supportRequestMarkResolvedTitle => 'وضع محلول؟';
+
+  @override
+  String get supportRequestMarkResolvedMessage =>
+      'سيُعلَّم طلب الدعم هذا على أنه محلول ويصبح للقراءة فقط.';
+
+  @override
+  String get supportRequestMarkResolvedSuccess => 'تم وضع طلب الدعم محلولًا.';
+
+  @override
+  String get supportRequestEmpty => 'لا توجد طلبات دعم بعد.';
+
+  @override
+  String get supportRequestNoMatch =>
+      'لا توجد طلبات دعم تطابق عوامل التصفية المحددة.';
+
+  @override
+  String get supportRequestLoading => 'جارٍ تحميل طلبات الدعم...';
+
+  @override
+  String get supportRequestResolvedTitle => 'تم حل هذا الطلب';
+
+  @override
+  String get supportRequestResolvedReadOnly => 'المحادثة أصبحت للقراءة فقط.';
+
+  @override
+  String get supportRequestConversationTitle => 'المحادثة';
+
+  @override
+  String get supportRequestCreatedLabel => 'تاريخ الإنشاء';
+
+  @override
+  String get supportRequestLastActivityLabel => 'آخر نشاط';
+
+  @override
+  String get supportRequestResolvedDateLabel => 'تاريخ الحل';
+
+  @override
+  String get supportRequestDateUnavailable => 'التاريخ غير متاح';
+
+  @override
+  String supportRequestLastActivity(String date) {
+    return 'آخر نشاط: $date';
+  }
+
+  @override
+  String supportRequestCreatedDate(String date) {
+    return 'تاريخ الإنشاء: $date';
+  }
+
+  @override
+  String supportRequestSpecialistLabel(String name) {
+    return 'الأخصائي: $name';
+  }
+
+  @override
+  String get supportRequestSpecialistFieldLabel => 'الأخصائي';
+
+  @override
+  String get supportRequestSpecialistEmailLabel => 'البريد الإلكتروني للأخصائي';
+
+  @override
+  String get supportRequestSenderAdmin => 'الإدارة';
+
+  @override
+  String get supportRequestSenderSpecialist => 'الأخصائي';
+
+  @override
+  String get supportRequestRequestStatusLabel => 'حالة الطلب';
+
+  @override
+  String get supportRequestAllStatuses => 'جميع الحالات';
+
+  @override
+  String get supportRequestAllCategories => 'جميع الفئات';
+
+  @override
+  String get supportRequestAllSpecialists => 'جميع الأخصائيين';
+
+  @override
+  String get supportRequestSelectCategory => 'يرجى اختيار فئة.';
+
+  @override
+  String get supportRequestSubjectTooShort =>
+      'يجب أن يكون الموضوع 3 أحرف على الأقل.';
+
+  @override
+  String get supportRequestSubjectTooLong => 'يجب ألا يتجاوز الموضوع 200 حرف.';
+
+  @override
+  String get supportRequestDescriptionTooShort =>
+      'يجب أن يكون الوصف 20 حرفًا على الأقل.';
+
+  @override
+  String get supportRequestDescriptionTooLong =>
+      'يجب ألا يتجاوز الوصف 2000 حرف.';
+
+  @override
+  String get supportRequestAttachmentPickFailed => 'تعذر قراءة الملف المحدد.';
+
+  @override
+  String get supportRequestAttachmentUploadFailed => 'فشل رفع المرفق.';
+
+  @override
+  String get supportRequestAttachmentInvalidType =>
+      'نوع مرفق غير مدعوم. المسموح: JPEG وPNG وWebP وPDF.';
+
+  @override
+  String get supportRequestAttachmentTooLarge =>
+      'المرفق كبير جدًا. الحد الأقصى 10 ميجابايت.';
+
+  @override
+  String get supportRequestAttachmentOpenPdf => 'فتح مرفق PDF';
+
+  @override
+  String get supportRequestAttachmentOpenImage => 'فتح مرفق الصورة';
+
+  @override
+  String get supportRequestErrorResolved =>
+      'تم حل طلب الدعم هذا ولا يمكن تحديثه.';
+
+  @override
+  String get supportRequestErrorNotFound => 'طلب الدعم غير موجود.';
+
+  @override
+  String get supportRequestErrorForbidden =>
+      'غير مصرح لك بالوصول إلى طلب الدعم هذا.';
+
+  @override
+  String get supportRequestCategoryTechnicalIssue => 'مشكلة تقنية';
+
+  @override
+  String get supportRequestCategoryPatientCaseIssue => 'مشكلة مريض / حالة';
+
+  @override
+  String get supportRequestCategorySessionSchedulingIssue =>
+      'مشكلة جلسة / جدولة';
+
+  @override
+  String get supportRequestCategoryAccountProfileIssue =>
+      'مشكلة حساب / ملف شخصي';
+
+  @override
+  String get supportRequestCategoryExerciseContentIssue =>
+      'مشكلة تمرين / محتوى';
+
+  @override
+  String get supportRequestCategoryOther => 'أخرى';
+
+  @override
+  String get supportRequestStatusPending => 'قيد الانتظار';
+
+  @override
+  String get supportRequestStatusInProgress => 'قيد المعالجة';
+
+  @override
+  String get supportRequestStatusResolved => 'محلول';
 }

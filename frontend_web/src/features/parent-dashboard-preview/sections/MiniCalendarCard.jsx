@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { MONTH_NAMES } from "../mock/parentDashboardMock";
 
 function buildMonthGrid(year, monthIndex) {
@@ -33,19 +34,20 @@ export function MiniCalendarCard({
   onPrevMonth,
   onNextMonth,
 }) {
+  const { t } = useLocale();
   const cells = useMemo(() => buildMonthGrid(year, monthIndex), [year, monthIndex]);
   const weekdays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
   const monthLabel = `${MONTH_NAMES[monthIndex]} ${year}`;
 
   return (
-    <section className="pd-calendar-minimal pd-section-enter" aria-label={`Calendar for ${monthLabel}`}>
+    <section className="pd-calendar-minimal pd-section-enter" aria-label={t("parent.home.calendarFor", { monthLabel })}>
       <div className="pd-calendar-minimal-header">
         <h2 className="pd-overview-title">{monthLabel}</h2>
         <div className="pd-cal-nav">
           <button
             type="button"
             className="pd-icon-btn-sm"
-            aria-label="Previous month"
+            aria-label={t("parent.home.previousMonth")}
             onClick={onPrevMonth}
           >
             <ChevronLeft size={15} />
@@ -53,7 +55,7 @@ export function MiniCalendarCard({
           <button
             type="button"
             className="pd-icon-btn-sm"
-            aria-label="Next month"
+            aria-label={t("parent.home.nextMonth")}
             onClick={onNextMonth}
           >
             <ChevronRight size={15} />
@@ -103,8 +105,8 @@ export function MiniCalendarCard({
       </div>
 
       <div className="pd-cal-legend">
-        <span><i className="session" aria-hidden="true" /> Session</span>
-        <span><i className="exercise" aria-hidden="true" /> Exercise</span>
+        <span><i className="session" aria-hidden="true" /> {t("parent.home.sessionLegend")}</span>
+        <span><i className="exercise" aria-hidden="true" /> {t("parent.home.exerciseLegend")}</span>
       </div>
     </section>
   );

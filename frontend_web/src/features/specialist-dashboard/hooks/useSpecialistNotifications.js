@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getNotifications,
   markAllNotificationsAsRead,
   markNotificationAsRead,
 } from "../../../services/parentDashboardService";
+import {
+  applySpecialistNotificationsLocalization,
+  getSpecialistNotificationsErrorMessages,
+} from "../utils/specialistNotificationsLocalization.js";
 import {
   countUnreadMessageNotifications,
   countUnreadNotifications,
@@ -25,6 +30,9 @@ const EMPTY_NOTIFICATION_STATE = {
 };
 
 export function useSpecialistNotifications(userId) {
+  const { t, locale } = useLocale();
+  const errorMessages = useMemo(() => getSpecialistNotificationsErrorMessages(t), [t]);
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
   const [notifications, setNotifications] = useState([]);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
   const [notificationsError, setNotificationsError] = useState(null);
@@ -56,7 +64,12 @@ export function useSpecialistNotifications(userId) {
           return;
         }
 
-        setNotifications(mapSpecialistNotificationsToViewModels(rows));
+        setNotifications(
+          applySpecialistNotificationsLocalization(
+            mapSpecialistNotificationsToViewModels(rows),
+            mapperContext,
+          ),
+        );
       } catch (error) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
@@ -64,7 +77,7 @@ export function useSpecialistNotifications(userId) {
 
         setNotifications([]);
         setNotificationsError(
-          resolveErrorMessage(error, "Failed to load notifications."),
+          resolveErrorMessage(error, errorMessages.loadFailed),
         );
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -78,7 +91,7 @@ export function useSpecialistNotifications(userId) {
     return () => {
       cancelled = true;
     };
-  }, [userId, refreshToken]);
+  }, [userId, refreshToken, mapperContext, errorMessages.loadFailed]);
 
   const unreadCount = useMemo(
     () => (notificationsError ? 0 : countUnreadNotifications(notifications)),

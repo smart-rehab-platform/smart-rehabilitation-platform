@@ -15,12 +15,19 @@ import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { Toast } from "../../components/auth/Toast";
 import { C, G } from "../../components/auth/tokens";
 import { readAuthApiMessage } from "../../components/auth/authHelpers";
+import {
+  getAuthHidePasswordLabel,
+  getAuthInvalidEmailMessage,
+  getAuthShowPasswordLabel,
+} from "../../components/auth/authLocalization";
+import { useLocale } from "../../context/useLocale.js";
 import { useAuth } from "../../context/useAuth";
 import { dashboardForRole } from "../../routes/roleRouting";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLocale();
   const [searchParams, setSearchParams] = useSearchParams();
   const auth = useAuth();
   const rememberedLogin = auth.loadRememberedLogin();
@@ -38,6 +45,7 @@ export default function Login() {
   const sessionExpiredToastShown = useRef(false);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const invalidEmailMessage = getAuthInvalidEmailMessage(t);
 
   const showToast = (message, variant = "success") => {
     setToastMessage(message);
@@ -56,12 +64,12 @@ export default function Login() {
     }
 
     sessionExpiredToastShown.current = true;
-    showToast("Your session has expired. Please sign in again.", "error");
+    showToast(t("auth.signIn.sessionExpired"), "error");
 
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("reason");
     setSearchParams(nextParams, { replace: true });
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, t]);
 
   useEffect(() => {
     const prefillEmail =
@@ -78,7 +86,7 @@ export default function Login() {
   const handleBlurEmail = () => {
     if (email && !emailValid) {
       setEmailState("error");
-      setEmailMsg("Invalid email address");
+      setEmailMsg(invalidEmailMessage);
     } else if (email && emailValid) {
       setEmailState("success");
       setEmailMsg("");
@@ -88,7 +96,7 @@ export default function Login() {
   const handleSubmit = async () => {
     if (!emailValid) {
       setEmailState("error");
-      setEmailMsg("Invalid email address");
+      setEmailMsg(invalidEmailMessage);
       return;
     }
 
@@ -99,17 +107,17 @@ export default function Login() {
       const destination = dashboardForRole(user?.role);
 
       setShowVerifyEmailPrompt(false);
-      showToast("Signed in successfully! Redirecting...", "success");
+      showToast(t("auth.signIn.success"), "success");
 
       if (!destination) {
         auth.logout();
-        showToast("Unable to determine your account role. Please contact support.", "error");
+        showToast(t("auth.signIn.unableToDetermineRole"), "error");
         return;
       }
 
       setTimeout(() => navigate(destination), 1200);
     } catch (error) {
-      const message = readAuthApiMessage(error, "Invalid email or password");
+      const message = readAuthApiMessage(error, t("auth.signIn.invalidCredentials"));
       setShowVerifyEmailPrompt(message.toLowerCase().includes("verify"));
       showToast(message, "error");
     } finally {
@@ -122,10 +130,10 @@ export default function Login() {
       <Toast message={toastMessage} visible={toast} variant={toastVariant} />
       <div className="flex flex-col gap-5">
         <AuthInput
-          label="Email Address"
+          label={t("auth.signIn.emailLabel")}
           icon={<Mail size={16} />}
           type="email"
-          placeholder="name@example.com"
+          placeholder={t("auth.signIn.emailPlaceholder")}
           value={email}
           onChange={setEmail}
           state={emailState}
@@ -140,16 +148,17 @@ export default function Login() {
           }
         />
         <AuthInput
-          label="Password"
+          label={t("auth.signIn.passwordLabel")}
           icon={<Lock size={16} />}
           type={showPw ? "text" : "password"}
-          placeholder="Enter your password"
+          placeholder={t("auth.signIn.passwordPlaceholder")}
           value={password}
           onChange={setPassword}
           rightSlot={
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
+              aria-label={showPw ? getAuthHidePasswordLabel(t) : getAuthShowPasswordLabel(t)}
               style={{ color: C.iconInteractive, opacity: 0.85 }}
               className="transition-opacity hover:opacity-100"
             >
@@ -171,7 +180,7 @@ export default function Login() {
               {remember && <Check size={11} color={C.white} strokeWidth={3} />}
             </div>
             <span className="auth-footer-text text-[13px] font-medium tracking-[-0.01em]">
-              Remember Me
+              {t("auth.signIn.rememberMe")}
             </span>
           </label>
           <button
@@ -189,7 +198,7 @@ export default function Login() {
               e.currentTarget.style.color = "";
             }}
           >
-            Forgot Password?
+            {t("auth.signIn.forgotPassword")}
           </button>
         </div>
         {showVerifyEmailPrompt && (
@@ -203,22 +212,22 @@ export default function Login() {
               navigate(`/verify-email?email=${encodeURIComponent(email.trim())}`);
             }}
           >
-            Go to Email Verification
+            {t("auth.signIn.goToEmailVerification")}
           </PrimaryButton>
         )}
         <PrimaryButton loading={loading} onClick={handleSubmit}>
           {loading ? (
-            "Signing In..."
+            t("auth.signIn.signingIn")
           ) : (
             <>
-              <span>Sign In</span>
+              <span>{t("auth.shared.signIn")}</span>
               <ChevronRight size={16} className="auth-btn-arrow" />
             </>
           )}
         </PrimaryButton>
-        <p className="auth-footer-text pt-1 text-center text-xs">Don&apos;t have an account?</p>
+        <p className="auth-footer-text pt-1 text-center text-xs">{t("auth.signIn.noAccountPrompt")}</p>
         <button type="button" onClick={() => navigate("/signup")} className="auth-secondary-btn">
-          Create Account
+          {t("auth.shared.createAccount")}
         </button>
       </div>
     </>

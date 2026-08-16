@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   loadAdminComplaintSpecialists,
   loadAdminComplaints,
 } from "../../../services/adminComplaintsService";
+import {
+  applyAdminComplaintsLocalization,
+  getAdminComplaintsLabels,
+} from "../utils/adminComplaintsLocalization.js";
 import {
   COMPLAINT_PAGE_LIMIT,
   buildComplaintDateRangeIso,
@@ -10,7 +15,7 @@ import {
   mapAdminComplaints,
   mapComplaintPagination,
   mapComplaintSpecialistOptions,
-} from "../utils/adminComplaintsMappers";
+} from "../utils/adminComplaintsMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -31,6 +36,9 @@ function mergeComplaints(existing, incoming) {
 }
 
 export function useAdminComplaints() {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminComplaintsLabels(t), [t]);
   const [complaints, setComplaints] = useState([]);
   const [specialists, setSpecialists] = useState([]);
   const [pagination, setPagination] = useState(() => mapComplaintPagination(null));
@@ -58,11 +66,11 @@ export function useAdminComplaints() {
     }
 
     if (isComplaintDateRangeInvalid(fromDate, toDate)) {
-      return "From date cannot be after To date.";
+      return labels.dateRangeInvalid;
     }
 
     return null;
-  }, [fromDate, toDate]);
+  }, [fromDate, labels.dateRangeInvalid, toDate]);
 
   const hasActiveFilters = Boolean(
     selectedStatus
@@ -142,7 +150,7 @@ export function useAdminComplaints() {
         if (!cancelled) {
           setSpecialists([]);
           setSpecialistsError(
-            resolveErrorMessage(loadError, "Failed to load specialists."),
+            resolveErrorMessage(loadError, labels.toast.specialistsLoadFailed),
           );
         }
       }
@@ -152,7 +160,7 @@ export function useAdminComplaints() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [labels.toast.specialistsLoadFailed, refreshToken]);
 
   useEffect(() => {
     if (dateRangeError) {
@@ -178,7 +186,7 @@ export function useAdminComplaints() {
           return;
         }
 
-        setComplaints(mapAdminComplaints(result.items));
+        setComplaints(applyAdminComplaintsLocalization(mapAdminComplaints(result.items), mapperContext));
         setPagination(mapComplaintPagination(result.pagination));
         setError(null);
         setLoadMoreError(null);
@@ -189,7 +197,7 @@ export function useAdminComplaints() {
 
         setComplaints([]);
         setPagination(mapComplaintPagination(null));
-        setError(resolveErrorMessage(loadError, "Failed to load complaints."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && requestSerialRef.current === serial) {
           setIsLoading(false);
@@ -207,6 +215,8 @@ export function useAdminComplaints() {
     buildListParams,
     dateRangeError,
     fromDate,
+    labels.loadFailed,
+    mapperContext,
     refreshToken,
     selectedCategory,
     selectedSpecialistId,
@@ -232,7 +242,7 @@ export function useAdminComplaints() {
         return;
       }
 
-      const mapped = mapAdminComplaints(result.items);
+      const mapped = applyAdminComplaintsLocalization(mapAdminComplaints(result.items), mapperContext);
       setComplaints((current) => mergeComplaints(current, mapped));
       setPagination(mapComplaintPagination(result.pagination));
       setLoadMoreError(null);
@@ -241,7 +251,7 @@ export function useAdminComplaints() {
         return;
       }
 
-      setLoadMoreError(resolveErrorMessage(loadError, "Failed to load more complaints."));
+      setLoadMoreError(resolveErrorMessage(loadError, labels.loadingMore));
     } finally {
       if (requestSerialRef.current === serial) {
         setIsLoadingMore(false);
@@ -253,10 +263,13 @@ export function useAdminComplaints() {
     hasMore,
     isLoading,
     isLoadingMore,
+    labels.loadingMore,
+    mapperContext,
     pagination?.page,
   ]);
 
   return {
+    labels,
     complaints,
     specialists,
     specialistOptions,

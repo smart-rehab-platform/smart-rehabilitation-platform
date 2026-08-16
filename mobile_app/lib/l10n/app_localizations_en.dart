@@ -5847,4 +5847,250 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adminComplaintInvalidTransition =>
       'This status change is not allowed for the current complaint.';
+
+  @override
+  String get supportRequestTitle => 'Support';
+
+  @override
+  String get supportRequestAdminTitle => 'Support Requests';
+
+  @override
+  String get supportRequestAdminDescription =>
+      'Review and respond to specialist support requests.';
+
+  @override
+  String get supportRequestNewRequest => 'New Request';
+
+  @override
+  String get supportRequestDetailsTitle => 'Support Request';
+
+  @override
+  String get supportRequestAdminDetailsTitle => 'Support Request Details';
+
+  @override
+  String get supportRequestCategoryLabel => 'Category';
+
+  @override
+  String get supportRequestSubjectLabel => 'Subject';
+
+  @override
+  String get supportRequestDescriptionLabel => 'Description';
+
+  @override
+  String get supportRequestDescriptionHint =>
+      'Describe your issue in detail (minimum 20 characters)';
+
+  @override
+  String supportRequestDescriptionCounter(int count) {
+    return '$count/2000';
+  }
+
+  @override
+  String get supportRequestAttachmentLabel => 'Attachment (optional)';
+
+  @override
+  String get supportRequestAddAttachment => 'Add attachment';
+
+  @override
+  String get supportRequestSubmitRequest => 'Submit Request';
+
+  @override
+  String get supportRequestSubmitting => 'Submitting...';
+
+  @override
+  String get supportRequestReply => 'Reply';
+
+  @override
+  String get supportRequestReplyLabel => 'Your reply';
+
+  @override
+  String get supportRequestReplyHint => 'Write your message...';
+
+  @override
+  String get supportRequestReplyRequired =>
+      'Enter a message or add an attachment.';
+
+  @override
+  String get supportRequestSending => 'Sending...';
+
+  @override
+  String get supportRequestMarkInProgress => 'Mark In Progress';
+
+  @override
+  String get supportRequestMarkResolved => 'Mark Resolved';
+
+  @override
+  String get supportRequestMarkInProgressTitle => 'Mark in progress?';
+
+  @override
+  String get supportRequestMarkInProgressMessage =>
+      'This support request will be marked as in progress.';
+
+  @override
+  String get supportRequestMarkInProgressSuccess =>
+      'Support request marked as in progress.';
+
+  @override
+  String get supportRequestMarkResolvedTitle => 'Mark resolved?';
+
+  @override
+  String get supportRequestMarkResolvedMessage =>
+      'This support request will be marked as resolved and become read-only.';
+
+  @override
+  String get supportRequestMarkResolvedSuccess =>
+      'Support request marked as resolved.';
+
+  @override
+  String get supportRequestEmpty => 'No support requests yet.';
+
+  @override
+  String get supportRequestNoMatch =>
+      'No support requests match the selected filters.';
+
+  @override
+  String get supportRequestLoading => 'Loading support requests...';
+
+  @override
+  String get supportRequestResolvedTitle => 'This request is resolved';
+
+  @override
+  String get supportRequestResolvedReadOnly =>
+      'The conversation is now read-only.';
+
+  @override
+  String get supportRequestConversationTitle => 'Conversation';
+
+  @override
+  String get supportRequestCreatedLabel => 'Created';
+
+  @override
+  String get supportRequestLastActivityLabel => 'Last activity';
+
+  @override
+  String get supportRequestResolvedDateLabel => 'Resolved';
+
+  @override
+  String get supportRequestDateUnavailable => 'Date unavailable';
+
+  @override
+  String supportRequestLastActivity(String date) {
+    return 'Last activity: $date';
+  }
+
+  @override
+  String supportRequestCreatedDate(String date) {
+    return 'Created: $date';
+  }
+
+  @override
+  String supportRequestSpecialistLabel(String name) {
+    return 'Specialist: $name';
+  }
+
+  @override
+  String get supportRequestSpecialistFieldLabel => 'Specialist';
+
+  @override
+  String get supportRequestSpecialistEmailLabel => 'Specialist email';
+
+  @override
+  String get supportRequestSenderAdmin => 'Administration';
+
+  @override
+  String get supportRequestSenderSpecialist => 'Specialist';
+
+  @override
+  String get supportRequestRequestStatusLabel => 'Request status';
+
+  @override
+  String get supportRequestAllStatuses => 'All Statuses';
+
+  @override
+  String get supportRequestAllCategories => 'All Categories';
+
+  @override
+  String get supportRequestAllSpecialists => 'All Specialists';
+
+  @override
+  String get supportRequestSelectCategory => 'Please select a category.';
+
+  @override
+  String get supportRequestSubjectTooShort =>
+      'Subject must be at least 3 characters.';
+
+  @override
+  String get supportRequestSubjectTooLong =>
+      'Subject must not exceed 200 characters.';
+
+  @override
+  String get supportRequestDescriptionTooShort =>
+      'Description must be at least 20 characters.';
+
+  @override
+  String get supportRequestDescriptionTooLong =>
+      'Description must not exceed 2000 characters.';
+
+  @override
+  String get supportRequestAttachmentPickFailed =>
+      'Could not read the selected file.';
+
+  @override
+  String get supportRequestAttachmentUploadFailed =>
+      'Failed to upload attachment.';
+
+  @override
+  String get supportRequestAttachmentInvalidType =>
+      'Unsupported attachment type. Allowed: JPEG, PNG, WebP, and PDF.';
+
+  @override
+  String get supportRequestAttachmentTooLarge =>
+      'Attachment is too large. Maximum allowed size is 10 MB.';
+
+  @override
+  String get supportRequestAttachmentOpenPdf => 'Open PDF attachment';
+
+  @override
+  String get supportRequestAttachmentOpenImage => 'Open image attachment';
+
+  @override
+  String get supportRequestErrorResolved =>
+      'This support request is resolved and cannot be updated.';
+
+  @override
+  String get supportRequestErrorNotFound => 'Support request not found.';
+
+  @override
+  String get supportRequestErrorForbidden =>
+      'You are not authorized to access this support request.';
+
+  @override
+  String get supportRequestCategoryTechnicalIssue => 'Technical Issue';
+
+  @override
+  String get supportRequestCategoryPatientCaseIssue => 'Patient / Case Issue';
+
+  @override
+  String get supportRequestCategorySessionSchedulingIssue =>
+      'Session / Scheduling Issue';
+
+  @override
+  String get supportRequestCategoryAccountProfileIssue =>
+      'Account / Profile Issue';
+
+  @override
+  String get supportRequestCategoryExerciseContentIssue =>
+      'Exercise / Content Issue';
+
+  @override
+  String get supportRequestCategoryOther => 'Other';
+
+  @override
+  String get supportRequestStatusPending => 'Pending';
+
+  @override
+  String get supportRequestStatusInProgress => 'In Progress';
+
+  @override
+  String get supportRequestStatusResolved => 'Resolved';
 }

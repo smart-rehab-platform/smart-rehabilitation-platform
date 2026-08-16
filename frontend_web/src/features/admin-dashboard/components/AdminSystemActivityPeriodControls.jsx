@@ -1,11 +1,9 @@
-import { SYSTEM_ACTIVITY_PRESET_OFFSETS } from "../utils/adminDashboardMappers";
-
-const PRESET_OPTIONS = [
-  { label: "This Week", value: SYSTEM_ACTIVITY_PRESET_OFFSETS.thisWeek },
-  { label: "Last Week", value: SYSTEM_ACTIVITY_PRESET_OFFSETS.lastWeek },
-  { label: "Last 2 Weeks", value: SYSTEM_ACTIVITY_PRESET_OFFSETS.last2Weeks },
-  { label: "Last Month", value: SYSTEM_ACTIVITY_PRESET_OFFSETS.lastMonth },
-];
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
+import {
+  getAdminAnalyticsLabels,
+  getAdminAnalyticsPeriodOptions,
+} from "../utils/adminDashboardLocalization.js";
 
 export function AdminSystemActivityPeriodControls({
   periodLabel,
@@ -16,6 +14,10 @@ export function AdminSystemActivityPeriodControls({
   onNextWeek,
   onPresetSelected,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminAnalyticsLabels(t), [t]);
+  const presetOptions = useMemo(() => getAdminAnalyticsPeriodOptions(t), [t]);
+
   const handlePresetChange = (event) => {
     const nextOffset = Number.parseInt(event.target.value, 10);
     if (Number.isFinite(nextOffset) && nextOffset !== selectedWeekOffset) {
@@ -23,7 +25,7 @@ export function AdminSystemActivityPeriodControls({
     }
   };
 
-  const presetValue = PRESET_OPTIONS.some((option) => option.value === selectedWeekOffset)
+  const presetValue = presetOptions.some((option) => option.value === selectedWeekOffset)
     ? String(selectedWeekOffset)
     : "";
 
@@ -32,7 +34,7 @@ export function AdminSystemActivityPeriodControls({
       <button
         type="button"
         className="pd-admin-period-nav"
-        aria-label="Previous week"
+        aria-label={labels.previousWeek}
         disabled={isLoading}
         onClick={onPreviousWeek}
       >
@@ -40,7 +42,7 @@ export function AdminSystemActivityPeriodControls({
       </button>
 
       <label className="pd-admin-period-select-wrap">
-        <span className="pd-sr-only">Select period</span>
+        <span className="pd-sr-only">{labels.selectPeriod}</span>
         {isLoading ? (
           <span className="pd-admin-period-loading" aria-hidden="true" />
         ) : null}
@@ -49,12 +51,12 @@ export function AdminSystemActivityPeriodControls({
           value={presetValue}
           disabled={isLoading}
           onChange={handlePresetChange}
-          aria-label="System activity period"
+          aria-label={labels.periodAriaLabel}
         >
           <option value="" disabled hidden>
             {periodLabel}
           </option>
-          {PRESET_OPTIONS.map((option) => (
+          {presetOptions.map((option) => (
             <option key={option.value} value={String(option.value)}>
               {option.label}
             </option>
@@ -68,7 +70,7 @@ export function AdminSystemActivityPeriodControls({
       <button
         type="button"
         className="pd-admin-period-nav"
-        aria-label="Next week"
+        aria-label={labels.nextWeek}
         disabled={!canGoForward || isLoading}
         onClick={onNextWeek}
       >

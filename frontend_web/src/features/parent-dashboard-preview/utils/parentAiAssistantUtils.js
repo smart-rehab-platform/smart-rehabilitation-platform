@@ -1,44 +1,38 @@
 import { readString } from "./parentDashboardMappers";
+import { resolveMapperContext } from "./parentLocalizationCore";
+import {
+  AI_DISCLAIMER_TEXT,
+  AI_EMPTY_MESSAGES,
+  AI_QUICK_PROMPTS,
+  AI_SAFETY_NOTICE,
+  buildAiQuickPrompts,
+  formatAiDisplayDate,
+  getAiDisclaimerText,
+  getAiEmptyMessages,
+  getAiSafetyNotice,
+  getAiSenderLabel,
+  getNewConversationTitle,
+  getSuggestedHomePracticeTitle,
+} from "./parentAiAssistantLocalization";
+
+export {
+  AI_DISCLAIMER_TEXT,
+  AI_EMPTY_MESSAGES,
+  AI_QUICK_PROMPTS,
+  AI_SAFETY_NOTICE,
+  buildAiQuickPrompts,
+  getAiDisclaimerText,
+  getAiEmptyMessages,
+  getAiSafetyNotice,
+  getAiSenderLabel,
+  getNewConversationTitle,
+  getSuggestedHomePracticeTitle,
+};
 
 const CONVERSATION_TIMESTAMP_KEYS = ["last_message_at", "lastMessageAt", "started_at", "startedAt"];
 const MESSAGE_TIMESTAMP_KEYS = ["created_at", "createdAt"];
 
 const CONVERSATION_PATIENT_STORAGE_KEY = "pd-ai-conversation-patients";
-
-export const AI_DISCLAIMER_TEXT =
-  "AI guidance supports, but does not replace, your child's specialist.";
-
-export const AI_SAFETY_NOTICE =
-  "AI guidance is for support only. Always follow your specialist's instructions.";
-
-export const AI_QUICK_PROMPTS = [
-  "Explain today's exercise",
-  "Summarize my child's progress",
-  "What should I focus on today?",
-  "Explain the latest report",
-];
-
-export const AI_EMPTY_MESSAGES = {
-  noChild: "Select a child to begin.",
-  noConversations: "No conversations yet.",
-  noConversationSelected: "Start a conversation about your child's home practice or progress.",
-  noMessages: "Ask me anything about your child's exercises, reports, or progress.",
-};
-
-function formatDisplayDate(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
 
 function readTimestampValue(entity, keys) {
   if (!entity || typeof entity !== "object") {
@@ -64,17 +58,6 @@ export function normalizeAiSender(sender) {
     return "assistant";
   }
   return normalized || "unknown";
-}
-
-export function getAiSenderLabel(sender) {
-  const role = normalizeAiSender(sender);
-  if (role === "user") {
-    return "You";
-  }
-  if (role === "assistant") {
-    return "AI Assistant";
-  }
-  return null;
 }
 
 export function readConversationPatientMap() {
@@ -116,7 +99,8 @@ export function getConversationPatientId(conversationId) {
   return readConversationPatientMap()[conversationId] ?? null;
 }
 
-export function mapConversationRowToHubItem(row, childNameByPatientId = null) {
+export function mapConversationRowToHubItem(row, childNameByPatientId = null, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
@@ -129,24 +113,24 @@ export function mapConversationRowToHubItem(row, childNameByPatientId = null) {
 
   return {
     id,
-    title: "New conversation",
+    title: getNewConversationTitle(t),
     preview,
     patientId,
     childName: patientId && childNameByPatientId?.[patientId] ? childNameByPatientId[patientId] : null,
     messageCount: row.message_count ?? row.messageCount ?? 0,
-    updatedDate: formatDisplayDate(timestampValue),
+    updatedDate: formatAiDisplayDate(timestampValue, locale, t),
     updatedAtMs: Number.isFinite(parsedMs) ? parsedMs : null,
     startedAt: readTimestampValue(row, ["started_at", "startedAt"]),
   };
 }
 
-export function mapConversationRowsToHubItems(rows, childNameByPatientId = null) {
+export function mapConversationRowsToHubItems(rows, childNameByPatientId = null, options = {}) {
   if (!Array.isArray(rows)) {
     return [];
   }
 
   return rows
-    .map((row) => mapConversationRowToHubItem(row, childNameByPatientId))
+    .map((row) => mapConversationRowToHubItem(row, childNameByPatientId, options))
     .filter(Boolean)
     .sort((left, right) => (right.updatedAtMs ?? 0) - (left.updatedAtMs ?? 0));
 }
@@ -159,7 +143,8 @@ export function filterConversationsForChild(conversations, childId) {
   return conversations.filter((conversation) => conversation.patientId === childId);
 }
 
-export function mapMessageRowToHubItem(row) {
+export function mapMessageRowToHubItem(row, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
@@ -169,29 +154,29 @@ export function mapMessageRowToHubItem(row) {
   const content = readString(row, ["content", "message", "text"]) || "";
   const timestampValue = readTimestampValue(row, MESSAGE_TIMESTAMP_KEYS);
   const parsedMs = timestampValue ? Date.parse(timestampValue) : Number.NaN;
-  const parsedContent = parseSuggestedHomePractice(content);
+  const parsedContent = parseSuggestedHomePractice(content, options);
 
   return {
     id,
     conversationId: readString(row, ["conversation_id", "conversationId"]),
     sender,
     role: normalizeAiSender(sender),
-    senderLabel: getAiSenderLabel(sender),
+    senderLabel: getAiSenderLabel(sender, t),
     content: parsedContent.mainText,
     suggestedPractice: parsedContent.suggestedPractice,
-    createdDate: formatDisplayDate(timestampValue),
+    createdDate: formatAiDisplayDate(timestampValue, locale, t),
     createdAtIso: timestampValue,
     createdAtMs: Number.isFinite(parsedMs) ? parsedMs : null,
   };
 }
 
-export function mapMessageRowsToHubItems(rows) {
+export function mapMessageRowsToHubItems(rows, options = {}) {
   if (!Array.isArray(rows)) {
     return [];
   }
 
   return rows
-    .map((row) => mapMessageRowToHubItem(row))
+    .map((row) => mapMessageRowToHubItem(row, options))
     .filter(Boolean)
     .sort((left, right) => (left.createdAtMs ?? 0) - (right.createdAtMs ?? 0));
 }
@@ -199,12 +184,17 @@ export function mapMessageRowsToHubItems(rows) {
 /**
  * Parses optional "Suggested Home Practice" section from plain-text bot replies.
  */
-export function parseSuggestedHomePractice(content) {
+export function parseSuggestedHomePractice(content, options = {}) {
+  const { t } = resolveMapperContext(options);
+
   if (!content || typeof content !== "string") {
     return { mainText: "", suggestedPractice: null };
   }
 
-  const match = content.match(/\n\s*Suggested Home Practice\s*\n/i);
+  const sectionTitle = getSuggestedHomePracticeTitle(t);
+  const match = content.match(new RegExp(`\\n\\s*${sectionTitle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\n`, "i"))
+    ?? content.match(/\n\s*Suggested Home Practice\s*\n/i);
+
   if (!match || match.index === undefined) {
     return { mainText: content.trim(), suggestedPractice: null };
   }
@@ -219,16 +209,16 @@ export function parseSuggestedHomePractice(content) {
   return {
     mainText: mainText || content.trim(),
     suggestedPractice: {
-      title: "Suggested Home Practice",
+      title: sectionTitle,
       body: practiceText,
     },
   };
 }
 
-export function mapSendMessageResponse(data, childNameByPatientId = null) {
-  const conversation = mapConversationRowToHubItem(data?.conversation, childNameByPatientId);
-  const userMessage = mapMessageRowToHubItem(data?.user_message || data?.userMessage);
-  const botMessage = mapMessageRowToHubItem(data?.bot_message || data?.botMessage);
+export function mapSendMessageResponse(data, childNameByPatientId = null, options = {}) {
+  const conversation = mapConversationRowToHubItem(data?.conversation, childNameByPatientId, options);
+  const userMessage = mapMessageRowToHubItem(data?.user_message || data?.userMessage, options);
+  const botMessage = mapMessageRowToHubItem(data?.bot_message || data?.botMessage, options);
 
   return {
     conversation,

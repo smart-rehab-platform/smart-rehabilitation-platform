@@ -6,6 +6,7 @@ export function AdminPatientAssignmentsUnlinkDialog({
   error = null,
   onClose,
   onConfirm,
+  labels,
 }) {
   if (!open) {
     return null;
@@ -34,7 +35,7 @@ export function AdminPatientAssignmentsUnlinkDialog({
             onClick={() => onClose?.()}
             disabled={isSubmitting}
           >
-            Cancel
+            {labels.cancel}
           </button>
           <button
             type="button"
@@ -42,7 +43,7 @@ export function AdminPatientAssignmentsUnlinkDialog({
             onClick={() => onConfirm?.()}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Unlinking..." : "Unlink"}
+            {isSubmitting ? labels.unlinking : labels.unlink}
           </button>
         </div>
       </div>

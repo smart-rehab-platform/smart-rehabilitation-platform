@@ -1,6 +1,11 @@
+import { useMemo } from "react";
 import { Bell } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
+import { getSpecialistNotificationsPageLabels } from "../utils/specialistNotificationsLocalization.js";
 
 export function SpecialistNotificationCard({ notification, onSelect }) {
+  const { t } = useLocale();
+  const pageLabels = useMemo(() => getSpecialistNotificationsPageLabels(t), [t]);
   const metaLabel = `${notification.typeLabel} • ${notification.displayDate}`;
 
   return (
@@ -12,8 +17,8 @@ export function SpecialistNotificationCard({ notification, onSelect }) {
         }`}
         onClick={() => onSelect?.(notification)}
         aria-label={notification.unread
-          ? `Unread notification: ${notification.title}`
-          : `Notification: ${notification.title}`}
+          ? pageLabels.unreadNotification(notification.title)
+          : pageLabels.notification(notification.title)}
       >
         <span
           className={`pd-notification-feed-icon pd-notif-icon pd-tone-${
@@ -25,16 +30,16 @@ export function SpecialistNotificationCard({ notification, onSelect }) {
         </span>
 
         <span className="pd-notification-feed-body">
-          <strong className="pd-notification-feed-title">{notification.title}</strong>
+          <strong className="pd-notification-feed-title" dir="auto">{notification.title}</strong>
 
           {notification.body ? (
-            <span className="pd-notification-feed-preview">{notification.body}</span>
+            <span className="pd-notification-feed-preview" dir="auto">{notification.body}</span>
           ) : null}
 
           <span className="pd-notification-feed-meta">{metaLabel}</span>
 
           {notification.unread ? (
-            <span className="pd-sr-only">Unread</span>
+            <span className="pd-sr-only">{pageLabels.unread}</span>
           ) : null}
         </span>
       </button>

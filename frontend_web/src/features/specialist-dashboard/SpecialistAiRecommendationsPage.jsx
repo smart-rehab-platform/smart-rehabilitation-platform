@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   buildSpecialistPatientDetailPath,
   SPECIALIST_WEB_ROUTES,
@@ -19,6 +20,7 @@ export default function SpecialistAiRecommendationsPage() {
   const navigate = useNavigate();
   const { patientId } = useParams();
   const { user, isInitializing } = useAuth();
+  const { t } = useLocale();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
   const {
@@ -120,7 +122,7 @@ export default function SpecialistAiRecommendationsPage() {
     if (isLoading && !bundle) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading AI recommendations...</p>
+          <p className="pd-inline-loading">{t("specialist.aiRecommendations.loading")}</p>
         </section>
       );
     }
@@ -132,7 +134,7 @@ export default function SpecialistAiRecommendationsPage() {
           <p className={isUnauthorized ? "pd-section-sub" : "pd-inline-error"}>{error}</p>
           {!isUnauthorized ? (
             <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-              Retry
+              {t("common.retry")}
             </button>
           ) : null}
         </section>
@@ -142,7 +144,7 @@ export default function SpecialistAiRecommendationsPage() {
     if (!bundle) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading AI recommendations...</p>
+          <p className="pd-inline-loading">{t("specialist.aiRecommendations.loading")}</p>
         </section>
       );
     }
@@ -157,12 +159,12 @@ export default function SpecialistAiRecommendationsPage() {
           onGeneratePlanAdjustment={handleGeneratePlanAdjustment}
         />
         <section className="pd-specialist-ai-recommendations-section">
-          <h2 className="pd-specialist-ai-section-title">Recommendations</h2>
+          <h2 className="pd-specialist-ai-section-title">{t("specialist.aiRecommendations.sectionTitle")}</h2>
           {error ? (
             <div className="pd-card pd-card-pad pd-inline-error-card">
               <p className="pd-inline-error">{error}</p>
               <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-                Retry
+                {t("common.retry")}
               </button>
             </div>
           ) : null}
@@ -211,9 +213,9 @@ export default function SpecialistAiRecommendationsPage() {
                 onClick={handleBack}
               >
                 <ArrowLeft size={18} aria-hidden="true" />
-                Back to Patient
+                {t("specialist.aiRecommendations.backToPatient")}
               </button>
-              <h1 className="pd-section-title">AI Recommendations</h1>
+              <h1 className="pd-section-title">{t("specialist.aiRecommendations.title")}</h1>
             </header>
             {renderContent()}
           </div>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, Loader2 } from "lucide-react";
 import { C, G } from "./tokens";
 import { resolveUploadUrl } from "./authHelpers";
+import { useLocale } from "../../context/useLocale.js";
 
 export function ProfilePhotoUpload({
   displayUrl,
@@ -11,6 +12,7 @@ export function ProfilePhotoUpload({
   uploading = false,
   onSelect,
 }) {
+  const { t } = useLocale();
   const fileInputRef = useRef(null);
   const [imageBroken, setImageBroken] = useState(false);
   const [activeUrl, setActiveUrl] = useState(null);
@@ -59,7 +61,7 @@ export function ProfilePhotoUpload({
         className="profile-photo-upload-label mb-2 text-[13px] font-semibold leading-none"
         style={{ color: "#0F2342", fontFamily: "'Inter', sans-serif" }}
       >
-        Profile Photo
+        {t("auth.signup.profilePhoto")}
       </p>
 
       <input
@@ -78,7 +80,7 @@ export function ProfilePhotoUpload({
         onClick={openFilePicker}
         onKeyDown={handleKeyDown}
         disabled={uploading}
-        aria-label="Upload profile photo"
+        aria-label={t("auth.signup.uploadProfilePhotoAria")}
         className={`profile-photo-upload-trigger group relative flex h-[76px] w-[76px] items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-[225ms] focus-visible:outline-none disabled:cursor-not-allowed ${
           hasImage
             ? "profile-photo-upload-trigger--filled border-transparent"
@@ -111,7 +113,9 @@ export function ProfilePhotoUpload({
             aria-hidden
           >
             <Camera size={18} color="#FFFFFF" strokeWidth={2} />
-            <span className="mt-1 text-[10px] font-semibold text-white">Change Photo</span>
+            <span className="mt-1 text-[10px] font-semibold text-white">
+              {t("auth.signup.changePhoto")}
+            </span>
           </span>
         )}
 
@@ -127,7 +131,7 @@ export function ProfilePhotoUpload({
           className="profile-photo-upload-hint mt-1.5 text-[11px] font-medium leading-none"
           style={{ color: "#5A7390", fontFamily: "'Inter', sans-serif" }}
         >
-          {uploading ? "Uploading..." : "Click to upload"}
+          {uploading ? t("auth.signup.uploading") : t("auth.signup.clickToUpload")}
         </p>
       )}
 
@@ -136,7 +140,7 @@ export function ProfilePhotoUpload({
           className="profile-photo-upload-hint mt-1.5 text-[11px] font-medium leading-none"
           style={{ color: "#5A7390", fontFamily: "'Inter', sans-serif" }}
         >
-          Uploading...
+          {t("auth.signup.uploading")}
         </p>
       )}
 

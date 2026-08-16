@@ -1,4 +1,5 @@
 import { Play } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { ChildSelector } from "../components/ChildSelector";
 
 export function GreetingAndActions({
@@ -11,12 +12,13 @@ export function GreetingAndActions({
   onSelectChild,
   onStartExercise,
 }) {
+  const { t } = useLocale();
   const hasActivitiesToday = (summary?.todaysExercises ?? 0) > 0;
 
   return (
     <section className="pd-greeting pd-section-enter">
       <div className="pd-greeting-main">
-        <h1>Good morning, {parentFirstName}!</h1>
+        <h1>{t("parent.home.greetingMorning", { name: parentFirstName })}</h1>
       </div>
 
       <div className="pd-greeting-toolbar">
@@ -32,7 +34,7 @@ export function GreetingAndActions({
         {hasActivitiesToday ? (
           <button type="button" className="pd-btn pd-btn-primary" onClick={onStartExercise}>
             <Play size={15} aria-hidden="true" />
-            Start Today&apos;s Exercise
+            {t("parent.home.startTodaysExercise")}
           </button>
         ) : null}
       </div>

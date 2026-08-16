@@ -1,10 +1,6 @@
+import { EXERCISE_VALIDATION_KEYS } from "./specialistExercisesLocalization.js";
+
 export const EXERCISE_ALL_CATEGORY_LABEL = "All";
-
-export const EXERCISE_SEARCH_PLACEHOLDER = "Search by title, category, or instructions...";
-
-export const EXERCISE_EMPTY_DATABASE_MESSAGE = "No exercises available.";
-
-export const EXERCISE_EMPTY_FILTERED_MESSAGE = "No exercises match your search or selected category.";
 
 const KNOWN_CATEGORY_ORDER = [
   "Speech Articulation",
@@ -45,7 +41,7 @@ function parseExerciseLanguage(value) {
 }
 
 export function getExerciseLanguageLabel(language) {
-  return parseExerciseLanguage(language) === "ar" ? "Arabic" : "English";
+  return parseExerciseLanguage(language) === "ar" ? "ar" : "en";
 }
 
 export function mapExerciseItem(row) {
@@ -152,7 +148,8 @@ export function filterExercises(exercises, { searchQuery = "", selectedCategory 
       exercise.category,
       exercise.instructions,
       exercise.description,
-      exercise.languageLabel,
+      exercise.language,
+      exercise.language === "ar" ? "arabic" : "english",
     ]
       .filter(Boolean)
       .join(" ")
@@ -302,36 +299,12 @@ export function buildExerciseCreatePayload({
 
 export function validateExerciseEditForm({ categoryId, title }) {
   if (!categoryId?.trim()) {
-    return "Please select a category.";
+    return EXERCISE_VALIDATION_KEYS.CATEGORY_REQUIRED;
   }
   if (!title?.trim()) {
-    return "Title is required.";
+    return EXERCISE_VALIDATION_KEYS.TITLE_REQUIRED;
   }
   return null;
 }
 
 export const validateExerciseCreateForm = validateExerciseEditForm;
-
-export function resolveExerciseFieldErrors(validationMessage) {
-  if (!validationMessage) {
-    return {};
-  }
-  switch (validationMessage) {
-    case "Please select a category.":
-      return { categoryId: validationMessage };
-    case "Title is required.":
-      return { title: validationMessage };
-    default:
-      return { form: validationMessage };
-  }
-}
-
-export function getExerciseLibraryEmptyMessage({ hasExercises, hasVisible }) {
-  if (!hasExercises) {
-    return EXERCISE_EMPTY_DATABASE_MESSAGE;
-  }
-  if (!hasVisible) {
-    return EXERCISE_EMPTY_FILTERED_MESSAGE;
-  }
-  return null;
-}

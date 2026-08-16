@@ -1,11 +1,12 @@
 import { ChevronRight } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
 
-function reviewTone(status) {
-  if (status === "Reviewed") {
+function reviewTone(rawStatus) {
+  if (rawStatus === "reviewed") {
     return "success";
   }
-  if (status === "Needs retry") {
+  if (rawStatus === "needs_retry") {
     return "warning";
   }
   return "success";
@@ -16,18 +17,20 @@ export function SpecialistRecentSubmissions({
   onReviewExercises,
   onSubmissionClick,
 }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-specialist-patient-section" id="specialist-patient-submissions">
       <div className="pd-specialist-section-head">
-        <h2 className="pd-section-title">Recent Exercise Submissions</h2>
+        <h2 className="pd-section-title">{t("specialist.patientDetails.recentSubmissions")}</h2>
         <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onReviewExercises}>
-          Review Exercises
+          {t("specialist.patientDetails.reviewExercises")}
         </button>
       </div>
 
       {submissions.length === 0 ? (
         <div className="pd-card pd-card-pad">
-          <p className="pd-section-sub">No recent submissions yet.</p>
+          <p className="pd-section-sub">{t("specialist.patientDetails.noSubmissions")}</p>
         </div>
       ) : (
         <ul className="pd-specialist-patient-item-list">
@@ -40,13 +43,16 @@ export function SpecialistRecentSubmissions({
                 disabled={!submission.id || !onSubmissionClick}
               >
                 <div>
-                  <strong>{submission.exerciseTitle}</strong>
+                  <strong dir="auto">{submission.exerciseTitle}</strong>
                   <p className="pd-section-sub">
                     {[submission.mediaTypeLabel, submission.submittedAtLabel].filter(Boolean).join(" · ")}
                   </p>
                 </div>
                 <div className="pd-specialist-patient-list-row-aside">
-                  <StatusBadge label={submission.reviewStatus} tone={reviewTone(submission.reviewStatus)} />
+                  <StatusBadge
+                    label={submission.reviewStatus}
+                    tone={reviewTone(submission.reviewStatusRaw)}
+                  />
                   <ChevronRight size={16} aria-hidden="true" />
                 </div>
               </button>

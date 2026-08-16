@@ -2,12 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   buildParentCaseRequestEditPath,
   buildParentCaseRequestsPath,
   buildParentMessagesPath,
 } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { useParentCaseRequestDetail } from "./hooks/useParentCaseRequests";
 import { useParentNotifications } from "./hooks/useParentNotifications";
@@ -19,6 +19,7 @@ import "./styles/parentDashboardTokens.css";
 export default function ParentCaseRequestDetailPage() {
   const navigate = useNavigate();
   const { requestId } = useParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -99,7 +100,7 @@ export default function ParentCaseRequestDetailPage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading case request...</p>
+          <p className="pd-inline-loading">{t("parent.caseRequests.loadingDetail")}</p>
         </section>
       );
     }
@@ -109,7 +110,7 @@ export default function ParentCaseRequestDetailPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -118,7 +119,7 @@ export default function ParentCaseRequestDetailPage() {
     if (!request) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p>Case request not found.</p>
+          <p>{t("parent.caseRequests.notFound")}</p>
         </section>
       );
     }
@@ -142,15 +143,25 @@ export default function ParentCaseRequestDetailPage() {
               {request.statusSubtitle ? (
                 <p className="pd-section-sub">{request.statusSubtitle}</p>
               ) : null}
-              <p className="pd-case-meta">Gender: {request.genderLabel}</p>
+              <p className="pd-case-meta">
+                {t("parent.caseRequests.genderLabel", { gender: request.genderLabel })}
+              </p>
               {request.categoryName ? (
-                <p className="pd-case-meta">Category: {request.categoryName}</p>
+                <p className="pd-case-meta">
+                  {t("parent.caseRequests.categoryLabel", { category: request.categoryName })}
+                </p>
               ) : null}
               {request.submittedLabel ? (
-                <p className="pd-case-meta">Submitted {request.submittedLabel}</p>
+                <p className="pd-case-meta">
+                  {t("parent.caseRequests.submitted", { date: request.submittedLabel })}
+                </p>
               ) : null}
               {request.assignedSpecialistName ? (
-                <p className="pd-case-meta">Specialist: {request.assignedSpecialistName}</p>
+                <p className="pd-case-meta">
+                  {t("parent.caseRequests.assignedSpecialist", {
+                    name: request.assignedSpecialistName,
+                  })}
+                </p>
               ) : null}
             </div>
           </div>
@@ -158,21 +169,21 @@ export default function ParentCaseRequestDetailPage() {
 
         {request.caseDescription ? (
           <section className="pd-card pd-card-pad">
-            <h3 className="pd-section-title">Case Description</h3>
+            <h3 className="pd-section-title">{t("parent.caseRequests.caseDescription")}</h3>
             <p>{request.caseDescription}</p>
           </section>
         ) : null}
 
         {request.observedDifficulties ? (
           <section className="pd-card pd-card-pad">
-            <h3 className="pd-section-title">Observed Difficulties</h3>
+            <h3 className="pd-section-title">{t("parent.caseRequests.observedDifficulties")}</h3>
             <p>{request.observedDifficulties}</p>
           </section>
         ) : null}
 
         {request.rejectionReason ? (
           <section className="pd-card pd-card-pad">
-            <h3 className="pd-section-title">Rejection Reason</h3>
+            <h3 className="pd-section-title">{t("parent.caseRequests.rejectionReason")}</h3>
             <p>{request.rejectionReason}</p>
           </section>
         ) : null}
@@ -184,7 +195,7 @@ export default function ParentCaseRequestDetailPage() {
               className="pd-btn pd-btn-soft"
               onClick={() => navigate(buildParentCaseRequestEditPath(request.id))}
             >
-              Edit Request
+              {t("parent.caseRequests.editRequest")}
             </button>
           ) : null}
           {request.conversationId ? (
@@ -193,7 +204,7 @@ export default function ParentCaseRequestDetailPage() {
               className="pd-btn pd-btn-primary"
               onClick={() => navigate(buildParentMessagesPath(request.conversationId))}
             >
-              Open Messages
+              {t("parent.caseRequests.openMessages")}
             </button>
           ) : null}
         </div>
@@ -206,7 +217,6 @@ export default function ParentCaseRequestDetailPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -228,12 +238,12 @@ export default function ParentCaseRequestDetailPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Case Requests
+              {t("parent.caseRequests.backToList")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Case Request Details</h1>
+            <h1 className="pd-task-hub-title">{t("parent.caseRequests.detailTitle")}</h1>
           </header>
 
           <div className="pd-task-hub-panel">{renderContent()}</div>

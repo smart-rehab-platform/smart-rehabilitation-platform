@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   loadEditTreatmentPlanBundle,
   updateTreatmentPlan,
 } from "../../../services/specialistTreatmentPlanService";
 import { formatDateOnlyForApi } from "../utils/specialistTreatmentPlanMappers";
+import {
+  getTreatmentPlanValidationMessage,
+  validateTreatmentPlanEditForm,
+} from "../utils/specialistTreatmentPlansLocalization";
 import { notifySpecialistTreatmentPlanRefresh } from "../utils/specialistTreatmentPlanRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -19,6 +24,7 @@ function todayDateOnly() {
 }
 
 export function useSpecialistTreatmentPlanEdit(specialistUserId, planId) {
+  const { t } = useLocale();
   const [bundle, setBundle] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -31,6 +37,11 @@ export function useSpecialistTreatmentPlanEdit(specialistUserId, planId) {
   const [endDate, setEndDate] = useState("");
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadPlanFailedMessage = t("specialist.treatmentPlans.errors.loadPlanFailed");
+  const notFoundMessage = t("specialist.treatmentPlans.empty.notFound");
+  const pleaseWaitMessage = t("specialist.treatmentPlans.pleaseWait");
+  const saveFailedMessage = t("specialist.treatmentPlans.errors.saveFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -63,7 +74,7 @@ export function useSpecialistTreatmentPlanEdit(specialistUserId, planId) {
         }
 
         if (!result.bundle) {
-          setError("Treatment plan not found.");
+          setError(notFoundMessage);
           return;
         }
 
@@ -77,7 +88,7 @@ export function useSpecialistTreatmentPlanEdit(specialistUserId, planId) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setError(resolveErrorMessage(loadError, "Failed to load treatment plan."));
+        setError(resolveErrorMessage(loadError, loadPlanFailedMessage));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -90,30 +101,22 @@ export function useSpecialistTreatmentPlanEdit(specialistUserId, planId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, planId, refreshToken]);
+  }, [specialistUserId, planId, refreshToken, loadPlanFailedMessage, notFoundMessage]);
 
-  const validate = useCallback(() => {
-    if (!title.trim()) {
-      return "Plan title is required";
-    }
-    if (!startDate) {
-      return "Start date is required";
-    }
-    if (endDate && endDate < startDate) {
-      return "End date cannot be before start date";
-    }
-    return null;
-  }, [title, startDate, endDate]);
+  const validate = useCallback(
+    () => validateTreatmentPlanEditForm({ title, startDate, endDate }),
+    [title, startDate, endDate],
+  );
 
   const save = useCallback(async () => {
     const validation = validate();
     if (validation) {
       setValidationMessage(validation);
-      return { ok: false, message: validation };
+      return { ok: false, message: getTreatmentPlanValidationMessage(validation, t) };
     }
 
     if (isSaving) {
-      return { ok: false, message: "Please wait…" };
+      return { ok: false, message: pleaseWaitMessage };
     }
 
     setIsSaving(true);
@@ -137,13 +140,13 @@ export function useSpecialistTreatmentPlanEdit(specialistUserId, planId) {
       notifySpecialistTreatmentPlanRefresh();
       return { ok: true };
     } catch (saveError) {
-      const message = resolveErrorMessage(saveError, "Failed to save treatment plan. Please try again.");
+      const message = resolveErrorMessage(saveError, saveFailedMessage);
       setError(message);
       return { ok: false, message };
     } finally {
       setIsSaving(false);
     }
-  }, [validate, isSaving, title, status, startDate, endDate, planId]);
+  }, [validate, isSaving, title, status, startDate, endDate, planId, t, pleaseWaitMessage, saveFailedMessage]);
 
   if (!specialistUserId || !planId) {
     return {

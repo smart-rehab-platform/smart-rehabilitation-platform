@@ -1,4 +1,5 @@
 export function AdminAuditLogsToolbar({
+  labels,
   userOptions = [],
   actionOptions = [],
   entityOptions = [],
@@ -19,24 +20,24 @@ export function AdminAuditLogsToolbar({
   onClearFilters,
 }) {
   return (
-    <section className="pd-admin-audit-toolbar pd-section-enter" aria-label="Audit logs toolbar">
+    <section className="pd-admin-audit-toolbar pd-section-enter" aria-label={labels.toolbarAriaLabel}>
       <div className="pd-admin-audit-toolbar-top">
         <div className="pd-admin-audit-heading">
-          <h1 className="pd-section-title">Audit Logs</h1>
-          <p className="pd-section-sub">Monitor administrative and system activity.</p>
+          <h1 className="pd-section-title">{labels.title}</h1>
+          <p className="pd-section-sub">{labels.subtitle}</p>
         </div>
 
         <div className="pd-admin-audit-toolbar-actions">
           {isRefreshing ? (
             <span className="pd-admin-audit-refreshing" role="status" aria-live="polite">
               <span className="pd-admin-audit-refresh-spinner" aria-hidden="true" />
-              Updating…
+              {labels.updating}
             </span>
           ) : null}
 
           {hasActiveFilters ? (
             <button type="button" className="pd-btn pd-btn-soft" onClick={onClearFilters}>
-              Clear filters
+              {labels.clearFilters}
             </button>
           ) : null}
         </div>
@@ -45,13 +46,13 @@ export function AdminAuditLogsToolbar({
       <div className="pd-card pd-card-pad pd-admin-audit-filters">
         <div className="pd-admin-audit-filters-grid">
           <label className="pd-admin-audit-filter-field">
-            <span className="pd-admin-audit-filter-label">User</span>
+            <span className="pd-admin-audit-filter-label">{labels.filters.user}</span>
             <select
               className="pd-admin-audit-filter"
               value={selectedUserId}
               onChange={(event) => onUserChange(event.target.value)}
             >
-              <option value="">All users</option>
+              <option value="">{labels.filters.allUsers}</option>
               {userOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -60,19 +61,19 @@ export function AdminAuditLogsToolbar({
             </select>
             {usersError ? (
               <span className="pd-admin-audit-filter-hint" role="status">
-                User filter options could not be loaded.
+                {labels.filters.usersUnavailable}
               </span>
             ) : null}
           </label>
 
           <label className="pd-admin-audit-filter-field">
-            <span className="pd-admin-audit-filter-label">Action</span>
+            <span className="pd-admin-audit-filter-label">{labels.filters.action}</span>
             <select
               className="pd-admin-audit-filter"
               value={selectedAction}
               onChange={(event) => onActionChange(event.target.value)}
             >
-              <option value="">All actions</option>
+              <option value="">{labels.filters.allActions}</option>
               {actionOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -82,13 +83,13 @@ export function AdminAuditLogsToolbar({
           </label>
 
           <label className="pd-admin-audit-filter-field">
-            <span className="pd-admin-audit-filter-label">Entity</span>
+            <span className="pd-admin-audit-filter-label">{labels.filters.entity}</span>
             <select
               className="pd-admin-audit-filter"
               value={selectedEntity}
               onChange={(event) => onEntityChange(event.target.value)}
             >
-              <option value="">All entities</option>
+              <option value="">{labels.filters.allEntities}</option>
               {entityOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -98,7 +99,7 @@ export function AdminAuditLogsToolbar({
           </label>
 
           <label className="pd-admin-audit-filter-field">
-            <span className="pd-admin-audit-filter-label">From date</span>
+            <span className="pd-admin-audit-filter-label">{labels.filters.fromDate}</span>
             <input
               type="date"
               className="pd-admin-audit-filter"
@@ -108,7 +109,7 @@ export function AdminAuditLogsToolbar({
           </label>
 
           <label className="pd-admin-audit-filter-field">
-            <span className="pd-admin-audit-filter-label">To date</span>
+            <span className="pd-admin-audit-filter-label">{labels.filters.toDate}</span>
             <input
               type="date"
               className="pd-admin-audit-filter"

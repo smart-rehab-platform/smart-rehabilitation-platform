@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   rejectAdminComplaint,
   resolveAdminComplaint,
@@ -8,26 +9,13 @@ import {
   COMPLAINT_PARENT_RESPONSE_MAX_LENGTH,
   buildComplaintReviewPayload,
   isInvalidComplaintStatusTransitionError,
-  validateComplaintAdminNotes,
 } from "../utils/adminComplaintsMappers";
+import {
+  friendlyComplaintErrorLocalized,
+  getAdminComplaintsLabels,
+  validateComplaintAdminNotesLocalized,
+} from "../utils/adminComplaintsLocalization.js";
 import { useAdminDialogEscape } from "../hooks/useAdminDialogEscape";
-
-const ACTION_CONFIG = {
-  resolve: {
-    title: "Resolve Complaint",
-    confirmLabel: "Resolve Complaint",
-    confirmClassName: "pd-btn-success",
-    submittingLabel: "Resolving...",
-    run: resolveAdminComplaint,
-  },
-  reject: {
-    title: "Reject Complaint",
-    confirmLabel: "Reject Complaint",
-    confirmClassName: "pd-btn-danger",
-    submittingLabel: "Rejecting...",
-    run: rejectAdminComplaint,
-  },
-};
 
 function AdminComplaintReviewActionDialogInner({
   actionType,
@@ -36,18 +24,26 @@ function AdminComplaintReviewActionDialogInner({
   onSuccess,
   onStaleRefresh,
 }) {
-  const config = ACTION_CONFIG[actionType];
+  const { t, locale } = useLocale();
+  const labels = useMemo(() => getAdminComplaintsLabels(t), [t]);
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
   const [adminNotes, setAdminNotes] = useState("");
   const [parentResponse, setParentResponse] = useState("");
   const [fieldError, setFieldError] = useState(null);
   const [apiError, setApiError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useAdminDialogEscape(Boolean(config && complaint), onClose, { disabled: isSubmitting });
+  useAdminDialogEscape(Boolean(actionType && complaint), onClose, { disabled: isSubmitting });
 
-  if (!config || !complaint) {
+  if (!actionType || !complaint) {
     return null;
   }
+
+  const isResolve = actionType === "resolve";
+  const title = isResolve ? labels.dialogs.resolveTitle : labels.dialogs.rejectTitle;
+  const confirmLabel = isResolve ? labels.actions.resolve : labels.actions.reject;
+  const submittingLabel = isResolve ? labels.dialogs.resolving : labels.dialogs.rejecting;
+  const run = isResolve ? resolveAdminComplaint : rejectAdminComplaint;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -56,7 +52,7 @@ function AdminComplaintReviewActionDialogInner({
       return;
     }
 
-    const notesResult = validateComplaintAdminNotes(adminNotes);
+    const notesResult = validateComplaintAdminNotesLocalized(adminNotes, mapperContext);
     if (!notesResult.valid) {
       setFieldError(notesResult.error);
       setApiError(null);
@@ -79,13 +75,13 @@ function AdminComplaintReviewActionDialogInner({
     setIsSubmitting(true);
 
     try {
-      await config.run(complaint.id, built.payload);
+      await run(complaint.id, built.payload);
       onSuccess?.(actionType);
     } catch (submitError) {
       const message = submitError instanceof Error
         ? submitError.message
-        : "Action failed.";
-      setApiError(message);
+        : labels.toast.actionFailed;
+      setApiError(friendlyComplaintErrorLocalized(message, mapperContext));
 
       if (isInvalidComplaintStatusTransitionError(submitError)) {
         await onStaleRefresh?.();
@@ -109,22 +105,22 @@ function AdminComplaintReviewActionDialogInner({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="admin-complaint-review-action-title" className="pd-admin-modal-title">
-          {config.title}
+          {title}
         </h2>
 
         <div className="pd-admin-complaint-modal-context">
           <p className="pd-admin-modal-copy">
-            Category: <strong>{complaint.categoryLabel}</strong>
+            {labels.dialogs.categoryLabel}: <strong>{complaint.categoryLabel}</strong>
           </p>
           <p className="pd-admin-modal-copy">
-            Child: <strong>{complaint.patientName}</strong>
+            {labels.dialogs.childLabel}: <strong dir="auto">{complaint.patientName}</strong>
           </p>
         </div>
 
         <form className="pd-admin-complaint-review-form" onSubmit={handleSubmit}>
           <label className="pd-admin-complaint-field">
             <span className="pd-admin-complaint-field-label">
-              Admin Notes <span className="pd-admin-complaint-required">*</span>
+              {labels.dialogs.adminNotesLabel} <span className="pd-admin-complaint-required">*</span>
             </span>
             <textarea
               className="pd-admin-complaint-textarea"
@@ -132,20 +128,24 @@ function AdminComplaintReviewActionDialogInner({
               onChange={(event) => setAdminNotes(event.target.value)}
               rows={5}
               maxLength={COMPLAINT_ADMIN_NOTES_MAX_LENGTH}
+              placeholder={labels.dialogs.adminNotesPlaceholder}
               disabled={isSubmitting}
               required
+              dir="auto"
             />
           </label>
 
           <label className="pd-admin-complaint-field">
-            <span className="pd-admin-complaint-field-label">Parent Response (optional)</span>
+            <span className="pd-admin-complaint-field-label">{labels.dialogs.parentResponseLabel}</span>
             <textarea
               className="pd-admin-complaint-textarea"
               value={parentResponse}
               onChange={(event) => setParentResponse(event.target.value)}
               rows={4}
               maxLength={COMPLAINT_PARENT_RESPONSE_MAX_LENGTH}
+              placeholder={labels.dialogs.parentResponsePlaceholder}
               disabled={isSubmitting}
+              dir="auto"
             />
           </label>
 
@@ -159,14 +159,14 @@ function AdminComplaintReviewActionDialogInner({
               onClick={() => onClose?.()}
               disabled={isSubmitting}
             >
-              Cancel
+              {labels.dialogs.cancel}
             </button>
             <button
               type="submit"
-              className={`pd-btn ${config.confirmClassName}`}
+              className={`pd-btn ${isResolve ? "pd-btn-success" : "pd-btn-danger"}`}
               disabled={isSubmitting}
             >
-              {isSubmitting ? config.submittingLabel : config.confirmLabel}
+              {isSubmitting ? submittingLabel : confirmLabel}
             </button>
           </div>
         </form>

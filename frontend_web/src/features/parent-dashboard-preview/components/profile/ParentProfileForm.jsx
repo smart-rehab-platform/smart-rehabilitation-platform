@@ -1,3 +1,4 @@
+import { useLocale } from "../../../../context/useLocale.js";
 import { ParentProfileAvatar } from "./ParentProfileAvatar";
 
 export function ParentProfileForm({
@@ -14,6 +15,8 @@ export function ParentProfileForm({
   onCancel,
   onSubmit,
 }) {
+  const { t } = useLocale();
+
   return (
     <form
       className="pd-profile-edit-layout pd-section-enter"
@@ -23,7 +26,7 @@ export function ParentProfileForm({
       }}
     >
       <section className="pd-card pd-card-pad pd-profile-photo-card">
-        <h2 className="pd-profile-section-title">Profile Photo</h2>
+        <h2 className="pd-profile-section-title">{t("parent.profile.photoTitle")}</h2>
         <ParentProfileAvatar
           profile={profile}
           previewUrl={avatarPreviewUrl}
@@ -34,11 +37,11 @@ export function ParentProfileForm({
       </section>
 
       <section className="pd-card pd-card-pad pd-profile-form-section">
-        <h2 className="pd-profile-section-title">Personal Information</h2>
+        <h2 className="pd-profile-section-title">{t("parent.profile.personalInfo")}</h2>
         <div className="pd-profile-form-grid">
           <div className="pd-form-field">
             <label className="pd-form-label" htmlFor="pd-profile-full-name">
-              Full name
+              {t("parent.profile.fullName")}
             </label>
             <input
               id="pd-profile-full-name"
@@ -57,7 +60,7 @@ export function ParentProfileForm({
 
           <div className="pd-form-field">
             <label className="pd-form-label" htmlFor="pd-profile-phone">
-              Phone number
+              {t("parent.profile.phoneNumber")}
             </label>
             <input
               id="pd-profile-phone"
@@ -71,7 +74,7 @@ export function ParentProfileForm({
 
           <div className="pd-form-field pd-profile-form-span">
             <label className="pd-form-label" htmlFor="pd-profile-address">
-              Address
+              {t("parent.profile.address")}
             </label>
             <textarea
               id="pd-profile-address"
@@ -85,7 +88,7 @@ export function ParentProfileForm({
 
           <div className="pd-form-field pd-profile-form-span">
             <label className="pd-form-label" htmlFor="pd-profile-relationship-notes">
-              Relationship notes
+              {t("parent.profile.relationshipNotesLower")}
             </label>
             <textarea
               id="pd-profile-relationship-notes"
@@ -110,14 +113,14 @@ export function ParentProfileForm({
           disabled={isSaving}
           onClick={onCancel}
         >
-          Cancel
+          {t("parent.common.cancel")}
         </button>
         <button
           type="submit"
           className="pd-btn pd-btn-primary"
           disabled={isSaving || !isDirty}
         >
-          {isSaving ? "Saving..." : "Save Changes"}
+          {isSaving ? t("parent.profile.saving") : t("parent.profile.saveChanges")}
         </button>
       </div>
     </form>

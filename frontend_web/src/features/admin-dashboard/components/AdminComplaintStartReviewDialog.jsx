@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { startAdminComplaintReview } from "../../../services/adminComplaintsService";
 import { isInvalidComplaintStatusTransitionError } from "../utils/adminComplaintsMappers";
+import {
+  friendlyComplaintErrorLocalized,
+  getAdminComplaintsLabels,
+} from "../utils/adminComplaintsLocalization.js";
 import { useAdminDialogEscape } from "../hooks/useAdminDialogEscape";
 
 function AdminComplaintStartReviewDialogInner({
@@ -9,6 +14,9 @@ function AdminComplaintStartReviewDialogInner({
   onSuccess,
   onStaleRefresh,
 }) {
+  const { t, locale } = useLocale();
+  const labels = useMemo(() => getAdminComplaintsLabels(t), [t]);
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
   const [apiError, setApiError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,8 +36,8 @@ function AdminComplaintStartReviewDialogInner({
     } catch (submitError) {
       const message = submitError instanceof Error
         ? submitError.message
-        : "Failed to start complaint review.";
-      setApiError(message);
+        : labels.toast.actionFailed;
+      setApiError(friendlyComplaintErrorLocalized(message, mapperContext));
 
       if (isInvalidComplaintStatusTransitionError(submitError)) {
         await onStaleRefresh?.();
@@ -53,17 +61,17 @@ function AdminComplaintStartReviewDialogInner({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="admin-complaint-start-review-title" className="pd-admin-modal-title">
-          Start Review
+          {labels.dialogs.startReviewTitle}
         </h2>
 
-        <p className="pd-admin-modal-copy">Start reviewing this complaint?</p>
+        <p className="pd-admin-modal-copy">{labels.dialogs.startReviewBody}</p>
 
         <div className="pd-admin-complaint-modal-context">
           <p className="pd-admin-modal-copy">
-            Category: <strong>{complaint.categoryLabel}</strong>
+            {labels.dialogs.categoryLabel}: <strong>{complaint.categoryLabel}</strong>
           </p>
           <p className="pd-admin-modal-copy">
-            Child: <strong>{complaint.patientName}</strong>
+            {labels.dialogs.childLabel}: <strong dir="auto">{complaint.patientName}</strong>
           </p>
         </div>
 
@@ -76,7 +84,7 @@ function AdminComplaintStartReviewDialogInner({
             onClick={() => onClose?.()}
             disabled={isSubmitting}
           >
-            Cancel
+            {labels.dialogs.cancel}
           </button>
           <button
             type="button"
@@ -84,7 +92,7 @@ function AdminComplaintStartReviewDialogInner({
             onClick={handleConfirm}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Starting..." : "Start Review"}
+            {isSubmitting ? labels.dialogs.starting : labels.actions.startReview}
           </button>
         </div>
       </div>

@@ -4,12 +4,15 @@ import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfile
 export function AdminMatchingSpecialistsGrid({
   specialists,
   selectedSpecialistId,
+  labels,
   onSelectSpecialist,
 }) {
+  const { specialistsPage } = labels;
+
   if (specialists.length === 0) {
     return (
       <section className="pd-card pd-card-pad pd-section-enter">
-        <p className="pd-admin-case-request-empty-copy">No matching specialists are available for this case.</p>
+        <p className="pd-admin-case-request-empty-copy">{specialistsPage.empty}</p>
       </section>
     );
   }
@@ -42,8 +45,8 @@ export function AdminMatchingSpecialistsGrid({
                 className="pd-avatar-photo"
               />
               <div>
-                <strong>{specialist.fullName}</strong>
-                <span>{specialist.specialization}</span>
+                <strong dir="auto">{specialist.fullName}</strong>
+                <span dir="auto">{specialist.specialization}</span>
               </div>
             </div>
 
@@ -55,12 +58,12 @@ export function AdminMatchingSpecialistsGrid({
 
             {specialist.licenseNumber ? (
               <p className="pd-admin-matching-specialist-license">
-                License: {specialist.licenseNumber}
+                {labels.licenseLabel(specialist.licenseNumber)}
               </p>
             ) : null}
 
             {specialist.bio ? (
-              <p className="pd-admin-matching-specialist-bio">{specialist.bio}</p>
+              <p className="pd-admin-matching-specialist-bio" dir="auto">{specialist.bio}</p>
             ) : null}
           </button>
         );

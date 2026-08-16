@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistMessagesPath,
@@ -19,11 +20,14 @@ import { useSpecialistPresence } from "./hooks/useSpecialistPresence";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
 import {
-  SPECIALIST_MESSAGES_CHAT_EMPTY,
-  SPECIALIST_MESSAGES_EMPTY,
-  buildMessageThreadItems,
+  applySpecialistConversationLocalization,
+  buildLocalizedMessageThreadItems,
+  getSpecialistMessagesEmptyMessages,
+  getSpecialistMessagesPageLabels,
+  localizeSpecialistMessageContent,
+} from "./utils/specialistMessagesLocalization.js";
+import {
   filterSpecialistConversations,
-  formatMessageTime,
   mapSpecialistConversation,
   getLatestReadOutgoingMessageId,
 } from "./utils/specialistMessagesUtils";
@@ -36,6 +40,10 @@ const THREAD_SCROLL_THRESHOLD_PX = 80;
 
 export default function SpecialistMessagesPage() {
   const navigate = useNavigate();
+  const { t, locale } = useLocale();
+  const pageLabels = useMemo(() => getSpecialistMessagesPageLabels(t), [t]);
+  const emptyMessages = useMemo(() => getSpecialistMessagesEmptyMessages(t), [t]);
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
   const { conversationId: routeConversationId } = useParams();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
@@ -96,12 +104,11 @@ export default function SpecialistMessagesPage() {
     }
 
     if (resolvedConversation?.id === activeConversationId) {
-      return resolvedConversation;
+      return applySpecialistConversationLocalization(resolvedConversation, mapperContext);
     }
 
     return null;
-  }, [listConversation, resolvedConversation, activeConversationId]);
-
+  }, [listConversation, resolvedConversation, activeConversationId, mapperContext]);
   const handleIncomingMessages = useCallback(() => {
     refetchNotifications();
   }, [refetchNotifications]);
@@ -161,8 +168,8 @@ export default function SpecialistMessagesPage() {
   );
 
   const threadItems = useMemo(
-    () => buildMessageThreadItems(messages),
-    [messages],
+    () => buildLocalizedMessageThreadItems(messages, mapperContext),
+    [messages, mapperContext],
   );
 
   const latestReadOutgoingId = useMemo(
@@ -313,7 +320,7 @@ export default function SpecialistMessagesPage() {
 
   const renderConversationList = () => {
     if (isLoadingConversations) {
-      return <p className="pd-inline-loading">Loading conversations...</p>;
+      return <p className="pd-inline-loading">{pageLabels.loadingConversations}</p>;
     }
 
     if (conversationsError) {
@@ -321,20 +328,19 @@ export default function SpecialistMessagesPage() {
         <div className="pd-ai-panel-state">
           <p className="pd-inline-error">{conversationsError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetchConversations}>
-            Retry
+            {pageLabels.retry}
           </button>
         </div>
       );
     }
 
     if (conversations.length === 0) {
-      return <p className="pd-section-sub">{SPECIALIST_MESSAGES_EMPTY}</p>;
+      return <p className="pd-section-sub">{emptyMessages.conversations}</p>;
     }
 
     if (filteredConversations.length === 0) {
-      return <p className="pd-section-sub">No conversations match your search.</p>;
+      return <p className="pd-section-sub">{emptyMessages.filtered}</p>;
     }
-
     return (
       <div className="pd-messages-list">
         {filteredConversations.map((conversation) => (
@@ -357,8 +363,8 @@ export default function SpecialistMessagesPage() {
               />
             </span>
             <span className="pd-specialist-conversation-copy">
-              <strong>{conversation.title}</strong>
-              {conversation.subtitle ? <span>{conversation.subtitle}</span> : null}
+              <strong dir="auto">{conversation.title}</strong>
+              {conversation.subtitle ? <span dir="auto">{conversation.subtitle}</span> : null}
               {conversation.startedLabel ? (
                 <span className="pd-specialist-conversation-meta">{conversation.startedLabel}</span>
               ) : null}
@@ -372,11 +378,11 @@ export default function SpecialistMessagesPage() {
 
   const renderThread = () => {
     if (!activeConversationId) {
-      return <p className="pd-section-sub">Select a conversation to view messages.</p>;
+      return <p className="pd-section-sub">{pageLabels.selectConversation}</p>;
     }
 
     if (isLoadingMessages) {
-      return <p className="pd-inline-loading">Loading messages...</p>;
+      return <p className="pd-inline-loading">{pageLabels.loadingMessages}</p>;
     }
 
     if (messagesError) {
@@ -384,16 +390,15 @@ export default function SpecialistMessagesPage() {
         <div className="pd-ai-panel-state">
           <p className="pd-inline-error">{messagesError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetchMessages}>
-            Retry
+            {pageLabels.retry}
           </button>
         </div>
       );
     }
 
     if (threadItems.length === 0) {
-      return <p className="pd-section-sub">{SPECIALIST_MESSAGES_CHAT_EMPTY}</p>;
+      return <p className="pd-section-sub">{emptyMessages.chat}</p>;
     }
-
     return threadItems.map((item) => {
       if (item.type === "separator") {
         return (
@@ -416,9 +421,15 @@ export default function SpecialistMessagesPage() {
             className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}
           >
             {!isOwn && message.senderName ? (
-              <span className="pd-message-sender">{message.senderName}</span>
+              <span className="pd-message-sender" dir="auto">
+                {message.senderName}
+              </span>
             ) : null}
-            {message.content ? <p>{message.content}</p> : null}
+            {message.content ? (
+              <p dir="auto">
+                {localizeSpecialistMessageContent(message.content, t)}
+              </p>
+            ) : null}
             {message.hasAttachments ? (
               <div className="pd-message-attachments">
                 {message.attachments.map((attachment) => (
@@ -430,7 +441,7 @@ export default function SpecialistMessagesPage() {
               </div>
             ) : null}
             {message.sentAt ? (
-              <time className="pd-message-time">{formatMessageTime(message.sentAt)}</time>
+              <time className="pd-message-time">{message.timeLabel}</time>
             ) : null}
           </article>
           {showSeen ? <span className="pd-message-seen">Seen</span> : null}
@@ -472,7 +483,7 @@ export default function SpecialistMessagesPage() {
               onClick={() => navigate(SPECIALIST_WEB_ROUTES.dashboard)}
             >
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Dashboard
+              {pageLabels.backToDashboard}
             </button>
             {isNarrowLayout && mobileShowsChat ? (
               <button
@@ -480,30 +491,30 @@ export default function SpecialistMessagesPage() {
                 className="pd-btn pd-btn-soft"
                 onClick={navigateToMessagesList}
               >
-                Conversations
+                {pageLabels.conversations}
               </button>
             ) : null}
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Messages</h1>
+            <h1 className="pd-task-hub-title">{pageLabels.title}</h1>
             <p className="pd-task-hub-subtitle">
-              Conversations with parents about your patients
+              {pageLabels.subtitle}
             </p>
           </header>
 
           <div className="pd-messages-layout">
             {showListPanel ? (
               <aside className="pd-messages-sidebar pd-card pd-card-pad">
-                <h2 className="pd-section-title">Conversations</h2>
+                <h2 className="pd-section-title">{pageLabels.conversations}</h2>
                 {conversations.length > 0 ? (
                   <label className="pd-specialist-conversation-search">
-                    <span className="pd-visually-hidden">Search conversations</span>
+                    <span className="pd-visually-hidden">{pageLabels.searchLabel}</span>
                     <input
                       type="search"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
-                      placeholder="Search parent or patient"
+                      placeholder={pageLabels.searchPlaceholder}
                       className="pd-specialist-conversation-search-input"
                     />
                   </label>
@@ -528,9 +539,9 @@ export default function SpecialistMessagesPage() {
                         className="pd-avatar-photo"
                       />
                       <div>
-                        <h2 className="pd-section-title">{activeConversation.title}</h2>
+                        <h2 className="pd-section-title" dir="auto">{activeConversation.title}</h2>
                         {activeConversation.subtitle ? (
-                          <p className="pd-section-sub">{activeConversation.subtitle}</p>
+                          <p className="pd-section-sub" dir="auto">{activeConversation.subtitle}</p>
                         ) : null}
                         <SpecialistPresenceStatus
                           presence={parentPresence.presence}
@@ -541,7 +552,7 @@ export default function SpecialistMessagesPage() {
                       </div>
                     </div>
                   ) : (
-                    <h2 className="pd-section-title">Conversation</h2>
+                    <h2 className="pd-section-title">{pageLabels.conversationDefault}</h2>
                   )}
                 </div>
 

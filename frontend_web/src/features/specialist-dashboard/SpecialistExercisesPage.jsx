@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   buildSpecialistCreateExercisePath,
   buildSpecialistExerciseDetailPath,
@@ -15,6 +16,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistExercisesPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -95,8 +97,8 @@ export default function SpecialistExercisesPage() {
         <div className="pd-specialist-exercises-page">
           <header className="pd-specialist-exercise-page-header pd-specialist-exercise-page-header--library">
             <div>
-              <h1 className="pd-section-title">Exercise Library</h1>
-              <p className="pd-section-sub">Browse therapy exercises by category and search.</p>
+              <h1 className="pd-section-title">{t("specialist.exercises.title")}</h1>
+              <p className="pd-section-sub">{t("specialist.exercises.subtitle")}</p>
             </div>
             <button
               type="button"
@@ -104,7 +106,7 @@ export default function SpecialistExercisesPage() {
               onClick={handleAddExercise}
             >
               <Plus size={18} aria-hidden="true" />
-              Add Exercise
+              {t("specialist.exercises.addExercise")}
             </button>
           </header>
 

@@ -1,7 +1,7 @@
 import api from "./api";
 import { buildSpecialistOverviewKpis } from "../features/specialist-dashboard/utils/specialistDashboardMappers";
 import {
-  buildRecentPatientProgressPreview,
+  buildSpecialistPatientProgressList,
   mapPendingReviewPreview,
 } from "../features/specialist-dashboard/utils/specialistPreviewMappers";
 import { mapSpecialistSessionRows } from "../features/specialist-dashboard/utils/specialistScheduleUtils";
@@ -57,6 +57,11 @@ async function fetchSpecialistPendingReviews(specialistUserId) {
   return extractList(response);
 }
 
+export async function fetchSpecialistPendingReviewRows(specialistUserId) {
+  const id = requireId(specialistUserId, "Specialist user id");
+  return fetchSpecialistPendingReviews(id);
+}
+
 async function fetchSpecialistPatients(specialistUserId) {
   const response = await api.get(
     `/specialists/${encodeURIComponent(specialistUserId)}/patients`,
@@ -102,12 +107,13 @@ export async function loadSpecialistDashboardOverview(specialistUserId) {
  * Loads scheduled specialist sessions for the weekly schedule card.
  * @param {string} specialistUserId Authenticated specialist user id
  */
-export async function loadSpecialistScheduleSessions(specialistUserId) {
+export async function loadSpecialistScheduleSessions(specialistUserId, context = {}) {
   const id = requireId(specialistUserId, "Specialist user id");
+  const locale = context.locale === "ar" ? "ar" : "en";
 
   try {
     const rows = await fetchSpecialistSessions(id);
-    return mapSpecialistSessionRows(rows);
+    return mapSpecialistSessionRows(rows, locale);
   } catch (error) {
     throwServiceError(error, "Failed to load specialist schedule.");
   }
@@ -117,22 +123,23 @@ export async function loadSpecialistScheduleSessions(specialistUserId) {
  * Loads pending review preview rows for the authenticated specialist.
  * @param {string} specialistUserId
  */
-export async function loadSpecialistPendingReviews(specialistUserId) {
+export async function loadSpecialistPendingReviews(specialistUserId, context = {}) {
   const id = requireId(specialistUserId, "Specialist user id");
 
   try {
     const rows = await fetchSpecialistPendingReviews(id);
-    return mapPendingReviewPreview(rows, { limit: 4 });
+    return mapPendingReviewPreview(rows, { limit: 4, ...context });
   } catch (error) {
     throwServiceError(error, "Failed to load pending reviews.");
   }
 }
 
 /**
- * Loads recent patient progress preview rows for assigned patients.
+ * Loads patient progress rows for assigned patients.
  * @param {string} specialistUserId
+ * @param {{ limit?: number|null }} [options]
  */
-export async function loadSpecialistRecentProgress(specialistUserId) {
+export async function loadSpecialistPatientProgress(specialistUserId, options = {}) {
   const id = requireId(specialistUserId, "Specialist user id");
 
   try {
@@ -141,8 +148,16 @@ export async function loadSpecialistRecentProgress(specialistUserId) {
       fetchProgressSnapshots(),
     ]);
 
-    return buildRecentPatientProgressPreview(patients, snapshots, { limit: 4 });
+    return buildSpecialistPatientProgressList(patients, snapshots, options);
   } catch (error) {
     throwServiceError(error, "Failed to load patient progress.");
   }
+}
+
+/**
+ * Loads recent patient progress preview rows for assigned patients.
+ * @param {string} specialistUserId
+ */
+export async function loadSpecialistRecentProgress(specialistUserId) {
+  return loadSpecialistPatientProgress(specialistUserId, { limit: 4 });
 }

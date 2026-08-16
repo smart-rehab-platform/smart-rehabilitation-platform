@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   loadExerciseCategories,
   loadSpecialistExerciseById,
@@ -7,9 +8,13 @@ import {
 } from "../../../services/specialistExerciseService";
 import {
   buildExerciseUpdatePayload,
-  resolveExerciseFieldErrors,
   validateExerciseEditForm,
 } from "../utils/specialistExerciseMappers";
+import {
+  getExerciseMediaValidationMessage,
+  getExerciseValidationMessage,
+  resolveExerciseFieldErrors,
+} from "../utils/specialistExercisesLocalization";
 import { notifySpecialistExerciseRefresh } from "../utils/specialistExerciseRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -17,6 +22,7 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
+  const { t } = useLocale();
   const [exercise, setExercise] = useState(null);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +45,12 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
   const [clearInstructionMedia, setClearInstructionMedia] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadExerciseFailedMessage = t("specialist.exercises.errors.loadExerciseFailed");
+  const notFoundMessage = t("specialist.exercises.empty.notFound");
+  const pleaseWaitMessage = t("specialist.exercises.pleaseWait");
+  const uploadFailedMessage = t("specialist.exercises.errors.uploadFailed");
+  const saveFailedMessage = t("specialist.exercises.errors.saveFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -93,8 +105,8 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        const message = resolveErrorMessage(loadError, "Failed to load exercise.");
-        if (message === "Exercise not found.") {
+        const message = resolveErrorMessage(loadError, loadExerciseFailedMessage);
+        if (message === notFoundMessage || message === "Exercise not found.") {
           setNotFound(true);
           return;
         }
@@ -111,9 +123,12 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
     return () => {
       cancelled = true;
     };
-  }, [enabled, exerciseId, refreshToken]);
+  }, [enabled, exerciseId, refreshToken, loadExerciseFailedMessage, notFoundMessage]);
 
-  const fieldErrors = resolveExerciseFieldErrors(validationMessage);
+  const fieldErrors = useMemo(
+    () => resolveExerciseFieldErrors(validationMessage, t),
+    [validationMessage, t],
+  );
 
   const selectMediaFile = useCallback((file, validationError = null) => {
     if (validationError) {
@@ -144,11 +159,11 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
     const validation = validateExerciseEditForm({ categoryId, title });
     if (validation) {
       setValidationMessage(validation);
-      return { ok: false, message: validation };
+      return { ok: false, message: getExerciseValidationMessage(validation, t) };
     }
 
     if (isSaving || isUploading) {
-      return { ok: false, message: "Please wait…" };
+      return { ok: false, message: pleaseWaitMessage };
     }
 
     setIsSaving(true);
@@ -171,7 +186,7 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
           setPendingMediaFile(null);
           setClearInstructionMedia(false);
         } catch (uploadError) {
-          const message = resolveErrorMessage(uploadError, "Failed to upload instructional media.");
+          const message = resolveErrorMessage(uploadError, uploadFailedMessage);
           setMediaError(message);
           return { ok: false, message };
         } finally {
@@ -202,7 +217,7 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
       notifySpecialistExerciseRefresh();
       return { ok: true };
     } catch (saveError) {
-      const message = resolveErrorMessage(saveError, "Failed to save exercise changes.");
+      const message = resolveErrorMessage(saveError, saveFailedMessage);
       if (message.includes("do not have access") || message.includes("not allowed")) {
         setForbidden(true);
       }
@@ -225,9 +240,16 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
     isSaving,
     isUploading,
     exerciseId,
+    t,
+    pleaseWaitMessage,
+    uploadFailedMessage,
+    saveFailedMessage,
   ]);
 
   const isBusy = isSaving || isUploading;
+  const localizedMediaError = mediaError
+    ? (getExerciseMediaValidationMessage(mediaError, t) || mediaError)
+    : null;
 
   return {
     exercise,
@@ -238,7 +260,7 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
     isBusy,
     uploadProgress,
     error,
-    mediaError,
+    mediaError: localizedMediaError,
     notFound,
     forbidden,
     validationMessage,

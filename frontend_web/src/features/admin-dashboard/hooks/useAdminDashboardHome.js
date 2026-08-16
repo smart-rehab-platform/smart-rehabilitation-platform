@@ -3,15 +3,19 @@ import {
   fetchAdminOverviewKpis,
   fetchRecentUsers,
 } from "../../../services/adminDashboardService";
-
-const SIGNED_OUT_ERROR =
-  "Please sign in as an admin to view this dashboard.";
+import { useLocale } from "../../../context/useLocale.js";
+import {
+  applyAdminRecentUsersLocalization,
+  getAdminDashboardHomeLabels,
+} from "../utils/adminDashboardLocalization.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminDashboardHome(adminUserId) {
+  const { t, locale } = useLocale();
+  const labels = getAdminDashboardHomeLabels(t);
   const [overview, setOverview] = useState(null);
   const [recentUsers, setRecentUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +51,9 @@ export function useAdminDashboardHome(adminUserId) {
         }
 
         setOverview(nextOverview);
-        setRecentUsers(nextRecentUsers);
+        setRecentUsers(
+          applyAdminRecentUsersLocalization(nextRecentUsers, { t, locale }),
+        );
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
@@ -58,7 +64,7 @@ export function useAdminDashboardHome(adminUserId) {
         setError(
           resolveErrorMessage(
             loadError,
-            "Failed to load admin dashboard.",
+            labels.loadFailed,
           ),
         );
       } finally {
@@ -73,14 +79,14 @@ export function useAdminDashboardHome(adminUserId) {
     return () => {
       cancelled = true;
     };
-  }, [adminUserId, refreshToken]);
+  }, [adminUserId, refreshToken, t, locale, labels.loadFailed]);
 
   if (!adminUserId) {
     return {
       overview: null,
       recentUsers: [],
       isLoading: false,
-      error: SIGNED_OUT_ERROR,
+      error: labels.signInRequired,
       reload,
     };
   }

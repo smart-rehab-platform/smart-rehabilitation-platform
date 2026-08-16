@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadSpecialistScheduleSessions } from "../../../services/specialistDashboardService";
 import { subscribeSpecialistSessionRefresh } from "../utils/specialistSessionRefresh";
 
@@ -6,9 +7,8 @@ function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
-const SIGNED_OUT_ERROR = "Please sign in to view the specialist schedule.";
-
 export function useSpecialistWeeklySchedule(specialistUserId) {
+  const { t, locale } = useLocale();
   const [sessions, setSessions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -35,7 +35,7 @@ export function useSpecialistWeeklySchedule(specialistUserId) {
       setError(null);
 
       try {
-        const nextSessions = await loadSpecialistScheduleSessions(specialistUserId);
+        const nextSessions = await loadSpecialistScheduleSessions(specialistUserId, { locale });
 
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
@@ -48,7 +48,7 @@ export function useSpecialistWeeklySchedule(specialistUserId) {
         }
 
         setSessions([]);
-        setError(resolveErrorMessage(loadError, "Failed to load weekly schedule."));
+        setError(resolveErrorMessage(loadError, t("specialist.dashboard.errors.scheduleLoadFailed")));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -61,13 +61,13 @@ export function useSpecialistWeeklySchedule(specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, refreshToken]);
+  }, [specialistUserId, refreshToken, locale, t]);
 
   if (!specialistUserId) {
     return {
       sessions: [],
       isLoading: false,
-      error: SIGNED_OUT_ERROR,
+      error: t("specialist.dashboard.errors.scheduleSignInRequired"),
       reload,
     };
   }

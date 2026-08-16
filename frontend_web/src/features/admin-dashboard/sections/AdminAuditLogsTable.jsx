@@ -3,12 +3,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { AdminAuditActionBadge } from "../components/AdminAuditActionBadge";
 import { getAvatarInitial } from "../utils/adminDashboardMappers";
-import { formatAdminDateTimeLabel } from "../utils/adminCaseRequestsMappers";
-import { isAuditEntityReferenceId } from "../utils/adminAuditLogsMappers";
-
-function formatAuditDateTime(createdAt) {
-  return formatAdminDateTimeLabel(createdAt) || "—";
-}
+import { isAuditEntityReferenceId } from "../utils/adminAuditLogsConstants.js";
 
 function getDetailsPanelId(logId) {
   return `admin-audit-details-${logId}`;
@@ -19,6 +14,7 @@ function ActionCell({ log }) {
     <div className="pd-admin-audit-action-cell">
       <strong className="pd-admin-audit-action-title">{log.actionLabel}</strong>
       <AdminAuditActionBadge
+        label={log.badgeLabel}
         category={log.actionCategory}
         tone={log.actionTone}
         action={log.action}
@@ -27,9 +23,10 @@ function ActionCell({ log }) {
   );
 }
 
-function UserCell({ log }) {
-  const initials = log.displayUserName === "System"
-    ? "SY"
+function UserCell({ log, labels }) {
+  const isSystemUser = log.displayUserName === labels.systemUser;
+  const initials = isSystemUser
+    ? labels.systemUserInitials
     : getAvatarInitial(log.displayUserName);
 
   return (
@@ -43,34 +40,36 @@ function UserCell({ log }) {
         className="pd-avatar-photo"
       />
       <span className="pd-admin-audit-user-copy">
-        <strong className="pd-admin-audit-user-name">{log.displayUserName}</strong>
+        <strong className="pd-admin-audit-user-name" dir="auto">{log.displayUserName}</strong>
         {log.userEmail ? (
-          <span className="pd-admin-audit-user-email">{log.userEmail}</span>
+          <span className="pd-admin-audit-user-email" dir="auto">{log.userEmail}</span>
         ) : null}
       </span>
     </div>
   );
 }
 
-function EntityChip({ label }) {
-  return <span className="pd-admin-audit-entity-chip">{label || "System"}</span>;
+function EntityChip({ label, labels }) {
+  return (
+    <span className="pd-admin-audit-entity-chip">{label || labels.systemUser}</span>
+  );
 }
 
-function DetailsPanel({ logId, entityId }) {
+function DetailsPanel({ logId, entityId, labels }) {
   return (
     <div
       id={getDetailsPanelId(logId)}
       className="pd-admin-audit-details-panel"
     >
-      <span className="pd-admin-audit-details-label">Reference ID</span>
-      <code className="pd-admin-audit-details-value">{entityId}</code>
+      <span className="pd-admin-audit-details-label">{labels.details.referenceId}</span>
+      <code className="pd-admin-audit-details-value" dir="auto">{entityId}</code>
     </div>
   );
 }
 
-function DetailsCell({ log, expanded, onToggle }) {
+function DetailsCell({ log, labels, expanded, onToggle }) {
   if (!isAuditEntityReferenceId(log.entityId)) {
-    return <span className="pd-admin-audit-muted">—</span>;
+    return <span className="pd-admin-audit-muted">{labels.emptyDisplay}</span>;
   }
 
   const Chevron = expanded ? ChevronUp : ChevronDown;
@@ -83,63 +82,63 @@ function DetailsCell({ log, expanded, onToggle }) {
       aria-controls={getDetailsPanelId(log.id)}
       onClick={() => onToggle(log.id)}
     >
-      Details
+      {labels.details.button}
       <Chevron size={16} aria-hidden="true" />
     </button>
   );
 }
 
-function SkeletonRows() {
+function SkeletonRows({ labels }) {
   return (
     <>
       {[0, 1, 2, 3, 4, 5].map((index) => (
         <tr key={index} className="pd-admin-audit-row-loading" aria-hidden="true">
-          <td data-label="Action">
+          <td data-label={labels.columns.action}>
             <div className="pd-admin-audit-skeleton-action">
               <span className="pd-admin-audit-skeleton-line is-wide" />
               <span className="pd-admin-audit-skeleton-chip" />
             </div>
           </td>
-          <td data-label="User">
+          <td data-label={labels.columns.user}>
             <div className="pd-admin-audit-skeleton-user">
               <span className="pd-admin-audit-skeleton-avatar" />
               <span className="pd-admin-audit-skeleton-line is-wide" />
             </div>
           </td>
-          <td data-label="Entity"><span className="pd-admin-audit-skeleton-chip" /></td>
-          <td data-label="Date & Time"><span className="pd-admin-audit-skeleton-line" /></td>
-          <td data-label="Details"><span className="pd-admin-audit-skeleton-line is-short" /></td>
+          <td data-label={labels.columns.entity}><span className="pd-admin-audit-skeleton-chip" /></td>
+          <td data-label={labels.columns.dateTime}><span className="pd-admin-audit-skeleton-line" /></td>
+          <td data-label={labels.columns.details}><span className="pd-admin-audit-skeleton-line is-short" /></td>
         </tr>
       ))}
     </>
   );
 }
 
-function AuditLogRow({ log, expanded, onToggle }) {
+function AuditLogRow({ log, labels, expanded, onToggle }) {
   const canExpand = isAuditEntityReferenceId(log.entityId);
 
   return (
     <>
       <tr className={`pd-admin-audit-row${expanded ? " is-expanded" : ""}`}>
-        <td data-label="Action">
+        <td data-label={labels.columns.action}>
           <ActionCell log={log} />
         </td>
-        <td data-label="User">
-          <UserCell log={log} />
+        <td data-label={labels.columns.user}>
+          <UserCell log={log} labels={labels} />
         </td>
-        <td data-label="Entity">
-          <EntityChip label={log.entityLabel} />
+        <td data-label={labels.columns.entity}>
+          <EntityChip label={log.entityLabel} labels={labels} />
         </td>
-        <td data-label="Date & Time">{formatAuditDateTime(log.createdAt)}</td>
-        <td data-label="Details">
-          <DetailsCell log={log} expanded={expanded} onToggle={onToggle} />
+        <td data-label={labels.columns.dateTime}>{log.createdAtLabel}</td>
+        <td data-label={labels.columns.details}>
+          <DetailsCell log={log} labels={labels} expanded={expanded} onToggle={onToggle} />
         </td>
       </tr>
 
       {canExpand && expanded ? (
         <tr className="pd-admin-audit-details-row">
           <td colSpan={5}>
-            <DetailsPanel logId={log.id} entityId={log.entityId} />
+            <DetailsPanel logId={log.id} entityId={log.entityId} labels={labels} />
           </td>
         </tr>
       ) : null}
@@ -149,10 +148,10 @@ function AuditLogRow({ log, expanded, onToggle }) {
 
 export function AdminAuditLogsTable({
   logs = [],
+  labels,
   isInitialLoading = false,
   isRefreshing = false,
   emptyKind = null,
-  onClearFilters,
 }) {
   const [expandedIds, setExpandedIds] = useState(() => new Set());
 
@@ -186,21 +185,21 @@ export function AdminAuditLogsTable({
       <section
         className="pd-card pd-admin-audit-table-wrap pd-section-enter"
         aria-busy="true"
-        aria-label="Audit logs loading"
+        aria-label={labels.tableLoadingAriaLabel}
       >
         <div className="pd-admin-audit-table-scroll">
           <table className="pd-admin-audit-table">
             <thead>
               <tr>
-                <th scope="col">Action</th>
-                <th scope="col">User</th>
-                <th scope="col">Entity</th>
-                <th scope="col">Date &amp; Time</th>
-                <th scope="col">Details</th>
+                <th scope="col">{labels.columns.action}</th>
+                <th scope="col">{labels.columns.user}</th>
+                <th scope="col">{labels.columns.entity}</th>
+                <th scope="col">{labels.columns.dateTime}</th>
+                <th scope="col">{labels.columns.details}</th>
               </tr>
             </thead>
             <tbody>
-              <SkeletonRows />
+              <SkeletonRows labels={labels} />
             </tbody>
           </table>
         </div>
@@ -211,7 +210,7 @@ export function AdminAuditLogsTable({
   if (emptyKind === "no-logs") {
     return (
       <section className="pd-card pd-card-pad pd-admin-audit-empty pd-section-enter">
-        <p className="pd-admin-audit-empty-copy">No audit logs found.</p>
+        <p className="pd-admin-audit-empty-copy">{labels.empty}</p>
       </section>
     );
   }
@@ -219,10 +218,7 @@ export function AdminAuditLogsTable({
   if (emptyKind === "no-matches") {
     return (
       <section className="pd-card pd-card-pad pd-admin-audit-empty pd-section-enter">
-        <p className="pd-admin-audit-empty-copy">No audit logs match your filters.</p>
-        <button type="button" className="pd-btn pd-btn-soft" onClick={onClearFilters}>
-          Clear filters
-        </button>
+        <p className="pd-admin-audit-empty-copy">{labels.emptyFiltered}</p>
       </section>
     );
   }
@@ -230,18 +226,18 @@ export function AdminAuditLogsTable({
   return (
     <section
       className={`pd-card pd-admin-audit-table-wrap pd-section-enter${isRefreshing ? " is-refreshing" : ""}`}
-      aria-label="Audit logs list"
+      aria-label={labels.tableAriaLabel}
       aria-busy={isRefreshing || undefined}
     >
       <div className="pd-admin-audit-table-scroll">
         <table className="pd-admin-audit-table">
           <thead>
             <tr>
-              <th scope="col">Action</th>
-              <th scope="col">User</th>
-              <th scope="col">Entity</th>
-              <th scope="col">Date &amp; Time</th>
-              <th scope="col">Details</th>
+              <th scope="col">{labels.columns.action}</th>
+              <th scope="col">{labels.columns.user}</th>
+              <th scope="col">{labels.columns.entity}</th>
+              <th scope="col">{labels.columns.dateTime}</th>
+              <th scope="col">{labels.columns.details}</th>
             </tr>
           </thead>
           <tbody>
@@ -249,6 +245,7 @@ export function AdminAuditLogsTable({
               <AuditLogRow
                 key={log.id}
                 log={log}
+                labels={labels}
                 expanded={activeExpandedIds.has(log.id)}
                 onToggle={handleToggleDetails}
               />

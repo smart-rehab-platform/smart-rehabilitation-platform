@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Image, Mic, Video } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 
 function mediaIcon(type) {
   const normalized = (type || "").toLowerCase();
@@ -12,7 +13,7 @@ function mediaIcon(type) {
   return Image;
 }
 
-function MediaPreview({ media }) {
+function MediaPreview({ media, t }) {
   const [videoError, setVideoError] = useState(false);
   const [audioError, setAudioError] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -20,7 +21,7 @@ function MediaPreview({ media }) {
 
   if (type === "video") {
     if (videoError) {
-      return <p className="pd-section-sub">Unable to load video.</p>;
+      return <p className="pd-section-sub">{t("specialist.reviews.media.loadFailedVideo")}</p>;
     }
     return (
       <video
@@ -38,7 +39,7 @@ function MediaPreview({ media }) {
 
   if (type === "audio") {
     if (audioError) {
-      return <p className="pd-section-sub">Unable to load audio.</p>;
+      return <p className="pd-section-sub">{t("specialist.reviews.media.loadFailedAudio")}</p>;
     }
     return (
       <audio
@@ -55,34 +56,36 @@ function MediaPreview({ media }) {
 
   if (type === "image") {
     if (imageError) {
-      return <p className="pd-section-sub">Unable to load image.</p>;
+      return <p className="pd-section-sub">{t("specialist.reviews.media.loadFailedImage")}</p>;
     }
     return (
       <img
         src={media.fileUrl}
-        alt={media.fileName || "Submission media"}
+        alt={media.fileName || t("specialist.reviews.media.submissionAlt")}
         className="pd-specialist-review-media-image"
         onError={() => setImageError(true)}
       />
     );
   }
 
-  return <p className="pd-section-sub">Unsupported media type for preview.</p>;
+  return <p className="pd-section-sub">{t("specialist.reviews.media.unsupportedType")}</p>;
 }
 
 export function SpecialistSubmissionMedia({ mediaItems = [] }) {
+  const { t } = useLocale();
+
   if (mediaItems.length === 0) {
     return (
       <section className="pd-card pd-card-pad pd-specialist-review-media-panel">
-        <h3 className="pd-specialist-review-section-title">Uploaded Media</h3>
-        <p className="pd-section-sub">No media uploaded for this submission.</p>
+        <h3 className="pd-specialist-review-section-title">{t("specialist.reviews.media.title")}</h3>
+        <p className="pd-section-sub">{t("specialist.reviews.media.empty")}</p>
       </section>
     );
   }
 
   return (
     <section className="pd-card pd-card-pad pd-specialist-review-media-panel">
-      <h3 className="pd-specialist-review-section-title">Uploaded Media</h3>
+      <h3 className="pd-specialist-review-section-title">{t("specialist.reviews.media.title")}</h3>
       <div className="pd-specialist-review-media-stack">
         {mediaItems.map((media) => {
           const Icon = mediaIcon(media.mediaType);
@@ -94,9 +97,9 @@ export function SpecialistSubmissionMedia({ mediaItems = [] }) {
                 </span>
                 <strong>{media.mediaTypeLabel}</strong>
               </div>
-              <MediaPreview media={media} />
+              <MediaPreview media={media} t={t} />
               {media.fileName ? (
-                <p className="pd-specialist-review-media-filename" title={media.fileName}>
+                <p className="pd-specialist-review-media-filename" title={media.fileName} dir="auto">
                   {media.fileName}
                 </p>
               ) : null}

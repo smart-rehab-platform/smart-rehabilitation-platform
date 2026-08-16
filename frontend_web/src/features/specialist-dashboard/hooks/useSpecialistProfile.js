@@ -1,8 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getCurrentUserProfile,
   getSpecialistProfiles,
 } from "../../../services/specialistProfileService";
+import {
+  applySpecialistProfileLocalization,
+  getSpecialistProfileErrorMessages,
+} from "../utils/specialistProfileLocalization.js";
 import {
   findSpecialistProfileRow,
   mapSpecialistProfileBundle,
@@ -13,6 +18,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistProfile(userId) {
+  const { t } = useLocale();
+  const errorMessages = useMemo(() => getSpecialistProfileErrorMessages(t), [t]);
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(Boolean(userId));
   const [error, setError] = useState(null);
@@ -21,10 +28,6 @@ export function useSpecialistProfile(userId) {
 
   const refetch = useCallback(() => {
     setRefreshToken((value) => value + 1);
-  }, []);
-
-  const replaceProfile = useCallback((nextProfile) => {
-    setProfile(nextProfile);
   }, []);
 
   useEffect(() => {
@@ -51,11 +54,14 @@ export function useSpecialistProfile(userId) {
         }
 
         const specialistRow = findSpecialistProfileRow(specialistRows, userId);
-        setProfile(mapSpecialistProfileBundle(userRow, specialistRow));
+        setProfile(applySpecialistProfileLocalization(
+          mapSpecialistProfileBundle(userRow, specialistRow),
+          { t },
+        ));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setProfile(null);
-          setError(resolveErrorMessage(loadError, "Failed to load profile."));
+          setError(resolveErrorMessage(loadError, errorMessages.loadFailed));
         }
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -69,13 +75,15 @@ export function useSpecialistProfile(userId) {
     return () => {
       cancelled = true;
     };
-  }, [userId, refreshToken]);
+  }, [userId, refreshToken, t, errorMessages.loadFailed]);
 
   return {
     profile,
     isLoading,
     error,
     refetch,
-    replaceProfile,
+    replaceProfile: useCallback((nextProfile) => {
+      setProfile(applySpecialistProfileLocalization(nextProfile, { t }));
+    }, [t]),
   };
 }

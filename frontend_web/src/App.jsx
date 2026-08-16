@@ -13,6 +13,8 @@ import AdminCaseRequestSpecialistsPage from "./features/admin-dashboard/AdminCas
 import AdminCaseRequestsPage from "./features/admin-dashboard/AdminCaseRequestsPage";
 import AdminComplaintsPage from "./features/admin-dashboard/AdminComplaintsPage";
 import AdminComplaintDetailsPage from "./features/admin-dashboard/AdminComplaintDetailsPage";
+import AdminSupportRequestsPage from "./features/admin-dashboard/AdminSupportRequestsPage";
+import AdminSupportRequestDetailsPage from "./features/admin-dashboard/AdminSupportRequestDetailsPage";
 import AdminExercisesPage from "./features/admin-dashboard/AdminExercisesPage";
 import AdminSessionsPage from "./features/admin-dashboard/AdminSessionsPage";
 import AdminReportsPage from "./features/admin-dashboard/AdminReportsPage";
@@ -20,6 +22,7 @@ import AdminReportDetailsPage from "./features/admin-dashboard/AdminReportDetail
 import AdminAiCenterPage from "./features/admin-dashboard/AdminAiCenterPage";
 import AdminAuditLogsPage from "./features/admin-dashboard/AdminAuditLogsPage";
 import AdminNotificationsPage from "./features/admin-dashboard/AdminNotificationsPage";
+import AdminEditProfilePage from "./features/admin-dashboard/AdminEditProfilePage";
 import AdminProfilePage from "./features/admin-dashboard/AdminProfilePage";
 import AdminExerciseDetailsPage from "./features/admin-dashboard/AdminExerciseDetailsPage";
 import AdminUpsertExercisePage from "./features/admin-dashboard/AdminUpsertExercisePage";
@@ -30,6 +33,7 @@ import SpecialistDashboardPage from "./features/specialist-dashboard/SpecialistD
 import SpecialistPlaceholderPage from "./features/specialist-dashboard/SpecialistPlaceholderPage";
 import SpecialistMessagesPage from "./features/specialist-dashboard/SpecialistMessagesPage";
 import SpecialistNotificationsPage from "./features/specialist-dashboard/SpecialistNotificationsPage";
+import SpecialistProgressPage from "./features/specialist-dashboard/SpecialistProgressPage";
 import SpecialistPatientsPage from "./features/specialist-dashboard/SpecialistPatientsPage";
 import SpecialistPatientDetailsPage from "./features/specialist-dashboard/SpecialistPatientDetailsPage";
 import SpecialistReviewsPage from "./features/specialist-dashboard/SpecialistReviewsPage";
@@ -49,6 +53,9 @@ import SpecialistExerciseEditPage from "./features/specialist-dashboard/Speciali
 import SpecialistExerciseCreatePage from "./features/specialist-dashboard/SpecialistExerciseCreatePage";
 import SpecialistCaseRequestsPage from "./features/specialist-dashboard/SpecialistCaseRequestsPage";
 import SpecialistCaseRequestDetailsPage from "./features/specialist-dashboard/SpecialistCaseRequestDetailsPage";
+import SpecialistSupportRequestsPage from "./features/specialist-dashboard/SpecialistSupportRequestsPage";
+import SpecialistSupportRequestFormPage from "./features/specialist-dashboard/SpecialistSupportRequestFormPage";
+import SpecialistSupportRequestDetailPage from "./features/specialist-dashboard/SpecialistSupportRequestDetailPage";
 import SpecialistProfilePage from "./features/specialist-dashboard/SpecialistProfilePage";
 import SpecialistEditProfilePage from "./features/specialist-dashboard/SpecialistEditProfilePage";
 import { SPECIALIST_PLACEHOLDER_FEATURES } from "./routes/specialistDashboardRoutes";
@@ -70,6 +77,9 @@ import ParentProgressPage from "./features/parent-dashboard-preview/ParentProgre
 import ParentCaseRequestsPage from "./features/parent-dashboard-preview/ParentCaseRequestsPage";
 import ParentCaseRequestDetailPage from "./features/parent-dashboard-preview/ParentCaseRequestDetailPage";
 import ParentCaseRequestFormPage from "./features/parent-dashboard-preview/ParentCaseRequestFormPage";
+import ParentComplaintsPage from "./features/parent-dashboard-preview/ParentComplaintsPage";
+import ParentComplaintFormPage from "./features/parent-dashboard-preview/ParentComplaintFormPage";
+import ParentComplaintDetailPage from "./features/parent-dashboard-preview/ParentComplaintDetailPage";
 import ParentMessagesPage from "./features/parent-dashboard-preview/ParentMessagesPage";
 import { useAuth } from "./context/useAuth";
 import { canAccessRoute, dashboardForRole } from "./routes/roleRouting";
@@ -267,6 +277,22 @@ function App() {
           }
         />
         <Route
+          path="/dashboard/admin/support-requests"
+          element={
+            <ProtectedRoute>
+              <AdminSupportRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/support-requests/:requestId"
+          element={
+            <ProtectedRoute>
+              <AdminSupportRequestDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/dashboard/admin/exercises/new"
           element={
             <ProtectedRoute>
@@ -351,6 +377,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/profile/edit"
+          element={
+            <ProtectedRoute>
+              <AdminEditProfilePage />
             </ProtectedRoute>
           }
         />
@@ -534,7 +568,7 @@ function App() {
           path="/dashboard/specialist/progress"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title={SPECIALIST_PLACEHOLDER_FEATURES.progress.title} />
+              <SpecialistProgressPage />
             </ProtectedRoute>
           }
         />
@@ -559,6 +593,30 @@ function App() {
           element={
             <ProtectedRoute>
               <SpecialistNotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/support-requests/new"
+          element={
+            <ProtectedRoute>
+              <SpecialistSupportRequestFormPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/support-requests/:requestId"
+          element={
+            <ProtectedRoute>
+              <SpecialistSupportRequestDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/support-requests"
+          element={
+            <ProtectedRoute>
+              <SpecialistSupportRequestsPage />
             </ProtectedRoute>
           }
         />
@@ -727,6 +785,30 @@ function App() {
           element={
             <ProtectedRoute>
               <ParentCaseRequestDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/complaints/new"
+          element={
+            <ProtectedRoute>
+              <ParentComplaintFormPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/complaints/:complaintId"
+          element={
+            <ProtectedRoute>
+              <ParentComplaintDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/complaints"
+          element={
+            <ProtectedRoute>
+              <ParentComplaintsPage />
             </ProtectedRoute>
           }
         />

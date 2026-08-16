@@ -177,17 +177,6 @@ function normalizeImprovementPercentage(map) {
   return Math.max(0, Math.min(1, normalized));
 }
 
-function formatPlanStatus(status) {
-  const normalized = (status || "").trim().toLowerCase();
-  if (normalized === "completed") {
-    return { label: "Completed", tone: "gray" };
-  }
-  if (normalized === "archived") {
-    return { label: "Archived", tone: "gray" };
-  }
-  return { label: "Active", tone: "success" };
-}
-
 export function mapAdminPatientProfile(row) {
   const id = readString(row, ["id", "_id"]);
   if (!id) {
@@ -219,7 +208,6 @@ export function mapAdminTreatmentPlan(row) {
   }
 
   const status = readString(row, ["status"]) || "active";
-  const statusMeta = formatPlanStatus(status);
   const startDateRaw = readRawField(row, ["start_date", "startDate"]);
   const endDateRaw = readRawField(row, ["end_date", "endDate"]);
 
@@ -227,9 +215,9 @@ export function mapAdminTreatmentPlan(row) {
     id,
     title: readString(row, ["title"]) || "Treatment Plan",
     status,
-    statusLabel: statusMeta.label,
-    statusTone: statusMeta.tone,
     isActive: status.trim().toLowerCase() === "active",
+    startDateRaw,
+    endDateRaw,
     startDateLabel: formatAdminDateOnlyLabel(startDateRaw),
     endDateLabel: formatAdminDateOnlyLabel(endDateRaw),
   };
@@ -257,8 +245,8 @@ export function mapAdminAssignedExercise(row) {
     id,
     exerciseTitle: readString(row, ["exercise_title", "exerciseTitle", "title"]) || "Exercise",
     category: readString(row, ["category_name", "categoryName", "category"]) || null,
+    dueDateRaw,
     dueDateLabel: formatAdminDateOnlyLabel(dueDateRaw),
-    statusLabel: isActive ? "Active" : "Inactive",
     isActive,
   };
 }
@@ -272,6 +260,7 @@ export function mapAdminPatientNote(row) {
   const createdAtRaw = readRawField(row, ["created_at", "createdAt"]);
   return {
     ...mapped,
+    createdAtRaw,
     createdAtLabel: formatAdminDateTimeLabel(createdAtRaw) || mapped.createdAtLabel,
   };
 }
@@ -303,6 +292,7 @@ export async function buildAdminRecentSubmissionsWithMedia(submissionRows, getSu
       const submittedAtRaw = readRawField(row, ["submitted_at", "submittedAt"]);
       return {
         ...mapped,
+        submittedAtRaw,
         submittedAtLabel: formatAdminDateTimeLabel(submittedAtRaw) || mapped.submittedAtLabel,
       };
     }),

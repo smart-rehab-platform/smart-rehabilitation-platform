@@ -6,13 +6,25 @@ import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { Toast } from "../../components/auth/Toast";
 import { C } from "../../components/auth/tokens";
 import {
+  getAuthBackLabel,
+  getAuthContinueLabel,
+  getAuthHideConfirmPasswordLabel,
+  getAuthHidePasswordLabel,
+  getAuthPasswordsDoNotMatchMessage,
+  getAuthShowConfirmPasswordLabel,
+  getAuthShowPasswordLabel,
+  getStrongPasswordMessage,
+} from "../../components/auth/authLocalization";
+import {
   getReviewStep,
   isPasswordValid,
   passwordsMatch,
 } from "./signupWizardHelpers";
+import { useLocale } from "../../context/useLocale.js";
 import { useSignupWizard } from "../../context/SignupWizardContext";
 
 export function SignupStep4AccountSecurity({ onBack }) {
+  const { t } = useLocale();
   const { wizardData, updateWizardData, setWizardStep } = useSignupWizard();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -28,6 +40,8 @@ export function SignupStep4AccountSecurity({ onBack }) {
 
   const passwordValid = isPasswordValid(password);
   const confirmValid = passwordsMatch(password, confirmPassword);
+  const passwordsDoNotMatchMessage = getAuthPasswordsDoNotMatchMessage(t);
+  const strongPasswordMessage = getStrongPasswordMessage(t);
 
   const confirmState =
     confirmTouched && confirmPassword && !confirmValid ? "error" : "idle";
@@ -46,30 +60,27 @@ export function SignupStep4AccountSecurity({ onBack }) {
     setTermsTouched(true);
 
     if (!password) {
-      showToast("Password is required.", "error");
+      showToast(t("auth.signup.passwordRequired"), "error");
       return;
     }
 
     if (!passwordValid) {
-      showToast(
-        "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.",
-        "error",
-      );
+      showToast(strongPasswordMessage, "error");
       return;
     }
 
     if (!confirmPassword) {
-      showToast("Confirm password is required.", "error");
+      showToast(t("auth.signup.confirmPasswordRequired"), "error");
       return;
     }
 
     if (!confirmValid) {
-      showToast("Passwords do not match.", "error");
+      showToast(passwordsDoNotMatchMessage, "error");
       return;
     }
 
     if (!acceptedTerms) {
-      showToast("You must accept the Terms of Service and Privacy Policy.", "error");
+      showToast(t("auth.validation.termsRequired"), "error");
       return;
     }
 
@@ -83,17 +94,19 @@ export function SignupStep4AccountSecurity({ onBack }) {
       <div className="signup-wizard-step flex flex-col">
         <div className="mb-3 flex flex-col gap-2.5">
           <AuthInput
-            label="Password"
+            label={t("auth.signup.passwordLabel")}
             icon={<Lock size={16} />}
             type={showPassword ? "text" : "password"}
-            placeholder="Password"
+            placeholder={t("auth.signup.passwordPlaceholder")}
             value={password}
             onChange={(value) => updateWizardData({ password: value })}
             rightSlot={
               <button
                 type="button"
                 onClick={() => setShowPassword((current) => !current)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={
+                  showPassword ? getAuthHidePasswordLabel(t) : getAuthShowPasswordLabel(t)
+                }
                 style={{ color: C.iconInteractive, opacity: 0.85 }}
                 className="transition-opacity hover:opacity-100"
               >
@@ -103,21 +116,23 @@ export function SignupStep4AccountSecurity({ onBack }) {
           />
 
           <AuthInput
-            label="Confirm Password"
+            label={t("auth.signup.confirmPasswordLabel")}
             icon={<Lock size={16} />}
             type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirm Password"
+            placeholder={t("auth.signup.confirmPasswordPlaceholder")}
             value={confirmPassword}
             onChange={(value) => updateWizardData({ confirmPassword: value })}
             state={confirmState}
-            message={confirmState === "error" ? "Passwords do not match." : ""}
+            message={confirmState === "error" ? passwordsDoNotMatchMessage : ""}
             onBlur={() => setConfirmTouched(true)}
             rightSlot={
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((current) => !current)}
                 aria-label={
-                  showConfirmPassword ? "Hide confirm password" : "Show confirm password"
+                  showConfirmPassword
+                    ? getAuthHideConfirmPasswordLabel(t)
+                    : getAuthShowConfirmPasswordLabel(t)
                 }
                 style={{ color: C.iconInteractive, opacity: 0.85 }}
                 className="transition-opacity hover:opacity-100"
@@ -135,7 +150,7 @@ export function SignupStep4AccountSecurity({ onBack }) {
                 type="button"
                 role="checkbox"
                 aria-checked={acceptedTerms}
-                aria-label="Accept Terms of Service and Privacy Policy"
+                aria-label={t("auth.signup.termsAcceptAria")}
                 onClick={() => updateWizardData({ acceptedTerms: !acceptedTerms })}
                 className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(79,166,248,0.35)]"
                 style={{
@@ -151,21 +166,21 @@ export function SignupStep4AccountSecurity({ onBack }) {
                 className="text-[12px] leading-relaxed"
                 style={{ color: "#5A7390", fontFamily: "'Inter', sans-serif" }}
               >
-                I agree to the{" "}
+                {t("auth.signup.termsAgreementPrefix")}{" "}
                 <button
                   type="button"
                   className="auth-footer-link font-semibold transition-colors"
                   onClick={(event) => event.preventDefault()}
                 >
-                  Terms of Service
+                  {t("auth.signup.termsOfService")}
                 </button>{" "}
-                and{" "}
+                {t("auth.signup.termsAnd")}{" "}
                 <button
                   type="button"
                   className="auth-footer-link font-semibold transition-colors"
                   onClick={(event) => event.preventDefault()}
                 >
-                  Privacy Policy
+                  {t("auth.signup.privacyPolicy")}
                 </button>
                 .
               </span>
@@ -173,7 +188,7 @@ export function SignupStep4AccountSecurity({ onBack }) {
 
             {termsTouched && !acceptedTerms && (
               <p className="mt-1.5 pl-1 text-xs" style={{ color: "#ef4444" }}>
-                You must accept the Terms of Service and Privacy Policy.
+                {t("auth.validation.termsRequired")}
               </p>
             )}
           </div>
@@ -181,11 +196,11 @@ export function SignupStep4AccountSecurity({ onBack }) {
 
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={onBack} className="auth-secondary-btn flex-1">
-            Back
+            {getAuthBackLabel(t)}
           </button>
           <div className="flex-1">
             <PrimaryButton disabled={!canContinue} onClick={handleContinue}>
-              <span>Continue</span>
+              <span>{getAuthContinueLabel(t)}</span>
               <ChevronRight size={16} className="auth-btn-arrow" />
             </PrimaryButton>
           </div>

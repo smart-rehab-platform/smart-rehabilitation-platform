@@ -1,19 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { loadSpecialistAllPendingReviews } from "../../../services/specialistReviewService";
+import { applyPendingReviewLocalization } from "../utils/specialistReviewsLocalization";
 import { subscribeSpecialistReviewRefresh } from "../utils/specialistReviewRefresh";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
-const SIGNED_OUT_ERROR = "Please sign in to view pending reviews.";
-
 export function useSpecialistReviews(specialistUserId) {
+  const { t, locale } = useLocale();
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const signedOutError = t("specialist.reviews.errors.signInRequired");
+  const loadFailedError = t("specialist.reviews.errors.loadFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -45,7 +49,7 @@ export function useSpecialistReviews(specialistUserId) {
           return;
         }
         setReviews([]);
-        setError(resolveErrorMessage(loadError, "Failed to load pending reviews."));
+        setError(resolveErrorMessage(loadError, loadFailedError));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -58,19 +62,24 @@ export function useSpecialistReviews(specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, refreshToken]);
+  }, [specialistUserId, refreshToken, loadFailedError]);
+
+  const localizedReviews = useMemo(
+    () => reviews.map((review) => applyPendingReviewLocalization(review, { t, locale })),
+    [reviews, t, locale],
+  );
 
   if (!specialistUserId) {
     return {
       reviews: [],
       isLoading: false,
-      error: SIGNED_OUT_ERROR,
+      error: signedOutError,
       reload,
     };
   }
 
   return {
-    reviews,
+    reviews: localizedReviews,
     isLoading,
     error,
     reload,

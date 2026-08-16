@@ -58,24 +58,7 @@ export const L = {
   modulesHoverBg: BRAND.brandSoft,
 };
 
-export const NAV_LINKS = [
-  { label: "Home", href: "#home" },
-  { label: "Features", href: "#features" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "AI Solutions", href: "#ai-solutions" },
-  { label: "Who It's For", href: "#who-its-for" },
-  { label: "About", href: "#about" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Join Us", href: "#join-us" },
-];
-
-export const SCROLL_SPY_HREFS = [
-  "#home",
-  "#who-its-for",
-  "#how-it-works",
-  "#features",
-  "#ai-solutions",
-  "#about",
-  "#faq",
-  "#join-us",
-];
+export {
+  LANDING_NAV_LINKS,
+  LANDING_SCROLL_SPY_HREFS,
+} from "./landingLocalization.js";

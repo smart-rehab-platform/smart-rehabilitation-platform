@@ -1,8 +1,6 @@
+import { useLocale } from "../../../context/useLocale";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
-import {
-  formatConfidencePercent,
-  formatPriorityLabel,
-} from "../utils/specialistAiRecommendationMappers";
+import { formatConfidencePercent } from "../utils/specialistAiRecommendationMappers";
 import { SpecialistAiRecommendationActions } from "./SpecialistAiRecommendationActions";
 
 function hasText(value) {
@@ -19,7 +17,7 @@ function RecommendationSection({ title, children }) {
 }
 
 function RecommendationParagraph({ text }) {
-  return <p className="pd-specialist-ai-recommendation-text">{text}</p>;
+  return <p className="pd-specialist-ai-recommendation-text" dir="auto">{text}</p>;
 }
 
 export function SpecialistAiRecommendationCard({
@@ -28,8 +26,17 @@ export function SpecialistAiRecommendationCard({
   onAccept,
   onReject,
 }) {
-  const { type, status, generatedAtLabel, details } = recommendation;
+  const { t } = useLocale();
+  const { type, status, generatedAtLabel, details, sectionLabels, priorityLabel } = recommendation;
   const confidencePercent = formatConfidencePercent(details.confidence);
+  const labels = sectionLabels || {
+    summary: t("specialist.aiRecommendations.sections.summary"),
+    reason: t("specialist.aiRecommendations.sections.reason"),
+    clinicalAnalysis: t("specialist.aiRecommendations.sections.clinicalAnalysis"),
+    suggestedExercises: t("specialist.aiRecommendations.sections.suggestedExercises"),
+    planAdjustment: t("specialist.aiRecommendations.sections.planAdjustment"),
+    confidence: t("specialist.aiRecommendations.sections.confidence"),
+  };
 
   const showReason = hasText(details.clinicalReasoning)
     && details.clinicalReasoning !== details.summary;
@@ -49,28 +56,28 @@ export function SpecialistAiRecommendationCard({
 
       <div className="pd-specialist-ai-recommendation-content">
         {hasText(details.summary) ? (
-          <RecommendationSection title="Summary">
+          <RecommendationSection title={labels.summary}>
             <RecommendationParagraph text={details.summary} />
           </RecommendationSection>
         ) : null}
 
         {showReason ? (
-          <RecommendationSection title="Reason">
+          <RecommendationSection title={labels.reason}>
             <RecommendationParagraph text={details.clinicalReasoning} />
           </RecommendationSection>
         ) : null}
 
         {showClinicalAnalysis ? (
-          <RecommendationSection title="Clinical Analysis">
+          <RecommendationSection title={labels.clinicalAnalysis}>
             <RecommendationParagraph text={details.clinicalAnalysis} />
           </RecommendationSection>
         ) : null}
 
         {details.suggestedExercises.length > 0 ? (
-          <RecommendationSection title="Suggested Exercises">
+          <RecommendationSection title={labels.suggestedExercises}>
             <ul className="pd-specialist-ai-recommendation-list">
               {details.suggestedExercises.map((exercise, index) => (
-                <li key={exercise.exerciseId || `${exercise.displayLine}-${index}`}>
+                <li key={exercise.exerciseId || `${exercise.displayLine}-${index}`} dir="auto">
                   {exercise.displayLine}
                 </li>
               ))}
@@ -79,10 +86,10 @@ export function SpecialistAiRecommendationCard({
         ) : null}
 
         {details.planAdjustments.length > 0 ? (
-          <RecommendationSection title="Plan Adjustment">
+          <RecommendationSection title={labels.planAdjustment}>
             <ul className="pd-specialist-ai-recommendation-list">
               {details.planAdjustments.map((item, index) => (
-                <li key={`${item}-${index}`}>{item}</li>
+                <li key={`${item}-${index}`} dir="auto">{item}</li>
               ))}
             </ul>
           </RecommendationSection>
@@ -90,8 +97,8 @@ export function SpecialistAiRecommendationCard({
 
         {confidencePercent != null ? (
           <p className="pd-specialist-ai-confidence">
-            Confidence:
-            {" "}
+            {labels.confidence}
+            {": "}
             {confidencePercent}
             %
           </p>
@@ -99,7 +106,7 @@ export function SpecialistAiRecommendationCard({
 
         {hasText(details.priorityLevel) ? (
           <StatusBadge
-            label={formatPriorityLabel(details.priorityLevel)}
+            label={priorityLabel}
             tone="blue"
           />
         ) : null}

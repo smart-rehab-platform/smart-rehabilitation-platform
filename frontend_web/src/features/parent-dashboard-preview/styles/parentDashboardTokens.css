@@ -17,7 +17,7 @@
 
 @media (min-width: 1151px) {
   .pd-preview .pd-dashboard-hero-viewport > .pd-greeting {
-    display: grid;
+  display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: minmax(var(--pd-parent-profile-dropdown-clearance), auto) auto;
     column-gap: 20px;
@@ -30,12 +30,12 @@
   .pd-preview .pd-dashboard-hero-viewport > .pd-greeting .pd-greeting-main {
     grid-column: 1;
     grid-row: 1 / -1;
-    align-self: center;
-  }
+  align-self: center;
+}
 
   .pd-preview .pd-dashboard-hero-viewport > .pd-greeting .pd-greeting-toolbar {
-    grid-column: 2;
-    grid-row: 2;
+  grid-column: 2;
+  grid-row: 2;
     margin-top: 0;
   }
 }

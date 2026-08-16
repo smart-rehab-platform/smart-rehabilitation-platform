@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getChildren,
   getChildrenProgress,
@@ -20,6 +21,7 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useParentProgress(parentUserId, requestedChildId) {
+  const { t } = useLocale();
   const [children, setChildren] = useState([]);
   const [validChildId, setValidChildId] = useState(null);
   const [snapshots, setSnapshots] = useState([]);
@@ -75,7 +77,7 @@ export function useParentProgress(parentUserId, requestedChildId) {
         setValidChildId(preferred);
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setChildrenError(resolveErrorMessage(loadError, "Failed to load children."));
+          setChildrenError(resolveErrorMessage(loadError, t("parent.hooks.loadChildrenFailed")));
           setChildren([]);
           setValidChildId(null);
         }
@@ -91,7 +93,7 @@ export function useParentProgress(parentUserId, requestedChildId) {
     return () => {
       cancelled = true;
     };
-  }, [parentUserId, requestedChildId, refreshToken]);
+  }, [parentUserId, requestedChildId, refreshToken, t]);
 
   useEffect(() => {
     if (!validChildId) {
@@ -132,7 +134,7 @@ export function useParentProgress(parentUserId, requestedChildId) {
         setMetrics(mapPerformanceMetrics(metricsRow));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setProgressError(resolveErrorMessage(loadError, "Failed to load progress."));
+          setProgressError(resolveErrorMessage(loadError, t("parent.hooks.loadProgressFailed")));
         }
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -146,7 +148,7 @@ export function useParentProgress(parentUserId, requestedChildId) {
     return () => {
       cancelled = true;
     };
-  }, [validChildId, refreshToken]);
+  }, [validChildId, refreshToken, t]);
 
   const isLoading = isLoadingChildren || isLoadingProgress;
 
@@ -163,7 +165,7 @@ export function useParentProgress(parentUserId, requestedChildId) {
       isLoading: false,
       isLoadingChildren: false,
       isLoadingProgress: false,
-      childrenError: "Please sign in to view progress.",
+      childrenError: t("parent.hooks.signInProgress"),
       progressError: null,
       refetch,
       setValidChildId,

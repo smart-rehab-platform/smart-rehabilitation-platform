@@ -4,13 +4,13 @@ import {
   mapPatientGoal,
   mapTreatmentPlan,
 } from "./specialistPatientMappers";
+import {
+  formatTreatmentPlanDisplayDate,
+  formatTreatmentPlanDateRange,
+  getTreatmentPlanStatusMeta as getLocalizedTreatmentPlanStatusMeta,
+} from "./specialistTreatmentPlansLocalization.js";
 
-export const TREATMENT_PLAN_FILTERS = [
-  { id: "all", label: "All" },
-  { id: "active", label: "Active" },
-  { id: "completed", label: "Completed" },
-  { id: "archived", label: "Archived" },
-];
+export { TREATMENT_PLAN_FILTER_IDS } from "./specialistTreatmentPlansLocalization.js";
 
 const DATE_ONLY_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
@@ -61,29 +61,12 @@ export function formatDateOnlyForApi(value) {
   return parseDateOnlyValue(value);
 }
 
-export function formatDateOnlyLabel(value) {
-  const dateOnly = parseDateOnlyValue(value);
-  if (!dateOnly) {
-    return "—";
-  }
-  const [year, month, day] = dateOnly.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
+export function formatDateOnlyLabel(value, locale = "en") {
+  return formatTreatmentPlanDisplayDate(value, locale);
 }
 
-export function getTreatmentPlanStatusMeta(status) {
-  const normalized = (status || "").trim().toLowerCase();
-  if (normalized === "completed") {
-    return { label: "Completed", tone: "gray", iconTone: "completed" };
-  }
-  if (normalized === "archived") {
-    return { label: "Archived", tone: "gray", iconTone: "archived" };
-  }
-  return { label: "Active", tone: "success", iconTone: "active" };
+export function getTreatmentPlanStatusMeta(status, t = null) {
+  return getLocalizedTreatmentPlanStatusMeta(status, t);
 }
 
 export function mapTreatmentPlanListItem(row, patientNameMap = new Map()) {
@@ -115,9 +98,9 @@ export function mapTreatmentPlanListItem(row, patientNameMap = new Map()) {
     isActive: status.trim().toLowerCase() === "active",
     startDate,
     endDate,
-    startDateLabel: formatDateOnlyLabel(startDate),
-    endDateLabel: formatDateOnlyLabel(endDate),
-    dateRangeLabel: `${formatDateOnlyLabel(startDate)} → ${formatDateOnlyLabel(endDate)}`,
+    startDateLabel: formatTreatmentPlanDisplayDate(startDate, "en"),
+    endDateLabel: formatTreatmentPlanDisplayDate(endDate, "en"),
+    dateRangeLabel: formatTreatmentPlanDateRange(startDate, endDate, "en"),
   };
 }
 

@@ -6,6 +6,7 @@ import {
   mapSpecialistCaseRequestDetail,
   mapSpecialistCaseRequestListItem,
 } from "./specialistCaseRequestMappers.js";
+import { getCaseRequestStatusLabel } from "./specialistCaseRequestsLocalization.js";
 
 describe("specialistCaseRequestMappers", () => {
   it("maps list item fields and conversation availability", () => {
@@ -42,6 +43,7 @@ describe("specialistCaseRequestMappers", () => {
     });
 
     assert.equal(getCaseRequestStatusChipLabel("converted_to_patient"), "Profile Created");
+    assert.equal(getCaseRequestStatusLabel("converted_to_patient"), "Profile Created");
     const steps = buildCaseRequestTimelineSteps(detail);
     assert.equal(steps.length, 4);
     assert.equal(steps.every((step) => step.state === "completed"), true);

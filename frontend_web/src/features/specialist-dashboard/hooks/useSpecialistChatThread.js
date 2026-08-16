@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getConversationMessages,
   markConversationMessagesRead,
@@ -6,6 +7,7 @@ import {
   sendConversationMessage,
   uploadMessageAttachment,
 } from "../../../services/specialistCommunicationService";
+import { getSpecialistMessagesErrorMessages } from "../utils/specialistMessagesLocalization.js";
 import { mapSpecialistMessage, mapSpecialistMessages } from "../utils/specialistMessagesUtils";
 
 const MESSAGE_POLL_INTERVAL_MS = 5000;
@@ -42,6 +44,8 @@ function mergeMessages(existing, incoming) {
 }
 
 export function useSpecialistChatThread(conversationId, currentUserId, options = {}) {
+  const { t } = useLocale();
+  const errorMessages = useMemo(() => getSpecialistMessagesErrorMessages(t), [t]);
   const { enabled = true, onIncomingMessages } = options;
   const [messages, setMessages] = useState([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(Boolean(conversationId));
@@ -120,7 +124,7 @@ export function useSpecialistChatThread(conversationId, currentUserId, options =
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setMessages([]);
-          setMessagesError(resolveErrorMessage(loadError, "Failed to load messages."));
+          setMessagesError(resolveErrorMessage(loadError, errorMessages.loadMessagesFailed));
         }
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -134,7 +138,7 @@ export function useSpecialistChatThread(conversationId, currentUserId, options =
     return () => {
       cancelled = true;
     };
-  }, [conversationId, enabled, refreshToken, markIncomingMessagesRead, onIncomingMessages]);
+  }, [conversationId, enabled, refreshToken, markIncomingMessagesRead, onIncomingMessages, errorMessages.loadMessagesFailed]);
 
   useEffect(() => {
     if (!conversationId || !enabled) {
@@ -189,6 +193,8 @@ export function useSpecialistChatThread(conversationId, currentUserId, options =
 }
 
 export function useSpecialistMessageComposer({ conversationId, onSendSuccess, setSendingState }) {
+  const { t } = useLocale();
+  const errorMessages = useMemo(() => getSpecialistMessagesErrorMessages(t), [t]);
   const [isSending, setIsSending] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null);
   const [sendError, setSendError] = useState(null);
@@ -219,7 +225,7 @@ export function useSpecialistMessageComposer({ conversationId, onSendSuccess, se
         );
         const fileUrl = uploaded?.url;
         if (!fileUrl) {
-          throw new Error("Attachment upload did not return a file URL.");
+          throw new Error(errorMessages.attachmentUrlMissing);
         }
 
         row = await sendConversationAttachmentMessage(conversationId, {
@@ -235,7 +241,7 @@ export function useSpecialistMessageComposer({ conversationId, onSendSuccess, se
       onSendSuccess?.(mapped);
       return { ok: true, message: mapped };
     } catch (error) {
-      const message = resolveErrorMessage(error, "Failed to send message.");
+      const message = resolveErrorMessage(error, errorMessages.sendFailed);
       setSendError(message);
       return { ok: false, message };
     } finally {
@@ -244,7 +250,7 @@ export function useSpecialistMessageComposer({ conversationId, onSendSuccess, se
       setSendingState?.(false);
       setUploadProgress(null);
     }
-  }, [conversationId, isSending, onSendSuccess, setSendingState]);
+  }, [conversationId, isSending, onSendSuccess, setSendingState, errorMessages]);
 
   const clearSendError = useCallback(() => {
     setSendError(null);

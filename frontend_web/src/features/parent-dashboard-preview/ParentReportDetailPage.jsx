@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   buildParentReportsPath,
 } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { ReportFileAction } from "./components/reports/ReportFileAction";
 import { ReportSummarySections } from "./components/reports/ReportSummarySections";
@@ -18,6 +18,7 @@ import "./styles/parentDashboardTokens.css";
 export default function ParentReportDetailPage() {
   const navigate = useNavigate();
   const { reportId } = useParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
   const notificationUserId = parentUserId;
@@ -106,7 +107,7 @@ export default function ParentReportDetailPage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading report details...</p>
+          <p className="pd-inline-loading">{t("parent.pages.reports.loadingDetail")}</p>
         </section>
       );
     }
@@ -114,17 +115,17 @@ export default function ParentReportDetailPage() {
     if (error || !report) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-error">{error || "Report not found."}</p>
+          <p className="pd-inline-error">{error || t("parent.pages.reports.notFound")}</p>
           <div className="pd-report-detail-actions">
             <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-              Retry
+              {t("parent.common.retry")}
             </button>
             <button
               type="button"
               className="pd-btn pd-btn-ghost"
               onClick={() => navigate(buildParentReportsPath(report?.patientId))}
             >
-              Back to Reports
+              {t("parent.common.backToReports")}
             </button>
           </div>
         </section>
@@ -137,7 +138,7 @@ export default function ParentReportDetailPage() {
           {report.title ? (
             <h1 className="pd-report-detail-title">{report.title}</h1>
           ) : (
-            <h1 className="pd-report-detail-title">Report Details</h1>
+            <h1 className="pd-report-detail-title">{t("parent.pages.reports.detailTitle")}</h1>
           )}
           {report.reportTypeLabel ? (
             <span className="pd-report-type-badge">{report.reportTypeLabel}</span>
@@ -147,19 +148,19 @@ export default function ParentReportDetailPage() {
         <ul className="pd-task-hub-card-meta pd-report-detail-meta">
           {report.childName ? (
             <li>
-              <strong>Child</strong>
+              <strong>{t("parent.common.child")}</strong>
               <span>{report.childName}</span>
             </li>
           ) : null}
           {report.generatedDate ? (
             <li>
-              <strong>Generated</strong>
+              <strong>{t("parent.pages.reports.generated")}</strong>
               <span>{report.generatedDate}</span>
             </li>
           ) : null}
           {report.authorName ? (
             <li>
-              <strong>Specialist</strong>
+              <strong>{t("parent.common.specialist")}</strong>
               <span>{report.authorName}</span>
             </li>
           ) : null}
@@ -177,7 +178,6 @@ export default function ParentReportDetailPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -199,7 +199,7 @@ export default function ParentReportDetailPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-ghost pd-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
-              Back to Reports
+              {t("parent.common.backToReports")}
             </button>
           </div>
 

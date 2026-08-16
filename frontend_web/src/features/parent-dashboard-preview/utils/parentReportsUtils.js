@@ -2,6 +2,30 @@ import {
   readString,
   resolveReportFileUrl,
 } from "./parentDashboardMappers";
+import { resolveMapperContext } from "./parentLocalizationCore";
+import {
+  buildReportSortOptions,
+  buildReportTypeFilterOptions,
+  formatReportGeneratedDate,
+  getReportEmptyMessages,
+  getReportFileUnavailableError,
+  getReportTypeLabel,
+  getSummaryListDefs,
+  getSummarySectionDefs,
+  REPORT_EMPTY_MESSAGES,
+  REPORT_SORT_OPTIONS,
+  REPORT_TYPE_LABELS,
+} from "./parentReportsLocalization";
+
+export {
+  buildReportSortOptions,
+  buildReportTypeFilterOptions,
+  getReportEmptyMessages,
+  getReportTypeLabel,
+  REPORT_EMPTY_MESSAGES,
+  REPORT_SORT_OPTIONS,
+  REPORT_TYPE_LABELS,
+};
 
 const REPORT_TIMESTAMP_KEYS = [
   "created_at",
@@ -9,20 +33,6 @@ const REPORT_TIMESTAMP_KEYS = [
   "generated_at",
   "generatedAt",
 ];
-
-function formatDisplayDate(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 function readTimestampValue(entity, keys) {
   if (!entity || typeof entity !== "object") {
@@ -37,59 +47,6 @@ function readTimestampValue(entity, keys) {
   }
 
   return null;
-}
-
-/** Confirmed backend report_type values and friendly labels. */
-export const REPORT_TYPE_LABELS = {
-  weekly: "Weekly",
-  monthly: "Monthly",
-  assessment: "Assessment",
-  progress: "Progress",
-};
-
-export const REPORT_SORT_OPTIONS = [
-  { id: "newest", label: "Newest first" },
-  { id: "oldest", label: "Oldest first" },
-  { id: "childName", label: "Child name" },
-  { id: "reportType", label: "Report type" },
-];
-
-export const REPORT_EMPTY_MESSAGES = {
-  none: "No reports available yet.",
-  filtered: "No reports match your filters.",
-};
-
-const SUMMARY_SECTION_DEFS = [
-  { key: "executive_summary", label: "Executive summary" },
-  { key: "patient_progress_summary", label: "Patient progress" },
-  { key: "speech_analysis_summary", label: "Speech analysis" },
-  { key: "exercise_adherence_summary", label: "Exercise adherence" },
-  { key: "goal_progress_summary", label: "Goal progress" },
-];
-
-const SUMMARY_LIST_DEFS = [
-  { key: "clinical_insights", label: "Clinical insights" },
-  { key: "risks_or_regressions", label: "Risks or regressions" },
-  { key: "recommendations", label: "Recommendations" },
-  { key: "next_steps", label: "Next steps" },
-];
-
-/**
- * @param {string|null|undefined} reportType
- */
-export function getReportTypeLabel(reportType) {
-  if (!reportType) {
-    return null;
-  }
-
-  const normalized = reportType.trim().toLowerCase();
-  if (REPORT_TYPE_LABELS[normalized]) {
-    return REPORT_TYPE_LABELS[normalized];
-  }
-
-  return normalized
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 /**
@@ -107,8 +64,10 @@ function truncateSummary(summary, maxLength = 160) {
 /**
  * @param {Record<string, string>|null|undefined} childNameByPatientId
  * @param {Record<string, unknown>} reportRow
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapReportRowToHubItem(reportRow, childNameByPatientId = null) {
+export function mapReportRowToHubItem(reportRow, childNameByPatientId = null, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const id = readString(reportRow, ["id", "_id"]);
   if (!id) {
     return null;
@@ -133,8 +92,8 @@ export function mapReportRowToHubItem(reportRow, childNameByPatientId = null) {
     childName,
     title: readString(reportRow, ["title", "report_title", "name"]),
     reportType,
-    reportTypeLabel: getReportTypeLabel(reportType),
-    generatedDate: formatDisplayDate(timestampValue),
+    reportTypeLabel: getReportTypeLabel(reportType, t),
+    generatedDate: formatReportGeneratedDate(timestampValue, locale, t),
     generatedAtMs: Number.isFinite(parsedMs) ? parsedMs : null,
     authorName: readString(reportRow, [
       "generated_by_name",
@@ -152,37 +111,25 @@ export function mapReportRowToHubItem(reportRow, childNameByPatientId = null) {
 /**
  * @param {Array<Record<string, unknown>>} reportRows
  * @param {Record<string, string>|null|undefined} childNameByPatientId
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapReportRowsToHubItems(reportRows, childNameByPatientId = null) {
+export function mapReportRowsToHubItems(reportRows, childNameByPatientId = null, options = {}) {
   if (!Array.isArray(reportRows)) {
     return [];
   }
 
   return reportRows
-    .map((row) => mapReportRowToHubItem(row, childNameByPatientId))
+    .map((row) => mapReportRowToHubItem(row, childNameByPatientId, options))
     .filter(Boolean);
 }
 
 /**
  * @param {Array<{ reportType?: string|null }>} reports
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function buildReportTypeFilterOptions(reports) {
-  const typeSet = new Set();
-
-  reports.forEach((report) => {
-    if (report.reportType) {
-      typeSet.add(report.reportType);
-    }
-  });
-
-  const options = [{ id: "all", label: "All types" }];
-  [...typeSet]
-    .sort((left, right) => getReportTypeLabel(left).localeCompare(getReportTypeLabel(right)))
-    .forEach((type) => {
-      options.push({ id: type, label: getReportTypeLabel(type) });
-    });
-
-  return options;
+export function buildReportTypeFilterOptionsLocalized(reports, options = {}) {
+  const { t } = resolveMapperContext(options);
+  return buildReportTypeFilterOptions(reports, t);
 }
 
 /**
@@ -271,8 +218,11 @@ function compareByDate(left, right, direction) {
 
 /**
  * @param {string|null|undefined} summaryRaw
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function normalizeReportSummary(summaryRaw) {
+export function normalizeReportSummary(summaryRaw, options = {}) {
+  const { t } = resolveMapperContext(options);
+
   if (!summaryRaw || typeof summaryRaw !== "string") {
     return { plainText: null, sections: [], listSections: [] };
   }
@@ -292,14 +242,17 @@ export function normalizeReportSummary(summaryRaw) {
       return { plainText: trimmed, sections: [], listSections: [] };
     }
 
-    const sections = SUMMARY_SECTION_DEFS
+    const sectionDefs = getSummarySectionDefs(t);
+    const listDefs = getSummaryListDefs(t);
+
+    const sections = sectionDefs
       .map(({ key, label }) => {
         const value = readString(parsed, [key]);
         return value ? { label, value } : null;
       })
       .filter(Boolean);
 
-    const listSections = SUMMARY_LIST_DEFS
+    const listSections = listDefs
       .map(({ key, label }) => {
         const items = parsed[key];
         if (!Array.isArray(items) || items.length === 0) {
@@ -326,10 +279,13 @@ export function normalizeReportSummary(summaryRaw) {
 
 /**
  * @param {string} url
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function openReportFileUrl(url) {
+export function openReportFileUrl(url, options = {}) {
+  const { t } = resolveMapperContext(options);
+
   if (!url) {
-    throw new Error("Report file is unavailable.");
+    throw new Error(getReportFileUnavailableError(t));
   }
 
   window.open(url, "_blank", "noopener,noreferrer");

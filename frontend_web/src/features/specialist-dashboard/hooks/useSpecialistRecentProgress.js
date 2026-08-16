@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadSpecialistRecentProgress } from "../../../services/specialistDashboardService";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
-const SIGNED_OUT_ERROR = "Please sign in to view patient progress.";
-
 export function useSpecialistRecentProgress(specialistUserId) {
+  const { t } = useLocale();
   const [progressItems, setProgressItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -45,7 +45,7 @@ export function useSpecialistRecentProgress(specialistUserId) {
         }
 
         setProgressItems([]);
-        setError(resolveErrorMessage(loadError, "Failed to load patient progress."));
+        setError(resolveErrorMessage(loadError, t("specialist.dashboard.errors.progressLoadFailed")));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -58,13 +58,13 @@ export function useSpecialistRecentProgress(specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, refreshToken]);
+  }, [specialistUserId, refreshToken, t]);
 
   if (!specialistUserId) {
     return {
       progressItems: [],
       isLoading: false,
-      error: SIGNED_OUT_ERROR,
+      error: t("specialist.dashboard.errors.progressSignInRequired"),
       reload,
     };
   }

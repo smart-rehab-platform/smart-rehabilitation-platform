@@ -1,6 +1,7 @@
+import { useLocale } from "../../../../context/useLocale.js";
 import {
   CASE_REQUEST_CHILD_IMAGE_ACCEPT,
-  CASE_REQUEST_CHILD_IMAGE_HINT,
+  getCaseRequestChildImageHint,
   getCaseRequestChildInitials,
 } from "../../utils/parentCaseRequestImageUtils";
 
@@ -14,9 +15,13 @@ export function CaseRequestChildPhoto({
   error = null,
   inputId = "case-request-child-photo",
 }) {
+  const { t } = useLocale();
   const displayUrl = previewUrl || persistedImageUrl || null;
-  const initials = getCaseRequestChildInitials(childName);
+  const initials = getCaseRequestChildInitials(childName, { t });
   const showClear = Boolean(previewUrl);
+  const selectLabel = displayUrl && !previewUrl
+    ? t("parent.caseRequests.childPhoto.changePhoto")
+    : t("parent.caseRequests.childPhoto.addPhoto");
 
   return (
     <div className="pd-case-child-photo">
@@ -33,10 +38,10 @@ export function CaseRequestChildPhoto({
       </div>
 
       <div className="pd-case-child-photo-actions">
-        <p className="pd-section-title">Child Photo</p>
-        <p className="pd-section-sub">Optional</p>
+        <p className="pd-section-title">{t("parent.caseRequests.childPhoto.title")}</p>
+        <p className="pd-section-sub">{t("parent.common.optional")}</p>
         <label className="pd-btn pd-btn-soft" htmlFor={inputId}>
-          {displayUrl && !previewUrl ? "Replace photo" : "Select photo"}
+          {selectLabel}
         </label>
         <input
           id={inputId}
@@ -59,10 +64,10 @@ export function CaseRequestChildPhoto({
             disabled={disabled}
             onClick={() => onClearPreview?.()}
           >
-            Remove selected photo
+            {t("parent.caseRequests.childPhoto.removePhoto")}
           </button>
         ) : null}
-        <p className="pd-case-child-photo-hint">{CASE_REQUEST_CHILD_IMAGE_HINT}</p>
+        <p className="pd-case-child-photo-hint">{getCaseRequestChildImageHint(t)}</p>
         {error ? <p className="pd-form-error" role="alert">{error}</p> : null}
       </div>
     </div>

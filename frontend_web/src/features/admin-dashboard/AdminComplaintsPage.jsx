@@ -31,6 +31,7 @@ export default function AdminComplaintsPage() {
   } = useAdminShell();
 
   const {
+    labels,
     complaints,
     specialistOptions,
     selectedStatus,
@@ -113,7 +114,7 @@ export default function AdminComplaintsPage() {
           <div className="pd-admin-complaints-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : null}
@@ -122,7 +123,7 @@ export default function AdminComplaintsPage() {
           <div className="pd-admin-complaints-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : null}
@@ -135,7 +136,6 @@ export default function AdminComplaintsPage() {
                 isLoading={showInitialSkeleton}
                 emptyKind={emptyKind}
                 onViewComplaint={handleViewComplaint}
-                onClearFilters={clearFilters}
               />
             </div>
 
@@ -145,7 +145,7 @@ export default function AdminComplaintsPage() {
                   <>
                     <p className="pd-inline-error">{loadMoreError}</p>
                     <button type="button" className="pd-btn pd-btn-soft" onClick={loadMore}>
-                      Retry Load More
+                      {labels.retry}
                     </button>
                   </>
                 ) : (
@@ -155,7 +155,7 @@ export default function AdminComplaintsPage() {
                     onClick={loadMore}
                     disabled={isLoadingMore}
                   >
-                    {isLoadingMore ? "Loading..." : "Load more"}
+                    {isLoadingMore ? labels.loadingMore : labels.loadMore}
                   </button>
                 )}
               </div>

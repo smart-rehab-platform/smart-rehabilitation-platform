@@ -1,12 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadAdminExerciseDetails } from "../../../services/adminExercisesService";
-import { mapAdminExercise } from "../utils/adminExercisesMappers";
+import {
+  applyAdminExerciseLocalization,
+  getAdminExercisesLabels,
+} from "../utils/adminExercisesLocalization.js";
+import { mapAdminExercise } from "../utils/adminExercisesMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminExerciseDetails(exerciseId) {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminExercisesLabels(t), [t]);
   const [exercise, setExercise] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,7 +34,7 @@ export function useAdminExerciseDetails(exerciseId) {
     async function loadDetail() {
       if (!normalizedId) {
         setExercise(null);
-        setError("Exercise not found.");
+        setError(labels.notFound);
         setIsLoading(false);
         return;
       }
@@ -43,18 +51,18 @@ export function useAdminExerciseDetails(exerciseId) {
         const mapped = mapAdminExercise(row);
         if (!mapped) {
           setExercise(null);
-          setError("Exercise not found.");
+          setError(labels.notFound);
           return;
         }
 
-        setExercise(mapped);
+        setExercise(applyAdminExerciseLocalization(mapped, mapperContext));
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
 
         setExercise(null);
-        setError(resolveErrorMessage(loadError, "Failed to load exercise details."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -67,12 +75,13 @@ export function useAdminExerciseDetails(exerciseId) {
     return () => {
       cancelled = true;
     };
-  }, [exerciseId, refreshToken]);
+  }, [exerciseId, labels.loadFailed, labels.notFound, mapperContext, refreshToken]);
 
   return {
     exercise,
     isLoading,
     error,
     refresh,
+    labels,
   };
 }

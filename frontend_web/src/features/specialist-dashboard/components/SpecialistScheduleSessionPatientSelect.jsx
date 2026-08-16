@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { getInitials } from "../utils/specialistScheduleUtils";
 
@@ -10,6 +11,7 @@ export function SpecialistScheduleSessionPatientSelect({
   error = null,
   onSelect,
 }) {
+  const { t } = useLocale();
   const listboxId = useId();
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -70,10 +72,12 @@ export function SpecialistScheduleSessionPatientSelect({
               fallbackClassName="pd-avatar pd-specialist-schedule-session-patient-avatar"
               className="pd-avatar-photo"
             />
-            <span className="pd-specialist-schedule-session-patient-name">{selectedPatient.name}</span>
+            <span className="pd-specialist-schedule-session-patient-name" dir="auto">{selectedPatient.name}</span>
           </span>
         ) : (
-          <span className="pd-specialist-schedule-session-patient-placeholder">Select patient</span>
+          <span className="pd-specialist-schedule-session-patient-placeholder">
+            {t("specialist.sessions.schedule.selectPatient")}
+          </span>
         )}
         <ChevronDown size={18} aria-hidden="true" className="pd-specialist-schedule-session-patient-chevron" />
       </button>
@@ -104,7 +108,7 @@ export function SpecialistScheduleSessionPatientSelect({
                     fallbackClassName="pd-avatar pd-specialist-schedule-session-patient-avatar"
                     className="pd-avatar-photo"
                   />
-                  <span className="pd-specialist-schedule-session-patient-name">{patient.name}</span>
+                  <span className="pd-specialist-schedule-session-patient-name" dir="auto">{patient.name}</span>
                 </button>
               </li>
             );

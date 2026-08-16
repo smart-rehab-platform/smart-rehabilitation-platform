@@ -1,3 +1,5 @@
+import { getSpecialistProfileValidationMessages } from "./specialistProfileLocalization.js";
+
 export const EMPTY_VALUE = "—";
 
 export function formatOptionalProfileValue(value) {
@@ -19,31 +21,32 @@ export function mapProfileToFormValues(bundle) {
   };
 }
 
-export function validateProfileImageFile(file) {
+export function validateProfileImageFile(file, t = null) {
   if (!file) {
     return null;
   }
 
   if (!file.type.startsWith("image/")) {
-    return "Please choose an image file.";
+    return getSpecialistProfileValidationMessages(t).imageRequired;
   }
 
   return null;
 }
 
-export function validateSpecialistProfileForm(formValues) {
+export function validateSpecialistProfileForm(formValues, t = null) {
   const errors = {};
+  const validation = getSpecialistProfileValidationMessages(t);
   const fullName = String(formValues?.fullName ?? "").trim();
 
   if (!fullName) {
-    errors.fullName = "Full name is required";
+    errors.fullName = validation.fullNameRequired;
   }
 
   const yearsText = String(formValues?.yearsOfExperience ?? "").trim();
   if (yearsText) {
     const years = Number.parseInt(yearsText, 10);
     if (!Number.isFinite(years) || years < 0) {
-      errors.yearsOfExperience = "Years of experience must be a valid number";
+      errors.yearsOfExperience = validation.yearsInvalid;
     }
   }
 

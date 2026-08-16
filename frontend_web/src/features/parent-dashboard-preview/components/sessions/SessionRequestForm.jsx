@@ -1,6 +1,8 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
 import {
-  PREFERRED_TIME_PERIODS,
-  SESSION_REQUEST_REASONS,
+  buildPreferredTimePeriodOptions,
+  buildSessionRequestReasonOptions,
   getTodayDateInputValue,
   mapSpecialistOption,
 } from "../../utils/parentSessionsUtils";
@@ -17,16 +19,20 @@ export function SessionRequestForm({
   onSubmit,
   onReset,
 }) {
+  const { t } = useLocale();
+  const reasonOptions = useMemo(() => buildSessionRequestReasonOptions(t), [t]);
+  const timePeriodOptions = useMemo(() => buildPreferredTimePeriodOptions(t), [t]);
+
   const specialistOptions = specialists
     .map((row) => mapSpecialistOption(row))
     .filter(Boolean);
 
   return (
-    <section className="pd-card pd-card-pad pd-session-request-form pd-section-enter" aria-label="Request a session">
+    <section className="pd-card pd-card-pad pd-session-request-form pd-section-enter" aria-label={t("parent.sessions.formAriaLabel")}>
       <header className="pd-session-request-form-head">
-        <h2 className="pd-section-title">Request a Session</h2>
+        <h2 className="pd-section-title">{t("parent.sessions.formTitle")}</h2>
         <p className="pd-task-hub-subtitle">
-          Submit a request for your specialist to review and schedule.
+          {t("parent.sessions.formSubtitle")}
         </p>
       </header>
 
@@ -39,7 +45,7 @@ export function SessionRequestForm({
       >
         <div className="pd-form-field">
           <label className="pd-form-label" htmlFor="pd-session-request-child">
-            Child
+            {t("parent.common.child")}
           </label>
           <select
             id="pd-session-request-child"
@@ -48,7 +54,7 @@ export function SessionRequestForm({
             onChange={(event) => onFieldChange("patientId", event.target.value)}
             disabled={isSubmitting}
           >
-            <option value="">Select a child</option>
+            <option value="">{t("parent.common.selectChild")}</option>
             {children.map((child) => (
               <option key={child.id} value={child.id}>
                 {child.fullName}
@@ -62,7 +68,7 @@ export function SessionRequestForm({
 
         <div className="pd-form-field">
           <label className="pd-form-label" htmlFor="pd-session-request-specialist">
-            Specialist
+            {t("parent.common.specialist")}
           </label>
           <select
             id="pd-session-request-specialist"
@@ -72,7 +78,7 @@ export function SessionRequestForm({
             disabled={isSubmitting || !form.patientId || isLoadingSpecialists}
           >
             <option value="">
-              {isLoadingSpecialists ? "Loading specialists..." : "Select a specialist"}
+              {isLoadingSpecialists ? t("parent.common.loadingSpecialists") : t("parent.common.selectSpecialist")}
             </option>
             {specialistOptions.map((option) => (
               <option key={option.id} value={option.id}>
@@ -87,7 +93,7 @@ export function SessionRequestForm({
 
         <div className="pd-form-field">
           <label className="pd-form-label" htmlFor="pd-session-request-reason">
-            Reason
+            {t("parent.common.reason")}
           </label>
           <select
             id="pd-session-request-reason"
@@ -96,8 +102,8 @@ export function SessionRequestForm({
             onChange={(event) => onFieldChange("reason", event.target.value)}
             disabled={isSubmitting}
           >
-            <option value="">Select a reason</option>
-            {SESSION_REQUEST_REASONS.map((option) => (
+            <option value="">{t("parent.common.selectReason")}</option>
+            {reasonOptions.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.label}
               </option>
@@ -111,7 +117,7 @@ export function SessionRequestForm({
         {form.reason === "other" ? (
           <div className="pd-form-field pd-form-field-wide">
             <label className="pd-form-label" htmlFor="pd-session-request-reason-other">
-              Reason details
+              {t("parent.common.reasonDetails")}
             </label>
             <input
               id="pd-session-request-reason-other"
@@ -129,7 +135,7 @@ export function SessionRequestForm({
 
         <div className="pd-form-field">
           <label className="pd-form-label" htmlFor="pd-session-request-date">
-            Preferred date
+            {t("parent.common.preferredDate")}
           </label>
           <input
             id="pd-session-request-date"
@@ -147,7 +153,7 @@ export function SessionRequestForm({
 
         <div className="pd-form-field">
           <label className="pd-form-label" htmlFor="pd-session-request-period">
-            Preferred time period
+            {t("parent.common.preferredTimePeriod")}
           </label>
           <select
             id="pd-session-request-period"
@@ -156,7 +162,7 @@ export function SessionRequestForm({
             onChange={(event) => onFieldChange("preferredTimePeriod", event.target.value)}
             disabled={isSubmitting}
           >
-            {PREFERRED_TIME_PERIODS.map((option) => (
+            {timePeriodOptions.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.label}
               </option>
@@ -169,7 +175,7 @@ export function SessionRequestForm({
 
         <div className="pd-form-field pd-form-field-wide">
           <label className="pd-form-label" htmlFor="pd-session-request-notes">
-            Additional notes
+            {t("parent.common.additionalNotes")}
           </label>
           <textarea
             id="pd-session-request-notes"
@@ -178,7 +184,7 @@ export function SessionRequestForm({
             value={form.notes}
             onChange={(event) => onFieldChange("notes", event.target.value)}
             disabled={isSubmitting}
-            placeholder="Optional details for the specialist"
+            placeholder={t("parent.common.optionalDetailsPlaceholder")}
           />
         </div>
 
@@ -194,7 +200,7 @@ export function SessionRequestForm({
             className="pd-btn pd-btn-primary"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Submitting..." : "Submit Request"}
+            {isSubmitting ? t("parent.common.submitting") : t("parent.common.submitRequest")}
           </button>
           <button
             type="button"
@@ -202,7 +208,7 @@ export function SessionRequestForm({
             onClick={onReset}
             disabled={isSubmitting}
           >
-            Clear
+            {t("parent.common.clear")}
           </button>
         </div>
       </form>

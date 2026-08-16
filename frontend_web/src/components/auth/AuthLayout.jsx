@@ -2,6 +2,8 @@ import { Fragment, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import bgVideo from "../../assets/auth-bg.mp4";
 import neurologyIcon from "../../assets/icons/neurology.svg";
+import { useLocale } from "../../context/useLocale.js";
+import { LanguageSelector } from "../localization/LanguageSelector.jsx";
 import { Logo, BrandIcon } from "./Logo";
 import { C, G } from "./tokens";
 import { useSignupWizard } from "../../context/SignupWizardContext";
@@ -12,38 +14,9 @@ const VIDEO_PLAYBACK_RATE = 0.5;
 const HERO_GRADIENT =
   "linear-gradient(180deg, #A8E4FF 0%, #56B6E9 48%, #2AA4C9 100%)";
 
-const CARD_HEADERS = {
-  signin: {
-    title: "Welcome Back",
-    subtitle: "Sign in to continue",
-  },
-  signup: {
-    title: "Create Your Account",
-  },
-};
-
-const SIGNUP_ROLE_INTRO = "Choose how you'll use Smart Rehabilitation.";
 const ONBOARDING_TOTAL_STEPS = 5;
 
-const SIGNUP_WIZARD_HEADERS = {
-  1: {
-    title: "Create Your Account",
-  },
-  2: {
-    subtitle: "Tell us a little about yourself.",
-  },
-  3: {
-    subtitle: "Tell us about your professional background.",
-  },
-  4: {
-    subtitle: "Secure your account with a strong password.",
-  },
-  5: {
-    subtitle: "Review your details before creating your account.",
-  },
-};
-
-function OnboardingProgressIndicator({ currentStep = 1, className = "" }) {
+function OnboardingProgressIndicator({ currentStep = 1, className = "", t }) {
   return (
     <div className={`auth-onboarding-progress mb-4 flex flex-col items-center ${className}`}>
       <div
@@ -80,19 +53,32 @@ function OnboardingProgressIndicator({ currentStep = 1, className = "" }) {
         className="auth-onboarding-step-label mt-1.5 text-[15px] font-semibold leading-none tracking-[0.01em] sm:text-[16px]"
         style={{ color: "#3D5675" }}
       >
-        Step {currentStep} of {ONBOARDING_TOTAL_STEPS}
+        {t("auth.signup.stepProgress", {
+          current: currentStep,
+          total: ONBOARDING_TOTAL_STEPS,
+        })}
       </p>
     </div>
   );
 }
 
 export function AuthLayout({ activeTab, onTabChange, children }) {
+  const { t, locale } = useLocale();
+  const isRtl = locale === "ar";
   const videoRef = useRef(null);
   const location = useLocation();
   const { wizardStep, isRegistrationSubmitting } = useSignupWizard();
   const isLoginOrSignup = location.pathname === "/login" || location.pathname === "/signup";
-  const header = CARD_HEADERS[activeTab] ?? CARD_HEADERS.signin;
-  const signupHeader = SIGNUP_WIZARD_HEADERS[wizardStep] ?? SIGNUP_WIZARD_HEADERS[1];
+  const signupHeaderSubtitles = {
+    2: t("auth.signup.stepSubtitlePersonal"),
+    3: t("auth.signup.stepSubtitleProfessional"),
+    4: t("auth.signup.stepSubtitleSecurity"),
+    5: t("auth.signup.stepSubtitleReview"),
+  };
+  const signupHeader = {
+    title: t("auth.signup.createYourAccount"),
+    subtitle: signupHeaderSubtitles[wizardStep] ?? signupHeaderSubtitles[2],
+  };
   const isSignupCompactIntro =
     activeTab === "signup" && (wizardStep === 2 || wizardStep === 3 || wizardStep === 4 || wizardStep === 5);
   const showSignupHeaderAboveTabs = activeTab === "signup" && wizardStep === 1;
@@ -186,12 +172,13 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
             <header className="auth-panel-header">
               <div className="auth-panel-header-brand">
                 <BrandIcon size={34} color="#56B6E9" />
-                <div className="auth-panel-header-wordmark" aria-label="Smart Rehabilitation">
+                <div className="auth-panel-header-wordmark" aria-label={t("auth.hero.brandAriaLabel")}>
                   <span className="auth-panel-header-wordmark-smart">SMART</span>
                   <span className="auth-panel-header-wordmark-rehab">REHABILITATION</span>
                 </div>
               </div>
-      </header>
+              <LanguageSelector surface="auth" />
+            </header>
 
             {/* Two-column body */}
             <div className="auth-panel-body">
@@ -220,7 +207,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                           fontWeight: 600,
                         }}
                       >
-                        Empowering Every
+                        {t("auth.hero.leadLine1")}
                 </span>
                     </div>
                     <span className="auth-hero-gradient-wrap mb-1 block w-full overflow-visible">
@@ -237,9 +224,10 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                           color: "transparent",
                   }}
                 >
-                  Rehabilitation
+                  {t("auth.hero.leadHighlight")}
                 </span>
                     </span>
+                    {t("auth.hero.leadLine2") ? (
                     <span
                       className="block"
                       style={{
@@ -249,14 +237,14 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                         lineHeight: 1,
                       }}
                     >
-                      Journey
+                      {t("auth.hero.leadLine2")}
                 </span>
+                    ) : null}
                     <span className="auth-hero-accent-line" aria-hidden />
               </h1>
 
                   <p className="auth-panel-hero-desc">
-                    Smart therapy, personalized progress, and seamless collaboration between
-                    specialists and families.
+                    {t("auth.hero.description")}
               </p>
             </div>
                 </div>
@@ -264,7 +252,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                   to="/"
                   className="auth-back-home auth-panel-hero-back-home transition-all duration-200 ease-in-out focus-visible:outline-none"
                 >
-                  ← Back to Home
+                  {isRtl ? `${t("auth.hero.backToHome")} →` : `← ${t("auth.hero.backToHome")}`}
                 </Link>
               </div>
 
@@ -285,30 +273,30 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                       aria-hidden
                       className="h-[14px] w-[14px] shrink-0 object-contain"
                     />
-                    Smart Rehabilitation AI
+                    {t("auth.hero.aiBadge")}
                   </div>
                 </div>
                 <div className="auth-panel-form-content">
                   {(isLoginOrSignup && activeTab === "signin") || showSignupHeaderAboveTabs ? (
                     <div className="auth-form-header mb-7 text-center">
                     {showSignupHeaderAboveTabs && (
-                      <OnboardingProgressIndicator currentStep={wizardStep} />
+                      <OnboardingProgressIndicator currentStep={wizardStep} t={t} />
                     )}
                     <h2
                       className="text-[1.875rem] font-bold leading-[1.2] sm:text-[2rem]"
                       style={{ fontFamily: "'Syne', sans-serif", color: "#0F2342", fontWeight: 700 }}
                     >
-                      {activeTab === "signup" ? signupHeader.title : header.title}
+                      {activeTab === "signup" ? signupHeader.title : t("auth.signIn.title")}
                     </h2>
-                    {activeTab === "signin" && header.subtitle && (
+                    {activeTab === "signin" && (
                       <p className="mt-2 text-[15px] leading-relaxed" style={{ color: "#5A7390" }}>
-                        {header.subtitle}
+                        {t("auth.signIn.subtitle")}
                       </p>
                     )}
                   </div>
                 ) : null}
 
-                <div className={`auth-segment relative flex rounded-2xl p-1 ${segmentMarginClass}`}>
+                <div className={`auth-segment relative flex rounded-2xl p-1 ${segmentMarginClass}`} dir="ltr">
                   <div
                     className="auth-segment-indicator absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-xl transition-transform duration-300 ease-out"
                     style={{
@@ -318,19 +306,19 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                     }}
                     aria-hidden
                   />
-                    {["signin", "signup"].map((t) => (
+                    {["signin", "signup"].map((tab) => (
                       <button
-                        key={t}
+                        key={tab}
                       type="button"
-                        onClick={() => onTabChange(t)}
+                        onClick={() => onTabChange(tab)}
                       disabled={isRegistrationSubmitting}
                       className="auth-segment-btn relative z-10 flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-55"
                       style={{
-                        color: activeTab === t ? C.white : "#3D5675",
-                        opacity: activeTab === t ? 1 : 0.88,
+                        color: activeTab === tab ? C.white : "#3D5675",
+                        opacity: activeTab === tab ? 1 : 0.88,
                       }}
                       >
-                        {t === "signin" ? "Sign In" : "Create Account"}
+                        {tab === "signin" ? t("auth.shared.signIn") : t("auth.shared.createAccount")}
                       </button>
                     ))}
                   </div>
@@ -340,6 +328,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                     <OnboardingProgressIndicator
                       currentStep={wizardStep}
                       className="!mb-3"
+                      t={t}
                     />
                     <p
                       className="auth-form-section-subtitle mb-7 text-[15px] font-semibold leading-relaxed"
@@ -355,7 +344,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
                     className="auth-form-section-subtitle mb-7 text-center text-[15px] leading-relaxed"
                     style={{ color: "#5A7390" }}
                   >
-                    {SIGNUP_ROLE_INTRO}
+                    {t("auth.signup.stepSubtitleRole")}
                   </p>
                 )}
 
@@ -370,7 +359,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           className="relative z-10 mt-auto shrink-0 px-5 pb-6 pt-2 text-center text-[13px] font-normal"
           style={{ color: "rgba(255, 255, 255, 0.55)" }}
         >
-          © 2026 Smart Rehabilitation Platform
+          {t("auth.shared.copyright")}
         </p>
       </div>
 
@@ -436,7 +425,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           position: relative;
           display: flex;
           align-items: center;
-          justify-content: flex-start;
+          justify-content: space-between;
           gap: 16px;
           padding: 14px 28px;
           background:
@@ -571,7 +560,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
         @media (min-width: 980px) {
           .auth-panel-hero {
-            border-right: 1px solid rgba(110, 160, 205, 0.22);
+            border-inline-end: 1px solid rgba(110, 160, 205, 0.22);
           }
         }
 
@@ -637,7 +626,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
         @media (min-width: 980px) {
           .auth-panel-hero-inner {
-            text-align: left;
+            text-align: start;
           }
         }
 
@@ -739,16 +728,33 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
         @media (min-width: 980px) {
           .auth-hero-accent-line {
-            margin-left: 0;
-            margin-right: auto;
+            margin-inline-start: 0;
+            margin-inline-end: auto;
           }
         }
 
         @media (max-width: 979px) {
           .auth-hero-accent-line {
-            margin-left: auto;
-            margin-right: auto;
+            margin-inline: auto;
           }
+        }
+
+        @media (min-width: 980px) {
+          [dir="rtl"] .auth-panel-body {
+            direction: rtl;
+          }
+
+          [dir="rtl"] .auth-panel-hero {
+            order: 2;
+          }
+
+          [dir="rtl"] .auth-panel-form {
+            order: 1;
+          }
+        }
+
+        [dir="rtl"] .auth-back-home:hover {
+          transform: translateX(2px);
         }
 
         .auth-hero-gradient-wrap {
@@ -766,21 +772,20 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
         @media (min-width: 980px) {
           .auth-panel-hero-desc {
-            margin-left: 0;
-            margin-right: auto;
+            margin-inline-start: 0;
+            margin-inline-end: auto;
           }
         }
 
         @media (max-width: 979px) {
           .auth-panel-hero-desc {
-            margin-left: auto;
-            margin-right: auto;
+            margin-inline: auto;
           }
         }
 
         .auth-panel-hero-back-home {
           position: absolute;
-          right: 28px;
+          inset-inline-end: 28px;
           bottom: 18px;
           z-index: 2;
           font-size: 12px;
@@ -791,7 +796,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
         @media (min-width: 640px) {
           .auth-panel-hero-back-home {
-            right: 40px;
+            inset-inline-end: 40px;
             bottom: 26px;
           }
         }
@@ -1010,6 +1015,10 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
           .auth-back-home:hover {
             transform: translateX(-2px);
+          }
+
+          [dir="rtl"] .auth-back-home:hover {
+            transform: translateX(2px);
           }
 
           .auth-panel-form .auth-primary-btn:not(:disabled):hover {

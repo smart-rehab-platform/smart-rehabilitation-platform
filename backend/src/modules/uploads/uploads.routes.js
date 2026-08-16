@@ -24,6 +24,10 @@ const {
   isAllowedComplaintAttachment,
   MAX_COMPLAINT_ATTACHMENT_BYTES,
 } = require("../../config/complaintAttachments");
+const {
+  isAllowedSupportRequestAttachment,
+  MAX_SUPPORT_REQUEST_ATTACHMENT_BYTES,
+} = require("../../config/supportRequestAttachments");
 
 const router = express.Router();
 
@@ -144,6 +148,23 @@ const uploadComplaintAttachment = multer({
   },
 });
 
+const uploadSupportRequestAttachment = multer({
+  storage: createStorage(uploadsRoot, { sanitizeFilename: true }),
+  limits: { fileSize: MAX_SUPPORT_REQUEST_ATTACHMENT_BYTES },
+  fileFilter: (_req, file, cb) => {
+    if (isAllowedSupportRequestAttachment(file.mimetype, file.originalname)) {
+      cb(null, true);
+      return;
+    }
+
+    const error = new Error(
+      "Unsupported attachment type. Allowed: JPEG, PNG, WebP, and PDF."
+    );
+    error.statusCode = 400;
+    cb(error);
+  },
+});
+
 router.post(
   "/profile-image",
   upload.single("file"),
@@ -237,6 +258,23 @@ router.post(
   authorizeRoles("parent"),
   (req, res, next) => {
     uploadComplaintAttachment.single("file")(req, res, (err) => {
+      if (err) {
+        return uploadsController.handleUploadError(res, err, {
+          maxSizeMessage: "Attachment is too large. Maximum allowed size is 10 MB.",
+        });
+      }
+      next();
+    });
+  },
+  uploadsController.uploadMessageAttachment
+);
+
+router.post(
+  "/support-request-attachment",
+  authenticate,
+  authorizeRoles("admin", "specialist"),
+  (req, res, next) => {
+    uploadSupportRequestAttachment.single("file")(req, res, (err) => {
       if (err) {
         return uploadsController.handleUploadError(res, err, {
           maxSizeMessage: "Attachment is too large. Maximum allowed size is 10 MB.",

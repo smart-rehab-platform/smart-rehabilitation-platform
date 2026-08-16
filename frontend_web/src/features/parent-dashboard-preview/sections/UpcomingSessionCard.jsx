@@ -1,6 +1,7 @@
 import { MapPin, Video } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 
-function SessionRow({ session, onViewDetails, onOpenMeeting, showDivider }) {
+function SessionRow({ session, onViewDetails, onOpenMeeting, showDivider, t }) {
   const hasMeetingLink = Boolean(session.meetingUrl);
   const isOnline = session.mode?.toLowerCase() === "online";
   const specialistShort = session.specialistName?.replace(/^(\S+\s+\S+).*/, "$1")
@@ -19,7 +20,7 @@ function SessionRow({ session, onViewDetails, onOpenMeeting, showDivider }) {
         {isOnline ? (
           <span className="pd-schedule-mode">
             <Video size={12} aria-hidden="true" />
-            Online meeting
+            {t("parent.home.onlineMeeting")}
           </span>
         ) : session.location ? (
           <span className="pd-schedule-mode">
@@ -27,7 +28,7 @@ function SessionRow({ session, onViewDetails, onOpenMeeting, showDivider }) {
             {session.location}
           </span>
         ) : (
-          <span className="pd-schedule-mode">In-person session</span>
+          <span className="pd-schedule-mode">{t("parent.home.inPersonSession")}</span>
         )}
       </div>
 
@@ -38,17 +39,17 @@ function SessionRow({ session, onViewDetails, onOpenMeeting, showDivider }) {
             className="pd-btn pd-btn-primary pd-btn-sm"
             onClick={() => onOpenMeeting?.(session)}
           >
-            Open Meeting
+            {t("parent.home.openMeeting")}
           </button>
         ) : null}
         <button
           type="button"
           className="pd-btn pd-btn-soft pd-btn-sm"
-          aria-label="View session details"
+          aria-label={t("parent.home.viewSessionDetails")}
           data-testid="pd-upcoming-session-view-details"
           onClick={() => onViewDetails?.(session)}
         >
-          View Details
+          {t("parent.home.viewDetails")}
         </button>
       </div>
     </article>
@@ -60,14 +61,15 @@ export function UpcomingSessionCard({
   onViewDetails,
   onOpenMeeting,
 }) {
+  const { t } = useLocale();
   const items = Array.isArray(sessions) ? sessions.filter(Boolean) : [];
 
   return (
-    <section className="pd-session-minimal pd-schedule-card pd-section-enter" aria-label="Upcoming schedule">
-      <h2 className="pd-overview-title">Upcoming Schedule</h2>
+    <section className="pd-session-minimal pd-schedule-card pd-section-enter" aria-label={t("parent.home.upcomingSchedule")}>
+      <h2 className="pd-overview-title">{t("parent.home.upcomingSchedule")}</h2>
 
       {items.length === 0 ? (
-        <p className="pd-schedule-empty">No upcoming sessions scheduled.</p>
+        <p className="pd-schedule-empty">{t("parent.home.noUpcomingSessions")}</p>
       ) : (
         <div className="pd-schedule-list">
           {items.map((session, index) => (
@@ -77,6 +79,7 @@ export function UpcomingSessionCard({
               onViewDetails={onViewDetails}
               onOpenMeeting={onOpenMeeting}
               showDivider={index > 0}
+              t={t}
             />
           ))}
         </div>

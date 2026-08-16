@@ -15,6 +15,7 @@ import '../widgets/dashboard_components.dart';
 import '../widgets/dashboard_layout.dart';
 import '../widgets/parent_dashboard_cards.dart';
 import 'admin/admin_scoped_localization_utils.dart';
+import '../utils/admin_dashboard_navigation.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -25,6 +26,10 @@ class AdminDashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
+  final GlobalKey _recentUsersSectionKey = GlobalKey(
+    debugLabel: kAdminDashboardRecentUsersSectionDebugLabel,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +37,20 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
       ref.read(adminDashboardProvider.notifier).initialize();
       ref.read(specialistNotificationsProvider.notifier).initialize();
     });
+  }
+
+  Future<void> _scrollToRecentUsers() async {
+    final targetContext = _recentUsersSectionKey.currentContext;
+    if (targetContext == null || !mounted) {
+      return;
+    }
+
+    await Scrollable.ensureVisible(
+      targetContext,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+      alignment: 0.08,
+    );
   }
 
   @override
@@ -166,7 +185,9 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       icon: Icons.medical_services_outlined,
                       iconBackground: DashboardColors.tealSoft,
                       iconColor: DashboardColors.success,
-                      onTap: () => context.push(AppRoutes.adminUsers),
+                      onTap: () => context.push(
+                        AppRoutes.adminUsersWithRole(role: 'specialist'),
+                      ),
                     ),
                     DashboardSummaryCard(
                       compact: true,
@@ -177,7 +198,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       icon: Icons.person_add_alt_1_outlined,
                       iconBackground: DashboardColors.amberSoft,
                       iconColor: DashboardColors.warning,
-                      onTap: () => context.push(AppRoutes.adminUsers),
+                      onTap: _scrollToRecentUsers,
                     ),
                   ],
                 ),
@@ -248,109 +269,117 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     ),
                   ),
                 SizedBox(height: context.dashSpacing * 1.2),
-                AdminSectionHeader(
-                  title: l10n.adminDashboardRecentUsers,
-                  onActionTap: () => context.push(AppRoutes.adminUsers),
-                ),
-                SizedBox(height: context.dashSpacing * 0.5),
-                if (state.recentUsers.isEmpty)
-                  DashboardEmptyCard(message: l10n.adminDashboardNoUsers)
-                else
-                  Column(
+                KeyedSubtree(
+                  key: _recentUsersSectionKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      for (var i = 0; i < state.recentUsers.length; i++) ...[
-                        if (i > 0) const SizedBox(height: 9),
-                        AdminSurfaceCard(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: context.dashSpacing * 0.75,
-                            vertical: context.dashSpacing * 0.42,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 19,
-                                backgroundColor: adminRoleColor(
-                                  state.recentUsers[i].role,
-                                ).withValues(alpha: 0.12),
-                                child: Text(
-                                  dashboardAvatarLetter(
-                                    state.recentUsers[i].name,
-                                  ),
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    color: adminRoleColor(
-                                      state.recentUsers[i].role,
-                                    ),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize:
-                                        (theme.textTheme.labelLarge?.fontSize ??
-                                            14) *
-                                        0.86,
-                                  ),
+                      AdminSectionHeader(
+                        title: l10n.adminDashboardRecentUsers,
+                        onActionTap: () => context.push(AppRoutes.adminUsers),
+                      ),
+                      SizedBox(height: context.dashSpacing * 0.5),
+                      if (state.recentUsers.isEmpty)
+                        DashboardEmptyCard(message: l10n.adminDashboardNoUsers)
+                      else
+                        Column(
+                          children: [
+                            for (var i = 0; i < state.recentUsers.length; i++) ...[
+                              if (i > 0) const SizedBox(height: 9),
+                              AdminSurfaceCard(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: context.dashSpacing * 0.75,
+                                  vertical: context.dashSpacing * 0.42,
                                 ),
-                              ),
-                              SizedBox(width: context.dashSpacing * 0.48),
-                              Expanded(
-                                child: Column(
+                                child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            state.recentUsers[i].name,
+                                    CircleAvatar(
+                                      radius: 19,
+                                      backgroundColor: adminRoleColor(
+                                        state.recentUsers[i].role,
+                                      ).withValues(alpha: 0.12),
+                                      child: Text(
+                                        dashboardAvatarLetter(
+                                          state.recentUsers[i].name,
+                                        ),
+                                        style: theme.textTheme.labelLarge?.copyWith(
+                                          color: adminRoleColor(
+                                            state.recentUsers[i].role,
+                                          ),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize:
+                                              (theme.textTheme.labelLarge?.fontSize ??
+                                                  14) *
+                                              0.86,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: context.dashSpacing * 0.48),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  state.recentUsers[i].name,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: theme.textTheme.bodyMedium
+                                                      ?.copyWith(
+                                                        fontWeight: FontWeight.w800,
+                                                        color: DashboardColors
+                                                            .textPrimary,
+                                                      ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                state.recentUsers[i].registeredLabel,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: theme.textTheme.labelSmall
+                                                    ?.copyWith(
+                                                      color:
+                                                          DashboardColors.textMuted,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: context.dashSpacing * 0.15,
+                                          ),
+                                          Text(
+                                            localizedAdminRole(
+                                              l10n,
+                                              state.recentUsers[i].role,
+                                            ),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
-                                            style: theme.textTheme.bodyMedium
+                                            style: theme.textTheme.bodySmall
                                                 ?.copyWith(
-                                                  fontWeight: FontWeight.w800,
-                                                  color: DashboardColors
-                                                      .textPrimary,
+                                                  color:
+                                                      DashboardColors.textSecondary,
+                                                  fontWeight: FontWeight.w500,
                                                 ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          state.recentUsers[i].registeredLabel,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: theme.textTheme.labelSmall
-                                              ?.copyWith(
-                                                color:
-                                                    DashboardColors.textMuted,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: context.dashSpacing * 0.15,
-                                    ),
-                                    Text(
-                                      localizedAdminRole(
-                                        l10n,
-                                        state.recentUsers[i].role,
+                                        ],
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color:
-                                                DashboardColors.textSecondary,
-                                            fontWeight: FontWeight.w500,
-                                          ),
                                     ),
                                   ],
                                 ),
                               ),
                             ],
-                          ),
+                          ],
                         ),
-                      ],
                     ],
                   ),
+                ),
                 SizedBox(height: context.dashSpacing),
               ],
             ),

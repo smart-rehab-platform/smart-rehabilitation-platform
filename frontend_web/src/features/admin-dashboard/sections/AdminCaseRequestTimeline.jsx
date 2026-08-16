@@ -12,10 +12,10 @@ function TimelineIcon({ state }) {
   return <Circle size={18} strokeWidth={2.1} aria-hidden="true" />;
 }
 
-export function AdminCaseRequestTimeline({ steps }) {
+export function AdminCaseRequestTimeline({ steps, labels }) {
   return (
-    <section className="pd-card pd-card-pad pd-admin-case-request-timeline pd-section-enter" aria-label="Status timeline">
-      <h2 className="pd-admin-case-request-section-title">Status Timeline</h2>
+    <section className="pd-card pd-card-pad pd-admin-case-request-timeline pd-section-enter" aria-label={labels.statusTimeline}>
+      <h2 className="pd-admin-case-request-section-title">{labels.statusTimeline}</h2>
       <ol className="pd-admin-case-request-timeline-list">
         {steps.map((step) => (
           <li

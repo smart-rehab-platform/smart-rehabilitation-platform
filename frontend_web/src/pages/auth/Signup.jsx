@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Users, Stethoscope, ChevronRight } from "lucide-react";
 import { OnboardingRoleCard } from "../../components/auth/OnboardingRoleCard";
 import { PrimaryButton } from "../../components/auth/PrimaryButton";
+import { useLocale } from "../../context/useLocale.js";
 import { useSignupWizard } from "../../context/SignupWizardContext";
 import { SignupStep2PersonalInfo } from "./SignupStep2PersonalInfo";
 import { SignupStep3ProfessionalInfo } from "./SignupStep3ProfessionalInfo";
@@ -13,6 +14,7 @@ import { getStepBeforeSecurity } from "./signupWizardHelpers";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { wizardStep, setWizardStep, updateWizardData, wizardData, isRegistrationSubmitting } =
     useSignupWizard();
   const [selectedRole, setSelectedRole] = useState(null);
@@ -72,8 +74,8 @@ export default function Signup() {
             <div className="mb-3 flex flex-col gap-2.5">
               <OnboardingRoleCard
                 icon={<Users size={20} strokeWidth={1.75} />}
-                title="Parent"
-                description="Monitor your child's progress, communicate with specialists, and complete home exercises."
+                title={t("auth.roles.parent")}
+                description={t("auth.roles.parentDescription")}
                 selected={selectedRole === "parent"}
                 onClick={() => {
                   setSelectedRole("parent");
@@ -82,8 +84,8 @@ export default function Signup() {
               />
               <OnboardingRoleCard
                 icon={<Stethoscope size={20} strokeWidth={1.75} />}
-                title="Specialist"
-                description="Manage patients, create treatment plans, review progress, and provide professional guidance."
+                title={t("auth.roles.specialist")}
+                description={t("auth.roles.specialistDescription")}
                 selected={selectedRole === "specialist"}
                 onClick={() => setSelectedRole("specialist")}
               />
@@ -91,7 +93,7 @@ export default function Signup() {
 
             <div className="pt-2">
               <PrimaryButton disabled={!selectedRole} onClick={handleContinue}>
-                <span>Continue</span>
+                <span>{t("auth.shared.continue")}</span>
                 <ChevronRight size={16} className="auth-btn-arrow" />
               </PrimaryButton>
             </div>
@@ -149,14 +151,14 @@ export default function Signup() {
       </AnimatePresence>
 
       <p className="auth-footer-text mt-8 text-center text-xs">
-        Already have an account?{" "}
+        {t("auth.signup.alreadyHaveAccount")}{" "}
         <button
           type="button"
           onClick={() => navigate("/login")}
           disabled={isRegistrationSubmitting}
           className="auth-footer-link font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Sign In
+          {t("auth.shared.signIn")}
         </button>
       </p>
 

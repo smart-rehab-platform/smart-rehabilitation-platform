@@ -1,7 +1,10 @@
 import { Paperclip, MessagesSquare } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
 
 export function SpecialistCaseRequestCard({ item, onClick }) {
+  const { t } = useLocale();
+
   return (
     <button
       type="button"
@@ -9,12 +12,12 @@ export function SpecialistCaseRequestCard({ item, onClick }) {
       onClick={() => onClick?.(item)}
     >
       <div className="pd-specialist-case-request-card-top">
-        <strong className="pd-specialist-case-request-card-title">{item.childName}</strong>
+        <strong className="pd-specialist-case-request-card-title" dir="auto">{item.childName}</strong>
         <StatusBadge label={item.statusLabel} tone={item.statusTone} />
       </div>
 
       {item.parentName ? (
-        <span className="pd-specialist-case-request-card-parent">{item.parentName}</span>
+        <span className="pd-specialist-case-request-card-parent" dir="auto">{item.parentName}</span>
       ) : null}
 
       {item.categoryName ? (
@@ -30,7 +33,7 @@ export function SpecialistCaseRequestCard({ item, onClick }) {
         {item.conversationAvailable ? (
           <span className="pd-specialist-case-request-card-meta-item">
             <MessagesSquare size={14} aria-hidden="true" />
-            Conversation available
+            {t("specialist.caseRequests.conversationAvailable")}
           </span>
         ) : null}
       </div>

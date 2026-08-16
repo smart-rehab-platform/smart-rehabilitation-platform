@@ -1,4 +1,4 @@
-import { formatAdminDateLabel } from "./adminCaseRequestsMappers";
+import { formatAdminDateLabel } from "./adminCaseRequestsMappers.js";
 
 const EMPTY_AI_CENTER = {
   speechTotal: 0,

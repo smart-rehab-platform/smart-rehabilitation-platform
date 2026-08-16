@@ -2,13 +2,21 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   EXERCISE_ALL_CATEGORY_LABEL,
-  buildExerciseCategoryFilters,
   buildExerciseCreatePayload,
   buildExerciseUpdatePayload,
+  buildExerciseCategoryFilters,
   canEditExercise,
   filterExercises,
   validateExerciseEditForm,
 } from "./specialistExerciseMappers.js";
+import { EXERCISE_VALIDATION_KEYS } from "./specialistExercisesLocalization.js";
+import {
+  EXERCISE_MEDIA_VALIDATION_KEYS,
+  EXERCISE_MEDIA_MAX_BYTES,
+  inferExerciseMediaMimeType,
+  validateExerciseMediaFile,
+  guessExerciseMediaKind,
+} from "./specialistExerciseMediaUtils.js";
 
 describe("specialistExerciseMappers", () => {
   const sampleExercises = [
@@ -19,7 +27,7 @@ describe("specialistExerciseMappers", () => {
     instructions: "Sit upright and blow gently.",
     description: "Breath exercise",
     language: "en",
-    languageLabel: "English",
+    languageLabel: "en",
     createdBy: "spec-1",
   },
   {
@@ -29,7 +37,7 @@ describe("specialistExerciseMappers", () => {
     instructions: "Show 4 emotion cards.",
     description: "Match expressions",
     language: "en",
-    languageLabel: "English",
+    languageLabel: "en",
     createdBy: "spec-2",
   },
   ];
@@ -50,7 +58,7 @@ describe("specialistExerciseMappers", () => {
   assert.equal(filtered[0].id, "1");
   });
 
-  it("filterExercises matches language label in search", () => {
+  it("filterExercises matches language code in search", () => {
   const filtered = filterExercises(sampleExercises, {
     searchQuery: "english",
   });
@@ -115,9 +123,38 @@ describe("specialistExerciseMappers", () => {
     });
   });
 
-  it("validateExerciseEditForm enforces category and title", () => {
-  assert.equal(validateExerciseEditForm({ categoryId: "", title: "A" }), "Please select a category.");
-  assert.equal(validateExerciseEditForm({ categoryId: "cat", title: "  " }), "Title is required.");
+  it("validateExerciseEditForm returns validation keys", () => {
+  assert.equal(validateExerciseEditForm({ categoryId: "", title: "A" }), EXERCISE_VALIDATION_KEYS.CATEGORY_REQUIRED);
+  assert.equal(validateExerciseEditForm({ categoryId: "cat", title: "  " }), EXERCISE_VALIDATION_KEYS.TITLE_REQUIRED);
   assert.equal(validateExerciseEditForm({ categoryId: "cat", title: "A" }), null);
+  });
+});
+
+describe("specialistExerciseMediaUtils", () => {
+  it("infers supported mime types from extension", () => {
+    assert.equal(inferExerciseMediaMimeType("demo.mp4", ""), "video/mp4");
+    assert.equal(inferExerciseMediaMimeType("notes.pdf", ""), "application/pdf");
+  });
+
+  it("rejects unsupported files with validation keys", () => {
+    const file = new File(["hello"], "notes.txt", { type: "text/plain" });
+    assert.equal(validateExerciseMediaFile(file), EXERCISE_MEDIA_VALIDATION_KEYS.UNSUPPORTED);
+  });
+
+  it("rejects oversized files with validation keys", () => {
+    const bytes = new Uint8Array(EXERCISE_MEDIA_MAX_BYTES + 1);
+    const file = new File([bytes], "large.mp4", { type: "video/mp4" });
+    assert.equal(validateExerciseMediaFile(file), EXERCISE_MEDIA_VALIDATION_KEYS.TOO_LARGE);
+  });
+
+  it("accepts supported files within size limit", () => {
+    const file = new File(["abc"], "photo.png", { type: "image/png" });
+    assert.equal(validateExerciseMediaFile(file), null);
+  });
+
+  it("guesses media kinds from url/filename", () => {
+    assert.equal(guessExerciseMediaKind("/uploads/demo.mov"), "video");
+    assert.equal(guessExerciseMediaKind("/uploads/guide.pdf"), "pdf");
+    assert.equal(guessExerciseMediaKind("/uploads/track.mp3"), "audio");
   });
 });

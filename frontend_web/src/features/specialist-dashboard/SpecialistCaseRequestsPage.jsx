@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import { buildSpecialistCaseRequestDetailPath } from "../../routes/specialistDashboardRoutes";
 import { SpecialistCaseRequestCard } from "./components/SpecialistCaseRequestCard";
 import { SpecialistCaseRequestFilters } from "./components/SpecialistCaseRequestFilters";
@@ -12,6 +13,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistCaseRequestsPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
   const loadMoreRef = useRef(null);
@@ -110,9 +112,9 @@ export default function SpecialistCaseRequestsPage() {
         <div className="pd-task-hub-page pd-specialist-case-requests-page">
           <header className="pd-task-hub-header">
             <div>
-              <h1>Case Requests</h1>
+              <h1>{t("specialist.caseRequests.title")}</h1>
               <p className="pd-section-sub">
-                Review assigned cases and track their assessment status.
+                {t("specialist.caseRequests.subtitle")}
               </p>
             </div>
           </header>
@@ -148,7 +150,7 @@ export default function SpecialistCaseRequestsPage() {
             <div className="pd-card pd-card-pad pd-specialist-case-state-card">
               <p>{error}</p>
               <button type="button" className="pd-btn pd-btn-primary" onClick={reload}>
-                Retry
+                {t("common.retry")}
               </button>
             </div>
           ) : null}
@@ -157,7 +159,7 @@ export default function SpecialistCaseRequestsPage() {
             <div className="pd-card pd-card-pad pd-specialist-case-state-card">
               <p>{error}</p>
               <button type="button" className="pd-btn pd-btn-primary" onClick={reload}>
-                Retry
+                {t("common.retry")}
               </button>
             </div>
           ) : null}
@@ -165,14 +167,8 @@ export default function SpecialistCaseRequestsPage() {
           {!isInitialLoading && !error && emptyMessage ? (
             <div className="pd-card pd-card-pad pd-specialist-case-state-card">
               <p>{emptyMessage}</p>
-              {hasActiveFilters ? (
-                <button type="button" className="pd-btn pd-btn-ghost" onClick={clearFilters}>
-                  Clear Filters
-                </button>
-              ) : null}
             </div>
           ) : null}
-
           {!isInitialLoading && items.length > 0 ? (
             <div className="pd-specialist-case-request-list">
               {items.map((item) => (
@@ -189,7 +185,7 @@ export default function SpecialistCaseRequestsPage() {
             <div className="pd-specialist-case-load-more-error">
               <p>{loadMoreError}</p>
               <button type="button" className="pd-btn pd-btn-ghost" onClick={loadMore}>
-                Retry
+                {t("common.retry")}
               </button>
             </div>
           ) : null}
@@ -197,7 +193,7 @@ export default function SpecialistCaseRequestsPage() {
           {hasMore ? <div ref={loadMoreRef} className="pd-specialist-case-load-more-sentinel" /> : null}
 
           {isLoadingMore ? (
-            <div className="pd-specialist-case-loading-more">Loading more...</div>
+            <div className="pd-specialist-case-loading-more">{t("specialist.caseRequests.loadingMore")}</div>
           ) : null}
         </div>
 

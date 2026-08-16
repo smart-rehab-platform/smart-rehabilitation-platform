@@ -1,4 +1,8 @@
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
+import {
+  formatSpecialistScheduleTime,
+  formatSpecialistSelectedDaySummary,
+} from "./specialistDashboardLocalization";
 
 function readString(record, keys) {
   if (!record || typeof record !== "object") {
@@ -142,17 +146,6 @@ export function buildWeekDays(weekStart) {
   });
 }
 
-function formatDisplayTime(date) {
-  if (!date) {
-    return "—";
-  }
-
-  return date.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 function formatDisplayDate(date) {
   if (!date) {
     return "—";
@@ -167,8 +160,9 @@ function formatDisplayDate(date) {
 
 /**
  * @param {Record<string, unknown>} row
+ * @param {string} [locale]
  */
-export function mapSpecialistSessionRow(row) {
+export function mapSpecialistSessionRow(row, locale = "en") {
   const scheduledAt = parseScheduledAt(row);
   const locationOrLink = readString(row, ["location_or_link", "locationOrLink"]);
   const meetingUrl = extractMeetingUrl(locationOrLink);
@@ -182,7 +176,7 @@ export function mapSpecialistSessionRow(row) {
       readString(row, ["patient_profile_image_url", "patientProfileImageUrl"]),
     ),
     scheduledAt,
-    timeLabel: formatDisplayTime(scheduledAt),
+    timeLabel: formatSpecialistScheduleTime(scheduledAt, locale),
     durationMinutes,
     status: readString(row, ["status"]) || "scheduled",
     locationOrLink: locationOrLink || null,
@@ -194,15 +188,16 @@ export function mapSpecialistSessionRow(row) {
 
 /**
  * @param {Array<Record<string, unknown>>} rows
+ * @param {string} [locale]
  */
-export function mapSpecialistSessionRows(rows) {
+export function mapSpecialistSessionRows(rows, locale = "en") {
   if (!Array.isArray(rows)) {
     return [];
   }
 
   return rows
     .filter(isScheduledSession)
-    .map(mapSpecialistSessionRow)
+    .map((row) => mapSpecialistSessionRow(row, locale))
     .filter((session) => session.id);
 }
 
@@ -311,14 +306,15 @@ export function getWeekScheduledSessions(sessions, weekStart) {
  * @param {ReturnType<typeof mapSpecialistSessionRow>[]} sessions
  * @param {Date} selectedDay
  * @param {Date} [now]
+ * @param {{ t?: Function, locale?: string }} [context]
  */
-export function buildWeeklyScheduleViewModel(sessions, selectedDay, now = new Date()) {
+export function buildWeeklyScheduleViewModel(sessions, selectedDay, now = new Date(), context = {}) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const weekStart = startOfWeekMonday(today);
   const weekDays = buildWeekDays(weekStart);
   const weekSessions = getWeekScheduledSessions(sessions, weekStart);
   const previewSession = findPreviewSessionForDay(sessions, selectedDay, now);
-  const summaryLabel = formatSelectedDaySummary(sessions, selectedDay, now);
+  const summaryLabel = formatSpecialistSelectedDaySummary(sessions, selectedDay, now, context);
 
   return {
     weekDays,

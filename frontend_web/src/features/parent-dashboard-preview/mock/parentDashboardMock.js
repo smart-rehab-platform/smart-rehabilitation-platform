@@ -590,7 +590,7 @@ export const parentDashboardMock = {
       "Great improvement in pronunciation. Please repeat the breathing exercise twice this week. Omar is responding well to the structured practice sessions.",
   },
   navItems: [
-    { id: "dashboard", label: "Dashboard", icon: "layoutDashboard" },
+    { id: "dashboard", label: "Home", icon: "layoutDashboard" },
     { id: "children", label: "My Children", icon: "users" },
     { id: "cases", label: "Case Requests", icon: "clipboardList" },
     { id: "exercises", label: "Exercises", icon: "activity" },
@@ -598,6 +598,8 @@ export const parentDashboardMock = {
     { id: "sessions", label: "Sessions", icon: "calendar" },
     { id: "reports", label: "Reports", icon: "fileText" },
     { id: "feedback", label: "Feedback", icon: "messageCircle" },
+    { id: "reportSpecialist", label: "Report a Specialist", icon: "complaint" },
+    { id: "myComplaints", label: "My Complaints", icon: "history" },
     { id: "messages", label: "Messages", icon: "messageSquare", badgeKey: "messages" },
     { id: "ai", label: "AI Assistant", icon: "sparkles" },
     { id: "notifications", label: "Notifications", icon: "bell", badgeKey: "notifications" },

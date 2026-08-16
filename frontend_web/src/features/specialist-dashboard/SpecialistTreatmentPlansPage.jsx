@@ -1,7 +1,8 @@
 import { ArrowLeft, Plus } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistCreateTreatmentPlanPath,
@@ -18,6 +19,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistTreatmentPlansPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -60,11 +62,6 @@ export default function SpecialistTreatmentPlansPage() {
     reload,
   } = useSpecialistTreatmentPlans(specialistUserId);
 
-  const pageSubtitle = useMemo(
-    () => "Manage treatment plans for your assigned patients.",
-    [],
-  );
-
   const handleBack = useCallback(() => {
     if (window.history.length > 1) {
       navigate(-1);
@@ -87,15 +84,15 @@ export default function SpecialistTreatmentPlansPage() {
     try {
       const patients = await loadSpecialistAssignedPatients(specialistUserId);
       if (patients.length === 0) {
-        showToast("No assigned patients available.");
+        showToast(t("specialist.treatmentPlans.toast.noPatients"));
         return;
       }
       setPickerPatients(patients);
       setPickerOpen(true);
     } catch (pickerError) {
-      showToast(pickerError instanceof Error ? pickerError.message : "Failed to load patients.");
+      showToast(pickerError instanceof Error ? pickerError.message : t("specialist.treatmentPlans.errors.loadPatientsFailed"));
     }
-  }, [specialistUserId, showToast]);
+  }, [specialistUserId, showToast, t]);
 
   const handlePatientSelect = useCallback((patient) => {
     setPickerOpen(false);
@@ -139,21 +136,21 @@ export default function SpecialistTreatmentPlansPage() {
                 onClick={handleBack}
               >
                 <ArrowLeft size={18} aria-hidden="true" />
-                Back
+                {t("specialist.treatmentPlans.back")}
               </button>
               <div className="pd-specialist-treatment-plan-page-header-row">
                 <div className="pd-specialist-treatment-plan-page-heading">
-                  <h1 className="pd-section-title">Treatment Plans</h1>
-                  <p className="pd-section-sub">{pageSubtitle}</p>
+                  <h1 className="pd-section-title">{t("specialist.treatmentPlans.title")}</h1>
+                  <p className="pd-section-sub">{t("specialist.treatmentPlans.subtitle")}</p>
                 </div>
                 <button
                   type="button"
                   className="pd-btn pd-btn-soft pd-specialist-treatment-plan-toolbar-add"
                   onClick={handleOpenPatientPicker}
-                  aria-label="Add Treatment Plan"
+                  aria-label={t("specialist.treatmentPlans.addPlanAriaLabel")}
                 >
                   <Plus size={18} aria-hidden="true" />
-                  Add Treatment Plan
+                  {t("specialist.treatmentPlans.addPlan")}
                 </button>
               </div>
             </header>

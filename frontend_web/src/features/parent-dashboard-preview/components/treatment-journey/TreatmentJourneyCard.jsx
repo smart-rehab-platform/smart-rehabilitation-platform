@@ -1,11 +1,10 @@
 import { ChevronRight, TrendingUp } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 import {
   formatTreatmentJourneyPercent,
-  formatTreatmentJourneyScoreChange,
   journeyHasData,
   treatmentJourneyPreviewScores,
   treatmentJourneyTrendClass,
-  treatmentJourneyTrendLabel,
 } from "../../utils/parentTreatmentJourneyUtils";
 import { TreatmentJourneySparkline } from "./TreatmentJourneySparkline";
 
@@ -26,10 +25,37 @@ function buildSparklineScores(journey) {
   return fromPoints;
 }
 
-function TrendBadge({ trend }) {
+function localizedTrendLabel(trend, t) {
+  switch (String(trend || "").trim().toLowerCase()) {
+    case "improving":
+      return t("parent.progress.trendImproving");
+    case "declining":
+      return t("parent.progress.trendNeedsAttention");
+    case "stable":
+    default:
+      return t("parent.progress.trendStable");
+  }
+}
+
+function localizedScoreChange(scoreChange, t) {
+  if (scoreChange == null || !Number.isFinite(scoreChange)) {
+    return "—";
+  }
+
+  const rounded = Math.round(scoreChange);
+  if (rounded > 0) {
+    return t("parent.progress.scoreChangePositive", { points: rounded });
+  }
+  if (rounded < 0) {
+    return t("parent.progress.scoreChangeNegative", { points: rounded });
+  }
+  return t("parent.progress.scoreChangeZero");
+}
+
+function TrendBadge({ trend, t }) {
   return (
     <span className={`pd-tj-trend-badge ${treatmentJourneyTrendClass(trend)}`}>
-      {treatmentJourneyTrendLabel(trend)}
+      {localizedTrendLabel(trend, t)}
     </span>
   );
 }
@@ -49,39 +75,39 @@ function LoadingBody() {
   );
 }
 
-function ErrorBody({ onRetry }) {
+function ErrorBody({ onRetry, t }) {
   return (
     <div className="pd-tj-card-body pd-tj-card-body-error">
-      <p>Couldn&apos;t load treatment progress.</p>
+      <p>{t("parent.progress.loadError")}</p>
       {onRetry ? (
         <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-          Retry
+          {t("common.retry")}
         </button>
       ) : null}
     </div>
   );
 }
 
-function EmptyBody() {
+function EmptyBody({ t }) {
   return (
     <div className="pd-tj-card-body pd-tj-card-body-empty">
       <TrendingUp size={22} aria-hidden="true" />
-      <p>Progress will appear after exercises are reviewed.</p>
+      <p>{t("parent.progress.emptyMessage")}</p>
     </div>
   );
 }
 
-function CompactSummaryMetric({ label, value, emphasized = false, trend = null }) {
+function CompactSummaryMetric({ label, value, emphasized = false, trend = null, t }) {
   return (
     <div className={emphasized ? "pd-tj-card-summary-metric is-primary" : "pd-tj-card-summary-metric"}>
       <span className="pd-tj-metric-label">{label}</span>
       <strong>{value}</strong>
-      {trend ? <TrendBadge trend={trend} /> : null}
+      {trend ? <TrendBadge trend={trend} t={t} /> : null}
     </div>
   );
 }
 
-function LoadedBody({ journey }) {
+function LoadedBody({ journey, t }) {
   const previewScores = buildSparklineScores(journey);
 
   return (
@@ -89,18 +115,21 @@ function LoadedBody({ journey }) {
       <div className="pd-tj-card-visual-block">
         <div className="pd-tj-card-summary-grid">
           <CompactSummaryMetric
-            label="Started At"
+            label={t("parent.progress.startedAt")}
             value={formatTreatmentJourneyPercent(journey.startingScore)}
+            t={t}
           />
           <CompactSummaryMetric
-            label="Current Progress"
+            label={t("parent.progress.currentProgress")}
             value={formatTreatmentJourneyPercent(journey.currentScore)}
             trend={journey.trend}
             emphasized
+            t={t}
           />
           <CompactSummaryMetric
-            label="Score Change"
-            value={formatTreatmentJourneyScoreChange(journey.scoreChange)}
+            label={t("parent.progress.scoreChange")}
+            value={localizedScoreChange(journey.scoreChange, t)}
+            t={t}
           />
         </div>
         <TreatmentJourneySparkline scores={previewScores} />
@@ -116,22 +145,26 @@ export function TreatmentJourneyCard({
   onTap,
   onRetry,
 }) {
+  const { t } = useLocale();
   const hasData = journeyHasData(journey);
   const summaryLabel = (() => {
     if (isLoading) {
-      return "Treatment Journey, loading progress";
+      return t("parent.progress.semanticsLoading");
     }
 
     if (error) {
-      return "Treatment Journey, could not load treatment progress";
+      return t("parent.progress.semanticsError");
     }
 
     if (!hasData) {
-      return "Treatment Journey, progress will appear after exercises are reviewed";
+      return t("parent.progress.semanticsEmpty");
     }
 
     const current = journey?.currentScore != null ? Math.round(journey.currentScore) : 0;
-    return `Treatment Journey, current progress ${current} percent, ${treatmentJourneyTrendLabel(journey.trend)}`;
+    return t("parent.progress.semanticsLoaded", {
+      score: current,
+      trend: localizedTrendLabel(journey.trend, t),
+    });
   })();
 
   const handleViewDetails = (event) => {
@@ -151,17 +184,17 @@ export function TreatmentJourneyCard({
           </span>
           <div className="pd-tj-card-heading-text">
             <div className="pd-tj-card-title-row">
-              <h2 className="pd-section-title">Treatment Journey</h2>
+              <h2 className="pd-section-title">{t("parent.progress.title")}</h2>
               <button
                 type="button"
                 className="pd-link pd-tj-card-view-details"
                 onClick={handleViewDetails}
               >
-                View details
+                {t("parent.progress.viewDetails")}
                 <ChevronRight size={16} aria-hidden="true" className="pd-tj-card-view-details-icon" />
               </button>
             </div>
-            <p className="pd-section-sub">Progress throughout the treatment period</p>
+            <p className="pd-section-sub">{t("parent.progress.subtitle")}</p>
           </div>
         </div>
       </div>
@@ -170,12 +203,12 @@ export function TreatmentJourneyCard({
         type="button"
         className="pd-tj-card-interactive"
         onClick={onTap}
-        aria-label={`${summaryLabel}. Open treatment journey details.`}
+        aria-label={t("parent.progress.openDetailsAria", { summary: summaryLabel })}
       >
         {isLoading ? <LoadingBody /> : null}
-        {!isLoading && error ? <ErrorBody onRetry={onRetry} /> : null}
-        {!isLoading && !error && !hasData ? <EmptyBody /> : null}
-        {!isLoading && !error && hasData ? <LoadedBody journey={journey} /> : null}
+        {!isLoading && error ? <ErrorBody onRetry={onRetry} t={t} /> : null}
+        {!isLoading && !error && !hasData ? <EmptyBody t={t} /> : null}
+        {!isLoading && !error && hasData ? <LoadedBody journey={journey} t={t} /> : null}
       </button>
     </section>
   );

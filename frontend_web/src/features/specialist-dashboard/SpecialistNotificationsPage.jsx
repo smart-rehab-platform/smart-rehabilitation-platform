@@ -1,16 +1,20 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { SPECIALIST_WEB_ROUTES } from "../../routes/specialistDashboardRoutes";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
 import { SpecialistNotificationsList } from "./sections/SpecialistNotificationsList";
+import { getSpecialistNotificationsPageLabels } from "./utils/specialistNotificationsLocalization.js";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistNotificationsPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
+  const pageLabels = useMemo(() => getSpecialistNotificationsPageLabels(t), [t]);
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -46,25 +50,29 @@ export default function SpecialistNotificationsPage() {
     navigate(SPECIALIST_WEB_ROUTES.dashboard);
   }, [navigate]);
 
+  const handleRefresh = useCallback(() => {
+    refetchNotifications();
+  }, [refetchNotifications]);
+
   const handleMarkAllAsRead = useCallback(async () => {
     const ok = await markAllNotificationsRead();
     if (!ok) {
-      showToast("Unable to mark all notifications as read.");
+      showToast(pageLabels.markAllReadFailed);
     }
-  }, [markAllNotificationsRead, showToast]);
+  }, [markAllNotificationsRead, showToast, pageLabels.markAllReadFailed]);
 
   const handleSelectNotification = useCallback(async (notification) => {
     const ok = await handleNotificationSelect(notification);
     if (!ok) {
-      showToast("Unable to mark notification as read.");
+      showToast(pageLabels.markReadFailed);
     }
-  }, [handleNotificationSelect, showToast]);
+  }, [handleNotificationSelect, showToast, pageLabels.markReadFailed]);
 
   const renderContent = () => {
     if (isLoadingNotifications) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading notifications...</p>
+          <p className="pd-inline-loading">{pageLabels.loading}</p>
         </section>
       );
     }
@@ -74,7 +82,7 @@ export default function SpecialistNotificationsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{notificationsError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetchNotifications}>
-            Retry
+            {pageLabels.retry}
           </button>
         </section>
       );
@@ -83,7 +91,7 @@ export default function SpecialistNotificationsPage() {
     if (fullNotifications.length === 0) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-section-sub">No notifications yet.</p>
+          <p className="pd-section-sub">{pageLabels.empty}</p>
         </section>
       );
     }
@@ -122,29 +130,37 @@ export default function SpecialistNotificationsPage() {
         showToast={showToast}
       >
         <div className="pd-task-hub-page">
-          <div className="pd-task-hub-toolbar">
+          <div className="pd-task-hub-toolbar pd-notifications-page-toolbar">
             <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
-              Back to Dashboard
+              {pageLabels.backToDashboard}
             </button>
-            {unreadCount > 0 ? (
-              <div className="pd-specialist-notifications-mark-all">
+            <div className="pd-notification-hub-toolbar-actions">
+              <button
+                type="button"
+                className="pd-btn pd-btn-soft pd-btn-sm"
+                onClick={handleRefresh}
+                disabled={isLoadingNotifications}
+              >
+                {pageLabels.refresh}
+              </button>
+              {unreadCount > 0 ? (
                 <button
                   type="button"
                   className="pd-btn pd-btn-primary pd-btn-sm"
                   onClick={handleMarkAllAsRead}
                   disabled={isMarkingAllRead || isLoadingNotifications}
                 >
-                  Mark all as read
+                  {pageLabels.markAllRead}
                 </button>
-              </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Notifications</h1>
+            <h1 className="pd-task-hub-title">{pageLabels.title}</h1>
             <p className="pd-task-hub-subtitle">
-              Stay updated on your patients and clinical activity
+              {pageLabels.subtitle}
             </p>
           </header>
 

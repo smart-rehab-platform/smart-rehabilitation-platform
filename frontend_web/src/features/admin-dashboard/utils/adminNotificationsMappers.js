@@ -88,6 +88,7 @@ export function mapAdminNotifications(rows) {
 /**
  * Maps Admin notification view models into the compact header-popover shape.
  * Preserves backend/hook order (newest-first). Does not re-sort.
+ * Expects notifications to already include localized title/body/metaLabel when available.
  */
 export function mapAdminNotificationsForPopover(notifications) {
   if (!Array.isArray(notifications)) {
@@ -98,9 +99,35 @@ export function mapAdminNotificationsForPopover(notifications) {
     id: item.id,
     title: item.title,
     body: item.body || null,
-    timeAgo: formatAdminNotificationMeta(item),
+    timeAgo: item.metaLabel ?? item.timeAgo ?? "",
     icon: "notifications",
     tone: item.isRead ? "gray" : "blue",
     unread: !item.isRead,
+    relatedEntityType: item.relatedEntityType,
+    relatedEntityId: item.relatedEntityId,
+    type: item.type,
   }));
+}
+
+/**
+ * Resolves an admin notification to an in-app route when one exists.
+ * @param {object|null|undefined} notification
+ * @param {{ buildSupportRequestDetailPath?: (id: string) => string, buildComplaintDetailPath?: (id: string) => string }} builders
+ */
+export function resolveAdminNotificationRoute(notification, builders = {}) {
+  if (!notification?.relatedEntityId) {
+    return null;
+  }
+
+  const entityType = notification.relatedEntityType?.trim().toLowerCase();
+
+  if (entityType === "support_request" && typeof builders.buildSupportRequestDetailPath === "function") {
+    return builders.buildSupportRequestDetailPath(notification.relatedEntityId);
+  }
+
+  if (entityType === "complaint" && typeof builders.buildComplaintDetailPath === "function") {
+    return builders.buildComplaintDetailPath(notification.relatedEntityId);
+  }
+
+  return null;
 }

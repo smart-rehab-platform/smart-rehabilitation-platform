@@ -11,6 +11,14 @@
   margin-bottom: 0;
 }
 
+.pd-preview .pd-admin-notif-toolbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .pd-preview .pd-admin-notif-mutation-error {
   display: flex;
   align-items: center;
@@ -74,7 +82,7 @@
   border: none;
   background: var(--pd-surface);
   color: inherit;
-  text-align: left;
+  text-align: start;
   font-family: inherit;
 }
 

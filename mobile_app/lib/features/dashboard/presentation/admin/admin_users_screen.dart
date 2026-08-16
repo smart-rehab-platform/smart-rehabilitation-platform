@@ -16,7 +16,9 @@ import '../../widgets/admin_ui_components.dart';
 import 'admin_scoped_localization_utils.dart';
 
 class AdminUsersScreen extends ConsumerStatefulWidget {
-  const AdminUsersScreen({super.key});
+  const AdminUsersScreen({super.key, this.initialRoleFilter});
+
+  final String? initialRoleFilter;
 
   @override
   ConsumerState<AdminUsersScreen> createState() => _AdminUsersScreenState();
@@ -32,6 +34,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   @override
   void initState() {
     super.initState();
+    _roleFilter = widget.initialRoleFilter;
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
@@ -725,12 +728,45 @@ class _RoleChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: 8),
-      child: FilterChip(
-        label: Text(label),
-        selected: selected,
-        onSelected: (_) => onTap(),
-        selectedColor: DashboardColors.blueSoft,
-        checkmarkColor: DashboardColors.primary,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: selected
+                  ? DashboardColors.primary
+                  : DashboardColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: selected
+                  ? null
+                  : Border.all(color: DashboardColors.border),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (selected) ...[
+                  const Icon(Icons.check, size: 16, color: Colors.white),
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: selected
+                        ? Colors.white
+                        : DashboardColors.textPrimary,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,14 +1,16 @@
 import { ExternalLink, FileText, Music, Paperclip, Trash2, Undo2, Video } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
 import {
   EXERCISE_MEDIA_ACCEPT,
-  EXERCISE_MEDIA_EMPTY_MESSAGE,
-  EXERCISE_MEDIA_REMOVAL_PENDING_MESSAGE,
-  describeExerciseMediaSelection,
-  describeExerciseMediaUrl,
   validateExerciseMediaFile,
 } from "../utils/specialistExerciseMediaUtils";
+import {
+  describeLocalizedExerciseMediaSelection,
+  describeLocalizedExerciseMediaUrl,
+  getExerciseMediaValidationMessage,
+} from "../utils/specialistExercisesLocalization";
 
 function resolvePreviewUrl(source) {
   if (!source) {
@@ -44,17 +46,18 @@ export function SpecialistExerciseMediaSection({
   onRemoveMedia,
   onUndoRemoval,
 }) {
+  const { t } = useLocale();
   const inputId = useId();
   const inputRef = useRef(null);
 
   const pendingPreview = useMemo(
-    () => (pendingMediaFile ? describeExerciseMediaSelection(pendingMediaFile) : null),
-    [pendingMediaFile],
+    () => (pendingMediaFile ? describeLocalizedExerciseMediaSelection(pendingMediaFile, t) : null),
+    [pendingMediaFile, t],
   );
 
   const existingPreview = useMemo(
-    () => (existingMediaUrl?.trim() ? describeExerciseMediaUrl(existingMediaUrl) : null),
-    [existingMediaUrl],
+    () => (existingMediaUrl?.trim() ? describeLocalizedExerciseMediaUrl(existingMediaUrl, t) : null),
+    [existingMediaUrl, t],
   );
 
   const previewSource = pendingMediaFile ?? (existingMediaUrl?.trim() ? existingMediaUrl : null);
@@ -71,7 +74,9 @@ export function SpecialistExerciseMediaSection({
   }, [previewSource, previewUrl]);
 
   const hasAttachedMedia = Boolean(pendingMediaFile || existingMediaUrl?.trim());
-  const addLabel = hasAttachedMedia ? "Replace media" : "Add media";
+  const addLabel = hasAttachedMedia
+    ? t("specialist.exercises.media.replaceMedia")
+    : t("specialist.exercises.media.addMedia");
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0] ?? null;
@@ -87,15 +92,19 @@ export function SpecialistExerciseMediaSection({
     onSelectFile(file, null);
   };
 
+  const resolvedMediaError = mediaError
+    ? (getExerciseMediaValidationMessage(mediaError, t) || mediaError)
+    : null;
+
   return (
     <div className="pd-specialist-exercise-field">
-      <h3 className="pd-specialist-exercise-media-heading">Instructional media (optional)</h3>
+      <h3 className="pd-specialist-exercise-media-heading">{t("specialist.exercises.media.sectionTitle")}</h3>
 
       <div className="pd-specialist-exercise-media-panel">
         {pendingPreview ? (
           <div className="pd-specialist-exercise-media-state">
-            <p className="pd-specialist-exercise-media-label">Selected media</p>
-            <p className="pd-specialist-exercise-media-filename">{pendingPreview.filename}</p>
+            <p className="pd-specialist-exercise-media-label">{t("specialist.exercises.media.selectedMedia")}</p>
+            <p className="pd-specialist-exercise-media-filename" dir="auto">{pendingPreview.filename}</p>
             <p className="pd-specialist-exercise-media-meta">
               {pendingPreview.typeLabel}
               {pendingPreview.sizeLabel ? ` • ${pendingPreview.sizeLabel}` : ""}
@@ -104,14 +113,14 @@ export function SpecialistExerciseMediaSection({
               <img
                 className="pd-specialist-exercise-media-preview"
                 src={previewUrl}
-                alt={`Preview of ${pendingPreview.filename}`}
+                alt={t("specialist.exercises.details.mediaPreviewAlt", { filename: pendingPreview.filename })}
               />
             ) : null}
           </div>
         ) : existingPreview ? (
           <div className="pd-specialist-exercise-media-state">
-            <p className="pd-specialist-exercise-media-label">Current media attached</p>
-            <p className="pd-specialist-exercise-media-filename">
+            <p className="pd-specialist-exercise-media-label">{t("specialist.exercises.media.currentMediaAttached")}</p>
+            <p className="pd-specialist-exercise-media-filename" dir="auto">
               {existingPreview.filename || existingMediaUrl}
             </p>
             <p className="pd-specialist-exercise-media-meta">{existingPreview.typeLabel}</p>
@@ -119,7 +128,9 @@ export function SpecialistExerciseMediaSection({
               <img
                 className="pd-specialist-exercise-media-preview"
                 src={previewUrl}
-                alt={`Current media ${existingPreview.filename || "preview"}`}
+                alt={t("specialist.exercises.details.currentMediaPreviewAlt", {
+                  filename: existingPreview.filename || "preview",
+                })}
               />
             ) : (
               <div className="pd-specialist-exercise-media-icon-preview">
@@ -128,12 +139,12 @@ export function SpecialistExerciseMediaSection({
             )}
           </div>
         ) : (
-          <p className="pd-specialist-exercise-media-empty">{EXERCISE_MEDIA_EMPTY_MESSAGE}</p>
+          <p className="pd-specialist-exercise-media-empty">{t("specialist.exercises.media.noMediaSelected")}</p>
         )}
 
         {clearInstructionMedia && !pendingMediaFile ? (
           <div className="pd-specialist-exercise-media-removal-notice">
-            <p>{EXERCISE_MEDIA_REMOVAL_PENDING_MESSAGE}</p>
+            <p>{t("specialist.exercises.media.removalPending")}</p>
             <button
               type="button"
               className="pd-btn pd-btn-soft pd-btn-sm"
@@ -141,7 +152,7 @@ export function SpecialistExerciseMediaSection({
               disabled={isBusy}
             >
               <Undo2 size={14} aria-hidden="true" />
-              Undo
+              {t("specialist.exercises.media.undo")}
             </button>
           </div>
         ) : null}
@@ -152,12 +163,12 @@ export function SpecialistExerciseMediaSection({
               className="pd-specialist-exercise-media-progress-bar"
               style={{ width: `${Math.round(uploadProgress * 100)}%` }}
             />
-            <span>Uploading media…</span>
+            <span>{t("specialist.exercises.media.uploading")}</span>
           </div>
         ) : null}
 
-        {mediaError ? (
-          <p className="pd-specialist-exercise-error">{mediaError}</p>
+        {resolvedMediaError ? (
+          <p className="pd-specialist-exercise-error">{resolvedMediaError}</p>
         ) : null}
 
         <div className="pd-specialist-exercise-media-actions">
@@ -180,9 +191,11 @@ export function SpecialistExerciseMediaSection({
               className="pd-btn pd-btn-soft pd-specialist-exercise-media-remove"
               onClick={onRemoveMedia}
               disabled={isBusy}
+              title={t("specialist.exercises.media.removeTooltip")}
+              aria-label={t("specialist.exercises.media.removeTooltip")}
             >
               <Trash2 size={16} aria-hidden="true" />
-              Remove
+              {t("specialist.exercises.media.remove")}
             </button>
           ) : null}
         </div>
@@ -191,28 +204,33 @@ export function SpecialistExerciseMediaSection({
   );
 }
 
-export function SpecialistExerciseInstructionMedia({ mediaUrl, title = "Instruction Media" }) {
+export function SpecialistExerciseInstructionMedia({ mediaUrl, title }) {
+  const { t } = useLocale();
   const [imageError, setImageError] = useState(false);
   const resolvedUrl = resolveUploadedAssetUrl(mediaUrl) ?? mediaUrl?.trim();
+  const sectionTitle = title ?? t("specialist.exercises.details.instructionMedia");
+
   if (!resolvedUrl) {
     return null;
   }
 
-  const description = describeExerciseMediaUrl(mediaUrl);
+  const description = describeLocalizedExerciseMediaUrl(mediaUrl, t);
   const kind = description.kind;
 
   return (
     <section className="pd-card pd-card-pad pd-specialist-exercise-details-section">
-      <h3 className="pd-specialist-exercise-details-section-title">{title}</h3>
+      <h3 className="pd-specialist-exercise-details-section-title">{sectionTitle}</h3>
 
       {kind === "image" ? (
         imageError ? (
-          <p className="pd-section-sub">Unable to load image preview.</p>
+          <p className="pd-section-sub">{t("specialist.exercises.details.unableLoadImage")}</p>
         ) : (
           <img
             className="pd-specialist-exercise-media"
             src={resolvedUrl}
-            alt={description.filename ? `Instruction media: ${description.filename}` : "Exercise instruction media"}
+            alt={description.filename
+              ? t("specialist.exercises.details.mediaPreviewAlt", { filename: description.filename })
+              : t("specialist.exercises.details.instructionMedia")}
             onError={() => setImageError(true)}
           />
         )
@@ -236,19 +254,15 @@ export function SpecialistExerciseInstructionMedia({ mediaUrl, title = "Instruct
       ) : null}
 
       {kind === "pdf" ? (
-        <p className="pd-specialist-exercise-details-body">
-          PDF instruction attached. Open externally to view.
-        </p>
+        <p className="pd-specialist-exercise-details-body">{t("specialist.exercises.details.pdfAttached")}</p>
       ) : null}
 
       {kind === "unknown" ? (
-        <p className="pd-specialist-exercise-details-body">
-          Media attached. Open externally to view.
-        </p>
+        <p className="pd-specialist-exercise-details-body">{t("specialist.exercises.details.mediaAttached")}</p>
       ) : null}
 
       {description.filename ? (
-        <p className="pd-specialist-exercise-media-meta">{description.filename}</p>
+        <p className="pd-specialist-exercise-media-meta" dir="auto">{description.filename}</p>
       ) : null}
 
       <a
@@ -258,7 +272,7 @@ export function SpecialistExerciseInstructionMedia({ mediaUrl, title = "Instruct
         rel="noopener noreferrer"
       >
         <ExternalLink size={16} aria-hidden="true" />
-        {kind === "pdf" ? "Open PDF" : "Open externally"}
+        {kind === "pdf" ? t("specialist.exercises.details.openPdf") : t("specialist.exercises.details.openExternally")}
       </a>
     </section>
   );

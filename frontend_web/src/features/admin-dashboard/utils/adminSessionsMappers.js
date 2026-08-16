@@ -1,22 +1,12 @@
+import { FINAL_SESSION_STATUSES, SESSION_STATUS_VALUES } from "./adminSessionsConstants.js";
 import {
   formatSessionStatusLabel,
   getSessionStatusTone,
   isPastScheduledNotCompleted,
   resolveProfileImageUrl,
-} from "./adminPatientsMappers";
+} from "./adminPatientsMappers.js";
 
-export const SESSION_STATUS_VALUES = [
-  "scheduled",
-  "completed",
-  "cancelled",
-  "no_show",
-];
-
-export const FINAL_SESSION_STATUSES = new Set([
-  "completed",
-  "cancelled",
-  "no_show",
-]);
+export { FINAL_SESSION_STATUSES, SESSION_STATUS_VALUES };
 
 export const SESSION_STATUS_FILTER_OPTIONS = [
   { value: "", label: "All statuses" },

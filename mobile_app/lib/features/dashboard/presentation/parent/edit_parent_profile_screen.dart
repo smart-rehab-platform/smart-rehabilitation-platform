@@ -7,9 +7,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../../providers/parent_edit_profile_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/edit_profile_avatar_section.dart';
+import '../../widgets/edit_profile_labeled_field.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
-import '../specialist/manage_goals_widgets.dart';
 import 'parent_scoped_localization_utils.dart';
 
 class EditParentProfileScreen extends ConsumerStatefulWidget {
@@ -49,15 +49,28 @@ class _EditParentProfileScreenState
     super.dispose();
   }
 
-  void _syncControllers(ParentEditProfileState state) {
-    if (_controllersSynced || state.isLoading) {
-      return;
-    }
+  void _populateControllers(ParentEditProfileState state) {
     _fullNameController.text = state.fullName;
     _phoneController.text = state.phone;
     _addressController.text = state.address;
     _relationshipNotesController.text = state.relationshipNotes;
-    _controllersSynced = true;
+  }
+
+  void _listenForProfileLoad() {
+    ref.listen<ParentEditProfileState>(parentEditProfileProvider, (
+      previous,
+      next,
+    ) {
+      if (next.isLoading) {
+        _controllersSynced = false;
+        return;
+      }
+      if (_controllersSynced || next.errorMessage != null) {
+        return;
+      }
+      _populateControllers(next);
+      _controllersSynced = true;
+    });
   }
 
   Future<void> _save() async {
@@ -90,10 +103,10 @@ class _EditParentProfileScreenState
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    _syncControllers(state);
+    _listenForProfileLoad();
 
     Widget body;
-    if (state.isLoading) {
+    if (state.isLoading || (state.errorMessage == null && !_controllersSynced)) {
       body = Center(
         child: DashboardLoadingCard(message: l10n.parentProfileLoading),
       );
@@ -134,19 +147,19 @@ class _EditParentProfileScreenState
               ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldFullName,
               controller: _fullNameController,
               onChanged: notifier.setFullName,
               textInputAction: TextInputAction.next,
-              decoration: goalFieldDecoration(l10n.fieldFullName),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldPhone,
               controller: _phoneController,
               onChanged: notifier.setPhone,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.next,
-              decoration: goalFieldDecoration(l10n.fieldPhone),
             ),
             SizedBox(height: context.dashSpacing * 1.1),
             Text(
@@ -157,23 +170,21 @@ class _EditParentProfileScreenState
               ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldAddress,
               controller: _addressController,
               onChanged: notifier.setAddress,
               textInputAction: TextInputAction.next,
               minLines: 1,
               maxLines: 3,
-              decoration: goalFieldDecoration(l10n.fieldAddress),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.parentProfileRelationshipNotes,
               controller: _relationshipNotesController,
               onChanged: notifier.setRelationshipNotes,
               minLines: 3,
               maxLines: 6,
-              decoration: goalFieldDecoration(
-                l10n.parentProfileRelationshipNotes,
-              ),
             ),
             if (state.validationMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.75),

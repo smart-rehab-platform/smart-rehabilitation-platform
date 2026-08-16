@@ -8,16 +8,17 @@ export function AdminPatientAssignmentsAssignSpecialist({
   onSelectSpecialist,
   onPrimaryChange,
   onSubmit,
+  labels,
 }) {
   const hasSpecialists = specialists.length > 0;
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-assignments-form-card" aria-label="Assign specialist">
-      <h2 className="pd-admin-assignments-card-title">Assign Specialist</h2>
+    <section className="pd-card pd-card-pad pd-admin-assignments-form-card" aria-label={labels.assignSpecialist}>
+      <h2 className="pd-admin-assignments-card-title">{labels.assignSpecialist}</h2>
 
       <div className="pd-admin-form">
         <label className="pd-admin-field">
-          <span className="pd-admin-field-label">Specialist</span>
+          <span className="pd-admin-field-label">{labels.specialistLabel}</span>
           <select
             className="pd-admin-select"
             value={selectedSpecialistId ?? ""}
@@ -25,10 +26,10 @@ export function AdminPatientAssignmentsAssignSpecialist({
             disabled={!hasSpecialists || isSubmitting}
           >
             {!hasSpecialists ? (
-              <option value="">No specialists available</option>
+              <option value="">{labels.noSpecialists}</option>
             ) : (
               <>
-                <option value="">Select a specialist</option>
+                <option value="">{labels.selectSpecialist}</option>
                 {specialists.map((specialist) => (
                   <option key={specialist.userId} value={specialist.userId}>
                     {specialist.name}
@@ -47,7 +48,7 @@ export function AdminPatientAssignmentsAssignSpecialist({
             onChange={(event) => onPrimaryChange(event.target.checked)}
             disabled={!hasSpecialists || isSubmitting}
           />
-          <span>Primary specialist</span>
+          <span>{labels.primarySpecialist}</span>
         </label>
 
         {error ? <p className="pd-inline-error">{error}</p> : null}
@@ -58,7 +59,7 @@ export function AdminPatientAssignmentsAssignSpecialist({
           onClick={onSubmit}
           disabled={!canSubmit}
         >
-          {isSubmitting ? "Assigning..." : "Assign Specialist to Patient"}
+          {isSubmitting ? labels.assigning : labels.assignSpecialistAction}
         </button>
       </div>
     </section>

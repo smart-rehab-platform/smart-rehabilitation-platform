@@ -1,16 +1,21 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   buildMonthGrid,
-  formatCalendarDayHeading,
-  formatCalendarLocationLabel,
-  formatMonthYear,
   isSameMonth,
   normalizeCalendarDate,
 } from "../utils/specialistSessionMappers";
 import { isSameDay } from "../utils/specialistScheduleUtils";
-
-const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+import {
+  formatCalendarDaySessionMeta,
+  formatSessionCalendarDayHeading,
+  formatSessionCalendarMonthYear,
+  getCalendarDayEmptyMessage,
+  getCalendarNextMonthLabel,
+  getCalendarPreviousMonthLabel,
+  getSessionCalendarWeekdayLabels,
+} from "../utils/specialistSessionsLocalization";
 
 export function SpecialistSessionCalendar({
   visibleMonth,
@@ -20,7 +25,9 @@ export function SpecialistSessionCalendar({
   onMonthChange,
   onSelectDate,
 }) {
+  const { t, locale } = useLocale();
   const monthDays = useMemo(() => buildMonthGrid(visibleMonth), [visibleMonth]);
+  const weekdayLabels = useMemo(() => getSessionCalendarWeekdayLabels(locale), [locale]);
 
   return (
     <section className="pd-card pd-card-pad pd-specialist-session-calendar">
@@ -29,24 +36,26 @@ export function SpecialistSessionCalendar({
           type="button"
           className="pd-btn pd-btn-soft pd-specialist-session-calendar-nav"
           onClick={() => onMonthChange(-1)}
-          aria-label="Previous month"
+          aria-label={getCalendarPreviousMonthLabel(t)}
         >
           <ChevronLeft size={18} aria-hidden="true" />
         </button>
-        <h3 className="pd-specialist-session-calendar-title">{formatMonthYear(visibleMonth)}</h3>
+        <h3 className="pd-specialist-session-calendar-title">
+          {formatSessionCalendarMonthYear(visibleMonth, locale)}
+        </h3>
         <button
           type="button"
           className="pd-btn pd-btn-soft pd-specialist-session-calendar-nav"
           onClick={() => onMonthChange(1)}
-          aria-label="Next month"
+          aria-label={getCalendarNextMonthLabel(t)}
         >
           <ChevronRight size={18} aria-hidden="true" />
         </button>
       </div>
 
       <div className="pd-specialist-session-calendar-weekdays">
-        {WEEKDAY_LABELS.map((label) => (
-          <span key={label} className="pd-specialist-session-calendar-weekday">{label}</span>
+        {weekdayLabels.map((label, index) => (
+          <span key={index} className="pd-specialist-session-calendar-weekday">{label}</span>
         ))}
       </div>
 
@@ -69,7 +78,7 @@ export function SpecialistSessionCalendar({
               ].filter(Boolean).join(" ")}
               disabled={!inMonth}
               onClick={() => onSelectDate(normalizeCalendarDate(day))}
-              aria-label={formatCalendarDayHeading(day)}
+              aria-label={formatSessionCalendarDayHeading(day, locale, t)}
             >
               <span>{day.getDate()}</span>
               {hasSessions ? <span className="pd-specialist-session-calendar-dot" aria-hidden="true" /> : null}
@@ -85,25 +94,21 @@ export function SpecialistSessionCalendarDayList({
   selectedDate,
   sessions,
 }) {
+  const { t, locale } = useLocale();
+
   return (
     <section className="pd-card pd-card-pad pd-specialist-session-calendar-day-list">
       <h3 className="pd-specialist-session-calendar-day-title">
-        {formatCalendarDayHeading(selectedDate)}
+        {formatSessionCalendarDayHeading(selectedDate, locale, t)}
       </h3>
       {sessions.length === 0 ? (
-        <p className="pd-section-sub">No sessions scheduled for this date.</p>
+        <p className="pd-section-sub">{getCalendarDayEmptyMessage(t)}</p>
       ) : (
         <ul className="pd-specialist-session-calendar-day-items">
           {sessions.map((session) => (
             <li key={session.id} className="pd-specialist-session-calendar-day-item">
-              <strong>{session.patientName}</strong>
-              <span>
-                {session.timeLabel}
-                {" • "}
-                {session.durationMinutes ? `${session.durationMinutes} min` : "—"}
-                {" • "}
-                {formatCalendarLocationLabel(session)}
-              </span>
+              <strong dir="auto">{session.patientName}</strong>
+              <span>{formatCalendarDaySessionMeta(session, t, locale)}</span>
             </li>
           ))}
         </ul>

@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   askAiAssistant,
   sendAiMessage,
@@ -37,6 +38,8 @@ export function useParentAiComposer({
   childNameByPatientId,
   onSendSuccess,
 }) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState(null);
   const sendGuardRef = useRef(false);
@@ -53,7 +56,7 @@ export function useParentAiComposer({
 
     try {
       const data = await sendWithFallback(conversationId, content, patientId);
-      const mapped = mapSendMessageResponse(data, childNameByPatientId);
+      const mapped = mapSendMessageResponse(data, childNameByPatientId, mapperOptions);
 
       if (mapped.conversation?.id) {
         rememberConversationPatient(mapped.conversation.id, patientId);
@@ -62,7 +65,7 @@ export function useParentAiComposer({
       onSendSuccess?.(mapped);
       return { ok: true, mapped };
     } catch (error) {
-      const message = resolveErrorMessage(error, "Failed to send message.");
+      const message = resolveErrorMessage(error, t("parent.hooks.sendAiMessageFailed"));
       setSendError(message);
       return { ok: false, reason: "error", message, content };
     } finally {
@@ -75,6 +78,8 @@ export function useParentAiComposer({
     childNameByPatientId,
     isSending,
     onSendSuccess,
+    mapperOptions,
+    t,
   ]);
 
   const clearSendError = useCallback(() => {

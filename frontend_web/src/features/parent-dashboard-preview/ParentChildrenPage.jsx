@@ -2,25 +2,26 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   PARENT_WEB_ROUTES,
   buildParentChildDetailPath,
 } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { useParentChildren } from "./hooks/useParentChildren";
 import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  CHILDREN_EMPTY_MESSAGE,
   buildChildMetaLine,
+  getChildrenEmptyMessage,
 } from "./utils/parentChildrenUtils";
 import { UserProfileAvatar } from "./components/profile/UserProfileAvatar";
 import "./styles/parentDashboardTokens.css";
 
 export default function ParentChildrenPage() {
   const navigate = useNavigate();
+  const { t, locale } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -108,7 +109,7 @@ export default function ParentChildrenPage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading linked children...</p>
+          <p className="pd-inline-loading">{t("parent.children.loading")}</p>
         </section>
       );
     }
@@ -118,7 +119,7 @@ export default function ParentChildrenPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -127,7 +128,7 @@ export default function ParentChildrenPage() {
     if (children.length === 0) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p>{CHILDREN_EMPTY_MESSAGE}</p>
+          <p>{getChildrenEmptyMessage(t)}</p>
         </section>
       );
     }
@@ -152,12 +153,14 @@ export default function ParentChildrenPage() {
               />
               <div className="pd-child-list-copy">
                 <strong>{child.fullName}</strong>
-                {buildChildMetaLine(child) ? (
-                  <span>{buildChildMetaLine(child)}</span>
+                {buildChildMetaLine(child, { t, locale }) ? (
+                  <span>{buildChildMetaLine(child, { t, locale })}</span>
                 ) : null}
                 {child.progressPercent != null ? (
                   <span className="pd-child-list-progress">
-                    Progress: {Math.round(child.progressPercent)}%
+                    {t("parent.children.progressPercent", {
+                      percent: Math.round(child.progressPercent),
+                    })}
                   </span>
                 ) : null}
               </div>
@@ -174,7 +177,6 @@ export default function ParentChildrenPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -196,14 +198,14 @@ export default function ParentChildrenPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Dashboard
+              {t("parent.children.backToDashboard")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">My Children</h1>
+            <h1 className="pd-task-hub-title">{t("parent.children.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              Linked child profiles connected to your parent account.
+              {t("parent.children.subtitle")}
             </p>
           </header>
 

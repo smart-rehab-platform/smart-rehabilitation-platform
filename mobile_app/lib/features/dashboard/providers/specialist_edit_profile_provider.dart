@@ -11,7 +11,7 @@ import 'specialist_dashboard_provider.dart';
 
 class SpecialistEditProfileState {
   const SpecialistEditProfileState({
-    this.isLoading = false,
+    this.isLoading = true,
     this.isSaving = false,
     this.errorMessage,
     this.validationMessage,

@@ -1,13 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { resolveParentSidebarActiveId } from "../../../routes/parentDashboardRoutes";
 import { DashboardShell } from "../../shared-dashboard/layout/DashboardShell";
+import { useParentNavItems } from "../hooks/useParentNavItems";
 import { ParentSidebar } from "./ParentSidebar";
 import { ParentTopHeader } from "./ParentTopHeader";
 
 export function ParentDashboardShell({
   collapsed,
   mobileOpen,
-  navItems,
   badges,
   parent,
   notifications,
@@ -28,6 +28,7 @@ export function ParentDashboardShell({
 }) {
   const { pathname } = useLocation();
   const activeNavId = resolveParentSidebarActiveId(pathname);
+  const navItems = useParentNavItems();
 
   return (
     <DashboardShell

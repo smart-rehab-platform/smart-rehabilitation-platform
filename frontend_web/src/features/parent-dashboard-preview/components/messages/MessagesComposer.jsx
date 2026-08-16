@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Image, Mic, Paperclip, Square, Video } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 import { PlatformMaterialIcon } from "../../../../components/platform/PlatformMaterialIcon";
 import {
   formatAttachmentFileSize,
@@ -25,6 +26,7 @@ export function MessagesComposer({
   onStopRecording,
   disabled = false,
 }) {
+  const { t } = useLocale();
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -83,7 +85,7 @@ export function MessagesComposer({
           {draftKind === "image" && draft.previewUrl ? (
             <img
               src={draft.previewUrl}
-              alt="Selected image preview"
+              alt={t("parent.messages.composer.selectedImageAlt")}
               className="pd-messages-attachment-preview-image"
             />
           ) : null}
@@ -103,7 +105,7 @@ export function MessagesComposer({
             disabled={isSending}
             onClick={onClearDraft}
           >
-            Remove
+            {t("common.remove")}
           </button>
         </div>
       ) : null}
@@ -114,8 +116,8 @@ export function MessagesComposer({
             <button
               type="button"
               className="pd-btn pd-btn-soft pd-messages-attach-trigger is-recording"
-              title="Stop recording"
-              aria-label="Stop recording"
+              title={t("parent.messages.composer.stopRecording")}
+              aria-label={t("parent.messages.composer.stopRecording")}
               onClick={onStopRecording}
             >
               <Square size={16} aria-hidden="true" />
@@ -124,8 +126,8 @@ export function MessagesComposer({
             <button
               type="button"
               className="pd-btn pd-btn-soft pd-messages-attach-trigger"
-              title="Add attachment"
-              aria-label="Add attachment"
+              title={t("parent.messages.composer.addAttachment")}
+              aria-label={t("parent.messages.composer.addAttachment")}
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               aria-controls={menuId}
@@ -145,7 +147,7 @@ export function MessagesComposer({
                 onClick={() => runMenuAction(() => imageInputRef.current?.click())}
               >
                 <Image size={16} aria-hidden="true" />
-                Image
+                {t("parent.messages.composer.image")}
               </button>
               <button
                 type="button"
@@ -154,7 +156,7 @@ export function MessagesComposer({
                 onClick={() => runMenuAction(() => videoInputRef.current?.click())}
               >
                 <Video size={16} aria-hidden="true" />
-                Video
+                {t("parent.messages.composer.video")}
               </button>
               <button
                 type="button"
@@ -163,7 +165,7 @@ export function MessagesComposer({
                 onClick={() => runMenuAction(() => onStartRecording())}
               >
                 <Mic size={16} aria-hidden="true" />
-                Record Voice
+                {t("parent.messages.composer.recordVoice")}
               </button>
               <button
                 type="button"
@@ -172,7 +174,7 @@ export function MessagesComposer({
                 onClick={() => runMenuAction(() => fileInputRef.current?.click())}
               >
                 <PlatformMaterialIcon icon="report" size={16} />
-                File
+                {t("parent.messages.composer.file")}
               </button>
             </div>
           ) : null}
@@ -182,7 +184,7 @@ export function MessagesComposer({
           rows={1}
           className="pd-messages-composer-textarea"
           value={composerValue}
-          placeholder="Write a message..."
+          placeholder={t("parent.messages.composer.placeholder")}
           disabled={disabled || isSending}
           onChange={(event) => onComposerChange(event.target.value)}
           onKeyDown={(event) => {
@@ -220,7 +222,7 @@ export function MessagesComposer({
 
       {typeof uploadProgress === "number" ? (
         <p className="pd-messages-upload-progress" role="status">
-          Uploading… {Math.round(uploadProgress * 100)}%
+          {t("parent.messages.composer.uploading", { percent: Math.round(uploadProgress * 100) })}
         </p>
       ) : null}
 
@@ -234,7 +236,7 @@ export function MessagesComposer({
         disabled={!canSend}
         onClick={onSend}
       >
-        {isSending ? "Sending..." : "Send"}
+        {isSending ? t("parent.messages.composer.sending") : t("parent.messages.send")}
       </button>
     </div>
   );

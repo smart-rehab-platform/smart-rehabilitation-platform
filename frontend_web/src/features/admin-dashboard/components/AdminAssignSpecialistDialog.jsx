@@ -3,6 +3,7 @@ export function AdminAssignSpecialistDialog({
   specialistName,
   isSubmitting = false,
   error = null,
+  labels,
   onClose,
   onConfirm,
 }) {
@@ -11,8 +12,8 @@ export function AdminAssignSpecialistDialog({
   }
 
   const message = specialistName
-    ? `Assign ${specialistName} to this case request?`
-    : "Assign this specialist to the case request?";
+    ? labels.assignBody(specialistName)
+    : labels.assignBodyGeneric;
 
   return (
     <div className="pd-admin-modal-backdrop" role="presentation" onClick={() => !isSubmitting && onClose?.()}>
@@ -24,7 +25,7 @@ export function AdminAssignSpecialistDialog({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="admin-assign-specialist-title" className="pd-admin-modal-title">
-          Assign Specialist
+          {labels.assignTitle}
         </h2>
         <p className="pd-admin-modal-copy">{message}</p>
 
@@ -37,7 +38,7 @@ export function AdminAssignSpecialistDialog({
             onClick={() => onClose?.()}
             disabled={isSubmitting}
           >
-            Cancel
+            {labels.cancel}
           </button>
           <button
             type="button"
@@ -45,7 +46,7 @@ export function AdminAssignSpecialistDialog({
             onClick={() => onConfirm?.()}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Assigning..." : "Assign Specialist"}
+            {isSubmitting ? labels.assigning : labels.assignConfirm}
           </button>
         </div>
       </div>

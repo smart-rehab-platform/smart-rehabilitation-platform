@@ -3,15 +3,17 @@ import { AdminAiInsightList } from "../components/AdminAiInsightList";
 
 export function AdminLatestAiReports({
   records = [],
+  labels,
   isLoading = false,
 }) {
   return (
     <AdminAiInsightList
       sectionId="admin-ai-reports"
-      title="Latest AI Reports"
+      title={labels.reports.title}
       records={records}
+      labels={labels}
       isLoading={isLoading}
-      emptyMessage="No AI reports yet."
+      emptyMessage={labels.reports.empty}
       icon={FileText}
       iconTone="amber"
       readOnly

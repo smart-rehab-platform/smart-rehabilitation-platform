@@ -1,9 +1,14 @@
-import { HUB_TASK_TABS } from "../../utils/parentDailyTasksUtils";
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
+import { buildHubTaskTabOptions } from "../../utils/parentDailyTasksUtils";
 
 export function TaskTabs({ activeTab, onChange, counts = {} }) {
+  const { t } = useLocale();
+  const tabs = useMemo(() => buildHubTaskTabOptions(t), [t]);
+
   return (
-    <div className="pd-task-hub-tabs" role="tablist" aria-label="Exercise lists">
-      {HUB_TASK_TABS.map((tab) => {
+    <div className="pd-task-hub-tabs" role="tablist" aria-label={t("parent.exercises.title")}>
+      {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         const count = counts[tab.id];
 

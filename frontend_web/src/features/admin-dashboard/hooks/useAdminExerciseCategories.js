@@ -1,5 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadExerciseCategories } from "../../../services/adminExercisesService";
+import {
+  applyAdminExerciseCategoriesLocalization,
+  getAdminExercisesLabels,
+} from "../utils/adminExercisesLocalization.js";
 import { mapExerciseCategory } from "../utils/adminExercisesMappers";
 
 function resolveErrorMessage(error, fallback) {
@@ -7,6 +12,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useAdminExerciseCategories() {
+  const { t, locale } = useLocale();
+  const labels = useMemo(() => getAdminExercisesLabels(t), [t]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,14 +39,15 @@ export function useAdminExerciseCategories() {
           return;
         }
 
-        setCategories(rows.map(mapExerciseCategory).filter(Boolean));
+        const mapped = rows.map(mapExerciseCategory).filter(Boolean);
+        setCategories(applyAdminExerciseCategoriesLocalization(mapped, { t, locale }));
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
 
         setCategories([]);
-        setError(resolveErrorMessage(loadError, "Failed to load exercise categories."));
+        setError(resolveErrorMessage(loadError, labels.toast.categoriesLoadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -52,7 +60,7 @@ export function useAdminExerciseCategories() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [labels.toast.categoriesLoadFailed, locale, refreshToken, t]);
 
   return {
     categories,

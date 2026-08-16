@@ -1,15 +1,10 @@
 import { useEffect, useMemo } from "react";
 import { ImageIcon, Music, Trash2, Video } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   detectSubmissionMediaTypeFromFile,
   formatFileSize,
 } from "../utils/parentDashboardMappers";
-
-const MEDIA_TYPE_LABELS = {
-  image: "Image",
-  video: "Video",
-  audio: "Audio",
-};
 
 function MediaTypeIcon({ mediaType }) {
   if (mediaType === "video") {
@@ -24,6 +19,7 @@ function MediaTypeIcon({ mediaType }) {
 }
 
 export function SelectedSubmissionMedia({ file, onRemove, disabled = false }) {
+  const { t } = useLocale();
   const mediaType = useMemo(
     () => (file ? detectSubmissionMediaTypeFromFile(file) : null),
     [file],
@@ -48,7 +44,9 @@ export function SelectedSubmissionMedia({ file, onRemove, disabled = false }) {
     return null;
   }
 
-  const typeLabel = mediaType ? MEDIA_TYPE_LABELS[mediaType] : "File";
+  const typeLabel = mediaType
+    ? t(`parent.pages.exerciseDetail.mediaType.${mediaType}`)
+    : t("parent.pages.exerciseDetail.mediaType.file");
 
   return (
     <div className="pd-submission-media-preview">
@@ -72,10 +70,10 @@ export function SelectedSubmissionMedia({ file, onRemove, disabled = false }) {
           className="pd-btn pd-btn-soft pd-btn-sm"
           onClick={onRemove}
           disabled={disabled}
-          aria-label={`Remove ${file.name}`}
+          aria-label={t("parent.pages.exerciseDetail.removeFile", { name: file.name })}
         >
           <Trash2 size={14} aria-hidden="true" />
-          Remove
+          {t("common.remove")}
         </button>
       </div>
 
@@ -83,7 +81,7 @@ export function SelectedSubmissionMedia({ file, onRemove, disabled = false }) {
         <div className="pd-submission-media-preview-frame">
           <img
             src={previewUrl}
-            alt={`Preview of ${file.name}`}
+            alt={t("parent.pages.exerciseDetail.previewOf", { name: file.name })}
             className="pd-submission-media-preview-image"
           />
         </div>
@@ -97,7 +95,7 @@ export function SelectedSubmissionMedia({ file, onRemove, disabled = false }) {
             preload="metadata"
             src={previewUrl}
           >
-            Your browser does not support video playback.
+            {t("parent.instructionMedia.videoUnsupported")}
           </video>
         </div>
       ) : null}
@@ -105,7 +103,7 @@ export function SelectedSubmissionMedia({ file, onRemove, disabled = false }) {
       {previewUrl && mediaType === "audio" ? (
         <div className="pd-submission-media-preview-frame pd-submission-media-preview-audio">
           <audio className="pd-submission-media-preview-audio-player" controls preload="metadata" src={previewUrl}>
-            Your browser does not support audio playback.
+            {t("parent.instructionMedia.audioUnsupported")}
           </audio>
         </div>
       ) : null}

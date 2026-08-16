@@ -1,18 +1,27 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   assignSpecialistToCaseRequest,
   fetchMatchingSpecialists,
 } from "../../../services/adminCaseRequestsService";
 import {
+  applyAdminMatchingSpecialistsLocalization,
+  friendlyCaseAssignmentErrorLocalized,
+  getAdminCaseRequestsLabels,
+} from "../utils/adminCaseRequestsLocalization.js";
+import {
   isStalePendingAssignmentError,
   mapMatchingSpecialist,
-} from "../utils/adminCaseRequestsMappers";
+} from "../utils/adminCaseRequestsMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminCaseRequestSpecialists(requestId) {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminCaseRequestsLabels(t), [t]);
   const [specialists, setSpecialists] = useState([]);
   const [selectedSpecialistId, setSelectedSpecialistId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,9 +31,14 @@ export function useAdminCaseRequestSpecialists(requestId) {
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
 
+  const localizedSpecialists = useMemo(
+    () => applyAdminMatchingSpecialistsLocalization(specialists, mapperContext),
+    [mapperContext, specialists],
+  );
+
   const selectedSpecialist = useMemo(
-    () => specialists.find((specialist) => specialist.id === selectedSpecialistId) ?? null,
-    [specialists, selectedSpecialistId],
+    () => localizedSpecialists.find((specialist) => specialist.id === selectedSpecialistId) ?? null,
+    [localizedSpecialists, selectedSpecialistId],
   );
 
   const reload = useCallback(() => {
@@ -41,7 +55,7 @@ export function useAdminCaseRequestSpecialists(requestId) {
       if (!normalizedId) {
         setSpecialists([]);
         setSelectedSpecialistId(null);
-        setError("Case request not found.");
+        setError(labels.notFound);
         setIsLoading(false);
         return;
       }
@@ -68,7 +82,7 @@ export function useAdminCaseRequestSpecialists(requestId) {
 
         setSpecialists([]);
         setSelectedSpecialistId(null);
-        setError(resolveErrorMessage(loadError, "Failed to load matching specialists."));
+        setError(resolveErrorMessage(loadError, labels.toast.loadSpecialistsFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -81,7 +95,7 @@ export function useAdminCaseRequestSpecialists(requestId) {
     return () => {
       cancelled = true;
     };
-  }, [requestId, refreshToken]);
+  }, [labels, requestId, refreshToken]);
 
   const selectSpecialist = useCallback((specialistId) => {
     if (isAssigning) {
@@ -102,15 +116,15 @@ export function useAdminCaseRequestSpecialists(requestId) {
     const specialistId = selectedSpecialistId?.trim();
 
     if (!normalizedId) {
-      return { ok: false, message: "Case request not found." };
+      return { ok: false, message: labels.notFound };
     }
 
     if (!specialistId) {
-      return { ok: false, message: "Select a specialist to continue." };
+      return { ok: false, message: labels.specialistsPage.subtitle };
     }
 
     if (isAssigning) {
-      return { ok: false, message: "Assignment already in progress." };
+      return { ok: false, message: labels.dialogs.assigning };
     }
 
     setIsAssigning(true);
@@ -118,12 +132,13 @@ export function useAdminCaseRequestSpecialists(requestId) {
 
     try {
       await assignSpecialistToCaseRequest(normalizedId, specialistId);
-      return { ok: true, message: "Specialist assigned successfully." };
+      return { ok: true, message: labels.toast.assignSuccess };
     } catch (assignError) {
-      const message = resolveErrorMessage(assignError, "Failed to assign specialist. Please try again.");
+      const rawMessage = resolveErrorMessage(assignError, labels.toast.assignFailed);
+      const message = friendlyCaseAssignmentErrorLocalized(rawMessage, mapperContext);
       setAssignmentError(message);
 
-      if (isStalePendingAssignmentError(message)) {
+      if (isStalePendingAssignmentError(rawMessage)) {
         return { ok: false, stale: true, message };
       }
 
@@ -131,10 +146,10 @@ export function useAdminCaseRequestSpecialists(requestId) {
     } finally {
       setIsAssigning(false);
     }
-  }, [isAssigning, requestId, selectedSpecialistId]);
+  }, [isAssigning, labels, mapperContext, requestId, selectedSpecialistId]);
 
   return {
-    specialists,
+    specialists: localizedSpecialists,
     selectedSpecialist,
     selectedSpecialistId,
     isLoading,
@@ -145,5 +160,6 @@ export function useAdminCaseRequestSpecialists(requestId) {
     selectSpecialist,
     assignSelectedSpecialist,
     clearAssignmentError: () => setAssignmentError(null),
+    labels,
   };
 }

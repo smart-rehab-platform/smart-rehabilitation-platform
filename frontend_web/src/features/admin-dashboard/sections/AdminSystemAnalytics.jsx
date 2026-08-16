@@ -1,5 +1,8 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { AdminSystemActivityChart } from "../components/AdminSystemActivityChart";
 import { AdminSystemActivityPeriodControls } from "../components/AdminSystemActivityPeriodControls";
+import { getAdminAnalyticsLabels } from "../utils/adminDashboardLocalization.js";
 
 export function AdminSystemAnalytics({
   activity,
@@ -13,13 +16,16 @@ export function AdminSystemAnalytics({
   onPresetSelected,
   onRetry,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminAnalyticsLabels(t), [t]);
+
   return (
     <section
       className="pd-card pd-card-pad pd-admin-analytics pd-section-enter"
-      aria-label="System Analytics"
+      aria-label={labels.sectionAriaLabel}
     >
       <div className="pd-admin-analytics-header">
-        <h2 className="pd-section-title">System Analytics</h2>
+        <h2 className="pd-section-title">{labels.title}</h2>
         <AdminSystemActivityPeriodControls
           periodLabel={periodLabel}
           selectedWeekOffset={weekOffset}
@@ -35,7 +41,7 @@ export function AdminSystemAnalytics({
         <div className="pd-admin-section-error">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-            Retry
+            {labels.retry}
           </button>
         </div>
       ) : (

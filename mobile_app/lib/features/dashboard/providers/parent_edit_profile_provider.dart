@@ -12,7 +12,7 @@ import 'parent_dashboard_provider.dart';
 
 class ParentEditProfileState {
   const ParentEditProfileState({
-    this.isLoading = false,
+    this.isLoading = true,
     this.isSaving = false,
     this.errorMessage,
     this.validationMessage,

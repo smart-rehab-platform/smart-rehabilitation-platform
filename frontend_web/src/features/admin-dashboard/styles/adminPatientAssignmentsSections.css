@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  text-align: start;
 }
 
 .pd-preview .pd-admin-assignments-patient-panel {
@@ -20,6 +21,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--pd-text);
+  text-align: start;
 }
 
 .pd-preview .pd-admin-assignments-patient-panel-body {
@@ -113,6 +115,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--pd-text);
+  text-align: start;
 }
 
 .pd-preview .pd-admin-assignments-checkbox {
@@ -144,6 +147,7 @@
   color: var(--pd-text-secondary);
   font-size: 0.8125rem;
   line-height: 1.45;
+  text-align: start;
 }
 
 .pd-preview .pd-admin-assignments-lists-grid {
@@ -162,6 +166,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--pd-text);
+  text-align: start;
 }
 
 .pd-preview .pd-admin-assignments-item-list {
@@ -211,6 +216,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  text-align: start;
 }
 
 .pd-preview .pd-admin-assignments-item-copy strong {
@@ -253,6 +259,7 @@
   margin: 0;
   color: var(--pd-text-muted);
   font-size: 0.875rem;
+  text-align: start;
 }
 
 .pd-preview .pd-admin-assignments-inline-error {

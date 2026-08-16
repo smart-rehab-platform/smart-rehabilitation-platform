@@ -13,8 +13,6 @@ import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/adminDashboardSections.css";
 import "./styles/adminExercisesSections.css";
 
-const FORM_SUBTITLE = "Add therapy exercises to the shared library for assignment.";
-
 function AdminExerciseFormSkeleton() {
   return (
     <div className="pd-admin-exercise-form-shell pd-admin-exercise-form-skeleton" aria-hidden="true">
@@ -58,6 +56,7 @@ export default function AdminUpsertExercisePage({ mode = "create" }) {
   } = useAdminShell();
 
   const {
+    labels,
     submit,
     refreshExercise,
     refreshCategories,
@@ -91,7 +90,7 @@ export default function AdminUpsertExercisePage({ mode = "create" }) {
       return;
     }
 
-    showToast(isEdit ? "Exercise updated successfully." : "Exercise created successfully.");
+    showToast(isEdit ? labels.toast.updateSuccess : labels.toast.createSuccess);
 
     if (isEdit && exerciseId) {
       navigate(buildAdminExerciseDetailsPath(exerciseId));
@@ -99,14 +98,13 @@ export default function AdminUpsertExercisePage({ mode = "create" }) {
     }
 
     navigate(ADMIN_WEB_ROUTES.exercises);
-  }, [exerciseId, isEdit, navigate, showToast, submit]);
+  }, [exerciseId, isEdit, labels.toast.createSuccess, labels.toast.updateSuccess, navigate, showToast, submit]);
 
-  const pageTitle = isEdit ? "Edit Exercise" : "Add Exercise";
-  const backLabel = isEdit ? "Back to Exercise Details" : "Back to Exercise Library";
+  const pageTitle = isEdit ? labels.form.editTitle : labels.form.createTitle;
+  const backLabel = isEdit ? labels.backToDetails : labels.back;
   const isNotFound = isEdit
     && !upsertState.isLoadingExercise
-    && upsertState.loadError
-    && upsertState.loadError.toLowerCase().includes("exercise not found");
+    && upsertState.loadError === labels.notFound;
 
   let body;
 
@@ -115,9 +113,9 @@ export default function AdminUpsertExercisePage({ mode = "create" }) {
   } else if (isNotFound) {
     body = (
       <section className="pd-card pd-card-pad pd-admin-exercise-details-empty pd-section-enter">
-        <p className="pd-section-sub">Exercise not found.</p>
+        <p className="pd-section-sub">{labels.notFound}</p>
         <button type="button" className="pd-btn pd-btn-soft" onClick={() => navigate(ADMIN_WEB_ROUTES.exercises)}>
-          Back to Exercise Library
+          {labels.back}
         </button>
       </section>
     );
@@ -126,7 +124,7 @@ export default function AdminUpsertExercisePage({ mode = "create" }) {
       <div className="pd-admin-exercises-error pd-section-enter">
         <p className="pd-inline-error">{upsertState.loadError}</p>
         <button type="button" className="pd-btn pd-btn-soft" onClick={refreshExercise}>
-          Retry
+          {labels.retry}
         </button>
       </div>
     );
@@ -195,7 +193,7 @@ export default function AdminUpsertExercisePage({ mode = "create" }) {
 
           <header className="pd-admin-exercise-upsert-header pd-section-enter">
             <h1 className="pd-section-title">{pageTitle}</h1>
-            <p className="pd-section-sub">{FORM_SUBTITLE}</p>
+            <p className="pd-section-sub">{labels.form.subtitle}</p>
           </header>
 
           <div className="pd-admin-exercise-form-shell pd-section-enter">

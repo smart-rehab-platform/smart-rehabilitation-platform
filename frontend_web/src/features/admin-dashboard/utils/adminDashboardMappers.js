@@ -1,4 +1,4 @@
-import { getRoleLabel } from "../../../routes/roleRouting";
+import { getRoleLabel } from "../../../routes/roleRouting.js";
 
 export const SYSTEM_ACTIVITY_PRESET_OFFSETS = {
   thisWeek: 0,
@@ -213,16 +213,14 @@ export function formatRegisteredLabel(createdAt, now = new Date()) {
 export function mapRecentUser(row) {
   const name =
     readString(row, ["full_name", "fullName", "name"]) || "User";
-  const rawRole = readString(row, ["role", "userRole"]);
-  const role = formatAdminRole(rawRole);
-  const registeredLabel = formatRegisteredLabel(row.created_at ?? row.createdAt);
+  const rawRole = readString(row, ["role", "userRole"]).toLowerCase();
+  const createdAt = readDate(row.created_at ?? row.createdAt);
 
   return {
     id: readString(row, ["id", "_id", "userId"]),
     name,
-    role,
-    rawRole: rawRole.toLowerCase(),
-    registeredLabel,
+    rawRole,
+    createdAt,
   };
 }
 

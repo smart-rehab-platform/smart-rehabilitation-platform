@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import { Plus } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 import { AiConversationListItem } from "./AiConversationListItem";
 import { AiEmptyState } from "./AiEmptyState";
 import { AiErrorState } from "./AiErrorState";
-import { AI_EMPTY_MESSAGES } from "../../utils/parentAiAssistantUtils";
+import { getAiEmptyMessages } from "../../utils/parentAiAssistantUtils";
 
 export function AiConversationList({
   conversations,
@@ -14,10 +16,13 @@ export function AiConversationList({
   onCreate,
   onRetry,
 }) {
+  const { t } = useLocale();
+  const emptyMessages = useMemo(() => getAiEmptyMessages(t), [t]);
+
   return (
-    <aside className="pd-ai-conversation-panel" aria-label="AI conversations">
+    <aside className="pd-ai-conversation-panel" aria-label={t("parent.aiAssistant.conversationsTitle")}>
       <div className="pd-ai-conversation-panel-header">
-        <h2 className="pd-ai-panel-title">Conversations</h2>
+        <h2 className="pd-ai-panel-title">{t("parent.aiAssistant.conversationsTitle")}</h2>
         <button
           type="button"
           className="pd-btn pd-btn-soft pd-ai-new-conversation"
@@ -25,13 +30,13 @@ export function AiConversationList({
           onClick={onCreate}
         >
           <Plus size={16} aria-hidden="true" />
-          {isCreating ? "Creating..." : "New"}
+          {isCreating ? t("parent.aiAssistant.creating") : t("parent.aiAssistant.newShort")}
         </button>
       </div>
 
       {isLoading ? (
         <div className="pd-ai-panel-state">
-          <p className="pd-inline-loading">Loading conversations...</p>
+          <p className="pd-inline-loading">{t("parent.pages.messages.loading")}</p>
         </div>
       ) : null}
 
@@ -40,7 +45,7 @@ export function AiConversationList({
       ) : null}
 
       {!isLoading && !error && conversations.length === 0 ? (
-        <AiEmptyState message={AI_EMPTY_MESSAGES.noConversations} />
+        <AiEmptyState message={emptyMessages.noConversations} />
       ) : null}
 
       {!isLoading && !error && conversations.length > 0 ? (

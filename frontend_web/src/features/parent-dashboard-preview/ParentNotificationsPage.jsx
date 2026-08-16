@@ -2,12 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   getChildren,
   getChildrenProgress,
 } from "../../services/parentDashboardService";
 import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { NotificationCard } from "./components/notifications/NotificationCard";
 import { NotificationFilters } from "./components/notifications/NotificationFilters";
@@ -16,10 +16,10 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth, mergeChildren, resolveNotificationRoute } from "./utils/parentDashboardMappers";
 import {
-  NOTIFICATION_EMPTY_MESSAGES,
   buildNotificationTypeFilterOptions,
   enrichNotificationsForHub,
   filterNotifications,
+  getNotificationEmptyMessages,
   sortNotifications,
 } from "./utils/parentNotificationsUtils";
 import "./styles/parentDashboardTokens.css";
@@ -35,6 +35,7 @@ function buildChildNameLookup(children) {
 export default function ParentNotificationsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t, locale } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -147,13 +148,13 @@ export default function ParentNotificationsPage() {
   );
 
   const hubNotifications = useMemo(
-    () => enrichNotificationsForHub(notifications, childNameByPatientId),
-    [notifications, childNameByPatientId],
+    () => enrichNotificationsForHub(notifications, childNameByPatientId, { t, locale }),
+    [notifications, childNameByPatientId, t, locale],
   );
 
   const notificationTypeOptions = useMemo(
-    () => buildNotificationTypeFilterOptions(hubNotifications),
-    [hubNotifications],
+    () => buildNotificationTypeFilterOptions(hubNotifications, t),
+    [hubNotifications, t],
   );
 
   const filteredNotifications = useMemo(
@@ -171,17 +172,19 @@ export default function ParentNotificationsPage() {
     [filteredNotifications, sortKey],
   );
 
+  const emptyMessages = useMemo(() => getNotificationEmptyMessages(t), [t]);
+
   const emptyMessage = useMemo(() => {
     if (hubNotifications.length === 0) {
-      return NOTIFICATION_EMPTY_MESSAGES.none;
+      return emptyMessages.none;
     }
 
     if (visibleNotifications.length === 0) {
-      return NOTIFICATION_EMPTY_MESSAGES.filtered;
+      return emptyMessages.filtered;
     }
 
     return null;
-  }, [hubNotifications.length, visibleNotifications.length]);
+  }, [hubNotifications.length, visibleNotifications.length, emptyMessages]);
 
   const badges = useMemo(() => ({
     notifications:
@@ -217,11 +220,43 @@ export default function ParentNotificationsPage() {
     }
   }, [markNotificationRead, navigate]);
 
+  const subtitleSuffix = useMemo(() => {
+    if (isLoadingNotifications || notificationsError) {
+      return "";
+    }
+
+    const total = hubNotifications.length;
+    const key = total === 1
+      ? "parent.notificationsPage.subtitleUnread"
+      : "parent.notificationsPage.subtitleUnreadPlural";
+
+    return ` ${t(key, { unread: unreadCount, total })}`;
+  }, [
+    isLoadingNotifications,
+    notificationsError,
+    hubNotifications.length,
+    unreadCount,
+    t,
+  ]);
+
+  const summaryLabel = useMemo(() => {
+    const count = visibleNotifications.length;
+    const countLabel = count === 1
+      ? t("parent.notificationsPage.summaryCount", { count })
+      : t("parent.notificationsPage.summaryCountPlural", { count });
+
+    if (unreadCount > 0) {
+      return `${countLabel}${t("parent.notificationsPage.unreadSummary", { count: unreadCount })}`;
+    }
+
+    return countLabel;
+  }, [visibleNotifications.length, unreadCount, t]);
+
   const renderContent = () => {
     if (isLoadingNotifications) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading notifications...</p>
+          <p className="pd-inline-loading">{t("parent.pages.notifications.loading")}</p>
         </section>
       );
     }
@@ -231,7 +266,7 @@ export default function ParentNotificationsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{notificationsError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("parent.common.retry")}
           </button>
         </section>
       );
@@ -244,8 +279,7 @@ export default function ParentNotificationsPage() {
     return (
       <div className="pd-notification-feed-panel pd-section-enter">
         <p className="pd-notification-feed-summary">
-          {visibleNotifications.length} notification{visibleNotifications.length === 1 ? "" : "s"}
-          {unreadCount > 0 ? ` · ${unreadCount} unread` : ""}
+          {summaryLabel}
         </p>
         <ul className="pd-notification-feed">
           {visibleNotifications.map((notification) => (
@@ -265,7 +299,6 @@ export default function ParentNotificationsPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -284,10 +317,10 @@ export default function ParentNotificationsPage() {
         onMessages={navigation.handleMessages}
       >
         <div className="pd-task-hub-page">
-          <div className="pd-task-hub-toolbar">
+          <div className="pd-task-hub-toolbar pd-notifications-page-toolbar">
             <button type="button" className="pd-btn pd-btn-ghost pd-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
-              Back to Dashboard
+              {t("parent.common.backToDashboard")}
             </button>
             <div className="pd-notification-hub-toolbar-actions">
               <button
@@ -296,7 +329,7 @@ export default function ParentNotificationsPage() {
                 onClick={handleRefresh}
                 disabled={isLoadingNotifications}
               >
-                Refresh
+                {t("parent.common.refresh")}
               </button>
               {unreadCount > 0 ? (
                 <button
@@ -305,19 +338,17 @@ export default function ParentNotificationsPage() {
                   onClick={markAllNotificationsRead}
                   disabled={isMarkingAllRead || isLoadingNotifications}
                 >
-                  Mark all as read
+                  {t("parent.pages.notifications.markAllRead")}
                 </button>
               ) : null}
             </div>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Notifications</h1>
+            <h1 className="pd-task-hub-title">{t("parent.pages.notifications.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              Stay updated on sessions, reports, feedback, and messages.
-              {!isLoadingNotifications && !notificationsError ? (
-                ` ${unreadCount} unread of ${hubNotifications.length} notification${hubNotifications.length === 1 ? "" : "s"}.`
-              ) : ""}
+              {t("parent.pages.notifications.subtitle")}
+              {subtitleSuffix}
             </p>
           </header>
 

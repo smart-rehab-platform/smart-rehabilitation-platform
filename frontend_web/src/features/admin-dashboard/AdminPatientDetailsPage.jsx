@@ -81,7 +81,7 @@ export default function AdminPatientDetailsPage() {
     handleSidebarNav,
   } = useAdminShell();
 
-  const { details, isLoading, error, refetch } = useAdminPatientDetails(patientId);
+  const { details, isLoading, error, refetch, labels } = useAdminPatientDetails(patientId);
 
   const handleBack = useCallback(() => {
     navigate(ADMIN_WEB_ROUTES.patients);
@@ -108,14 +108,14 @@ export default function AdminPatientDetailsPage() {
       <section className="pd-card pd-card-pad pd-admin-patient-error pd-section-enter">
         <p className="pd-inline-error">{error}</p>
         <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-          Retry
+          {labels.retry}
         </button>
       </section>
     );
   } else if (!details) {
     body = (
       <section className="pd-card pd-card-pad pd-section-enter">
-        <p className="pd-admin-patient-empty-copy">Patient not found.</p>
+        <p className="pd-admin-patient-empty-copy">{labels.notFound}</p>
       </section>
     );
   } else {
@@ -123,7 +123,7 @@ export default function AdminPatientDetailsPage() {
       <div className="pd-admin-patient-details">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-patient-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Patients
+          {labels.back}
         </button>
 
         <AdminPatientOverview

@@ -9,7 +9,7 @@ import '../../../../core/routes/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../providers/specialist_features_provider.dart';
-import '../../providers/specialist_reports_provider.dart';
+import '../../providers/admin_reports_provider.dart';
 import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
@@ -21,6 +21,8 @@ import '../specialist/specialist_scoped_localization_utils.dart';
 import '../specialist/specialist_exercises_widgets.dart';
 import 'admin_scoped_localization_utils.dart';
 import '../../../presence/widgets/online_status_dot.dart';
+import '../../utils/support_request_notification_navigation.dart';
+import '../../models/specialist_feature_models.dart';
 import '../shared/reports_list_widgets.dart';
 
 class AdminProfileScreen extends ConsumerStatefulWidget {
@@ -144,9 +146,22 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen> {
                 ),
               ],
               SizedBox(height: context.dashSpacing),
-              const LanguageSelector(
-                presentation: LanguageSelectorPresentation.settingsTile,
+              OutlinedButton.icon(
+                onPressed: () => context.push(AppRoutes.adminEditProfile),
+                icon: const Icon(Icons.edit_outlined),
+                label: Text(l10n.parentProfileEditProfile),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: DashboardColors.brandCyan,
+                  side: const BorderSide(color: DashboardColors.brandCyan),
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dashSpacing * 0.75,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
               ),
+              SizedBox(height: context.dashSpacing * 0.5),
               FilledButton(
                 onPressed: () => AdminNavigation.logout(context, ref),
                 child: Text(l10n.commonLogout),
@@ -201,6 +216,11 @@ class AdminMoreScreen extends ConsumerWidget {
             icon: Icons.report_outlined,
             label: l10n.navComplaints,
             onTap: () => context.go(AppRoutes.adminComplaints),
+          ),
+          _MoreTile(
+            icon: Icons.support_agent_outlined,
+            label: l10n.supportRequestAdminTitle,
+            onTap: () => context.push(AppRoutes.adminSupportRequests),
           ),
           _MoreTile(
             icon: Icons.event_note_outlined,
@@ -361,7 +381,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
     super.initState();
     _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(specialistReportsProvider(null).notifier).initialize();
+      ref.read(adminReportsProvider.notifier).initialize();
     });
   }
 
@@ -381,6 +401,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
       body: ReportsListBody(
         searchController: _searchController,
         refreshIndicatorColor: DashboardColors.brandCyan,
+        useAdminScope: true,
         onReportTap: (context, report) {
           context.push(
             AppRoutes.adminReportDetails(report.id, isAi: report.isAiReport),
@@ -407,6 +428,21 @@ class _AdminNotificationsScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistNotificationsProvider.notifier).initialize();
     });
+  }
+
+  Future<void> _onNotificationTap(SpecialistNotificationItem item) async {
+    if (!item.isRead) {
+      await ref.read(specialistNotificationsProvider.notifier).markAsRead(item.id);
+    }
+    if (!mounted) return;
+
+    final destination = resolveSupportRequestNotificationDestination(
+      item,
+      isAdmin: true,
+    );
+    if (destination != null) {
+      await context.push(destination);
+    }
   }
 
   @override
@@ -459,9 +495,7 @@ class _AdminNotificationsScreenState
               (item) => Padding(
                 padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
                 child: DashboardSurfaceCard(
-                  onTap: () => ref
-                      .read(specialistNotificationsProvider.notifier)
-                      .markAsRead(item.id),
+                  onTap: () => _onNotificationTap(item),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

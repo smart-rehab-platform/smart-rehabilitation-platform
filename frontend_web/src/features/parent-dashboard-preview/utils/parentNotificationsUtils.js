@@ -1,73 +1,36 @@
 import {
   buildNotificationViewModel,
   getNotificationTimestamp,
-  normalizeNotificationType,
 } from "./parentDashboardMappers";
+import { resolveMapperContext } from "./parentLocalizationCore";
+import {
+  buildNotificationReadFilterOptions,
+  buildNotificationSortOptions,
+  buildNotificationTypeFilterOptions,
+  formatNotificationDisplayDate,
+  formatNotificationTimeAgo,
+  getDefaultNotificationTitle,
+  getNotificationEmptyMessages,
+  getNotificationTypeLabel,
+  getRecentlyLabel,
+  localizeNotificationBody,
+  localizeNotificationTitle,
+  NOTIFICATION_EMPTY_MESSAGES,
+  NOTIFICATION_READ_FILTER_OPTIONS,
+  NOTIFICATION_SORT_OPTIONS,
+  NOTIFICATION_TYPE_LABELS,
+} from "./parentNotificationsLocalization";
 
-/** Confirmed backend notification_type enum values. */
-export const NOTIFICATION_TYPE_LABELS = {
-  exercise_reminder: "Exercise reminder",
-  session_reminder: "Session reminder",
-  feedback_received: "Feedback received",
-  report_ready: "Report ready",
-  new_message: "New message",
-  general: "General",
-  session_request: "Session request",
-  case_request_submitted: "Case request submitted",
-  case_request_assigned: "Case request assigned",
-  case_request_accepted: "Case request accepted",
-  case_request_rejected: "Case request rejected",
-  case_request_converted: "Case request converted",
+export {
+  buildNotificationReadFilterOptions,
+  buildNotificationSortOptions,
+  buildNotificationTypeFilterOptions,
+  getNotificationTypeLabel,
+  NOTIFICATION_EMPTY_MESSAGES,
+  NOTIFICATION_READ_FILTER_OPTIONS,
+  NOTIFICATION_SORT_OPTIONS,
+  NOTIFICATION_TYPE_LABELS,
 };
-
-export const NOTIFICATION_READ_FILTER_OPTIONS = [
-  { id: "all", label: "All" },
-  { id: "unread", label: "Unread" },
-  { id: "read", label: "Read" },
-];
-
-export const NOTIFICATION_SORT_OPTIONS = [
-  { id: "newest", label: "Newest first" },
-  { id: "oldest", label: "Oldest first" },
-  { id: "unreadFirst", label: "Unread first" },
-];
-
-export const NOTIFICATION_EMPTY_MESSAGES = {
-  none: "No notifications yet.",
-  filtered: "No notifications match your filters.",
-};
-
-function formatDisplayDate(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-/**
- * @param {string|null|undefined} type
- */
-export function getNotificationTypeLabel(type) {
-  const normalized = normalizeNotificationType(type);
-  if (normalized === "default") {
-    return null;
-  }
-
-  if (NOTIFICATION_TYPE_LABELS[normalized]) {
-    return NOTIFICATION_TYPE_LABELS[normalized];
-  }
-
-  return normalized
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-}
 
 /**
  * @param {{ relatedEntityType?: string|null, relatedEntityId?: string|null, title?: string|null, body?: string|null }} notification
@@ -95,9 +58,11 @@ export function resolveNotificationPatientId(notification, childNameByPatientId 
 /**
  * @param {Record<string, unknown>} notificationRow
  * @param {Record<string, string>|null|undefined} childNameByPatientId
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapNotificationRowToHubItem(notificationRow, childNameByPatientId = null) {
-  const base = buildNotificationViewModel(notificationRow);
+export function mapNotificationRowToHubItem(notificationRow, childNameByPatientId = null, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
+  const base = buildNotificationViewModel(notificationRow, options);
   if (!base) {
     return null;
   }
@@ -108,8 +73,8 @@ export function mapNotificationRowToHubItem(notificationRow, childNameByPatientI
 
   return {
     ...base,
-    typeLabel: getNotificationTypeLabel(base.type),
-    displayDate: formatDisplayDate(timestampValue),
+    typeLabel: getNotificationTypeLabel(base.type, t),
+    displayDate: formatNotificationDisplayDate(timestampValue, locale, t),
     createdAtMs: Number.isFinite(parsedMs) ? parsedMs : null,
     patientId,
     childName: patientId ? childNameByPatientId?.[patientId] ?? null : null,
@@ -119,39 +84,25 @@ export function mapNotificationRowToHubItem(notificationRow, childNameByPatientI
 /**
  * @param {Array<Record<string, unknown>>} notificationRows
  * @param {Record<string, string>|null|undefined} childNameByPatientId
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapNotificationRowsToHubItems(notificationRows, childNameByPatientId = null) {
+export function mapNotificationRowsToHubItems(notificationRows, childNameByPatientId = null, options = {}) {
   if (!Array.isArray(notificationRows)) {
     return [];
   }
 
   return notificationRows
-    .map((row) => mapNotificationRowToHubItem(row, childNameByPatientId))
+    .map((row) => mapNotificationRowToHubItem(row, childNameByPatientId, options))
     .filter(Boolean);
 }
 
 /**
  * @param {Array<{ type?: string|null }>} notifications
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function buildNotificationTypeFilterOptions(notifications) {
-  const typeSet = new Set();
-
-  notifications.forEach((notification) => {
-    if (notification.type) {
-      typeSet.add(notification.type);
-    }
-  });
-
-  const options = [{ id: "all", label: "All types" }];
-  [...typeSet]
-    .sort((left, right) => (
-      getNotificationTypeLabel(left).localeCompare(getNotificationTypeLabel(right))
-    ))
-    .forEach((type) => {
-      options.push({ id: type, label: getNotificationTypeLabel(type) });
-    });
-
-  return options;
+export function buildNotificationTypeFilterOptionsLocalized(notifications, options = {}) {
+  const { t } = resolveMapperContext(options);
+  return buildNotificationTypeFilterOptions(notifications, t);
 }
 
 /**
@@ -242,8 +193,11 @@ function compareByDate(left, right, direction) {
  * Maps hub notifications from existing view models.
  * @param {Array<Record<string, unknown>>} notifications
  * @param {Record<string, string>|null|undefined} childNameByPatientId
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function enrichNotificationsForHub(notifications, childNameByPatientId = null) {
+export function enrichNotificationsForHub(notifications, childNameByPatientId = null, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
+
   if (!Array.isArray(notifications)) {
     return [];
   }
@@ -255,11 +209,17 @@ export function enrichNotificationsForHub(notifications, childNameByPatientId = 
 
     return {
       ...notification,
-      typeLabel: getNotificationTypeLabel(notification.type),
-      displayDate: formatDisplayDate(timestampValue),
+      typeLabel: getNotificationTypeLabel(notification.type, t),
+      displayDate: formatNotificationDisplayDate(timestampValue, locale, t),
+      timeAgo: formatNotificationTimeAgo(timestampValue, locale, t) ?? getRecentlyLabel(t),
+      title: localizeNotificationTitle(notification.title, notification.type, t)
+        || getDefaultNotificationTitle(t),
+      body: localizeNotificationBody(notification.body, notification.type, t),
       createdAtMs: Number.isFinite(parsedMs) ? parsedMs : null,
       patientId,
       childName: patientId ? childNameByPatientId?.[patientId] ?? null : null,
     };
   });
 }
+
+export { getNotificationEmptyMessages };

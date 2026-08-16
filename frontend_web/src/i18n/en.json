@@ -1,0 +1,4119 @@
+{
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "loading": "Loading",
+    "retry": "Retry",
+    "close": "Close",
+    "remove": "Remove",
+    "unknown": "Unknown",
+    "dateUnavailable": "Date unavailable",
+    "unread": "unread",
+    "navigation": "Navigation",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "nav": {
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "profile": "Profile"
+  },
+  "profile": {
+    "viewProfile": "View profile",
+    "signOut": "Sign out",
+    "photoAlt": "{name} profile photo"
+  },
+  "roles": {
+    "parent": "Parent",
+    "specialist": "Specialist",
+    "admin": "Admin",
+    "user": "User"
+  },
+  "auth": {
+    "shared": {
+      "signIn": "Sign In",
+      "createAccount": "Create Account",
+      "continue": "Continue",
+      "back": "Back",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "showConfirmPassword": "Show confirm password",
+      "hideConfirmPassword": "Hide confirm password",
+      "emptyDisplay": "—",
+      "copyright": "© 2026 Smart Rehabilitation Platform"
+    },
+    "hero": {
+      "brandAriaLabel": "Smart Rehabilitation",
+      "leadLine1": "Empowering Every",
+      "leadHighlight": "Rehabilitation",
+      "leadLine2": "Journey",
+      "description": "Smart therapy, personalized progress, and seamless collaboration between specialists and families.",
+      "backToHome": "Back to Home",
+      "aiBadge": "Smart Rehabilitation AI"
+    },
+    "signIn": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "name@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember Me",
+      "forgotPassword": "Forgot Password?",
+      "goToEmailVerification": "Go to Email Verification",
+      "signingIn": "Signing In...",
+      "noAccountPrompt": "Don't have an account?",
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "success": "Signed in successfully! Redirecting...",
+      "unableToDetermineRole": "Unable to determine your account role. Please contact support.",
+      "invalidCredentials": "Invalid email or password"
+    },
+    "signup": {
+      "createYourAccount": "Create Your Account",
+      "stepProgress": "Step {current} of {total}",
+      "stepSubtitleRole": "Choose how you'll use Smart Rehabilitation.",
+      "stepSubtitlePersonal": "Tell us a little about yourself.",
+      "stepSubtitleProfessional": "Tell us about your professional background.",
+      "stepSubtitleSecurity": "Secure your account with a strong password.",
+      "stepSubtitleReview": "Review your details before creating your account.",
+      "alreadyHaveAccount": "Already have an account?",
+      "selectRoleRequired": "Please select your role",
+      "profilePhoto": "Profile Photo",
+      "uploadProfilePhotoAria": "Upload profile photo",
+      "clickToUpload": "Click to upload",
+      "changePhoto": "Change Photo",
+      "uploading": "Uploading...",
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "Dr. Sarah Johnson",
+      "fullNameRequired": "Please enter your full name",
+      "emailLabel": "Email Address",
+      "phoneLabel": "Phone Number",
+      "phonePlaceholder": "+970 59 000 0000",
+      "phoneRequired": "Please enter your phone number",
+      "duplicateEmailToast": "This email is already registered.",
+      "duplicateEmailInline": "This email is already registered. Please use a different email or sign in.",
+      "duplicateEmailInlinePrompt": "This email is already registered. Use a different email or",
+      "duplicateEmailSignInLink": "sign in",
+      "invalidImageType": "Please select a JPG, PNG, or WEBP image",
+      "imageTooLarge": "Image must be smaller than 5MB",
+      "imageUploadFailed": "Image upload failed",
+      "specializationLabel": "Specialization",
+      "specializationPlaceholder": "Speech Therapy",
+      "licenseNumberLabel": "License Number",
+      "yearsOfExperienceLabel": "Years of Experience",
+      "bioLabel": "Bio",
+      "bioPlaceholder": "Brief professional bio",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Min. 8 characters",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "confirmPasswordRequired": "Confirm password is required.",
+      "passwordRequired": "Password is required.",
+      "termsAgreementPrefix": "I agree to the",
+      "termsOfService": "Terms of Service",
+      "termsAnd": "and",
+      "privacyPolicy": "Privacy Policy",
+      "termsAcceptAria": "Accept Terms of Service and Privacy Policy",
+      "accountType": "Account Type",
+      "personalDetails": "Personal Details",
+      "professionalDetails": "Professional Details",
+      "securitySection": "Security",
+      "experienceLabel": "Experience",
+      "experienceOneYear": "1 year",
+      "experienceYears": "{count} years",
+      "passwordCreatedSecurely": "Password created securely",
+      "reviewConfirmAccuracy": "By creating this account, you confirm that the information above is accurate.",
+      "edit": "Edit",
+      "editAccountTypeAria": "Edit account type",
+      "editPersonalDetailsAria": "Edit personal details",
+      "editProfessionalDetailsAria": "Edit professional details",
+      "editSecurityAria": "Edit account security",
+      "reviewRegionAria": "Account review",
+      "creatingAccount": "Creating Account...",
+      "registrationFailed": "Registration failed. Please try again.",
+      "verificationEmailFailed": "Failed to send verification email.",
+      "checkEmailTitle": "Check your email",
+      "checkEmailSentTo": "We sent a verification link to:",
+      "checkEmailVerifyBeforeSignIn": "Please verify your email before signing in.",
+      "goToSignIn": "Go to Sign In",
+      "resendVerificationEmail": "Resend Verification Email",
+      "resending": "Sending..."
+    },
+    "roles": {
+      "parent": "Parent",
+      "parentDescription": "Monitor your child's progress, communicate with specialists, and complete home exercises.",
+      "specialist": "Specialist",
+      "specialistDescription": "Manage patients, create treatment plans, review progress, and provide professional guidance."
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email address and we'll send you a secure password reset link.",
+      "enterEmail": "Please enter your email address",
+      "sending": "Sending Reset Link...",
+      "sendLink": "Send Reset Link",
+      "successTitle": "Reset Email Sent",
+      "successMessage": "If an account exists with this email, a password reset link has been sent.",
+      "failedSend": "Failed to send reset link",
+      "backToSignIn": "Back to Sign In",
+      "rememberedPassword": "Remembered your password?"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your new password below.",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPasswordLabel": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Re-enter your new password",
+      "resetting": "Resetting Password...",
+      "completeTitle": "Password Reset Complete",
+      "completeMessage": "Your password has been changed successfully.",
+      "failed": "Failed to reset password",
+      "backToSignIn": "Back to Sign In",
+      "backToPrefix": "Back to",
+      "linkExpiredTitle": "Reset link expired",
+      "linkExpiredMessage": "This password reset link is no longer valid. Please request a new password reset email.",
+      "requestNewLink": "Request New Link"
+    },
+    "verifyEmail": {
+      "checkTitle": "Check Your Email",
+      "checkMessage": "We sent a verification link to your email address. Open the link on this device to activate your account.",
+      "verifyingTitle": "Verifying Email",
+      "verifyingMessage": "Please wait while we confirm your email address.",
+      "successTitle": "Email Verified",
+      "successMessage": "Email verified successfully.",
+      "successDefault": "Email verified successfully.",
+      "goToLogin": "Go to Login",
+      "goToDashboard": "Go to Dashboard",
+      "failedTitle": "Verification Failed",
+      "failedMessage": "We could not verify your email with this link. Please request a new verification email if needed.",
+      "resending": "Sending...",
+      "resend": "Resend Verification Email",
+      "showManual": "Already have a verification link?",
+      "hideManual": "Hide manual verification",
+      "tokenLabel": "Verification link or token",
+      "tokenPlaceholder": "Paste the link or token from your email",
+      "verifyButton": "Verify Email",
+      "verifyingButton": "Verifying...",
+      "enterToken": "Enter the verification token or paste the full verification link.",
+      "emailMissing": "Email address is missing. Please sign up again or contact support.",
+      "resendFailed": "Unable to resend the verification email right now.",
+      "verifyFailed": "Unable to verify your email right now.",
+      "backToSignIn": "Back to Sign In"
+    },
+    "validation": {
+      "invalidEmail": "Invalid email address",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "passwordRequirements": "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.",
+      "specializationRequired": "Specialization is required.",
+      "specializationMax": "Specialization must not exceed 150 characters.",
+      "licenseRequired": "License number is required.",
+      "licenseMax": "License number must not exceed 100 characters.",
+      "experienceRequired": "Years of experience is required.",
+      "experienceMin": "Years of experience must be at least 0.",
+      "bioMax": "Bio must not exceed 500 characters.",
+      "selectAccountType": "Please select an account type.",
+      "fullNameRequired": "Please enter your full name.",
+      "phoneRequired": "Please enter your phone number.",
+      "validPasswordRequired": "Please create a valid password.",
+      "termsRequired": "You must accept the Terms of Service and Privacy Policy.",
+      "completePersonalFields": "Please complete all required personal fields"
+    },
+    "password": {
+      "strengthTitle": "Password strength",
+      "strengthWeak": "Weak",
+      "strengthMedium": "Medium",
+      "strengthStrong": "Strong",
+      "ruleMinLength": "At least 8 characters",
+      "ruleUppercase": "Contains uppercase letter",
+      "ruleLowercase": "Contains lowercase letter",
+      "ruleNumber": "Contains number",
+      "ruleSpecialCharacter": "Contains special character"
+    }
+  },
+  "header": {
+    "openNavigationMenu": "Open navigation menu",
+    "closeNavigationMenu": "Close navigation menu",
+    "searchPlaceholder": "Search...",
+    "searchAriaLabel": "Search dashboard",
+    "messagesAriaLabel": "Messages",
+    "messagesUnreadAriaLabel": "Messages, {count} unread",
+    "notificationsAriaLabel": "Notifications",
+    "notificationsUnreadAriaLabel": "Notifications, {count} unread"
+  },
+  "sidebar": {
+    "expand": "Expand sidebar",
+    "collapse": "Collapse sidebar",
+    "signOutAriaLabel": "Sign out",
+    "unreadBadgeAriaLabel": "{count} unread"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "recentAriaLabel": "Recent notifications",
+    "loading": "Loading notifications...",
+    "empty": "No notifications yet.",
+    "viewAll": "View all notifications"
+  },
+  "supportRequests": {
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "resolved": "Resolved",
+      "unknown": "Unknown"
+    },
+    "category": {
+      "technicalIssue": "Technical Issue",
+      "patientCaseIssue": "Patient / Case Issue",
+      "sessionSchedulingIssue": "Session / Scheduling Issue",
+      "accountProfileIssue": "Account / Profile Issue",
+      "exerciseContentIssue": "Exercise / Content Issue",
+      "other": "Other"
+    },
+    "filters": {
+      "allStatuses": "All Statuses",
+      "allCategories": "All Categories",
+      "allSpecialists": "All Specialists"
+    },
+    "conversation": "Conversation",
+    "conversationEmpty": "No messages yet.",
+    "reply": "Reply",
+    "message": "Message",
+    "messagePlaceholder": "Write your reply...",
+    "sendReply": "Send Reply",
+    "sending": "Sending...",
+    "attachmentOptional": "Attachment (optional)",
+    "attachmentHelp": "Supported formats: JPEG, PNG, WebP, or PDF. Maximum size 10 MB.",
+    "addAttachment": "Add attachment",
+    "viewAttachment": "View attachment",
+    "resolvedTitle": "This request is resolved",
+    "resolved": "Resolved",
+    "resolvedReadOnly": "Conversation is read-only.",
+    "created": "Created",
+    "lastActivity": "Last activity",
+    "resolvedDate": "Resolved",
+    "specialist": "Specialist",
+    "email": "Email",
+    "defaultSubject": "Support request",
+    "errors": {
+      "attachmentInvalidType": "Unsupported attachment type. Allowed: JPEG, PNG, WebP, and PDF.",
+      "attachmentTooLarge": "Attachment is too large. Maximum allowed size is 10 MB.",
+      "attachmentUrlMissing": "Attachment upload did not return a file URL."
+    }
+  },
+  "parent": {
+    "nav": {
+      "home": "Home",
+      "myChildren": "My Children",
+      "caseRequests": "Case Requests",
+      "exercises": "Exercises",
+      "progress": "Progress",
+      "sessions": "Sessions",
+      "reports": "Reports",
+      "feedback": "Feedback",
+      "reportSpecialist": "Report a Specialist",
+      "myComplaints": "My Complaints",
+      "messages": "Messages",
+      "aiAssistant": "AI Assistant",
+      "notifications": "Notifications",
+      "profile": "Profile"
+    },
+    "brand": {
+      "title": "Smart Rehabilitation",
+      "subtitle": "Where Recovery Never Stops",
+      "navigationAriaLabel": "Parent navigation"
+    },
+    "header": {
+      "searchPlaceholder": "Search dashboard",
+      "searchAriaLabel": "Search dashboard"
+    },
+    "routes": {
+      "unavailable": {
+        "aiAssistant": "AI Assistant is not available on web yet.",
+        "dailyTasks": "Daily tasks are not available on web yet.",
+        "exerciseDetails": "Exercise details are not available on web yet.",
+        "sessions": "Sessions are not available on web yet.",
+        "sessionDetails": "Session details are not available on web yet.",
+        "feedback": "Feedback details are not available on web yet.",
+        "profile": "Profile is not available on web yet.",
+        "summary": "This section is not available on web yet.",
+        "generic": "This feature is not available on web yet."
+      }
+    },
+    "toast": {
+      "signOutFailed": "Unable to sign out. Please try again.",
+      "selectChildForAi": "Select a child to use the AI Assistant.",
+      "selectChildForExercise": "Select a child to start an exercise.",
+      "noActionableExercises": "No actionable exercises for today.",
+      "exerciseUnavailable": "This exercise is unavailable right now.",
+      "exerciseAlreadySubmitted": "This exercise has already been submitted or reviewed.",
+      "selectChildForDetails": "Select a child to view details."
+    },
+    "common": {
+      "all": "All",
+      "allStatuses": "All statuses",
+      "loading": "Loading...",
+      "retry": "Retry",
+      "save": "Save",
+      "cancel": "Cancel",
+      "submit": "Submit",
+      "edit": "Edit",
+      "view": "View",
+      "viewAll": "View all",
+      "back": "Back",
+      "next": "Next",
+      "previous": "Previous",
+      "noData": "No data available",
+      "somethingWrong": "Something went wrong. Please try again.",
+      "child": "Child",
+      "specialist": "Specialist",
+      "category": "Category",
+      "status": "Status",
+      "description": "Description",
+      "attachment": "Attachment",
+      "date": "Date",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "notes": "Notes",
+      "optional": "Optional",
+      "required": "Required",
+      "clearFilters": "Clear filters",
+      "search": "Search",
+      "actions": "Actions",
+      "details": "Details",
+      "notAvailable": "Not available",
+      "unknown": "Unknown",
+      "exercise": "Exercise",
+      "filters": {
+        "label": "Filters",
+        "allStatuses": "All statuses",
+        "all": "All",
+        "allTypes": "All types",
+        "read": "Read",
+        "unread": "Unread"
+      },
+      "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "alphabetical": "Alphabetical"
+      },
+      "backToDashboard": "Back to Dashboard",
+      "backToReports": "Back to Reports",
+      "backToProfile": "Back to profile",
+      "backToMyComplaints": "Back to My Complaints",
+      "emptyDisplay": "—",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday",
+      "upcoming": "Upcoming",
+      "recently": "Recently",
+      "justNow": "Just now",
+      "minutesAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago",
+      "allChildren": "All children",
+      "searchPlaceholder": "Search...",
+      "sortBy": "Sort by",
+      "type": "Type",
+      "reportType": "Report type",
+      "reason": "Reason",
+      "clear": "Clear",
+      "frequency": "Frequency",
+      "dueDate": "Due date",
+      "generated": "Generated",
+      "location": "Location",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "duration": "Duration",
+      "durationMinutes": "{count} min",
+      "selectChild": "Select a child",
+      "selectSpecialist": "Select a specialist",
+      "selectReason": "Select a reason",
+      "loadingSpecialists": "Loading specialists...",
+      "viewDetails": "View Details",
+      "refresh": "Refresh",
+      "conversation": "Conversation",
+      "reviewDate": "Review date",
+      "performanceRating": "Performance rating",
+      "reasonDetails": "Reason details",
+      "preferredDate": "Preferred date",
+      "preferredTimePeriod": "Preferred time period",
+      "additionalNotes": "Additional notes",
+      "optionalDetailsPlaceholder": "Optional details for the specialist",
+      "submitRequest": "Submit Request",
+      "submitting": "Submitting...",
+      "copyLink": "Copy Link",
+      "openMeeting": "Open Meeting",
+      "signInRequired": "Please sign in to continue."
+    },
+    "home": {
+      "title": "Home",
+      "greeting": "Welcome back",
+      "greetingMorning": "Good morning, {name}!",
+      "startTodaysExercise": "Start Today's Exercise",
+      "selectChild": "Select a child",
+      "selectChildAriaLabel": "Select child",
+      "loadingChildren": "Loading children...",
+      "noChildren": "No children",
+      "pleaseWait": "Please wait",
+      "loadingSummary": "Loading summary...",
+      "summaryUnavailable": "Summary unavailable.",
+      "noLinkedChildren": "No linked children found yet.",
+      "todaysTasks": "Today's Tasks",
+      "loadingTodaysTasks": "Loading today's tasks...",
+      "unableToLoadTodaysTasks": "Unable to load today's tasks. {error}",
+      "upcomingSession": "Upcoming Session",
+      "upcomingSchedule": "Upcoming Schedule",
+      "loadingUpcomingSchedule": "Loading upcoming schedule...",
+      "upcomingScheduleUnavailable": "Upcoming schedule unavailable right now.",
+      "calendar": "Calendar",
+      "loadingCalendar": "Loading calendar...",
+      "calendarUnavailable": "Calendar unavailable right now.",
+      "calendarFor": "Calendar for {monthLabel}",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "sessionLegend": "Session",
+      "exerciseLegend": "Exercise",
+      "latestUpdates": "Latest Updates",
+      "loadingLatestUpdates": "Loading latest updates...",
+      "latestUpdatesUnavailable": "Latest updates unavailable right now.",
+      "unableToLoadLatestUpdates": "Unable to load latest updates.",
+      "noUpdatesYet": "No updates yet for this child.",
+      "latestReportUnavailable": "Latest report unavailable.",
+      "specialistFeedbackUnavailable": "Specialist feedback unavailable.",
+      "loadingChildProgress": "Loading child progress...",
+      "overallProgressAriaLabel": "Overall progress",
+      "todaysSummary": "Today's Summary",
+      "tasksLabel": "Tasks",
+      "nextSession": "Next Session",
+      "overallProgress": "Overall Progress",
+      "summaryNavigateAria": "{label}: {value}. Go to {destination}.",
+      "completedCount": "{completed} of {total} completed",
+      "tasksProgressAria": "{completed} of {total} tasks completed",
+      "seeAll": "See All",
+      "noTasksToday": "No tasks assigned for today.",
+      "weeklyProgressReport": "Weekly Progress Report",
+      "latestSpecialistFeedback": "Latest Specialist Feedback",
+      "openReport": "Open Report",
+      "viewFeedback": "View Feedback",
+      "rehabilitationFollowUp": "Rehabilitation Follow-up",
+      "exercisesCompletedToday": "{completed} of {total} exercises completed today",
+      "exercisesCompletedThisWeek": "{count} exercises completed this week",
+      "nextSessionLabel": "Next session:",
+      "noSessionScheduled": "No session scheduled",
+      "noUpcomingSessions": "No upcoming sessions scheduled.",
+      "onlineMeeting": "Online meeting",
+      "inPersonSession": "In-person session",
+      "openMeeting": "Open Meeting",
+      "viewSessionDetails": "View session details",
+      "aiAssistantCard": "AI Assistant",
+      "aiDailyGuidance": "Daily Guidance",
+      "aiAssistantHint": "Ask about exercises, reports, sessions, or home-practice guidance.",
+      "aiSuggestionExplainExercise": "Explain an exercise",
+      "aiSuggestionUnderstandProgress": "Understand progress",
+      "suggestedTopicsAriaLabel": "Suggested topics",
+      "askAi": "Ask AI",
+      "viewAllExercises": "View all exercises",
+      "viewDetails": "View details",
+      "openAiAssistant": "Open AI Assistant",
+      "needQuickGuidance": "Need quick guidance?",
+      "aiSupportBody": "Ask the AI Assistant about today's exercises, session prep, or progress tips.",
+      "quickSummary": "Quick summary",
+      "noRecentUpdates": "No recent reports or specialist feedback yet.",
+      "latestReport": "Latest Report",
+      "treatmentJourney": "Treatment Journey",
+      "activeCaseBanner": {
+        "ariaLabel": "Active case request",
+        "message": "{name}'s case request is under assessment by {specialist}.",
+        "yourChild": "Your child",
+        "viewRequest": "View Request"
+      },
+      "recentUpdates": {
+        "title": "Recent Updates",
+        "viewAll": "View All",
+        "unread": "Unread"
+      },
+      "recentNotifications": {
+        "title": "Recent Notifications",
+        "viewAll": "View All Notifications",
+        "unreadActivate": "Unread. Activate to mark as read."
+      },
+      "encouragementAriaLabel": "Encouragement"
+    },
+    "children": {
+      "title": "My Children",
+      "subtitle": "Linked child profiles connected to your parent account.",
+      "detailTitle": "Child Details",
+      "detailSubtitle": "Profile, exercises, reports, and sessions for your linked child.",
+      "backToDashboard": "Back to Dashboard",
+      "backToChildren": "Back to My Children",
+      "noChildren": "No linked children yet. Contact your specialist to link a child profile.",
+      "empty": {
+        "none": "No linked children yet. Contact your specialist to link a child profile.",
+        "notFound": "This child profile is not linked to your account or could not be found."
+      },
+      "loading": "Loading linked children...",
+      "loadingDetails": "Loading child details...",
+      "notFound": "This child profile is not linked to your account or could not be found.",
+      "ageYears": "{count} yrs",
+      "progressPercent": "Progress: {percent}%",
+      "age": "Age",
+      "diagnosis": "Diagnosis",
+      "specialist": "Specialist",
+      "treatmentPlan": "Treatment Plan",
+      "goals": "Goals",
+      "assignedExercises": "Assigned Exercises",
+      "noAssignedExercises": "No assigned exercises yet.",
+      "reports": "Reports",
+      "noReports": "No reports yet.",
+      "sessions": "Sessions",
+      "noSessions": "No sessions scheduled.",
+      "specialistFeedback": "Specialist Feedback",
+      "recentSubmissions": "Recent Submissions",
+      "viewProgress": "View Progress",
+      "viewSessions": "View Sessions",
+      "viewReports": "View Reports"
+    },
+    "caseRequests": {
+      "title": "Case Requests",
+      "subtitle": "Preliminary intake requests reviewed by the admin team and assigned specialists.",
+      "detailTitle": "Case Request Details",
+      "formTitleNew": "Submit Case Request",
+      "formTitleEdit": "Edit Case Request",
+      "formSubtitle": "Share preliminary information for admin review and specialist assignment.",
+      "backToDashboard": "Back to Dashboard",
+      "backToList": "Back to Case Requests",
+      "newRequest": "New Case Request",
+      "empty": {
+        "none": "You have not submitted any case requests yet.",
+        "filtered": "No case requests match your search or filters."
+      },
+      "loading": "Loading case requests...",
+      "loadingDetail": "Loading case request...",
+      "loadingForm": "Loading form...",
+      "notFound": "Case request not found.",
+      "viewRequestAria": "View case request for {childName}",
+      "submittedOn": "Submitted {date}",
+      "genderLabel": "Gender: {gender}",
+      "categoryLabel": "Category: {category}",
+      "submitted": "Submitted {date}",
+      "assignedSpecialist": "Specialist: {name}",
+      "caseDescription": "Case Description",
+      "observedDifficulties": "Observed Difficulties",
+      "rejectionReason": "Rejection Reason",
+      "editRequest": "Edit Request",
+      "openMessages": "Open Messages",
+      "childName": "Child name",
+      "dateOfBirth": "Date of birth",
+      "genderField": "Gender",
+      "selectGender": "Select gender",
+      "categoryField": "Category",
+      "selectCategory": "Select a category",
+      "caseDescriptionField": "Case description",
+      "observedDifficultiesField": "Observed difficulties",
+      "hasPreviousDiagnosis": "Has previous diagnosis",
+      "previousDiagnosisDetails": "Previous diagnosis details",
+      "currentlyReceivingTreatment": "Currently receiving treatment",
+      "currentTreatmentDetails": "Current treatment details",
+      "preferredContactPeriod": "Preferred contact period",
+      "saving": "Saving...",
+      "updateRequest": "Update Request",
+      "submitRequest": "Submit Request",
+      "searchPlaceholder": "Search request...",
+      "sortLabel": "Sort",
+      "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "alphabetical": "Alphabetical"
+      },
+      "status": {
+        "all": "All statuses",
+        "pending": "Pending Review",
+        "assigned": "Specialist Assigned",
+        "under_assessment": "Under Assessment",
+        "underAssessment": "Under Assessment",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "converted_to_patient": "Profile Created",
+        "convertedToPatient": "Profile Created"
+      },
+      "statusSubtitle": {
+        "pending": "Waiting for admin review.",
+        "assigned": "Specialist assigned; review starting.",
+        "under_assessment": "Specialist is assessing the case.",
+        "underAssessment": "Specialist is assessing the case.",
+        "accepted": "Case accepted; profile may be created soon.",
+        "rejected": "Request not accepted. See reason below.",
+        "converted_to_patient": "The case was accepted and the patient profile was created.",
+        "convertedToPatient": "The case was accepted and the patient profile was created."
+      },
+      "categories": {
+        "speechAndLanguageTherapy": "Speech and Language Therapy",
+        "behavioralTherapy": "Behavioral Therapy",
+        "occupationalTherapy": "Occupational Therapy",
+        "learningDifficulties": "Learning Difficulties",
+        "autismSupport": "Autism Support",
+        "developmentalDelay": "Developmental Delay",
+        "motorRehabilitation": "Motor Rehabilitation"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "notSpecified": "Not specified"
+      },
+      "childPhoto": {
+        "title": "Child photo",
+        "addPhoto": "Add child photo",
+        "changePhoto": "Change child photo",
+        "removePhoto": "Remove photo"
+      },
+      "imageHint": "Optional. JPEG, PNG, or WebP up to 5 MB.",
+      "validation": {
+        "selectImage": "Please select an image file.",
+        "invalidImageType": "Unsupported image type. Use JPEG, PNG, or WebP.",
+        "imageTooLarge": "Image is too large. Maximum size is 5 MB."
+      },
+      "contactPeriod": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "flexible": "Flexible"
+      }
+    },
+    "exercises": {
+      "title": "Daily Tasks",
+      "detailTitle": "Exercise Details",
+      "tabs": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "assigned": "Assigned"
+      },
+      "status": {
+        "todo": "To Do",
+        "submitted": "Submitted",
+        "reviewed": "Reviewed",
+        "needs_retry": "Needs Retry"
+      },
+      "sort": {
+        "actionable": "Most actionable",
+        "dueDate": "Due date",
+        "newest": "Newest assigned",
+        "alphabetical": "Alphabetical"
+      },
+      "empty": {
+        "daily": "No daily exercises.",
+        "weekly": "No weekly exercises.",
+        "assigned": "No assigned exercises.",
+        "filtered": "No exercises match the current filters."
+      },
+      "actions": {
+        "open": "Open Exercise",
+        "resume": "Resume Exercise",
+        "viewDetails": "View Details"
+      },
+      "loading": "Loading exercises...",
+      "instructions": "Instructions",
+      "uploadSubmission": "Upload submission",
+      "notes": "Notes"
+    },
+    "progress": {
+      "title": "Treatment Journey",
+      "subtitle": "Progress throughout the treatment period",
+      "viewDetails": "View details",
+      "loadError": "Couldn't load treatment progress.",
+      "emptyMessage": "Progress will appear after exercises are reviewed.",
+      "startedAt": "Started At",
+      "currentProgress": "Current Progress",
+      "scoreChange": "Score Change",
+      "semanticsLoading": "Treatment Journey, loading progress",
+      "semanticsError": "Treatment Journey, could not load treatment progress",
+      "semanticsEmpty": "Treatment Journey, progress will appear after exercises are reviewed",
+      "semanticsLoaded": "Treatment Journey, current progress {score} percent, {trend}",
+      "openDetailsAria": "{summary}. Open treatment journey details.",
+      "trendImproving": "Improving",
+      "trendNeedsAttention": "Needs Attention",
+      "trendStable": "Stable",
+      "scoreChangePositive": "+{points} points",
+      "scoreChangeNegative": "{points} points",
+      "scoreChangeZero": "0 points",
+      "period": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "full": "Full Treatment"
+      },
+      "improvement": "Improvement Percentage",
+      "goalProgress": "Goal Progress",
+      "trend": {
+        "up": "Progress is moving upward",
+        "down": "Progress needs attention",
+        "steady": "Steady improvement",
+        "building": "Building your journey"
+      },
+      "empty": "Progress data will appear once exercises are tracked.",
+      "loading": "Loading progress..."
+    },
+    "sessions": {
+      "title": "Sessions",
+      "hub": {
+        "sessions": "Sessions",
+        "requests": "Session Requests"
+      },
+      "tabs": {
+        "upcoming": "Upcoming",
+        "history": "History"
+      },
+      "status": {
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "no_show": "No Show",
+        "noShow": "No Show"
+      },
+      "requestStatus": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "reason": {
+        "regular_follow_up": "Regular Follow-up",
+        "replacement_cancelled": "Replacement (Cancelled Session)",
+        "replacement_missed": "Replacement (Missed Session)",
+        "additional_session": "Additional Session",
+        "consultation": "Consultation",
+        "other": "Other",
+        "regularFollowUp": "Regular Follow-up",
+        "replacementCancelled": "Replacement (Cancelled Session)",
+        "replacementMissed": "Replacement (Missed Session)",
+        "additionalSession": "Additional Session"
+      },
+      "timePeriod": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "flexible": "Flexible"
+      },
+      "empty": {
+        "upcoming": "No upcoming sessions.",
+        "history": "No session history.",
+        "filtered": "No sessions match your filters.",
+        "requests": "No session requests yet."
+      },
+      "requestSession": "Request session",
+      "joinMeeting": "Join meeting",
+      "loading": "Loading sessions...",
+      "errors": {
+        "meetingLinkUnavailable": "Meeting link is unavailable.",
+        "meetingLinkCopyFailed": "Unable to copy the meeting link.",
+        "meetingLinkCopied": "Meeting link copied."
+      },
+      "validation": {
+        "selectChild": "Select a child.",
+        "selectSpecialist": "Select a specialist.",
+        "selectReason": "Select a reason.",
+        "otherReason": "Describe the reason when selecting Other.",
+        "preferredDateRequired": "Preferred date is required.",
+        "preferredDateInvalid": "Use a valid date.",
+        "preferredDatePast": "Preferred date cannot be in the past.",
+        "selectTimePeriod": "Select a preferred time period."
+      },
+      "searchPlaceholder": "Search by child or specialist",
+      "formTitle": "Request a Session",
+      "formSubtitle": "Submit a request for your specialist to review and schedule.",
+      "formAriaLabel": "Request a session",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "duration": "Duration",
+      "location": "Location",
+      "openMeeting": "Open Meeting",
+      "copyLink": "Copy Link",
+      "hubAreasAriaLabel": "Sessions hub areas",
+      "listTabsAriaLabel": "Session lists",
+      "requested": "Requested",
+      "preferredTime": "Preferred time",
+      "approvedSession": "Approved session",
+      "response": "Response",
+      "time": "Time",
+      "date": "Date",
+      "meetingLink": "Meeting link"
+    },
+    "reports": {
+      "title": "Reports",
+      "detailTitle": "Report Details",
+      "empty": {
+        "none": "No reports available yet.",
+        "filtered": "No reports match your filters."
+      },
+      "loading": "Loading reports...",
+      "generated": "Generated",
+      "viewReport": "View report",
+      "download": "Download",
+      "sections": {
+        "executiveSummary": "Executive summary",
+        "clinicalInsights": "Clinical insights",
+        "nextSteps": "Next steps"
+      },
+      "type": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "assessment": "Assessment",
+        "progress": "Progress"
+      },
+      "sort": {
+        "childName": "Child name",
+        "reportType": "Report type"
+      },
+      "errors": {
+        "fileUnavailable": "Report file is unavailable."
+      },
+      "summary": {
+        "executiveSummary": "Executive summary",
+        "patientProgress": "Patient progress",
+        "speechAnalysis": "Speech analysis",
+        "exerciseAdherence": "Exercise adherence",
+        "goalProgress": "Goal progress",
+        "clinicalInsights": "Clinical insights",
+        "risksOrRegressions": "Risks or regressions",
+        "recommendations": "Recommendations",
+        "nextSteps": "Next steps"
+      },
+      "openReport": "Open report",
+      "downloadReport": "Download report",
+      "searchPlaceholder": "Search by title, child, specialist, or summary",
+      "fileNotAvailable": "File not available yet",
+      "viewDetailsAria": "View details for {title}",
+      "viewReportDetails": "View report details",
+      "forChild": "For {name}",
+      "summaryTitle": "Summary",
+      "openReportFile": "Open report file",
+      "openReportLabel": "Open report: {title}",
+      "fileUnavailableYet": "Report file is not available yet."
+    },
+    "feedback": {
+      "title": "Exercise Feedback",
+      "empty": {
+        "none": "No exercise feedback yet.",
+        "filtered": "No reviews match your filters."
+      },
+      "loading": "Loading feedback...",
+      "rating": "Rating",
+      "needsRetry": "Needs Retry",
+      "newest": "Newest review",
+      "requiresRetryFirst": "Requires retry first",
+      "sort": {
+        "newest": "Newest review",
+        "oldest": "Oldest review",
+        "retryFirst": "Requires retry first"
+      },
+      "searchPlaceholder": "Search by exercise title",
+      "reviewDate": "Review date",
+      "performanceRating": "Performance rating",
+      "forChild": "For {name}",
+      "requiresRetry": "Requires Retry"
+    },
+    "complaints": {
+      "title": "My Complaints",
+      "formTitle": "Report a Specialist",
+      "detailTitle": "Complaint Details",
+      "empty": "You have not submitted any complaints yet. Use Report a Specialist when you need administration review.",
+      "intro": "Your complaint will be reviewed by administration only and will not be sent directly to the specialist.",
+      "child": "Child",
+      "specialist": "Specialist",
+      "category": "Complaint category",
+      "description": "Description",
+      "descriptionHint": "Describe your concern in detail (at least 20 characters)",
+      "attachment": {
+        "title": "Attachment (optional)",
+        "openError": "Unable to open this attachment.",
+        "view": "View attachment",
+        "alt": "Complaint attachment",
+        "add": "Add attachment",
+        "help": "Supported formats: JPEG, PNG, WebP, or PDF. Maximum size 10 MB."
+      },
+      "addAttachment": "Add attachment",
+      "removeAttachment": "Remove attachment",
+      "submit": "Submit complaint",
+      "submitting": "Submitting...",
+      "submittedSuccess": "Your complaint was submitted successfully and will be reviewed by administration.",
+      "adminResponse": "Administration response",
+      "submitted": "Submitted",
+      "statusLabel": "Status",
+      "categoryLabels": {
+        "specialist_not_responding": "Specialist is not responding",
+        "poor_follow_up": "Poor follow-up",
+        "repeated_session_cancellations": "Repeated session cancellations",
+        "delayed_exercise_feedback": "Delayed exercise feedback",
+        "inappropriate_communication": "Inappropriate communication",
+        "other": "Other"
+      },
+      "status": {
+        "pending": "Pending",
+        "under_review": "Under Review",
+        "resolved": "Resolved",
+        "rejected": "Rejected"
+      },
+      "validation": {
+        "selectChild": "Please select a child.",
+        "selectSpecialist": "Please select a specialist.",
+        "selectCategory": "Please select a complaint category.",
+        "descriptionTooShort": "Description must be at least 20 characters.",
+        "descriptionTooLong": "Description must not exceed 1000 characters.",
+        "noSpecialistAssigned": "No specialist is assigned to this child.",
+        "attachmentInvalidType": "Unsupported attachment type. Allowed: images and PDF.",
+        "attachmentTooLarge": "Attachment is too large. Maximum allowed size is 10 MB.",
+        "attachmentPickFailed": "Unable to read the selected file.",
+        "attachmentUploadFailed": "Failed to upload attachment. Please try again.",
+        "submitFailed": "Failed to submit complaint. Please try again.",
+        "duplicateActive": "An active complaint already exists for this child, specialist, and category.",
+        "specialistNotAssigned": "The selected specialist is not assigned to this child.",
+        "childNotAuthorized": "You are not authorized to submit a complaint for this child."
+      },
+      "notFound": "Complaint not found.",
+      "notSignedIn": "Please sign in to submit a complaint.",
+      "form": {
+        "selectChild": "Child",
+        "selectSpecialist": "Specialist",
+        "category": "Category",
+        "complaintCategory": "Complaint Category",
+        "selectCategory": "Select a category",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe your concern in detail (minimum 20 characters)",
+        "loadingSpecialist": "Loading specialist...",
+        "noSpecialist": "No specialist is assigned to this child.",
+        "submit": "Submit Complaint",
+        "submitting": "Submitting...",
+        "uploadingAttachment": "Uploading attachment..."
+      },
+      "introShort": "Your complaint will be reviewed by the administration only. It will not be sent directly to the specialist.",
+      "attachmentPreview": {
+        "pdfTitle": "PDF attachment",
+        "pdfHint": "Open to view the submitted file",
+        "openAttachment": "Open attachment",
+        "openFullImage": "Open full image"
+      },
+      "attachmentFieldHelpShort": "Supported formats: Image or PDF."
+    },
+    "messages": {
+      "title": "Messages",
+      "conversations": "Conversations",
+      "searchPlaceholder": "Search conversations...",
+      "empty": {
+        "conversations": "No conversations yet.",
+        "chat": "No messages yet. Start the conversation below."
+      },
+      "chatEmpty": "No messages yet. Start the conversation.",
+      "send": "Send",
+      "loading": "Loading messages...",
+      "attachment": "Attachment",
+      "unread": "Unread",
+      "regardingChild": "Regarding {name}",
+      "patientLabel": "Patient: {name}",
+      "subtitle": "Secure conversations with specialists about your children.",
+      "selectConversationView": "Select a conversation to view messages.",
+      "conversationDefault": "Conversation",
+      "conversationsButton": "Conversations",
+      "composer": {
+        "placeholder": "Write a message...",
+        "stopRecording": "Stop recording",
+        "addAttachment": "Add attachment",
+        "image": "Image",
+        "video": "Video",
+        "recordVoice": "Record Voice",
+        "file": "File",
+        "uploading": "Uploading… {percent}%",
+        "selectedImageAlt": "Selected image preview",
+        "sending": "Sending..."
+      },
+      "lightbox": {
+        "preview": "Image preview",
+        "closePreview": "Close preview",
+        "close": "Close"
+      },
+      "pdfDocument": "PDF document",
+      "attachments": {
+        "imageUnavailable": "Image unavailable",
+        "videoUnavailable": "Video unavailable",
+        "audioUnavailable": "Audio unavailable",
+        "downloadVideo": "Download video",
+        "viewImage": "View image: {label}"
+      }
+    },
+    "instructionMedia": {
+      "title": "Instructional Media",
+      "imageLoadFailed": "Unable to load image preview.",
+      "videoUnsupported": "Your browser does not support video playback.",
+      "audioUnsupported": "Your browser does not support audio playback.",
+      "pdfDocument": "PDF document",
+      "mediaFile": "Media file",
+      "openHint": "Open the specialist-provided file in a new tab.",
+      "open": "Open"
+    },
+    "aiAssistant": {
+      "title": "AI Assistant",
+      "inputPlaceholder": "Ask about exercises, progress, or session prep...",
+      "newConversation": "New conversation",
+      "sending": "Sending...",
+      "failedToSend": "Failed to send message",
+      "emptyIntro": "Ask questions about your child's exercises, progress, or rehabilitation plan.",
+      "disclaimer": "AI guidance supports, but does not replace, your child's specialist.",
+      "suggested": {
+        "explainExercise": "Explain today's exercise",
+        "summarizeProgress": "Summarize recent progress",
+        "focusToday": "What should we focus on today?",
+        "explainReport": "Explain the latest report"
+      },
+      "loading": "Loading conversation...",
+      "safetyNotice": "AI guidance is for support only. Always follow your specialist's instructions.",
+      "prompt": {
+        "explainExercise": "Explain today's exercise",
+        "summarizeProgress": "Summarize my child's progress",
+        "focusToday": "What should I focus on today?",
+        "explainReport": "Explain the latest report"
+      },
+      "empty": {
+        "noChild": "Select a child to begin.",
+        "noConversations": "No conversations yet.",
+        "noConversationSelected": "Start a conversation about your child's home practice or progress.",
+        "noMessages": "Ask me anything about your child's exercises, reports, or progress."
+      },
+      "sender": {
+        "you": "You",
+        "assistant": "AI Assistant"
+      },
+      "suggestedHomePractice": "Suggested Home Practice",
+      "subtitle": "Ask about home practice, exercises, and progress for your linked child.",
+      "loadingChildren": "Loading children...",
+      "thinking": "AI Assistant is thinking...",
+      "creating": "Creating...",
+      "newShort": "New",
+      "conversationsTitle": "Conversations",
+      "loadingHistory": "Loading message history...",
+      "backToConversations": "Back to conversations",
+      "messageInputLabel": "Message to AI Assistant",
+      "composerHint": "Enter to send, Shift+Enter for a new line",
+      "sendMessageAria": "Send message",
+      "messageAria": "{sender} message",
+      "suggestedPromptsAria": "Suggested prompts",
+      "childLabel": "Child"
+    },
+    "notificationsPage": {
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
+      "empty": "No notifications yet.",
+      "filteredEmpty": "No notifications match your filters.",
+      "loading": "Loading notifications...",
+      "filters": {
+        "all": "All",
+        "unread": "Unread",
+        "read": "Read"
+      },
+      "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "unreadFirst": "Unread first"
+      },
+      "types": {
+        "exercise_reminder": "Exercise reminder",
+        "session_reminder": "Session reminder",
+        "feedback_received": "Feedback received",
+        "report_ready": "Report ready",
+        "new_message": "New message",
+        "general": "General",
+        "session_request": "Session request",
+        "case_request_submitted": "Case request submitted",
+        "case_request_assigned": "Case request assigned",
+        "case_request_accepted": "Case request accepted",
+        "case_request_rejected": "Case request rejected",
+        "case_request_converted": "Case request converted"
+      },
+      "searchPlaceholder": "Search by title, message, or child",
+      "summaryCount": "{count} notification",
+      "summaryCountPlural": "{count} notifications",
+      "unreadSummary": " · {count} unread",
+      "subtitleUnread": "{unread} unread of {total} notification.",
+      "subtitleUnreadPlural": "{unread} unread of {total} notifications.",
+      "unreadNotificationAria": "Unread notification: {title}",
+      "notificationAria": "Notification: {title}"
+    },
+    "profilePage": {
+      "title": "Profile",
+      "editTitle": "Edit Profile",
+      "fullName": "Full Name",
+      "phone": "Phone",
+      "address": "Address",
+      "relationshipNotes": "Relationship Notes",
+      "profilePhoto": "Profile Photo",
+      "changePhoto": "Change Photo",
+      "saveChanges": "Save Changes",
+      "personalInfo": "Personal Information",
+      "parentDetails": "Parent Details",
+      "loading": "Loading profile...",
+      "notAvailable": "Profile not available.",
+      "updatedSuccess": "Profile updated successfully",
+      "fullNameRequired": "Full name is required",
+      "loadFailed": "Failed to load profile",
+      "saveFailed": "Failed to save profile",
+      "notSignedIn": "Not signed in"
+    },
+    "pages": {
+      "dailyTasks": {
+        "title": "Daily Tasks",
+        "subtitle": "Review daily, weekly, and assigned exercises for your children.",
+        "loading": "Loading exercises..."
+      },
+      "exerciseDetail": {
+        "noExerciseSpecified": "No exercise was specified. Return to the dashboard and select a task.",
+        "loading": "Loading exercise details...",
+        "unavailable": "Exercise details are unavailable.",
+        "forChild": "For {name}",
+        "frequency": "Frequency",
+        "dueDate": "Due date",
+        "instructions": "Instructions",
+        "instructionsEmpty": "Follow the specialist instructions for this exercise.",
+        "submission": "Submission",
+        "submittedSuccess": "Exercise submitted successfully.",
+        "parentNotes": "Parent Notes",
+        "optional": "(optional)",
+        "notesPlaceholder": "Add notes about how the exercise went, or anything you'd like the specialist to know.",
+        "mediaAttachment": "Media Attachment",
+        "mediaHelp": "Attach one image, video, or audio file up to 50 MB.",
+        "chooseFile": "Choose File",
+        "replaceFile": "Replace File",
+        "submitExercise": "Submit Exercise",
+        "submitExerciseAgain": "Submit Exercise Again",
+        "submitting": "Submitting…",
+        "submitAriaLabel": "Submit exercise",
+        "removeFile": "Remove {name}",
+        "previewOf": "Preview of {name}",
+        "mediaType": {
+          "image": "Image",
+          "video": "Video",
+          "audio": "Audio",
+          "file": "File"
+        }
+      },
+      "progress": {
+        "title": "Treatment Journey",
+        "subtitle": "See how your child's progress has changed over time.",
+        "loading": "Loading progress...",
+        "loadingSupporting": "Loading supporting progress details...",
+        "noChildren": "No linked children available for progress tracking.",
+        "selectChild": "Select a child to view treatment journey progress.",
+        "supportingTitle": "Supporting Progress Details",
+        "improvement": "Improvement: {percent}%",
+        "completedExercises": "Completed exercises: {count}",
+        "exercisesCompleted": "{count} exercises completed",
+        "snapshot": "Progress snapshot"
+      },
+      "sessions": {
+        "title": "Sessions",
+        "subtitle": "View therapy sessions and request new appointments for your children.",
+        "loading": "Loading sessions...",
+        "loadingRequests": "Loading session requests...",
+        "myRequests": "My Requests",
+        "requestSubmitted": "Session request submitted."
+      },
+      "reports": {
+        "title": "Reports",
+        "subtitle": "View progress reports for your linked children.",
+        "countLoaded": "{count} report loaded.",
+        "countLoadedPlural": "{count} reports loaded.",
+        "loading": "Loading reports...",
+        "detailTitle": "Report Details",
+        "loadingDetail": "Loading report details...",
+        "notFound": "Report not found.",
+        "generated": "Generated"
+      },
+      "feedback": {
+        "title": "Exercise Feedback",
+        "subtitle": "Specialist reviews for submitted exercises across your children.",
+        "loading": "Loading exercise feedback..."
+      },
+      "complaints": {
+        "title": "My Complaints",
+        "subtitle": "Review complaints you submitted for administration review.",
+        "loading": "Loading complaints...",
+        "reportSpecialist": "Report a Specialist",
+        "empty": "You have not submitted any complaints yet. Use Report a Specialist when you need administration review.",
+        "formTitle": "Report a Specialist",
+        "formSubtitle": "Submit a concern for administration review.",
+        "loadingChildren": "Loading children...",
+        "noChildren": "No linked children were found. Add a child before submitting a complaint.",
+        "submitSuccess": "Your complaint has been submitted successfully and will be reviewed by the administration.",
+        "detailTitle": "Complaint Details",
+        "detailSubtitle": "Review the information submitted for administration review.",
+        "loadingDetail": "Loading complaint details...",
+        "notFound": "Complaint not found.",
+        "description": "Description",
+        "adminResponse": "Administration Response",
+        "submitted": "Submitted",
+        "status": "Status",
+        "intro": "Describe your concern in detail. The administration team will review your submission and respond when possible.",
+        "viewMyComplaints": "My Complaints",
+        "viewDetails": "View details",
+        "submittedLabel": "Submitted {date}"
+      },
+      "messages": {
+        "title": "Messages",
+        "loading": "Loading conversations...",
+        "loadingThread": "Loading messages...",
+        "selectConversation": "Select a conversation to start messaging.",
+        "backToList": "Back to conversations"
+      },
+      "aiAssistant": {
+        "title": "AI Assistant",
+        "loading": "Loading AI assistant..."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "subtitle": "Stay updated on exercises, sessions, reports, and messages.",
+        "loading": "Loading notifications...",
+        "markAllRead": "Mark all as read"
+      },
+      "profile": {
+        "title": "Profile",
+        "subtitle": "Manage your personal and account information.",
+        "editTitle": "Edit Profile",
+        "editSubtitle": "Update your contact details and parent information.",
+        "loading": "Loading profile...",
+        "unavailable": "Profile unavailable.",
+        "updatedSuccess": "Profile updated successfully"
+      }
+    },
+    "dailyTasks": {
+      "tabs": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "assigned": "Assigned"
+      },
+      "sort": {
+        "actionable": "Most actionable",
+        "dueDate": "Due date",
+        "newest": "Newest assigned"
+      },
+      "status": {
+        "todo": "To Do",
+        "needsRetry": "Needs Retry",
+        "submitted": "Submitted",
+        "reviewed": "Reviewed"
+      },
+      "action": {
+        "open": "Open Exercise",
+        "resume": "Resume Exercise",
+        "viewDetails": "View Details"
+      },
+      "empty": {
+        "daily": "No daily exercises.",
+        "weekly": "No weekly exercises.",
+        "assigned": "No assigned exercises.",
+        "filtered": "No exercises match the current filters."
+      },
+      "searchPlaceholder": "Search by exercise title",
+      "tabsAriaLabel": "Exercise lists",
+      "instructionMediaIncluded": "Instruction media included"
+    },
+    "dashboard": {
+      "frequency": {
+        "oneTime": "One time"
+      },
+      "dueToday": "Due Today",
+      "noSessionScheduled": "No session scheduled",
+      "defaultProgressReport": "Progress Report",
+      "defaultFeedbackQuote": "Review available for the latest exercise submission.",
+      "reps": "{count} reps",
+      "improvementTrend": "{sign}{percent}% improvement",
+      "status": {
+        "activeTreatmentPlan": "Active treatment plan"
+      },
+      "sessionMode": {
+        "online": "Online",
+        "inPerson": "In-person"
+      },
+      "exerciseState": {
+        "submitted": "This exercise has been submitted and is awaiting specialist review.",
+        "reviewed": "This exercise has been reviewed by the specialist.",
+        "needsRetry": "The specialist asked for this exercise to be done again. Submit a new recording or notes below."
+      },
+      "aiGuidance": {
+        "default": "Ask about exercises, reports, sessions, or home-practice guidance.",
+        "pending": "You still have exercises to complete today. Ask the assistant for help understanding the instructions.",
+        "complete": "Today's exercises are complete. Ask the assistant for home-practice guidance."
+      },
+      "submission": {
+        "unsupportedType": "This file type is not supported. Use an image, video, or audio file.",
+        "tooLarge": "File exceeds 50 MB. Choose a smaller file."
+      }
+    },
+    "treatmentJourney": {
+      "period": {
+        "full": "Full Treatment"
+      },
+      "trend": {
+        "improving": "Improving",
+        "declining": "Needs Attention",
+        "stable": "Stable"
+      },
+      "scoreChangePositive": "+{points} points",
+      "scoreChangeNegative": "{points} points",
+      "scoreChangeZero": "0 points",
+      "startedAt": "Started At",
+      "currentProgress": "Current Progress",
+      "scoreChange": "Score Change",
+      "treatmentPeriod": "Treatment Period",
+      "periodStart": "Start",
+      "periodEnd": "End",
+      "selectedView": "Selected view",
+      "periodSelectorAria": "Treatment journey period",
+      "summaryAria": "Treatment journey summary",
+      "interpretationAria": "Treatment journey interpretation",
+      "periodInfoAria": "Treatment period information",
+      "refresh": "Refresh",
+      "refreshAria": "Refresh treatment journey",
+      "loadFailedDefault": "Couldn't load the treatment journey.",
+      "emptyProgress": "Progress will appear after exercises are reviewed.",
+      "subtitleNamed": "See how {name}'s progress has changed over time",
+      "subtitleGeneric": "See how your child's progress has changed over time",
+      "childPhotoAlt": "Child profile photo",
+      "interpretation": {
+        "buildingTitle": "Building your journey",
+        "earlyTitle": "Early progress recorded",
+        "needMoreData": "More progress entries are needed to identify a trend.",
+        "improvingTitle": "Progress is moving upward",
+        "improvingBody": "The current score is higher than the starting score.",
+        "decliningTitle": "Progress needs attention",
+        "decliningBody": "The latest score is lower than the previous period. Review recent feedback or contact the specialist.",
+        "stableTitle": "Progress is currently stable",
+        "stableBody": "Recent scores are staying within a similar range."
+      },
+      "errors": {
+        "signInRequired": "Please sign in to view treatment journey progress.",
+        "accessDenied": "You do not have access to this child's treatment journey.",
+        "notFound": "Treatment journey data was not found for this child.",
+        "loadFailed": "Failed to load treatment journey. Please try again."
+      },
+      "chart": {
+        "updating": "Updating chart…",
+        "score": "Score",
+        "exercises": "Exercises",
+        "ariaEmpty": "Treatment progress chart, no data yet",
+        "ariaWithPoints": "Treatment progress chart with {count} points",
+        "selectedPointAria": "Selected point score {score}, date {date}"
+      }
+    },
+    "notifications": {
+      "defaultTitle": "Notification",
+      "sort": {
+        "unreadFirst": "Unread first"
+      },
+      "empty": {
+        "none": "No notifications yet.",
+        "filtered": "No notifications match your filters."
+      },
+      "type": {
+        "exerciseReminder": "Exercise reminder",
+        "sessionReminder": "Session reminder",
+        "feedbackReceived": "Feedback received",
+        "reportReady": "Report ready",
+        "newMessage": "New message",
+        "general": "General",
+        "sessionRequest": "Session request",
+        "caseRequestSubmitted": "Case request submitted",
+        "caseRequestAssigned": "Case request assigned",
+        "caseRequestAccepted": "Case request accepted",
+        "caseRequestRejected": "Case request rejected",
+        "caseRequestConverted": "Case request converted"
+      },
+      "systemText": {
+        "newMessageFrom": "New message from {name}",
+        "newMessageFromParticipant": "New message from a participant",
+        "sentImage": "Sent an image",
+        "sentAudio": "Sent an audio recording",
+        "sentPdf": "Sent a PDF file",
+        "sentVideo": "Sent a video",
+        "sentFile": "Sent a file"
+      }
+    },
+    "profile": {
+      "empty": {
+        "loadError": "We couldn't load your profile right now."
+      },
+      "validation": {
+        "fullNameRequired": "Full name is required.",
+        "imageRequired": "Please choose an image file."
+      },
+      "photoTitle": "Profile Photo",
+      "accountInfo": "Account Information",
+      "accountReadOnly": "Read-only account details.",
+      "personalInfo": "Personal Information",
+      "parentInfo": "Parent Information",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "role": "Role",
+      "address": "Address",
+      "relationshipNotes": "Relationship Notes",
+      "emailStatus": "Email Status",
+      "verified": "Verified",
+      "notVerified": "Not verified",
+      "memberSince": "Member Since",
+      "editProfile": "Edit Profile",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "changePhoto": "Change photo",
+      "avatarHint": "JPG or PNG image files are supported.",
+      "phoneNumber": "Phone number",
+      "relationshipNotesLower": "Relationship notes",
+      "profilePhotoAlt": "{name} profile photo"
+    },
+    "hooks": {
+      "loadComplaintsFailed": "Failed to load complaints.",
+      "complaintNotFound": "Complaint not found.",
+      "loadComplaintDetailFailed": "Failed to load complaint details.",
+      "loadChildrenFailed": "Failed to load linked children.",
+      "signInComplaint": "Please sign in to submit a complaint.",
+      "loadSessionsFailed": "Failed to load sessions.",
+      "signInSessions": "Please sign in to view sessions.",
+      "loadSessionRequestsFailed": "Failed to load session requests.",
+      "submitSessionRequestFailed": "Unable to submit session request.",
+      "signInSessionRequests": "Please sign in to view session requests.",
+      "loadReportsFailed": "Failed to load reports.",
+      "signInReports": "Please sign in to view reports.",
+      "reportNotFound": "Report not found.",
+      "loadReportDetailFailed": "Failed to load report details.",
+      "loadFeedbackFailed": "Failed to load exercise feedback.",
+      "signInFeedback": "Please sign in to view exercise feedback.",
+      "loadExercisesFailed": "Failed to load exercises.",
+      "signInExercises": "Please sign in to view exercises.",
+      "exerciseNotFound": "Exercise not found.",
+      "exerciseWrongChild": "This exercise does not belong to the selected child.",
+      "loadExerciseDetailFailed": "Failed to load exercise details.",
+      "loadProgressFailed": "Failed to load progress.",
+      "signInProgress": "Please sign in to view progress.",
+      "loadProfileFailed": "Failed to load profile.",
+      "loadConversationsFailed": "Failed to load conversations.",
+      "signInMessages": "Please sign in to view messages.",
+      "loadMessagesFailed": "Failed to load messages.",
+      "sendMessageFailed": "Failed to send message.",
+      "loadNotificationsFailed": "Failed to load notifications.",
+      "loadAiChildrenFailed": "Failed to load children.",
+      "loadAiConversationsFailed": "Failed to load conversations.",
+      "createAiConversationFailed": "Failed to create conversation.",
+      "aiConversationWrongChild": "This conversation belongs to another child.",
+      "loadAiMessagesFailed": "Failed to load message history.",
+      "sendAiMessageFailed": "Failed to send message.",
+      "profileSaveFailed": "Failed to save profile.",
+      "profileUpdated": "Profile updated successfully.",
+      "profileImageNoUrl": "Profile image upload succeeded but no image URL was returned.",
+      "profileSessionRefreshFailed": "Profile saved but the session could not be refreshed. Please reload the page."
+    }
+  },
+  "specialist": {
+    "nav": {
+      "home": "Home",
+      "patients": "Patients",
+      "caseRequests": "Case Requests",
+      "exercises": "Exercises",
+      "sessions": "Sessions",
+      "reviews": "Reviews",
+      "treatmentPlans": "Treatment Plans",
+      "reports": "Reports",
+      "support": "Support"
+    },
+    "shell": {
+      "navigationAriaLabel": "Specialist navigation",
+      "brandTitle": "Smart Rehabilitation",
+      "brandSubtitle": "Where Recovery Never Stops",
+      "searchPlaceholder": "Search patients, sessions, reports...",
+      "searchAriaLabel": "Search patients, sessions, reports"
+    },
+    "dashboard": {
+      "greeting": "Welcome back, {name}",
+      "greetingSubtitle": "Here's an overview of your clinical work today.",
+      "greetingAriaLabel": "Specialist greeting",
+      "overviewTitle": "Overview",
+      "overviewAriaLabel": "Overview",
+      "overviewLoadingAriaLabel": "Overview summary loading",
+      "viewAll": "View All",
+      "kpi": {
+        "activeCases": "Active Cases",
+        "pendingReviews": "Pending Reviews",
+        "todaysSessions": "Today's Sessions",
+        "treatmentPlans": "Treatment Plans",
+        "loading": "Loading...",
+        "loadingAriaLabel": "{label} loading",
+        "valueAriaLabel": "{label}: {value}"
+      },
+      "schedule": {
+        "title": "Weekly Schedule",
+        "subtitle": "Your sessions for this week",
+        "ariaLabel": "Weekly schedule",
+        "currentWeekAriaLabel": "Current week",
+        "weekDayAriaLabel": "{weekday} {day}{hasSessions}",
+        "weekDayHasSessions": ", has sessions",
+        "viewCalendar": "View Calendar →",
+        "loading": "Loading schedule...",
+        "emptyWeek": "No sessions are scheduled this week.",
+        "nextSession": "Next Session",
+        "viewSession": "View Session",
+        "onlineMeeting": "Online meeting",
+        "durationMinutes": "{minutes} min",
+        "noSessionsThisDayTitle": "No sessions scheduled for this day.",
+        "noSessionsThisDayHint": "Scheduled sessions will appear here when assigned.",
+        "noSessionsToday": "No sessions scheduled for today.",
+        "noMoreSessionsToday": "No more sessions today.",
+        "sessionRemainingToday": "1 session remaining today",
+        "sessionsRemainingToday": "{count} sessions remaining today",
+        "noSessionsThisDay": "No sessions scheduled for this day.",
+        "scheduledSessionSingular": "1 scheduled session",
+        "scheduledSessionCount": "{count} scheduled sessions",
+        "nextSessionToday": "Today, {time}",
+        "nextSessionTomorrow": "Tomorrow, {time}",
+        "sessionDateTime": "{date} • {time}",
+        "patientPhotoAlt": "{name} profile photo"
+      },
+      "reviews": {
+        "title": "Pending Reviews",
+        "subtitle": "Submissions waiting for your feedback",
+        "ariaLabel": "Pending reviews",
+        "loading": "Loading pending reviews...",
+        "empty": "No pending reviews right now.",
+        "submittedRecently": "Recently submitted",
+        "submittedMinutesAgo": "Submitted {minutes}m ago",
+        "submittedHoursAgo": "Submitted {hours}h ago",
+        "submittedDaysAgo": "Submitted {count} days ago",
+        "submittedOnDate": "Submitted {date}"
+      },
+      "progress": {
+        "title": "Recent Patient Progress",
+        "subtitle": "Latest progress across your active cases",
+        "ariaLabel": "Recent patient progress",
+        "loading": "Loading patient progress...",
+        "empty": "No patient progress available yet."
+      },
+      "errors": {
+        "signInRequired": "Please sign in as a specialist to view this dashboard.",
+        "overviewLoadFailed": "Failed to load dashboard overview.",
+        "scheduleSignInRequired": "Please sign in to view the specialist schedule.",
+        "scheduleLoadFailed": "Failed to load weekly schedule.",
+        "reviewsSignInRequired": "Please sign in to view pending reviews.",
+        "reviewsLoadFailed": "Failed to load pending reviews.",
+        "progressSignInRequired": "Please sign in to view patient progress.",
+        "progressLoadFailed": "Failed to load patient progress."
+      }
+    },
+    "patients": {
+      "title": "Patients",
+      "subtitle": "View and manage your assigned patients.",
+      "loading": "Loading patients...",
+      "empty": "No active patients assigned yet.",
+      "cardAriaLabel": "View patient {name}",
+      "errors": {
+        "loadFailed": "Failed to load patients.",
+        "signInRequired": "Please sign in to view patients."
+      }
+    },
+    "patientDetails": {
+      "back": "Back to Patients",
+      "loading": "Loading patient details...",
+      "notFound": "Patient not found.",
+      "overallProgress": "Overall Progress",
+      "noProgressData": "No progress data available yet.",
+      "messageParent": "Message Parent",
+      "openingConversation": "Opening...",
+      "quickStatistics": "Quick Statistics",
+      "treatmentPlan": "Treatment Plan",
+      "createTreatmentPlan": "Create Treatment Plan",
+      "editTreatmentPlan": "Edit Treatment Plan",
+      "noTreatmentPlanYet": "No treatment plan yet.",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "goals": "Goals",
+      "manageGoals": "Manage Goals",
+      "noGoals": "No goals defined for this patient yet.",
+      "completion": "Completion",
+      "assignedExercises": "Assigned Exercises",
+      "assignExercise": "Assign Exercise",
+      "noExercises": "No assigned exercises yet.",
+      "dueDate": "Due {date}",
+      "recentSubmissions": "Recent Exercise Submissions",
+      "reviewExercises": "Review Exercises",
+      "noSubmissions": "No recent submissions yet.",
+      "latestNotes": "Latest Specialist Notes",
+      "addSpecialistNote": "Add Specialist Note",
+      "noNotes": "No specialist notes yet.",
+      "addNoteTitle": "Add Specialist Note",
+      "noteLabel": "Note",
+      "notePlaceholder": "Enter clinical note...",
+      "noteRequired": "Note is required.",
+      "saveNote": "Save Note",
+      "savingNote": "Saving...",
+      "saveNoteFailed": "Unable to save note. Please try again.",
+      "noteSaved": "Note saved",
+      "viewReports": "View Reports",
+      "aiRecommendations": "AI Recommendations",
+      "speechAnalysis": "Speech Analysis",
+      "noDiagnosis": "No diagnosis recorded",
+      "ageDiagnosis": "Age {age} • {diagnosis}",
+      "ageOneYear": "1 year",
+      "ageYears": "{count} years",
+      "familyPatternInsight": "Family Pattern Insight",
+      "clinicalSummary": "Clinical Summary",
+      "loadingFamilyPattern": "Loading family pattern insight...",
+      "familyPatternNeutralSummary": "No repeated clinical characteristics were detected in the available records.",
+      "familyPatternDisclaimer": "This feature identifies repeated characteristics among children linked to the same parent account. It does not diagnose hereditary or genetic conditions.",
+      "evidenceLevel": "Evidence level: {level}",
+      "reviewMatchedChildren": "Review matched children",
+      "matchedChildren": "Matched Children",
+      "noMatchedChildrenDetails": "No matched children details available.",
+      "close": "Close",
+      "stats": {
+        "activeGoals": "Active Goals",
+        "assignedExercises": "Assigned Exercises",
+        "pendingReviews": "Pending Reviews",
+        "reports": "Reports"
+      },
+      "planStatus": {
+        "active": "Active",
+        "completed": "Completed",
+        "archived": "Archived"
+      },
+      "goalTerm": {
+        "shortTerm": "Short-term",
+        "longTerm": "Long-term",
+        "default": "Goal"
+      },
+      "exerciseStatus": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "reviewStatus": {
+        "pending": "Pending",
+        "reviewed": "Reviewed",
+        "needsRetry": "Needs retry"
+      },
+      "mediaType": {
+        "video": "Video",
+        "audio": "Audio",
+        "image": "Image"
+      },
+      "toast": {
+        "activePlanRequired": "An active treatment plan is required before assigning an exercise.",
+        "noTreatmentPlan": "No treatment plan found for this patient."
+      },
+      "errors": {
+        "loadFailed": "Failed to load patient details.",
+        "notFoundOrUnassigned": "Patient not found or not assigned to you.",
+        "familyPatternLoadFailed": "Failed to load family pattern insight.",
+        "noParentLinked": "No parent is linked to this patient yet.",
+        "openConversationFailed": "Unable to open conversation."
+      }
+    },
+    "caseRequests": {
+      "title": "Case Requests",
+      "subtitle": "Review assigned cases and track their assessment status.",
+      "loading": "Loading assigned case requests...",
+      "loadingMore": "Loading more...",
+      "back": "Back to Case Requests",
+      "backShort": "Back",
+      "detailsTitle": "Case Request",
+      "detailsIntro": "Review the submitted information before starting the assessment.",
+      "loadingDetails": "Loading case request...",
+      "notFound": "Case request not found.",
+      "parentLabel": "Parent: {name}",
+      "statusTimeline": "Status Timeline",
+      "rejectionReason": "Rejection Reason",
+      "noRejectionReason": "No rejection reason was provided.",
+      "profileCreated": "Patient profile created successfully.",
+      "openPatientProfile": "Open Patient Profile",
+      "convertedMissingPatientId": "Converted status is present, but no patient profile id was returned.",
+      "childInformation": "Child Information",
+      "caseInformation": "Case Information",
+      "previousDiagnosisTreatment": "Previous Diagnosis & Treatment",
+      "parentInformation": "Parent Information",
+      "preliminaryAssessmentNotes": "Preliminary Assessment Notes",
+      "assessmentNotesLabel": "Assessment notes",
+      "assessmentNotesPlaceholder": "Enter preliminary assessment notes",
+      "saveNotes": "Save Notes",
+      "savingNotes": "Saving...",
+      "attachments": "Attachments",
+      "noAttachments": "No attachments",
+      "openConversation": "Open Conversation",
+      "acceptCase": "Accept Case",
+      "creatingPatientProfile": "Creating patient profile...",
+      "rejectCase": "Reject Case",
+      "rejecting": "Rejecting...",
+      "startAssessment": "Start Assessment",
+      "startingAssessment": "Starting...",
+      "copy": "Copy",
+      "copyEmail": "Email copied",
+      "copyPhone": "Phone number copied",
+      "copyFailed": "Unable to copy.",
+      "clearFilters": "Clear Filters",
+      "notProvided": "Not provided",
+      "yes": "Yes",
+      "no": "No",
+      "assignedOn": "Assigned {date}",
+      "submittedOn": "Submitted {date}",
+      "oneAttachment": "1 attachment",
+      "attachmentCount": "{count} attachments",
+      "conversationAvailable": "Conversation available",
+      "unnamedChild": "Unnamed child",
+      "filters": {
+        "ariaLabel": "Case request filters",
+        "searchLabel": "Search by child name",
+        "searchPlaceholder": "Search by child name",
+        "clearSearchAriaLabel": "Clear search",
+        "statusLabel": "Status",
+        "categoryLabel": "Category",
+        "allStatuses": "All Statuses",
+        "allCategories": "All Categories"
+      },
+      "fields": {
+        "dateOfBirth": "Date of birth",
+        "age": "Age",
+        "gender": "Gender",
+        "caseDescription": "Case description",
+        "observedDifficulties": "Observed difficulties",
+        "preferredContactPeriod": "Preferred contact period",
+        "previousDiagnosis": "Previous diagnosis",
+        "diagnosisDetails": "Diagnosis details",
+        "currentlyReceivingTreatment": "Currently receiving treatment",
+        "treatmentDetails": "Treatment details",
+        "email": "Email",
+        "phone": "Phone"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "contactPeriod": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "flexible": "Flexible"
+      },
+      "age": {
+        "unavailable": "Unavailable",
+        "oneYear": "1 year",
+        "years": "{count} years"
+      },
+      "attachmentType": {
+        "image": "Image",
+        "audio": "Audio",
+        "video": "Video",
+        "file": "File"
+      },
+      "category": {
+        "default": "Category",
+        "speechAndLanguageTherapy": "Speech and Language Therapy",
+        "behavioralTherapy": "Behavioral Therapy",
+        "occupationalTherapy": "Occupational Therapy",
+        "learningDifficulties": "Learning Difficulties",
+        "autismSupport": "Autism Support",
+        "developmentalDelay": "Developmental Delay",
+        "motorRehabilitation": "Motor Rehabilitation"
+      },
+      "status": {
+        "pending": "Pending Review",
+        "assigned": "Specialist Assigned",
+        "under_assessment": "Under Assessment",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "converted_to_patient": "Profile Created"
+      },
+      "timeline": {
+        "assigned": "Assigned",
+        "underAssessment": "Under Assessment",
+        "accepted": "Accepted",
+        "converted": "Converted",
+        "inProgress": "In progress"
+      },
+      "dialogs": {
+        "startAssessmentTitle": "Start Assessment",
+        "startAssessmentBody": "Contact the parent first if you have not already. Start the preliminary assessment for this case?",
+        "acceptTitle": "Accept Case",
+        "acceptBody": "Accept this case for continued rehabilitation follow-up?\n\nThe patient profile will not be created yet.",
+        "rejectTitle": "Reject Case",
+        "rejectBody": "This reason will be visible to the parent.",
+        "rejectReasonLabel": "Reason for rejection",
+        "rejectReasonPlaceholder": "Enter rejection reason"
+      },
+      "validation": {
+        "assessmentNotesRequired": "Assessment notes are required.",
+        "assessmentNotesMaxLength": "Assessment notes must not exceed 10000 characters.",
+        "rejectReasonMinLength": "Reason must be at least 5 characters.",
+        "rejectReasonMaxLength": "Reason must not exceed 2000 characters.",
+        "saveNotesBeforeAccept": "Save assessment notes before accepting this case.",
+        "saveNotesBeforeAcceptDirty": "Save your assessment notes before accepting."
+      },
+      "toast": {
+        "assessmentNotesUpdated": "Assessment notes updated successfully",
+        "assessmentStarted": "Assessment started successfully",
+        "patientProfileCreated": "Patient profile created successfully.",
+        "caseRejected": "Case request rejected successfully",
+        "patientProfileUnavailable": "Patient profile is unavailable for this request.",
+        "attachmentOpenFailed": "Unable to open this attachment.",
+        "waitSavingNotes": "Please wait while assessment notes are being saved.",
+        "waitCreatingProfile": "Please wait while the patient profile is being created.",
+        "waitRejecting": "Please wait while the case is being rejected.",
+        "waitStartingAssessment": "Please wait while the assessment is starting."
+      },
+      "empty": {
+        "none": "No assigned case requests yet. Assigned cases will appear here after an admin selects you for a request.",
+        "filtered": "No case requests match the selected filters."
+      },
+      "errors": {
+        "signInRequired": "Please sign in to view case requests.",
+        "loadFailed": "Failed to load assigned case requests.",
+        "loadMoreFailed": "Failed to load more case requests.",
+        "loadDetailsFailed": "Failed to load case request.",
+        "startAssessmentFailed": "Failed to start assessment.",
+        "updateNotesFailed": "Failed to update assessment notes.",
+        "acceptFailed": "Failed to accept case request.",
+        "rejectFailed": "Failed to reject case request."
+      }
+    },
+    "exercises": {
+      "title": "Exercise Library",
+      "subtitle": "Browse therapy exercises by category and search.",
+      "addExercise": "Add Exercise",
+      "back": "Back",
+      "backToExercises": "Back to Exercises",
+      "detailsTitle": "Exercise Details",
+      "createTitle": "Add Exercise",
+      "editTitle": "Edit Exercise",
+      "formSubtitle": "Add therapy exercises to the shared library for assignment.",
+      "formHeading": "Exercise Information",
+      "editExercise": "Edit Exercise",
+      "includesMedia": "Includes instruction media",
+      "loading": "Loading exercises...",
+      "loadingExercise": "Loading exercise...",
+      "loadingCategories": "Loading categories...",
+      "creating": "Creating...",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "createExercise": "Create Exercise",
+      "pleaseWait": "Please wait…",
+      "filters": {
+        "all": "All",
+        "ariaLabel": "Exercise category filters"
+      },
+      "search": {
+        "placeholder": "Search by title, category, or instructions...",
+        "ariaLabel": "Search exercises"
+      },
+      "fields": {
+        "category": "Category",
+        "selectCategory": "Select category",
+        "language": "Exercise Language",
+        "title": "Title",
+        "titlePlaceholder": "Exercise title",
+        "descriptionOptional": "Description (optional)",
+        "instructions": "Instructions",
+        "instructionsPlaceholder": "Detailed instructions"
+      },
+      "details": {
+        "languageLine": "Language: {language}",
+        "createdBy": "Created by {name}",
+        "description": "Description",
+        "noDescription": "No description available.",
+        "instructions": "Instructions",
+        "noInstructions": "No instructions available.",
+        "instructionMedia": "Instruction Media",
+        "unableLoadImage": "Unable to load image preview.",
+        "pdfAttached": "PDF instruction attached. Open externally to view.",
+        "mediaAttached": "Media attached. Open externally to view.",
+        "openPdf": "Open PDF",
+        "openExternally": "Open externally",
+        "mediaPreviewAlt": "Preview of {filename}",
+        "currentMediaPreviewAlt": "Current media {filename}"
+      },
+      "empty": {
+        "none": "No exercises available.",
+        "filtered": "No exercises match your search or selected category.",
+        "noCategories": "No exercise categories available yet.",
+        "notFound": "Exercise not found.",
+        "forbidden": "You do not have permission to edit this exercise."
+      },
+      "category": {
+        "speechArticulation": "Speech Articulation",
+        "fluency": "Fluency",
+        "languageDevelopment": "Language Development",
+        "voiceAndBreathing": "Voice & Breathing",
+        "fineMotorSkills": "Fine Motor Skills",
+        "grossMotorSkills": "Gross Motor Skills",
+        "sensoryIntegration": "Sensory Integration",
+        "dailyLivingSkills": "Daily Living Skills",
+        "motorRehabilitation": "Motor Rehabilitation",
+        "behavioralSkills": "Behavioral Skills",
+        "socialCommunication": "Social Communication",
+        "autismSupport": "Autism Support",
+        "developmentalActivities": "Developmental Activities",
+        "learningAndCognitiveSkills": "Learning & Cognitive Skills",
+        "speechTherapy": "Speech Therapy"
+      },
+      "validation": {
+        "selectCategory": "Please select a category.",
+        "titleRequired": "Title is required."
+      },
+      "media": {
+        "sectionTitle": "Instructional media (optional)",
+        "selectedMedia": "Selected media",
+        "currentMediaAttached": "Current media attached",
+        "noMediaSelected": "No media selected. Images, audio, PDF, and MP4/MOV video are supported (max 50 MB).",
+        "removalPending": "Instructional media will be removed when you save.",
+        "uploading": "Uploading media…",
+        "replaceMedia": "Replace media",
+        "addMedia": "Add media",
+        "remove": "Remove",
+        "removeTooltip": "Remove media",
+        "undo": "Undo",
+        "type": {
+          "image": "Image",
+          "video": "Video",
+          "audio": "Audio",
+          "pdf": "PDF",
+          "file": "File"
+        },
+        "validation": {
+          "unableReadFile": "Unable to read the selected file.",
+          "unsupportedType": "Unsupported media type. Use image, audio, PDF, or MP4/MOV video.",
+          "fileTooLarge": "File is too large. Maximum size is 50 MB."
+        }
+      },
+      "toast": {
+        "createdSuccess": "Exercise created successfully",
+        "updatedSuccess": "Exercise updated successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load exercises.",
+        "loadExerciseFailed": "Failed to load exercise. Please try again.",
+        "loadCategoriesFailed": "Failed to load categories. Please retry.",
+        "createFailed": "Failed to create exercise.",
+        "saveFailed": "Failed to save exercise. Please try again.",
+        "uploadFailed": "Failed to upload instructional media."
+      }
+    },
+    "treatmentPlans": {
+      "title": "Treatment Plans",
+      "subtitle": "Manage treatment plans for your assigned patients.",
+      "createTitle": "Create Treatment Plan",
+      "createSubtitle": "Create a treatment plan and define its active period.",
+      "editTitle": "Edit Treatment Plan",
+      "addPlan": "Add Treatment Plan",
+      "addPlanAriaLabel": "Add Treatment Plan",
+      "back": "Back",
+      "loading": "Loading treatment plans...",
+      "loadingPlan": "Loading treatment plan...",
+      "loadingPatients": "Loading patients...",
+      "creating": "Creating...",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "createPlan": "Create Treatment Plan",
+      "pleaseWait": "Please wait…",
+      "dateRangeSeparator": " → ",
+      "filters": {
+        "all": "All",
+        "ariaLabel": "Treatment plan filters"
+      },
+      "search": {
+        "placeholder": "Search by plan title or patient",
+        "ariaLabel": "Search by plan title or patient"
+      },
+      "fields": {
+        "patient": "Patient",
+        "selectPatient": "Select patient",
+        "assignedPatient": "Assigned patient",
+        "planTitle": "Plan title",
+        "planTitlePlaceholder": "Treatment plan title",
+        "status": "Status",
+        "startDate": "Start date",
+        "endDate": "End date (optional)",
+        "clearDate": "Clear",
+        "planInformation": "Plan Information",
+        "statusAriaLabel": "Plan status"
+      },
+      "status": {
+        "active": "Active",
+        "completed": "Completed",
+        "archived": "Archived",
+        "newPlanHelper": "New treatment plans start as Active."
+      },
+      "goal": {
+        "currentGoals": "Current Goals",
+        "noGoals": "No goals defined for this plan.",
+        "completion": "Completion"
+      },
+      "patientSummary": {
+        "title": "Patient Summary",
+        "ageYears": "Age: {count} years",
+        "noProgress": "No progress data available yet.",
+        "overallProgress": "Overall Progress"
+      },
+      "picker": {
+        "title": "Select patient",
+        "noPatients": "No assigned patients available.",
+        "hasActivePlan": "This patient already has an active treatment plan.",
+        "noActivePlan": "No active plan"
+      },
+      "empty": {
+        "none": "No treatment plans found.",
+        "filtered": "No plans match your search or filter.",
+        "notFound": "Treatment plan not found.",
+        "unauthorized": "Treatment plan not found or you do not have access."
+      },
+      "validation": {
+        "patientRequired": "Patient is required",
+        "titleRequired": "Plan title is required",
+        "startDateRequired": "Start date is required",
+        "endDateBeforeStart": "End date cannot be before start date"
+      },
+      "toast": {
+        "createdSuccess": "Treatment plan created successfully",
+        "updatedSuccess": "Treatment plan updated successfully",
+        "noPatients": "No assigned patients available."
+      },
+      "errors": {
+        "signInRequired": "Please sign in to view treatment plans.",
+        "signInRequiredCreate": "Please sign in to create a treatment plan.",
+        "loadFailed": "Failed to load treatment plans.",
+        "loadPatientsFailed": "Failed to load patients.",
+        "loadPlanFailed": "Failed to load treatment plan.",
+        "createFailed": "Failed to create treatment plan. Please try again.",
+        "saveFailed": "Failed to save treatment plan. Please try again.",
+        "patientAccessDenied": "You do not have access to this patient."
+      }
+    },
+    "progress": {
+      "title": "Patient Progress",
+      "subtitle": "Review progress across your assigned patients",
+      "loading": "Loading patient progress...",
+      "empty": "No progress data available yet.",
+      "latestUpdate": "Latest update: {date}",
+      "viewPatient": "View Patient",
+      "viewPatientAria": "View patient {name}"
+    },
+    "reviews": {
+      "title": "Reviews",
+      "subtitle": "Submissions waiting for your feedback",
+      "loading": "Loading pending reviews...",
+      "empty": "No pending reviews right now.",
+      "back": "Back to Reviews",
+      "exerciseTitle": "Review Exercise",
+      "exerciseSubtitle": "Review the submitted exercise media and provide feedback.",
+      "loadingSubmission": "Loading submission...",
+      "submissionNotFound": "Submission not found.",
+      "submittedSuccess": "Review submitted successfully",
+      "labels": {
+        "patient": "Patient",
+        "exercise": "Exercise",
+        "submitted": "Submitted"
+      },
+      "form": {
+        "section": "Review",
+        "rating": "Rating",
+        "ratingAriaLabel": "Performance rating",
+        "starAriaLabel": "{count} star(s)",
+        "feedback": "Feedback",
+        "feedbackPlaceholder": "Write feedback for the parent and patient...",
+        "status": "Status",
+        "decisionAriaLabel": "Review decision",
+        "submit": "Submit Review",
+        "update": "Update Review",
+        "submitting": "Submitting...",
+        "speechAnalysis": "View Speech Analysis"
+      },
+      "decision": {
+        "approved": "Approved",
+        "needsRetry": "Needs retry"
+      },
+      "media": {
+        "title": "Uploaded Media",
+        "empty": "No media uploaded for this submission.",
+        "submissionAlt": "Submission media",
+        "loadFailedVideo": "Unable to load video.",
+        "loadFailedAudio": "Unable to load audio.",
+        "loadFailedImage": "Unable to load image.",
+        "unsupportedType": "Unsupported media type for preview.",
+        "type": {
+          "image": "Image",
+          "audio": "Audio",
+          "video": "Video",
+          "pdf": "PDF",
+          "file": "File"
+        }
+      },
+      "errors": {
+        "signInRequired": "Please sign in to view pending reviews.",
+        "loadFailed": "Failed to load pending reviews.",
+        "loadSubmissionFailed": "Failed to load submission.",
+        "submitFailed": "Failed to submit review."
+      }
+    },
+    "sessions": {
+      "title": "Sessions",
+      "subtitle": "Manage your therapy sessions and parent requests.",
+      "scheduleSession": "Schedule Session",
+      "loading": "Loading sessions...",
+      "loadingRequests": "Loading session requests...",
+      "searchPlaceholder": "Search by patient name",
+      "searchAriaLabel": "Search by patient name",
+      "meetingLink": "Meeting link",
+      "openMeetingLink": "Open meeting link",
+      "tabs": {
+        "sessions": "Sessions",
+        "requests": "Requests",
+        "sectionsAriaLabel": "Sessions sections"
+      },
+      "view": {
+        "list": "List",
+        "calendar": "Calendar",
+        "ariaLabel": "Sessions view"
+      },
+      "filters": {
+        "ariaLabel": "Session filters",
+        "requestAriaLabel": "Session request filters",
+        "all": "All",
+        "today": "Today",
+        "upcoming": "Upcoming",
+        "past": "Past",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "empty": {
+        "noSessions": "No sessions found.",
+        "noMatch": "No sessions match your search or filter.",
+        "noSessionsOnDate": "No sessions scheduled for this date.",
+        "noRequests": "No session requests yet.",
+        "noPendingRequests": "No pending session requests.",
+        "noRequestsMatchFilter": "No session requests match this filter."
+      },
+      "calendar": {
+        "previousMonth": "Previous month",
+        "nextMonth": "Next month",
+        "durationMinutes": "{minutes} min"
+      },
+      "location": {
+        "online": "Online",
+        "inPerson": "In Person"
+      },
+      "request": {
+        "preferredDate": "Preferred date",
+        "preferredTime": "Preferred time",
+        "requested": "Requested",
+        "scheduledAt": "Scheduled: {dateTime}",
+        "duration": "Duration:",
+        "reason": {
+          "regularFollowUp": "Regular Follow-up",
+          "replacementCancelled": "Replacement for Cancelled Session",
+          "replacementMissed": "Replacement for Missed Session",
+          "additionalSession": "Additional Session",
+          "consultation": "Consultation",
+          "other": "Other",
+          "default": "Session request"
+        },
+        "timePeriod": {
+          "morning": "Morning",
+          "afternoon": "Afternoon",
+          "evening": "Evening",
+          "flexible": "Flexible"
+        }
+      },
+      "schedule": {
+        "title": "Schedule Session",
+        "subtitle": "Schedule a session for one of your assigned patients.",
+        "back": "Back",
+        "loadingPatients": "Loading patients...",
+        "noAssignedPatients": "No assigned patients found. Assign a patient before scheduling.",
+        "patient": "Patient",
+        "selectPatient": "Select patient",
+        "sessionTypeTitle": "Session type / title",
+        "sessionTypePlaceholder": "Therapy Session",
+        "duration": "Duration (minutes)",
+        "durationUnit": "minutes",
+        "date": "Date",
+        "startTime": "Start time",
+        "locationOrLink": "Location or meeting link",
+        "locationHint": "Clinic room or https://…",
+        "notesOptional": "Notes (optional)",
+        "notesPlaceholder": "Additional details for this session",
+        "formHelper": "Review the session details before scheduling.",
+        "scheduling": "Scheduling...",
+        "scheduleSession": "Schedule Session",
+        "scheduledSuccess": "Session scheduled successfully.",
+        "signInRequired": "Please sign in to schedule a session.",
+        "pleaseWait": "Please wait…"
+      },
+      "validation": {
+        "titleRequired": "Enter a session type or title.",
+        "patientRequired": "Select an assigned patient.",
+        "durationRange": "Duration must be between 1 and 480 minutes.",
+        "futureDateTimeRequired": "Scheduled date and time must be in the future."
+      },
+      "errors": {
+        "loadFailed": "Failed to load sessions.",
+        "loadPatientsFailed": "Failed to load patients.",
+        "createFailed": "Failed to create session. Please try again.",
+        "loadRequestsFailed": "Failed to load session requests.",
+        "signInRequiredCreate": "Please sign in to continue."
+      }
+    },
+    "reports": {
+      "title": "Reports",
+      "patientTitle": "Patient Reports",
+      "subtitle": "View reports across your active patients.",
+      "subtitleForPatient": "Reports for {name}",
+      "backToPatient": "Back to Patient",
+      "backToReports": "Back to Reports",
+      "detailTitle": "Report Details",
+      "loading": "Loading reports...",
+      "loadingDetail": "Loading report...",
+      "notFound": "Report not found.",
+      "searchPlaceholder": "Search by patient or title",
+      "searchAriaLabel": "Search by patient or title",
+      "filters": {
+        "ariaLabel": "Report filters",
+        "all": "All",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "assessment": "Assessment",
+        "aiReports": "AI Reports",
+        "recent": "Recent"
+      },
+      "empty": {
+        "none": "No reports available yet.",
+        "nonePatient": "No reports available for this patient yet.",
+        "filtered": "No reports match your current search or filter."
+      },
+      "labels": {
+        "patient": "Patient",
+        "specialist": "Specialist",
+        "reportType": "Report Type",
+        "createdDate": "Created Date",
+        "period": "Period",
+        "status": "Status",
+        "reportInformation": "Report Information"
+      },
+      "status": {
+        "pdfReady": "PDF Ready"
+      },
+      "type": {
+        "ai": "AI",
+        "aiReport": "AI Report",
+        "report": "Report",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "assessment": "Assessment",
+        "daily": "Daily",
+        "progress": "Progress",
+        "clinical": "Clinical",
+        "summary": "Summary"
+      },
+      "titleLabels": {
+        "weeklyProgress": "Weekly Progress Report",
+        "monthlyProgress": "Monthly Progress Report",
+        "assessment": "Assessment Report",
+        "progress": "Progress Report",
+        "aiWeeklySummary": "AI Weekly Summary",
+        "aiMonthlySummary": "AI Monthly Summary",
+        "aiClinicalSummary": "AI Clinical Summary",
+        "aiAssessmentSummary": "AI Assessment Summary",
+        "aiTypeSummary": "AI {type} Summary",
+        "typeReport": "{type} Report"
+      },
+      "sections": {
+        "summary": "Summary",
+        "aiSummary": "AI Summary"
+      },
+      "pdf": {
+        "view": "View PDF",
+        "copyLink": "Copy PDF Link",
+        "generate": "Generate PDF",
+        "generating": "Generating PDF...",
+        "linkCopied": "PDF link copied to clipboard",
+        "copyFailed": "Unable to copy PDF link.",
+        "generatedSuccess": "PDF generated successfully"
+      },
+      "errors": {
+        "signInRequired": "Please sign in to view reports.",
+        "loadFailed": "Failed to load reports.",
+        "loadDetailFailed": "Failed to load report.",
+        "generatePdfFailed": "Failed to generate PDF."
+      }
+    },
+    "aiRecommendations": {
+      "title": "AI Recommendations",
+      "backToPatient": "Back to Patient",
+      "patientSubtitle": "AI-powered clinical recommendations",
+      "loading": "Loading AI recommendations...",
+      "sectionTitle": "Recommendations",
+      "generate": {
+        "title": "Generate Recommendation",
+        "subtitle": "Create AI-assisted exercise or plan recommendations from patient context.",
+        "exerciseSuggestion": "Generate Exercise Suggestion",
+        "planAdjustment": "Generate Plan Adjustment",
+        "generating": "Generating..."
+      },
+      "empty": "Generate your first AI recommendation",
+      "sections": {
+        "summary": "Summary",
+        "reason": "Reason",
+        "clinicalAnalysis": "Clinical Analysis",
+        "suggestedExercises": "Suggested Exercises",
+        "planAdjustment": "Plan Adjustment",
+        "confidence": "Confidence"
+      },
+      "type": {
+        "exerciseSuggestion": "Exercise Suggestion",
+        "planAdjustment": "Plan Adjustment",
+        "recommendation": "Recommendation"
+      },
+      "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "unknown": "Unknown"
+      },
+      "priority": {
+        "label": "Priority",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "suggestedExerciseFallback": "Suggested exercise",
+      "actions": {
+        "accept": "Accept",
+        "reject": "Reject",
+        "saving": "Saving..."
+      },
+      "toast": {
+        "generated": "AI recommendation generated",
+        "accepted": "Recommendation accepted",
+        "rejected": "Recommendation rejected"
+      },
+      "errors": {
+        "loadFailed": "Failed to load AI recommendations.",
+        "generateFailed": "Failed to generate recommendation.",
+        "acceptFailed": "Failed to accept recommendation.",
+        "rejectFailed": "Failed to reject recommendation.",
+        "generateFailedWithReason": "Failed to generate recommendation: {reason}",
+        "acceptFailedWithReason": "Failed to accept recommendation: {reason}",
+        "rejectFailedWithReason": "Failed to reject recommendation: {reason}"
+      }
+    },
+    "messages": {
+      "title": "Messages",
+      "subtitle": "Conversations with parents about your patients",
+      "conversations": "Conversations",
+      "searchLabel": "Search conversations",
+      "searchPlaceholder": "Search parent or patient",
+      "backToDashboard": "Back to Dashboard",
+      "conversationDefault": "Conversation",
+      "selectConversation": "Select a conversation to view messages.",
+      "loadingConversations": "Loading conversations...",
+      "loadingMessages": "Loading messages...",
+      "empty": {
+        "conversations": "No parent conversations yet.",
+        "filtered": "No conversations match your search.",
+        "chat": "No messages yet. Start the conversation."
+      },
+      "regardingChild": "Regarding {name}",
+      "patientLabel": "Patient: {name}",
+      "startedOn": "Started {date}",
+      "composer": {
+        "placeholder": "Write a message...",
+        "send": "Send",
+        "sending": "Sending...",
+        "removeAttachment": "Remove",
+        "stopRecording": "Stop recording",
+        "addAttachment": "Add attachment",
+        "chooseImage": "Choose Image",
+        "recordAudio": "Record Audio",
+        "chooseFile": "Choose File",
+        "chooseVideo": "Choose Video",
+        "selectedImageAlt": "Selected image preview",
+        "uploading": "Uploading… {percent}%"
+      },
+      "presence": {
+        "online": "Online",
+        "offline": "Offline",
+        "checkingStatus": "Checking status...",
+        "lastSeenJustNow": "Last seen just now",
+        "lastSeenMinutes": "Last seen {count}m ago",
+        "lastSeenHours": "Last seen {count}h ago",
+        "lastSeenAt": "Last seen {datetime}"
+      },
+      "attachments": {
+        "imageUnavailable": "Image unavailable",
+        "videoUnavailable": "Video unavailable",
+        "audioUnavailable": "Audio unavailable",
+        "downloadVideo": "Download video",
+        "pdfDocument": "PDF document",
+        "viewImage": "View image: {label}"
+      },
+      "lightbox": {
+        "preview": "Image preview",
+        "closePreview": "Close preview",
+        "close": "Close"
+      },
+      "systemText": {
+        "sentImage": "Sent an image",
+        "sentAudio": "Sent an audio recording",
+        "sentPdf": "Sent a PDF file",
+        "sentVideo": "Sent a video",
+        "sentFile": "Sent a file"
+      },
+      "attachmentValidation": {
+        "selectFile": "Please select a file.",
+        "unsupportedType": "This file type is not supported.",
+        "tooLarge": "File is too large. Maximum allowed size is {size}.",
+        "recordingNotSupported": "Audio recording is not supported in this browser.",
+        "micPermission": "Microphone permission is required to record audio.",
+        "micAccessFailed": "Unable to access the microphone.",
+        "recordingFailed": "Recording failed. Please try again.",
+        "noAudioRecorded": "No audio was recorded.",
+        "processRecordingFailed": "Unable to process the recording."
+      },
+      "errors": {
+        "signInRequired": "Please sign in to view messages.",
+        "loadConversationsFailed": "Failed to load conversations.",
+        "loadMessagesFailed": "Failed to load messages.",
+        "sendFailed": "Failed to send message.",
+        "attachmentUrlMissing": "Attachment upload did not return a file URL."
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "Stay updated on your patients and clinical activity",
+      "loading": "Loading notifications...",
+      "empty": {
+        "none": "No notifications yet."
+      },
+      "markAllRead": "Mark all as read",
+      "markAllReadFailed": "Unable to mark all notifications as read.",
+      "markReadFailed": "Unable to mark notification as read.",
+      "defaultTitle": "Notification",
+      "unread": "Unread",
+      "unreadNotification": "Unread notification: {title}",
+      "notification": "Notification: {title}",
+      "time": {
+        "justNow": "Just now",
+        "minutesAgo": "{count}m ago",
+        "hoursAgo": "{count}h ago",
+        "daysAgo": "{count}d ago",
+        "recently": "Recently"
+      },
+      "type": {
+        "exerciseReminder": "Exercise reminder",
+        "sessionReminder": "Session reminder",
+        "feedbackReceived": "Feedback received",
+        "reportReady": "Report ready",
+        "newMessage": "New message",
+        "general": "General",
+        "sessionRequest": "Session request",
+        "caseRequestSubmitted": "Case request submitted",
+        "caseRequestAssigned": "Case request assigned",
+        "caseRequestAccepted": "Case request accepted",
+        "caseRequestRejected": "Case request rejected",
+        "caseRequestConverted": "Case request converted",
+        "supportRequestSubmitted": "Support request submitted",
+        "supportRequestReply": "Support request reply",
+        "supportRequestStatusChanged": "Support request status changed",
+        "update": "Update"
+      },
+      "systemText": {
+        "newMessageFrom": "New message from {name}",
+        "sentImage": "Sent an image",
+        "sentAudio": "Sent an audio recording",
+        "sentPdf": "Sent a PDF file",
+        "sentVideo": "Sent a video",
+        "sentFile": "Sent a file"
+      },
+      "errors": {
+        "loadFailed": "Failed to load notifications."
+      }
+    },
+    "support": {
+      "title": "Support",
+      "subtitle": "Contact the administration for operational and platform support issues.",
+      "newRequest": "New Request",
+      "backToList": "Back to support requests",
+      "viewRequest": "View request",
+      "lastActivity": "Last activity {date}",
+      "created": "Created {date}",
+      "loading": "Loading support requests...",
+      "empty": {
+        "none": "You have not submitted any support requests yet.",
+        "filtered": "No support requests match the selected filters."
+      },
+      "filters": {
+        "status": "Status",
+        "category": "Category",
+        "clear": "Clear filters"
+      },
+      "form": {
+        "title": "New Support Request",
+        "subtitle": "Describe the issue so the administration can review and respond in the request thread.",
+        "intro": "Submit a structured support request to the administration. This is not a direct chat with parents.",
+        "category": "Category",
+        "selectCategory": "Select a category",
+        "subject": "Subject",
+        "description": "Description",
+        "submit": "Submit Request",
+        "submitting": "Submitting...",
+        "submitSuccess": "Support request submitted successfully."
+      },
+      "detail": {
+        "loading": "Loading support request...",
+        "unavailable": "Support request unavailable.",
+        "replySuccess": "Reply sent successfully."
+      },
+      "validation": {
+        "messageRequired": "Message content or attachment is required."
+      },
+      "errors": {
+        "loadFailed": "Failed to load support requests.",
+        "submitFailed": "Failed to submit support request.",
+        "notFound": "Support request not found.",
+        "attachmentUrlMissing": "Attachment upload did not return a file URL."
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Manage your personal and professional information.",
+      "editTitle": "Edit Profile",
+      "editSubtitle": "Update your personal and professional details.",
+      "backToProfile": "Back to profile",
+      "loading": "Loading profile...",
+      "unavailable": "Profile unavailable.",
+      "updatedSuccess": "Profile updated successfully",
+      "editProfile": "Edit Profile",
+      "personalInfo": "Personal Information",
+      "professionalInfo": "Professional Information",
+      "profilePhoto": "Profile Photo",
+      "changePhoto": "Change photo",
+      "photoHint": "Choose a new photo. It will upload when you save changes.",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "role": "Role",
+      "specialization": "Specialization",
+      "licenseNumber": "License Number",
+      "yearsOfExperience": "Years of Experience",
+      "bio": "Bio",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "validation": {
+        "fullNameRequired": "Full name is required",
+        "yearsInvalid": "Years of experience must be a valid number",
+        "imageRequired": "Please choose an image file."
+      },
+      "errors": {
+        "loadFailed": "Failed to load profile.",
+        "saveFailed": "Failed to save profile.",
+        "imageUploadPartial": "Profile details were saved, but the image upload failed: {reason}",
+        "imageUploadPartialGeneric": "Profile details were saved, but the image upload failed.",
+        "imageNoUrl": "Profile image upload succeeded but no image URL was returned.",
+        "sessionRefreshFailed": "Profile saved but the session could not be refreshed. Please reload the page.",
+        "sessionImageRefreshFailed": "Session refresh did not return the updated profile image."
+      }
+    },
+    "status": {
+      "session": {
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "noShow": "No Show",
+        "unknown": "{status}"
+      }
+    },
+    "toast": {
+      "signOutFailed": "Unable to sign out. Please try again."
+    }
+  },
+  "admin": {
+    "nav": {
+      "home": "Home",
+      "users": "Users",
+      "patients": "Patients",
+      "patientAssignments": "Patient Assignments",
+      "caseRequests": "Case Requests",
+      "complaints": "Complaints",
+      "supportRequests": "Support Requests",
+      "exercises": "Exercises",
+      "sessions": "Sessions",
+      "reports": "Reports",
+      "aiCenter": "AI Center",
+      "auditLogs": "Audit Logs"
+    },
+    "shell": {
+      "navigationAriaLabel": "Admin navigation",
+      "signOutFailed": "Unable to sign out. Please try again."
+    },
+    "search": {
+      "placeholder": "Jump to a page...",
+      "inputAriaLabel": "Jump to a page",
+      "panelAriaLabel": "Admin pages",
+      "empty": "No matching pages."
+    },
+    "dashboard": {
+      "greetingAriaLabel": "Admin greeting",
+      "welcome": "Welcome, {name}",
+      "subtitle": "Manage your rehabilitation platform from one place.",
+      "signInRequired": "Please sign in as an admin to view this dashboard.",
+      "loadFailed": "Failed to load admin dashboard.",
+      "summary": {
+        "overviewAriaLabel": "Overview summary",
+        "overviewLoadingAriaLabel": "Overview summary loading",
+        "loadingCardAria": "{label} loading",
+        "valueAria": "{label}: {value}",
+        "specialists": "Specialists",
+        "newSignups": "New Signups",
+        "newSignupsThisWeek": "+{count} this week",
+        "thisWeek": "This week"
+      },
+      "analytics": {
+        "sectionAriaLabel": "System Analytics",
+        "title": "System Analytics",
+        "legend": "System Activity",
+        "chartAriaLabel": "Weekly system activity chart",
+        "emptyTitle": "No system activity for this week.",
+        "emptyHint": "Try selecting another week.",
+        "loadingChart": "Loading chart...",
+        "loadFailed": "Failed to load system activity. Please try again.",
+        "previousWeek": "Previous week",
+        "nextWeek": "Next week",
+        "selectPeriod": "Select period",
+        "periodAriaLabel": "System activity period",
+        "period": {
+          "thisWeek": "This Week",
+          "lastWeek": "Last Week",
+          "last2Weeks": "Last 2 Weeks",
+          "lastMonth": "Last Month",
+          "range": "{start} – {end}"
+        },
+        "weeksAgo": "{count} weeks ago",
+        "event": "event",
+        "events": "events",
+        "dayEvents": "{day}: {count} {eventLabel}"
+      },
+      "quickActions": {
+        "sectionAriaLabel": "Quick actions",
+        "patientAssignmentsHint": "Assign specialists and link parents to patients"
+      },
+      "recentUsers": {
+        "sectionAriaLabel": "Recent users",
+        "title": "Recent Users",
+        "seeAll": "See all",
+        "empty": "No recent users.",
+        "loadingListAriaLabel": "Recent users loading",
+        "loadingUser": "Loading user..."
+      }
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "Manage platform user accounts",
+      "toolbarAriaLabel": "Users toolbar",
+      "addUser": "Add User",
+      "searchAriaLabel": "Search users",
+      "searchPlaceholder": "Search by name, email, or role",
+      "roleFiltersAriaLabel": "Role filters",
+      "filterAll": "All",
+      "tableAriaLabel": "Users list",
+      "columns": {
+        "user": "User",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "lastSeen": "Last Seen",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "online": "Online",
+        "offline": "Offline",
+        "lastSeenJustNow": "Last seen just now",
+        "lastSeenMinutesAgo": "Last seen {count}m ago",
+        "lastSeenHoursAgo": "Last seen {count}h ago",
+        "lastSeenYesterday": "Last seen yesterday",
+        "lastSeenDate": "Last seen {date}"
+      },
+      "actions": {
+        "edit": "Edit",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "delete": "Delete"
+      },
+      "loading": "Loading users...",
+      "empty": "No users have been created yet.",
+      "emptyFiltered": "No users match your search or filter.",
+      "loadFailed": "Failed to load users.",
+      "createFailed": "Failed to create user.",
+      "updateFailed": "Failed to update user.",
+      "updateStatusFailed": "Failed to update user status.",
+      "deleteFailed": "Failed to delete user.",
+      "createdSuccess": "User created successfully.",
+      "updatedSuccess": "User updated successfully.",
+      "activatedSuccess": "User activated.",
+      "deactivatedSuccess": "User deactivated.",
+      "deletedSuccess": "User deleted successfully.",
+      "form": {
+        "addTitle": "Add User",
+        "editTitle": "Edit User",
+        "fullName": "Full Name",
+        "email": "Email",
+        "password": "Password",
+        "phoneOptional": "Phone (optional)",
+        "role": "Role",
+        "cancel": "Cancel",
+        "save": "Save",
+        "create": "Create",
+        "saving": "Saving...",
+        "passwordRequirementsAriaLabel": "Password requirements"
+      },
+      "validation": {
+        "fullNameRequired": "Full name is required.",
+        "fullNameMinLength": "Full name must be at least 3 characters long.",
+        "fullNameMaxLength": "Full name must not exceed 150 characters.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address.",
+        "passwordRequired": "Password is required.",
+        "passwordInvalid": "Please create a valid password.",
+        "roleRequired": "Role is required."
+      },
+      "dialogs": {
+        "activateTitle": "Activate User",
+        "deactivateTitle": "Deactivate User",
+        "activateBody": "This user will regain access to the platform.",
+        "deactivateBody": "This user will lose access to the platform until reactivated.",
+        "deleteTitle": "Delete user?",
+        "deleteSelfTitle": "Delete your account?",
+        "deleteBody": "Are you sure you want to delete {name}? This action cannot be undone.",
+        "deleteSelfBody": "You are about to delete your own admin account. This action cannot be undone.",
+        "deleting": "Deleting..."
+      }
+    },
+    "patients": {
+      "title": "Patients",
+      "subtitle": "View and manage all registered patients.",
+      "toolbarAriaLabel": "Patients toolbar",
+      "searchAriaLabel": "Search patients",
+      "searchPlaceholder": "Search patients or condition",
+      "filterAriaLabel": "Filter by condition",
+      "allConditions": "All conditions",
+      "tableAriaLabel": "Patients list",
+      "columns": {
+        "patient": "Patient",
+        "gender": "Gender",
+        "condition": "Condition",
+        "previousSession": "Previous Session",
+        "view": "View"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "unknown": "—"
+      },
+      "noCondition": "No condition",
+      "noPreviousSession": "No previous session",
+      "unknownDate": "Unknown date",
+      "view": "View",
+      "viewDetailsAria": "View details for {name}",
+      "loading": "Loading patients...",
+      "empty": "No patients have been registered yet.",
+      "emptyFiltered": "No patients match your search or filter.",
+      "loadFailed": "Failed to load patients.",
+      "notFound": "Patient not found.",
+      "sessionStatus": {
+        "notCompleted": "Not completed"
+      }
+    },
+    "patientDetails": {
+      "back": "Back to Patients",
+      "idRequired": "Patient id is required.",
+      "loadFailed": "Failed to load patient details.",
+      "notFound": "Patient not found.",
+      "overviewAriaLabel": "Patient overview",
+      "overallProgressAriaLabel": "Overall progress",
+      "ageYears": "Age {count} yrs",
+      "ageUnknown": "Age —",
+      "achieved": "Achieved",
+      "noDueDate": "No due date",
+      "assignmentsTitle": "Patient Assignments",
+      "assignmentsHint": "Manage linked specialists and parents",
+      "assignmentsAriaLabel": "Patient actions"
+    },
+    "assignments": {
+      "title": "Patient Assignments",
+      "subtitle": "Manage specialists and parent relationships for patients.",
+      "headerAriaLabel": "Patient assignments header",
+      "loading": "Loading assignment data...",
+      "loadFailed": "Failed to load assignment data.",
+      "loadRelationshipsFailed": "Failed to load patient assignments.",
+      "changeHint": "To change an assignment, unlink the current specialist or parent, then assign or link the new one.",
+      "patientLabel": "Patient",
+      "selectPatient": "Select a patient",
+      "selectPatientHint": "Select a patient to view assignments.",
+      "searchPatients": "Search patients",
+      "searchPatientsPlaceholder": "Search patients by name or condition",
+      "noPatients": "No patients available.",
+      "noPatientsMatch": "No patients match your search.",
+      "assignSpecialist": "Assign Specialist",
+      "linkParent": "Link Parent",
+      "specialistLabel": "Specialist",
+      "parentLabel": "Parent",
+      "noSpecialists": "No specialists available",
+      "noParents": "No parent accounts available",
+      "selectSpecialist": "Select a specialist",
+      "selectParent": "Select a parent",
+      "primarySpecialist": "Primary specialist",
+      "primaryContact": "Primary contact",
+      "relationship": "Relationship",
+      "assigning": "Assigning...",
+      "linking": "Linking...",
+      "assignSpecialistAction": "Assign Specialist to Patient",
+      "linkParentAction": "Link Parent to Patient",
+      "assignedSpecialists": "Assigned Specialists",
+      "linkedParents": "Linked Parents",
+      "loadingRelationships": "Loading assigned specialists...",
+      "loadingParents": "Loading linked parents...",
+      "selectPatientForAssignments": "Select a patient to manage assignments.",
+      "noSpecialistsAssigned": "No specialists are currently assigned to this patient.",
+      "noParentsLinked": "No parents are currently linked to this patient.",
+      "specialistRole": "Specialist",
+      "primarySpecialistBadge": "Primary specialist",
+      "primaryContactBadge": "Primary contact",
+      "unlinkSpecialistAria": "Unlink {name}",
+      "unlinkParentAria": "Unlink {name}",
+      "unlinkSpecialistTitle": "Unlink Specialist",
+      "unlinkParentTitle": "Unlink Parent",
+      "unlinkSpecialistConfirm": "Are you sure you want to unlink {name} from this patient?",
+      "unlinkParentConfirm": "Are you sure you want to unlink {name} from this patient?",
+      "unlinking": "Unlinking...",
+      "unlink": "Unlink",
+      "unlinkFailed": "Unable to unlink.",
+      "unlinkInProgress": "An unlink is already in progress.",
+      "selectPatientRequired": "Please select a patient.",
+      "selectSpecialistRequired": "Please select a specialist.",
+      "selectParentRequired": "Please select a parent.",
+      "specialistIdMissing": "Specialist id is missing.",
+      "parentIdMissing": "Parent id is missing.",
+      "assignSpecialistSuccess": "Specialist assigned to patient successfully.",
+      "assignSpecialistFailed": "Failed to assign specialist.",
+      "linkParentSuccess": "Parent linked to patient successfully.",
+      "linkParentFailed": "Failed to link parent.",
+      "unlinkSpecialistSuccess": "Specialist unlinked successfully.",
+      "unlinkParentSuccess": "Parent unlinked successfully.",
+      "unlinkSpecialistFailed": "Failed to unlink specialist.",
+      "unlinkParentFailed": "Failed to unlink parent.",
+      "requestFailed": "Request failed. Please try again.",
+      "alreadyLinked": "This patient is already linked to this user.",
+      "relationshipOptions": {
+        "mother": "Mother",
+        "father": "Father",
+        "guardian": "Guardian",
+        "other": "Other"
+      }
+    },
+    "caseRequests": {
+      "title": "Case Requests",
+      "subtitle": "Review preliminary child case requests and track their current status.",
+      "toolbarAriaLabel": "Case requests toolbar",
+      "statusFilterAriaLabel": "Filter by status",
+      "tableAriaLabel": "Case requests list",
+      "columns": {
+        "child": "Child",
+        "parent": "Parent",
+        "category": "Category",
+        "status": "Status",
+        "submitted": "Submitted",
+        "attachments": "Attachments",
+        "view": "View"
+      },
+      "view": "View",
+      "loading": "Loading case requests...",
+      "empty": "No case requests have been submitted yet.",
+      "emptyFiltered": "No case requests match your search or filters.",
+      "loadFailed": "Failed to load case requests.",
+      "assignSpecialist": "Assign Specialist",
+      "assignedSpecialist": "Assigned Specialist",
+      "noSpecialistAssigned": "No specialist assigned yet.",
+      "fields": {
+        "specialization": "Specialization",
+        "licenseNumber": "License number"
+      },
+      "specialistsPage": {
+        "title": "Assign Specialist",
+        "subtitle": "Select a specialist to assign to this case.",
+        "back": "Back to case request",
+        "loading": "Loading specialists...",
+        "empty": "No matching specialists are available.",
+        "continue": "Continue",
+        "activePatients": "{count} Active Patients",
+        "currentRequests": "{count} Current Requests",
+        "yearsExperience": "{count} Years",
+        "oneYearExperience": "1 Year"
+      },
+      "dialogs": {
+        "assignTitle": "Assign Specialist",
+        "assignBody": "Assign {name} to this case request?",
+        "assignConfirm": "Assign Specialist",
+        "assigning": "Assigning..."
+      },
+      "toast": {
+        "assignSuccess": "Specialist assigned successfully.",
+        "assignFailed": "Failed to assign specialist.",
+        "stalePending": "This case request is no longer pending and cannot be assigned.",
+        "specialistCategoryMismatch": "The selected specialist is not assigned to this case category.",
+        "loadSpecialistsFailed": "Failed to load matching specialists."
+      },
+      "timeline": {
+        "submitted": "Submitted"
+      }
+    },
+    "complaints": {
+      "title": "Complaints Management",
+      "subtitle": "Review specialist complaints submitted by parents and manage review actions.",
+      "toolbarAriaLabel": "Complaints toolbar",
+      "updating": "Updating complaints",
+      "filters": {
+        "status": "Status",
+        "category": "Category",
+        "specialist": "Specialist",
+        "from": "From",
+        "to": "To",
+        "allStatuses": "All statuses",
+        "allCategories": "All categories",
+        "allSpecialists": "All specialists",
+        "clearFilters": "Clear filters",
+        "specialistUnavailable": "Specialist filter unavailable: {error}",
+        "dateRangeInvalid": "From date cannot be after To date."
+      },
+      "tableAriaLabel": "Complaints list",
+      "columns": {
+        "parent": "Parent",
+        "patient": "Patient",
+        "specialist": "Specialist",
+        "category": "Category",
+        "status": "Status",
+        "submitted": "Submitted",
+        "view": "View"
+      },
+      "view": "View",
+      "viewDetails": "View details",
+      "loading": "Loading complaints...",
+      "loadingMore": "Loading more...",
+      "empty": "No complaints have been submitted yet.",
+      "emptyFiltered": "No complaints match the selected filters.",
+      "loadFailed": "Failed to load complaints.",
+      "loadMore": "Load more",
+      "back": "Back to Complaints",
+      "loadingDetails": "Loading complaint details...",
+      "detailsLoadingAriaLabel": "Complaint details loading",
+      "notFound": "Complaint not found.",
+      "summaryAriaLabel": "Complaint summary",
+      "submittedAt": "Submitted {date}",
+      "complaintInformation": "Complaint Information",
+      "complaintInformationAriaLabel": "Complaint information",
+      "reviewer": "Reviewer",
+      "reviewDate": "Review date",
+      "descriptionTitle": "Complaint Description",
+      "descriptionAriaLabel": "Complaint description",
+      "attachmentTitle": "Attachment",
+      "attachmentAriaLabel": "Attachment",
+      "attachmentPdf": "PDF attachment",
+      "attachmentImage": "Image attachment",
+      "attachmentHint": "Open to view the submitted file",
+      "openAttachment": "Open attachment",
+      "parties": "Parties",
+      "parentInformation": "Parent Information",
+      "childInformation": "Child Information",
+      "specialistInformation": "Specialist Information",
+      "adminNotesAriaLabel": "Admin notes",
+      "reviewActionsAriaLabel": "Complaint actions",
+      "submittedBy": "Submitted By",
+      "reportedSpecialist": "Reported Specialist",
+      "adminNotes": "Admin Notes",
+      "resolution": "Resolution",
+      "reviewActions": "Review Actions",
+      "reviewActionsHint": "Update this complaint status according to your review outcome.",
+      "actions": {
+        "startReview": "Start Review",
+        "resolve": "Resolve Complaint",
+        "reject": "Reject Complaint"
+      },
+      "dialogs": {
+        "startReviewTitle": "Start Review",
+        "startReviewBody": "Mark this complaint as under review?",
+        "resolveTitle": "Resolve Complaint",
+        "rejectTitle": "Reject Complaint",
+        "adminNotesLabel": "Admin notes",
+        "adminNotesPlaceholder": "Enter admin notes for this decision",
+        "parentResponseLabel": "Parent response (optional)",
+        "parentResponsePlaceholder": "Optional message visible to the parent",
+        "confirm": "Confirm",
+        "submitting": "Submitting...",
+        "starting": "Starting...",
+        "resolving": "Resolving...",
+        "rejecting": "Rejecting...",
+        "categoryLabel": "Category",
+        "childLabel": "Child"
+      },
+      "validation": {
+        "adminNotesRequired": "Admin notes are required.",
+        "adminNotesMinLength": "Admin notes must be at least {min} characters.",
+        "adminNotesMaxLength": "Admin notes must be at most {max} characters."
+      },
+      "toast": {
+        "startReviewSuccess": "Complaint marked as under review.",
+        "resolveSuccess": "Complaint resolved successfully.",
+        "rejectSuccess": "Complaint rejected successfully.",
+        "actionFailed": "Unable to update complaint status.",
+        "invalidTransition": "This status change is no longer allowed.",
+        "specialistsLoadFailed": "Failed to load specialists."
+      }
+    },
+    "support": {
+      "title": "Support Requests",
+      "subtitle": "Review specialist administration support requests and respond in the request thread.",
+      "toolbarAriaLabel": "Support requests filters",
+      "filters": {
+        "status": "Status",
+        "category": "Category",
+        "specialist": "Specialist",
+        "filters": "Filters",
+        "clearFilters": "Clear filters"
+      },
+      "refresh": "Refresh",
+      "refreshing": "Refreshing...",
+      "tableAriaLabel": "Support requests list",
+      "columns": {
+        "subject": "Subject",
+        "category": "Category",
+        "status": "Status",
+        "action": "Action"
+      },
+      "view": "View",
+      "loading": "Loading support requests...",
+      "loadingMore": "Loading more...",
+      "loadMore": "Load more",
+      "empty": "No support requests have been submitted yet.",
+      "emptyFiltered": "No support requests match the selected filters.",
+      "loadFailed": "Failed to load support requests.",
+      "specialistsLoadFailed": "Failed to load specialists.",
+      "back": "Back to Support Requests",
+      "loadingDetails": "Loading support request...",
+      "notFound": "Support request not found.",
+      "unavailable": "Support request unavailable.",
+      "requestStatus": "Request status:",
+      "actionsAriaLabel": "Support request status actions",
+      "markInProgress": "Mark In Progress",
+      "resolveRequest": "Resolve Request",
+      "statusDialog": {
+        "markInProgressTitle": "Mark In Progress",
+        "markInProgressBody": "This will mark the support request as actively being handled by administration.",
+        "markResolvedTitle": "Mark Resolved",
+        "markResolvedBody": "This will close the support request. No further replies will be allowed.",
+        "updating": "Updating..."
+      },
+      "toast": {
+        "replySent": "Reply sent successfully.",
+        "replyFailed": "Failed to send reply.",
+        "markInProgressSuccess": "Support request marked as in progress.",
+        "markResolvedSuccess": "Support request marked as resolved.",
+        "statusUpdated": "Support request status updated.",
+        "statusUpdateFailed": "Failed to update support request status."
+      }
+    },
+    "exercises": {
+      "title": "Exercises",
+      "subtitle": "Browse and manage the platform exercise library.",
+      "toolbarAriaLabel": "Exercises toolbar",
+      "searchAriaLabel": "Search exercises",
+      "searchPlaceholder": "Search by title, category, or instructions...",
+      "categoryFiltersAriaLabel": "Exercise category filters",
+      "addExercise": "Add Exercise",
+      "viewDetails": "View Details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteExercise": "Delete Exercise",
+      "hasMedia": "Has media",
+      "includesMedia": "Includes instruction media",
+      "loading": "Loading exercises...",
+      "empty": "No exercises have been added yet.",
+      "emptyFiltered": "No exercises match your search or filter.",
+      "loadFailed": "Failed to load exercises.",
+      "loadDetailsFailed": "Failed to load exercise details.",
+      "clearFilters": "Clear filters",
+      "back": "Back to Exercises",
+      "backToDetails": "Back to Exercise Details",
+      "detailsTitle": "Exercise Details",
+      "loadingDetails": "Loading exercise...",
+      "notFound": "Exercise not found.",
+      "editExercise": "Edit Exercise",
+      "category": "Category",
+      "description": "Description",
+      "instructions": "Instructions",
+      "media": "Media",
+      "language": "Language",
+      "createdBy": "Created By",
+      "created": "Created",
+      "updated": "Updated",
+      "noDescription": "No description provided.",
+      "noInstructions": "No instructions provided.",
+      "noMedia": "No media attached.",
+      "noInstructionsAvailable": "No instructions available.",
+      "form": {
+        "createTitle": "Create Exercise",
+        "editTitle": "Edit Exercise",
+        "subtitle": "Add exercise details and optional instruction media.",
+        "title": "Title",
+        "titlePlaceholder": "Exercise title",
+        "category": "Category",
+        "selectCategory": "Select a category",
+        "description": "Description",
+        "descriptionOptional": "Description (optional)",
+        "descriptionPlaceholder": "Optional description",
+        "instructions": "Instructions",
+        "instructionsDetailed": "Detailed instructions",
+        "instructionsPlaceholder": "Step-by-step instructions",
+        "language": "Language",
+        "mediaSection": "Instruction Media",
+        "chooseFile": "Choose File",
+        "replace": "Replace",
+        "remove": "Remove",
+        "mediaHelp": "Supported formats: image, audio, PDF, or MP4/MOV video. Maximum size 50 MB.",
+        "preview": "Preview",
+        "create": "Create",
+        "saveChanges": "Save Changes",
+        "saving": "Saving...",
+        "creating": "Creating...",
+        "uploadingMedia": "Uploading media...",
+        "noCategories": "No categories available"
+      },
+      "validation": {
+        "titleMaxLength": "Title must be at most {max} characters.",
+        "descriptionMaxLength": "Description must be at most {max} characters.",
+        "instructionsMaxLength": "Instructions must be at most {max} characters."
+      },
+      "dialogs": {
+        "deleteTitle": "Delete Exercise",
+        "deleteBody": "Are you sure you want to delete {title}? This action cannot be undone.",
+        "deleting": "Deleting...",
+        "confirm": "Delete"
+      },
+      "toast": {
+        "createSuccess": "Exercise created successfully.",
+        "updateSuccess": "Exercise updated successfully.",
+        "deleteSuccess": "Exercise deleted successfully.",
+        "createFailed": "Failed to create exercise.",
+        "updateFailed": "Failed to update exercise.",
+        "deleteFailed": "Failed to delete exercise.",
+        "uploadFailed": "Failed to upload media.",
+        "categoriesLoadFailed": "Failed to load exercise categories."
+      }
+    },
+    "sessions": {
+      "title": "Sessions",
+      "subtitle": "View and manage scheduled rehabilitation sessions.",
+      "toolbarAriaLabel": "Sessions toolbar",
+      "searchAriaLabel": "Search sessions",
+      "searchPlaceholder": "Search by patient or specialist",
+      "statusFilterAriaLabel": "Filter by status",
+      "tableAriaLabel": "Sessions list",
+      "clearFilters": "Clear filters",
+      "columns": {
+        "patient": "Patient",
+        "specialist": "Specialist",
+        "dateTime": "Date & Time",
+        "duration": "Duration",
+        "location": "Location",
+        "locationLink": "Location / Link",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "filters": {
+        "allStatuses": "All statuses"
+      },
+      "loading": "Loading sessions...",
+      "empty": "No sessions have been scheduled yet.",
+      "emptyFiltered": "No sessions match your search or filter.",
+      "loadFailed": "Failed to load sessions.",
+      "edit": "Edit",
+      "complete": "Complete",
+      "cancelSession": "Cancel",
+      "markNoShow": "Mark No Show",
+      "dialogs": {
+        "editTitle": "Edit Session",
+        "completeTitle": "Complete Session",
+        "cancelTitle": "Cancel Session",
+        "noShowTitle": "Mark No Show",
+        "completeBody": "Are you sure you want to mark this session as completed?",
+        "cancelBody": "Are you sure you want to cancel this session?",
+        "noShowBody": "Are you sure you want to mark this session as a no-show?",
+        "patient": "Patient",
+        "specialist": "Specialist",
+        "scheduled": "Scheduled",
+        "date": "Date",
+        "dateHint": "Date (YYYY-MM-DD)",
+        "time": "Time",
+        "timeHint": "Time (HH:MM)",
+        "duration": "Duration (minutes)",
+        "location": "Location or meeting link",
+        "locationLink": "Location / Link",
+        "status": "Status",
+        "statusFinalNote": "Status is final and cannot be changed.",
+        "cancellationReason": "Cancellation reason",
+        "cancellationReasonPlaceholder": "Enter cancellation reason",
+        "keepSession": "Keep Session",
+        "saving": "Saving...",
+        "confirm": "Confirm",
+        "confirming": "Confirming...",
+        "processing": "Processing..."
+      },
+      "validation": {
+        "cancellationReasonRequired": "Cancellation reason is required.",
+        "dateRequired": "Date is required.",
+        "timeRequired": "Time is required.",
+        "invalidDateTime": "Invalid date or time."
+      },
+      "toast": {
+        "updateSuccess": "Session updated successfully.",
+        "completeSuccess": "Session marked as completed.",
+        "cancelSuccess": "Session cancelled successfully.",
+        "noShowSuccess": "Session marked as no-show.",
+        "updateFailed": "Failed to update session.",
+        "actionFailed": "Unable to update session status."
+      },
+      "actionAria": {
+        "edit": "Edit session for {name}",
+        "complete": "Complete session for {name}",
+        "cancel": "Cancel session for {name}",
+        "noShow": "Mark session as no show for {name}"
+      }
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Review patient progress and AI-generated clinical reports.",
+      "toolbarAriaLabel": "Reports toolbar",
+      "searchAriaLabel": "Search reports",
+      "searchPlaceholder": "Search by patient or title",
+      "filterAriaLabel": "Report filters",
+      "gridAriaLabel": "Reports list",
+      "viewReport": "View Report",
+      "viewDetails": "View Details",
+      "loading": "Loading reports...",
+      "empty": "No reports have been generated yet.",
+      "emptyFiltered": "No reports match your search or filter.",
+      "loadFailed": "Failed to load reports.",
+      "clearFilters": "Clear filters",
+      "aiLoadWarning": "Some AI reports could not be loaded.",
+      "back": "Back to Reports",
+      "detailsTitle": "Report Details",
+      "loadingDetails": "Loading report...",
+      "notFound": "Report not found.",
+      "invalidSource": "Invalid report source.",
+      "patient": "Patient",
+      "specialist": "Specialist",
+      "generatedBy": "Generated By",
+      "reportType": "Report Type",
+      "date": "Date",
+      "createdDate": "Created Date",
+      "period": "Period",
+      "periodRange": "Period: {start} – {end}",
+      "summary": "Summary",
+      "aiSummary": "AI Summary",
+      "noSummary": "No summary available.",
+      "progress": "Progress",
+      "recommendations": "Recommendations",
+      "pdf": "PDF",
+      "attachment": "Attachment",
+      "attachments": "Attachments",
+      "reportInformation": "Report Information",
+      "status": "Status",
+      "pdfActionsTitle": "PDF Actions",
+      "pdfReport": "PDF report",
+      "pdfUnavailable": "PDF attachment is unavailable.",
+      "pdfLinkUnavailable": "PDF link is unavailable.",
+      "pdfActions": {
+        "viewPdf": "View PDF",
+        "viewPdfAria": "View PDF report",
+        "generatePdf": "Generate PDF",
+        "generating": "Generating...",
+        "copyLink": "Copy Link",
+        "copyPdfLink": "Copy PDF Link",
+        "linkCopied": "Link copied.",
+        "copyFailed": "Unable to copy link.",
+        "openFailed": "Unable to open PDF.",
+        "generateFailed": "Failed to generate PDF.",
+        "generatedSuccess": "PDF generated successfully."
+      },
+      "toast": {
+        "detailsLoadFailed": "Failed to load report details."
+      }
+    },
+    "ai": {
+      "title": "AI Insights",
+      "subtitle": "Speech analysis, recommendations, and clinical reports",
+      "toolbarAriaLabel": "AI Center header",
+      "loading": "Loading AI Center...",
+      "loadFailed": "Failed to load AI Center.",
+      "recently": "Recently",
+      "summary": {
+        "ariaLabel": "AI summary",
+        "loadingAriaLabel": "AI summary loading",
+        "loading": "Loading...",
+        "speechAnalyses": "Speech Analyses",
+        "recommendations": "AI Recommendations",
+        "reports": "AI Reports",
+        "needsAttention": "Needs Attention",
+        "avgScore": "Avg score {score}",
+        "pendingReviews": "{count} pending reviews"
+      },
+      "attention": {
+        "title": "Patients Needing Attention",
+        "ariaLabel": "Patients needing attention",
+        "loadingAriaLabel": "Patients needing attention loading",
+        "loadingPatient": "Loading patient...",
+        "empty": "No patients currently need attention.",
+        "speechScore": "Speech {score}",
+        "viewPatientAria": "View patient {name}"
+      },
+      "speech": {
+        "title": "Latest Speech Analyses",
+        "empty": "No speech analyses yet.",
+        "scoreDetail": "Score {score} • {date}"
+      },
+      "recommendations": {
+        "title": "Latest AI Recommendations",
+        "empty": "No AI recommendations yet.",
+        "status": {
+          "approved": "Approved",
+          "completed": "Completed"
+        }
+      },
+      "reports": {
+        "title": "Latest AI Reports",
+        "empty": "No AI reports yet.",
+        "detail": "{type} • {date}"
+      },
+      "records": {
+        "loading": "Loading record...",
+        "loadingAriaLabel": "Loading records",
+        "patientFallback": "Patient"
+      }
+    },
+    "audit": {
+      "title": "Audit Logs",
+      "subtitle": "Monitor administrative and system activity.",
+      "toolbarAriaLabel": "Audit logs toolbar",
+      "tableAriaLabel": "Audit logs list",
+      "tableLoadingAriaLabel": "Audit logs loading",
+      "clearFilters": "Clear filters",
+      "updating": "Updating…",
+      "loadFailed": "Failed to load audit logs.",
+      "usersLoadFailed": "Failed to load users.",
+      "systemUser": "System",
+      "systemUserInitials": "SY",
+      "empty": "No audit logs found.",
+      "emptyFiltered": "No audit logs match your filters.",
+      "unknownAction": "Unknown action",
+      "unknownEntity": "Unknown entity",
+      "filters": {
+        "user": "User",
+        "action": "Action",
+        "entity": "Entity",
+        "fromDate": "From date",
+        "toDate": "To date",
+        "allUsers": "All users",
+        "allActions": "All actions",
+        "allEntities": "All entities",
+        "usersUnavailable": "User filter options could not be loaded.",
+        "dateRangeInvalid": "From date cannot be after To date.",
+        "userFallback": "User"
+      },
+      "columns": {
+        "action": "Action",
+        "user": "User",
+        "entity": "Entity",
+        "dateTime": "Date & Time",
+        "details": "Details"
+      },
+      "details": {
+        "button": "Details",
+        "referenceId": "Reference ID"
+      },
+      "badges": {
+        "create": "Create",
+        "update": "Update",
+        "complete": "Complete",
+        "delete": "Delete",
+        "assign": "Assign",
+        "login": "Login",
+        "logout": "Logout",
+        "cancel": "Cancel",
+        "activity": "Activity"
+      },
+      "actions": {
+        "activity": "Activity",
+        "login": "Login",
+        "logout": "Logout",
+        "user_create": "User Created",
+        "user_activate": "User Activated",
+        "user_deactivate": "User Deactivated",
+        "user_update": "User Updated",
+        "user_delete": "User Deleted",
+        "patient_create": "Patient Created",
+        "patient_update": "Patient Updated",
+        "patient_delete": "Patient Deleted",
+        "session_create": "Session Created",
+        "session_update": "Session Updated",
+        "session_delete": "Session Deleted",
+        "session_complete": "Session Completed",
+        "session_cancel": "Session Cancelled",
+        "session_no_show": "Session Marked No Show",
+        "treatment_plan_create": "Treatment Plan Created",
+        "treatment_plan_created": "Treatment Plan Created",
+        "goal_add": "Goal Added",
+        "goal_added": "Goal Added",
+        "goal_create": "Goal Added",
+        "exercise_assign": "Exercise Assigned",
+        "exercise_assigned": "Exercise Assigned",
+        "parent_link": "Parent Linked",
+        "parent_linked": "Parent Linked",
+        "specialist_assign": "Specialist Assigned",
+        "specialist_assigned": "Specialist Assigned",
+        "case_category_create": "Case Category Created",
+        "case_category_update": "Case Category Updated",
+        "specialist_case_categories_update": "Specialist Categories Updated",
+        "case_intake_request_create": "Case Request Created",
+        "case_intake_request_update": "Case Request Updated",
+        "case_intake_request_assign": "Case Request Assigned",
+        "case_intake_request_accept": "Case Request Accepted",
+        "case_intake_request_reject": "Case Request Rejected",
+        "case_intake_request_convert": "Case Converted to Patient",
+        "case_intake_attachment_add": "Attachment Added",
+        "case_intake_attachment_delete": "Attachment Deleted",
+        "case_intake_assessment_start": "Assessment Started",
+        "case_intake_assessment_notes_update": "Assessment Notes Updated",
+        "complaint_submitted": "Complaint Submitted",
+        "complaint_review_started": "Complaint Review Started",
+        "complaint_resolved": "Complaint Resolved",
+        "complaint_rejected": "Complaint Rejected",
+        "specialist_warning_issued": "Specialist Warning Issued",
+        "create": "Create",
+        "created": "Create",
+        "update": "Update",
+        "updated": "Update",
+        "delete": "Delete",
+        "deleted": "Delete",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "assign": "Assign",
+        "unassign": "Unassign",
+        "approve": "Approve",
+        "reject": "Reject",
+        "accept": "Accept",
+        "complete": "Complete",
+        "cancel": "Cancel",
+        "archive": "Archive",
+        "upload": "Upload",
+        "generate": "Generate",
+        "review": "Review",
+        "mark_read": "Mark Read",
+        "read_all": "Read All"
+      },
+      "entities": {
+        "system": "System",
+        "user": "User",
+        "users": "User",
+        "patient": "Patient",
+        "patients": "Patient",
+        "session": "Session",
+        "sessions": "Session",
+        "case_category": "Case Category",
+        "case_intake_request": "Case Request",
+        "case_request": "Case Request",
+        "complaint": "Complaint",
+        "specialist_warning": "Specialist Warning",
+        "goal": "Goal",
+        "goals": "Goal",
+        "exercise": "Exercise",
+        "exercises": "Exercise",
+        "treatment_plan": "Treatment Plan",
+        "report": "Report",
+        "reports": "Report",
+        "parent": "Parent",
+        "specialist": "Specialist",
+        "notification": "Notification",
+        "notifications": "Notification",
+        "assigned_exercise": "Assigned Exercise",
+        "submission": "Submission",
+        "review": "Review",
+        "speech_analysis": "Speech Analysis",
+        "ai_recommendation": "AI Recommendation",
+        "ai_report": "AI Report"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "toolbarAriaLabel": "Notifications header",
+      "listAriaLabel": "Notifications list",
+      "listLoadingAriaLabel": "Notifications loading",
+      "markAllRead": "Mark all as read",
+      "empty": "No notifications yet.",
+      "loading": "Loading notifications...",
+      "markingAsRead": "Marking as read",
+      "unreadNotification": "Unread notification: {title}. Mark as read.",
+      "notification": "Notification: {title}",
+      "popover": {
+        "trigger": "Notifications",
+        "triggerWithUnread": "Notifications, {count} unread",
+        "dialogAriaLabel": "Recent notifications",
+        "viewAll": "View All Notifications"
+      },
+      "type": {
+        "complaintSubmitted": "Complaint submitted",
+        "specialistWarningIssued": "Specialist warning issued"
+      },
+      "systemText": {
+        "titles": {
+          "complaintSubmitted": "New specialist complaint submitted",
+          "caseRequestSubmitted": "New case intake request",
+          "caseRequestAccepted": "Case request accepted",
+          "caseRequestRejected": "Case request rejected",
+          "caseRequestConverted": "Case request converted to patient",
+          "patientCreated": "Patient created",
+          "parentLinked": "Parent linked",
+          "specialistAssigned": "Specialist assigned",
+          "userDeleted": "User deleted",
+          "userActivated": "User activated",
+          "userDeactivated": "User deactivated",
+          "supportRequestSubmitted": "New specialist support request",
+          "supportRequestReply": "Specialist replied to a support request",
+          "specialistWarningThreshold": "Specialist warning threshold reached",
+          "userRegistered": "New user registered",
+          "reportGenerated": "Report generated",
+          "treatmentPlanCreated": "Treatment plan created"
+        },
+        "bodies": {
+          "complaintSubmitted": "A parent submitted a specialist complaint for administration review.",
+          "caseRequestSubmitted": "{name} submitted a new preliminary case request.",
+          "caseRequestAccepted": "A specialist accepted a preliminary case request.",
+          "caseRequestRejected": "A specialist rejected a preliminary case request.",
+          "caseRequestConverted": "{name}'s preliminary case request was converted to an official patient profile.",
+          "patientCreated": "{name} was added to the system.",
+          "parentLinked": "{parent} was linked to patient {patient}.",
+          "specialistAssigned": "{specialist} was assigned to patient {patient}.",
+          "treatmentPlanCreated": "Treatment plan \"{planTitle}\" was created for patient {patient}.",
+          "userActivated": "{name} was activated.",
+          "userDeactivated": "{name} was deactivated.",
+          "userDeleted": "{name} was deleted from the system.",
+          "supportRequestSubmitted": "A specialist submitted a support request: {subject}",
+          "supportRequestAttachment": "The specialist added an attachment to a support request.",
+          "specialistWarningThreshold": "A specialist reached {count} confirmed complaints within {days} days.",
+          "userRegistered": "{name} registered as {role}.",
+          "reportGenerated": "Report \"{reportTitle}\" was generated for patient {patient}."
+        }
+      },
+      "errors": {
+        "loadFailed": "Failed to load notifications.",
+        "markReadFailed": "Failed to mark notification as read.",
+        "markAllReadFailed": "Failed to mark all notifications as read.",
+        "signedOut": "Please sign in to view notifications."
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Manage your account information.",
+      "editTitle": "Edit Profile",
+      "editSubtitle": "Update your contact details and profile photo.",
+      "backToProfile": "Back to profile",
+      "loading": "Loading profile...",
+      "unavailable": "Profile unavailable.",
+      "updatedSuccess": "Profile updated successfully",
+      "editProfile": "Edit Profile",
+      "personalInfo": "Personal Information",
+      "accountInfo": "Account Information",
+      "profilePhoto": "Profile Photo",
+      "changePhoto": "Change photo",
+      "photoHint": "JPG or PNG image files are supported.",
+      "fullName": "Full Name",
+      "phone": "Phone",
+      "phoneNumber": "Phone number",
+      "email": "Email",
+      "role": "Role",
+      "emailStatus": "Email Status",
+      "verified": "Verified",
+      "notVerified": "Not verified",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "validation": {
+        "fullNameRequired": "Full name is required.",
+        "imageRequired": "Please choose an image file."
+      },
+      "errors": {
+        "loadError": "We couldn't load your profile right now.",
+        "loadFailed": "Failed to load profile.",
+        "saveFailed": "Failed to save profile.",
+        "imageNoUrl": "Profile image upload succeeded but no image URL was returned.",
+        "sessionRefreshFailed": "Profile saved but the session could not be refreshed. Please reload the page.",
+        "sessionImageRefreshFailed": "Session refresh did not return the updated profile image."
+      }
+    }
+  },
+  "landing": {
+    "nav": {
+      "home": "Home",
+      "features": "Features",
+      "howItWorks": "How It Works",
+      "aiSolutions": "AI Solutions",
+      "whoItsFor": "Who It's For",
+      "about": "About",
+      "faq": "FAQ",
+      "joinUs": "Join Us",
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "badge": "AI-Powered • Family-Centered • Specialist-Led",
+      "headline": {
+        "line1": "Smarter Rehabilitation.",
+        "line2Prefix": "Stronger",
+        "line2Highlight": "Family Support.",
+        "line3": "Better Progress."
+      },
+      "description": "One connected platform that brings families, specialists, and intelligent rehabilitation tools together to support every patient's rehabilitation journey.",
+      "getStarted": "Get Started",
+      "explorePlatform": "Explore the Platform"
+    },
+    "features": {
+      "aiInsights": "AI-Powered Insights",
+      "connectedRoles": "{count} Connected Roles",
+      "continuousProgress": "Continuous Progress"
+    },
+    "valueStrip": {
+      "ariaLabel": "Platform values",
+      "families": {
+        "title": "Built for Families",
+        "subtitle": "Supportive, clear, and accessible"
+      },
+      "specialists": {
+        "title": "Designed for Specialists",
+        "subtitle": "Clinical tools, full case visibility"
+      },
+      "ai": {
+        "title": "Powered by AI",
+        "subtitle": "Smart summaries & recommendations"
+      },
+      "progress": {
+        "title": "Focused on Progress",
+        "subtitle": "Continuous, measurable improvement"
+      }
+    },
+    "whoItsFor": {
+      "eyebrow": "WHO IT'S FOR",
+      "heading": "One Platform. Three Connected Experiences.",
+      "family": {
+        "eyebrow": "For Families",
+        "title": "Everything Parents Need in One Place",
+        "description": "Track exercises, daily tasks, sessions, AI reports, notifications and communicate directly with specialists.",
+        "badges": {
+          "exerciseTracking": "Exercise Tracking",
+          "aiReports": "AI Reports",
+          "parentDashboard": "Parent Dashboard",
+          "secureCommunication": "Secure Communication"
+        }
+      },
+      "specialist": {
+        "eyebrow": "For Specialists",
+        "title": "Complete Rehabilitation Management",
+        "description": "Manage patients, assessments, treatment plans, exercises, reviews, reports and AI-powered rehabilitation tools.",
+        "badges": {
+          "patientManagement": "Patient Management",
+          "treatmentPlans": "Treatment Plans",
+          "speechAnalysis": "Speech Analysis",
+          "aiRecommendations": "AI Recommendations"
+        }
+      },
+      "admin": {
+        "eyebrow": "For Administrators",
+        "title": "Complete Platform Oversight",
+        "description": "Manage users, specialists, patients, case requests, assignments, categories, and system-wide activity from one centralized workspace.",
+        "badges": {
+          "userManagement": "User Management",
+          "caseRequests": "Case Requests",
+          "specialistAssignments": "Specialist Assignments",
+          "systemAnalytics": "System Analytics"
+        }
+      }
+    },
+    "problemSolution": {
+      "heading": {
+        "line1": "Rehabilitation Should Not Stop",
+        "line2": "After the Session"
+      },
+      "description": "Families often struggle to follow treatment plans at home, specialists lack continuous visibility into daily performance, and progress information becomes scattered across calls, messages, appointments, and reports.",
+      "challenges": {
+        "a": {
+          "label": "Challenge A",
+          "title": "Fragmented Follow-Up",
+          "description": "Communication, reports, and progress updates are often spread across different tools."
+        },
+        "b": {
+          "label": "Challenge B",
+          "title": "Limited Home Guidance",
+          "description": "Families do not always receive clear and continuous support for daily rehabilitation activities."
+        },
+        "c": {
+          "label": "Challenge C",
+          "title": "Delayed Progress Insight",
+          "description": "Specialists may not have enough visibility into the patient's performance between sessions."
+        }
+      },
+      "solution": {
+        "label": "THE SOLUTION",
+        "text": "Smart Rehabilitation brings the complete care journey into one connected platform."
+      }
+    },
+    "journey": {
+      "eyebrow": "THE JOURNEY",
+      "heading": "From First Request to Continuous Progress",
+      "description": "Follow the complete rehabilitation journey—from the parent's first case request to continuous AI-powered rehabilitation support and measurable patient improvement.",
+      "preview": {
+        "patientJourney": {
+          "ariaLabel": "Complete patient rehabilitation journey",
+          "title": "Patient Journey",
+          "badge": "Active Rehabilitation",
+          "progress": "Progress"
+        },
+        "aiReport": {
+          "ariaLabel": "AI progress report preview",
+          "title": "AI Progress Report",
+          "widgets": {
+            "speechAnalysis": "Speech Analysis",
+            "weeklySummary": "Weekly Summary",
+            "progressScore": "Progress Score",
+            "aiRecommendation": "AI Recommendation"
+          }
+        },
+        "parentDashboard": {
+          "ariaLabel": "Parent dashboard preview",
+          "title": "Parent Dashboard",
+          "todaysExercises": "Today's Exercises",
+          "exercisesStatus": "2 Completed · 1 Remaining",
+          "nextSession": {
+            "label": "Next Session",
+            "detail": "Tomorrow · 10:00 AM"
+          },
+          "specialistFeedback": {
+            "label": "Specialist Feedback",
+            "detail": "New feedback available."
+          },
+          "aiReminder": {
+            "label": "AI Reminder",
+            "detail": "Evening exercise due."
+          }
+        }
+      },
+      "steps": {
+        "submitCaseRequest": {
+          "title": "Submit Case Request",
+          "description": "Parent submits child information, category, case description and attachments."
+        },
+        "specialistAssignment": {
+          "title": "Specialist Assignment",
+          "description": "Administrator reviews the request and assigns the appropriate specialist."
+        },
+        "assessmentCommunication": {
+          "title": "Assessment & Communication",
+          "description": "Specialist communicates with family and performs assessment."
+        },
+        "acceptCreatePatient": {
+          "title": "Accept & Create Patient",
+          "description": "Accepted case becomes an active patient profile."
+        },
+        "treatmentPlan": {
+          "title": "Treatment Plan",
+          "description": "Specialist creates treatment plan and goals."
+        },
+        "homeExercises": {
+          "title": "Home Exercises",
+          "description": "Parent completes assigned exercises and uploads videos, audio and notes."
+        },
+        "specialistReview": {
+          "title": "Specialist Review",
+          "description": "Specialist reviews submissions, provides feedback, and requests retry if necessary."
+        },
+        "aiProgressTracking": {
+          "title": "AI Progress Tracking",
+          "description": "AI generates speech analysis, progress reports, weekly summaries and recommendations."
+        }
+      }
+    },
+    "modules": {
+      "eyebrow": "PLATFORM MODULES",
+      "heading": "Everything Needed for a Connected Rehabilitation Journey",
+      "description": "Explore the complete Smart Rehabilitation Platform and discover how every module works together to support families, specialists, administrators, and patients throughout the rehabilitation journey.",
+      "carousel": {
+        "previous": "Previous module",
+        "next": "Next module",
+        "label": "Platform modules carousel",
+        "goTo": "Go to {module}"
+      },
+      "items": {
+        "caseManagement": {
+          "title": "Case Management",
+          "description": "Manage every rehabilitation request from submission until patient conversion.",
+          "features": {
+            "intake": "Case intake requests",
+            "assignment": "Category-based assignment",
+            "assessment": "Assessment workflow",
+            "conversion": "Patient conversion",
+            "linking": "Parent & specialist linking"
+          }
+        },
+        "treatmentManagement": {
+          "title": "Treatment Management",
+          "description": "Create personalized rehabilitation plans and monitor long-term treatment goals.",
+          "features": {
+            "assessments": "Assessments",
+            "treatmentPlans": "Treatment plans",
+            "shortTermGoals": "Short-term goals",
+            "longTermGoals": "Long-term goals",
+            "goalProgress": "Goal progress tracking"
+          }
+        },
+        "homeExerciseSupport": {
+          "title": "Home Exercise Support",
+          "description": "Support families with daily rehabilitation exercises and home follow-up.",
+          "features": {
+            "tasks": "Daily & weekly tasks",
+            "instructions": "Exercise instructions",
+            "submissions": "Video, audio & image submissions",
+            "notes": "Parent notes",
+            "retry": "Retry workflow"
+          }
+        },
+        "specialistReview": {
+          "title": "Specialist Review",
+          "description": "Review patient submissions and provide professional rehabilitation feedback.",
+          "features": {
+            "review": "Submission review",
+            "rating": "Performance rating",
+            "feedback": "Written feedback",
+            "approveRetry": "Approve or request retry",
+            "history": "Review history"
+          }
+        },
+        "sessions": {
+          "title": "Sessions",
+          "description": "Manage rehabilitation appointments and online therapy sessions.",
+          "features": {
+            "upcoming": "Upcoming sessions",
+            "onlineLinks": "Online session links",
+            "requests": "Session requests",
+            "approval": "Approval & rejection",
+            "statuses": "Completed, cancelled & missed"
+          }
+        },
+        "communication": {
+          "title": "Communication",
+          "description": "Keep parents and specialists connected through secure communication.",
+          "features": {
+            "chat": "Parent-specialist chat",
+            "presence": "Online & last seen",
+            "attachments": "Images, audio, video & PDF",
+            "readStatus": "Read status",
+            "notifications": "Unread notifications"
+          }
+        },
+        "progressReports": {
+          "title": "Progress & Reports",
+          "description": "Track rehabilitation progress with intelligent analytics and reports.",
+          "features": {
+            "periods": "Daily, weekly & monthly progress",
+            "goalCompletion": "Goal completion",
+            "improvement": "Improvement percentage",
+            "specialistReports": "Specialist reports",
+            "pdfExports": "PDF exports"
+          }
+        }
+      }
+    },
+    "ai": {
+      "eyebrow": "ARTIFICIAL INTELLIGENCE",
+      "heading": {
+        "line1": "AI That Supports —",
+        "highlight": "Not Replaces",
+        "line2": "— Specialists"
+      },
+      "description": "AI transforms rehabilitation data into useful summaries, speech analysis, reports and intelligent recommendations while keeping clinical decisions completely under specialist control.",
+      "cards": {
+        "speechAnalysis": {
+          "title": "AI Speech Analysis",
+          "description": "Analyze pronunciation, fluency and speech quality from uploaded recordings.",
+          "widget": {
+            "speechScore": "Speech Score",
+            "trend": "Trend ↑",
+            "comparedToPrevious": "Compared to previous session"
+          }
+        },
+        "clinicalSummary": {
+          "title": "Clinical Summary",
+          "description": "Generate structured weekly and monthly rehabilitation summaries.",
+          "widget": {
+            "title": "Weekly Summary",
+            "goalCompletion": "Goal completion +23%",
+            "speechClarity": "Speech clarity +18%",
+            "fluencyImproved": "Fluency improved",
+            "generatedToday": "Generated Today"
+          }
+        },
+        "recommendations": {
+          "title": "AI Recommendations",
+          "description": "The AI suggests treatment adjustments while specialists always make the final decision.",
+          "widget": {
+            "suggestedExercise": "Suggested Exercise",
+            "increaseWarmUp": "Increase oral motor warm-up",
+            "durationChange": "from 10 → 15 minutes.",
+            "approve": "Approve",
+            "reject": "Reject"
+          }
+        },
+        "reportGenerator": {
+          "title": "AI Report Generator",
+          "description": "Automatically generate structured progress reports ready for export.",
+          "widget": {
+            "filename": "Omar_Progress_Report.pdf",
+            "progress": "Progress",
+            "exportPdf": "Export PDF"
+          }
+        }
+      }
+    },
+    "whyChooseUs": {
+      "eyebrow": "WHY CHOOSE US",
+      "heading": "Why Smart Rehabilitation?",
+      "columns": {
+        "traditional": "Traditional Follow-Up",
+        "smart": "Smart Rehabilitation"
+      },
+      "comparisons": {
+        "communication": {
+          "traditional": "Scattered communication",
+          "smart": "One connected platform"
+        },
+        "progress": {
+          "traditional": "Paper-based progress",
+          "smart": "Visual progress analytics"
+        },
+        "homeGuidance": {
+          "traditional": "Limited home guidance",
+          "smart": "Guided daily exercises"
+        },
+        "feedback": {
+          "traditional": "Delayed feedback",
+          "smart": "Direct specialist reviews"
+        },
+        "summaries": {
+          "traditional": "Manual summaries",
+          "smart": "AI-assisted summaries"
+        },
+        "tools": {
+          "traditional": "Separate tools",
+          "smart": "Mobile + Web + AI ecosystem"
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "heading": "Frequently Asked Questions",
+      "items": {
+        "whoCanUse": {
+          "question": "Who can use the platform?",
+          "answer": "The platform is designed for families, rehabilitation specialists, and administrators, with each role receiving tools and access tailored to their responsibilities."
+        },
+        "childJoin": {
+          "question": "How does a child join the platform?",
+          "answer": "Parents submit a case request. After review, a specialist accepts the case and creates the patient profile."
+        },
+        "familyCommunication": {
+          "question": "Can families communicate with specialists?",
+          "answer": "Yes. Families and specialists can communicate securely through built-in chat, share files, and view message read and presence status."
+        },
+        "homeExercises": {
+          "question": "Can parents complete exercises at home?",
+          "answer": "Yes. Parents can follow exercise instructions, complete daily or weekly tasks, and upload video, audio, images, and notes for specialist review."
+        },
+        "onlineSessions": {
+          "question": "Does the platform support online sessions?",
+          "answer": "Yes. Specialists can schedule sessions and provide online meeting links, while families can view upcoming sessions and request new appointments."
+        },
+        "progressMonitoring": {
+          "question": "Can progress be monitored over time?",
+          "answer": "Yes. The platform tracks daily, weekly, and monthly progress, goal completion, exercise performance, and improvement trends."
+        },
+        "aiUsage": {
+          "question": "How is AI used in the platform?",
+          "answer": "AI assists specialists by generating summaries, speech analysis, recommendations, and reports. Clinical decisions always remain under specialist supervision."
+        },
+        "security": {
+          "question": "Is patient information secure?",
+          "answer": "Yes. Patient information is protected through authenticated access, role-based permissions, and controlled access to clinical and personal records."
+        },
+        "mobileWeb": {
+          "question": "Is the platform available on mobile and web?",
+          "answer": "Yes. Families and specialists can use the mobile application, while the web platform provides access to supported workflows and administrative tools."
+        },
+        "anywhere": {
+          "question": "Can I use the platform from anywhere?",
+          "answer": "Yes. Families can follow rehabilitation activities from home, and specialists and administrators can access supported platform tools online."
+        }
+      }
+    },
+    "finalCta": {
+      "eyebrow": "JOIN THE PLATFORM",
+      "heading": "Ready to Start the Rehabilitation Journey?",
+      "description": "Join one connected platform that empowers families, specialists, and administrators to deliver better rehabilitation outcomes through collaboration and AI-powered support.",
+      "benefits": {
+        "ariaLabel": "Platform benefits",
+        "quickStart": "Get Started in Minutes",
+        "aiAssisted": "AI-Assisted Rehabilitation",
+        "mobileWeb": "Mobile & Web Access",
+        "secure": "Secure Role-Based Platform"
+      },
+      "getStarted": "Get Started",
+      "signIn": "Sign In"
+    },
+    "footer": {
+      "description": "A connected rehabilitation platform that brings together families, specialists, administrators, and AI-powered clinical tools to support better rehabilitation outcomes.",
+      "platform": {
+        "title": "Platform",
+        "features": "Features",
+        "howItWorks": "How It Works",
+        "aiSolutions": "AI Solutions",
+        "whoItsFor": "Who It's For",
+        "about": "About",
+        "joinUs": "Join Us"
+      },
+      "access": {
+        "title": "Access",
+        "signIn": "Sign In",
+        "createAccount": "Create Account"
+      },
+      "copyright": "© 2026 Smart Rehabilitation Platform. All Rights Reserved."
+    },
+    "a11y": {
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
+    }
+  }
+}

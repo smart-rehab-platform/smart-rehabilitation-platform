@@ -3,11 +3,12 @@ import { AdminReportCard, AdminReportCardSkeleton } from "../components/AdminRep
 export function AdminReportsGrid({
   reports = [],
   isLoading = false,
+  labels,
   onOpenReport,
 }) {
   if (isLoading) {
     return (
-      <div className="pd-admin-reports-grid" aria-busy="true" aria-label="Reports loading">
+      <div className="pd-admin-reports-grid" aria-busy="true" aria-label={labels?.loading}>
         {Array.from({ length: 6 }).map((_, index) => (
           <AdminReportCardSkeleton key={`report-skeleton-${index}`} />
         ))}
@@ -16,11 +17,12 @@ export function AdminReportsGrid({
   }
 
   return (
-    <div className="pd-admin-reports-grid" aria-label="Reports">
+    <div className="pd-admin-reports-grid" aria-label={labels?.gridAriaLabel}>
       {reports.map((report) => (
         <AdminReportCard
           key={`${report.isAiReport ? "ai" : "regular"}-${report.id}`}
           report={report}
+          labels={labels}
           onOpen={onOpenReport}
         />
       ))}

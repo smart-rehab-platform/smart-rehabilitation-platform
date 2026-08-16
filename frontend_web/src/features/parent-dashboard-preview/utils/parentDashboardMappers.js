@@ -8,6 +8,34 @@ import {
   buildParentReportDetailPath,
   buildParentSessionsPath,
 } from "../../../routes/parentDashboardRoutes";
+import {
+  formatDisplayDate as formatLocalizedDisplayDate,
+  formatEmptyDash,
+  formatFrequencyLabel,
+  formatImprovementTrend,
+  formatNotificationTimeAgo,
+  formatNotificationTitleFallback,
+  formatSessionDate as formatLocalizedSessionDate,
+  formatTaskDuration,
+  getActiveTreatmentPlanStatus,
+  getAiDashboardGuidanceMessages,
+  getDefaultChildLabel,
+  getDefaultExerciseLabel,
+  getDefaultFeedbackQuote,
+  getDefaultParentLabel,
+  getDefaultProgressReportTitle,
+  getDefaultSpecialistLabel,
+  getDueTodayLabel,
+  getExerciseSubmissionStateMessage as getLocalizedExerciseSubmissionStateMessage,
+  getNoSessionScheduledLabel,
+  getSessionModeLabel,
+  getSubmissionMediaValidationMessages,
+} from "./parentDashboardLocalization";
+import {
+  localizeNotificationBody,
+  localizeNotificationTitle,
+} from "./parentNotificationsLocalization.js";
+import { resolveMapperContext, translateKey } from "./parentLocalizationCore";
 
 export function readString(source, keys) {
   if (!source || typeof source !== "object") {
@@ -92,8 +120,9 @@ function shouldPreferProgressRow(current, candidate) {
   return candidateRank > currentRank;
 }
 
-function mapChildRow(row) {
-  const fullName = readString(row, ["full_name", "fullName", "name"]) || "Child";
+function mapChildRow(row, options = {}) {
+  const { t } = resolveMapperContext(options);
+  const fullName = readString(row, ["full_name", "fullName", "name"]) || getDefaultChildLabel(t);
   const id = readString(row, ["id", "_id"]);
 
   return {
@@ -103,7 +132,7 @@ function mapChildRow(row) {
     profileImageUrl: resolveReportFileUrl(
       readString(row, ["profile_image_url", "profileImageUrl", "image_url", "avatar"]),
     ),
-    status: "Active treatment plan",
+    status: getActiveTreatmentPlanStatus(t),
     progressPercent: readProgressPercent(row),
   };
 }
@@ -114,11 +143,12 @@ function mapChildRow(row) {
  * @param {Array<Record<string, unknown>>} progressRows
  * @returns {Array<{ id: string, fullName: string, initials: string, profileImageUrl: string|null, status: string, progressPercent: number|null }>}
  */
-export function mergeChildren(childrenRows, progressRows) {
+export function mergeChildren(childrenRows, progressRows, options = {}) {
+  const { t } = resolveMapperContext(options);
   const map = new Map();
 
   for (const row of childrenRows) {
-    const child = mapChildRow(row);
+    const child = mapChildRow(row, options);
     if (child.id) {
       map.set(child.id, child);
     }
@@ -126,7 +156,7 @@ export function mergeChildren(childrenRows, progressRows) {
 
   if (map.size === 0 && progressRows.length > 0) {
     for (const row of progressRows) {
-      const child = mapChildRow(row);
+      const child = mapChildRow(row, options);
       if (child.id) {
         map.set(child.id, child);
       }
@@ -158,8 +188,9 @@ export function mergeChildren(childrenRows, progressRows) {
       continue;
     }
 
-    const existing = map.get(id) || mapChildRow(row);
+    const existing = map.get(id) || mapChildRow(row, options);
     const progressPercent = bestProgressByChild.get(id)?.percent ?? null;
+    const fallbackName = getDefaultChildLabel(t);
 
     map.set(id, {
       ...existing,
@@ -167,11 +198,11 @@ export function mergeChildren(childrenRows, progressRows) {
       fullName:
         existing.fullName
         || readString(row, ["full_name", "fullName", "name"])
-        || "Child",
+        || fallbackName,
       initials: getInitials(
         existing.fullName
         || readString(row, ["full_name", "fullName", "name"])
-        || "Child",
+        || fallbackName,
       ),
       progressPercent: progressPercent ?? existing.progressPercent ?? null,
       profileImageUrl: existing.profileImageUrl ?? resolveReportFileUrl(
@@ -186,14 +217,15 @@ export function mergeChildren(childrenRows, progressRows) {
 /**
  * @param {Record<string, unknown>|null|undefined} user
  */
-export function mapParentFromAuth(user) {
+export function mapParentFromAuth(user, options = {}) {
+  const { t } = resolveMapperContext(options);
   const fullName =
     readString(user, ["full_name", "fullName"])
-    || (typeof user?.email === "string" ? user.email : "Parent");
+    || (typeof user?.email === "string" ? user.email : getDefaultParentLabel(t));
 
   return {
     fullName,
-    role: "Parent",
+    role: getDefaultParentLabel(t),
     initials: getInitials(fullName),
     profileImageUrl: resolveReportFileUrl(
       readString(user, ["profile_image_url", "profileImageUrl"]),
@@ -213,32 +245,8 @@ function normalizePercent(value) {
   return Math.round(Math.max(0, Math.min(100, value)));
 }
 
-function formatSessionDate(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return { dateLabel: "Upcoming", timeLabel: null };
-  }
-
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
-
-  let dateLabel;
-  if (diffDays === 0) {
-    dateLabel = "Today";
-  } else if (diffDays === 1) {
-    dateLabel = "Tomorrow";
-  } else {
-    dateLabel = date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  }
-
-  const timeLabel = date.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  return { dateLabel, timeLabel };
+function formatSessionDate(dateValue, locale = "en", t = null) {
+  return formatLocalizedSessionDate(dateValue, locale, t);
 }
 
 const TERMINAL_SESSION_STATUSES = new Set([
@@ -385,9 +393,10 @@ export function isUpcomingSession(session, now = Date.now()) {
  * Maps a backend session row into UpcomingSessionCard props.
  * @param {Record<string, unknown>} sessionRow
  */
-export function buildUpcomingSessionViewModel(sessionRow) {
+export function buildUpcomingSessionViewModel(sessionRow, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const scheduledAt = sessionRow.scheduled_at ?? sessionRow.scheduledAt;
-  const { dateLabel, timeLabel } = formatSessionDate(scheduledAt);
+  const { dateLabel, timeLabel } = formatSessionDate(scheduledAt, locale, t);
   const locationOrLink = readString(sessionRow, ["location_or_link", "locationOrLink"]);
   const meetingUrl = extractMeetingUrl(locationOrLink);
   const isOnline = meetingUrl != null || isOnlineSessionLocation(locationOrLink);
@@ -401,7 +410,7 @@ export function buildUpcomingSessionViewModel(sessionRow) {
       "type",
     ]),
     specialistName:
-      readString(sessionRow, ["specialist_name", "specialistName"]) || "Specialist",
+      readString(sessionRow, ["specialist_name", "specialistName"]) || getDefaultSpecialistLabel(t),
     specialty: readString(sessionRow, [
       "specialist_specialty",
       "specialistSpecialty",
@@ -410,7 +419,7 @@ export function buildUpcomingSessionViewModel(sessionRow) {
     dateLabel,
     timeLabel,
     whenLabel: [dateLabel, timeLabel].filter(Boolean).join(" · "),
-    mode: isOnline ? "Online" : "In-person",
+    mode: getSessionModeLabel(isOnline, t),
     durationMinutes: readNumber(sessionRow, ["duration_minutes", "durationMinutes"]),
     status: readString(sessionRow, ["status"]),
     meetingUrl,
@@ -467,7 +476,7 @@ export function buildCalendarMarkersForMonth({
  * @param {Array<Record<string, unknown>>} sessions
  * @param {string} patientId
  */
-export function pickUpcomingSessionsForPatient(sessions, patientId, limit = 2) {
+export function pickUpcomingSessionsForPatient(sessions, patientId, limit = 2, options = {}) {
   return filterSessionsForPatient(sessions, patientId)
     .filter((session) => isUpcomingSession(session))
     .sort((left, right) => {
@@ -476,15 +485,17 @@ export function pickUpcomingSessionsForPatient(sessions, patientId, limit = 2) {
       return leftTime - rightTime;
     })
     .slice(0, limit)
-    .map(buildUpcomingSessionViewModel);
+    .map((session) => buildUpcomingSessionViewModel(session, options));
 }
 
-export function pickNextSessionForPatient(sessions, patientId) {
-  const [next] = pickUpcomingSessionsForPatient(sessions, patientId, 1);
+export function pickNextSessionForPatient(sessions, patientId, options = {}) {
+  const [next] = pickUpcomingSessionsForPatient(sessions, patientId, 1, options);
   return next ?? null;
 }
 
-export function buildAiDashboardGuidance(exercises = []) {
+export function buildAiDashboardGuidance(exercises = [], options = {}) {
+  const { t } = resolveMapperContext(options);
+  const messages = getAiDashboardGuidanceMessages(t);
   const todayTasks = exercises.filter(
     (exercise) => !exercise.due || exercise.due.toLowerCase().includes("today"),
   );
@@ -495,18 +506,18 @@ export function buildAiDashboardGuidance(exercises = []) {
 
   if (total === 0) {
     return {
-      message: "Ask about exercises, reports, sessions, or home-practice guidance.",
+      message: messages.default,
     };
   }
 
   if (pending > 0) {
     return {
-      message: "You still have exercises to complete today. Ask the assistant for help understanding the instructions.",
+      message: messages.pending,
     };
   }
 
   return {
-    message: "Today's exercises are complete. Ask the assistant for home-practice guidance.",
+    message: messages.complete,
   };
 }
 
@@ -570,21 +581,19 @@ export function resolveTaskStatus(submission) {
   return "submitted";
 }
 
-function formatTaskDuration(taskRow) {
+function formatTaskDurationRow(taskRow, t = null) {
   const repetitions = readNumber(taskRow, ["repetitions"]);
-  if (repetitions != null) {
-    return `${repetitions} reps`;
-  }
-
-  return null;
+  return formatTaskDuration(repetitions, t);
 }
 
 /**
  * Maps daily tasks + submissions into TodaysExercisesSection exercise props.
  * @param {Array<Record<string, unknown>>} dailyTasks
  * @param {Array<Record<string, unknown>>} submissions
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapDailyTasksToExercises(dailyTasks, submissions) {
+export function mapDailyTasksToExercises(dailyTasks, submissions, options = {}) {
+  const { t } = resolveMapperContext(options);
   const submissionIndex = indexLatestSubmissions(submissions);
 
   return dailyTasks
@@ -602,7 +611,7 @@ export function mapDailyTasksToExercises(dailyTasks, submissions) {
         id,
         title:
           readString(taskRow, ["exercise_title", "title", "name"])
-          || "Exercise",
+          || getDefaultExerciseLabel(t),
         category: readString(taskRow, [
           "exercise_type",
           "exerciseType",
@@ -610,8 +619,8 @@ export function mapDailyTasksToExercises(dailyTasks, submissions) {
           "therapy_type",
           "therapyType",
         ]),
-        duration: formatTaskDuration(taskRow),
-        due: "Due Today",
+        duration: formatTaskDurationRow(taskRow, t),
+        due: getDueTodayLabel(t),
         dueDateMs: dueRaw ? new Date(dueRaw).getTime() : null,
         status,
         exerciseId: readString(taskRow, ["exercise_id", "exerciseId"]),
@@ -642,16 +651,8 @@ function truncateInstructionPreview(text, maxLength = 120) {
   return `${trimmed.slice(0, maxLength).trim()}…`;
 }
 
-function formatFrequencyLabel(frequency) {
-  if (!frequency) {
-    return null;
-  }
-
-  if (frequency === "one_time") {
-    return "One time";
-  }
-
-  return frequency.charAt(0).toUpperCase() + frequency.slice(1);
+function formatFrequencyLabelRow(frequency, t = null) {
+  return formatFrequencyLabel(frequency, t);
 }
 
 /**
@@ -659,8 +660,10 @@ function formatFrequencyLabel(frequency) {
  * @param {Array<Record<string, unknown>>} taskRows
  * @param {Array<Record<string, unknown>>} submissions
  * @param {{ id: string, fullName: string }} child
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapTaskRowsToHubTasks(taskRows, submissions, child) {
+export function mapTaskRowsToHubTasks(taskRows, submissions, child, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   if (!child?.id || !Array.isArray(taskRows)) {
     return [];
   }
@@ -689,10 +692,10 @@ export function mapTaskRowsToHubTasks(taskRows, submissions, child) {
         id,
         patientId: child.id,
         childName: child.fullName,
-        title: readString(taskRow, ["exercise_title", "title", "name"]) || "Exercise",
+        title: readString(taskRow, ["exercise_title", "title", "name"]) || getDefaultExerciseLabel(t),
         status,
-        frequency: formatFrequencyLabel(frequency),
-        dueDate: formatDisplayDate(dueRaw),
+        frequency: formatFrequencyLabelRow(frequency, t),
+        dueDate: formatDisplayDate(dueRaw, locale, t),
         dueDateMs: dueRaw ? new Date(dueRaw).getTime() : null,
         instructions,
         instructionPreview: truncateInstructionPreview(instructions),
@@ -711,15 +714,16 @@ export function buildSummaryStrip({
   exercises,
   upcomingSession,
   overallPercent,
-}) {
+}, options = {}) {
+  const { t } = resolveMapperContext(options);
   const completed = exercises.filter((exercise) => isTaskCompletedStatus(exercise.status)).length;
 
   return {
     todaysExercises: exercises.length,
     completed,
     remaining: Math.max(exercises.length - completed, 0),
-    nextSessionLabel: upcomingSession?.dateLabel || "—",
-    nextSessionDetail: upcomingSession?.whenLabel || "No session scheduled",
+    nextSessionLabel: upcomingSession?.dateLabel || formatEmptyDash(t),
+    nextSessionDetail: upcomingSession?.whenLabel || getNoSessionScheduledLabel(t),
     overallProgress: `${overallPercent ?? 0}%`,
     overallProgressPercent: overallPercent ?? 0,
   };
@@ -735,9 +739,10 @@ export function buildChildViewModel({
   submissions,
   sessions,
   patientId,
-}) {
-  const exercises = mapDailyTasksToExercises(dailyTasks, submissions);
-  const upcomingSession = pickNextSessionForPatient(sessions, patientId);
+}, options = {}) {
+  const { t } = resolveMapperContext(options);
+  const exercises = mapDailyTasksToExercises(dailyTasks, submissions, options);
+  const upcomingSession = pickNextSessionForPatient(sessions, patientId, options);
 
   const improvementPercent = readNumber(improvement, [
     "improvement_percentage",
@@ -762,7 +767,7 @@ export function buildChildViewModel({
     progress: {
       overallPercent,
       trendDelta: improvementPercent != null && improvementPercent !== 0
-        ? `${improvementPercent > 0 ? "+" : ""}${Math.round(improvementPercent)}% improvement`
+        ? formatImprovementTrend(improvementPercent, t)
         : null,
     },
     summary: {
@@ -779,7 +784,7 @@ export function buildChildViewModel({
     exercises,
     upcomingSession,
     overallPercent,
-  });
+  }, options);
 
   return {
     hero,
@@ -792,8 +797,9 @@ export function buildChildViewModel({
  * Builds the hero card view model from API payloads.
  * @deprecated Prefer buildChildViewModel for consolidated child-scoped mapping.
  */
-export function buildHeroViewModel({ child, improvement, dailyTasks, upcomingSession }) {
-  const exercises = mapDailyTasksToExercises(dailyTasks, []);
+export function buildHeroViewModel({ child, improvement, dailyTasks, upcomingSession }, options = {}) {
+  const { t } = resolveMapperContext(options);
+  const exercises = mapDailyTasksToExercises(dailyTasks, [], options);
   const improvementPercent = readNumber(improvement, [
     "improvement_percentage",
     "improvementPercentage",
@@ -817,7 +823,7 @@ export function buildHeroViewModel({ child, improvement, dailyTasks, upcomingSes
     progress: {
       overallPercent,
       trendDelta: improvementPercent != null && improvementPercent !== 0
-        ? `${improvementPercent > 0 ? "+" : ""}${Math.round(improvementPercent)}% improvement`
+        ? formatImprovementTrend(improvementPercent, t)
         : null,
     },
     summary: {
@@ -853,17 +859,8 @@ const REVIEW_TIMESTAMP_KEYS = [
   "submittedAt",
 ];
 
-function formatDisplayDate(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString(undefined, {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+function formatDisplayDate(dateValue, locale = "en", t = null) {
+  return formatLocalizedDisplayDate(dateValue, locale, t);
 }
 
 function readTimestampValue(entity, keys) {
@@ -1005,7 +1002,8 @@ function getLatestSubmissionForAssignment(submissions, assignedExerciseId) {
  * @param {Record<string, unknown>|null|undefined} assignmentRow
  * @param {Array<Record<string, unknown>>} submissions
  */
-export function buildExerciseDetailViewModel(assignmentRow, submissions = []) {
+export function buildExerciseDetailViewModel(assignmentRow, submissions = [], options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   if (!assignmentRow || typeof assignmentRow !== "object") {
     return null;
   }
@@ -1024,13 +1022,13 @@ export function buildExerciseDetailViewModel(assignmentRow, submissions = []) {
 
   return {
     id,
-    title: readString(assignmentRow, ["exercise_title", "title", "name"]) || "Exercise",
+    title: readString(assignmentRow, ["exercise_title", "title", "name"]) || getDefaultExerciseLabel(t),
     childName: readString(assignmentRow, ["patient_name", "patientName"]),
     patientId: readString(assignmentRow, ["patient_id", "patientId"]),
     exerciseId: readString(assignmentRow, ["exercise_id", "exerciseId"]),
     instructions: readString(assignmentRow, ["instructions", "description"]),
     frequency: readString(assignmentRow, ["frequency"]),
-    dueDate: formatDisplayDate(dueRaw),
+    dueDate: formatDisplayDate(dueRaw, locale, t),
     instructionMediaUrl: resolveReportFileUrl(instructionRaw),
     instructionMediaKind: instructionRaw ? guessMediaKind(instructionRaw) : null,
     status: resolveTaskStatus(latestSubmission),
@@ -1059,7 +1057,8 @@ export function resolveReportFileUrl(fileUrl) {
  * Maps the latest report row into LatestUpdatesSection props.
  * @param {Record<string, unknown>|null|undefined} reportRow
  */
-export function buildLatestReportViewModel(reportRow) {
+export function buildLatestReportViewModel(reportRow, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   if (!reportRow) {
     return null;
   }
@@ -1078,9 +1077,9 @@ export function buildLatestReportViewModel(reportRow) {
 
   return {
     id,
-    title: title || "Progress Report",
+    title: title || getDefaultProgressReportTitle(t),
     reportType: readString(reportRow, ["report_type", "reportType", "type"]),
-    date: formatDisplayDate(timestampValue),
+    date: formatDisplayDate(timestampValue, locale, t),
     preview: summary,
     status: readString(reportRow, ["status"]),
     pdfUrl,
@@ -1097,7 +1096,8 @@ export function buildLatestReportViewModel(reportRow) {
  * Maps the latest review row into LatestUpdatesSection props.
  * @param {Record<string, unknown>|null|undefined} reviewRow
  */
-export function buildLatestFeedbackViewModel(reviewRow) {
+export function buildLatestFeedbackViewModel(reviewRow, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   if (!reviewRow) {
     return null;
   }
@@ -1107,11 +1107,11 @@ export function buildLatestFeedbackViewModel(reviewRow) {
     "comments",
     "review_notes",
     "notes",
-  ]) || "Review available for the latest exercise submission.";
+  ]) || getDefaultFeedbackQuote(t);
 
   const timestampValue = readTimestampValue(reviewRow, REVIEW_TIMESTAMP_KEYS);
   const specialistName =
-    readString(reviewRow, ["specialist_name", "specialistName"]) || "Specialist";
+    readString(reviewRow, ["specialist_name", "specialistName"]) || getDefaultSpecialistLabel(t);
 
   return {
     id: readString(reviewRow, ["id", "_id"]),
@@ -1121,7 +1121,7 @@ export function buildLatestFeedbackViewModel(reviewRow) {
       "specialistSpecialty",
       "specialty",
     ]),
-    date: formatDisplayDate(timestampValue),
+    date: formatDisplayDate(timestampValue, locale, t),
     quote,
     status: readString(reviewRow, ["status"]),
     rating: readNumber(reviewRow, [
@@ -1167,7 +1167,8 @@ export function resolveReviewDisplayStatus(reviewRow) {
  * @param {Record<string, unknown>} reviewRow
  * @param {{ id?: string, fullName?: string }|null|undefined} child
  */
-export function mapReviewRowToFeedbackItem(reviewRow, child) {
+export function mapReviewRowToFeedbackItem(reviewRow, child, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const id = readString(reviewRow, ["id", "_id"]);
   if (!id) {
     return null;
@@ -1198,7 +1199,7 @@ export function mapReviewRowToFeedbackItem(reviewRow, child) {
     ]),
     requiresRetry,
     status: resolveReviewDisplayStatus(reviewRow),
-    reviewedAt: formatDisplayDate(timestampValue),
+    reviewedAt: formatDisplayDate(timestampValue, locale, t),
     reviewedAtMs,
   };
 }
@@ -1208,23 +1209,23 @@ export function mapReviewRowToFeedbackItem(reviewRow, child) {
  * @param {Array<Record<string, unknown>>} reviews
  * @param {{ id?: string, fullName?: string }|null|undefined} child
  */
-export function mapReviewRowsToFeedbackItems(reviews, child) {
+export function mapReviewRowsToFeedbackItems(reviews, child, options = {}) {
   if (!Array.isArray(reviews)) {
     return [];
   }
 
   return reviews
-    .map((reviewRow) => mapReviewRowToFeedbackItem(reviewRow, child))
+    .map((reviewRow) => mapReviewRowToFeedbackItem(reviewRow, child, options))
     .filter(Boolean);
 }
 
 /**
  * Builds Latest Updates view models from patient reports and reviews.
  */
-export function buildLatestUpdatesViewModel({ reports, reviews }) {
+export function buildLatestUpdatesViewModel({ reports, reviews }, options = {}) {
   return {
-    latestReport: buildLatestReportViewModel(pickLatestReport(reports)),
-    recentFeedback: buildLatestFeedbackViewModel(pickLatestReview(reviews)),
+    latestReport: buildLatestReportViewModel(pickLatestReport(reports), options),
+    recentFeedback: buildLatestFeedbackViewModel(pickLatestReview(reviews), options),
   };
 }
 
@@ -1237,38 +1238,8 @@ const NOTIFICATION_TIMESTAMP_KEYS = [
   "updatedAt",
 ];
 
-function formatTimeAgo(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  const diffMs = Date.now() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-
-  if (diffMins < 1) {
-    return "Just now";
-  }
-
-  if (diffMins < 60) {
-    return `${diffMins}m ago`;
-  }
-
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) {
-    return `${diffHours}h ago`;
-  }
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays === 1) {
-    return "Yesterday";
-  }
-
-  if (diffDays < 7) {
-    return `${diffDays}d ago`;
-  }
-
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+function formatTimeAgo(dateValue, locale = "en", t = null) {
+  return formatNotificationTimeAgo(dateValue, locale, t);
 }
 
 /**
@@ -1348,7 +1319,8 @@ function isNotificationRead(notification) {
 /**
  * @param {Record<string, unknown>} notificationRow
  */
-export function buildNotificationViewModel(notificationRow) {
+export function buildNotificationViewModel(notificationRow, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const id = readString(notificationRow, ["id", "_id"]);
   if (!id) {
     return null;
@@ -1357,13 +1329,15 @@ export function buildNotificationViewModel(notificationRow) {
   const type = readString(notificationRow, ["type", "category"]);
   const { icon, tone } = mapNotificationTypeToUi(type);
   const timestampValue = readTimestampValue(notificationRow, NOTIFICATION_TIMESTAMP_KEYS);
+  const rawTitle = readString(notificationRow, ["title", "subject"]);
+  const rawBody = readString(notificationRow, ["body", "message"]);
 
   return {
     id,
-    title: readString(notificationRow, ["title", "subject"]) || "Notification",
-    body: readString(notificationRow, ["body", "message"]),
+    title: localizeNotificationTitle(rawTitle, type, t) || formatNotificationTitleFallback(t),
+    body: localizeNotificationBody(rawBody, type, t),
     type,
-    timeAgo: formatTimeAgo(timestampValue) || "Recently",
+    timeAgo: formatTimeAgo(timestampValue, locale, t) || translateKey(t, "parent.common.recently", "Recently"),
     unread: !isNotificationRead(notificationRow),
     tone,
     icon,
@@ -1382,9 +1356,9 @@ export function buildNotificationViewModel(notificationRow) {
 /**
  * @param {Array<Record<string, unknown>>} notificationRows
  */
-export function mapNotificationsToViewModels(notificationRows) {
+export function mapNotificationsToViewModels(notificationRows, options = {}) {
   return sortNotificationsNewestFirst(notificationRows)
-    .map((row) => buildNotificationViewModel(row))
+    .map((row) => buildNotificationViewModel(row, options))
     .filter(Boolean);
 }
 
@@ -1529,7 +1503,10 @@ export function formatFileSize(bytes) {
  * Validates a selected submission media file before upload.
  * @param {File|null|undefined} file
  */
-export function validateSubmissionMediaFile(file) {
+export function validateSubmissionMediaFile(file, options = {}) {
+  const { t } = resolveMapperContext(options);
+  const messages = getSubmissionMediaValidationMessages(t);
+
   if (!file) {
     return { valid: true, mediaType: null, error: null };
   }
@@ -1539,7 +1516,7 @@ export function validateSubmissionMediaFile(file) {
     return {
       valid: false,
       mediaType: null,
-      error: "This file type is not supported. Use an image, video, or audio file.",
+      error: messages.unsupportedType,
     };
   }
 
@@ -1547,7 +1524,7 @@ export function validateSubmissionMediaFile(file) {
     return {
       valid: false,
       mediaType: null,
-      error: "File exceeds 50 MB. Choose a smaller file.",
+      error: messages.tooLarge,
     };
   }
 
@@ -1557,20 +1534,8 @@ export function validateSubmissionMediaFile(file) {
 /**
  * @param {string|null|undefined} status UI exercise status key
  */
-export function getExerciseSubmissionStateMessage(status) {
-  if (status === "submitted") {
-    return "This exercise has been submitted and is awaiting specialist review.";
-  }
-
-  if (status === "reviewed") {
-    return "This exercise has been reviewed by the specialist.";
-  }
-
-  if (status === "needs_retry") {
-    return "The specialist asked for this exercise to be done again. Submit a new recording or notes below.";
-  }
-
-  return null;
+export function getExerciseSubmissionStateMessage(status, t = null) {
+  return getLocalizedExerciseSubmissionStateMessage(status, t);
 }
 
 /**
