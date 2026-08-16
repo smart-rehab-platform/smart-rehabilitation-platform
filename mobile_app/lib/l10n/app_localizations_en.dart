@@ -1657,7 +1657,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminAiPatientsNeedingAttention => 'Patients Needing Attention';
 
   @override
-  String get adminAiNoPatientsFlagged => 'No patients currently need attention.';
+  String get adminAiNoPatientsFlagged =>
+      'No patients currently need attention.';
 
   @override
   String get adminAiLatestSpeechAnalyses => 'Latest Speech Analyses';
@@ -3252,6 +3253,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get communicationTypeMessageHint => 'Type a message...';
+
+  @override
+  String get communicationSeen => 'Seen';
 
   @override
   String get communicationAttachHint => 'Attach a file, image, or audio';

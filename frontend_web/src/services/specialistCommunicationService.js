@@ -6,4 +6,5 @@ export {
   uploadMessageAttachment,
   sendConversationAttachmentMessage,
   markMessageRead,
+  markConversationMessagesRead,
 } from "./parentCommunicationService";

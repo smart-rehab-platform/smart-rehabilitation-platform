@@ -5709,6 +5709,12 @@ abstract class AppLocalizations {
   /// **'Type a message...'**
   String get communicationTypeMessageHint;
 
+  /// Read receipt shown under the latest outgoing chat message the recipient has read.
+  ///
+  /// In en, this message translates to:
+  /// **'Seen'**
+  String get communicationSeen;
+
   /// Chat attachment button hint.
   ///
   /// In en, this message translates to:

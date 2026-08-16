@@ -2,15 +2,44 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getConversationMessages,
   getUserConversations,
-  markMessageRead,
+  markConversationMessagesRead,
   sendConversationAttachmentMessage,
   sendConversationMessage,
   uploadMessageAttachment,
 } from "../../../services/parentCommunicationService";
 import { mapConversations, mapMessage, mapMessages } from "../utils/parentMessagesUtils";
 
+const MESSAGE_POLL_INTERVAL_MS = 5000;
+
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
+}
+
+function mergeMessages(existing, incoming) {
+  const byId = new Map(existing.map((message) => [message.id, message]));
+
+  incoming.forEach((message) => {
+    const current = byId.get(message.id);
+    if (!current) {
+      byId.set(message.id, message);
+      return;
+    }
+
+    byId.set(message.id, {
+      ...current,
+      ...message,
+      isRead: Boolean(current.isRead || message.isRead),
+      attachments: message.attachments?.length ? message.attachments : current.attachments,
+      senderName: message.senderName || current.senderName,
+      senderRole: message.senderRole || current.senderRole,
+    });
+  });
+
+  return Array.from(byId.values()).sort((a, b) => {
+    const aTime = a.sentAt ? new Date(a.sentAt).getTime() : 0;
+    const bTime = b.sentAt ? new Date(b.sentAt).getTime() : 0;
+    return aTime - bTime;
+  });
 }
 
 export function useParentMessages(userId) {
@@ -86,12 +115,16 @@ export function useParentMessages(userId) {
   return { conversations, isLoading, error, refetch, upsertConversation };
 }
 
-export function useParentConversation(conversationId, currentUserId) {
+export function useParentConversation(conversationId, currentUserId, options = {}) {
+  const { onIncomingMessages } = options;
   const [messages, setMessages] = useState([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(Boolean(conversationId));
   const [messagesError, setMessagesError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+  const pollInFlightRef = useRef(false);
+  const markReadInFlightRef = useRef(false);
+  const isSendingRef = useRef(false);
 
   const refetchMessages = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -102,13 +135,36 @@ export function useParentConversation(conversationId, currentUserId) {
       return;
     }
 
-    setMessages((current) => {
-      if (current.some((item) => item.id === message.id)) {
-        return current;
-      }
-      return [...current, message];
-    });
+    setMessages((current) => mergeMessages(current, [message]));
   }, []);
+
+  const markIncomingMessagesRead = useCallback(async (mappedMessages) => {
+    if (!conversationId || !currentUserId || markReadInFlightRef.current) {
+      return;
+    }
+
+    const hasUnreadIncoming = mappedMessages.some(
+      (message) => !message.isRead && message.senderId && message.senderId !== currentUserId,
+    );
+
+    if (!hasUnreadIncoming) {
+      return;
+    }
+
+    markReadInFlightRef.current = true;
+    try {
+      await markConversationMessagesRead(conversationId);
+      setMessages((current) => current.map((message) => (
+        message.senderId && message.senderId !== currentUserId
+          ? { ...message, isRead: true }
+          : message
+      )));
+    } catch {
+      // Retry on the next load/poll.
+    } finally {
+      markReadInFlightRef.current = false;
+    }
+  }, [conversationId, currentUserId]);
 
   useEffect(() => {
     if (!conversationId) {
@@ -131,14 +187,8 @@ export function useParentConversation(conversationId, currentUserId) {
 
         const mapped = mapMessages(rows);
         setMessages(mapped);
-
-        const unreadFromOthers = mapped.filter(
-          (message) => !message.isRead && message.senderId !== currentUserId,
-        );
-
-        await Promise.all(
-          unreadFromOthers.map((message) => markMessageRead(message.id).catch(() => null)),
-        );
+        await markIncomingMessagesRead(mapped);
+        onIncomingMessages?.(mapped);
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setMessagesError(resolveErrorMessage(loadError, "Failed to load messages."));
@@ -156,7 +206,49 @@ export function useParentConversation(conversationId, currentUserId) {
     return () => {
       cancelled = true;
     };
-  }, [conversationId, currentUserId, refreshToken]);
+  }, [conversationId, currentUserId, refreshToken, markIncomingMessagesRead, onIncomingMessages]);
+
+  useEffect(() => {
+    if (!conversationId) {
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    async function pollMessages() {
+      if (pollInFlightRef.current || isSendingRef.current) {
+        return;
+      }
+
+      pollInFlightRef.current = true;
+
+      try {
+        const rows = await getConversationMessages(conversationId);
+        if (cancelled) {
+          return;
+        }
+
+        const mapped = mapMessages(rows);
+        setMessages((current) => mergeMessages(current, mapped));
+        await markIncomingMessagesRead(mapped);
+        onIncomingMessages?.(mapped);
+      } catch {
+        // Silent poll failures are ignored.
+      } finally {
+        pollInFlightRef.current = false;
+      }
+    }
+
+    const timer = window.setInterval(pollMessages, MESSAGE_POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [conversationId, markIncomingMessagesRead, onIncomingMessages]);
+
+  const setSendingState = useCallback((value) => {
+    isSendingRef.current = value;
+  }, []);
 
   return {
     messages,
@@ -164,10 +256,11 @@ export function useParentConversation(conversationId, currentUserId) {
     messagesError,
     refetchMessages,
     appendMessage,
+    setSendingState,
   };
 }
 
-export function useParentMessageComposer({ conversationId, onSendSuccess }) {
+export function useParentMessageComposer({ conversationId, onSendSuccess, setSendingState }) {
   const [isSending, setIsSending] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null);
   const [sendError, setSendError] = useState(null);
@@ -184,6 +277,7 @@ export function useParentMessageComposer({ conversationId, onSendSuccess }) {
 
     sendGuardRef.current = true;
     setIsSending(true);
+    setSendingState?.(true);
     setSendError(null);
     setUploadProgress(null);
 
@@ -219,9 +313,10 @@ export function useParentMessageComposer({ conversationId, onSendSuccess }) {
     } finally {
       sendGuardRef.current = false;
       setIsSending(false);
+      setSendingState?.(false);
       setUploadProgress(null);
     }
-  }, [conversationId, isSending, onSendSuccess]);
+  }, [conversationId, isSending, onSendSuccess, setSendingState]);
 
   const clearSendError = useCallback(() => {
     setSendError(null);

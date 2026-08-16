@@ -526,6 +526,10 @@ const markMessageAsRead = async (messageId, user) => {
   const conversation = await getConversationById(message.conversation_id);
   assertConversationAccess(conversation, user);
 
+  if (message.sender_id === user.id) {
+    throw createError("You cannot mark your own message as read.", 403);
+  }
+
   const result = await pool.query(
     `UPDATE messages
      SET is_read = TRUE
@@ -535,6 +539,23 @@ const markMessageAsRead = async (messageId, user) => {
   );
 
   return result.rows[0];
+};
+
+const markConversationMessagesAsRead = async (conversationId, user) => {
+  const conversation = await getConversationById(conversationId);
+  assertConversationAccess(conversation, user);
+
+  const result = await pool.query(
+    `UPDATE messages
+     SET is_read = TRUE
+     WHERE conversation_id = $1
+       AND sender_id IS DISTINCT FROM $2
+       AND is_read = FALSE
+     RETURNING *`,
+    [conversationId, user.id]
+  );
+
+  return result.rows;
 };
 
 module.exports = {
@@ -551,5 +572,6 @@ module.exports = {
   getConversationMessages,
   addMessageAttachment,
   markMessageAsRead,
+  markConversationMessagesAsRead,
   isAdmin,
 };

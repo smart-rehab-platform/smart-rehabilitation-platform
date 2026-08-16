@@ -6659,6 +6659,37 @@ body.pd-preview-drawer-open {
   color: var(--pd-text-secondary);
 }
 
+.pd-preview .pd-message-block {
+  display: flex;
+  flex-direction: column;
+  max-width: min(100%, 520px);
+}
+
+.pd-preview .pd-message-block.is-own {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.pd-preview .pd-message-block.is-other {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.pd-preview .pd-message-block .pd-message-bubble {
+  max-width: 100%;
+}
+
+.pd-preview .pd-message-seen {
+  display: block;
+  margin-top: 2px;
+  padding-inline: 2px;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--pd-text-secondary);
+  opacity: 0.85;
+}
+
 .pd-preview .pd-messages-composer {
   flex-shrink: 0;
   display: flex;

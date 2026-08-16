@@ -213,6 +213,24 @@ const markMessageAsRead = async (req, res) => {
   }
 };
 
+const markConversationMessagesAsRead = async (req, res) => {
+  try {
+    const messages = await communicationService.markConversationMessagesAsRead(
+      req.params.id,
+      req.user
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Messages marked as read successfully",
+      count: messages.length,
+      data: messages,
+    });
+  } catch (err) {
+    return handleError(res, err);
+  }
+};
+
 module.exports = {
   createConversation,
   getAllConversations,
@@ -224,4 +242,5 @@ module.exports = {
   getConversationMessages,
   addMessageAttachment,
   markMessageAsRead,
+  markConversationMessagesAsRead,
 };

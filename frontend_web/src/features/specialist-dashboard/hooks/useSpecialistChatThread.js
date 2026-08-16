@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getConversationMessages,
-  markMessageRead,
+  markConversationMessagesRead,
   sendConversationAttachmentMessage,
   sendConversationMessage,
   uploadMessageAttachment,
@@ -27,6 +27,7 @@ function mergeMessages(existing, incoming) {
     byId.set(message.id, {
       ...current,
       ...message,
+      isRead: Boolean(current.isRead || message.isRead),
       attachments: message.attachments?.length ? message.attachments : current.attachments,
       senderName: message.senderName || current.senderName,
       senderRole: message.senderRole || current.senderRole,
@@ -48,7 +49,7 @@ export function useSpecialistChatThread(conversationId, currentUserId, options =
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
   const pollInFlightRef = useRef(false);
-  const markedReadIdsRef = useRef(new Set());
+  const markReadInFlightRef = useRef(false);
   const isSendingRef = useRef(false);
 
   const refetchMessages = useCallback(() => {
@@ -64,40 +65,36 @@ export function useSpecialistChatThread(conversationId, currentUserId, options =
   }, []);
 
   const markIncomingMessagesRead = useCallback(async (mappedMessages) => {
-    if (!currentUserId) {
+    if (!conversationId || !currentUserId || markReadInFlightRef.current) {
       return;
     }
 
-    const unreadFromOthers = mappedMessages.filter(
+    const hasUnreadIncoming = mappedMessages.some(
       (message) => !message.isRead
         && message.senderId
-        && message.senderId !== currentUserId
-        && !markedReadIdsRef.current.has(message.id),
+        && message.senderId !== currentUserId,
     );
 
-    if (unreadFromOthers.length === 0) {
+    if (!hasUnreadIncoming) {
       return;
     }
 
-    await Promise.all(unreadFromOthers.map(async (message) => {
-      markedReadIdsRef.current.add(message.id);
-      try {
-        await markMessageRead(message.id);
-      } catch {
-        markedReadIdsRef.current.delete(message.id);
-      }
-    }));
-
-    setMessages((current) => current.map((message) => (
-      unreadFromOthers.some((item) => item.id === message.id)
-        ? { ...message, isRead: true }
-        : message
-    )));
-  }, [currentUserId]);
+    markReadInFlightRef.current = true;
+    try {
+      await markConversationMessagesRead(conversationId);
+      setMessages((current) => current.map((message) => (
+        message.senderId && message.senderId !== currentUserId
+          ? { ...message, isRead: true }
+          : message
+      )));
+    } catch {
+      // Retry on the next load/poll.
+    } finally {
+      markReadInFlightRef.current = false;
+    }
+  }, [conversationId, currentUserId]);
 
   useEffect(() => {
-    markedReadIdsRef.current = new Set();
-
     if (!conversationId || !enabled) {
       return undefined;
     }

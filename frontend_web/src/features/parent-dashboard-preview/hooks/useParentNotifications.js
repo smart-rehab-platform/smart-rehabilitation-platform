@@ -7,6 +7,7 @@ import {
 import {
   countUnreadMessageNotifications,
   countUnreadNotifications,
+  getConversationMessageNotifications,
   mapNotificationsToViewModels,
 } from "../utils/parentDashboardMappers";
 
@@ -143,11 +144,33 @@ export function useParentNotifications(userId) {
     }
   }, [notifications, refetch]);
 
+  const markConversationNotificationsRead = useCallback(async (conversationId) => {
+    const matching = getConversationMessageNotifications(notifications, conversationId);
+    if (matching.length === 0) {
+      return;
+    }
+
+    setNotifications((current) => current.map((item) => (
+      matching.some((match) => match.id === item.id)
+        ? { ...item, unread: false }
+        : item
+    )));
+
+    const results = await Promise.all(
+      matching.map((item) => markNotificationAsRead(item.id).catch(() => false)),
+    );
+
+    if (results.some((result) => result === false)) {
+      refetch();
+    }
+  }, [notifications, refetch]);
+
   if (!userId) {
     return {
       ...EMPTY_NOTIFICATION_STATE,
       markNotificationRead,
       markAllNotificationsRead,
+      markConversationNotificationsRead,
       refetch,
     };
   }
@@ -161,6 +184,7 @@ export function useParentNotifications(userId) {
     isMarkingAllRead,
     markNotificationRead,
     markAllNotificationsRead,
+    markConversationNotificationsRead,
     refetch,
   };
 }

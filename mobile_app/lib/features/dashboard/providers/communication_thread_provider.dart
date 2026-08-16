@@ -36,7 +36,6 @@ class CommunicationThreadState {
     this.sendErrorMessage,
     this.conversation,
     this.messages = const [],
-    this.markedReadIds = const {},
     this.pendingAttachment,
   });
 
@@ -50,7 +49,6 @@ class CommunicationThreadState {
   final String? sendErrorMessage;
   final CommunicationConversation? conversation;
   final List<CommunicationMessage> messages;
-  final Set<String> markedReadIds;
   final CommunicationAttachmentSelection? pendingAttachment;
 
   bool get hasPendingAttachment => pendingAttachment != null;
@@ -68,7 +66,6 @@ class CommunicationThreadState {
     Object? sendErrorMessage = _sentinel,
     CommunicationConversation? conversation,
     List<CommunicationMessage>? messages,
-    Set<String>? markedReadIds,
     Object? pendingAttachment = _sentinel,
   }) {
     return CommunicationThreadState(
@@ -89,7 +86,6 @@ class CommunicationThreadState {
           : sendErrorMessage as String?,
       conversation: conversation ?? this.conversation,
       messages: messages ?? this.messages,
-      markedReadIds: markedReadIds ?? this.markedReadIds,
       pendingAttachment: identical(pendingAttachment, _sentinel)
           ? this.pendingAttachment
           : pendingAttachment as CommunicationAttachmentSelection?,
@@ -110,6 +106,7 @@ class CommunicationThreadNotifier
 
   Timer? _pollTimer;
   bool _pollInFlight = false;
+  bool _markReadInFlight = false;
   bool _notifierDisposed = false;
 
   void setPendingAttachment(CommunicationAttachmentSelection? selection) {
@@ -427,50 +424,37 @@ class CommunicationThreadNotifier
       return;
     }
 
-    final toMark = state.messages.where((message) {
-      return message.isIncomingFor(userId) &&
-          !message.isRead &&
-          !state.markedReadIds.contains(message.id);
-    });
+    final hasUnreadIncoming = state.messages.any(
+      (message) => message.isIncomingFor(userId) && !message.isRead,
+    );
 
-    if (toMark.isEmpty) {
+    if (!hasUnreadIncoming || _markReadInFlight) {
       return;
     }
 
     _ensureAuthToken();
+    _markReadInFlight = true;
 
-    final newlyMarked = <String>{...state.markedReadIds};
-    final updatedMessages = [...state.messages];
-
-    for (final message in toMark) {
-      try {
-        await _repository.markMessageRead(message.id);
-        if (_notifierDisposed) {
-          return;
-        }
-        newlyMarked.add(message.id);
-        final index = updatedMessages.indexWhere(
-          (item) => item.id == message.id,
-        );
-        if (index >= 0) {
-          updatedMessages[index] = updatedMessages[index].copyWith(
-            isRead: true,
-          );
-        }
-      } catch (error) {
-        debugPrint(
-          '[CommunicationThread] mark read failed for ${message.id}: $error',
-        );
+    try {
+      await _repository.markConversationMessagesRead(_conversationId);
+      if (_notifierDisposed) {
+        return;
       }
-    }
 
-    if (_notifierDisposed) {
-      return;
+      state = state.copyWith(
+        messages: [
+          for (final message in state.messages)
+            message.isIncomingFor(userId)
+                ? message.copyWith(isRead: true)
+                : message,
+        ],
+      );
+    } catch (error) {
+      debugPrint(
+        '[CommunicationThread] mark conversation read failed: $error',
+      );
+    } finally {
+      _markReadInFlight = false;
     }
-
-    state = state.copyWith(
-      messages: updatedMessages,
-      markedReadIds: newlyMarked,
-    );
   }
 }

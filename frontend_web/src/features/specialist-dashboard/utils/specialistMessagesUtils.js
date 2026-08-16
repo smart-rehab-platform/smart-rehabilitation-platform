@@ -144,6 +144,8 @@ export function mapSpecialistMessages(rows) {
     .filter((message) => message.id && (message.content || message.hasAttachments));
 }
 
+export { getLatestReadOutgoingMessageId } from "../../shared-dashboard/utils/messageReadReceiptUtils";
+
 export function formatMessageTime(sentAt) {
   if (!sentAt) {
     return "";

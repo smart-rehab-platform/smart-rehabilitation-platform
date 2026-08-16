@@ -301,7 +301,7 @@ class CommunicationMessage {
           ApiResponseParser.readString(map, const ['sender_id', 'senderId']) ??
           '',
       content: ApiResponseParser.readString(map, const ['content']) ?? '',
-      isRead: map['is_read'] == true || map['isRead'] == true,
+      isRead: parseMessageIsRead(map['is_read'] ?? map['isRead']),
       sentAt: ApiResponseParser.readDate(
         map['sent_at'] ??
             map['sentAt'] ??
@@ -352,6 +352,43 @@ class CommunicationMessage {
       attachments: attachments ?? this.attachments,
     );
   }
+}
+
+bool parseMessageIsRead(dynamic value) {
+  if (value == true || value == 1) {
+    return true;
+  }
+  if (value is String) {
+    final normalized = value.trim().toLowerCase();
+    return normalized == 'true' || normalized == '1' || normalized == 't';
+  }
+  return false;
+}
+
+String? latestReadOutgoingMessageId({
+  required List<CommunicationMessage> messages,
+  required String? authenticatedUserId,
+}) {
+  if (authenticatedUserId == null ||
+      authenticatedUserId.isEmpty ||
+      messages.isEmpty) {
+    return null;
+  }
+
+  final ordered = [...messages]
+    ..sort((a, b) {
+      final aTime = a.sentAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bTime = b.sentAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return aTime.compareTo(bTime);
+    });
+  final lastMessage = ordered.last;
+
+  if (lastMessage.isFromAuthenticatedUser(authenticatedUserId) &&
+      lastMessage.isRead) {
+    return lastMessage.id;
+  }
+
+  return null;
 }
 
 /// Optional navigation payload for opening a chat with a prefilled draft message.

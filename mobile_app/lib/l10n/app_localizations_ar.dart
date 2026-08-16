@@ -3207,6 +3207,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get communicationTypeMessageHint => 'اكتب رسالة...';
 
   @override
+  String get communicationSeen => 'تمت المشاهدة';
+
+  @override
   String get communicationAttachHint => 'أرفق ملفاً أو صورة أو صوتاً';
 
   @override
