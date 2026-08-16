@@ -25,6 +25,7 @@ import {
   filterSpecialistConversations,
   formatMessageTime,
   mapSpecialistConversation,
+  getLatestReadOutgoingMessageId,
 } from "./utils/specialistMessagesUtils";
 import { getInitials } from "./utils/specialistScheduleUtils";
 import "../shared-dashboard/styles/dashboardTokens.css";
@@ -162,6 +163,11 @@ export default function SpecialistMessagesPage() {
   const threadItems = useMemo(
     () => buildMessageThreadItems(messages),
     [messages],
+  );
+
+  const latestReadOutgoingId = useMemo(
+    () => getLatestReadOutgoingMessageId(messages, specialistUserId),
+    [messages, specialistUserId],
   );
 
   const navigateToConversation = useCallback((conversationId) => {
@@ -399,30 +405,36 @@ export default function SpecialistMessagesPage() {
 
       const message = item.message;
       const isOwn = message.senderId === specialistUserId;
+      const showSeen = isOwn && message.id === latestReadOutgoingId;
 
       return (
-        <article
+        <div
           key={item.key}
-          className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}
+          className={`pd-message-block${isOwn ? " is-own" : " is-other"}`}
         >
-          {!isOwn && message.senderName ? (
-            <span className="pd-message-sender">{message.senderName}</span>
-          ) : null}
-          {message.content ? <p>{message.content}</p> : null}
-          {message.hasAttachments ? (
-            <div className="pd-message-attachments">
-              {message.attachments.map((attachment) => (
-                <SpecialistMessageAttachmentDisplay
-                  key={attachment.id || attachment.fileUrl}
-                  attachment={attachment}
-                />
-              ))}
-            </div>
-          ) : null}
-          {message.sentAt ? (
-            <time className="pd-message-time">{formatMessageTime(message.sentAt)}</time>
-          ) : null}
-        </article>
+          <article
+            className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}
+          >
+            {!isOwn && message.senderName ? (
+              <span className="pd-message-sender">{message.senderName}</span>
+            ) : null}
+            {message.content ? <p>{message.content}</p> : null}
+            {message.hasAttachments ? (
+              <div className="pd-message-attachments">
+                {message.attachments.map((attachment) => (
+                  <SpecialistMessageAttachmentDisplay
+                    key={attachment.id || attachment.fileUrl}
+                    attachment={attachment}
+                  />
+                ))}
+              </div>
+            ) : null}
+            {message.sentAt ? (
+              <time className="pd-message-time">{formatMessageTime(message.sentAt)}</time>
+            ) : null}
+          </article>
+          {showSeen ? <span className="pd-message-seen">Seen</span> : null}
+        </div>
       );
     });
   };

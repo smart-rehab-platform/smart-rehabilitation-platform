@@ -20,6 +20,7 @@ import {
   MESSAGES_CHAT_EMPTY,
   MESSAGES_EMPTY_MESSAGE,
   formatMessageTime,
+  getLatestReadOutgoingMessageId,
 } from "./utils/parentMessagesUtils";
 import { MessageAttachmentDisplay } from "./components/messages/MessageAttachmentDisplay";
 import { MessagesComposer } from "./components/messages/MessagesComposer";
@@ -62,19 +63,43 @@ export default function ParentMessagesPage() {
   );
 
   const {
+    notifications,
+    unreadCount,
+    messageUnreadCount,
+    isLoadingNotifications,
+    notificationsError,
+    markNotificationRead,
+    markConversationNotificationsRead,
+    refetch: refetchNotifications,
+  } = useParentNotifications(parentUserId);
+
+  const handleIncomingMessages = useCallback(() => {
+    refetchNotifications();
+  }, [refetchNotifications]);
+
+  const {
     messages,
     isLoadingMessages,
     messagesError,
     refetchMessages,
     appendMessage,
-  } = useParentConversation(activeConversationId, parentUserId);
+    setSendingState,
+  } = useParentConversation(activeConversationId, parentUserId, {
+    onIncomingMessages: handleIncomingMessages,
+  });
+
+  const latestReadOutgoingId = useMemo(
+    () => getLatestReadOutgoingMessageId(messages, parentUserId),
+    [messages, parentUserId],
+  );
 
   const handleSendSuccess = useCallback((message) => {
     shouldStickToBottomRef.current = true;
     appendMessage(message);
     setComposerValue("");
     refetchConversations();
-  }, [appendMessage, refetchConversations]);
+    refetchNotifications();
+  }, [appendMessage, refetchConversations, refetchNotifications]);
 
   const {
     isSending,
@@ -85,6 +110,7 @@ export default function ParentMessagesPage() {
   } = useParentMessageComposer({
     conversationId: activeConversationId,
     onSendSuccess: handleSendSuccess,
+    setSendingState,
   });
 
   const attachmentDraft = useMessageAttachmentDraft();
@@ -101,15 +127,6 @@ export default function ParentMessagesPage() {
     clearDraftError,
     clearRecordingError,
   } = attachmentDraft;
-
-  const {
-    notifications,
-    unreadCount,
-    messageUnreadCount,
-    isLoadingNotifications,
-    notificationsError,
-    markNotificationRead,
-  } = useParentNotifications(parentUserId);
 
   const showToast = useCallback((message) => {
     setToast(message);
@@ -140,6 +157,14 @@ export default function ParentMessagesPage() {
     clearDraft();
     cancelRecording();
   }, [activeConversationId, cancelRecording, clearDraft]);
+
+  useEffect(() => {
+    if (!activeConversationId) {
+      return undefined;
+    }
+
+    markConversationNotificationsRead(activeConversationId);
+  }, [activeConversationId, markConversationNotificationsRead]);
 
   useEffect(() => {
     if (!toast) return undefined;
@@ -308,26 +333,32 @@ export default function ParentMessagesPage() {
 
     return messages.map((message) => {
       const isOwn = message.senderId === parentUserId;
+      const showSeen = isOwn && message.id === latestReadOutgoingId;
       return (
-        <article
+        <div
           key={message.id}
-          className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}
+          className={`pd-message-block${isOwn ? " is-own" : " is-other"}`}
         >
-          {!isOwn && message.senderName ? (
-            <span className="pd-message-sender">{message.senderName}</span>
-          ) : null}
-          {message.content ? <p>{message.content}</p> : null}
-          {message.hasAttachments ? (
-            <div className="pd-message-attachments">
-              {message.attachments.map((attachment) => (
-                <MessageAttachmentDisplay key={attachment.id || attachment.fileUrl} attachment={attachment} />
-              ))}
-            </div>
-          ) : null}
-          {message.sentAt ? (
-            <time className="pd-message-time">{formatMessageTime(message.sentAt)}</time>
-          ) : null}
-        </article>
+          <article
+            className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}
+          >
+            {!isOwn && message.senderName ? (
+              <span className="pd-message-sender">{message.senderName}</span>
+            ) : null}
+            {message.content ? <p>{message.content}</p> : null}
+            {message.hasAttachments ? (
+              <div className="pd-message-attachments">
+                {message.attachments.map((attachment) => (
+                  <MessageAttachmentDisplay key={attachment.id || attachment.fileUrl} attachment={attachment} />
+                ))}
+              </div>
+            ) : null}
+            {message.sentAt ? (
+              <time className="pd-message-time">{formatMessageTime(message.sentAt)}</time>
+            ) : null}
+          </article>
+          {showSeen ? <span className="pd-message-seen">Seen</span> : null}
+        </div>
       );
     });
   };

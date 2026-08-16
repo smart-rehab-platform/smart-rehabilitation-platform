@@ -253,6 +253,17 @@ class CommunicationRepository {
     );
   }
 
+  Future<void> markConversationMessagesRead(String conversationId) async {
+    final path = '/conversations/$conversationId/messages/read';
+    await _guard(
+      () async {
+        await _dio.patch(path);
+      },
+      method: 'PATCH',
+      path: path,
+    );
+  }
+
   Future<UploadedMessageAttachment> uploadMessageAttachment({
     required List<int> bytes,
     required String filename,

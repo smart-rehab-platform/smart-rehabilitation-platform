@@ -52,6 +52,12 @@ router.get(
   communicationController.getConversationMessages
 );
 
+router.patch(
+  "/conversations/:id/messages/read",
+  authenticate,
+  communicationController.markConversationMessagesAsRead
+);
+
 router.post(
   "/messages/:id/attachments",
   authenticate,

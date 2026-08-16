@@ -979,6 +979,7 @@
   "communicationLoadingMessages": "جارٍ تحميل الرسائل...",
   "communicationNoMessagesYet": "لا توجد رسائل بعد. قل مرحباً لبدء المحادثة.",
   "communicationTypeMessageHint": "اكتب رسالة...",
+  "communicationSeen": "تمت المشاهدة",
   "communicationAttachHint": "أرفق ملفاً أو صورة أو صوتاً",
   "communicationEarlierMessages": "سابقاً",
   "communicationFileLinkUnavailable": "رابط الملف غير متاح.",

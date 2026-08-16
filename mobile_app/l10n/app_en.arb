@@ -2345,6 +2345,8 @@
   "@communicationNoMessagesYet": { "description": "Empty state on chat screen." },
   "communicationTypeMessageHint": "Type a message...",
   "@communicationTypeMessageHint": { "description": "Chat composer hint." },
+  "communicationSeen": "Seen",
+  "@communicationSeen": { "description": "Read receipt shown under the latest outgoing chat message the recipient has read." },
   "communicationAttachHint": "Attach a file, image, or audio",
   "@communicationAttachHint": { "description": "Chat attachment button hint." },
   "communicationEarlierMessages": "Earlier",

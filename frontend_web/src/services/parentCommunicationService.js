@@ -147,6 +147,18 @@ export async function markMessageRead(messageId) {
   }
 }
 
+export async function markConversationMessagesRead(conversationId) {
+  const id = requireId(conversationId, "Conversation id");
+  try {
+    const response = await api.patch(
+      `/conversations/${encodeURIComponent(id)}/messages/read`,
+    );
+    return extractList(response);
+  } catch (error) {
+    throwServiceError(error, "Failed to mark messages as read.");
+  }
+}
+
 const parentCommunicationService = {
   getUserConversations,
   getConversation,
@@ -155,6 +167,7 @@ const parentCommunicationService = {
   uploadMessageAttachment,
   sendConversationAttachmentMessage,
   markMessageRead,
+  markConversationMessagesRead,
 };
 
 export default parentCommunicationService;

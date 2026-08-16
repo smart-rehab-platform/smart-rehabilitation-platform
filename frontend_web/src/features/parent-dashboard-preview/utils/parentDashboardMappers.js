@@ -1413,6 +1413,19 @@ export function countUnreadMessageNotifications(notifications) {
   ).length;
 }
 
+export function getConversationMessageNotifications(notifications, conversationId) {
+  if (!conversationId || !Array.isArray(notifications)) {
+    return [];
+  }
+
+  return notifications.filter((item) => (
+    item.unread
+    && normalizeNotificationType(item.type) === "new_message"
+    && item.relatedEntityType?.trim().toLowerCase() === "conversation"
+    && item.relatedEntityId === conversationId
+  ));
+}
+
 /**
  * @param {number} count
  */
