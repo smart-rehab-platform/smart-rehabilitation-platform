@@ -1,3 +1,5 @@
+import { formatSpecialistSubmittedAgo } from "./specialistDashboardLocalization.js";
+
 function readString(record, keys) {
   if (!record || typeof record !== "object") {
     return "";
@@ -45,52 +47,17 @@ function parseDateValue(value) {
 }
 
 /**
- * @param {string|Date|null|undefined} dateInput
- * @param {Date} [now]
- */
-export function formatSubmittedAgo(dateInput, now = new Date()) {
-  const date = dateInput instanceof Date ? dateInput : parseDateValue(dateInput);
-  if (!date) {
-    return "Recently submitted";
-  }
-
-  const diffMs = now.getTime() - date.getTime();
-  const diffMinutes = Math.floor(diffMs / 60000);
-
-  if (diffMinutes < 60) {
-    return `${Math.max(diffMinutes, 0)}m ago`;
-  }
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) {
-    return `${diffHours}h ago`;
-  }
-
-  const diffDays = Math.floor(diffMs / 86400000);
-  if (diffDays === 1) {
-    return "Yesterday";
-  }
-
-  if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  }
-
-  return date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  });
-}
-
-/**
  * @param {Record<string, unknown>} row
+ * @param {{ t?: Function, locale?: string, now?: Date }} [context]
  */
-export function mapPendingReviewRow(row) {
+export function mapPendingReviewRow(row, context = {}) {
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
   }
 
   const submittedAt = parseDateValue(row.submitted_at ?? row.submittedAt);
+  const now = context.now instanceof Date ? context.now : new Date();
 
   return {
     id,
@@ -99,14 +66,14 @@ export function mapPendingReviewRow(row) {
     exerciseTitle: readString(row, ["exercise_title", "exerciseTitle", "title"])
       || "Exercise review",
     submittedAt,
-    submittedAgo: formatSubmittedAgo(submittedAt),
+    submittedAgo: formatSpecialistSubmittedAgo(submittedAt, now, context),
     status: readString(row, ["status"]) || "pending",
   };
 }
 
 /**
  * @param {Array<Record<string, unknown>>} rows
- * @param {{ limit?: number }} [options]
+ * @param {{ limit?: number, t?: Function, locale?: string, now?: Date }} [options]
  */
 export function mapPendingReviewPreview(rows, options = {}) {
   const limit = options.limit ?? 4;
@@ -116,7 +83,7 @@ export function mapPendingReviewPreview(rows, options = {}) {
   }
 
   return rows
-    .map(mapPendingReviewRow)
+    .map((row) => mapPendingReviewRow(row, options))
     .filter(Boolean)
     .sort((a, b) => {
       const aTime = a.submittedAt?.getTime() ?? 0;
@@ -172,16 +139,17 @@ function readSnapshotPercent(row) {
 /**
  * @param {Array<Record<string, unknown>>} patients
  * @param {Array<Record<string, unknown>>} snapshots
- * @param {{ limit?: number }} [options]
+ * @param {{ limit?: number|null }} [options]
  */
-export function buildRecentPatientProgressPreview(patients, snapshots, options = {}) {
-  const limit = options.limit ?? 4;
+export function buildSpecialistPatientProgressList(patients, snapshots, options = {}) {
+  const { limit = null } = options;
 
   if (!Array.isArray(patients) || patients.length === 0) {
     return [];
   }
 
   const patientNames = new Map();
+  const patientAvatars = new Map();
   const patientIds = new Set();
 
   patients.forEach((patient) => {
@@ -194,6 +162,10 @@ export function buildRecentPatientProgressPreview(patients, snapshots, options =
     patientNames.set(
       id,
       readString(patient, ["full_name", "fullName", "patient_name", "patientName"]) || "Patient",
+    );
+    patientAvatars.set(
+      id,
+      readString(patient, ["profile_image_url", "profileImageUrl"]) || null,
     );
   });
 
@@ -215,25 +187,44 @@ export function buildRecentPatientProgressPreview(patients, snapshots, options =
         return;
       }
 
+      const sortTime = readSnapshotSortTime(row);
       const existing = latestByPatient.get(patientId);
-      if (!existing || readSnapshotSortTime(row) > readSnapshotSortTime(existing.rawRow)) {
+      if (!existing || sortTime > existing.sortTime) {
         latestByPatient.set(patientId, {
-          rawRow: row,
           patientId,
           patientName: patientNames.get(patientId) || "Patient",
+          profileImageUrl: patientAvatars.get(patientId) || null,
           percent,
-          sortTime: readSnapshotSortTime(row),
+          sortTime,
+          updatedAt: sortTime > 0 ? new Date(sortTime) : null,
         });
       }
     });
   }
 
-  return Array.from(latestByPatient.values())
+  const items = Array.from(latestByPatient.values())
     .sort((a, b) => b.sortTime - a.sortTime)
-    .slice(0, limit)
-    .map(({ patientId, patientName, percent }) => ({
+    .map(({ patientId, patientName, profileImageUrl, percent, updatedAt }) => ({
       patientId,
       patientName,
+      profileImageUrl,
       percent,
+      updatedAt,
     }));
+
+  if (typeof limit === "number" && limit >= 0) {
+    return items.slice(0, limit);
+  }
+
+  return items;
+}
+
+/**
+ * @param {Array<Record<string, unknown>>} patients
+ * @param {Array<Record<string, unknown>>} snapshots
+ * @param {{ limit?: number }} [options]
+ */
+export function buildRecentPatientProgressPreview(patients, snapshots, options = {}) {
+  const limit = options.limit ?? 4;
+  return buildSpecialistPatientProgressList(patients, snapshots, { limit });
 }

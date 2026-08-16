@@ -1,4 +1,6 @@
-import { SESSION_STATUS_FILTER_OPTIONS } from "../../utils/parentSessionsUtils";
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
+import { buildSessionStatusFilterOptions } from "../../utils/parentSessionsUtils";
 
 export function SessionFilters({
   search,
@@ -10,18 +12,24 @@ export function SessionFilters({
   children = [],
   showSearch = true,
 }) {
+  const { t } = useLocale();
+  const statusOptions = useMemo(
+    () => buildSessionStatusFilterOptions(t),
+    [t],
+  );
+
   return (
     <div className="pd-task-hub-filters">
       {showSearch ? (
         <div className="pd-task-hub-filter pd-task-hub-filter-search">
           <label className="pd-form-label" htmlFor="pd-sessions-hub-search">
-            Search
+            {t("parent.common.search")}
           </label>
           <input
             id="pd-sessions-hub-search"
             type="search"
             className="pd-form-input"
-            placeholder="Search by child or specialist"
+            placeholder={t("parent.sessions.searchPlaceholder")}
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
           />
@@ -30,7 +38,7 @@ export function SessionFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-sessions-hub-child">
-          Child
+          {t("parent.common.child")}
         </label>
         <select
           id="pd-sessions-hub-child"
@@ -38,7 +46,7 @@ export function SessionFilters({
           value={childId}
           onChange={(event) => onChildChange(event.target.value)}
         >
-          <option value="all">All children</option>
+          <option value="all">{t("parent.common.allChildren")}</option>
           {children.map((child) => (
             <option key={child.id} value={child.id}>
               {child.fullName}
@@ -49,7 +57,7 @@ export function SessionFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-sessions-hub-status">
-          Status
+          {t("parent.common.status")}
         </label>
         <select
           id="pd-sessions-hub-status"
@@ -57,7 +65,7 @@ export function SessionFilters({
           value={status}
           onChange={(event) => onStatusChange(event.target.value)}
         >
-          {SESSION_STATUS_FILTER_OPTIONS.map((option) => (
+          {statusOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>

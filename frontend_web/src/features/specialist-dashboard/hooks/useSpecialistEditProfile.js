@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   createSpecialistProfile,
   updateSpecialistProfile,
   updateUserProfile,
   uploadProfileImage,
 } from "../../../services/specialistProfileService";
+import { getSpecialistProfileErrorMessages } from "../utils/specialistProfileLocalization.js";
 import {
   buildProfessionalUpdatePayload,
   buildUserUpdatePayload,
@@ -39,6 +41,8 @@ export function useSpecialistEditProfile({
   onProfileSaved,
   onRefreshSession,
 }) {
+  const { t } = useLocale();
+  const errorMessages = useMemo(() => getSpecialistProfileErrorMessages(t), [t]);
   const profileSnapshot = buildProfileSnapshot(profile);
   const [syncedSnapshot, setSyncedSnapshot] = useState(profileSnapshot);
   const [formValues, setFormValues] = useState(() => mapProfileToFormValues(profile));
@@ -87,7 +91,7 @@ export function useSpecialistEditProfile({
   }, []);
 
   const handleAvatarSelect = useCallback((file) => {
-    const validationMessage = validateProfileImageFile(file);
+    const validationMessage = validateProfileImageFile(file, t);
     if (validationMessage) {
       setAvatarError(validationMessage);
       return;
@@ -96,7 +100,7 @@ export function useSpecialistEditProfile({
     setAvatarError(null);
     setPendingAvatarFile(file);
     setSaveError(null);
-  }, []);
+  }, [t]);
 
   const resetForm = useCallback(() => {
     setSyncedSnapshot(buildProfileSnapshot(profile));
@@ -112,7 +116,7 @@ export function useSpecialistEditProfile({
       return { ok: false };
     }
 
-    const validationErrors = validateSpecialistProfileForm(formValues);
+    const validationErrors = validateSpecialistProfileForm(formValues, t);
     if (Object.keys(validationErrors).length > 0) {
       setFieldErrors(validationErrors);
       const firstError = Object.values(validationErrors)[0];
@@ -142,7 +146,7 @@ export function useSpecialistEditProfile({
         nextProfileId = readString(latestSpecialistRow, ["id", "_id"]);
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to save profile.";
+      const message = error instanceof Error ? error.message : errorMessages.saveFailed;
       setSaveError(message);
       saveGuardRef.current = false;
       setIsSaving(false);
@@ -157,14 +161,12 @@ export function useSpecialistEditProfile({
           "profileImageUrl",
         ]);
         if (!savedImageUrl) {
-          throw new Error(
-            "Profile image upload succeeded but no image URL was returned.",
-          );
+          throw new Error(errorMessages.imageNoUrl);
         }
       } catch (error) {
         const message = error instanceof Error
-          ? `Profile details were saved, but the image upload failed: ${error.message}`
-          : "Profile details were saved, but the image upload failed.";
+          ? errorMessages.imageUploadPartial(error.message)
+          : errorMessages.imageUploadPartialGeneric;
         setSaveError(message);
         saveGuardRef.current = false;
         setIsSaving(false);
@@ -202,7 +204,7 @@ export function useSpecialistEditProfile({
     } catch (refreshError) {
       const message = refreshError instanceof Error
         ? refreshError.message
-        : "Profile saved but the session could not be refreshed. Please reload the page.";
+        : errorMessages.sessionRefreshFailed;
       setSaveError(message);
       setSyncedSnapshot(buildProfileSnapshot(nextProfile));
       setFormValues(mapProfileToFormValues(nextProfile));
@@ -225,6 +227,8 @@ export function useSpecialistEditProfile({
     pendingAvatarFile,
     onProfileSaved,
     onRefreshSession,
+    errorMessages,
+    t,
   ]);
 
   return {

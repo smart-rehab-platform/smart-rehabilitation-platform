@@ -2,8 +2,8 @@ import { ArrowLeft } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { buildParentProfilePath } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { ParentProfileErrorState } from "./components/profile/ParentProfileErrorState";
 import { ParentProfileForm } from "./components/profile/ParentProfileForm";
@@ -12,11 +12,12 @@ import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigati
 import { useParentProfile } from "./hooks/useParentProfile";
 import { useParentProfileForm } from "./hooks/useParentProfileForm";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
-import { PROFILE_EMPTY_MESSAGES } from "./utils/parentProfileUtils";
+import { getProfileEmptyMessages } from "./utils/parentProfileUtils";
 import "./styles/parentDashboardTokens.css";
 
 export default function ParentEditProfilePage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { user, isInitializing, refreshSession } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -26,6 +27,7 @@ export default function ParentEditProfilePage() {
   const [toast, setToast] = useState(null);
 
   const parent = useMemo(() => mapParentFromAuth(user), [user]);
+  const profileEmptyMessages = useMemo(() => getProfileEmptyMessages(t), [t]);
 
   const {
     profile,
@@ -129,20 +131,20 @@ export default function ParentEditProfilePage() {
   const handleSave = useCallback(async () => {
     const result = await saveProfile();
     if (result.ok) {
-      showToast("Profile updated successfully");
+      showToast(t("parent.pages.profile.updatedSuccess"));
       handleBack();
       return;
     }
     if (result.message) {
       showToast(result.message);
     }
-  }, [saveProfile, showToast, handleBack]);
+  }, [saveProfile, showToast, handleBack, t]);
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-profile-state pd-section-enter">
-          <p className="pd-inline-loading">Loading profile...</p>
+          <p className="pd-inline-loading">{t("parent.pages.profile.loading")}</p>
         </section>
       );
     }
@@ -150,7 +152,7 @@ export default function ParentEditProfilePage() {
     if (error) {
       return (
         <ParentProfileErrorState
-          message={error || PROFILE_EMPTY_MESSAGES.loadError}
+          message={error || profileEmptyMessages.loadError}
           onRetry={refetch}
         />
       );
@@ -159,7 +161,7 @@ export default function ParentEditProfilePage() {
     if (!profile) {
       return (
         <ParentProfileErrorState
-          message="Profile unavailable."
+          message={t("parent.pages.profile.unavailable")}
           onRetry={refetch}
         />
       );
@@ -188,7 +190,6 @@ export default function ParentEditProfilePage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -214,14 +215,14 @@ export default function ParentEditProfilePage() {
               onClick={handleBack}
             >
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to profile
+              {t("parent.common.backToProfile")}
             </button>
           </div>
 
           <header className="pd-profile-page-header">
-            <h1 className="pd-task-hub-title">Edit Profile</h1>
+            <h1 className="pd-task-hub-title">{t("parent.pages.profile.editTitle")}</h1>
             <p className="pd-task-hub-subtitle">
-              Update your contact details and parent information.
+              {t("parent.pages.profile.editSubtitle")}
             </p>
           </header>
 

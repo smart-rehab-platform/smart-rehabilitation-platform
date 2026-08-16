@@ -7,9 +7,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../../providers/specialist_edit_profile_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/edit_profile_avatar_section.dart';
+import '../../widgets/edit_profile_labeled_field.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
-import 'manage_goals_widgets.dart';
 
 class EditSpecialistProfileScreen extends ConsumerStatefulWidget {
   const EditSpecialistProfileScreen({super.key});
@@ -54,17 +54,30 @@ class _EditSpecialistProfileScreenState
     super.dispose();
   }
 
-  void _syncControllers(SpecialistEditProfileState state) {
-    if (_controllersSynced || state.isLoading) {
-      return;
-    }
+  void _populateControllers(SpecialistEditProfileState state) {
     _fullNameController.text = state.fullName;
     _phoneController.text = state.phone;
     _specializationController.text = state.specialization;
     _licenseController.text = state.licenseNumber;
     _yearsController.text = state.yearsOfExperience;
     _bioController.text = state.bio;
-    _controllersSynced = true;
+  }
+
+  void _listenForProfileLoad() {
+    ref.listen<SpecialistEditProfileState>(specialistEditProfileProvider, (
+      previous,
+      next,
+    ) {
+      if (next.isLoading) {
+        _controllersSynced = false;
+        return;
+      }
+      if (_controllersSynced || next.errorMessage != null) {
+        return;
+      }
+      _populateControllers(next);
+      _controllersSynced = true;
+    });
   }
 
   Future<void> _save() async {
@@ -98,10 +111,10 @@ class _EditSpecialistProfileScreenState
     final notifier = ref.read(specialistEditProfileProvider.notifier);
     final theme = Theme.of(context);
 
-    _syncControllers(state);
+    _listenForProfileLoad();
 
     Widget body;
-    if (state.isLoading) {
+    if (state.isLoading || (state.errorMessage == null && !_controllersSynced)) {
       body = const Center(child: DashboardLoadingCard());
     } else if (state.errorMessage != null && !_controllersSynced) {
       body = Padding(
@@ -139,17 +152,17 @@ class _EditSpecialistProfileScreenState
               ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldFullName,
               controller: _fullNameController,
               onChanged: notifier.setFullName,
-              decoration: goalFieldDecoration(l10n.fieldFullName),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldPhone,
               controller: _phoneController,
               onChanged: notifier.setPhone,
               keyboardType: TextInputType.phone,
-              decoration: goalFieldDecoration(l10n.fieldPhone),
             ),
             SizedBox(height: context.dashSpacing * 1.1),
             Text(
@@ -160,30 +173,31 @@ class _EditSpecialistProfileScreenState
               ),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldSpecialization,
               controller: _specializationController,
               onChanged: notifier.setSpecialization,
-              decoration: goalFieldDecoration(l10n.fieldSpecialization),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldLicenseNumber,
               controller: _licenseController,
               onChanged: notifier.setLicenseNumber,
-              decoration: goalFieldDecoration(l10n.fieldLicenseNumber),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldYearsOfExperience,
               controller: _yearsController,
               onChanged: notifier.setYearsOfExperience,
               keyboardType: TextInputType.number,
-              decoration: goalFieldDecoration(l10n.fieldYearsOfExperience),
             ),
             SizedBox(height: context.dashSpacing * 0.65),
-            TextField(
+            EditProfileLabeledField(
+              label: l10n.fieldBio,
               controller: _bioController,
               onChanged: notifier.setBio,
+              minLines: 4,
               maxLines: 4,
-              decoration: goalFieldDecoration(l10n.fieldBio),
             ),
             if (state.validationMessage != null) ...[
               SizedBox(height: context.dashSpacing * 0.75),

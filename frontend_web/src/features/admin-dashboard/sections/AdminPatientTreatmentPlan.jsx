@@ -1,4 +1,7 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
+import { getAdminPatientDetailsLabels } from "../utils/adminPatientsLocalization.js";
 
 function resolvePlanTone(tone) {
   if (tone === "success") {
@@ -11,13 +14,16 @@ function resolvePlanTone(tone) {
 }
 
 export function AdminPatientTreatmentPlan({ treatmentPlan }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminPatientDetailsLabels(t), [t]);
+
   return (
-    <section className="pd-admin-patient-section pd-section-enter" aria-label="Treatment plan">
-      <h2 className="pd-admin-patient-section-title">Treatment Plan</h2>
+    <section className="pd-admin-patient-section pd-section-enter" aria-label={labels.treatmentPlan}>
+      <h2 className="pd-admin-patient-section-title">{labels.treatmentPlan}</h2>
 
       {!treatmentPlan ? (
         <div className="pd-card pd-card-pad">
-          <p className="pd-admin-patient-empty-copy">No treatment plan yet.</p>
+          <p className="pd-admin-patient-empty-copy">{labels.noTreatmentPlan}</p>
         </div>
       ) : (
         <div className="pd-card pd-card-pad">
@@ -30,12 +36,12 @@ export function AdminPatientTreatmentPlan({ treatmentPlan }) {
           </div>
           <dl className="pd-admin-patient-plan-dates">
             <div>
-              <dt>Start date</dt>
-              <dd>{treatmentPlan.startDateLabel || "—"}</dd>
+              <dt>{labels.startDate}</dt>
+              <dd>{treatmentPlan.startDateLabel || labels.emptyDisplay}</dd>
             </div>
             <div>
-              <dt>End date</dt>
-              <dd>{treatmentPlan.endDateLabel || "—"}</dd>
+              <dt>{labels.endDate}</dt>
+              <dd>{treatmentPlan.endDateLabel || labels.emptyDisplay}</dd>
             </div>
           </dl>
         </div>

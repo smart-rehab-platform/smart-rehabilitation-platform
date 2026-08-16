@@ -1,3 +1,5 @@
+import { useLocale } from "../../../context/useLocale";
+
 function TreatmentPlanStatusBadge({ label, status }) {
   const normalized = (status || label || "").trim().toLowerCase();
   let toneClass = "pd-specialist-treatment-plan-badge--active";
@@ -25,29 +27,32 @@ function TreatmentPlanMetaRow({ label, value }) {
 }
 
 export function SpecialistPatientTreatmentPlan({ treatmentPlan, onCreatePlan, onEditPlan }) {
+  const { t } = useLocale();
+  const emptyDisplay = t("parent.common.emptyDisplay");
+
   return (
     <section className="pd-specialist-patient-section" id="specialist-patient-treatment-plan">
       <div className="pd-specialist-section-head">
-        <h2 className="pd-section-title">Treatment Plan</h2>
+        <h2 className="pd-section-title">{t("specialist.patientDetails.treatmentPlan")}</h2>
         {treatmentPlan ? (
           <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onEditPlan}>
-            Edit Treatment Plan
+            {t("specialist.patientDetails.editTreatmentPlan")}
           </button>
         ) : (
           <button type="button" className="pd-btn pd-btn-primary pd-btn-sm" onClick={onCreatePlan}>
-            Create Treatment Plan
+            {t("specialist.patientDetails.createTreatmentPlan")}
           </button>
         )}
       </div>
 
       {!treatmentPlan ? (
         <div className="pd-card pd-card-pad">
-          <p className="pd-section-sub">No treatment plan yet.</p>
+          <p className="pd-section-sub">{t("specialist.patientDetails.noTreatmentPlanYet")}</p>
         </div>
       ) : (
         <div className="pd-card pd-card-pad pd-specialist-treatment-plan-card">
           <div className="pd-specialist-plan-head">
-            <strong className="pd-specialist-treatment-plan-title">{treatmentPlan.title}</strong>
+            <strong className="pd-specialist-treatment-plan-title" dir="auto">{treatmentPlan.title}</strong>
             <TreatmentPlanStatusBadge
               label={treatmentPlan.statusLabel}
               status={treatmentPlan.status}
@@ -55,12 +60,12 @@ export function SpecialistPatientTreatmentPlan({ treatmentPlan, onCreatePlan, on
           </div>
           <div className="pd-specialist-treatment-plan-meta">
             <TreatmentPlanMetaRow
-              label="Start date"
-              value={treatmentPlan.startDateLabel || "—"}
+              label={t("specialist.patientDetails.startDate")}
+              value={treatmentPlan.startDateLabel || emptyDisplay}
             />
             <TreatmentPlanMetaRow
-              label="End date"
-              value={treatmentPlan.endDateLabel || "—"}
+              label={t("specialist.patientDetails.endDate")}
+              value={treatmentPlan.endDateLabel || emptyDisplay}
             />
           </div>
         </div>

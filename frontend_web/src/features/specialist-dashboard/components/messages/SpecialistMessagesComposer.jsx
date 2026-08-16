@@ -1,10 +1,12 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Image, Mic, Paperclip, Square, Video } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 import { PlatformMaterialIcon } from "../../../../components/platform/PlatformMaterialIcon";
 import {
   formatAttachmentFileSize,
   getMessageAttachmentKind,
 } from "../../utils/specialistMessageAttachmentUtils";
+import { getSpecialistMessageComposerLabels } from "../../utils/specialistMessagesLocalization.js";
 
 export function SpecialistMessagesComposer({
   composerValue,
@@ -25,6 +27,8 @@ export function SpecialistMessagesComposer({
   onStopRecording,
   disabled = false,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getSpecialistMessageComposerLabels(t), [t]);
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -83,7 +87,7 @@ export function SpecialistMessagesComposer({
           {draftKind === "image" && draft.previewUrl ? (
             <img
               src={draft.previewUrl}
-              alt="Selected image preview"
+              alt={labels.selectedImageAlt}
               className="pd-messages-attachment-preview-image"
             />
           ) : null}
@@ -93,7 +97,7 @@ export function SpecialistMessagesComposer({
           ) : null}
 
           <div className="pd-messages-attachment-preview-copy">
-            <strong>{draft.file.name}</strong>
+            <strong dir="auto">{draft.file.name}</strong>
             <span>{formatAttachmentFileSize(draft.sizeBytes)}</span>
           </div>
 
@@ -103,7 +107,7 @@ export function SpecialistMessagesComposer({
             disabled={isSending}
             onClick={onClearDraft}
           >
-            Remove
+            {labels.removeAttachment}
           </button>
         </div>
       ) : null}
@@ -114,8 +118,8 @@ export function SpecialistMessagesComposer({
             <button
               type="button"
               className="pd-btn pd-btn-soft pd-messages-attach-trigger is-recording"
-              title="Stop recording"
-              aria-label="Stop recording"
+              title={labels.stopRecording}
+              aria-label={labels.stopRecording}
               onClick={onStopRecording}
             >
               <Square size={16} aria-hidden="true" />
@@ -124,8 +128,8 @@ export function SpecialistMessagesComposer({
             <button
               type="button"
               className="pd-btn pd-btn-soft pd-messages-attach-trigger"
-              title="Add attachment"
-              aria-label="Add attachment"
+              title={labels.addAttachment}
+              aria-label={labels.addAttachment}
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               aria-controls={menuId}
@@ -145,7 +149,7 @@ export function SpecialistMessagesComposer({
                 onClick={() => runMenuAction(() => imageInputRef.current?.click())}
               >
                 <Image size={16} aria-hidden="true" />
-                Choose Image
+                {labels.chooseImage}
               </button>
               <button
                 type="button"
@@ -154,7 +158,7 @@ export function SpecialistMessagesComposer({
                 onClick={() => runMenuAction(() => onStartRecording())}
               >
                 <Mic size={16} aria-hidden="true" />
-                Record Audio
+                {labels.recordAudio}
               </button>
               <button
                 type="button"
@@ -163,7 +167,7 @@ export function SpecialistMessagesComposer({
                 onClick={() => runMenuAction(() => fileInputRef.current?.click())}
               >
                 <PlatformMaterialIcon icon="report" size={16} />
-                Choose File
+                {labels.chooseFile}
               </button>
               <button
                 type="button"
@@ -172,7 +176,7 @@ export function SpecialistMessagesComposer({
                 onClick={() => runMenuAction(() => videoInputRef.current?.click())}
               >
                 <Video size={16} aria-hidden="true" />
-                Choose Video
+                {labels.chooseVideo}
               </button>
             </div>
           ) : null}
@@ -182,7 +186,7 @@ export function SpecialistMessagesComposer({
           rows={1}
           className="pd-messages-composer-textarea"
           value={composerValue}
-          placeholder="Write a message..."
+          placeholder={labels.placeholder}
           disabled={disabled || isSending}
           onChange={(event) => onComposerChange(event.target.value)}
           onKeyDown={(event) => {
@@ -220,7 +224,7 @@ export function SpecialistMessagesComposer({
 
       {typeof uploadProgress === "number" ? (
         <p className="pd-messages-upload-progress" role="status">
-          Uploading… {Math.round(uploadProgress * 100)}%
+          {labels.uploading(Math.round(uploadProgress * 100))}
         </p>
       ) : null}
 
@@ -234,7 +238,7 @@ export function SpecialistMessagesComposer({
         disabled={!canSend}
         onClick={onSend}
       >
-        {isSending ? "Sending..." : "Send"}
+        {isSending ? labels.sending : labels.send}
       </button>
     </div>
   );

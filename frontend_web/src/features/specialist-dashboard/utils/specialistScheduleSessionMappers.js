@@ -2,6 +2,13 @@ export const DEFAULT_SESSION_TITLE = "Therapy Session";
 export const DEFAULT_DURATION_MINUTES = "45";
 export const DEFAULT_TIME_VALUE = "09:00";
 
+export const SCHEDULE_SESSION_VALIDATION_KEYS = {
+  TITLE_REQUIRED: "titleRequired",
+  PATIENT_REQUIRED: "patientRequired",
+  DURATION_RANGE: "durationRange",
+  FUTURE_DATETIME_REQUIRED: "futureDateTimeRequired",
+};
+
 function formatDateInputValue(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -67,21 +74,21 @@ export function validateScheduleSessionForm({
   const errors = {};
 
   if (!String(title || "").trim()) {
-    errors.title = "Enter a session type or title.";
+    errors.title = SCHEDULE_SESSION_VALIDATION_KEYS.TITLE_REQUIRED;
   }
 
   if (!String(patientId || "").trim()) {
-    errors.patientId = "Select an assigned patient.";
+    errors.patientId = SCHEDULE_SESSION_VALIDATION_KEYS.PATIENT_REQUIRED;
   }
 
   const duration = Number.parseInt(String(durationValue || "").trim(), 10);
   if (!Number.isFinite(duration) || duration < 1 || duration > 480) {
-    errors.duration = "Duration must be between 1 and 480 minutes.";
+    errors.duration = SCHEDULE_SESSION_VALIDATION_KEYS.DURATION_RANGE;
   }
 
   const scheduledAt = buildScheduledDateTime(dateValue, timeValue);
   if (!scheduledAt || scheduledAt <= new Date()) {
-    errors.dateTime = "Scheduled date and time must be in the future.";
+    errors.dateTime = SCHEDULE_SESSION_VALIDATION_KEYS.FUTURE_DATETIME_REQUIRED;
   }
 
   return {

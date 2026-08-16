@@ -1,18 +1,18 @@
-export function AdminCaseInformation({ detail }) {
+export function AdminCaseInformation({ detail, labels }) {
   return (
-    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label="Case information">
-      <h2 className="pd-admin-case-request-section-title">Case Information</h2>
+    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={labels.caseInformation}>
+      <h2 className="pd-admin-case-request-section-title">{labels.caseInformation}</h2>
       <dl className="pd-admin-case-request-fields is-stack">
         <div>
-          <dt>Case description</dt>
-          <dd>{detail.caseDescription}</dd>
+          <dt>{labels.fields.caseDescription}</dt>
+          <dd dir="auto">{detail.caseDescription}</dd>
         </div>
         <div>
-          <dt>Observed difficulties</dt>
-          <dd>{detail.observedDifficulties}</dd>
+          <dt>{labels.fields.observedDifficulties}</dt>
+          <dd dir="auto">{detail.observedDifficulties}</dd>
         </div>
         <div>
-          <dt>Preferred contact period</dt>
+          <dt>{labels.fields.preferredContactPeriod}</dt>
           <dd>{detail.preferredContactPeriodLabel}</dd>
         </div>
       </dl>

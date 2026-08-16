@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { loadSpecialistPatients } from "../../../services/specialistPatientService";
 import { mapSpecialistPatientList } from "../utils/specialistPatientMappers";
 
@@ -7,11 +8,14 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistPatients(specialistUserId) {
+  const { t } = useLocale();
   const [patients, setPatients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadFailedMessage = t("specialist.patients.errors.loadFailed");
 
   const refetch = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -42,7 +46,7 @@ export function useSpecialistPatients(specialistUserId) {
           return;
         }
         setPatients([]);
-        setError(resolveErrorMessage(loadError, "Failed to load patients."));
+        setError(resolveErrorMessage(loadError, loadFailedMessage));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -55,7 +59,7 @@ export function useSpecialistPatients(specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, refreshToken]);
+  }, [specialistUserId, refreshToken, loadFailedMessage]);
 
   if (!specialistUserId) {
     return {

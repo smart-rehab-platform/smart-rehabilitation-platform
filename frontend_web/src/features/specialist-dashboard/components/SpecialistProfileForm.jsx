@@ -1,4 +1,7 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { SpecialistProfilePhotoField } from "./SpecialistProfilePhotoField";
+import { getSpecialistProfilePageLabels } from "../utils/specialistProfileLocalization.js";
 
 function fieldClassName(base, hasError) {
   return `${base}${hasError ? " has-error" : ""}`;
@@ -17,6 +20,9 @@ export function SpecialistProfileForm({
   onCancel,
   onSubmit,
 }) {
+  const { t } = useLocale();
+  const pageLabels = useMemo(() => getSpecialistProfilePageLabels(t), [t]);
+
   return (
     <form
       className="pd-specialist-profile-edit-layout"
@@ -35,11 +41,11 @@ export function SpecialistProfileForm({
       {avatarError ? <p className="pd-form-error pd-specialist-profile-form-error">{avatarError}</p> : null}
 
       <section className="pd-card pd-card-pad pd-specialist-profile-form-section">
-        <h2 className="pd-specialist-profile-section-title">Personal Information</h2>
+        <h2 className="pd-specialist-profile-section-title">{pageLabels.personalInfo}</h2>
         <div className="pd-specialist-profile-form-grid">
           <div className="pd-form-field">
             <label className="pd-form-label" htmlFor="specialist-profile-full-name">
-              Full name
+              {pageLabels.fullName}
             </label>
             <input
               id="specialist-profile-full-name"
@@ -49,6 +55,7 @@ export function SpecialistProfileForm({
               disabled={isSaving}
               onChange={(event) => onFieldChange("fullName", event.target.value)}
               aria-invalid={Boolean(fieldErrors.fullName)}
+              dir="auto"
             />
             {fieldErrors.fullName ? (
               <p className="pd-form-error">{fieldErrors.fullName}</p>
@@ -57,7 +64,7 @@ export function SpecialistProfileForm({
 
           <div className="pd-form-field">
             <label className="pd-form-label" htmlFor="specialist-profile-phone">
-              Phone
+              {pageLabels.phone}
             </label>
             <input
               id="specialist-profile-phone"
@@ -66,17 +73,18 @@ export function SpecialistProfileForm({
               value={formValues.phone}
               disabled={isSaving}
               onChange={(event) => onFieldChange("phone", event.target.value)}
+              dir="auto"
             />
           </div>
         </div>
       </section>
 
       <section className="pd-card pd-card-pad pd-specialist-profile-form-section">
-        <h2 className="pd-specialist-profile-section-title">Professional Information</h2>
+        <h2 className="pd-specialist-profile-section-title">{pageLabels.professionalInfo}</h2>
         <div className="pd-specialist-profile-form-grid">
           <div className="pd-form-field">
             <label className="pd-form-label" htmlFor="specialist-profile-specialization">
-              Specialization
+              {pageLabels.specialization}
             </label>
             <input
               id="specialist-profile-specialization"
@@ -85,12 +93,13 @@ export function SpecialistProfileForm({
               value={formValues.specialization}
               disabled={isSaving}
               onChange={(event) => onFieldChange("specialization", event.target.value)}
+              dir="auto"
             />
           </div>
 
           <div className="pd-form-field">
             <label className="pd-form-label" htmlFor="specialist-profile-license">
-              License number
+              {pageLabels.licenseNumber}
             </label>
             <input
               id="specialist-profile-license"
@@ -99,12 +108,13 @@ export function SpecialistProfileForm({
               value={formValues.licenseNumber}
               disabled={isSaving}
               onChange={(event) => onFieldChange("licenseNumber", event.target.value)}
+              dir="auto"
             />
           </div>
 
           <div className="pd-form-field pd-specialist-profile-form-span-half">
             <label className="pd-form-label" htmlFor="specialist-profile-years">
-              Years of experience
+              {pageLabels.yearsOfExperience}
             </label>
             <input
               id="specialist-profile-years"
@@ -125,7 +135,7 @@ export function SpecialistProfileForm({
 
           <div className="pd-form-field pd-specialist-profile-form-span">
             <label className="pd-form-label" htmlFor="specialist-profile-bio">
-              Bio
+              {pageLabels.bio}
             </label>
             <textarea
               id="specialist-profile-bio"
@@ -134,6 +144,7 @@ export function SpecialistProfileForm({
               value={formValues.bio}
               disabled={isSaving}
               onChange={(event) => onFieldChange("bio", event.target.value)}
+              dir="auto"
             />
           </div>
         </div>
@@ -152,10 +163,10 @@ export function SpecialistProfileForm({
           disabled={isSaving}
           onClick={onCancel}
         >
-          Cancel
+          {pageLabels.cancel}
         </button>
         <button type="submit" className="pd-btn pd-btn-primary" disabled={isSaving}>
-          {isSaving ? "Saving..." : "Save Changes"}
+          {isSaving ? pageLabels.saving : pageLabels.saveChanges}
         </button>
       </div>
     </form>

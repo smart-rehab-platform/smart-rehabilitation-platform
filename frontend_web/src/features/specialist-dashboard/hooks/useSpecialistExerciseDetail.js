@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { loadSpecialistExerciseById } from "../../../services/specialistExerciseService";
+import { applyExerciseListItemLocalization } from "../utils/specialistExercisesLocalization";
 import { subscribeSpecialistExerciseRefresh } from "../utils/specialistExerciseRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -7,12 +9,15 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistExerciseDetail(exerciseId, enabled = true) {
+  const { t } = useLocale();
   const [exercise, setExercise] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadFailedMessage = t("specialist.exercises.errors.loadExerciseFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -49,8 +54,8 @@ export function useSpecialistExerciseDetail(exerciseId, enabled = true) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        const message = resolveErrorMessage(loadError, "Failed to load exercise.");
-        if (message === "Exercise not found.") {
+        const message = resolveErrorMessage(loadError, loadFailedMessage);
+        if (message === "Exercise not found." || message === t("specialist.exercises.empty.notFound")) {
           setNotFound(true);
           return;
         }
@@ -67,10 +72,15 @@ export function useSpecialistExerciseDetail(exerciseId, enabled = true) {
     return () => {
       cancelled = true;
     };
-  }, [enabled, exerciseId, refreshToken]);
+  }, [enabled, exerciseId, refreshToken, loadFailedMessage, t]);
+
+  const localizedExercise = useMemo(
+    () => (exercise ? applyExerciseListItemLocalization(exercise, { t }) : null),
+    [exercise, t],
+  );
 
   return {
-    exercise,
+    exercise: localizedExercise,
     isLoading,
     error,
     notFound,

@@ -1,8 +1,13 @@
 /*
- * Profile dropdown extends below the sticky header (z-index 30). Greeting uses
- * z-index 50 from shared dashboardTokens and intercepts clicks on Sign out.
+ * Profile dropdown extends below the sticky header. Shared dashboardTokens
+ * sets .pd-top-header { z-index: 30 } and .pd-greeting { z-index: 50 } and
+ * can sort after this file in the bundle, so use higher-specificity overrides.
  */
-.pd-preview .pd-greeting {
+.pd-preview .pd-shell .pd-top-header {
+  z-index: 55;
+}
+
+.pd-preview .pd-content > .pd-greeting {
   z-index: auto;
 }
 
@@ -213,7 +218,7 @@
 }
 
 .pd-preview .pd-specialist-schedule-status {
-  text-transform: capitalize;
+  text-transform: none;
 }
 
 .pd-preview .pd-specialist-schedule-summary {
@@ -280,7 +285,7 @@
   padding: 10px 0;
   border: none;
   background: transparent;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   font-family: inherit;
   color: inherit;
@@ -327,6 +332,80 @@
   margin-top: 14px;
 }
 
+.pd-preview .pd-specialist-progress-page-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: start;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-progress-row:hover {
+  border-color: rgba(42, 164, 201, 0.35);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.pd-preview .pd-specialist-progress-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pd-preview .pd-specialist-progress-row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-progress-row-top strong {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-specialist-progress-row-percent {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-specialist-progress-row-trend {
+  flex-shrink: 0;
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-progress-row-updated {
+  margin: 0;
+}
+
+.pd-preview .pd-specialist-progress-row-action {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pd-primary);
+}
+
+.pd-preview .pd-specialist-progress-row-chevron {
+  flex-shrink: 0;
+}
+
 @media (max-width: 900px) {
   .pd-preview .pd-specialist-preview-row-layout {
     grid-template-columns: 1fr;
@@ -345,7 +424,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  text-align: left;
+  text-align: start;
 }
 
 .pd-preview .pd-avatar.pd-specialist-conversation-avatar {
@@ -405,6 +484,7 @@
 
 .pd-preview .pd-specialist-conversation-chevron {
   flex-shrink: 0;
+  margin-inline-start: auto;
   color: var(--pd-text-secondary);
 }
 
@@ -475,10 +555,6 @@
   color: var(--pd-text-secondary);
 }
 
-.pd-preview .pd-specialist-notifications-mark-all {
-  margin-left: auto;
-}
-
 .pd-preview .pd-specialist-notification-card .pd-notification-feed-title {
   font-weight: 500;
 }
@@ -523,7 +599,7 @@
   border: 1px solid var(--pd-border-soft);
   border-radius: 12px;
   background: var(--pd-surface);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -619,7 +695,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -745,7 +821,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--pd-text-primary);
-  text-align: right;
+  text-align: end;
 }
 
 @media (max-width: 640px) {
@@ -755,7 +831,7 @@
   }
 
   .pd-preview .pd-specialist-treatment-plan-meta-value {
-    text-align: left;
+    text-align: start;
     width: 100%;
   }
 }
@@ -825,7 +901,7 @@
 
 .pd-preview .pd-specialist-pattern-list {
   margin: 0;
-  padding-left: 18px;
+  padding-inline-start: 18px;
 }
 
 .pd-preview .pd-specialist-pattern-disclaimer {
@@ -833,6 +909,7 @@
   font-size: 0.75rem;
   line-height: 1.45;
   color: var(--pd-text-muted);
+  text-align: start;
 }
 
 .pd-preview .pd-specialist-patient-footer-actions {
@@ -868,7 +945,7 @@
 
 .pd-preview .pd-modal-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: end;
   gap: 10px;
   margin-top: 14px;
 }
@@ -906,11 +983,15 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   font-family: inherit;
   color: inherit;
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.pd-preview .pd-specialist-reviews-row-chevron {
+  flex-shrink: 0;
 }
 
 .pd-preview .pd-specialist-reviews-row:hover {
@@ -949,6 +1030,7 @@
   align-items: flex-start;
   gap: 6px;
   margin-bottom: 20px;
+  text-align: start;
 }
 
 .pd-preview .pd-specialist-review-page-header > .pd-specialist-back-btn {
@@ -995,6 +1077,7 @@
   letter-spacing: 0.01em;
   text-transform: uppercase;
   color: var(--pd-text-muted);
+  text-align: start;
 }
 
 .pd-preview .pd-specialist-review-patient-name {
@@ -1134,6 +1217,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--pd-text-secondary);
+  text-align: start;
 }
 
 .pd-preview .pd-specialist-review-stars {
@@ -1260,7 +1344,7 @@
 
 .pd-preview .pd-specialist-patient-list-row-btn {
   width: 100%;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   font-family: inherit;
   color: inherit;
@@ -1352,7 +1436,7 @@
   align-items: flex-start;
   gap: 12px;
   width: 100%;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   font-family: inherit;
   color: inherit;
@@ -1453,7 +1537,7 @@
   margin: 0;
   font-size: 0.8125rem;
   font-weight: 600;
-  text-align: right;
+  text-align: end;
 }
 
 .pd-preview .pd-specialist-report-section-body {
@@ -1461,6 +1545,7 @@
   white-space: pre-wrap;
   line-height: 1.45;
   color: var(--pd-text-secondary);
+  text-align: start;
 }
 
 .pd-preview .pd-specialist-report-attachment-row {
@@ -1647,31 +1732,15 @@
   color: var(--pd-danger, #dc2626);
 }
 
-.pd-preview .pd-specialist-treatment-plan-date-wrap {
-  position: relative;
-}
-
-.pd-preview .pd-specialist-treatment-plan-date-wrap .pd-specialist-treatment-plan-control {
-  padding-right: 44px;
+.pd-preview .pd-specialist-treatment-plan-date-input {
+  direction: ltr;
+  text-align: start;
   cursor: pointer;
 }
 
-.pd-preview .pd-specialist-treatment-plan-date-input::-webkit-calendar-picker-indicator {
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  width: 44px;
-  height: 100%;
-  cursor: pointer;
-}
-
-.pd-preview .pd-specialist-treatment-plan-date-icon {
-  position: absolute;
-  top: 50%;
-  right: 14px;
-  transform: translateY(-50%);
-  color: var(--pd-text-muted);
-  pointer-events: none;
+.pd-preview .pd-specialist-treatment-plan-date-input::-webkit-datetime-edit,
+.pd-preview .pd-specialist-treatment-plan-date-input::-webkit-datetime-edit-fields-wrapper {
+  direction: ltr;
 }
 
 .pd-preview .pd-specialist-treatment-plan-context-label {
@@ -1943,7 +2012,7 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   border: 1px solid var(--pd-border);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -2063,6 +2132,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.pd-preview .pd-specialist-treatment-plan-end-date .pd-specialist-treatment-plan-date-wrap {
+  flex: 1;
+  min-width: 0;
 }
 
 .pd-preview .pd-specialist-treatment-plan-end-date .pd-input {
@@ -2280,7 +2354,7 @@
 }
 
 .pd-preview .pd-specialist-ai-empty {
-  text-align: center;
+  text-align: start;
 }
 
 .pd-preview .pd-specialist-ai-recommendation-card-header {
@@ -2328,11 +2402,13 @@
   line-height: 1.6;
   color: var(--pd-text-muted);
   white-space: pre-wrap;
+  text-align: start;
 }
 
 .pd-preview .pd-specialist-ai-recommendation-list {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-inline-start: 1.1rem;
+  padding-inline-end: 0;
   display: grid;
   gap: 8px;
   font-size: 0.875rem;
@@ -2556,6 +2632,7 @@
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
+  direction: ltr;
 }
 
 .pd-preview .pd-specialist-session-calendar-weekday {
@@ -3189,7 +3266,7 @@
 .pd-preview .pd-specialist-exercise-search-icon {
   position: absolute;
   top: 50%;
-  left: 14px;
+  inset-inline-start: 14px;
   width: 18px;
   height: 18px;
   transform: translateY(-50%);
@@ -3201,7 +3278,8 @@
   width: 100%;
   box-sizing: border-box;
   min-height: 48px;
-  padding: 0 14px 0 42px;
+  padding-inline-start: 42px;
+  padding-inline-end: 14px;
   border: 1px solid var(--pd-border);
   border-radius: 12px;
   background: var(--pd-surface);
@@ -3251,7 +3329,7 @@
   align-items: start;
   gap: 12px;
   width: 100%;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -3566,6 +3644,7 @@
 
 .pd-preview .pd-specialist-exercise-form-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
   padding-top: 4px;
@@ -3824,15 +3903,15 @@
 
 .pd-preview .pd-specialist-case-request-search-icon {
   position: absolute;
-  left: 14px;
+  inset-inline-start: 14px;
   color: var(--pd-text-muted);
   pointer-events: none;
   z-index: 1;
 }
 
 .pd-preview .pd-specialist-case-request-search-input {
-  padding-left: 44px;
-  padding-right: 42px;
+  padding-inline-start: 44px;
+  padding-inline-end: 42px;
 }
 
 .pd-preview .pd-specialist-case-request-search-input::-webkit-search-cancel-button,
@@ -3843,7 +3922,7 @@
 
 .pd-preview .pd-specialist-case-request-search-clear {
   position: absolute;
-  right: 10px;
+  inset-inline-end: 10px;
   border: 0;
   background: transparent;
   color: var(--pd-text-muted);
@@ -3877,13 +3956,13 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   cursor: pointer;
-  padding-right: 44px;
+  padding-inline-end: 44px;
 }
 
 .pd-preview .pd-specialist-case-request-select-chevron {
   position: absolute;
   top: 50%;
-  right: 14px;
+  inset-inline-end: 14px;
   transform: translateY(-50%);
   color: var(--pd-text-muted);
   pointer-events: none;
@@ -3895,7 +3974,7 @@
 
 .pd-preview .pd-specialist-case-request-clear-row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: end;
 }
 
 .pd-preview .pd-specialist-case-request-list {
@@ -3905,7 +3984,7 @@
 }
 
 .pd-preview .pd-specialist-case-request-card {
-  text-align: left;
+  text-align: start;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -4173,7 +4252,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  text-align: left;
+  text-align: start;
   border: 1px solid var(--pd-border, #e2e8f0);
   background: #fff;
   border-radius: 12px;
@@ -4243,7 +4322,7 @@
 
 .pd-preview .pd-specialist-case-dialog-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: end;
   gap: 10px;
 }
 
@@ -4762,7 +4841,7 @@
 }
 
 .pd-preview .pd-specialist-profile-header-actions {
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .pd-preview .pd-specialist-profile-info-grid {
@@ -4890,4 +4969,13 @@
     width: 100%;
     margin-left: 0;
   }
+}
+
+/* Keep profile dropdown above dashboard content (see file header). */
+.pd-preview .pd-shell .pd-top-header {
+  z-index: 55;
+}
+
+.pd-preview .pd-content > .pd-greeting {
+  z-index: auto;
 }

@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { getUserPresence } from "../../../services/specialistPresenceService";
+import { formatSpecialistPresenceLabel } from "../utils/specialistMessagesLocalization.js";
 
 function readPresenceField(record, keys) {
   if (!record || typeof record !== "object") {
@@ -15,54 +17,12 @@ function readPresenceField(record, keys) {
   return null;
 }
 
-export function formatPresenceLabel(presence) {
-  if (!presence) {
-    return "Offline";
-  }
-
-  const isOnline = Boolean(
-    readPresenceField(presence, ["is_online", "isOnline"]),
-  );
-
-  if (isOnline) {
-    return "Online";
-  }
-
-  const lastSeen = readPresenceField(presence, ["last_seen", "lastSeen"]);
-  if (!lastSeen) {
-    return "Offline";
-  }
-
-  const date = new Date(lastSeen);
-  if (Number.isNaN(date.getTime())) {
-    return "Offline";
-  }
-
-  const now = new Date();
-  const diffMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
-
-  if (diffMinutes < 1) {
-    return "Last seen just now";
-  }
-
-  if (diffMinutes < 60) {
-    return `Last seen ${diffMinutes}m ago`;
-  }
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) {
-    return `Last seen ${diffHours}h ago`;
-  }
-
-  return `Last seen ${date.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  })}`;
+export function formatPresenceLabel(presence, locale = "en", t = null) {
+  return formatSpecialistPresenceLabel(presence, locale, t);
 }
 
 export function useSpecialistPresence(userId) {
+  const { t, locale } = useLocale();
   const [presence, setPresence] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -114,21 +74,25 @@ export function useSpecialistPresence(userId) {
     };
   }, [userId, refreshToken]);
 
+  const label = useMemo(
+    () => formatSpecialistPresenceLabel(presence, locale, t),
+    [presence, locale, t],
+  );
+
+  const isOnline = Boolean(
+    readPresenceField(presence, ["is_online", "isOnline"]),
+  );
+
   if (!userId) {
     return {
       presence: null,
-      label: "Offline",
+      label: formatSpecialistPresenceLabel(null, locale, t),
       isOnline: false,
       isLoading: false,
       error: null,
       refresh,
     };
   }
-
-  const label = formatPresenceLabel(presence);
-  const isOnline = Boolean(
-    readPresenceField(presence, ["is_online", "isOnline"]),
-  );
 
   return {
     presence,

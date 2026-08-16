@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   PARENT_WEB_ROUTES,
   buildParentMessagesPath,
 } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import {
   useParentConversation,
@@ -17,10 +17,10 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  MESSAGES_CHAT_EMPTY,
-  MESSAGES_EMPTY_MESSAGE,
   formatMessageTime,
   getLatestReadOutgoingMessageId,
+  getMessagesChatEmpty,
+  getMessagesEmptyMessage,
 } from "./utils/parentMessagesUtils";
 import { MessageAttachmentDisplay } from "./components/messages/MessageAttachmentDisplay";
 import { MessagesComposer } from "./components/messages/MessagesComposer";
@@ -33,6 +33,7 @@ const THREAD_SCROLL_THRESHOLD_PX = 80;
 export default function ParentMessagesPage() {
   const navigate = useNavigate();
   const { conversationId: routeConversationId } = useParams();
+  const { t, locale } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -264,7 +265,7 @@ export default function ParentMessagesPage() {
 
   const renderConversationList = () => {
     if (isLoadingConversations) {
-      return <p className="pd-inline-loading">Loading conversations...</p>;
+      return <p className="pd-inline-loading">{t("parent.pages.messages.loading")}</p>;
     }
 
     if (conversationsError) {
@@ -272,14 +273,14 @@ export default function ParentMessagesPage() {
         <div className="pd-ai-panel-state">
           <p className="pd-inline-error">{conversationsError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetchConversations}>
-            Retry
+            {t("parent.common.retry")}
           </button>
         </div>
       );
     }
 
     if (conversations.length === 0) {
-      return <p className="pd-section-sub">{MESSAGES_EMPTY_MESSAGE}</p>;
+      return <p className="pd-section-sub">{getMessagesEmptyMessage(t)}</p>;
     }
 
     return (
@@ -309,11 +310,11 @@ export default function ParentMessagesPage() {
 
   const renderThread = () => {
     if (!activeConversationId) {
-      return <p className="pd-section-sub">Select a conversation to view messages.</p>;
+      return <p className="pd-section-sub">{t("parent.messages.selectConversationView")}</p>;
     }
 
     if (isLoadingMessages) {
-      return <p className="pd-inline-loading">Loading messages...</p>;
+      return <p className="pd-inline-loading">{t("parent.pages.messages.loadingThread")}</p>;
     }
 
     if (messagesError) {
@@ -321,14 +322,14 @@ export default function ParentMessagesPage() {
         <div className="pd-ai-panel-state">
           <p className="pd-inline-error">{messagesError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetchMessages}>
-            Retry
+            {t("parent.common.retry")}
           </button>
         </div>
       );
     }
 
     if (messages.length === 0) {
-      return <p className="pd-section-sub">{MESSAGES_CHAT_EMPTY}</p>;
+      return <p className="pd-section-sub">{getMessagesChatEmpty(t)}</p>;
     }
 
     return messages.map((message) => {
@@ -345,7 +346,7 @@ export default function ParentMessagesPage() {
             {!isOwn && message.senderName ? (
               <span className="pd-message-sender">{message.senderName}</span>
             ) : null}
-            {message.content ? <p>{message.content}</p> : null}
+            {message.content ? <p dir="auto">{message.content}</p> : null}
             {message.hasAttachments ? (
               <div className="pd-message-attachments">
                 {message.attachments.map((attachment) => (
@@ -354,7 +355,7 @@ export default function ParentMessagesPage() {
               </div>
             ) : null}
             {message.sentAt ? (
-              <time className="pd-message-time">{formatMessageTime(message.sentAt)}</time>
+              <time className="pd-message-time">{formatMessageTime(message.sentAt, locale, t)}</time>
             ) : null}
           </article>
           {showSeen ? <span className="pd-message-seen">Seen</span> : null}
@@ -368,7 +369,6 @@ export default function ParentMessagesPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -390,7 +390,7 @@ export default function ParentMessagesPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Dashboard
+              {t("parent.common.backToDashboard")}
             </button>
             {isNarrowLayout && mobileShowsChat ? (
               <button
@@ -398,22 +398,22 @@ export default function ParentMessagesPage() {
                 className="pd-btn pd-btn-soft"
                 onClick={() => setMobileShowsChat(false)}
               >
-                Conversations
+                {t("parent.messages.conversationsButton")}
               </button>
             ) : null}
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Messages</h1>
+            <h1 className="pd-task-hub-title">{t("parent.messages.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              Secure conversations with specialists about your children.
+              {t("parent.messages.subtitle")}
             </p>
           </header>
 
           <div className="pd-messages-layout">
             {showListPanel ? (
               <aside className="pd-messages-sidebar pd-card pd-card-pad">
-                <h2 className="pd-section-title">Conversations</h2>
+                <h2 className="pd-section-title">{t("parent.messages.conversations")}</h2>
                 <div className="pd-messages-list-scroll">
                   {renderConversationList()}
                 </div>
@@ -424,7 +424,7 @@ export default function ParentMessagesPage() {
               <section className="pd-messages-chat pd-card pd-card-pad">
                 <div className="pd-messages-chat-header">
                   <h2 className="pd-section-title">
-                    {activeConversation?.title || "Conversation"}
+                    {activeConversation?.title || t("parent.messages.conversationDefault")}
                   </h2>
                   {activeConversation?.subtitle ? (
                     <p className="pd-section-sub">{activeConversation.subtitle}</p>

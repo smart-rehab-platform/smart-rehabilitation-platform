@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   finalizeRecordedAudioBlob,
   getSupportedRecorderMimeType,
   inferMessageAttachmentMimeType,
   validateMessageAttachmentFile,
 } from "../utils/specialistMessageAttachmentUtils";
+import {
+  getSpecialistMessageAttachmentValidationMessages,
+  localizeSpecialistAttachmentValidationError,
+} from "../utils/specialistMessagesLocalization.js";
 
-function buildDraftFromFile(file) {
+function buildDraftFromFile(file, t) {
   const mimeType = inferMessageAttachmentMimeType(file);
   const validationError = validateMessageAttachmentFile(file);
   if (validationError) {
-    return { error: validationError };
+    return { error: localizeSpecialistAttachmentValidationError(validationError, t) };
   }
 
   const previewUrl = mimeType?.startsWith("image/") || mimeType?.startsWith("audio/")
@@ -28,6 +33,8 @@ function buildDraftFromFile(file) {
 }
 
 export function useSpecialistMessageAttachmentDraft() {
+  const { t } = useLocale();
+  const validationMessages = getSpecialistMessageAttachmentValidationMessages(t);
   const [draft, setDraft] = useState(null);
   const [draftError, setDraftError] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -49,7 +56,7 @@ export function useSpecialistMessageAttachmentDraft() {
 
   const selectFile = useCallback((file) => {
     clearDraft();
-    const result = buildDraftFromFile(file);
+    const result = buildDraftFromFile(file, t);
     if (result.error) {
       setDraftError(result.error);
       return false;
@@ -58,7 +65,7 @@ export function useSpecialistMessageAttachmentDraft() {
     setDraft(result.draft);
     setDraftError(null);
     return true;
-  }, [clearDraft]);
+  }, [clearDraft, t]);
 
   const stopMediaTracks = useCallback(() => {
     mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
@@ -82,13 +89,13 @@ export function useSpecialistMessageAttachmentDraft() {
     clearDraft();
 
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-      setRecordingError("Audio recording is not supported in this browser.");
+      setRecordingError(validationMessages.recordingNotSupported);
       return false;
     }
 
     const mimeType = getSupportedRecorderMimeType();
     if (!mimeType) {
-      setRecordingError("Audio recording is not supported in this browser.");
+      setRecordingError(validationMessages.recordingNotSupported);
       return false;
     }
 
@@ -107,7 +114,7 @@ export function useSpecialistMessageAttachmentDraft() {
       };
 
       recorder.onerror = () => {
-        setRecordingError("Recording failed. Please try again.");
+        setRecordingError(validationMessages.recordingFailed);
         cancelRecording();
       };
 
@@ -118,13 +125,13 @@ export function useSpecialistMessageAttachmentDraft() {
       stopMediaTracks();
       const name = error instanceof Error ? error.name : "";
       if (name === "NotAllowedError" || name === "PermissionDeniedError") {
-        setRecordingError("Microphone permission is required to record audio.");
+        setRecordingError(validationMessages.micPermission);
       } else {
-        setRecordingError("Unable to access the microphone.");
+        setRecordingError(validationMessages.micAccessFailed);
       }
       return false;
     }
-  }, [cancelRecording, clearDraft, stopMediaTracks]);
+  }, [cancelRecording, clearDraft, stopMediaTracks, validationMessages]);
 
   const stopRecording = useCallback(async () => {
     const recorder = mediaRecorderRef.current;
@@ -142,7 +149,7 @@ export function useSpecialistMessageAttachmentDraft() {
         recordingChunksRef.current = [];
 
         if (!chunks.length) {
-          setRecordingError("No audio was recorded.");
+          setRecordingError(validationMessages.noAudioRecorded);
           resolve(false);
           return;
         }
@@ -150,7 +157,7 @@ export function useSpecialistMessageAttachmentDraft() {
         try {
           const blob = new Blob(chunks, { type: recorder.mimeType });
           const file = await finalizeRecordedAudioBlob(blob, recorder.mimeType);
-          const result = buildDraftFromFile(file);
+          const result = buildDraftFromFile(file, t);
           if (result.error) {
             setDraftError(result.error);
             resolve(false);
@@ -161,14 +168,14 @@ export function useSpecialistMessageAttachmentDraft() {
           setDraftError(null);
           resolve(true);
         } catch {
-          setRecordingError("Unable to process the recording.");
+          setRecordingError(validationMessages.processRecordingFailed);
           resolve(false);
         }
       };
 
       recorder.stop();
     });
-  }, [stopMediaTracks]);
+  }, [stopMediaTracks, t, validationMessages]);
 
   useEffect(() => () => {
     cancelRecording();

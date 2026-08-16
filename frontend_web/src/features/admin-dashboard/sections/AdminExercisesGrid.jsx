@@ -23,6 +23,7 @@ function AdminExerciseCardSkeleton() {
 }
 
 export function AdminExercisesGrid({
+  labels,
   exercises,
   isLoading,
   emptyKind,
@@ -34,7 +35,7 @@ export function AdminExercisesGrid({
 }) {
   if (isLoading) {
     return (
-      <div className="pd-admin-exercises-grid" aria-busy="true" aria-label="Loading exercises">
+      <div className="pd-admin-exercises-grid" aria-busy="true" aria-label={labels.loading}>
         {Array.from({ length: SKELETON_CARD_COUNT }, (_, index) => (
           <AdminExerciseCardSkeleton key={index} />
         ))}
@@ -44,11 +45,11 @@ export function AdminExercisesGrid({
 
   if (emptyKind === "no-exercises") {
     return (
-      <section className="pd-card pd-card-pad pd-admin-exercises-empty pd-section-enter" aria-label="No exercises">
-        <p className="pd-section-sub">No exercises available yet.</p>
+      <section className="pd-card pd-card-pad pd-admin-exercises-empty pd-section-enter" aria-label={labels.empty}>
+        <p className="pd-section-sub">{labels.empty}</p>
         <button type="button" className="pd-btn pd-btn-primary" onClick={onAddExercise}>
           <Plus size={16} aria-hidden="true" />
-          Add Exercise
+          {labels.addExercise}
         </button>
       </section>
     );
@@ -56,20 +57,21 @@ export function AdminExercisesGrid({
 
   if (emptyKind === "no-matches") {
     return (
-      <section className="pd-card pd-card-pad pd-admin-exercises-empty pd-section-enter" aria-label="No matching exercises">
-        <p className="pd-section-sub">No exercises match your filters.</p>
+      <section className="pd-card pd-card-pad pd-admin-exercises-empty pd-section-enter" aria-label={labels.emptyFiltered}>
+        <p className="pd-section-sub">{labels.emptyFiltered}</p>
         <button type="button" className="pd-btn pd-btn-soft" onClick={onClearFilters}>
-          Clear filters
+          {labels.clearFilters}
         </button>
       </section>
     );
   }
 
   return (
-    <div className="pd-admin-exercises-grid" aria-label="Exercise library">
+    <div className="pd-admin-exercises-grid" aria-label={labels.title}>
       {exercises.map((exercise) => (
         <AdminExerciseCard
           key={exercise.id}
+          labels={labels}
           exercise={exercise}
           canEdit={canEditExercise(exercise)}
           onOpen={onOpenExercise}

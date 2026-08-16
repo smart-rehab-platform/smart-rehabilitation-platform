@@ -1,3 +1,4 @@
+import { useLocale } from "../../../../context/useLocale.js";
 import { PlatformMaterialIcon } from "../../../../components/platform/PlatformMaterialIcon";
 import { openReportFileUrl } from "../../utils/parentReportsUtils";
 
@@ -6,23 +7,25 @@ export function ReportFileAction({
   onOpenError,
   compact = false,
 }) {
+  const { t } = useLocale();
+
   if (!report?.hasFile || !report?.pdfUrl) {
     return (
       <p className="pd-report-file-unavailable" role="status">
-        Report file is not available yet.
+        {t("parent.reports.fileUnavailableYet")}
       </p>
     );
   }
 
   const label = report.title
-    ? `Open report: ${report.title}`
-    : "Open report file";
+    ? t("parent.reports.openReportLabel", { title: report.title })
+    : t("parent.reports.openReportFile");
 
   const handleOpen = () => {
     try {
       openReportFileUrl(report.pdfUrl);
     } catch (error) {
-      onOpenError?.(error instanceof Error ? error.message : "Unable to open report file.");
+      onOpenError?.(error instanceof Error ? error.message : t("parent.reports.errors.fileUnavailable"));
     }
   };
 
@@ -35,7 +38,7 @@ export function ReportFileAction({
         aria-label={label}
       >
         <PlatformMaterialIcon icon="report" size={16} />
-        Open Report
+        {t("parent.reports.openReport")}
       </button>
     </div>
   );

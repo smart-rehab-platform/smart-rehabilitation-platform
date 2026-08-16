@@ -7,7 +7,8 @@ import {
   ADMIN_WEB_ROUTES,
   buildAdminExerciseEditPath,
 } from "../../routes/adminDashboardRoutes";
-import { AdminExerciseDeleteDialog } from "./components/AdminExerciseDeleteDialog";import { canEditExercise } from "./utils/adminExercisesMappers";
+import { AdminExerciseDeleteDialog } from "./components/AdminExerciseDeleteDialog";
+import { canEditExercise } from "./utils/adminExercisesMappers";
 import { useAdminExerciseDetails } from "./hooks/useAdminExerciseDetails";
 import { useAdminShell } from "./hooks/useAdminShell";
 import { AdminDashboardShell } from "./layout/AdminDashboardShell";
@@ -87,7 +88,7 @@ export default function AdminExerciseDetailsPage() {
     handleSidebarNav,
   } = useAdminShell();
 
-  const { exercise, isLoading, error, refresh } = useAdminExerciseDetails(exerciseId);
+  const { exercise, isLoading, error, refresh, labels } = useAdminExerciseDetails(exerciseId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -101,8 +102,7 @@ export default function AdminExerciseDetailsPage() {
   const canEdit = exercise ? canEditExercise(exercise, editActor) : false;
   const isNotFound = !isLoading
     && !exercise
-    && typeof error === "string"
-    && error.toLowerCase().includes("exercise not found");
+    && error === labels.notFound;
 
   const handleBack = useCallback(() => {
     navigate(ADMIN_WEB_ROUTES.exercises);
@@ -140,18 +140,18 @@ export default function AdminExerciseDetailsPage() {
     try {
       await deleteAdminExercise(exerciseId);
       setDeleteDialogOpen(false);
-      showToast("Exercise deleted successfully.");
+      showToast(labels.toast.deleteSuccess);
       navigate(ADMIN_WEB_ROUTES.exercises);
     } catch (deleteErr) {
       const message = deleteErr instanceof Error
         ? deleteErr.message
-        : "Failed to delete exercise.";
+        : labels.toast.deleteFailed;
       setDeleteError(message);
     } finally {
       deleteLockRef.current = false;
       setIsDeleting(false);
     }
-  }, [exerciseId, isDeleting, navigate, showToast]);
+  }, [exerciseId, isDeleting, labels.toast.deleteFailed, labels.toast.deleteSuccess, navigate, showToast]);
   let body;
 
   if (isLoading) {
@@ -161,13 +161,13 @@ export default function AdminExerciseDetailsPage() {
       <div className="pd-admin-exercise-details">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-exercise-details-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Exercise Library
+          {labels.back}
         </button>
 
         <section className="pd-card pd-card-pad pd-admin-exercise-details-empty pd-section-enter">
-          <p className="pd-section-sub">Exercise not found.</p>
+          <p className="pd-section-sub">{labels.notFound}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
-            Back to Exercise Library
+            {labels.back}
           </button>
         </section>
       </div>
@@ -177,13 +177,13 @@ export default function AdminExerciseDetailsPage() {
       <div className="pd-admin-exercise-details">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-exercise-details-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Exercise Library
+          {labels.back}
         </button>
 
         <div className="pd-admin-exercises-error pd-section-enter">
-          <p className="pd-inline-error">{error || "Failed to load exercise details."}</p>
+          <p className="pd-inline-error">{error || labels.loadDetailsFailed}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-            Retry
+            {labels.retry}
           </button>
         </div>
       </div>
@@ -193,10 +193,11 @@ export default function AdminExerciseDetailsPage() {
       <div className="pd-admin-exercise-details">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-exercise-details-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Exercise Library
+          {labels.back}
         </button>
 
         <AdminExerciseDetailsHero
+          labels={labels}
           exercise={exercise}
           canEdit={canEdit}
           onEdit={handleEdit}
@@ -204,8 +205,8 @@ export default function AdminExerciseDetailsPage() {
         />
         <div className={`pd-admin-exercise-details-content${exercise.hasMedia ? "" : " is-single-column"}`}>
           <div className="pd-admin-exercise-details-primary">
-            <AdminExerciseDescription description={exercise.description} />
-            <AdminExerciseInstructions instructions={exercise.instructions} />
+            <AdminExerciseDescription labels={labels} description={exercise.description} />
+            <AdminExerciseInstructions labels={labels} instructions={exercise.instructions} />
           </div>
 
           {exercise.hasMedia ? (
@@ -252,5 +253,6 @@ export default function AdminExerciseDetailsPage() {
         onClose={handleCloseDelete}
         onConfirm={handleConfirmDelete}
       />
-    </div>  );
+    </div>
+  );
 }

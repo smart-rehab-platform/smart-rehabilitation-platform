@@ -7,6 +7,7 @@ import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { Toast } from "../../components/auth/Toast";
 import { C } from "../../components/auth/tokens";
 import { readAuthApiMessage } from "../../components/auth/authHelpers";
+import { useLocale } from "../../context/useLocale.js";
 import { useAuth } from "../../context/useAuth";
 import { dashboardForRole } from "../../routes/roleRouting";
 
@@ -27,6 +28,7 @@ function extractVerificationToken(rawValue) {
 export default function VerifyEmail() {
   const navigate = useNavigate();
   const auth = useAuth();
+  const { t } = useLocale();
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email")?.trim() || "";
   const queryToken = extractVerificationToken(searchParams.get("token"));
@@ -39,8 +41,8 @@ export default function VerifyEmail() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [successTarget, setSuccessTarget] = useState("/login");
-  const [successActionLabel, setSuccessActionLabel] = useState("Go to Login");
-  const [successMessage, setSuccessMessage] = useState("Email verified successfully.");
+  const [successActionLabel, setSuccessActionLabel] = useState(() => t("auth.verifyEmail.goToLogin"));
+  const [successMessage, setSuccessMessage] = useState(() => t("auth.verifyEmail.successDefault"));
   const verifiedTokenRef = useRef(new Set());
 
   const showToast = useCallback((message, variant = "success") => {
@@ -56,14 +58,18 @@ export default function VerifyEmail() {
     if (refreshedUser?.is_email_verified) {
       const destination = dashboardForRole(refreshedUser.role) || "/login";
       setSuccessTarget(destination);
-      setSuccessActionLabel(destination === "/login" ? "Go to Login" : "Go to Dashboard");
+      setSuccessActionLabel(
+        destination === "/login"
+          ? t("auth.verifyEmail.goToLogin")
+          : t("auth.verifyEmail.goToDashboard"),
+      );
       return refreshedUser;
     }
 
     setSuccessTarget("/login");
-    setSuccessActionLabel("Go to Login");
+    setSuccessActionLabel(t("auth.verifyEmail.goToLogin"));
     return null;
-  }, [auth]);
+  }, [auth, t]);
 
   const verifyWithToken = useCallback(
     async (token) => {
@@ -79,27 +85,24 @@ export default function VerifyEmail() {
         await auth.verifyEmail(token);
         await syncAuthAfterVerification();
         setStatus("success");
-        setSuccessMessage("Email verified successfully.");
-        showToast("Email verified successfully", "success");
+        setSuccessMessage(t("auth.verifyEmail.successDefault"));
+        showToast(t("auth.verifyEmail.successMessage"), "success");
       } catch (error) {
         const refreshedUser = await syncAuthAfterVerification();
         if (refreshedUser?.is_email_verified) {
           setStatus("success");
-          setSuccessMessage("Email verified successfully.");
-          showToast("Email verified successfully", "success");
+          setSuccessMessage(t("auth.verifyEmail.successDefault"));
+          showToast(t("auth.verifyEmail.successMessage"), "success");
           return;
         }
 
         setStatus("error");
-        showToast(
-          readAuthApiMessage(error, "Unable to verify your email right now."),
-          "error"
-        );
+        showToast(readAuthApiMessage(error, t("auth.verifyEmail.verifyFailed")), "error");
       } finally {
         setLoading(false);
       }
     },
-    [auth, showToast, syncAuthAfterVerification]
+    [auth, showToast, syncAuthAfterVerification, t],
   );
 
   useEffect(() => {
@@ -130,7 +133,7 @@ export default function VerifyEmail() {
     const token = extractVerificationToken(manualToken);
 
     if (!token) {
-      showToast("Enter the verification token or paste the full verification link.", "error");
+      showToast(t("auth.verifyEmail.enterToken"), "error");
       return;
     }
 
@@ -139,7 +142,7 @@ export default function VerifyEmail() {
 
   const handleResend = async () => {
     if (!email) {
-      showToast("Email address is missing. Please sign up again or contact support.", "error");
+      showToast(t("auth.verifyEmail.emailMissing"), "error");
       return;
     }
 
@@ -149,10 +152,7 @@ export default function VerifyEmail() {
       const message = await auth.sendVerification(email);
       showToast(message, "success");
     } catch (error) {
-      showToast(
-        readAuthApiMessage(error, "Unable to resend the verification email right now."),
-        "error"
-      );
+      showToast(readAuthApiMessage(error, t("auth.verifyEmail.resendFailed")), "error");
     } finally {
       setResending(false);
     }
@@ -164,12 +164,12 @@ export default function VerifyEmail() {
       {status === "loading" ? (
         <AuthStatusCard
           variant="loading"
-          title="Verifying Email"
-          message="Please wait while we confirm your email address."
+          title={t("auth.verifyEmail.verifyingTitle")}
+          message={t("auth.verifyEmail.verifyingMessage")}
         />
       ) : status === "success" ? (
         <AuthStatusCard
-          title="Email Verified"
+          title={t("auth.verifyEmail.successTitle")}
           message={successMessage}
           actionLabel={successActionLabel}
           onAction={() => navigate(successTarget, { replace: true })}
@@ -177,8 +177,8 @@ export default function VerifyEmail() {
       ) : status === "pending" ? (
         <div className="flex flex-col gap-4">
           <AuthStatusCard
-            title="Check Your Email"
-            message="We sent a verification link to your email address. Open the link on this device to activate your account."
+            title={t("auth.verifyEmail.checkTitle")}
+            message={t("auth.verifyEmail.checkMessage")}
           />
           {email && (
             <p
@@ -189,7 +189,7 @@ export default function VerifyEmail() {
             </p>
           )}
           <PrimaryButton loading={resending} onClick={handleResend}>
-            {resending ? "Sending..." : "Resend Verification Email"}
+            {resending ? t("auth.verifyEmail.resending") : t("auth.verifyEmail.resend")}
           </PrimaryButton>
           <button
             type="button"
@@ -198,20 +198,20 @@ export default function VerifyEmail() {
             style={{ color: C.primary }}
           >
             {showManualVerify
-              ? "Hide manual verification"
-              : "Already have a verification link?"}
+              ? t("auth.verifyEmail.hideManual")
+              : t("auth.verifyEmail.showManual")}
           </button>
           {showManualVerify && (
             <div className="flex flex-col gap-3">
               <AuthInput
-                label="Verification link or token"
+                label={t("auth.verifyEmail.tokenLabel")}
                 icon={<Link size={16} />}
-                placeholder="Paste the link or token from your email"
+                placeholder={t("auth.verifyEmail.tokenPlaceholder")}
                 value={manualToken}
                 onChange={setManualToken}
               />
               <PrimaryButton loading={loading} onClick={handleManualVerify}>
-                {loading ? "Verifying..." : "Verify Email"}
+                {loading ? t("auth.verifyEmail.verifyingButton") : t("auth.verifyEmail.verifyButton")}
               </PrimaryButton>
             </div>
           )}
@@ -221,15 +221,15 @@ export default function VerifyEmail() {
             className="text-xs font-semibold transition-colors hover:text-white"
             style={{ color: C.primary }}
           >
-            Back to Sign In
+            {t("auth.verifyEmail.backToSignIn")}
           </button>
         </div>
       ) : (
         <AuthStatusCard
           variant="error"
-          title="Verification Failed"
-          message="We could not verify your email with this link. Please request a new verification email if needed."
-          actionLabel="Go to Login"
+          title={t("auth.verifyEmail.failedTitle")}
+          message={t("auth.verifyEmail.failedMessage")}
+          actionLabel={t("auth.verifyEmail.goToLogin")}
           onAction={() => navigate("/login")}
         />
       )}

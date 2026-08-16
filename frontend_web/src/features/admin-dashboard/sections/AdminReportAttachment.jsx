@@ -1,8 +1,8 @@
 import { FileText } from "lucide-react";
 
-function resolvePdfLabel(resolvedUrl) {
+function resolvePdfLabel(resolvedUrl, fallbackLabel) {
   if (!resolvedUrl) {
-    return "PDF report";
+    return fallbackLabel;
   }
 
   try {
@@ -15,34 +15,38 @@ function resolvePdfLabel(resolvedUrl) {
     // Fall through to default label.
   }
 
-  return "PDF report";
+  return fallbackLabel;
 }
 
-export function AdminReportAttachment({ report }) {
-  if (!report?.hasPdf) {
+export function AdminReportAttachment({ report, labels }) {
+  if (!report?.hasPdf || !labels) {
     return null;
   }
 
+  const pdfReportLabel = labels.pdfReport;
   const resolvedUrl = report.pdfResolvedUrl || null;
-  const label = resolvePdfLabel(resolvedUrl);
+  const filename = resolvePdfLabel(resolvedUrl, pdfReportLabel);
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-report-section pd-section-enter" aria-label="Attachments">
-      <h2 className="pd-admin-report-section-title">Attachments</h2>
+    <section
+      className="pd-card pd-card-pad pd-admin-report-section pd-section-enter"
+      aria-label={labels.attachments}
+    >
+      <h2 className="pd-admin-report-section-title">{labels.attachments}</h2>
 
       <div className="pd-admin-report-attachment-row">
         <span className="pd-admin-report-attachment-icon" aria-hidden="true">
           <FileText size={18} strokeWidth={2.1} />
         </span>
         <div className="pd-admin-report-attachment-copy">
-          <strong>PDF report</strong>
-          <span>{label}</span>
+          <strong>{pdfReportLabel}</strong>
+          <span dir="auto">{filename}</span>
         </div>
       </div>
 
       {!resolvedUrl ? (
         <p className="pd-admin-report-empty-copy" role="alert">
-          PDF attachment is unavailable.
+          {labels.pdfUnavailable}
         </p>
       ) : null}
     </section>

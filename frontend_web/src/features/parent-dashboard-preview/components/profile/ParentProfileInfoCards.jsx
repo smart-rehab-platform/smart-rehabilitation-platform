@@ -1,14 +1,15 @@
+import { useLocale } from "../../../../context/useLocale.js";
 import { formatOptionalProfileValue } from "../../utils/parentProfileUtils";
 
-function InfoRow({ label, value, required = false, multiline = false }) {
+function InfoRow({ label, value, required = false, multiline = false, t }) {
   const displayValue = required
     ? (value || "")
-    : formatOptionalProfileValue(value);
+    : formatOptionalProfileValue(value, t);
 
   return (
     <div className="pd-profile-info-row">
       <span className="pd-profile-info-label">{label}</span>
-      <p className={`pd-profile-info-value${multiline ? " is-multiline" : ""}`}>
+      <p className={`pd-profile-info-value${multiline ? " is-multiline" : ""}`} dir={multiline ? "auto" : undefined}>
         {displayValue}
       </p>
     </div>
@@ -16,32 +17,37 @@ function InfoRow({ label, value, required = false, multiline = false }) {
 }
 
 export function ParentPersonalInfo({ profile }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-card pd-card-pad pd-profile-info-card">
-      <h2 className="pd-profile-section-title">Personal Information</h2>
+      <h2 className="pd-profile-section-title">{t("parent.profile.personalInfo")}</h2>
       <div className="pd-profile-info-list">
-        <InfoRow label="Full Name" value={profile?.fullName ?? ""} required />
-        <InfoRow label="Email" value={profile?.email ?? ""} required />
-        <InfoRow label="Phone" value={profile?.phone} />
-        <InfoRow label="Role" value={profile?.roleLabel || "Parent"} required />
+        <InfoRow label={t("parent.profile.fullName")} value={profile?.fullName ?? ""} required t={t} />
+        <InfoRow label={t("parent.profile.email")} value={profile?.email ?? ""} required t={t} />
+        <InfoRow label={t("parent.profile.phone")} value={profile?.phone} t={t} />
+        <InfoRow label={t("parent.profile.role")} value={profile?.roleLabel || t("roles.parent")} required t={t} />
       </div>
     </section>
   );
 }
 
 export function ParentParentInfo({ profile }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-card pd-card-pad pd-profile-info-card">
-      <h2 className="pd-profile-section-title">Parent Information</h2>
+      <h2 className="pd-profile-section-title">{t("parent.profile.parentInfo")}</h2>
       <div className="pd-profile-info-list">
-        <InfoRow label="Address" value={profile?.address} multiline />
-        <InfoRow label="Relationship Notes" value={profile?.relationshipNotes} multiline />
+        <InfoRow label={t("parent.profile.address")} value={profile?.address} multiline t={t} />
+        <InfoRow label={t("parent.profile.relationshipNotes")} value={profile?.relationshipNotes} multiline t={t} />
         <InfoRow
-          label="Email Status"
-          value={profile?.isEmailVerified ? "Verified" : "Not verified"}
+          label={t("parent.profile.emailStatus")}
+          value={profile?.isEmailVerified ? t("parent.profile.verified") : t("parent.profile.notVerified")}
           required
+          t={t}
         />
-        <InfoRow label="Member Since" value={profile?.memberSince} />
+        <InfoRow label={t("parent.profile.memberSince")} value={profile?.memberSince} t={t} />
       </div>
     </section>
   );

@@ -18,9 +18,13 @@ import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/adminDashboardSections.css";
 import "./styles/adminComplaintsSections.css";
 
-function DetailsSkeleton() {
+function DetailsSkeleton({ labels }) {
   return (
-    <div className="pd-admin-complaint-details" aria-busy="true" aria-label="Complaint details loading">
+    <div
+      className="pd-admin-complaint-details"
+      aria-busy="true"
+      aria-label={labels.detailsLoadingAriaLabel}
+    >
       <div className="pd-card pd-card-pad pd-admin-complaint-skeleton-hero">
         <span className="pd-admin-complaints-skeleton-line is-wide" />
         <span className="pd-admin-complaints-skeleton-line" />
@@ -54,6 +58,15 @@ function DetailsSkeleton() {
   );
 }
 
+function BackButton({ labels, onClick }) {
+  return (
+    <button type="button" className="pd-btn pd-btn-soft pd-admin-complaint-back" onClick={onClick}>
+      <ArrowLeft size={16} aria-hidden="true" />
+      {labels.back}
+    </button>
+  );
+}
+
 export default function AdminComplaintDetailsPage() {
   const navigate = useNavigate();
   const { complaintId } = useParams();
@@ -82,6 +95,7 @@ export default function AdminComplaintDetailsPage() {
     error,
     errorStatus,
     refresh,
+    labels,
   } = useAdminComplaintDetails(complaintId);
 
   const [startReviewOpen, setStartReviewOpen] = useState(false);
@@ -93,15 +107,19 @@ export default function AdminComplaintDetailsPage() {
 
   const handleStartReviewSuccess = useCallback(async () => {
     setStartReviewOpen(false);
-    showToast("Complaint review started.");
+    showToast(labels.toast.startReviewSuccess);
     await refresh();
-  }, [refresh, showToast]);
+  }, [labels.toast.startReviewSuccess, refresh, showToast]);
 
   const handleReviewActionSuccess = useCallback(async (actionType) => {
     setReviewActionType(null);
-    showToast(actionType === "resolve" ? "Complaint resolved." : "Complaint rejected.");
+    showToast(
+      actionType === "resolve"
+        ? labels.toast.resolveSuccess
+        : labels.toast.rejectSuccess,
+    );
     await refresh();
-  }, [refresh, showToast]);
+  }, [labels.toast.rejectSuccess, labels.toast.resolveSuccess, refresh, showToast]);
 
   const isNotFound = errorStatus === 404
     || (typeof error === "string" && error.toLowerCase().includes("not found"));
@@ -111,24 +129,18 @@ export default function AdminComplaintDetailsPage() {
   if (isLoading) {
     body = (
       <>
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-complaint-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Complaints
-        </button>
-        <DetailsSkeleton />
+        <BackButton labels={labels} onClick={handleBack} />
+        <DetailsSkeleton labels={labels} />
       </>
     );
   } else if (isNotFound) {
     body = (
       <div className="pd-admin-complaint-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-complaint-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Complaints
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
         <section className="pd-card pd-card-pad pd-section-enter">
-          <p className="pd-admin-complaint-empty-copy">Complaint not found.</p>
+          <p className="pd-admin-complaint-empty-copy">{labels.notFound}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
-            Back to Complaints
+            {labels.back}
           </button>
         </section>
       </div>
@@ -136,14 +148,11 @@ export default function AdminComplaintDetailsPage() {
   } else if (error) {
     body = (
       <div className="pd-admin-complaint-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-complaint-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Complaints
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
         <section className="pd-card pd-card-pad pd-admin-complaints-error pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-            Retry
+            {labels.retry}
           </button>
         </section>
       </div>
@@ -151,14 +160,11 @@ export default function AdminComplaintDetailsPage() {
   } else if (!complaint) {
     body = (
       <div className="pd-admin-complaint-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-complaint-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Complaints
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
         <section className="pd-card pd-card-pad pd-section-enter">
-          <p className="pd-admin-complaint-empty-copy">Complaint not found.</p>
+          <p className="pd-admin-complaint-empty-copy">{labels.notFound}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
-            Back to Complaints
+            {labels.back}
           </button>
         </section>
       </div>
@@ -166,10 +172,7 @@ export default function AdminComplaintDetailsPage() {
   } else {
     body = (
       <div className="pd-admin-complaint-details">
-        <button type="button" className="pd-btn pd-btn-soft pd-admin-complaint-back" onClick={handleBack}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Complaints
-        </button>
+        <BackButton labels={labels} onClick={handleBack} />
 
         <AdminComplaintSummary complaint={complaint} />
 

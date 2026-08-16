@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 import { PlatformNotificationIcon } from "../PlatformNotificationIcon";
 
 function NotificationIcon({ iconType }) {
@@ -6,6 +7,8 @@ function NotificationIcon({ iconType }) {
 }
 
 export function NotificationCard({ notification, onSelect }) {
+  const { t } = useLocale();
+
   const metaParts = [
     notification.typeLabel,
     notification.childName ? notification.childName : null,
@@ -17,15 +20,17 @@ export function NotificationCard({ notification, onSelect }) {
     onSelect?.(notification);
   };
 
+  const ariaLabel = notification.unread
+    ? t("parent.notificationsPage.unreadNotificationAria", { title: notification.title })
+    : t("parent.notificationsPage.notificationAria", { title: notification.title });
+
   return (
     <li className="pd-notification-feed-entry">
       <button
         type="button"
         className={`pd-notification-feed-item${notification.unread ? " is-unread" : ""}`}
         onClick={handleClick}
-        aria-label={notification.unread
-          ? `Unread notification: ${notification.title}`
-          : `Notification: ${notification.title}`}
+        aria-label={ariaLabel}
       >
         <span
           className={`pd-notification-feed-icon pd-notif-icon pd-tone-${notification.tone}`}
@@ -43,7 +48,7 @@ export function NotificationCard({ notification, onSelect }) {
           </span>
 
           {notification.body ? (
-            <span className="pd-notification-feed-preview">{notification.body}</span>
+            <span className="pd-notification-feed-preview" dir="auto">{notification.body}</span>
           ) : null}
 
           {metaParts.length > 0 ? (
@@ -51,7 +56,7 @@ export function NotificationCard({ notification, onSelect }) {
           ) : null}
 
           {notification.unread ? (
-            <span className="pd-sr-only">Unread</span>
+            <span className="pd-sr-only">{t("parent.common.filters.unread")}</span>
           ) : null}
         </span>
 

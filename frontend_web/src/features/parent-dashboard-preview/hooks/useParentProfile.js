@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getCurrentUserProfile,
   getParentProfiles,
@@ -13,6 +14,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useParentProfile(userId) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(Boolean(userId));
   const [error, setError] = useState(null);
@@ -51,11 +54,11 @@ export function useParentProfile(userId) {
         }
 
         const parentRow = findParentProfileRow(parentRows, userId);
-        setProfile(mapProfileBundle(userRow, parentRow));
+        setProfile(mapProfileBundle(userRow, parentRow, mapperOptions));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setProfile(null);
-          setError(resolveErrorMessage(loadError, "Failed to load profile."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadProfileFailed")));
         }
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -69,7 +72,7 @@ export function useParentProfile(userId) {
     return () => {
       cancelled = true;
     };
-  }, [userId, refreshToken]);
+  }, [userId, refreshToken, mapperOptions, t]);
 
   return {
     profile,

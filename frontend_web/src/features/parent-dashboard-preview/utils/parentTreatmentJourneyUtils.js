@@ -1,3 +1,34 @@
+import { resolveMapperContext } from "./parentLocalizationCore.js";
+import {
+  buildJourneyPeriodOptions,
+  buildTreatmentJourneyInterpretation,
+  formatChartXAxisLabel,
+  formatTreatmentJourneyDisplayDate,
+  formatTreatmentJourneyImprovement,
+  formatTreatmentJourneyPercent,
+  formatTreatmentJourneyScoreChange,
+  getJourneyPeriodLabel,
+  getTreatmentJourneyTrendLabel,
+  JOURNEY_PERIOD_OPTIONS,
+  resolveTreatmentJourneyError,
+  VALID_JOURNEY_PERIODS,
+} from "./parentTreatmentJourneyLocalization.js";
+
+export {
+  buildJourneyPeriodOptions,
+  buildTreatmentJourneyInterpretation,
+  formatChartXAxisLabel,
+  formatTreatmentJourneyDisplayDate,
+  formatTreatmentJourneyImprovement,
+  formatTreatmentJourneyPercent,
+  formatTreatmentJourneyScoreChange,
+  getJourneyPeriodLabel,
+  getTreatmentJourneyTrendLabel,
+  JOURNEY_PERIOD_OPTIONS,
+  resolveTreatmentJourneyError,
+  VALID_JOURNEY_PERIODS,
+};
+
 function readString(source, keys) {
   if (!source || typeof source !== "object") {
     return null;
@@ -35,14 +66,6 @@ function readNumber(source, keys) {
   return null;
 }
 
-export const VALID_JOURNEY_PERIODS = ["weekly", "monthly", "full"];
-
-export const JOURNEY_PERIOD_OPTIONS = [
-  { value: "weekly", label: "Weekly" },
-  { value: "monthly", label: "Monthly" },
-  { value: "full", label: "Full Treatment" },
-];
-
 export function isValidJourneyPeriod(period) {
   return VALID_JOURNEY_PERIODS.includes(String(period || "").trim().toLowerCase());
 }
@@ -52,11 +75,9 @@ export function normalizeJourneyPeriod(period) {
   return isValidJourneyPeriod(normalized) ? normalized : "weekly";
 }
 
-export function journeyPeriodLabel(period) {
-  const option = JOURNEY_PERIOD_OPTIONS.find(
-    (entry) => entry.value === normalizeJourneyPeriod(period),
-  );
-  return option?.label ?? "Weekly";
+export function journeyPeriodLabel(period, options = {}) {
+  const { t } = resolveMapperContext(options);
+  return getJourneyPeriodLabel(period, t);
 }
 
 function readDateValue(source, keys) {
@@ -136,16 +157,9 @@ export function journeyHasData(journey) {
   return Boolean(journey?.chartPoints?.length);
 }
 
-export function treatmentJourneyTrendLabel(trend) {
-  switch (String(trend || "").trim().toLowerCase()) {
-    case "improving":
-      return "Improving";
-    case "declining":
-      return "Needs Attention";
-    case "stable":
-    default:
-      return "Stable";
-  }
+export function treatmentJourneyTrendLabel(trend, options = {}) {
+  const { t } = resolveMapperContext(options);
+  return getTreatmentJourneyTrendLabel(trend, t);
 }
 
 export function treatmentJourneyTrendClass(trend) {
@@ -157,76 +171,6 @@ export function treatmentJourneyTrendClass(trend) {
     case "stable":
     default:
       return "is-stable";
-  }
-}
-
-export function formatTreatmentJourneyPercent(value) {
-  if (value == null || !Number.isFinite(value)) {
-    return "—";
-  }
-
-  return `${Math.round(value)}%`;
-}
-
-export function formatTreatmentJourneyScoreChange(scoreChange) {
-  if (scoreChange == null || !Number.isFinite(scoreChange)) {
-    return "—";
-  }
-
-  const rounded = Math.round(scoreChange);
-  if (rounded > 0) {
-    return `+${rounded} points`;
-  }
-
-  if (rounded < 0) {
-    return `${rounded} points`;
-  }
-
-  return "0 points";
-}
-
-export function formatTreatmentJourneyImprovement(improvementPercentage) {
-  if (improvementPercentage == null || !Number.isFinite(improvementPercentage)) {
-    return "—";
-  }
-
-  const rounded = Math.round(improvementPercentage);
-  if (rounded > 0) {
-    return `+${rounded}%`;
-  }
-
-  if (rounded < 0) {
-    return `${rounded}%`;
-  }
-
-  return "0%";
-}
-
-export function formatTreatmentJourneyDisplayDate(date) {
-  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
-    return "—";
-  }
-
-  return date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-export function formatChartXAxisLabel(date, period) {
-  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  switch (normalizeJourneyPeriod(period)) {
-    case "monthly":
-      return date.toLocaleDateString(undefined, { month: "short" });
-    case "full":
-      return date.toLocaleDateString(undefined, { month: "short", year: "2-digit" });
-    case "weekly":
-    default:
-      return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   }
 }
 
@@ -256,67 +200,4 @@ export function treatmentJourneyPreviewScores(points, maxPoints = 5) {
 
   const startIndex = points.length > maxPoints ? points.length - maxPoints : 0;
   return points.slice(startIndex).map((point) => point.score);
-}
-
-export function buildTreatmentJourneyInterpretation(journey) {
-  if (!journey || !journeyHasData(journey)) {
-    return {
-      title: "Building your journey",
-      body: "More progress entries are needed to identify a trend.",
-    };
-  }
-
-  if (journey.chartPoints.length === 1) {
-    return {
-      title: "Early progress recorded",
-      body: "More progress entries are needed to identify a trend.",
-    };
-  }
-
-  switch (String(journey.trend || "").trim().toLowerCase()) {
-    case "improving":
-      return {
-        title: "Progress is moving upward",
-        body: "The current score is higher than the starting score.",
-      };
-    case "declining":
-      return {
-        title: "Progress needs attention",
-        body:
-          "The latest score is lower than the previous period. Review recent feedback or contact the specialist.",
-      };
-    case "stable":
-    default:
-      return {
-        title: "Progress is currently stable",
-        body: "Recent scores are staying within a similar range.",
-      };
-  }
-}
-
-export function resolveTreatmentJourneyError(error) {
-  const status = error?.response?.status;
-
-  if (status === 401) {
-    return "Please sign in to view treatment journey progress.";
-  }
-
-  if (status === 403) {
-    return "You do not have access to this child's treatment journey.";
-  }
-
-  if (status === 404) {
-    return "Treatment journey data was not found for this child.";
-  }
-
-  const apiMessage = error?.response?.data?.message;
-  if (typeof apiMessage === "string" && apiMessage.trim()) {
-    return apiMessage.trim();
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message.replace(/^Exception:\s*/i, "");
-  }
-
-  return "Failed to load treatment journey. Please try again.";
 }

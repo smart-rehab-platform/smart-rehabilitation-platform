@@ -1,3 +1,4 @@
+import { useLocale } from "../../../context/useLocale";
 import {
   SpecialistExerciseCard,
   SpecialistExerciseCardSkeleton,
@@ -21,11 +22,13 @@ export function SpecialistExerciseLibraryGrid({
   onRetry,
   onExerciseClick,
 }) {
+  const { t } = useLocale();
+
   if (isLoading) {
     return (
       <div className="pd-specialist-exercise-library">
         <SpecialistExerciseSearchField value="" onChange={() => {}} />
-        <div className="pd-specialist-exercise-grid" aria-busy="true" aria-label="Loading exercises">
+        <div className="pd-specialist-exercise-grid" aria-busy="true" aria-label={t("specialist.exercises.loading")}>
           {Array.from({ length: 6 }, (_, index) => (
             <SpecialistExerciseCardSkeleton key={`exercise-skeleton-${index}`} />
           ))}
@@ -39,7 +42,7 @@ export function SpecialistExerciseLibraryGrid({
       <section className="pd-card pd-card-pad pd-task-hub-state">
         <p className="pd-inline-error">{error}</p>
         <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-          Retry
+          {t("common.retry")}
         </button>
       </section>
     );
@@ -58,7 +61,7 @@ export function SpecialistExerciseLibraryGrid({
         <div className="pd-specialist-exercise-inline-error">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onRetry}>
-            Retry
+            {t("common.retry")}
           </button>
         </div>
       ) : null}

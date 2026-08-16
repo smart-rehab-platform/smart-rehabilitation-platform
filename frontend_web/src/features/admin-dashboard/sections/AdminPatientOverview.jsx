@@ -1,12 +1,20 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { DonutChart } from "../../shared-dashboard/components/DonutChart";
 import { getPatientInitials } from "../utils/adminPatientsMappers";
+import { getAdminPatientDetailsLabels } from "../utils/adminPatientsLocalization.js";
 
 export function AdminPatientOverview({ patient, conditionLabel, overallProgressPercent }) {
-  const ageLabel = patient.age != null ? `Age ${patient.age} yrs` : "Age —";
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminPatientDetailsLabels(t), [t]);
+  const ageLabel = patient.age != null ? labels.ageYears(patient.age) : labels.ageUnknown;
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-patient-overview pd-section-enter" aria-label="Patient overview">
+    <section
+      className="pd-card pd-card-pad pd-admin-patient-overview pd-section-enter"
+      aria-label={labels.overviewAriaLabel}
+    >
       <div className="pd-admin-patient-overview-main">
         <UserProfileAvatar
           imageUrl={patient.profileImageUrl}
@@ -26,10 +34,10 @@ export function AdminPatientOverview({ patient, conditionLabel, overallProgressP
           </p>
         </div>
       </div>
-      <div className="pd-admin-patient-overview-progress" aria-label="Overall progress">
+      <div className="pd-admin-patient-overview-progress" aria-label={labels.overallProgressAriaLabel}>
         <DonutChart
           percent={overallProgressPercent}
-          label="Overall Progress"
+          label={labels.overallProgress}
           size={140}
           animationKey={patient.id}
         />

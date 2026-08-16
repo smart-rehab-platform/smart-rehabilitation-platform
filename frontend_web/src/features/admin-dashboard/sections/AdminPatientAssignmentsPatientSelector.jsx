@@ -5,6 +5,7 @@ export function AdminPatientAssignmentsPatientSelector({
   patients,
   selectedPatientId,
   onSelectPatient,
+  labels,
   disabled = false,
 }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,24 +29,24 @@ export function AdminPatientAssignmentsPatientSelector({
 
   if (patients.length === 0) {
     return (
-      <section className="pd-card pd-card-pad pd-admin-assignments-patient-panel" aria-label="Patient selection">
-        <h2 className="pd-admin-assignments-patient-panel-title">Patient</h2>
-        <p className="pd-admin-assignments-empty-copy">No patients available.</p>
+      <section className="pd-card pd-card-pad pd-admin-assignments-patient-panel" aria-label={labels.patientLabel}>
+        <h2 className="pd-admin-assignments-patient-panel-title">{labels.patientLabel}</h2>
+        <p className="pd-admin-assignments-empty-copy">{labels.noPatients}</p>
       </section>
     );
   }
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-assignments-patient-panel" aria-label="Patient selection">
-      <h2 className="pd-admin-assignments-patient-panel-title">Patient</h2>
+    <section className="pd-card pd-card-pad pd-admin-assignments-patient-panel" aria-label={labels.patientLabel}>
+      <h2 className="pd-admin-assignments-patient-panel-title">{labels.patientLabel}</h2>
 
       <div className="pd-admin-assignments-patient-panel-body">
         <label className="pd-admin-field pd-admin-assignments-patient-search-field">
-          <span className="pd-sr-only">Search patients</span>
+          <span className="pd-sr-only">{labels.searchPatients}</span>
           <input
             type="search"
             className="pd-admin-input pd-admin-assignments-patient-search"
-            placeholder="Search patients by name or condition"
+            placeholder={labels.searchPatientsPlaceholder}
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             disabled={disabled}
@@ -71,14 +72,14 @@ export function AdminPatientAssignmentsPatientSelector({
         ) : null}
 
         <label className="pd-admin-field pd-admin-assignments-patient-select-field">
-          <span className="pd-sr-only">Select patient</span>
+          <span className="pd-sr-only">{labels.selectPatient}</span>
           <select
             className="pd-admin-select"
             value={selectedPatientId ?? ""}
             onChange={(event) => onSelectPatient(event.target.value || null)}
             disabled={disabled}
           >
-            <option value="">Select a patient</option>
+            <option value="">{labels.selectPatient}</option>
             {filteredPatients.map((patient) => (
               <option key={patient.id} value={patient.id}>
                 {patient.fullName}
@@ -91,7 +92,7 @@ export function AdminPatientAssignmentsPatientSelector({
 
         {searchQuery && filteredPatients.length === 0 ? (
           <p className="pd-admin-assignments-empty-copy pd-admin-assignments-patient-no-match">
-            No patients match your search.
+            {labels.noPatientsMatch}
           </p>
         ) : null}
       </div>

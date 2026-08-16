@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadAdminAuditLogs } from "../../../services/adminAuditLogsService";
 import { fetchAdminUsers } from "../../../services/adminUsersService";
-import { mapAdminUserRecord } from "../utils/adminUsersMappers";
 import {
-  buildAuditActionOptions,
+  applyAdminAuditLogsLocalization,
+  buildLocalizedAuditActionOptions,
+  buildLocalizedAuditEntityOptions,
+  getAdminAuditLogsLabels,
+} from "../utils/adminAuditLogsLocalization.js";
+import {
   buildAuditDateRangeParams,
-  buildAuditEntityOptions,
   buildAuditUserOptions,
   isAuditDateRangeInvalid,
   mapAdminAuditLog,
-} from "../utils/adminAuditLogsMappers";
+} from "../utils/adminAuditLogsMappers.js";
+import { mapAdminUserRecord } from "../utils/adminUsersMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -32,6 +37,9 @@ function hasServerSideFilters({
 }
 
 export function useAdminAuditLogs() {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminAuditLogsLabels(t), [t]);
   const [logs, setLogs] = useState([]);
   const [optionSourceLogs, setOptionSourceLogs] = useState([]);
   const [users, setUsers] = useState([]);
@@ -55,8 +63,8 @@ export function useAdminAuditLogs() {
       return null;
     }
 
-    return "From date cannot be after To date.";
-  }, [fromDate, toDate]);
+    return labels.filters.dateRangeInvalid;
+  }, [fromDate, labels.filters.dateRangeInvalid, toDate]);
 
   const hasActiveFilters = hasServerSideFilters({
     selectedUserId,
@@ -98,7 +106,7 @@ export function useAdminAuditLogs() {
         }
 
         setUsers([]);
-        setUsersError(resolveErrorMessage(loadError, "Failed to load users."));
+        setUsersError(resolveErrorMessage(loadError, labels.usersLoadFailed));
       }
     }
 
@@ -107,7 +115,7 @@ export function useAdminAuditLogs() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [labels.usersLoadFailed, refreshToken]);
 
   useEffect(() => {
     if (dateRangeError) {
@@ -159,7 +167,7 @@ export function useAdminAuditLogs() {
           return;
         }
 
-        setError(resolveErrorMessage(loadError, "Failed to load audit logs."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
 
         if (!hasLoadedLogsRef.current) {
           setLogs([]);
@@ -181,6 +189,7 @@ export function useAdminAuditLogs() {
   }, [
     dateRangeError,
     fromDate,
+    labels.loadFailed,
     refreshToken,
     selectedAction,
     selectedEntity,
@@ -194,21 +203,27 @@ export function useAdminAuditLogs() {
   );
 
   const actionOptions = useMemo(
-    () => buildAuditActionOptions(optionSourceLogs),
-    [optionSourceLogs],
+    () => buildLocalizedAuditActionOptions(optionSourceLogs, mapperContext),
+    [mapperContext, optionSourceLogs],
   );
 
   const entityOptions = useMemo(
-    () => buildAuditEntityOptions(optionSourceLogs),
-    [optionSourceLogs],
+    () => buildLocalizedAuditEntityOptions(optionSourceLogs, mapperContext),
+    [mapperContext, optionSourceLogs],
+  );
+
+  const localizedLogs = useMemo(
+    () => applyAdminAuditLogsLocalization(logs, mapperContext),
+    [logs, mapperContext],
   );
 
   return {
-    logs,
+    logs: localizedLogs,
     users,
     userOptions,
     actionOptions,
     entityOptions,
+    labels,
     selectedUserId,
     setSelectedUserId,
     selectedAction,

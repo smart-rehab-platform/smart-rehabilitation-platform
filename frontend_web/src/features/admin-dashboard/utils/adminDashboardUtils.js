@@ -1,5 +1,4 @@
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
-import { getRoleLabel } from "../../../routes/roleRouting";
 
 function readString(record, keys) {
   if (!record || typeof record !== "object") {
@@ -60,7 +59,7 @@ export function mapAdminFromAuth(user) {
 
   return {
     fullName,
-    role: getRoleLabel(user?.role) || "Admin",
+    role: readString(user, ["role"]).toLowerCase() || "admin",
     initials: getInitials(fullName),
     profileImageUrl: resolveProfileImageUrl(
       readString(user, ["profile_image_url", "profileImageUrl"]),

@@ -1,23 +1,30 @@
+import { useLocale } from "../../../../context/useLocale.js";
 import { StatusBadge } from "../StatusBadge";
-import { copyMeetingUrl, openMeetingUrl } from "../../utils/parentSessionsUtils";
+import {
+  copyMeetingUrl,
+  getMeetingLinkCopyError,
+  getMeetingLinkUnavailableError,
+  openMeetingUrl,
+} from "../../utils/parentSessionsUtils";
 
 export function SessionCard({ session, onCopySuccess, onCopyError, onOpenError }) {
+  const { t } = useLocale();
   const statusMeta = session.statusMeta;
 
   const handleOpenMeeting = () => {
     try {
       openMeetingUrl(session.meetingUrl);
     } catch (error) {
-      onOpenError?.(error instanceof Error ? error.message : "Unable to open meeting link.");
+      onOpenError?.(error instanceof Error ? error.message : getMeetingLinkUnavailableError(t));
     }
   };
 
   const handleCopyLink = async () => {
     try {
       await copyMeetingUrl(session.meetingUrl);
-      onCopySuccess?.("Meeting link copied.");
+      onCopySuccess?.(t("parent.sessions.errors.meetingLinkCopied"));
     } catch (error) {
-      onCopyError?.(error instanceof Error ? error.message : "Unable to copy meeting link.");
+      onCopyError?.(error instanceof Error ? error.message : getMeetingLinkCopyError(t));
     }
   };
 
@@ -29,7 +36,9 @@ export function SessionCard({ session, onCopySuccess, onCopyError, onOpenError }
             <h3 className="pd-task-hub-card-title">{session.sessionDate}</h3>
           ) : null}
           {session.childName ? (
-            <p className="pd-task-hub-card-child">For {session.childName}</p>
+            <p className="pd-task-hub-card-child">
+              {t("parent.reports.forChild", { name: session.childName })}
+            </p>
           ) : null}
         </div>
         {statusMeta ? (
@@ -40,32 +49,32 @@ export function SessionCard({ session, onCopySuccess, onCopyError, onOpenError }
       <ul className="pd-task-hub-card-meta">
         {session.startTime ? (
           <li>
-            <strong>Start time</strong>
+            <strong>{t("parent.sessions.startTime")}</strong>
             <span>{session.startTime}</span>
           </li>
         ) : null}
         {session.endTime ? (
           <li>
-            <strong>End time</strong>
+            <strong>{t("parent.sessions.endTime")}</strong>
             <span>{session.endTime}</span>
           </li>
         ) : null}
         {session.durationMinutes != null ? (
           <li>
-            <strong>Duration</strong>
-            <span>{session.durationMinutes} min</span>
+            <strong>{t("parent.sessions.duration")}</strong>
+            <span>{t("parent.common.durationMinutes", { count: session.durationMinutes })}</span>
           </li>
         ) : null}
         {session.specialistName ? (
           <li>
-            <strong>Specialist</strong>
+            <strong>{t("parent.common.specialist")}</strong>
             <span>{session.specialistName}</span>
           </li>
         ) : null}
         {!session.meetingUrl && session.physicalLocation ? (
           <li className="pd-session-location-row">
-            <strong>Location</strong>
-            <span className="pd-session-location-text">{session.physicalLocation}</span>
+            <strong>{t("parent.sessions.location")}</strong>
+            <span className="pd-session-location-text" dir="auto">{session.physicalLocation}</span>
           </li>
         ) : null}
       </ul>
@@ -73,10 +82,10 @@ export function SessionCard({ session, onCopySuccess, onCopyError, onOpenError }
       {session.meetingUrl ? (
         <div className="pd-session-hub-link-actions">
           <button type="button" className="pd-btn pd-btn-primary pd-btn-sm" onClick={handleOpenMeeting}>
-            Open Meeting
+            {t("parent.sessions.openMeeting")}
           </button>
           <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={handleCopyLink}>
-            Copy Link
+            {t("parent.sessions.copyLink")}
           </button>
         </div>
       ) : null}

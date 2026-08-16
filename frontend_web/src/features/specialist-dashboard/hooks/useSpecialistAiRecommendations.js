@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   acceptSpecialistAiRecommendation,
   generateSpecialistAiRecommendation,
@@ -7,12 +8,14 @@ import {
 } from "../../../services/specialistAiRecommendationService";
 import { AI_RECOMMENDATION_TYPE } from "../utils/specialistAiRecommendationMappers";
 import { notifySpecialistAiRecommendationRefresh } from "../utils/specialistAiRecommendationRefresh";
+import { applyAiRecommendationsBundleLocalization } from "../utils/specialistAiRecommendationsLocalization";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useSpecialistAiRecommendations(specialistUserId, patientId) {
+  const { t, locale } = useLocale();
   const [bundle, setBundle] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -21,6 +24,14 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
   const [error, setError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadFailedError = t("specialist.aiRecommendations.errors.loadFailed");
+  const generateFailedError = t("specialist.aiRecommendations.errors.generateFailed");
+  const acceptFailedError = t("specialist.aiRecommendations.errors.acceptFailed");
+  const rejectFailedError = t("specialist.aiRecommendations.errors.rejectFailed");
+  const generatedToast = t("specialist.aiRecommendations.toast.generated");
+  const acceptedToast = t("specialist.aiRecommendations.toast.accepted");
+  const rejectedToast = t("specialist.aiRecommendations.toast.rejected");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -50,7 +61,7 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
           return;
         }
         setBundle(null);
-        setError(resolveErrorMessage(loadError, "Failed to load AI recommendations."));
+        setError(resolveErrorMessage(loadError, loadFailedError));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -63,7 +74,12 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, patientId, refreshToken]);
+  }, [specialistUserId, patientId, refreshToken, loadFailedError]);
+
+  const localizedBundle = useMemo(
+    () => (bundle ? applyAiRecommendationsBundleLocalization(bundle, { t, locale }) : null),
+    [bundle, t, locale],
+  );
 
   const reloadBundleQuietly = useCallback(async () => {
     if (!specialistUserId || !patientId) {
@@ -94,16 +110,25 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
         relatedPlanId,
       });
       await reloadBundleQuietly();
-      return { ok: true, message: "AI recommendation generated" };
+      return { ok: true, message: generatedToast };
     } catch (generateError) {
-      const message = resolveErrorMessage(generateError, "Failed to generate recommendation.");
-      setError(`Failed to generate recommendation: ${message}`);
+      const message = resolveErrorMessage(generateError, generateFailedError);
+      setError(t("specialist.aiRecommendations.errors.generateFailedWithReason", { reason: message }));
       return { ok: false, message };
     } finally {
       setIsGenerating(false);
       setGeneratingTypeId(null);
     }
-  }, [specialistUserId, patientId, isGenerating, relatedPlanId, reloadBundleQuietly]);
+  }, [
+    specialistUserId,
+    patientId,
+    isGenerating,
+    relatedPlanId,
+    reloadBundleQuietly,
+    generatedToast,
+    generateFailedError,
+    t,
+  ]);
 
   const generateExerciseSuggestion = useCallback(
     () => generate(AI_RECOMMENDATION_TYPE.exerciseSuggestion),
@@ -127,15 +152,23 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
       await acceptSpecialistAiRecommendation(specialistUserId, patientId, recommendationId);
       await reloadBundleQuietly();
       notifySpecialistAiRecommendationRefresh();
-      return { ok: true, message: "Recommendation accepted" };
+      return { ok: true, message: acceptedToast };
     } catch (acceptError) {
-      const message = resolveErrorMessage(acceptError, "Failed to accept recommendation.");
-      setError(`Failed to accept recommendation: ${message}`);
+      const message = resolveErrorMessage(acceptError, acceptFailedError);
+      setError(t("specialist.aiRecommendations.errors.acceptFailedWithReason", { reason: message }));
       return { ok: false, message };
     } finally {
       setUpdatingRecommendationId(null);
     }
-  }, [specialistUserId, patientId, updatingRecommendationId, reloadBundleQuietly]);
+  }, [
+    specialistUserId,
+    patientId,
+    updatingRecommendationId,
+    reloadBundleQuietly,
+    acceptedToast,
+    acceptFailedError,
+    t,
+  ]);
 
   const reject = useCallback(async (recommendationId) => {
     if (!specialistUserId || !patientId || !recommendationId || updatingRecommendationId) {
@@ -148,19 +181,27 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
     try {
       await rejectSpecialistAiRecommendation(specialistUserId, patientId, recommendationId);
       await reloadBundleQuietly();
-      return { ok: true, message: "Recommendation rejected" };
+      return { ok: true, message: rejectedToast };
     } catch (rejectError) {
-      const message = resolveErrorMessage(rejectError, "Failed to reject recommendation.");
-      setError(`Failed to reject recommendation: ${message}`);
+      const message = resolveErrorMessage(rejectError, rejectFailedError);
+      setError(t("specialist.aiRecommendations.errors.rejectFailedWithReason", { reason: message }));
       return { ok: false, message };
     } finally {
       setUpdatingRecommendationId(null);
     }
-  }, [specialistUserId, patientId, updatingRecommendationId, reloadBundleQuietly]);
+  }, [
+    specialistUserId,
+    patientId,
+    updatingRecommendationId,
+    reloadBundleQuietly,
+    rejectedToast,
+    rejectFailedError,
+    t,
+  ]);
 
   return {
-    bundle,
-    recommendations: bundle?.recommendations ?? [],
+    bundle: localizedBundle,
+    recommendations: localizedBundle?.recommendations ?? [],
     isLoading,
     isGenerating,
     generatingTypeId,

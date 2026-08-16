@@ -9,36 +9,37 @@ export function AdminPatientAssignmentsParentsList({
   isUnlinking,
   onRetry,
   onUnlink,
+  labels,
 }) {
   return (
-    <section className="pd-admin-assignments-list-section" aria-label="Linked parents">
-      <h2 className="pd-admin-assignments-section-title">Linked Parents</h2>
+    <section className="pd-admin-assignments-list-section" aria-label={labels.linkedParents}>
+      <h2 className="pd-admin-assignments-section-title">{labels.linkedParents}</h2>
 
       {relationshipsError ? (
         <div className="pd-card pd-card-pad pd-admin-assignments-inline-error">
           <p className="pd-inline-error">{relationshipsError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-            Retry
+            {labels.retry}
           </button>
         </div>
       ) : null}
 
       {!relationshipsError && isLoading ? (
         <div className="pd-card pd-card-pad">
-          <p className="pd-admin-assignments-empty-copy">Loading linked parents...</p>
+          <p className="pd-admin-assignments-empty-copy">{labels.loadingParents}</p>
         </div>
       ) : null}
 
       {!relationshipsError && !isLoading && !hasSelectedPatient ? (
         <div className="pd-card pd-card-pad">
-          <p className="pd-admin-assignments-empty-copy">Select a patient to manage assignments.</p>
+          <p className="pd-admin-assignments-empty-copy">{labels.selectPatientForAssignments}</p>
         </div>
       ) : null}
 
       {!relationshipsError && !isLoading && hasSelectedPatient && linkedParents.length === 0 ? (
         <div className="pd-card pd-card-pad">
           <p className="pd-admin-assignments-empty-copy">
-            No parents are currently linked to this patient.
+            {labels.noParentsLinked}
           </p>
         </div>
       ) : null}
@@ -59,14 +60,14 @@ export function AdminPatientAssignmentsParentsList({
                 <strong>{link.parentName}</strong>
                 <span>
                   {link.relationshipLabel}
-                  {link.isPrimaryContact ? " · Primary contact" : ""}
+                  {link.isPrimaryContact ? ` · ${labels.primaryContactBadge}` : ""}
                   {link.email ? ` · ${link.email}` : ""}
                 </span>
               </div>
               <button
                 type="button"
                 className="pd-admin-assignments-unlink-btn"
-                aria-label={`Unlink ${link.parentName}`}
+                aria-label={labels.unlinkParentAria(link.parentName)}
                 onClick={() => onUnlink(link)}
                 disabled={isUnlinking}
               >

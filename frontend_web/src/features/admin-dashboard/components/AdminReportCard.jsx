@@ -1,5 +1,4 @@
 import { ChevronRight, FileCheck2 } from "lucide-react";
-import { getAdminReportPdfStatusLabel } from "../utils/adminReportsMappers";
 import { AdminReportTypeBadge } from "./AdminReportTypeBadge";
 
 function getPatientInitials(name) {
@@ -19,36 +18,17 @@ function getPatientInitials(name) {
   return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
 }
 
-function formatListDate(value) {
-  if (!value) {
-    return "—";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "—";
-  }
-
-  try {
-    return new Intl.DateTimeFormat(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date);
-  } catch {
-    return "—";
-  }
-}
-
-export function AdminReportCard({ report, onOpen }) {
-  if (!report) {
+export function AdminReportCard({ report, labels, onOpen }) {
+  if (!report || !labels) {
     return null;
   }
 
-  const patientName = report.patientName || "—";
+  const emptyDisplay = labels.emptyDisplay;
+  const patientName = report.patientName || emptyDisplay;
   const summary = typeof report.summary === "string" ? report.summary.trim() : "";
-  const pdfReadyLabel = getAdminReportPdfStatusLabel(Boolean(report.hasPdf));
-  const createdLabel = formatListDate(report.createdAt);
+  const typeLabel = report.typeBadgeLabel || report.categoryLabel;
+  const pdfReadyLabel = report.pdfReadyLabel;
+  const dateLabel = report.dateLabel || emptyDisplay;
 
   return (
     <article className="pd-card pd-card-pad pd-admin-report-card pd-section-enter">
@@ -64,23 +44,25 @@ export function AdminReportCard({ report, onOpen }) {
       </div>
 
       <div className="pd-admin-report-card-meta">
-        <AdminReportTypeBadge
-          label={report.reportTypeLabel}
-          isAiReport={Boolean(report.isAiReport)}
-        />
+        {typeLabel ? (
+          <AdminReportTypeBadge
+            label={typeLabel}
+            isAiReport={Boolean(report.isAiReport)}
+          />
+        ) : null}
         {pdfReadyLabel ? (
           <span className="pd-admin-report-pdf-badge">
             <FileCheck2 size={13} aria-hidden="true" />
             {pdfReadyLabel}
           </span>
         ) : null}
-        <span className="pd-admin-report-card-date">{createdLabel}</span>
+        <span className="pd-admin-report-card-date">{dateLabel}</span>
       </div>
 
       {summary ? (
-        <p className="pd-admin-report-card-summary">{summary}</p>
+        <p className="pd-admin-report-card-summary" dir="auto">{summary}</p>
       ) : (
-        <p className="pd-admin-report-card-summary is-empty">—</p>
+        <p className="pd-admin-report-card-summary is-empty">{emptyDisplay}</p>
       )}
 
       <button
@@ -88,7 +70,7 @@ export function AdminReportCard({ report, onOpen }) {
         className="pd-btn pd-btn-soft pd-admin-report-card-action"
         onClick={() => onOpen?.(report)}
       >
-        View details
+        {labels.viewDetails}
         <ChevronRight size={16} aria-hidden="true" />
       </button>
     </article>

@@ -32,6 +32,7 @@ export default function AdminAuditLogsPage() {
     userOptions,
     actionOptions,
     entityOptions,
+    labels,
     selectedUserId,
     setSelectedUserId,
     selectedAction,
@@ -88,6 +89,7 @@ export default function AdminAuditLogsPage() {
         showToast={showToast}
       >
         <AdminAuditLogsToolbar
+          labels={labels}
           userOptions={userOptions}
           actionOptions={actionOptions}
           entityOptions={entityOptions}
@@ -112,7 +114,7 @@ export default function AdminAuditLogsPage() {
           <div className="pd-admin-audit-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : null}
@@ -121,7 +123,7 @@ export default function AdminAuditLogsPage() {
           <div className="pd-admin-audit-inline-error pd-section-enter" role="alert">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : null}
@@ -129,10 +131,10 @@ export default function AdminAuditLogsPage() {
         {showTable ? (
           <AdminAuditLogsTable
             logs={logs}
+            labels={labels}
             isInitialLoading={isInitialLoading}
             isRefreshing={isRefreshing}
             emptyKind={emptyKind}
-            onClearFilters={clearFilters}
           />
         ) : null}
       </AdminDashboardShell>

@@ -1,17 +1,26 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadAdminExercises } from "../../../services/adminExercisesService";
+import {
+  applyAdminExercisesLocalization,
+  buildAdminExerciseCategoryFilterLabels,
+  getAdminExercisesLabels,
+} from "../utils/adminExercisesLocalization.js";
 import {
   EXERCISE_ALL_CATEGORY_LABEL,
   buildExerciseCategoryFilters,
   filterExercises,
   mapAdminExercise,
-} from "../utils/adminExercisesMappers";
+} from "../utils/adminExercisesMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminExercises() {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminExercisesLabels(t), [t]);
   const [exercises, setExercises] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(EXERCISE_ALL_CATEGORY_LABEL);
@@ -39,7 +48,10 @@ export function useAdminExercises() {
           return;
         }
 
-        const mapped = rows.map(mapAdminExercise).filter(Boolean);
+        const mapped = applyAdminExercisesLocalization(
+          rows.map(mapAdminExercise).filter(Boolean),
+          mapperContext,
+        );
         setExercises(mapped);
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
@@ -47,7 +59,7 @@ export function useAdminExercises() {
         }
 
         setExercises([]);
-        setError(resolveErrorMessage(loadError, "Failed to load exercises."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -60,16 +72,24 @@ export function useAdminExercises() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [labels.loadFailed, mapperContext, refreshToken]);
 
   const categoryFilters = useMemo(
     () => buildExerciseCategoryFilters(exercises),
     [exercises],
   );
 
+  const categoryFilterOptions = useMemo(
+    () => buildAdminExerciseCategoryFilterLabels(categoryFilters, mapperContext),
+    [categoryFilters, mapperContext],
+  );
+
   const filteredExercises = useMemo(
-    () => filterExercises(exercises, { searchQuery, selectedCategory }),
-    [exercises, searchQuery, selectedCategory],
+    () => applyAdminExercisesLocalization(
+      filterExercises(exercises, { searchQuery, selectedCategory }),
+      mapperContext,
+    ),
+    [exercises, mapperContext, searchQuery, selectedCategory],
   );
 
   const hasActiveFilters = Boolean(
@@ -78,9 +98,11 @@ export function useAdminExercises() {
   );
 
   return {
+    labels,
     exercises,
     filteredExercises,
     categoryFilters,
+    categoryFilterOptions,
     searchQuery,
     setSearchQuery,
     selectedCategory,

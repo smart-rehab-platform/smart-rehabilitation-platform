@@ -161,7 +161,7 @@
 
 .pd-preview .pd-admin-patient-stat-card.is-clickable {
   cursor: pointer;
-  text-align: left;
+  text-align: start;
   font-family: inherit;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -491,4 +491,12 @@
   .pd-preview .pd-admin-patient-plan-dates {
     grid-template-columns: 1fr;
   }
+}
+
+[dir="rtl"] .pd-preview .pd-admin-patient-back svg {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .pd-preview .pd-admin-patients-view-chevron {
+  transform: scaleX(-1);
 }

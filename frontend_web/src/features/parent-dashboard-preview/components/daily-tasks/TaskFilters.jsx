@@ -1,4 +1,9 @@
-import { HUB_SORT_OPTIONS, HUB_STATUS_FILTER_OPTIONS } from "../../utils/parentDailyTasksUtils";
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
+import {
+  buildHubSortOptions,
+  buildHubStatusFilterOptions,
+} from "../../utils/parentDailyTasksUtils";
 
 export function TaskFilters({
   search,
@@ -11,17 +16,21 @@ export function TaskFilters({
   onSortChange,
   children = [],
 }) {
+  const { t } = useLocale();
+  const sortOptions = useMemo(() => buildHubSortOptions(t), [t]);
+  const statusOptions = useMemo(() => buildHubStatusFilterOptions(t), [t]);
+
   return (
     <div className="pd-task-hub-filters">
       <div className="pd-task-hub-filter pd-task-hub-filter-search">
         <label className="pd-form-label" htmlFor="pd-task-hub-search">
-          Search
+          {t("parent.common.search")}
         </label>
         <input
           id="pd-task-hub-search"
           type="search"
           className="pd-form-input"
-          placeholder="Search by exercise title"
+          placeholder={t("parent.common.searchPlaceholder")}
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
         />
@@ -29,7 +38,7 @@ export function TaskFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-task-hub-child">
-          Child
+          {t("parent.common.child")}
         </label>
         <select
           id="pd-task-hub-child"
@@ -37,7 +46,7 @@ export function TaskFilters({
           value={childId}
           onChange={(event) => onChildChange(event.target.value)}
         >
-          <option value="all">All children</option>
+          <option value="all">{t("parent.common.allChildren")}</option>
           {children.map((child) => (
             <option key={child.id} value={child.id}>
               {child.fullName}
@@ -48,7 +57,7 @@ export function TaskFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-task-hub-status">
-          Status
+          {t("parent.common.status")}
         </label>
         <select
           id="pd-task-hub-status"
@@ -56,7 +65,7 @@ export function TaskFilters({
           value={status}
           onChange={(event) => onStatusChange(event.target.value)}
         >
-          {HUB_STATUS_FILTER_OPTIONS.map((option) => (
+          {statusOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>
@@ -66,7 +75,7 @@ export function TaskFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-task-hub-sort">
-          Sort by
+          {t("parent.caseRequests.sortLabel", "Sort by")}
         </label>
         <select
           id="pd-task-hub-sort"
@@ -74,7 +83,7 @@ export function TaskFilters({
           value={sortKey}
           onChange={(event) => onSortChange(event.target.value)}
         >
-          {HUB_SORT_OPTIONS.map((option) => (
+          {sortOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>

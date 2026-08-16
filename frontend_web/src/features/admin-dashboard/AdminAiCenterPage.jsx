@@ -46,7 +46,7 @@ export default function AdminAiCenterPage() {
     handleSidebarNav,
   } = useAdminShell();
 
-  const { data, isLoading, error, refresh } = useAdminAiCenter();
+  const { data, labels, isLoading, error, refresh } = useAdminAiCenter();
 
   const handleSelectPatient = useCallback((patientId) => {
     const path = buildAdminPatientDetailsPath(patientId);
@@ -78,12 +78,10 @@ export default function AdminAiCenterPage() {
         onViewAllNotifications={handleViewAllNotifications}
         showToast={showToast}
       >
-        <section className="pd-admin-ai-toolbar pd-section-enter" aria-label="AI Center header">
+        <section className="pd-admin-ai-toolbar pd-section-enter" aria-label={labels.toolbarAriaLabel}>
           <div className="pd-admin-ai-heading">
-            <h1 className="pd-section-title">AI Insights</h1>
-            <p className="pd-section-sub">
-              Speech analysis, recommendations, and clinical reports
-            </p>
+            <h1 className="pd-section-title">{labels.title}</h1>
+            <p className="pd-section-sub">{labels.subtitle}</p>
           </div>
         </section>
 
@@ -91,7 +89,7 @@ export default function AdminAiCenterPage() {
           <div className="pd-admin-ai-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : null}
@@ -100,6 +98,7 @@ export default function AdminAiCenterPage() {
           <>
             <AdminAiSummary
               data={data}
+              labels={labels}
               isLoading={isLoading}
               onScrollToSection={handleScrollToSection}
             />
@@ -107,6 +106,7 @@ export default function AdminAiCenterPage() {
             <div className="pd-admin-ai-content pd-section-enter">
               <AdminPatientsNeedingAttention
                 patients={data?.patientsNeedingAttention ?? []}
+                labels={labels}
                 isLoading={isLoading}
                 onSelectPatient={handleSelectPatient}
               />
@@ -114,11 +114,13 @@ export default function AdminAiCenterPage() {
               <div className="pd-admin-ai-insights-grid">
                 <AdminLatestSpeechAnalyses
                   records={data?.latestSpeechAnalyses ?? []}
+                  labels={labels}
                   isLoading={isLoading}
                   onSelectPatient={handleSelectPatient}
                 />
                 <AdminLatestAiRecommendations
                   records={data?.latestRecommendations ?? []}
+                  labels={labels}
                   isLoading={isLoading}
                   onSelectPatient={handleSelectPatient}
                 />
@@ -126,6 +128,7 @@ export default function AdminAiCenterPage() {
 
               <AdminLatestAiReports
                 records={data?.latestReports ?? []}
+                labels={labels}
                 isLoading={isLoading}
               />
             </div>

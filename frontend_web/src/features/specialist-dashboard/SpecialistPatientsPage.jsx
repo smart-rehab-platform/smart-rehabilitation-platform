@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import { buildSpecialistPatientDetailPath } from "../../routes/specialistDashboardRoutes";
 import { useSpecialistPatients } from "./hooks/useSpecialistPatients";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
@@ -9,10 +10,9 @@ import { SpecialistPatientCard } from "./components/SpecialistPatientCard";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
 
-const PATIENTS_EMPTY_MESSAGE = "No active patients assigned yet.";
-
 export default function SpecialistPatientsPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -53,7 +53,7 @@ export default function SpecialistPatientsPage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading patients...</p>
+          <p className="pd-inline-loading">{t("specialist.patients.loading")}</p>
         </section>
       );
     }
@@ -63,7 +63,7 @@ export default function SpecialistPatientsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -72,7 +72,7 @@ export default function SpecialistPatientsPage() {
     if (patients.length === 0) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">{PATIENTS_EMPTY_MESSAGE}</p>
+          <p className="pd-section-sub">{t("specialist.patients.empty")}</p>
         </section>
       );
     }
@@ -117,9 +117,9 @@ export default function SpecialistPatientsPage() {
       >
         <div className="pd-task-hub-page">
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Patients</h1>
+            <h1 className="pd-task-hub-title">{t("specialist.patients.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              View and manage your assigned patients.
+              {t("specialist.patients.subtitle")}
             </p>
           </header>
           <div className="pd-task-hub-panel">{renderContent()}</div>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getChildren,
   getChildrenProgress,
@@ -20,6 +21,8 @@ function buildChildNameLookup(children) {
 }
 
 export function useParentReports(parentUserId) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [children, setChildren] = useState([]);
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(Boolean(parentUserId));
@@ -59,10 +62,10 @@ export function useParentReports(parentUserId) {
         setChildren(mergedChildren);
 
         const childNameByPatientId = buildChildNameLookup(mergedChildren);
-        setReports(mapReportRowsToHubItems(reportRows, childNameByPatientId));
+        setReports(mapReportRowsToHubItems(reportRows, childNameByPatientId, mapperOptions));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setError(resolveErrorMessage(loadError, "Failed to load reports."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadReportsFailed")));
           setReports([]);
         }
       } finally {
@@ -77,7 +80,7 @@ export function useParentReports(parentUserId) {
     return () => {
       cancelled = true;
     };
-  }, [parentUserId, refreshToken]);
+  }, [parentUserId, refreshToken, mapperOptions, t]);
 
   const reportCount = useMemo(() => reports.length, [reports]);
 
@@ -87,7 +90,7 @@ export function useParentReports(parentUserId) {
       reports: [],
       reportCount: 0,
       isLoading: false,
-      error: "Please sign in to view reports.",
+      error: t("parent.hooks.signInReports"),
       refetch,
     };
   }

@@ -1,4 +1,5 @@
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
+import { useLocale } from "../../../context/useLocale.js";
 import { getInitials } from "../utils/specialistScheduleUtils";
 
 function PreviewCardHeader({ title, subtitle, actionLabel, onAction }) {
@@ -23,29 +24,31 @@ export function SpecialistPendingReviewsPreview({
   onViewAll,
   onReviewClick,
 }) {
+  const { t } = useLocale();
+
   return (
     <section
       className="pd-card pd-card-pad pd-specialist-preview-card"
-      aria-label="Pending reviews"
+      aria-label={t("specialist.dashboard.reviews.ariaLabel")}
     >
       <PreviewCardHeader
-        title="Pending Reviews"
-        subtitle="Submissions waiting for your feedback"
-        actionLabel="View All"
+        title={t("specialist.dashboard.reviews.title")}
+        subtitle={t("specialist.dashboard.reviews.subtitle")}
+        actionLabel={t("specialist.dashboard.viewAll")}
         onAction={onViewAll}
       />
 
       {isLoading ? (
-        <p className="pd-inline-loading pd-specialist-preview-loading">Loading pending reviews...</p>
+        <p className="pd-inline-loading pd-specialist-preview-loading">{t("specialist.dashboard.reviews.loading")}</p>
       ) : error ? (
         <div className="pd-specialist-preview-error">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-            Retry
+            {t("common.retry")}
           </button>
         </div>
       ) : reviews.length === 0 ? (
-        <p className="pd-specialist-preview-empty">No pending reviews right now.</p>
+        <p className="pd-specialist-preview-empty">{t("specialist.dashboard.reviews.empty")}</p>
       ) : (
         <ul className="pd-specialist-preview-list">
           {reviews.map((review) => (

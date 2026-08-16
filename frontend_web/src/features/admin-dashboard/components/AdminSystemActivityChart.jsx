@@ -1,24 +1,42 @@
 import { useMemo, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
+import {
+  getAdminAnalyticsLabels,
+  getAdminWeekdayLabels,
+} from "../utils/adminDashboardLocalization.js";
 import { normalizeBarHeight } from "../utils/adminDashboardMappers";
 
-const DEFAULT_DAYS = [
-  { label: "Mon", fullLabel: "Monday", activityCount: 0 },
-  { label: "Tue", fullLabel: "Tuesday", activityCount: 0 },
-  { label: "Wed", fullLabel: "Wednesday", activityCount: 0 },
-  { label: "Thu", fullLabel: "Thursday", activityCount: 0 },
-  { label: "Fri", fullLabel: "Friday", activityCount: 0 },
-  { label: "Sat", fullLabel: "Saturday", activityCount: 0 },
-  { label: "Sun", fullLabel: "Sunday", activityCount: 0 },
-];
+function buildDefaultChartDays(locale) {
+  const shortLabels = getAdminWeekdayLabels(locale, "short");
+  const fullLabels = getAdminWeekdayLabels(locale, "long");
+
+  return shortLabels.map((label, index) => ({
+    label,
+    fullLabel: fullLabels[index] ?? label,
+    activityCount: 0,
+  }));
+}
+
+function resolveEventLabel(count, labels) {
+  return count === 1 ? labels.event : labels.events;
+}
+
+function formatDayEvents(day, count, labels) {
+  const eventLabel = resolveEventLabel(count, labels);
+  return labels.dayEvents(day, count, eventLabel);
+}
 
 export function AdminSystemActivityChart({
   days = [],
   periodKey = "current-week",
   isLoading = false,
 }) {
+  const { t, locale } = useLocale();
+  const labels = useMemo(() => getAdminAnalyticsLabels(t), [t]);
+  const defaultDays = useMemo(() => buildDefaultChartDays(locale), [locale]);
   const [focusedIndex, setFocusedIndex] = useState(null);
 
-  const chartDays = days.length === 7 ? days : DEFAULT_DAYS;
+  const chartDays = days.length === 7 ? days : defaultDays;
   const values = chartDays.map((day) => day.activityCount ?? 0);
   const hasData = values.some((value) => value > 0);
   const maxValue = hasData ? Math.max(...values) : 1;
@@ -34,15 +52,18 @@ export function AdminSystemActivityChart({
     <div className="pd-admin-activity-chart" aria-busy={isLoading}>
       <div className="pd-admin-activity-legend">
         <span className="pd-admin-activity-dot" aria-hidden="true" />
-        <span>System Activity</span>
+        <span>{labels.legend}</span>
       </div>
 
       {activeIndex != null && hasData ? (
         <div className="pd-admin-activity-focus" aria-live="polite">
           <strong>{chartDays[activeIndex].fullLabel}</strong>
           <span>
-            {values[activeIndex]}{" "}
-            {values[activeIndex] === 1 ? "event" : "events"}
+            {formatDayEvents(
+              chartDays[activeIndex].fullLabel,
+              values[activeIndex],
+              labels,
+            )}
           </span>
         </div>
       ) : null}
@@ -50,7 +71,7 @@ export function AdminSystemActivityChart({
       <div
         className="pd-admin-activity-bars"
         role="img"
-        aria-label="Weekly system activity chart"
+        aria-label={labels.chartAriaLabel}
       >
         <div className="pd-admin-activity-grid" aria-hidden="true">
           <span className="pd-admin-activity-grid-line" />
@@ -64,6 +85,7 @@ export function AdminSystemActivityChart({
           const count = values[index];
           const heightFactor = normalizedHeights[index];
           const isSelected = activeIndex === index;
+          const dayEventsLabel = formatDayEvents(day.fullLabel, count, labels);
 
           return (
             <div key={`${periodKey}-${day.label}`} className="pd-admin-activity-col">
@@ -71,8 +93,8 @@ export function AdminSystemActivityChart({
                 type="button"
                 className={`pd-admin-activity-bar-btn${isSelected ? " is-selected" : ""}`}
                 disabled={!hasData || isLoading}
-                title={`${day.fullLabel}: ${count} ${count === 1 ? "event" : "events"}`}
-                aria-label={`${day.fullLabel}: ${count} ${count === 1 ? "event" : "events"}`}
+                title={dayEventsLabel}
+                aria-label={dayEventsLabel}
                 onFocus={() => setFocusedIndex(index)}
                 onBlur={() => setFocusedIndex((current) => (current === index ? null : current))}
                 onMouseEnter={() => setFocusedIndex(index)}
@@ -102,14 +124,14 @@ export function AdminSystemActivityChart({
 
         {!hasData && !isLoading ? (
           <div className="pd-admin-activity-empty">
-            <p>No system activity for this week.</p>
-            <span>Try selecting another week.</span>
+            <p>{labels.emptyTitle}</p>
+            <span>{labels.emptyHint}</span>
           </div>
         ) : null}
 
         {isLoading ? (
           <div className="pd-admin-activity-loading" aria-hidden="true">
-            <span className="pd-inline-loading">Loading chart...</span>
+            <span className="pd-inline-loading">{labels.loadingChart}</span>
           </div>
         ) : null}
       </div>

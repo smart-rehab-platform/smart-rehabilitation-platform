@@ -3,16 +3,18 @@ import { AdminAiInsightList } from "../components/AdminAiInsightList";
 
 export function AdminLatestSpeechAnalyses({
   records = [],
+  labels,
   isLoading = false,
   onSelectPatient,
 }) {
   return (
     <AdminAiInsightList
       sectionId="admin-ai-speech-analyses"
-      title="Latest Speech Analyses"
+      title={labels.speech.title}
       records={records}
+      labels={labels}
       isLoading={isLoading}
-      emptyMessage="No speech analyses yet."
+      emptyMessage={labels.speech.empty}
       icon={AudioLines}
       iconTone="blue"
       onSelectPatient={onSelectPatient}

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   createAdminExercise,
   loadAdminExerciseDetails,
@@ -6,48 +7,76 @@ import {
   uploadAdminExerciseMedia,
 } from "../../../services/adminExercisesService";
 import {
+  EXERCISE_VALIDATION_KEYS,
+  getAdminExercisesLabels,
+  getExerciseMediaValidationMessage,
+  resolveExerciseFieldErrors,
+} from "../utils/adminExercisesLocalization.js";
+import {
   buildCreateExercisePayload,
   buildUpdateExercisePayload,
   DEFAULT_EXERCISE_LANGUAGE,
   mapAdminExercise,
 } from "../utils/adminExercisesMappers";
 import {
+  EXERCISE_MEDIA_MAX_BYTES,
   EXERCISE_TEXT_MAX,
   EXERCISE_TITLE_MAX,
   validateExerciseMediaFile,
 } from "../utils/adminExerciseMediaUtils";
+import { EXERCISE_MEDIA_VALIDATION_KEYS } from "../../specialist-dashboard/utils/specialistExerciseMediaUtils.js";
 import { useAdminExerciseCategories } from "./useAdminExerciseCategories";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
-function validateFields(values) {
+function localizeMediaValidationError(file, t) {
+  if (!(file instanceof File)) {
+    return getExerciseMediaValidationMessage(EXERCISE_MEDIA_VALIDATION_KEYS.UNABLE_READ, t);
+  }
+
+  if (file.size > EXERCISE_MEDIA_MAX_BYTES) {
+    return getExerciseMediaValidationMessage(EXERCISE_MEDIA_VALIDATION_KEYS.TOO_LARGE, t);
+  }
+
+  const validation = validateExerciseMediaFile(file);
+  if (!validation.ok) {
+    return getExerciseMediaValidationMessage(EXERCISE_MEDIA_VALIDATION_KEYS.UNSUPPORTED, t);
+  }
+
+  return null;
+}
+
+function validateFields(values, t) {
+  const validationLabels = getAdminExercisesLabels(t);
   const errors = {};
   const title = values.title.trim();
 
   if (!values.categoryId) {
-    errors.categoryId = "Please select a category.";
+    Object.assign(errors, resolveExerciseFieldErrors(EXERCISE_VALIDATION_KEYS.CATEGORY_REQUIRED, t));
   }
 
   if (!title) {
-    errors.title = "Title is required.";
+    Object.assign(errors, resolveExerciseFieldErrors(EXERCISE_VALIDATION_KEYS.TITLE_REQUIRED, t));
   } else if (title.length > EXERCISE_TITLE_MAX) {
-    errors.title = `Title must be at most ${EXERCISE_TITLE_MAX} characters.`;
+    errors.title = validationLabels.validation.titleMaxLength(EXERCISE_TITLE_MAX);
   }
 
   if (values.description.trim().length > EXERCISE_TEXT_MAX) {
-    errors.description = `Description must be at most ${EXERCISE_TEXT_MAX} characters.`;
+    errors.description = validationLabels.validation.descriptionMaxLength(EXERCISE_TEXT_MAX);
   }
 
   if (values.instructions.trim().length > EXERCISE_TEXT_MAX) {
-    errors.instructions = `Instructions must be at most ${EXERCISE_TEXT_MAX} characters.`;
+    errors.instructions = validationLabels.validation.instructionsMaxLength(EXERCISE_TEXT_MAX);
   }
 
   return errors;
 }
 
 export function useAdminUpsertExercise({ mode, exerciseId }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminExercisesLabels(t), [t]);
   const isEdit = mode === "edit";
   const normalizedExerciseId = typeof exerciseId === "string" ? exerciseId.trim() : "";
 
@@ -72,7 +101,8 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
   const [formError, setFormError] = useState(null);
   const missingExerciseId = isEdit && !normalizedExerciseId;
   const [isLoadingExercise, setIsLoadingExercise] = useState(isEdit && !missingExerciseId);
-  const [loadError, setLoadError] = useState(missingExerciseId ? "Exercise not found." : null);  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadError, setLoadError] = useState(missingExerciseId ? labels.notFound : null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [refreshExerciseToken, setRefreshExerciseToken] = useState(0);
 
@@ -109,7 +139,7 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
 
         const exercise = mapAdminExercise(row);
         if (!exercise) {
-          setLoadError("Exercise not found.");
+          setLoadError(labels.notFound);
           return;
         }
 
@@ -127,7 +157,7 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
         setFieldErrors({});
       } catch (loadErr) {
         if (!cancelled) {
-          setLoadError(resolveErrorMessage(loadErr, "Failed to load exercise."));
+          setLoadError(resolveErrorMessage(loadErr, labels.loadDetailsFailed));
         }
       } finally {
         if (!cancelled) {
@@ -141,16 +171,16 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
     return () => {
       cancelled = true;
     };
-  }, [isEdit, normalizedExerciseId, refreshExerciseToken, revokePreviewUrl]);
+  }, [isEdit, labels.loadDetailsFailed, labels.notFound, normalizedExerciseId, refreshExerciseToken, revokePreviewUrl]);
 
   useEffect(() => () => {
     revokePreviewUrl();
   }, [revokePreviewUrl]);
 
   const handleSelectMediaFile = useCallback((file) => {
-    const validation = validateExerciseMediaFile(file);
-    if (!validation.ok) {
-      setMediaError(validation.message);
+    const validationMessage = localizeMediaValidationError(file, t);
+    if (validationMessage) {
+      setMediaError(validationMessage);
       return;
     }
 
@@ -172,7 +202,7 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
     } else {
       setNewMediaPreviewUrl(null);
     }
-  }, [revokePreviewUrl]);
+  }, [revokePreviewUrl, t]);
 
   const handleRemoveNewMedia = useCallback(() => {
     setNewMediaFile(null);
@@ -201,7 +231,7 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
       title,
       description,
       instructions,
-    });
+    }, t);
 
     setFieldErrors(nextFieldErrors);
     setFormError(null);
@@ -211,9 +241,9 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
     }
 
     if (newMediaFile) {
-      const mediaValidation = validateExerciseMediaFile(newMediaFile);
-      if (!mediaValidation.ok) {
-        setMediaError(mediaValidation.message);
+      const mediaValidationMessage = localizeMediaValidationError(newMediaFile, t);
+      if (mediaValidationMessage) {
+        setMediaError(mediaValidationMessage);
         return { ok: false };
       }
     }
@@ -264,7 +294,7 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
     } catch (submitError) {
       setFormError(resolveErrorMessage(
         submitError,
-        isEdit ? "Failed to update exercise." : "Failed to create exercise.",
+        isEdit ? labels.toast.updateFailed : labels.toast.createFailed,
       ));
       return { ok: false };
     } finally {
@@ -280,12 +310,15 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
     isEdit,
     isSubmitting,
     isUploading,
+    labels,
     language,
     newMediaFile,
     normalizedExerciseId,
     removeExistingMedia,
+    t,
     title,
   ]);
+
   const showExistingMedia = isEdit
     && Boolean(currentMediaUrl)
     && !removeExistingMedia
@@ -295,6 +328,7 @@ export function useAdminUpsertExercise({ mode, exerciseId }) {
   const canSubmit = Boolean(effectiveCategoryId) && title.trim().length > 0 && !isBusy;
 
   return {
+    labels,
     isEdit,
     categories,
     isLoadingCategories,

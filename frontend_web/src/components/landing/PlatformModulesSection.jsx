@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import calendarMonthIcon from "../../assets/icons/calendar-month.svg";
 import chartBarIcon from "../../assets/icons/chart-bar.svg";
@@ -7,97 +7,28 @@ import folderOpenIcon from "../../assets/icons/folder-open.svg";
 import homeIcon from "../../assets/icons/home.svg";
 import messageIcon from "../../assets/icons/message.svg";
 import stethoscopeIcon from "../../assets/icons/stethoscope.svg";
+import { useLocale } from "../../context/useLocale.js";
+import {
+  buildLandingModules,
+  getCarouselSwipeAction,
+  getCarouselTrackOffset,
+  getCarouselVisualControls,
+  isCarouselControlDisabled,
+} from "./landingLocalization.js";
 import { L } from "./landingTokens";
 
 const CARD_GAP = 24;
 const SWIPE_THRESHOLD = 48;
 
-const MODULES = [
-  {
-    icon: folderOpenIcon,
-    title: "Case Management",
-    description: "Manage every rehabilitation request from submission until patient conversion.",
-    features: [
-      "Case intake requests",
-      "Category-based assignment",
-      "Assessment workflow",
-      "Patient conversion",
-      "Parent & specialist linking",
-    ],
-  },
-  {
-    icon: clipboardCheckMultipleIcon,
-    title: "Treatment Management",
-    description: "Create personalized rehabilitation plans and monitor long-term treatment goals.",
-    features: [
-      "Assessments",
-      "Treatment plans",
-      "Short-term goals",
-      "Long-term goals",
-      "Goal progress tracking",
-    ],
-  },
-  {
-    icon: homeIcon,
-    title: "Home Exercise Support",
-    description: "Support families with daily rehabilitation exercises and home follow-up.",
-    features: [
-      "Daily & weekly tasks",
-      "Exercise instructions",
-      "Video, audio & image submissions",
-      "Parent notes",
-      "Retry workflow",
-    ],
-  },
-  {
-    icon: stethoscopeIcon,
-    title: "Specialist Review",
-    description: "Review patient submissions and provide professional rehabilitation feedback.",
-    features: [
-      "Submission review",
-      "Performance rating",
-      "Written feedback",
-      "Approve or request retry",
-      "Review history",
-    ],
-  },
-  {
-    icon: calendarMonthIcon,
-    title: "Sessions",
-    description: "Manage rehabilitation appointments and online therapy sessions.",
-    features: [
-      "Upcoming sessions",
-      "Online session links",
-      "Session requests",
-      "Approval & rejection",
-      "Completed, cancelled & missed",
-    ],
-  },
-  {
-    icon: messageIcon,
-    title: "Communication",
-    description: "Keep parents and specialists connected through secure communication.",
-    features: [
-      "Parent-specialist chat",
-      "Online & last seen",
-      "Images, audio, video & PDF",
-      "Read status",
-      "Unread notifications",
-    ],
-  },
-  {
-    icon: chartBarIcon,
-    title: "Progress & Reports",
-    description: "Track rehabilitation progress with intelligent analytics and reports.",
-    features: [
-      "Daily, weekly & monthly progress",
-      "Goal completion",
-      "Improvement percentage",
-      "Specialist reports",
-      "PDF exports",
-    ],
-  },
-];
+const MODULE_ICONS = {
+  caseManagement: folderOpenIcon,
+  treatmentManagement: clipboardCheckMultipleIcon,
+  homeExerciseSupport: homeIcon,
+  specialistReview: stethoscopeIcon,
+  sessions: calendarMonthIcon,
+  communication: messageIcon,
+  progressReports: chartBarIcon,
+};
 
 function ModuleIcon({ src }) {
   return (
@@ -110,10 +41,11 @@ function ModuleIcon({ src }) {
   );
 }
 
-function ModuleCard({ module }) {
+function ModuleCard({ module, isRtl }) {
   return (
     <article
-      className="module-carousel-card flex h-full flex-col rounded-3xl border p-8"
+      dir={isRtl ? "rtl" : "ltr"}
+      className="module-carousel-card flex h-full flex-col rounded-3xl border p-8 text-start"
       style={{
         background: L.lightBg,
         borderColor: L.modulesCardBorder,
@@ -161,6 +93,16 @@ function ModuleCard({ module }) {
 }
 
 export function PlatformModulesSection() {
+  const { t, isRtl } = useLocale();
+  const modules = useMemo(
+    () =>
+      buildLandingModules(t).map((module) => ({
+        ...module,
+        icon: MODULE_ICONS[module.key],
+      })),
+    [t],
+  );
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [cardWidth, setCardWidth] = useState(520);
   const [dragOffset, setDragOffset] = useState(0);
@@ -190,20 +132,35 @@ export function PlatformModulesSection() {
     return () => window.removeEventListener("resize", updateMetrics);
   }, [updateMetrics]);
 
-  const goTo = useCallback((index) => {
-    setActiveIndex(Math.max(0, Math.min(MODULES.length - 1, index)));
-  }, []);
+  const goTo = useCallback(
+    (index) => {
+      setActiveIndex(Math.max(0, Math.min(modules.length - 1, index)));
+    },
+    [modules.length],
+  );
 
   const goPrev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo]);
   const goNext = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);
 
+  const lastIndex = modules.length - 1;
+  const visualControls = useMemo(() => getCarouselVisualControls(isRtl), [isRtl]);
+
+  const navigateBySide = useCallback(
+    (side) => {
+      goTo(activeIndex + visualControls[side].delta);
+    },
+    [activeIndex, goTo, visualControls],
+  );
+
   const finishDrag = useCallback(() => {
-    const offset = dragOffsetRef.current;
-    if (offset > SWIPE_THRESHOLD) {
+    const action = getCarouselSwipeAction(dragOffsetRef.current, SWIPE_THRESHOLD);
+
+    if (action === "prev") {
       goPrev();
-    } else if (offset < -SWIPE_THRESHOLD) {
+    } else if (action === "next") {
       goNext();
     }
+
     dragOffsetRef.current = 0;
     setDragOffset(0);
     isDraggingRef.current = false;
@@ -239,7 +196,11 @@ export function PlatformModulesSection() {
     finishDrag();
   };
 
-  const trackOffset = activeIndex * (cardWidth + CARD_GAP) + cardWidth / 2;
+  const trackOffset = getCarouselTrackOffset({
+    activeIndex,
+    cardWidth,
+    gap: CARD_GAP,
+  });
 
   return (
     <section
@@ -253,30 +214,28 @@ export function PlatformModulesSection() {
           className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] md:mb-4"
           style={{ color: L.primary, fontFamily: "'Inter', sans-serif" }}
         >
-          PLATFORM MODULES
+          {t("landing.modules.eyebrow")}
         </p>
         <h2
           id="platform-modules-heading"
           className="text-[2.125rem] leading-[1.15] tracking-tight sm:text-[2.5rem] md:text-[3rem] lg:text-[3.25rem]"
           style={{ color: L.sectionHeading, fontFamily: "'Playfair Display', serif" }}
         >
-          Everything Needed for a Connected Rehabilitation Journey
+          {t("landing.modules.heading")}
         </h2>
         <p
           className="mx-auto mt-5 max-w-[760px] text-[16px] leading-relaxed md:mt-6 md:text-[17px] lg:text-[18px]"
           style={{ color: L.modulesBody, fontFamily: "'Inter', sans-serif" }}
         >
-          Explore the complete Smart Rehabilitation Platform and discover how every module works
-          together to support families, specialists, administrators, and patients throughout the
-          rehabilitation journey.
+          {t("landing.modules.description")}
         </p>
       </header>
 
       <div className="relative mx-auto max-w-[980px]">
         <button
           type="button"
-          onClick={goPrev}
-          disabled={activeIndex === 0}
+          onClick={() => navigateBySide("left")}
+          disabled={isCarouselControlDisabled(activeIndex, lastIndex, "left", isRtl)}
           className="module-carousel-nav absolute left-0 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border p-2.5 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-35 md:flex"
           style={{
             background: L.lightBg,
@@ -284,15 +243,15 @@ export function PlatformModulesSection() {
             color: L.primary,
             boxShadow: L.modulesCardShadow,
           }}
-          aria-label="Previous module"
+          aria-label={t(visualControls.left.ariaKey)}
         >
           <ChevronLeft size={20} />
         </button>
 
         <button
           type="button"
-          onClick={goNext}
-          disabled={activeIndex === MODULES.length - 1}
+          onClick={() => navigateBySide("right")}
+          disabled={isCarouselControlDisabled(activeIndex, lastIndex, "right", isRtl)}
           className="module-carousel-nav absolute right-0 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border p-2.5 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-35 md:flex"
           style={{
             background: L.lightBg,
@@ -300,13 +259,14 @@ export function PlatformModulesSection() {
             color: L.primary,
             boxShadow: L.modulesCardShadow,
           }}
-          aria-label="Next module"
+          aria-label={t(visualControls.right.ariaKey)}
         >
           <ChevronRight size={20} />
         </button>
 
         <div
           ref={containerRef}
+          dir="ltr"
           className="module-carousel-viewport overflow-hidden px-1 touch-pan-y"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -315,22 +275,23 @@ export function PlatformModulesSection() {
           onPointerLeave={onPointerCancel}
           role="region"
           aria-roledescription="carousel"
-          aria-label="Platform modules carousel"
+          aria-label={t("landing.modules.carousel.label")}
         >
           <div
             className="flex items-stretch"
+            dir="ltr"
             style={{
               gap: `${CARD_GAP}px`,
               transform: `translateX(calc(50% - ${trackOffset}px + ${dragOffset}px))`,
               transition: isDragging ? "none" : "transform 350ms ease",
             }}
           >
-            {MODULES.map((module, index) => {
+            {modules.map((module, index) => {
               const isActive = index === activeIndex;
 
               return (
                 <div
-                  key={module.title}
+                  key={module.key}
                   className="shrink-0"
                   style={{
                     width: `${cardWidth}px`,
@@ -342,7 +303,7 @@ export function PlatformModulesSection() {
                   }}
                   aria-hidden={!isActive}
                 >
-                  <ModuleCard module={module} />
+                  <ModuleCard module={module} isRtl={isRtl} />
                 </div>
               );
             })}
@@ -350,9 +311,9 @@ export function PlatformModulesSection() {
         </div>
 
         <div className="mt-8 flex items-center justify-center gap-2">
-          {MODULES.map((module, index) => (
+          {modules.map((module, index) => (
             <button
-              key={module.title}
+              key={module.key}
               type="button"
               onClick={() => goTo(index)}
               className="rounded-full transition-all duration-300"
@@ -361,7 +322,7 @@ export function PlatformModulesSection() {
                 height: "8px",
                 background: index === activeIndex ? L.primary : "rgba(79, 166, 248, 0.25)",
               }}
-              aria-label={`Go to ${module.title}`}
+              aria-label={t("landing.modules.carousel.goTo", { module: module.title })}
               aria-current={index === activeIndex ? "true" : undefined}
             />
           ))}

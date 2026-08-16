@@ -1,5 +1,7 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { AdminComplaintStatusBadge } from "../components/AdminComplaintStatusBadge";
-import { formatComplaintDateTimeLabel } from "../utils/adminComplaintsMappers";
+import { getAdminComplaintsLabels } from "../utils/adminComplaintsLocalization.js";
 
 function InfoRow({ label, children }) {
   return (
@@ -11,28 +13,36 @@ function InfoRow({ label, children }) {
 }
 
 export function AdminComplaintInformation({ complaint }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminComplaintsLabels(t), [t]);
+
   if (!complaint) {
     return null;
   }
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-complaint-section pd-section-enter" aria-label="Complaint information">
-      <h2 className="pd-admin-complaint-section-title">Complaint Information</h2>
+    <section
+      className="pd-card pd-card-pad pd-admin-complaint-section pd-section-enter"
+      aria-label={labels.complaintInformationAriaLabel}
+    >
+      <h2 className="pd-admin-complaint-section-title">{labels.complaintInformation}</h2>
 
       <div className="pd-admin-complaint-info-list">
-        <InfoRow label="Category">{complaint.categoryLabel || "—"}</InfoRow>
-        <InfoRow label="Status">
+        <InfoRow label={labels.columns.category}>{complaint.categoryLabel || labels.emptyDisplay}</InfoRow>
+        <InfoRow label={labels.columns.status}>
           <AdminComplaintStatusBadge
             label={complaint.statusLabel}
             tone={complaint.statusTone}
           />
         </InfoRow>
-        <InfoRow label="Submitted">
-          {formatComplaintDateTimeLabel(complaint.createdAt)}
+        <InfoRow label={labels.columns.submitted}>
+          {complaint.createdAtLabel || labels.emptyDisplay}
         </InfoRow>
-        <InfoRow label="Reviewer">{complaint.reviewedByName || "—"}</InfoRow>
-        <InfoRow label="Review date">
-          {complaint.reviewedAt ? formatComplaintDateTimeLabel(complaint.reviewedAt) : "—"}
+        <InfoRow label={labels.reviewer}>
+          <span dir="auto">{complaint.reviewedByName || labels.emptyDisplay}</span>
+        </InfoRow>
+        <InfoRow label={labels.reviewDate}>
+          {complaint.reviewedAtLabel || labels.emptyDisplay}
         </InfoRow>
       </div>
     </section>

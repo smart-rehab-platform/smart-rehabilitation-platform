@@ -1,43 +1,21 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ADMIN_NAV_ITEMS } from "../constants/adminNavigation";
+import { useLocale } from "../../../context/useLocale.js";
 import {
-  ADMIN_SIDEBAR_NAV_ROUTE_KEYS,
-  getAdminRoutePath,
-} from "../../../routes/adminDashboardRoutes";
+  buildAdminSearchDestinations,
+  filterAdminSearchDestinations,
+  getAdminSearchLabels,
+} from "../utils/adminDashboardLocalization.js";
 import { AdminNavIcon } from "./AdminNavIcon";
 import "../styles/adminHeaderSearch.css";
 
-function buildAdminSearchDestinations() {
-  return ADMIN_NAV_ITEMS.map((item) => {
-    const routeKey = ADMIN_SIDEBAR_NAV_ROUTE_KEYS[item.id] ?? item.id;
-    const route = getAdminRoutePath(routeKey);
-
-    return {
-      id: item.id,
-      label: item.label,
-      route,
-      icon: item.icon,
-    };
-  }).filter((destination) => Boolean(destination.route));
-}
-
-const ADMIN_SEARCH_DESTINATIONS = buildAdminSearchDestinations();
-
-function filterAdminSearchDestinations(query) {
-  const normalized = typeof query === "string" ? query.trim().toLowerCase() : "";
-  if (!normalized) {
-    return [];
-  }
-
-  return ADMIN_SEARCH_DESTINATIONS.filter((destination) => (
-    destination.label.toLowerCase().includes(normalized)
-  ));
-}
-
 export function AdminHeaderSearch() {
   const navigate = useNavigate();
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminSearchLabels(t), [t]);
+  const destinations = useMemo(() => buildAdminSearchDestinations(t), [t]);
+
   const rootRef = useRef(null);
   const inputRef = useRef(null);
   const listboxId = useId();
@@ -47,7 +25,10 @@ export function AdminHeaderSearch() {
   const [open, setOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
-  const results = useMemo(() => filterAdminSearchDestinations(query), [query]);
+  const results = useMemo(
+    () => filterAdminSearchDestinations(query, destinations),
+    [query, destinations],
+  );
   const trimmedQuery = query.trim();
   const showPanel = open && trimmedQuery.length > 0;
   const safeHighlightedIndex = results.length === 0
@@ -145,14 +126,14 @@ export function AdminHeaderSearch() {
     <div className="pd-admin-header-search" ref={rootRef}>
       <label className="pd-search pd-admin-header-search-field" htmlFor={inputId}>
         <Search size={16} aria-hidden="true" />
-        <span className="pd-sr-only">Jump to a page</span>
+        <span className="pd-sr-only">{labels.inputAriaLabel}</span>
         <input
           ref={inputRef}
           id={inputId}
           type="search"
           role="combobox"
-          placeholder="Jump to a page..."
-          aria-label="Jump to a page"
+          placeholder={labels.placeholder}
+          aria-label={labels.inputAriaLabel}
           aria-autocomplete="list"
           aria-expanded={showPanel}
           aria-controls={listboxId}
@@ -170,11 +151,11 @@ export function AdminHeaderSearch() {
           className="pd-admin-header-search-panel"
           id={listboxId}
           role="listbox"
-          aria-label="Admin pages"
+          aria-label={labels.panelAriaLabel}
         >
           {results.length === 0 ? (
             <p className="pd-admin-header-search-empty" role="status">
-              No matching pages.
+              {labels.empty}
             </p>
           ) : (
             results.map((destination, index) => {

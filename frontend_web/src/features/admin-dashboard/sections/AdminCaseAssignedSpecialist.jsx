@@ -1,12 +1,12 @@
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 
-export function AdminCaseAssignedSpecialist({ assignedSpecialist }) {
+export function AdminCaseAssignedSpecialist({ assignedSpecialist, labels }) {
   return (
-    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label="Assigned specialist">
-      <h2 className="pd-admin-case-request-section-title">Assigned Specialist</h2>
+    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={labels.assignedSpecialist}>
+      <h2 className="pd-admin-case-request-section-title">{labels.assignedSpecialist}</h2>
 
       {!assignedSpecialist ? (
-        <p className="pd-admin-case-request-empty-copy">No specialist assigned yet.</p>
+        <p className="pd-admin-case-request-empty-copy">{labels.noSpecialistAssigned}</p>
       ) : (
         <div className="pd-admin-case-assigned-specialist">
           <UserProfileAvatar
@@ -19,12 +19,12 @@ export function AdminCaseAssignedSpecialist({ assignedSpecialist }) {
             className="pd-avatar-photo"
           />
           <div className="pd-admin-case-assigned-specialist-copy">
-            <strong>{assignedSpecialist.fullName}</strong>
+            <strong dir="auto">{assignedSpecialist.fullName}</strong>
             {assignedSpecialist.specialization ? (
-              <span>{assignedSpecialist.specialization}</span>
+              <span dir="auto">{assignedSpecialist.specialization}</span>
             ) : null}
             {assignedSpecialist.email ? (
-              <span>{assignedSpecialist.email}</span>
+              <span dir="auto">{assignedSpecialist.email}</span>
             ) : null}
           </div>
         </div>

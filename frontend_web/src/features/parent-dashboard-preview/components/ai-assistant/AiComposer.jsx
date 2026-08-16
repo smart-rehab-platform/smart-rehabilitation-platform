@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 
 export function AiComposer({
   value,
@@ -7,8 +8,8 @@ export function AiComposer({
   onSend,
   isSending,
   disabled = false,
-  placeholder = "Ask about exercises, progress, or home practice...",
 }) {
+  const { t } = useLocale();
   const textareaRef = useRef(null);
 
   const handleSend = useCallback(() => {
@@ -34,7 +35,7 @@ export function AiComposer({
   return (
     <div className="pd-ai-composer">
       <label className="pd-visually-hidden" htmlFor="pd-ai-composer-input">
-        Message to AI Assistant
+        {t("parent.aiAssistant.messageInputLabel")}
       </label>
       <textarea
         ref={textareaRef}
@@ -42,7 +43,7 @@ export function AiComposer({
         className="pd-ai-composer-input"
         rows={3}
         value={value}
-        placeholder={placeholder}
+        placeholder={t("parent.aiAssistant.inputPlaceholder")}
         disabled={disabled || isSending}
         onChange={(event) => onChange?.(event.target.value)}
         onKeyDown={handleKeyDown}
@@ -50,17 +51,17 @@ export function AiComposer({
       />
       <div className="pd-ai-composer-actions">
         <span id="pd-ai-composer-hint" className="pd-ai-composer-hint">
-          Enter to send, Shift+Enter for a new line
+          {t("parent.aiAssistant.composerHint")}
         </span>
         <button
           type="button"
           className="pd-btn pd-btn-primary pd-ai-composer-send"
-          aria-label="Send message"
+          aria-label={t("parent.aiAssistant.sendMessageAria")}
           disabled={disabled || isSending || !value.trim()}
           onClick={handleSend}
         >
           <Send size={16} aria-hidden="true" />
-          {isSending ? "Sending..." : "Send"}
+          {isSending ? t("parent.aiAssistant.sending") : t("parent.messages.send")}
         </button>
       </div>
     </div>

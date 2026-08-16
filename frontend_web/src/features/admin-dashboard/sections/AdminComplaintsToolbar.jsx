@@ -1,7 +1,10 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
-  COMPLAINT_CATEGORY_FILTER_OPTIONS,
-  COMPLAINT_STATUS_FILTER_OPTIONS,
-} from "../utils/adminComplaintsMappers";
+  buildAdminComplaintCategoryFilterOptions,
+  buildAdminComplaintStatusFilterOptions,
+  getAdminComplaintsLabels,
+} from "../utils/adminComplaintsLocalization.js";
 
 export function AdminComplaintsToolbar({
   selectedStatus,
@@ -21,13 +24,16 @@ export function AdminComplaintsToolbar({
   onToDateChange,
   onClearFilters,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminComplaintsLabels(t), [t]);
+  const statusFilterOptions = useMemo(() => buildAdminComplaintStatusFilterOptions(t), [t]);
+  const categoryFilterOptions = useMemo(() => buildAdminComplaintCategoryFilterOptions(t), [t]);
+
   return (
-    <section className="pd-admin-complaints-toolbar pd-section-enter" aria-label="Complaints toolbar">
+    <section className="pd-admin-complaints-toolbar pd-section-enter" aria-label={labels.toolbarAriaLabel}>
       <div className="pd-admin-complaints-heading">
-        <h1 className="pd-section-title">Complaints Management</h1>
-        <p className="pd-section-sub">
-          Review specialist complaints submitted by parents and manage review actions.
-        </p>
+        <h1 className="pd-section-title">{labels.title}</h1>
+        <p className="pd-section-sub">{labels.subtitle}</p>
       </div>
 
       {isRefreshing ? (
@@ -35,20 +41,20 @@ export function AdminComplaintsToolbar({
           <span className="pd-admin-complaints-refresh-track">
             <span className="pd-admin-complaints-refresh-indicator" />
           </span>
-          <span className="pd-sr-only">Updating complaints</span>
+          <span className="pd-sr-only">{labels.updating}</span>
         </div>
       ) : null}
 
       <div className="pd-admin-complaints-controls">
         <label className="pd-admin-complaints-field">
-          <span className="pd-admin-complaints-field-label">Status</span>
+          <span className="pd-admin-complaints-field-label">{labels.statusLabel}</span>
           <select
             className="pd-admin-complaints-control"
             value={selectedStatus}
             onChange={(event) => onStatusChange?.(event.target.value)}
           >
-            <option value="">All statuses</option>
-            {COMPLAINT_STATUS_FILTER_OPTIONS.map((option) => (
+            <option value="">{labels.allStatuses}</option>
+            {statusFilterOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -57,14 +63,14 @@ export function AdminComplaintsToolbar({
         </label>
 
         <label className="pd-admin-complaints-field">
-          <span className="pd-admin-complaints-field-label">Category</span>
+          <span className="pd-admin-complaints-field-label">{labels.categoryLabel}</span>
           <select
             className="pd-admin-complaints-control"
             value={selectedCategory}
             onChange={(event) => onCategoryChange?.(event.target.value)}
           >
-            <option value="">All categories</option>
-            {COMPLAINT_CATEGORY_FILTER_OPTIONS.map((option) => (
+            <option value="">{labels.allCategories}</option>
+            {categoryFilterOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -73,13 +79,13 @@ export function AdminComplaintsToolbar({
         </label>
 
         <label className="pd-admin-complaints-field">
-          <span className="pd-admin-complaints-field-label">Specialist</span>
+          <span className="pd-admin-complaints-field-label">{labels.specialistLabel}</span>
           <select
             className="pd-admin-complaints-control"
             value={selectedSpecialistId}
             onChange={(event) => onSpecialistChange?.(event.target.value)}
           >
-            <option value="">All specialists</option>
+            <option value="">{labels.allSpecialists}</option>
             {specialistOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -89,7 +95,7 @@ export function AdminComplaintsToolbar({
         </label>
 
         <label className="pd-admin-complaints-field">
-          <span className="pd-admin-complaints-field-label">From</span>
+          <span className="pd-admin-complaints-field-label">{labels.fromLabel}</span>
           <input
             type="date"
             className="pd-admin-complaints-control"
@@ -99,7 +105,7 @@ export function AdminComplaintsToolbar({
         </label>
 
         <label className="pd-admin-complaints-field">
-          <span className="pd-admin-complaints-field-label">To</span>
+          <span className="pd-admin-complaints-field-label">{labels.toLabel}</span>
           <input
             type="date"
             className="pd-admin-complaints-control"
@@ -115,7 +121,7 @@ export function AdminComplaintsToolbar({
               className="pd-btn pd-btn-soft pd-admin-complaints-clear"
               onClick={onClearFilters}
             >
-              Clear filters
+              {labels.clearFilters}
             </button>
           </div>
         ) : null}
@@ -123,7 +129,7 @@ export function AdminComplaintsToolbar({
 
       {specialistsError ? (
         <p className="pd-admin-complaints-inline-warning" role="status">
-          Specialist filter unavailable: {specialistsError}
+          {labels.specialistFilterUnavailable(specialistsError)}
         </p>
       ) : null}
 

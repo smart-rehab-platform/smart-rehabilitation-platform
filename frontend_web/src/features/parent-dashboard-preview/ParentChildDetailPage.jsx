@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   PARENT_WEB_ROUTES,
   buildParentProgressPath,
   buildParentReportsPath,
   buildParentSessionsPath,
 } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { ReviewCard } from "./components/feedback/ReviewCard";
 import { useParentChildDetail } from "./hooks/useParentChildDetail";
@@ -16,14 +16,15 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  CHILD_NOT_FOUND_MESSAGE,
   buildChildMetaLine,
+  getChildNotFoundMessage,
 } from "./utils/parentChildrenUtils";
 import "./styles/parentDashboardTokens.css";
 
 export default function ParentChildDetailPage() {
   const navigate = useNavigate();
   const { childId } = useParams();
+  const { t, locale } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -115,7 +116,7 @@ export default function ParentChildDetailPage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading child details...</p>
+          <p className="pd-inline-loading">{t("parent.children.loadingDetails")}</p>
         </section>
       );
     }
@@ -125,7 +126,7 @@ export default function ParentChildDetailPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -134,9 +135,9 @@ export default function ParentChildDetailPage() {
     if (notFound || !child) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p>{CHILD_NOT_FOUND_MESSAGE}</p>
+          <p>{getChildNotFoundMessage(t)}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
-            Back to My Children
+            {t("parent.children.backToChildren")}
           </button>
         </section>
       );
@@ -159,12 +160,14 @@ export default function ParentChildDetailPage() {
             )}
             <div>
               <h2 className="pd-section-title">{child.fullName}</h2>
-              {buildChildMetaLine(child) ? (
-                <p className="pd-section-sub">{buildChildMetaLine(child)}</p>
+              {buildChildMetaLine(child, { t, locale }) ? (
+                <p className="pd-section-sub">{buildChildMetaLine(child, { t, locale })}</p>
               ) : null}
               {child.progressPercent != null ? (
                 <p className="pd-child-list-progress">
-                  Progress: {Math.round(child.progressPercent)}%
+                  {t("parent.children.progressPercent", {
+                    percent: Math.round(child.progressPercent),
+                  })}
                 </p>
               ) : null}
             </div>
@@ -175,29 +178,29 @@ export default function ParentChildDetailPage() {
               className="pd-btn pd-btn-soft"
               onClick={() => navigate(buildParentProgressPath(child.id))}
             >
-              View Progress
+              {t("parent.children.viewProgress")}
             </button>
             <button
               type="button"
               className="pd-btn pd-btn-soft"
               onClick={() => navigate(buildParentSessionsPath(child.id))}
             >
-              View Sessions
+              {t("parent.children.viewSessions")}
             </button>
             <button
               type="button"
               className="pd-btn pd-btn-soft"
               onClick={() => navigate(buildParentReportsPath(child.id))}
             >
-              View Reports
+              {t("parent.children.viewReports")}
             </button>
           </div>
         </section>
 
         <section className="pd-card pd-card-pad">
-          <h3 className="pd-section-title">Assigned Exercises</h3>
+          <h3 className="pd-section-title">{t("parent.children.assignedExercises")}</h3>
           {assignedExercises.length === 0 ? (
-            <p className="pd-section-sub">No assigned exercises yet.</p>
+            <p className="pd-section-sub">{t("parent.children.noAssignedExercises")}</p>
           ) : (
             <ul className="pd-simple-list">
               {assignedExercises.map((exercise) => (
@@ -211,9 +214,9 @@ export default function ParentChildDetailPage() {
         </section>
 
         <section className="pd-card pd-card-pad">
-          <h3 className="pd-section-title">Reports</h3>
+          <h3 className="pd-section-title">{t("parent.children.reports")}</h3>
           {reports.length === 0 ? (
-            <p className="pd-section-sub">No reports yet.</p>
+            <p className="pd-section-sub">{t("parent.children.noReports")}</p>
           ) : (
             <ul className="pd-simple-list">
               {reports.slice(0, 5).map((report) => (
@@ -224,14 +227,14 @@ export default function ParentChildDetailPage() {
         </section>
 
         <section className="pd-card pd-card-pad">
-          <h3 className="pd-section-title">Sessions</h3>
+          <h3 className="pd-section-title">{t("parent.children.sessions")}</h3>
           {sessions.length === 0 ? (
-            <p className="pd-section-sub">No sessions scheduled.</p>
+            <p className="pd-section-sub">{t("parent.children.noSessions")}</p>
           ) : (
             <ul className="pd-simple-list">
               {sessions.map((session) => (
                 <li key={session.id}>
-                  {session.specialistName || "Specialist"}
+                  {session.specialistName || t("parent.common.specialist")}
                   {session.whenLabel ? ` · ${session.whenLabel}` : ""}
                   {session.statusLabel ? ` · ${session.statusLabel}` : ""}
                 </li>
@@ -242,7 +245,7 @@ export default function ParentChildDetailPage() {
 
         {reviews.length > 0 ? (
           <section className="pd-child-detail-reviews">
-            <h3 className="pd-section-title">Specialist Feedback</h3>
+            <h3 className="pd-section-title">{t("parent.children.specialistFeedback")}</h3>
             <div className="pd-task-hub-list">
               {reviews.slice(0, 3).map((review) => (
                 <ReviewCard key={`${review.patientId}-${review.id}`} review={review} />
@@ -259,7 +262,6 @@ export default function ParentChildDetailPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -281,14 +283,14 @@ export default function ParentChildDetailPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to My Children
+              {t("parent.children.backToChildren")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Child Details</h1>
+            <h1 className="pd-task-hub-title">{t("parent.children.detailTitle")}</h1>
             <p className="pd-task-hub-subtitle">
-              Profile, exercises, reports, and sessions for your linked child.
+              {t("parent.children.detailSubtitle")}
             </p>
           </header>
 

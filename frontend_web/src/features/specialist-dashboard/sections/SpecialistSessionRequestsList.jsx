@@ -1,5 +1,6 @@
 import { SpecialistSessionRequestCard } from "../components/SpecialistSessionRequestCard";
 import { SpecialistSessionRequestFilters } from "../components/SpecialistSessionRequestFilters";
+import { useLocale } from "../../../context/useLocale";
 
 export function SpecialistSessionRequestsList({
   requests,
@@ -9,6 +10,8 @@ export function SpecialistSessionRequestsList({
   error,
   onRetry,
 }) {
+  const { t } = useLocale();
+
   return (
     <div className="pd-specialist-session-requests-view">
       <SpecialistSessionRequestFilters
@@ -20,7 +23,7 @@ export function SpecialistSessionRequestsList({
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       ) : null}

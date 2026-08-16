@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   fetchCaseCategories,
   fetchSpecialistAssignedCaseRequests,
@@ -6,7 +7,9 @@ import {
 import {
   CASE_REQUEST_CATEGORY_ALL,
   CASE_REQUEST_STATUS_ALL,
-  CASE_REQUEST_STATUS_FILTERS,
+  CASE_REQUEST_STATUS_FILTER_DEFS,
+  applyCaseRequestListItemLocalization,
+  getCaseRequestCategoryLabel,
   getCaseRequestListEmptyMessage,
 } from "../utils/specialistCaseRequestMappers";
 import { subscribeSpecialistCaseRequestRefresh } from "../utils/specialistCaseRequestRefresh";
@@ -19,8 +22,9 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistCaseRequests(specialistUserId) {
-  const [items, setItems] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const { t, locale } = useLocale();
+  const [baseItems, setBaseItems] = useState([]);
+  const [rawCategories, setRawCategories] = useState([]);
   const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -37,6 +41,21 @@ export function useSpecialistCaseRequests(specialistUserId) {
   const loadTokenRef = useRef(0);
   const pageRef = useRef(1);
 
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+
+  const items = useMemo(
+    () => baseItems.map((item) => applyCaseRequestListItemLocalization(item, mapperContext)),
+    [baseItems, mapperContext],
+  );
+
+  const categories = useMemo(
+    () => rawCategories.map((category) => ({
+      ...category,
+      name: getCaseRequestCategoryLabel(category.name, t),
+    })),
+    [rawCategories, t],
+  );
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setDebouncedSearch(searchInput.trim());
@@ -45,7 +64,7 @@ export function useSpecialistCaseRequests(specialistUserId) {
   }, [searchInput]);
 
   const statusApiValue = useMemo(() => {
-    const match = CASE_REQUEST_STATUS_FILTERS.find((item) => item.id === statusFilterId);
+    const match = CASE_REQUEST_STATUS_FILTER_DEFS.find((item) => item.id === statusFilterId);
     return match?.apiValue || null;
   }, [statusFilterId]);
 
@@ -87,11 +106,11 @@ export function useSpecialistCaseRequests(specialistUserId) {
       try {
         const next = await fetchCaseCategories();
         if (!cancelled) {
-          setCategories(next);
+          setRawCategories(next);
         }
       } catch {
         if (!cancelled) {
-          setCategories([]);
+          setRawCategories([]);
         }
       }
     }
@@ -132,16 +151,16 @@ export function useSpecialistCaseRequests(specialistUserId) {
           return;
         }
 
-        setItems(result.items);
+        setBaseItems(result.items);
         setHasMore(result.pagination.hasMore);
         setError(null);
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setItems([]);
+        setBaseItems([]);
         setHasMore(false);
-        setError(resolveErrorMessage(loadError, "Failed to load assigned case requests."));
+        setError(resolveErrorMessage(loadError, t("specialist.caseRequests.errors.loadFailed")));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsInitialLoading(false);
@@ -160,6 +179,7 @@ export function useSpecialistCaseRequests(specialistUserId) {
     categoryApiValue,
     debouncedSearch,
     refreshToken,
+    t,
   ]);
 
   const loadMore = useCallback(async () => {
@@ -185,7 +205,7 @@ export function useSpecialistCaseRequests(specialistUserId) {
         return;
       }
 
-      setItems((prev) => {
+      setBaseItems((prev) => {
         const seen = new Set(prev.map((item) => item.id));
         const merged = [...prev];
         result.items.forEach((item) => {
@@ -202,7 +222,7 @@ export function useSpecialistCaseRequests(specialistUserId) {
       if (loadTokenRef.current !== loadToken) {
         return;
       }
-      setLoadMoreError(resolveErrorMessage(loadError, "Failed to load more case requests."));
+      setLoadMoreError(resolveErrorMessage(loadError, t("specialist.caseRequests.errors.loadMoreFailed")));
     } finally {
       if (loadTokenRef.current === loadToken) {
         setIsLoadingMore(false);
@@ -216,6 +236,7 @@ export function useSpecialistCaseRequests(specialistUserId) {
     statusApiValue,
     categoryApiValue,
     debouncedSearch,
+    t,
   ]);
 
   const refresh = useCallback(async () => {
@@ -242,7 +263,7 @@ export function useSpecialistCaseRequests(specialistUserId) {
         return;
       }
 
-      setItems(result.items);
+      setBaseItems(result.items);
       setPage(1);
       pageRef.current = 1;
       setHasMore(result.pagination.hasMore);
@@ -250,20 +271,20 @@ export function useSpecialistCaseRequests(specialistUserId) {
       if (loadTokenRef.current !== loadToken) {
         return;
       }
-      setError(resolveErrorMessage(loadError, "Failed to load assigned case requests."));
+      setError(resolveErrorMessage(loadError, t("specialist.caseRequests.errors.loadFailed")));
     } finally {
       if (loadTokenRef.current === loadToken) {
         setIsRefreshing(false);
       }
     }
-  }, [specialistUserId, statusApiValue, categoryApiValue, debouncedSearch]);
+  }, [specialistUserId, statusApiValue, categoryApiValue, debouncedSearch, t]);
 
   const emptyMessage = useMemo(
     () => getCaseRequestListEmptyMessage({
       hasItems: items.length > 0,
       hasFilters: hasActiveFilters,
-    }),
-    [items.length, hasActiveFilters],
+    }, t),
+    [items.length, hasActiveFilters, t],
   );
 
   if (!specialistUserId) {
@@ -273,7 +294,7 @@ export function useSpecialistCaseRequests(specialistUserId) {
       isInitialLoading: false,
       isRefreshing: false,
       isLoadingMore: false,
-      error: "Please sign in to view case requests.",
+      error: t("specialist.caseRequests.errors.signInRequired"),
       loadMoreError: null,
       searchInput,
       setSearchInput,

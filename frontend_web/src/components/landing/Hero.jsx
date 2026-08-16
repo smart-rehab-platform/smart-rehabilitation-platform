@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Play } from "lucide-react";
 import verifiedUserIcon from "../../assets/icons/verified_user.svg";
+import { useLocale } from "../../context/useLocale.js";
 import { FeatureIndicators } from "./FeatureIndicators";
 import { L } from "./landingTokens";
 
@@ -9,6 +10,8 @@ function scrollToFeatures() {
 }
 
 export function Hero() {
+  const { t } = useLocale();
+
   return (
     <section id="home" className="relative overflow-hidden px-5 pt-12 pb-16 md:pt-16 md:pb-20 lg:px-8">
       <div
@@ -36,16 +39,16 @@ export function Hero() {
             aria-hidden="true"
             className="h-[18px] w-[18px] shrink-0 object-contain"
           />
-          AI-Powered • Family-Centered • Specialist-Led
+          {t("landing.hero.badge")}
         </div>
 
         <h1
           className="text-[2.4rem] sm:text-5xl md:text-[3.25rem] lg:text-[3.6rem] leading-[1.12] tracking-tight mb-6 md:mb-7"
           style={{ fontFamily: "'Playfair Display', serif", color: L.text }}
         >
-          Smarter Rehabilitation.
+          {t("landing.hero.headline.line1")}
           <br />
-          Stronger{" "}
+          {t("landing.hero.headline.line2Prefix")}{" "}
           <span
             style={{
               background: L.gradientHighlight,
@@ -54,18 +57,17 @@ export function Hero() {
               backgroundClip: "text",
             }}
           >
-            Family Support.
+            {t("landing.hero.headline.line2Highlight")}
           </span>
           <br />
-          Better Progress.
+          {t("landing.hero.headline.line3")}
         </h1>
 
         <p
           className="text-base md:text-[17px] leading-relaxed max-w-2xl mx-auto mb-9 md:mb-10 px-2"
           style={{ color: L.textMuted, fontFamily: "'Inter', sans-serif" }}
         >
-          One connected platform that brings families, specialists, and intelligent
-          rehabilitation tools together to support every patient&apos;s rehabilitation journey.
+          {t("landing.hero.description")}
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
@@ -84,8 +86,8 @@ export function Hero() {
               event.currentTarget.style.boxShadow = `0 4px 24px ${L.hoverGlow}`;
             }}
           >
-            Get Started
-            <ArrowRight size={17} />
+            {t("landing.hero.getStarted")}
+            <ArrowRight size={17} className="rtl:rotate-180" />
           </Link>
           <button
             type="button"
@@ -107,7 +109,7 @@ export function Hero() {
             }}
           >
             <Play size={16} fill={L.primary} strokeWidth={0} />
-            Explore the Platform
+            {t("landing.hero.explorePlatform")}
           </button>
         </div>
 

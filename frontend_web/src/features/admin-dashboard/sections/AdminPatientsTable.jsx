@@ -1,5 +1,8 @@
+import { useMemo } from "react";
 import { ChevronRight } from "lucide-react";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
+import { useLocale } from "../../../context/useLocale.js";
+import { getAdminPatientsLabels } from "../utils/adminPatientsLocalization.js";
 
 function ConditionBadge({ label, hasCondition }) {
   if (!hasCondition) {
@@ -21,15 +24,15 @@ function SessionStatusBadge({ session }) {
   );
 }
 
-function PreviousSessionCell({ session }) {
+function PreviousSessionCell({ session, labels }) {
   if (!session?.id) {
-    return <span className="pd-admin-patients-muted">No previous session</span>;
+    return <span className="pd-admin-patients-muted">{labels.noPreviousSession}</span>;
   }
 
   return (
     <div className="pd-admin-patients-session-cell">
       <span className="pd-admin-patients-session-date">
-        {session.scheduledAtLabel || "Unknown date"}
+        {session.scheduledAtLabel || labels.unknownDate}
       </span>
       <SessionStatusBadge session={session} />
     </div>
@@ -48,12 +51,12 @@ function PatientIdentity({ patient }) {
         fallbackClassName="pd-admin-patients-avatar-fallback"
         className="pd-avatar-photo"
       />
-      <span className="pd-admin-patients-name">{patient.fullName}</span>
+      <span className="pd-admin-patients-name" dir="auto">{patient.fullName}</span>
     </div>
   );
 }
 
-function ViewAction({ onView }) {
+function ViewAction({ onView, label }) {
   return (
     <button
       type="button"
@@ -63,13 +66,13 @@ function ViewAction({ onView }) {
         onView();
       }}
     >
-      View
-      <ChevronRight size={16} aria-hidden="true" />
+      {label}
+      <ChevronRight size={16} aria-hidden="true" className="pd-admin-patients-view-chevron" />
     </button>
   );
 }
 
-function PatientRow({ patient, onView }) {
+function PatientRow({ patient, labels, onView }) {
   return (
     <tr
       className="pd-admin-patients-row pd-admin-patients-row-clickable"
@@ -82,26 +85,26 @@ function PatientRow({ patient, onView }) {
       }}
       tabIndex={0}
       role="link"
-      aria-label={`View details for ${patient.fullName}`}
+      aria-label={labels.viewDetailsAria(patient.fullName)}
     >
-      <td data-label="Patient">
+      <td data-label={labels.columns.patient}>
         <PatientIdentity patient={patient} />
       </td>
-      <td data-label="Gender">{patient.genderLabel}</td>
-      <td data-label="Condition">
+      <td data-label={labels.columns.gender}>{patient.genderLabel}</td>
+      <td data-label={labels.columns.condition}>
         <ConditionBadge label={patient.conditionLabel} hasCondition={patient.hasCondition} />
       </td>
-      <td data-label="Previous Session">
-        <PreviousSessionCell session={patient.previousSession} />
+      <td data-label={labels.columns.previousSession}>
+        <PreviousSessionCell session={patient.previousSession} labels={labels} />
       </td>
-      <td data-label="View">
-        <ViewAction onView={onView} />
+      <td data-label={labels.columns.view}>
+        <ViewAction onView={onView} label={labels.view} />
       </td>
     </tr>
   );
 }
 
-function LoadingRows() {
+function LoadingRows({ loadingLabel }) {
   return (
     <>
       {[0, 1, 2, 3, 4].map((index) => (
@@ -114,7 +117,7 @@ function LoadingRows() {
                 <span className="pd-admin-patients-skeleton-line" />
               </span>
             </div>
-            <span className="pd-sr-only">Loading patients...</span>
+            <span className="pd-sr-only">{loadingLabel}</span>
           </td>
         </tr>
       ))}
@@ -128,29 +131,30 @@ export function AdminPatientsTable({
   emptyKind = null,
   onViewPatient,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminPatientsLabels(t), [t]);
+
   return (
-    <section className="pd-card pd-admin-patients-table-wrap pd-section-enter" aria-label="Patients list">
+    <section className="pd-card pd-admin-patients-table-wrap pd-section-enter" aria-label={labels.tableAriaLabel}>
       <div className="pd-admin-patients-table-scroll">
         <table className="pd-admin-patients-table">
           <thead>
             <tr>
-              <th scope="col">Patient</th>
-              <th scope="col">Gender</th>
-              <th scope="col">Condition</th>
-              <th scope="col">Previous Session</th>
-              <th scope="col">View</th>
+              <th scope="col">{labels.columns.patient}</th>
+              <th scope="col">{labels.columns.gender}</th>
+              <th scope="col">{labels.columns.condition}</th>
+              <th scope="col">{labels.columns.previousSession}</th>
+              <th scope="col">{labels.columns.view}</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
-              <LoadingRows />
+              <LoadingRows loadingLabel={labels.loading} />
             ) : emptyKind ? (
               <tr className="pd-admin-patients-empty-row">
                 <td colSpan={5}>
                   <p className="pd-admin-empty-copy">
-                    {emptyKind === "no-patients"
-                      ? "No patients have been registered yet."
-                      : "No patients match your search or filter."}
+                    {emptyKind === "no-patients" ? labels.empty : labels.emptyFiltered}
                   </p>
                 </td>
               </tr>
@@ -159,6 +163,7 @@ export function AdminPatientsTable({
                 <PatientRow
                   key={patient.id}
                   patient={patient}
+                  labels={labels}
                   onView={() => onViewPatient(patient.id)}
                 />
               ))

@@ -1,35 +1,20 @@
-const CATEGORY_LABELS = {
-  create: "Create",
-  update: "Update",
-  complete: "Complete",
-  delete: "Delete",
-  assign: "Assign",
-  login: "Login",
-  cancel: "Cancel",
-  activity: "Activity",
-};
-
-function resolveBadgeLabel(category, action) {
-  if (category === "login") {
-    const key = typeof action === "string" ? action.trim().toLowerCase() : "";
-    if (key.includes("logout")) {
-      return "Logout";
-    }
-    return "Login";
-  }
-
-  return CATEGORY_LABELS[category] ?? "Activity";
-}
-
 export function AdminAuditActionBadge({
+  label,
   category = "activity",
   tone = "neutral",
   action = "",
 }) {
-  const label = resolveBadgeLabel(category, action);
+  if (!label) {
+    return null;
+  }
 
   return (
-    <span className={`pd-admin-audit-action-badge is-${tone}`} role="status">
+    <span
+      className={`pd-admin-audit-action-badge is-${tone}`}
+      role="status"
+      data-action-category={category}
+      data-action-code={action}
+    >
       {label}
     </span>
   );

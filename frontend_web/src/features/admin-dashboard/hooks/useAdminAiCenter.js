@@ -1,12 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadAdminAiCenter } from "../../../services/adminAiCenterService";
-import { mapAdminAiCenter } from "../utils/adminAiCenterMappers";
+import {
+  applyAdminAiCenterLocalization,
+  getAdminAiCenterLabels,
+} from "../utils/adminAiCenterLocalization.js";
+import { mapAdminAiCenter } from "../utils/adminAiCenterMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminAiCenter() {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminAiCenterLabels(t), [t]);
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,7 +47,7 @@ export function useAdminAiCenter() {
         }
 
         setData(null);
-        setError(resolveErrorMessage(loadError, "Failed to load AI Center."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -52,10 +60,16 @@ export function useAdminAiCenter() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [labels.loadFailed, refreshToken]);
+
+  const localizedData = useMemo(
+    () => (data ? applyAdminAiCenterLocalization(data, mapperContext) : null),
+    [data, mapperContext],
+  );
 
   return {
-    data,
+    data: localizedData,
+    labels,
     isLoading,
     error,
     refresh,

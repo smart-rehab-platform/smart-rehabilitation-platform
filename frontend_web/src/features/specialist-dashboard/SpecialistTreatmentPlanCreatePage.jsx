@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistPatientDetailPath,
@@ -15,6 +16,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistTreatmentPlanCreatePage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [searchParams] = useSearchParams();
   const patientId = searchParams.get("patientId") || "";
   const patientName = searchParams.get("patientName") || "";
@@ -79,20 +81,20 @@ export default function SpecialistTreatmentPlanCreatePage() {
   const handleCreate = useCallback(async () => {
     const result = await create();
     if (result.ok) {
-      showToast("Treatment plan created successfully");
+      showToast(t("specialist.treatmentPlans.toast.createdSuccess"));
       handleBack();
       return;
     }
     if (result.message) {
       showToast(result.message);
     }
-  }, [create, showToast, handleBack]);
+  }, [create, showToast, handleBack, t]);
 
   const renderContent = () => {
     if (isLoadingPatients && !isPatientLocked) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading patients...</p>
+          <p className="pd-inline-loading">{t("specialist.treatmentPlans.loadingPatients")}</p>
         </section>
       );
     }
@@ -157,13 +159,11 @@ export default function SpecialistTreatmentPlanCreatePage() {
                 onClick={handleBack}
               >
                 <ArrowLeft size={18} aria-hidden="true" />
-                Back
+                {t("specialist.treatmentPlans.back")}
               </button>
               <div className="pd-specialist-treatment-plan-page-heading">
-                <h1 className="pd-section-title">Create Treatment Plan</h1>
-                <p className="pd-section-sub">
-                  Create a treatment plan and define its active period.
-                </p>
+                <h1 className="pd-section-title">{t("specialist.treatmentPlans.createTitle")}</h1>
+                <p className="pd-section-sub">{t("specialist.treatmentPlans.createSubtitle")}</p>
               </div>
             </header>
             <div className="pd-specialist-treatment-plan-edit-content">

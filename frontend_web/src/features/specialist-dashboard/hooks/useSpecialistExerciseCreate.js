@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   createSpecialistExercise,
   loadExerciseCategories,
@@ -6,9 +7,13 @@ import {
 } from "../../../services/specialistExerciseService";
 import {
   buildExerciseCreatePayload,
-  resolveExerciseFieldErrors,
   validateExerciseCreateForm,
 } from "../utils/specialistExerciseMappers";
+import {
+  getExerciseMediaValidationMessage,
+  getExerciseValidationMessage,
+  resolveExerciseFieldErrors,
+} from "../utils/specialistExercisesLocalization";
 import { notifySpecialistExerciseRefresh } from "../utils/specialistExerciseRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -16,6 +21,7 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistExerciseCreate(enabled = true) {
+  const { t } = useLocale();
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -33,6 +39,11 @@ export function useSpecialistExerciseCreate(enabled = true) {
   const [uploadedMediaUrl, setUploadedMediaUrl] = useState("");
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadCategoriesFailedMessage = t("specialist.exercises.errors.loadCategoriesFailed");
+  const pleaseWaitMessage = t("specialist.exercises.pleaseWait");
+  const uploadFailedMessage = t("specialist.exercises.errors.uploadFailed");
+  const createFailedMessage = t("specialist.exercises.errors.createFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -68,7 +79,7 @@ export function useSpecialistExerciseCreate(enabled = true) {
           return;
         }
         setCategories([]);
-        setError(resolveErrorMessage(loadError, "Failed to load categories."));
+        setError(resolveErrorMessage(loadError, loadCategoriesFailedMessage));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -81,9 +92,12 @@ export function useSpecialistExerciseCreate(enabled = true) {
     return () => {
       cancelled = true;
     };
-  }, [enabled, refreshToken]);
+  }, [enabled, refreshToken, loadCategoriesFailedMessage]);
 
-  const fieldErrors = resolveExerciseFieldErrors(validationMessage);
+  const fieldErrors = useMemo(
+    () => resolveExerciseFieldErrors(validationMessage, t),
+    [validationMessage, t],
+  );
 
   const selectMediaFile = useCallback((file, validationError = null) => {
     if (validationError) {
@@ -105,11 +119,11 @@ export function useSpecialistExerciseCreate(enabled = true) {
     const validation = validateExerciseCreateForm({ categoryId, title });
     if (validation) {
       setValidationMessage(validation);
-      return { ok: false, message: validation };
+      return { ok: false, message: getExerciseValidationMessage(validation, t) };
     }
 
     if (isSaving || isUploading) {
-      return { ok: false, message: "Please wait…" };
+      return { ok: false, message: pleaseWaitMessage };
     }
 
     setIsSaving(true);
@@ -130,10 +144,7 @@ export function useSpecialistExerciseCreate(enabled = true) {
           setUploadedMediaUrl(nextMediaUrl);
           setPendingMediaFile(null);
         } catch (uploadError) {
-          const message = resolveErrorMessage(
-            uploadError,
-            "Failed to upload instructional media.",
-          );
+          const message = resolveErrorMessage(uploadError, uploadFailedMessage);
           setMediaError(message);
           return { ok: false, message };
         } finally {
@@ -155,7 +166,7 @@ export function useSpecialistExerciseCreate(enabled = true) {
       notifySpecialistExerciseRefresh();
       return { ok: true, exercise: created };
     } catch (saveError) {
-      const message = resolveErrorMessage(saveError, "Failed to create exercise.");
+      const message = resolveErrorMessage(saveError, createFailedMessage);
       setError(message);
       return { ok: false, message };
     } finally {
@@ -173,9 +184,16 @@ export function useSpecialistExerciseCreate(enabled = true) {
     uploadedMediaUrl,
     isSaving,
     isUploading,
+    t,
+    pleaseWaitMessage,
+    uploadFailedMessage,
+    createFailedMessage,
   ]);
 
   const isBusy = isSaving || isUploading;
+  const localizedMediaError = mediaError
+    ? (getExerciseMediaValidationMessage(mediaError, t) || mediaError)
+    : null;
 
   return {
     categories,
@@ -185,7 +203,7 @@ export function useSpecialistExerciseCreate(enabled = true) {
     isBusy,
     uploadProgress,
     error,
-    mediaError,
+    mediaError: localizedMediaError,
     validationMessage,
     fieldErrors,
     categoryId,

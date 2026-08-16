@@ -1,4 +1,23 @@
 import { readNumber, readString, resolveReportFileUrl } from "./parentDashboardMappers";
+import { resolveMapperContext } from "./parentLocalizationCore";
+import {
+  buildChildMetaLine as buildLocalizedChildMetaLine,
+  CHILD_NOT_FOUND_MESSAGE,
+  CHILDREN_EMPTY_MESSAGE,
+  formatChildDate,
+  getChildNotFoundMessage,
+  getChildrenEmptyMessage,
+  getDefaultChildLabel,
+  getDefaultExerciseLabel,
+} from "./parentChildrenLocalization";
+
+export {
+  CHILD_NOT_FOUND_MESSAGE,
+  CHILDREN_EMPTY_MESSAGE,
+  formatChildDate,
+  getChildNotFoundMessage,
+  getChildrenEmptyMessage,
+};
 
 export function calculateAgeFromDob(dateOfBirth) {
   if (!dateOfBirth || typeof dateOfBirth !== "string") {
@@ -26,26 +45,10 @@ export function calculateAgeFromDob(dateOfBirth) {
   return age >= 0 ? age : null;
 }
 
-export function formatChildDate(dateValue) {
-  if (!dateValue) {
-    return null;
-  }
-
-  const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-export function mapChildListItem(row, progressPercent = null) {
+export function mapChildListItem(row, progressPercent = null, options = {}) {
+  const { t } = resolveMapperContext(options);
   const id = readString(row, ["id", "_id"]);
-  const fullName = readString(row, ["full_name", "fullName", "name"]) || "Child";
+  const fullName = readString(row, ["full_name", "fullName", "name"]) || getDefaultChildLabel(t);
   const dateOfBirth = readString(row, ["date_of_birth", "dateOfBirth"]);
   const gender = readString(row, ["gender"]);
   const age = calculateAgeFromDob(dateOfBirth);
@@ -67,34 +70,18 @@ export function mapChildListItem(row, progressPercent = null) {
   };
 }
 
-export function buildChildMetaLine(child) {
-  const parts = [];
-  if (child?.age != null) {
-    parts.push(`${child.age} yrs`);
-  }
-  if (child?.dateOfBirth) {
-    const formatted = formatChildDate(child.dateOfBirth);
-    if (formatted) {
-      parts.push(formatted);
-    }
-  }
-  if (child?.gender) {
-    parts.push(child.gender);
-  }
-  return parts.join(" · ");
+export function buildChildMetaLine(child, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
+  return buildLocalizedChildMetaLine(child, locale, t);
 }
 
-export function mapAssignedExerciseRow(row) {
+export function mapAssignedExerciseRow(row, options = {}) {
+  const { t } = resolveMapperContext(options);
+
   return {
     id: readString(row, ["id", "_id"]),
-    title: readString(row, ["title", "exercise_title", "exerciseTitle", "name"]) || "Exercise",
+    title: readString(row, ["title", "exercise_title", "exerciseTitle", "name"]) || getDefaultExerciseLabel(t),
     frequency: readString(row, ["frequency"]),
     status: readString(row, ["status"]),
   };
 }
-
-export const CHILDREN_EMPTY_MESSAGE =
-  "No linked children yet. Contact your specialist to link a child profile.";
-
-export const CHILD_NOT_FOUND_MESSAGE =
-  "This child profile is not linked to your account or could not be found.";

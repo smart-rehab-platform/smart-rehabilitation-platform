@@ -1,8 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/useAuth";
+import { useLocale } from "../../../context/useLocale.js";
 import {
-  PARENT_NAV_UNAVAILABLE,
   PARENT_WEB_ROUTES,
   SIDEBAR_NAV_ROUTE_KEYS,
   buildParentAiAssistantPath,
@@ -17,6 +17,7 @@ import {
   buildParentSessionsPath,
   isImplementedParentPath,
 } from "../../../routes/parentDashboardRoutes";
+import { buildParentNavUnavailable } from "../utils/parentRouteMessages";
 import {
   findActionableExercise,
   isExerciseActionable,
@@ -42,95 +43,97 @@ export function useParentDashboardNavigation({
 }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { t } = useLocale();
+  const navUnavailable = useMemo(() => buildParentNavUnavailable(t), [t]);
 
   const navigateIfImplemented = useCallback((path, unavailableMessage) => {
     if (!isImplementedParentPath(path)) {
-      showToast(unavailableMessage || PARENT_NAV_UNAVAILABLE.generic);
+      showToast(unavailableMessage || navUnavailable.generic);
       return false;
     }
 
     navigate(path);
     return true;
-  }, [navigate, showToast]);
+  }, [navigate, navUnavailable.generic, showToast]);
 
   const handleSignOut = useCallback(async () => {
     try {
       await logout();
       navigate(PARENT_WEB_ROUTES.login, { replace: true });
     } catch {
-      showToast("Unable to sign out. Please try again.");
+      showToast(t("parent.toast.signOutFailed"));
     }
-  }, [logout, navigate, showToast]);
+  }, [logout, navigate, showToast, t]);
 
   const handleViewProfile = useCallback(() => {
-    navigateIfImplemented(PARENT_WEB_ROUTES.profile, PARENT_NAV_UNAVAILABLE.profile);
-  }, [navigateIfImplemented]);
+    navigateIfImplemented(PARENT_WEB_ROUTES.profile, navUnavailable.profile);
+  }, [navigateIfImplemented, navUnavailable.profile]);
 
   const handleAskAi = useCallback(() => {
     if (!selectedChildId) {
-      showToast("Select a child to use the AI Assistant.");
+      showToast(t("parent.toast.selectChildForAi"));
       return;
     }
 
     navigateIfImplemented(
       buildParentAiAssistantPath(selectedChildId),
-      PARENT_NAV_UNAVAILABLE.aiAssistant,
+      navUnavailable.aiAssistant,
     );
-  }, [navigateIfImplemented, selectedChildId, showToast]);
+  }, [navigateIfImplemented, navUnavailable.aiAssistant, selectedChildId, showToast, t]);
 
   const handleStartExercise = useCallback(() => {
     if (!selectedChildId) {
-      showToast("Select a child to start an exercise.");
+      showToast(t("parent.toast.selectChildForExercise"));
       return;
     }
 
     const task = findActionableExercise(exercises);
     if (!task) {
-      showToast("No actionable exercises for today.");
+      showToast(t("parent.toast.noActionableExercises"));
       return;
     }
 
     navigateIfImplemented(
       buildExerciseDetailsPath(task, selectedChildId),
-      PARENT_NAV_UNAVAILABLE.exerciseDetails,
+      navUnavailable.exerciseDetails,
     );
-  }, [exercises, navigateIfImplemented, selectedChildId, showToast]);
+  }, [exercises, navigateIfImplemented, navUnavailable.exerciseDetails, selectedChildId, showToast, t]);
 
   const handleExerciseClick = useCallback((task) => {
     if (!selectedChildId) {
-      showToast("Select a child to view this exercise.");
+      showToast(t("parent.toast.selectChildForExercise"));
       return;
     }
 
     if (!task?.id) {
-      showToast("This exercise is unavailable right now.");
+      showToast(t("parent.toast.exerciseUnavailable"));
       return;
     }
 
     if (!isExerciseActionable(task.status)) {
-      showToast("This exercise has already been submitted or reviewed.");
+      showToast(t("parent.toast.exerciseAlreadySubmitted"));
       return;
     }
 
     navigateIfImplemented(
       buildExerciseDetailsPath(task, selectedChildId),
-      PARENT_NAV_UNAVAILABLE.exerciseDetails,
+      navUnavailable.exerciseDetails,
     );
-  }, [navigateIfImplemented, selectedChildId, showToast]);
+  }, [navigateIfImplemented, navUnavailable.exerciseDetails, selectedChildId, showToast, t]);
 
   const handleViewAllExercises = useCallback(() => {
     navigateIfImplemented(
       buildParentDailyTasksPath(selectedChildId),
-      PARENT_NAV_UNAVAILABLE.dailyTasks,
+      navUnavailable.dailyTasks,
     );
-  }, [navigateIfImplemented, selectedChildId]);
+  }, [navigateIfImplemented, navUnavailable.dailyTasks, selectedChildId]);
 
   const handleSessionViewDetails = useCallback(() => {
     navigateIfImplemented(
       buildParentSessionsPath(selectedChildId),
-      PARENT_NAV_UNAVAILABLE.sessions,
+      navUnavailable.sessions,
     );
-  }, [navigateIfImplemented, selectedChildId]);
+  }, [navigateIfImplemented, navUnavailable.sessions, selectedChildId]);
 
   const handleOpenMeeting = useCallback((session) => {
     const meetingUrl = session?.meetingUrl ?? upcomingSession?.meetingUrl;
@@ -144,23 +147,23 @@ export function useParentDashboardNavigation({
   const handleLatestUpdatesViewAll = useCallback(() => {
     navigateIfImplemented(
       buildParentReportsPath(selectedChildId),
-      PARENT_NAV_UNAVAILABLE.generic,
+      navUnavailable.generic,
     );
-  }, [navigateIfImplemented, selectedChildId]);
+  }, [navigateIfImplemented, navUnavailable.generic, selectedChildId]);
 
   const handleLatestUpdateAction = useCallback((item) => {
     if (item.type === "report") {
       if (latestReport?.id) {
         navigateIfImplemented(
           buildParentReportDetailPath(latestReport.id),
-          PARENT_NAV_UNAVAILABLE.generic,
+          navUnavailable.generic,
         );
         return;
       }
 
       navigateIfImplemented(
         buildParentReportsPath(selectedChildId),
-        PARENT_NAV_UNAVAILABLE.generic,
+        navUnavailable.generic,
       );
       return;
     }
@@ -168,10 +171,10 @@ export function useParentDashboardNavigation({
     if (item.type === "feedback") {
       navigateIfImplemented(
         buildParentFeedbackPath(selectedChildId),
-        PARENT_NAV_UNAVAILABLE.feedback,
+        navUnavailable.feedback,
       );
     }
-  }, [latestReport, navigateIfImplemented, selectedChildId]);
+  }, [latestReport, navigateIfImplemented, navUnavailable.feedback, navUnavailable.generic, selectedChildId]);
 
   const handleMessages = useCallback(() => {
     navigate(PARENT_WEB_ROUTES.messages);
@@ -180,9 +183,9 @@ export function useParentDashboardNavigation({
   const handleViewAllNotifications = useCallback(() => {
     navigateIfImplemented(
       PARENT_WEB_ROUTES.notifications,
-      PARENT_NAV_UNAVAILABLE.generic,
+      navUnavailable.generic,
     );
-  }, [navigateIfImplemented]);
+  }, [navigateIfImplemented, navUnavailable.generic]);
 
   const handleNotificationSelect = useCallback(async (item) => {
     if (item?.id) {
@@ -200,30 +203,28 @@ export function useParentDashboardNavigation({
     }
   }, [markNotificationRead, navigate, showToast]);
 
-  const handleSummaryNavigate = useCallback((label) => {
-    const normalized = label?.toLowerCase() ?? "";
-
-    if (normalized.includes("exercise")) {
+  const handleSummaryNavigate = useCallback((navKey) => {
+    if (navKey === "exercises") {
       handleViewAllExercises();
       return;
     }
 
-    if (normalized.includes("session")) {
+    if (navKey === "sessions") {
       navigateIfImplemented(
         buildParentSessionsPath(selectedChildId),
-        PARENT_NAV_UNAVAILABLE.sessions,
+        navUnavailable.sessions,
       );
       return;
     }
 
-    if (normalized.includes("progress")) {
+    if (navKey === "progress") {
       navigate(buildParentProgressPath(selectedChildId));
     }
-  }, [handleViewAllExercises, navigate, navigateIfImplemented, selectedChildId]);
+  }, [handleViewAllExercises, navigate, navigateIfImplemented, navUnavailable.sessions, selectedChildId]);
 
   const handleHeroViewFull = useCallback(() => {
     if (!selectedChildId) {
-      showToast("Select a child to view details.");
+      showToast(t("parent.toast.selectChildForDetails"));
       return;
     }
 
@@ -231,7 +232,7 @@ export function useParentDashboardNavigation({
     if (path) {
       navigate(path);
     }
-  }, [navigate, selectedChildId, showToast]);
+  }, [navigate, selectedChildId, showToast, t]);
 
   const handleSidebarNav = useCallback((navItemId) => {
     closeMobileNav?.();
@@ -245,7 +246,7 @@ export function useParentDashboardNavigation({
 
     const routeKey = SIDEBAR_NAV_ROUTE_KEYS[navItemId];
     if (!routeKey || routeKey === "dashboard") {
-      showToast(PARENT_NAV_UNAVAILABLE.generic);
+      showToast(navUnavailable.generic);
       return;
     }
 
@@ -289,6 +290,16 @@ export function useParentDashboardNavigation({
       return;
     }
 
+    if (routeKey === "complaintNew") {
+      navigate(PARENT_WEB_ROUTES.complaintNew);
+      return;
+    }
+
+    if (routeKey === "complaints") {
+      navigate(PARENT_WEB_ROUTES.complaints);
+      return;
+    }
+
     if (routeKey === "sessions") {
       navigate(buildParentSessionsPath(selectedChildId));
       return;
@@ -304,11 +315,11 @@ export function useParentDashboardNavigation({
       return;
     }
 
-    const unavailableKey = routeKey in PARENT_NAV_UNAVAILABLE
+    const unavailableKey = routeKey in navUnavailable
       ? routeKey
       : "generic";
 
-    navigateIfImplemented(null, PARENT_NAV_UNAVAILABLE[unavailableKey]);
+    navigateIfImplemented(null, navUnavailable[unavailableKey]);
   }, [
     closeMobileNav,
     handleAskAi,
@@ -316,6 +327,7 @@ export function useParentDashboardNavigation({
     handleViewAllNotifications,
     navigate,
     navigateIfImplemented,
+    navUnavailable,
     selectedChildId,
     showToast,
   ]);

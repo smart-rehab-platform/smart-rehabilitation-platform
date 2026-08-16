@@ -92,7 +92,7 @@
 }
 
 .pd-preview .pd-admin-users-table thead th {
-  text-align: left;
+  text-align: start;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--pd-text-muted);
@@ -137,7 +137,7 @@
 
 .pd-preview .pd-admin-users-presence-dot {
   position: absolute;
-  right: -1px;
+  inset-inline-end: -1px;
   bottom: -1px;
   width: 10px;
   height: 10px;
@@ -450,7 +450,7 @@
     max-width: none;
     white-space: normal;
     word-break: break-word;
-    text-align: right;
+    text-align: end;
   }
 }
 

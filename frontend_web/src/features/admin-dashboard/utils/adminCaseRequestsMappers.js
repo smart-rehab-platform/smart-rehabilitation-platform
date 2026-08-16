@@ -1,5 +1,5 @@
-import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
-import { getPatientInitials, resolveProfileImageUrl } from "./adminPatientsMappers";
+import { resolveUploadedAssetUrl } from "../../../services/apiConfig.js";
+import { getPatientInitials, resolveProfileImageUrl } from "./adminPatientsMappers.js";
 
 const DATE_ONLY_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 
@@ -327,9 +327,7 @@ function mapAttachment(row) {
     resolvedUrl: resolveCaseAttachmentUrl(fileUrl),
     fileType,
     originalName,
-    createdAtLabel: formatAdminDateTimeLabel(
-      readString(row, ["created_at", "createdAt"]),
-    ),
+    createdAtRaw: readString(row, ["created_at", "createdAt"]),
     isImage: fileType.startsWith("image/"),
     isPdf: fileType === "application/pdf",
   };
@@ -424,10 +422,10 @@ export function mapAdminCaseRequestDetail(row) {
       const age = calculateAgeFromDateOfBirth(dateOfBirthRaw);
       return age != null ? `${age} yrs` : NOT_PROVIDED;
     })(),
-    genderLabel: formatGenderLabel(readString(row, ["gender"])),
+    genderRaw: readString(row, ["gender"]),
+    preferredContactPeriodRaw,
     caseDescription: readString(row, ["case_description", "caseDescription"]) || NOT_PROVIDED,
     observedDifficulties: readString(row, ["observed_difficulties", "observedDifficulties"]) || NOT_PROVIDED,
-    preferredContactPeriodLabel: formatPreferredContactPeriod(preferredContactPeriodRaw),
     hasPreviousDiagnosis,
     hasPreviousDiagnosisLabel: formatBooleanYesNo(hasPreviousDiagnosis),
     previousDiagnosisDetails: readString(row, [

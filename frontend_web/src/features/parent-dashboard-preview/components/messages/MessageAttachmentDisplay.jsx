@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
 import { PlatformMaterialIcon } from "../../../../components/platform/PlatformMaterialIcon";
+import { useLocale } from "../../../../context/useLocale.js";
 import {
   getAttachmentDisplayName,
   getMessageAttachmentKind,
 } from "../../utils/parentMessageAttachmentUtils";
 import { MessageImageLightbox } from "./MessageImageLightbox";
 
-function MessageImageAttachment({ attachment }) {
+function MessageImageAttachment({ attachment, t }) {
   const [broken, setBroken] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const label = getAttachmentDisplayName(attachment.fileUrl, attachment.fileType);
 
   if (!attachment.fileUrl || broken) {
-    return <p className="pd-message-attachment-fallback">Image unavailable</p>;
+    return <p className="pd-message-attachment-fallback">{t("parent.messages.attachments.imageUnavailable")}</p>;
   }
 
   return (
@@ -22,7 +23,7 @@ function MessageImageAttachment({ attachment }) {
         type="button"
         className="pd-message-attachment-image-button"
         onClick={() => setLightboxOpen(true)}
-        aria-label={`View image: ${label}`}
+        aria-label={t("parent.messages.attachments.viewImage", { label })}
       >
         <img
           src={attachment.fileUrl}
@@ -42,18 +43,18 @@ function MessageImageAttachment({ attachment }) {
   );
 }
 
-function MessageVideoAttachment({ attachment }) {
+function MessageVideoAttachment({ attachment, t }) {
   const label = getAttachmentDisplayName(attachment.fileUrl, attachment.fileType);
 
   if (!attachment.fileUrl) {
-    return <p className="pd-message-attachment-fallback">Video unavailable</p>;
+    return <p className="pd-message-attachment-fallback">{t("parent.messages.attachments.videoUnavailable")}</p>;
   }
 
   return (
     <div className="pd-message-attachment-video">
       <video controls preload="metadata" src={attachment.fileUrl}>
         <a href={attachment.fileUrl} target="_blank" rel="noreferrer">
-          Download video
+          {t("parent.messages.attachments.downloadVideo")}
         </a>
       </video>
       <a
@@ -63,28 +64,28 @@ function MessageVideoAttachment({ attachment }) {
         className="pd-message-attachment-download"
       >
         <Download size={14} aria-hidden="true" />
-        {label}
+        <span dir="auto">{label}</span>
       </a>
     </div>
   );
 }
 
-function MessageAudioAttachment({ attachment }) {
+function MessageAudioAttachment({ attachment, t }) {
   const label = getAttachmentDisplayName(attachment.fileUrl, attachment.fileType);
 
   if (!attachment.fileUrl) {
-    return <p className="pd-message-attachment-fallback">Audio unavailable</p>;
+    return <p className="pd-message-attachment-fallback">{t("parent.messages.attachments.audioUnavailable")}</p>;
   }
 
   return (
     <div className="pd-message-attachment-audio">
       <audio controls preload="metadata" src={attachment.fileUrl} />
-      <span className="pd-message-attachment-label">{label}</span>
+      <span className="pd-message-attachment-label" dir="auto">{label}</span>
     </div>
   );
 }
 
-function MessageFileAttachment({ attachment }) {
+function MessageFileAttachment({ attachment, t }) {
   const label = getAttachmentDisplayName(attachment.fileUrl, attachment.fileType);
   const kind = getMessageAttachmentKind(attachment.fileType);
 
@@ -96,26 +97,27 @@ function MessageFileAttachment({ attachment }) {
       className="pd-message-attachment-file"
     >
       <PlatformMaterialIcon icon="report" size={16} />
-      <span>{kind === "pdf" ? "PDF document" : label}</span>
+      <span dir="auto">{kind === "pdf" ? t("parent.messages.pdfDocument") : label}</span>
       <Download size={14} aria-hidden="true" />
     </a>
   );
 }
 
 export function MessageAttachmentDisplay({ attachment }) {
+  const { t } = useLocale();
   const kind = getMessageAttachmentKind(attachment.fileType);
 
   if (kind === "image") {
-    return <MessageImageAttachment attachment={attachment} />;
+    return <MessageImageAttachment attachment={attachment} t={t} />;
   }
 
   if (kind === "video") {
-    return <MessageVideoAttachment attachment={attachment} />;
+    return <MessageVideoAttachment attachment={attachment} t={t} />;
   }
 
   if (kind === "audio") {
-    return <MessageAudioAttachment attachment={attachment} />;
+    return <MessageAudioAttachment attachment={attachment} t={t} />;
   }
 
-  return <MessageFileAttachment attachment={attachment} />;
+  return <MessageFileAttachment attachment={attachment} t={t} />;
 }

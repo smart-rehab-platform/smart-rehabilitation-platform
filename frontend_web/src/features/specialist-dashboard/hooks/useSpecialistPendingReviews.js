@@ -1,19 +1,25 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { loadSpecialistPendingReviews } from "../../../services/specialistDashboardService";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
+import { fetchSpecialistPendingReviewRows } from "../../../services/specialistDashboardService";
 import { subscribeSpecialistReviewRefresh } from "../utils/specialistReviewRefresh";
+import { mapPendingReviewPreview } from "../utils/specialistPreviewMappers";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
-const SIGNED_OUT_ERROR = "Please sign in to view pending reviews.";
-
 export function useSpecialistPendingReviews(specialistUserId) {
-  const [reviews, setReviews] = useState([]);
+  const { t, locale } = useLocale();
+  const [rawRows, setRawRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const reviews = useMemo(
+    () => mapPendingReviewPreview(rawRows, { limit: 4, t, locale }),
+    [rawRows, t, locale],
+  );
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -35,20 +41,20 @@ export function useSpecialistPendingReviews(specialistUserId) {
       setError(null);
 
       try {
-        const nextReviews = await loadSpecialistPendingReviews(specialistUserId);
+        const rows = await fetchSpecialistPendingReviewRows(specialistUserId);
 
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
 
-        setReviews(nextReviews);
+        setRawRows(rows);
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
 
-        setReviews([]);
-        setError(resolveErrorMessage(loadError, "Failed to load pending reviews."));
+        setRawRows([]);
+        setError(resolveErrorMessage(loadError, t("specialist.dashboard.errors.reviewsLoadFailed")));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -61,13 +67,13 @@ export function useSpecialistPendingReviews(specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, refreshToken]);
+  }, [specialistUserId, refreshToken, t]);
 
   if (!specialistUserId) {
     return {
       reviews: [],
       isLoading: false,
-      error: SIGNED_OUT_ERROR,
+      error: t("specialist.dashboard.errors.reviewsSignInRequired"),
       reload,
     };
   }

@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { loadSpecialistExercises } from "../../../services/specialistExerciseService";
 import {
   EXERCISE_ALL_CATEGORY_LABEL,
   buildExerciseCategoryFilters,
   filterExercises,
-  getExerciseLibraryEmptyMessage,
 } from "../utils/specialistExerciseMappers";
+import {
+  applyExerciseListItemLocalization,
+  getExerciseLibraryEmptyMessage,
+} from "../utils/specialistExercisesLocalization";
 import { subscribeSpecialistExerciseRefresh } from "../utils/specialistExerciseRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -13,6 +17,7 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistExercises(enabled = true) {
+  const { t } = useLocale();
   const [exercises, setExercises] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,6 +25,8 @@ export function useSpecialistExercises(enabled = true) {
   const [selectedCategory, setSelectedCategory] = useState(EXERCISE_ALL_CATEGORY_LABEL);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const loadFailedMessage = t("specialist.exercises.errors.loadFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -51,7 +58,7 @@ export function useSpecialistExercises(enabled = true) {
           return;
         }
         setExercises([]);
-        setError(resolveErrorMessage(loadError, "Failed to load exercises."));
+        setError(resolveErrorMessage(loadError, loadFailedMessage));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -64,24 +71,24 @@ export function useSpecialistExercises(enabled = true) {
     return () => {
       cancelled = true;
     };
-  }, [enabled, refreshToken]);
+  }, [enabled, refreshToken, loadFailedMessage]);
 
   const categoryFilters = useMemo(
     () => buildExerciseCategoryFilters(exercises),
     [exercises],
   );
 
-  const visibleExercises = useMemo(
-    () => filterExercises(exercises, { searchQuery, selectedCategory }),
-    [exercises, searchQuery, selectedCategory],
-  );
+  const visibleExercises = useMemo(() => {
+    const filtered = filterExercises(exercises, { searchQuery, selectedCategory });
+    return filtered.map((exercise) => applyExerciseListItemLocalization(exercise, { t }));
+  }, [exercises, searchQuery, selectedCategory, t]);
 
   const emptyMessage = useMemo(
     () => getExerciseLibraryEmptyMessage({
       hasExercises: exercises.length > 0,
       hasVisible: visibleExercises.length > 0,
-    }),
-    [exercises.length, visibleExercises.length],
+    }, t),
+    [exercises.length, visibleExercises.length, t],
   );
 
   return {

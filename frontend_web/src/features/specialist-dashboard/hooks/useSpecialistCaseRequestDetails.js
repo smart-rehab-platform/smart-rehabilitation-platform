@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   acceptSpecialistCaseRequest,
   fetchSpecialistCaseRequestDetail,
@@ -6,6 +7,7 @@ import {
   startSpecialistCaseAssessment,
   updateSpecialistAssessmentNotes,
 } from "../../../services/specialistCaseRequestService";
+import { applyCaseRequestDetailLocalization } from "../utils/specialistCaseRequestMappers";
 import { notifySpecialistCaseRequestRefresh } from "../utils/specialistCaseRequestRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -13,7 +15,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId) {
-  const [detail, setDetail] = useState(null);
+  const { t, locale } = useLocale();
+  const [baseDetail, setBaseDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState(null);
@@ -24,6 +27,13 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
   const [isRejecting, setIsRejecting] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+
+  const detail = useMemo(
+    () => applyCaseRequestDetailLocalization(baseDetail, mapperContext),
+    [baseDetail, mapperContext],
+  );
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -51,13 +61,13 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setDetail(next);
+        setBaseDetail(next);
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setDetail(null);
-        setError(resolveErrorMessage(loadError, "Failed to load case request."));
+        setBaseDetail(null);
+        setError(resolveErrorMessage(loadError, t("specialist.caseRequests.errors.loadDetailsFailed")));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -70,7 +80,7 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, caseRequestId, refreshToken]);
+  }, [specialistUserId, caseRequestId, refreshToken, t]);
 
   const refresh = useCallback(async () => {
     if (!specialistUserId || !caseRequestId) {
@@ -87,18 +97,18 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
       if (loadTokenRef.current !== loadToken) {
         return;
       }
-      setDetail(next);
+      setBaseDetail(next);
     } catch (loadError) {
       if (loadTokenRef.current !== loadToken) {
         return;
       }
-      setError(resolveErrorMessage(loadError, "Failed to load case request."));
+      setError(resolveErrorMessage(loadError, t("specialist.caseRequests.errors.loadDetailsFailed")));
     } finally {
       if (loadTokenRef.current === loadToken) {
         setIsRefreshing(false);
       }
     }
-  }, [specialistUserId, caseRequestId]);
+  }, [specialistUserId, caseRequestId, t]);
 
   const hasActiveMutation = isStartingAssessment || isSavingNotes || isAccepting || isRejecting;
 
@@ -110,16 +120,16 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
     setActionError(null);
     try {
       const next = await startSpecialistCaseAssessment(caseRequestId);
-      setDetail(next);
+      setBaseDetail(next);
       notifySpecialistCaseRequestRefresh({ caseRequestId, action: "start-assessment" });
       return true;
     } catch (actionErr) {
-      setActionError(resolveErrorMessage(actionErr, "Failed to start assessment."));
+      setActionError(resolveErrorMessage(actionErr, t("specialist.caseRequests.errors.startAssessmentFailed")));
       return false;
     } finally {
       setIsStartingAssessment(false);
     }
-  }, [caseRequestId, hasActiveMutation]);
+  }, [caseRequestId, hasActiveMutation, t]);
 
   const saveAssessmentNotes = useCallback(async (notes) => {
     if (!caseRequestId || hasActiveMutation) {
@@ -129,16 +139,16 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
     setActionError(null);
     try {
       const next = await updateSpecialistAssessmentNotes(caseRequestId, notes);
-      setDetail(next);
+      setBaseDetail(next);
       notifySpecialistCaseRequestRefresh({ caseRequestId, action: "assessment-notes" });
       return true;
     } catch (actionErr) {
-      setActionError(resolveErrorMessage(actionErr, "Failed to update assessment notes."));
+      setActionError(resolveErrorMessage(actionErr, t("specialist.caseRequests.errors.updateNotesFailed")));
       return false;
     } finally {
       setIsSavingNotes(false);
     }
-  }, [caseRequestId, hasActiveMutation]);
+  }, [caseRequestId, hasActiveMutation, t]);
 
   const acceptCase = useCallback(async () => {
     if (!caseRequestId || hasActiveMutation) {
@@ -148,16 +158,16 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
     setActionError(null);
     try {
       const next = await acceptSpecialistCaseRequest(caseRequestId);
-      setDetail(next);
+      setBaseDetail(next);
       notifySpecialistCaseRequestRefresh({ caseRequestId, action: "accept" });
       return next?.patientId || null;
     } catch (actionErr) {
-      setActionError(resolveErrorMessage(actionErr, "Failed to accept case request."));
+      setActionError(resolveErrorMessage(actionErr, t("specialist.caseRequests.errors.acceptFailed")));
       return null;
     } finally {
       setIsAccepting(false);
     }
-  }, [caseRequestId, hasActiveMutation]);
+  }, [caseRequestId, hasActiveMutation, t]);
 
   const rejectCase = useCallback(async (reason) => {
     if (!caseRequestId || hasActiveMutation) {
@@ -167,23 +177,23 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
     setActionError(null);
     try {
       const next = await rejectSpecialistCaseRequest(caseRequestId, reason);
-      setDetail(next);
+      setBaseDetail(next);
       notifySpecialistCaseRequestRefresh({ caseRequestId, action: "reject" });
       return true;
     } catch (actionErr) {
-      setActionError(resolveErrorMessage(actionErr, "Failed to reject case request."));
+      setActionError(resolveErrorMessage(actionErr, t("specialist.caseRequests.errors.rejectFailed")));
       return false;
     } finally {
       setIsRejecting(false);
     }
-  }, [caseRequestId, hasActiveMutation]);
+  }, [caseRequestId, hasActiveMutation, t]);
 
   if (!specialistUserId) {
     return {
       detail: null,
       isLoading: false,
       isRefreshing: false,
-      error: "Please sign in to view this case request.",
+      error: t("specialist.caseRequests.errors.signInRequired"),
       actionError: null,
       clearActionError,
       isStartingAssessment: false,
@@ -205,7 +215,7 @@ export function useSpecialistCaseRequestDetails(specialistUserId, caseRequestId)
       detail: null,
       isLoading: false,
       isRefreshing: false,
-      error: "Case request not found.",
+      error: t("specialist.caseRequests.notFound"),
       actionError: null,
       clearActionError,
       isStartingAssessment: false,

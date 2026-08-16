@@ -1,15 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadAdminSessions } from "../../../services/adminSessionsService";
+import {
+  applyAdminSessionsLocalization,
+  getAdminSessionsLabels,
+} from "../utils/adminSessionsLocalization.js";
 import {
   filterAdminSessions,
   mapAdminSession,
-} from "../utils/adminSessionsMappers";
+} from "../utils/adminSessionsMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminSessions() {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminSessionsLabels(t), [t]);
   const [sessions, setSessions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -37,7 +45,10 @@ export function useAdminSessions() {
           return;
         }
 
-        const mapped = rows.map(mapAdminSession).filter(Boolean);
+        const mapped = applyAdminSessionsLocalization(
+          rows.map(mapAdminSession).filter(Boolean),
+          mapperContext,
+        );
         setSessions(mapped);
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
@@ -45,7 +56,7 @@ export function useAdminSessions() {
         }
 
         setSessions([]);
-        setError(resolveErrorMessage(loadError, "Failed to load sessions."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -58,11 +69,14 @@ export function useAdminSessions() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [labels.loadFailed, mapperContext, refreshToken]);
 
   const filteredSessions = useMemo(
-    () => filterAdminSessions(sessions, { searchQuery, selectedStatus }),
-    [sessions, searchQuery, selectedStatus],
+    () => applyAdminSessionsLocalization(
+      filterAdminSessions(sessions, { searchQuery, selectedStatus }),
+      mapperContext,
+    ),
+    [mapperContext, searchQuery, selectedStatus, sessions],
   );
 
   const hasActiveFilters = Boolean(
@@ -71,6 +85,7 @@ export function useAdminSessions() {
   );
 
   return {
+    labels,
     sessions,
     filteredSessions,
     searchQuery,

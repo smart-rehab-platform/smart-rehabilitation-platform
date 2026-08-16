@@ -2,6 +2,7 @@ import { ArrowLeft, FileText, Link2 } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistPatientReportsPath,
@@ -11,7 +12,6 @@ import { StatusBadge } from "../shared-dashboard/components/StatusBadge";
 import { useSpecialistReportDetails } from "./hooks/useSpecialistReportDetails";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
-import { formatReportDateLabel } from "./utils/specialistReportMappers";
 import { getInitials } from "./utils/specialistScheduleUtils";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
@@ -23,6 +23,7 @@ export default function SpecialistReportDetailsPage() {
   const isAiReport = searchParams.get("ai") === "1";
   const patientId = searchParams.get("patientId");
   const { user, isInitializing } = useAuth();
+  const { t } = useLocale();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
   const {
@@ -79,24 +80,24 @@ export default function SpecialistReportDetailsPage() {
     }
     try {
       await navigator.clipboard.writeText(detail.pdfUrl);
-      showToast("PDF link copied to clipboard");
+      showToast(t("specialist.reports.pdf.linkCopied"));
     } catch {
-      showToast("Unable to copy PDF link.");
+      showToast(t("specialist.reports.pdf.copyFailed"));
     }
-  }, [detail, showToast]);
+  }, [detail, showToast, t]);
 
   const handleGeneratePdf = useCallback(async () => {
     const ok = await generatePdf();
     if (ok) {
-      showToast("PDF generated successfully");
+      showToast(t("specialist.reports.pdf.generatedSuccess"));
     }
-  }, [generatePdf, showToast]);
+  }, [generatePdf, showToast, t]);
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading report...</p>
+          <p className="pd-inline-loading">{t("specialist.reports.loadingDetail")}</p>
         </section>
       );
     }
@@ -106,7 +107,7 @@ export default function SpecialistReportDetailsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -115,7 +116,7 @@ export default function SpecialistReportDetailsPage() {
     if (!detail) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">Report not found.</p>
+          <p className="pd-section-sub">{t("specialist.reports.notFound")}</p>
         </section>
       );
     }
@@ -134,42 +135,46 @@ export default function SpecialistReportDetailsPage() {
             />
             <strong>{detail.patientName}</strong>
           </div>
-          <h2 className="pd-specialist-report-detail-title">{detail.title}</h2>
+          <h2 className="pd-specialist-report-detail-title">{detail.titleLabel || detail.title}</h2>
           <div className="pd-specialist-report-card-meta">
             <StatusBadge label={detail.typeBadgeLabel} tone="blue" />
-            {detail.isAi ? <StatusBadge label="AI" tone="purple" /> : null}
+            {detail.isAi ? <StatusBadge label={detail.aiBadgeLabel || t("specialist.reports.type.ai")} tone="purple" /> : null}
             <span className="pd-section-sub">{detail.dateLabel}</span>
           </div>
           {detail.periodStart && detail.periodEnd ? (
             <p className="pd-section-sub">
-              Period: {formatReportDateLabel(detail.periodStart)} – {formatReportDateLabel(detail.periodEnd)}
+              {t("specialist.reports.labels.period")}
+              {": "}
+              {detail.periodStartLabel}
+              {" – "}
+              {detail.periodEndLabel}
             </p>
           ) : null}
         </section>
 
         <section className="pd-card pd-card-pad pd-specialist-report-info">
-          <h3 className="pd-specialist-review-section-title">Report Information</h3>
+          <h3 className="pd-specialist-review-section-title">{t("specialist.reports.labels.reportInformation")}</h3>
           <dl className="pd-specialist-report-info-grid">
             <div>
-              <dt>Patient</dt>
+              <dt>{t("specialist.reports.labels.patient")}</dt>
               <dd>{detail.patientName}</dd>
             </div>
             <div>
-              <dt>Specialist</dt>
-              <dd>{detail.isAi ? "—" : (detail.specialistName || "—")}</dd>
+              <dt>{t("specialist.reports.labels.specialist")}</dt>
+              <dd>{detail.isAi ? t("auth.shared.emptyDisplay") : (detail.specialistName || t("auth.shared.emptyDisplay"))}</dd>
             </div>
             <div>
-              <dt>Report Type</dt>
+              <dt>{t("specialist.reports.labels.reportType")}</dt>
               <dd>{detail.typeBadgeLabel}</dd>
             </div>
             <div>
-              <dt>Created Date</dt>
+              <dt>{t("specialist.reports.labels.createdDate")}</dt>
               <dd>{detail.dateLabel}</dd>
             </div>
             {detail.isPdfReady ? (
               <div>
-                <dt>Status</dt>
-                <dd><StatusBadge label="PDF Ready" tone="success" /></dd>
+                <dt>{t("specialist.reports.labels.status")}</dt>
+                <dd><StatusBadge label={detail.pdfReadyLabel || t("specialist.reports.status.pdfReady")} tone="success" /></dd>
               </div>
             ) : null}
           </dl>
@@ -177,8 +182,8 @@ export default function SpecialistReportDetailsPage() {
 
         {detail.sections.map((section) => (
           <section key={section.title} className="pd-card pd-card-pad pd-specialist-report-section">
-            <h3 className="pd-specialist-review-section-title">{section.title}</h3>
-            <p className="pd-specialist-report-section-body">{section.content}</p>
+            <h3 className="pd-specialist-review-section-title">{section.titleLabel || section.title}</h3>
+            <p className="pd-specialist-report-section-body" dir="auto">{section.content}</p>
           </section>
         ))}
 
@@ -187,15 +192,15 @@ export default function SpecialistReportDetailsPage() {
             <section className="pd-card pd-card-pad pd-specialist-report-attachment">
               <div className="pd-specialist-report-attachment-row">
                 <FileText size={18} aria-hidden="true" />
-                <span className="pd-section-sub">{detail.pdfUrl}</span>
+                <span className="pd-section-sub" dir="auto">{detail.pdfUrl}</span>
               </div>
             </section>
             <button type="button" className="pd-btn pd-btn-primary pd-specialist-review-submit" onClick={handleViewPdf}>
-              View PDF
+              {t("specialist.reports.pdf.view")}
             </button>
             <button type="button" className="pd-btn pd-btn-soft pd-specialist-report-copy-link" onClick={handleCopyPdfLink}>
               <Link2 size={16} aria-hidden="true" />
-              Copy PDF Link
+              {t("specialist.reports.pdf.copyLink")}
             </button>
           </>
         ) : (
@@ -205,7 +210,7 @@ export default function SpecialistReportDetailsPage() {
             onClick={handleGeneratePdf}
             disabled={isExporting}
           >
-            {isExporting ? "Generating PDF..." : "Generate PDF"}
+            {isExporting ? t("specialist.reports.pdf.generating") : t("specialist.reports.pdf.generate")}
           </button>
         )}
 
@@ -243,7 +248,7 @@ export default function SpecialistReportDetailsPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
-              Back to Reports
+              {t("specialist.reports.backToReports")}
             </button>
           </div>
           <div className="pd-task-hub-panel pd-specialist-report-detail-page">

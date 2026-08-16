@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { PARENT_WEB_ROUTES, buildParentEditProfilePath } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { ParentProfileErrorState } from "./components/profile/ParentProfileErrorState";
 import { ParentProfileHeader } from "./components/profile/ParentProfileHeader";
@@ -12,11 +12,12 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { useParentProfile } from "./hooks/useParentProfile";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
-import { PROFILE_EMPTY_MESSAGES } from "./utils/parentProfileUtils";
+import { getProfileEmptyMessages } from "./utils/parentProfileUtils";
 import "./styles/parentDashboardTokens.css";
 
 export default function ParentProfilePage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -26,6 +27,7 @@ export default function ParentProfilePage() {
   const [toast, setToast] = useState(null);
 
   const parent = useMemo(() => mapParentFromAuth(user), [user]);
+  const profileEmptyMessages = useMemo(() => getProfileEmptyMessages(t), [t]);
 
   const {
     profile,
@@ -108,7 +110,7 @@ export default function ParentProfilePage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-profile-state pd-section-enter">
-          <p className="pd-inline-loading">Loading profile...</p>
+          <p className="pd-inline-loading">{t("parent.pages.profile.loading")}</p>
         </section>
       );
     }
@@ -116,7 +118,7 @@ export default function ParentProfilePage() {
     if (error) {
       return (
         <ParentProfileErrorState
-          message={error || PROFILE_EMPTY_MESSAGES.loadError}
+          message={error || profileEmptyMessages.loadError}
           onRetry={refetch}
         />
       );
@@ -125,7 +127,7 @@ export default function ParentProfilePage() {
     if (!profile) {
       return (
         <ParentProfileErrorState
-          message="Profile unavailable."
+          message={t("parent.pages.profile.unavailable")}
           onRetry={refetch}
         />
       );
@@ -147,7 +149,6 @@ export default function ParentProfilePage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -173,14 +174,14 @@ export default function ParentProfilePage() {
               onClick={handleBack}
             >
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to dashboard
+              {t("parent.common.backToDashboard")}
             </button>
           </div>
 
           <header className="pd-profile-page-header">
-            <h1 className="pd-task-hub-title">Profile</h1>
+            <h1 className="pd-task-hub-title">{t("parent.pages.profile.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              Manage your personal and account information.
+              {t("parent.pages.profile.subtitle")}
             </p>
           </header>
 

@@ -41,6 +41,7 @@ export default function AdminPatientsPage() {
     setSearchQuery,
     setConditionFilter,
     reload,
+    labels,
   } = useAdminPatients();
 
   const emptyKind = useMemo(() => {
@@ -94,7 +95,7 @@ export default function AdminPatientsPage() {
           <div className="pd-admin-patients-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : (

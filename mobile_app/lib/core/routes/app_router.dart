@@ -14,6 +14,11 @@ import '../../features/complaints/presentation/admin/admin_complaints_screen.dar
 import '../../features/complaints/presentation/parent/parent_complaint_details_screen.dart';
 import '../../features/complaints/presentation/parent/parent_complaint_form_screen.dart';
 import '../../features/complaints/presentation/parent/parent_complaints_screen.dart';
+import '../../features/support_requests/presentation/admin/admin_support_request_details_screen.dart';
+import '../../features/support_requests/presentation/admin/admin_support_requests_screen.dart';
+import '../../features/support_requests/presentation/specialist/specialist_support_request_details_screen.dart';
+import '../../features/support_requests/presentation/specialist/specialist_support_request_form_screen.dart';
+import '../../features/support_requests/presentation/specialist/specialist_support_requests_screen.dart';
 import '../../features/case_intake/presentation/parent_case_request_details_screen.dart';
 import '../../features/case_intake/presentation/parent_case_request_form_screen.dart';
 import '../../features/case_intake/presentation/parent_case_requests_screen.dart';
@@ -23,6 +28,7 @@ import '../../features/case_intake/presentation/admin/admin_matching_specialists
 import '../../features/case_intake/presentation/specialist/specialist_assigned_cases_screen.dart';
 import '../../features/case_intake/presentation/specialist/specialist_case_request_details_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_screens.dart';
+import '../../features/dashboard/presentation/admin/edit_admin_profile_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_ai_center_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_audit_logs_screen.dart';
 import '../../features/dashboard/presentation/admin/admin_patients_screen.dart';
@@ -591,6 +597,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: AppRoutes.specialistSupportRequests,
+        name: 'specialistSupportRequests',
+        builder: (context, state) => const SpecialistSupportRequestsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistSupportRequestNew,
+        name: 'specialistSupportRequestNew',
+        builder: (context, state) => const SpecialistSupportRequestFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistSupportRequestDetailPath,
+        name: 'specialistSupportRequestDetail',
+        builder: (context, state) => SpecialistSupportRequestDetailsScreen(
+          requestId: state.pathParameters['requestId']!,
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.adminDashboard,
         name: 'adminDashboard',
         builder: (context, state) => const AdminDashboardScreen(),
@@ -637,6 +660,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: AppRoutes.adminSupportRequests,
+        name: 'adminSupportRequests',
+        builder: (context, state) => const AdminSupportRequestsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminSupportRequestDetailPath,
+        name: 'adminSupportRequestDetail',
+        builder: (context, state) => AdminSupportRequestDetailsScreen(
+          requestId: state.pathParameters['requestId']!,
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.adminCaseRequestAssignPath,
         name: 'adminCaseRequestAssign',
         builder: (context, state) => AdminMatchingSpecialistsScreen(
@@ -661,7 +696,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.adminUsers,
         name: 'adminUsers',
-        builder: (context, state) => const AdminUsersScreen(),
+        builder: (context, state) => AdminUsersScreen(
+          initialRoleFilter: AppRoutes.parseAdminUsersRoleParam(
+            state.uri.queryParameters['role'],
+          ),
+        ),
       ),
       GoRoute(
         path: AppRoutes.adminExercises,
@@ -714,6 +753,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.adminProfile,
         name: 'adminProfile',
         builder: (context, state) => const AdminProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminEditProfile,
+        name: 'adminEditProfile',
+        builder: (context, state) => const EditAdminProfileScreen(),
       ),
       GoRoute(
         path: AppRoutes.adminMore,

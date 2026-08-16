@@ -1,4 +1,4 @@
-import { formatAdminRole, getAdminRoleTone, getAvatarInitial } from "./adminDashboardMappers";
+import { getAdminRoleTone, getAvatarInitial } from "./adminDashboardMappers.js";
 
 const MONTH_LABELS = [
   "Jan",
@@ -54,7 +54,6 @@ export function mapAdminUserRecord(row) {
     email: readString(row, ["email"]),
     phone: readString(row, ["phone"]) || "",
     role,
-    roleLabel: formatAdminRole(role),
     roleTone: getAdminRoleTone(role),
     avatarInitial: getAvatarInitial(fullName),
     isActive: row.is_active === true || row.isActive === true,

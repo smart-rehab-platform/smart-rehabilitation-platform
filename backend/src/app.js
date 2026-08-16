@@ -37,6 +37,8 @@ const specialistFeedbackRoutes = require("./modules/specialistFeedback/specialis
 const sessionRequestsRoutes = require("./modules/sessionRequests/sessionRequests.routes");
 const complaintsRoutes = require("./modules/complaints/complaints.routes");
 const adminComplaintsRoutes = require("./modules/complaints/adminComplaints.routes");
+const supportRequestsRoutes = require("./modules/supportRequests/supportRequests.routes");
+const adminSupportRequestsRoutes = require("./modules/supportRequests/adminSupportRequests.routes");
 const caseCategoriesRoutes = require("./modules/caseCategories/caseCategories.routes");
 const caseIntakeRoutes = require("./modules/caseIntake/caseIntake.routes");
 const familyPatternsRoutes = require("./modules/familyPatterns/familyPatterns.routes");
@@ -109,6 +111,8 @@ app.use("/api/v1/specialist-feedback", specialistFeedbackRoutes);
 app.use("/api/v1/session-requests", sessionRequestsRoutes);
 app.use("/api/v1/complaints", complaintsRoutes);
 app.use("/api/v1/admin/complaints", adminComplaintsRoutes);
+app.use("/api/v1/support-requests", supportRequestsRoutes);
+app.use("/api/v1/admin/support-requests", adminSupportRequestsRoutes);
 app.use("/api/v1/case-categories", caseCategoriesRoutes);
 app.use("/api/v1/case-intake-requests", caseIntakeRoutes);
 app.use("/api/v1", familyPatternsRoutes);

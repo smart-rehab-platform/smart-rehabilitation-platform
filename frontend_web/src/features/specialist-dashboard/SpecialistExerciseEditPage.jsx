@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import { buildSpecialistExerciseDetailPath } from "../../routes/specialistDashboardRoutes";
 import { SpecialistExerciseEditForm } from "./components/SpecialistExerciseEditForm";
 import { useSpecialistExerciseEdit } from "./hooks/useSpecialistExerciseEdit";
@@ -13,6 +14,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistExerciseEditPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { exerciseId } = useParams();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
@@ -84,20 +86,20 @@ export default function SpecialistExerciseEditPage() {
   const handleSave = useCallback(async () => {
     const result = await save();
     if (result.ok) {
-      showToast("Exercise updated successfully");
+      showToast(t("specialist.exercises.toast.updatedSuccess"));
       handleBack();
       return;
     }
     if (result.message) {
       showToast(result.message);
     }
-  }, [save, showToast, handleBack]);
+  }, [save, showToast, handleBack, t]);
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading exercise...</p>
+          <p className="pd-inline-loading">{t("specialist.exercises.loadingExercise")}</p>
         </section>
       );
     }
@@ -105,7 +107,7 @@ export default function SpecialistExerciseEditPage() {
     if (notFound) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">Exercise not found.</p>
+          <p className="pd-section-sub">{t("specialist.exercises.empty.notFound")}</p>
         </section>
       );
     }
@@ -113,7 +115,7 @@ export default function SpecialistExerciseEditPage() {
     if (forbidden || (exercise && !canEditExercise(exercise, { userId: user?.id, role: user?.role }))) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">You do not have permission to edit this exercise.</p>
+          <p className="pd-section-sub">{t("specialist.exercises.empty.forbidden")}</p>
         </section>
       );
     }
@@ -123,7 +125,7 @@ export default function SpecialistExerciseEditPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -193,9 +195,9 @@ export default function SpecialistExerciseEditPage() {
           <header className="pd-specialist-exercise-page-header">
             <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back
+              {t("specialist.exercises.back")}
             </button>
-            <h1 className="pd-section-title">Edit Exercise</h1>
+            <h1 className="pd-section-title">{t("specialist.exercises.editTitle")}</h1>
           </header>
 
           {error && exercise ? (

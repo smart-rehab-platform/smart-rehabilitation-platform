@@ -15,8 +15,7 @@
 .pd-preview .pd-admin-header-search-panel {
   position: absolute;
   top: calc(100% + 6px);
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   z-index: 40;
   max-height: min(320px, 60vh);
   overflow-y: auto;
@@ -41,7 +40,7 @@
   font: inherit;
   font-size: 0.875rem;
   font-weight: 600;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 

@@ -1,20 +1,12 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { LandingLogo } from "./LandingLogo";
+import { useLocale } from "../../context/useLocale.js";
+import {
+  buildLandingFooterAccessLinks,
+  buildLandingFooterPlatformLinks,
+} from "./landingLocalization.js";
 import { L } from "./landingTokens";
-
-const PLATFORM_LINKS = [
-  { label: "Features", href: "#features" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "AI Solutions", href: "#ai-solutions" },
-  { label: "Who It's For", href: "#who-its-for" },
-  { label: "About", href: "#about" },
-  { label: "Join Us", href: "#join-us" },
-];
-
-const ACCESS_LINKS = [
-  { label: "Sign In", href: "/login", isRoute: true },
-  { label: "Create Account", href: "/signup", isRoute: true },
-];
 
 function scrollToSection(href) {
   const id = href.replace("#", "");
@@ -65,6 +57,10 @@ function FooterLinkColumn({ title, links }) {
 }
 
 export function LandingFooter() {
+  const { t } = useLocale();
+  const platformLinks = useMemo(() => buildLandingFooterPlatformLinks(t), [t]);
+  const accessLinks = useMemo(() => buildLandingFooterAccessLinks(t), [t]);
+
   return (
     <footer
       className="border-t"
@@ -82,21 +78,19 @@ export function LandingFooter() {
               className="mt-4 max-w-sm text-[14px] leading-relaxed"
               style={{ color: L.textLight }}
             >
-              A connected rehabilitation platform that brings together families, specialists,
-              administrators, and AI-powered clinical tools to support better rehabilitation
-              outcomes.
+              {t("landing.footer.description")}
             </p>
           </div>
 
-          <FooterLinkColumn title="Platform" links={PLATFORM_LINKS} />
-          <FooterLinkColumn title="Access" links={ACCESS_LINKS} />
+          <FooterLinkColumn title={t("landing.footer.platform.title")} links={platformLinks} />
+          <FooterLinkColumn title={t("landing.footer.access.title")} links={accessLinks} />
         </div>
 
         <div
           className="mt-10 border-t pt-6 text-center text-[12px] leading-relaxed md:text-[13px]"
           style={{ borderColor: L.border, color: L.textLight }}
         >
-          © 2026 Smart Rehabilitation Platform. All Rights Reserved.
+          {t("landing.footer.copyright")}
         </div>
       </div>
     </footer>

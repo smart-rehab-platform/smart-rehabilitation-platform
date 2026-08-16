@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Activity,
   Bell,
@@ -8,56 +9,21 @@ import {
   TrendingUp,
 } from "lucide-react";
 import neurologyIcon from "../../assets/icons/neurology.svg";
+import { useLocale } from "../../context/useLocale.js";
+import {
+  buildLandingAiWidgets,
+  buildLandingWorkflowSteps,
+} from "./landingLocalization.js";
 import { L } from "./landingTokens";
 
 const PROGRESS_PERCENT = 67;
 const CURRENT_STEP_INDEX = 4;
 
-const WORKFLOW_STEPS = [
-  {
-    title: "Submit Case Request",
-    description:
-      "Parent submits child information, category, case description and attachments.",
-  },
-  {
-    title: "Specialist Assignment",
-    description: "Administrator reviews the request and assigns the appropriate specialist.",
-  },
-  {
-    title: "Assessment & Communication",
-    description: "Specialist communicates with family and performs assessment.",
-  },
-  {
-    title: "Accept & Create Patient",
-    description: "Accepted case becomes an active patient profile.",
-  },
-  {
-    title: "Treatment Plan",
-    description: "Specialist creates treatment plan and goals.",
-  },
-  {
-    title: "Home Exercises",
-    description:
-      "Parent completes assigned exercises and uploads videos, audio and notes.",
-  },
-  {
-    title: "Specialist Review",
-    description:
-      "Specialist reviews submissions, provides feedback, and requests retry if necessary.",
-  },
-  {
-    title: "AI Progress Tracking",
-    description:
-      "AI generates speech analysis, progress reports, weekly summaries and recommendations.",
-  },
-];
-
-const AI_WIDGETS = [
-  { icon: Mic, label: "Speech Analysis" },
-  { icon: Activity, label: "Weekly Summary" },
-  { icon: TrendingUp, label: "Progress Score" },
-  { iconSrc: neurologyIcon, label: "AI Recommendation" },
-];
+const AI_WIDGET_ICON_MAP = {
+  mic: Mic,
+  activity: Activity,
+  trendingUp: TrendingUp,
+};
 
 const cardStyle = {
   background: L.bgCard,
@@ -108,10 +74,10 @@ function FloatWrap({ children, floatClass }) {
   return <div className={floatClass}>{children}</div>;
 }
 
-function PatientJourneyCard() {
+function PatientJourneyCard({ t, workflowSteps }) {
   return (
     <article
-      aria-label="Complete patient rehabilitation journey"
+      aria-label={t("landing.journey.preview.patientJourney.ariaLabel")}
       className="journey-float-card journey-float-card-main w-full max-w-[460px] rounded-2xl p-5 transition-all duration-300 md:p-6"
       style={cardStyle}
     >
@@ -120,7 +86,7 @@ function PatientJourneyCard() {
           className="text-[17px] font-semibold"
           style={{ color: L.text, fontFamily: "'Inter', sans-serif" }}
         >
-          Patient Journey
+          {t("landing.journey.preview.patientJourney.title")}
         </h3>
         <span
           className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
@@ -130,13 +96,15 @@ function PatientJourneyCard() {
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          Active Rehabilitation
+          {t("landing.journey.preview.patientJourney.badge")}
         </span>
       </div>
 
       <div className="mb-5">
         <div className="mb-2 flex items-center justify-between text-[11px]">
-          <span style={{ color: L.textLight, fontFamily: "'Inter', sans-serif" }}>Progress</span>
+          <span style={{ color: L.textLight, fontFamily: "'Inter', sans-serif" }}>
+            {t("landing.journey.preview.patientJourney.progress")}
+          </span>
           <span style={{ color: L.primarySecondary, fontFamily: "'Inter', sans-serif" }}>
             {PROGRESS_PERCENT}%
           </span>
@@ -149,15 +117,15 @@ function PatientJourneyCard() {
         </div>
       </div>
 
-      <ol className="journey-steps-scroll flex max-h-[420px] flex-col gap-2 overflow-y-auto pr-1 md:max-h-[460px]">
-        {WORKFLOW_STEPS.map((step, index) => {
+      <ol className="journey-steps-scroll flex max-h-[420px] flex-col gap-2 overflow-y-auto pe-1 md:max-h-[460px]">
+        {workflowSteps.map((step, index) => {
           const isCurrent = index === CURRENT_STEP_INDEX;
           const isComplete = index < CURRENT_STEP_INDEX;
           const isPending = index > CURRENT_STEP_INDEX;
 
           return (
             <li
-              key={step.title}
+              key={step.key}
               className="rounded-xl px-3 py-2.5"
               style={{
                 background: isCurrent ? L.primary : "transparent",
@@ -210,10 +178,10 @@ function PatientJourneyCard() {
   );
 }
 
-function AiProgressPreview() {
+function AiProgressPreview({ t, aiWidgets }) {
   return (
     <article
-      aria-label="AI progress report preview"
+      aria-label={t("landing.journey.preview.aiReport.ariaLabel")}
       className="journey-float-card w-[220px] rounded-2xl p-4 transition-all duration-300 md:w-[240px]"
       style={{ ...cardStyle, opacity: 0.96 }}
     >
@@ -221,45 +189,67 @@ function AiProgressPreview() {
         className="mb-3 text-[13px] font-semibold"
         style={{ color: L.text, fontFamily: "'Inter', sans-serif" }}
       >
-        AI Progress Report
+        {t("landing.journey.preview.aiReport.title")}
       </h3>
       <div className="mb-3 flex justify-center">
         <CircularProgress value={92} />
       </div>
       <div className="grid grid-cols-2 gap-1.5">
-        {AI_WIDGETS.map(({ icon: Icon, iconSrc, label }) => (
-          <div
-            key={label}
-            className="rounded-lg px-2 py-1.5"
-            style={{ background: L.accentMuted, border: `1px solid ${L.journeyCardBorder}` }}
-          >
-            {iconSrc ? (
-              <img
-                src={iconSrc}
-                alt=""
-                aria-hidden="true"
-                style={{ width: 12, height: 12, display: "block", objectFit: "contain" }}
-              />
-            ) : (
-              <Icon size={12} style={{ color: L.primarySecondary }} aria-hidden="true" />
-            )}
-            <p
-              className="mt-0.5 text-[9px] leading-tight"
-              style={{ color: L.textMuted, fontFamily: "'Inter', sans-serif" }}
+        {aiWidgets.map((widget) => {
+          const Icon = AI_WIDGET_ICON_MAP[widget.icon];
+
+          return (
+            <div
+              key={widget.key}
+              className="rounded-lg px-2 py-1.5"
+              style={{ background: L.accentMuted, border: `1px solid ${L.journeyCardBorder}` }}
             >
-              {label}
-            </p>
-          </div>
-        ))}
+              {widget.iconSrc ? (
+                <img
+                  src={neurologyIcon}
+                  alt=""
+                  aria-hidden="true"
+                  style={{ width: 12, height: 12, display: "block", objectFit: "contain" }}
+                />
+              ) : (
+                Icon && <Icon size={12} style={{ color: L.primarySecondary }} aria-hidden="true" />
+              )}
+              <p
+                className="mt-0.5 text-[9px] leading-tight"
+                style={{ color: L.textMuted, fontFamily: "'Inter', sans-serif" }}
+              >
+                {widget.label}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </article>
   );
 }
 
-function ParentDashboardPreview() {
+function ParentDashboardPreview({ t }) {
+  const dashboardItems = [
+    {
+      icon: Calendar,
+      label: t("landing.journey.preview.parentDashboard.nextSession.label"),
+      detail: t("landing.journey.preview.parentDashboard.nextSession.detail"),
+    },
+    {
+      icon: MessageSquare,
+      label: t("landing.journey.preview.parentDashboard.specialistFeedback.label"),
+      detail: t("landing.journey.preview.parentDashboard.specialistFeedback.detail"),
+    },
+    {
+      icon: Bell,
+      label: t("landing.journey.preview.parentDashboard.aiReminder.label"),
+      detail: t("landing.journey.preview.parentDashboard.aiReminder.detail"),
+    },
+  ];
+
   return (
     <article
-      aria-label="Parent dashboard preview"
+      aria-label={t("landing.journey.preview.parentDashboard.ariaLabel")}
       className="journey-float-card w-[220px] rounded-2xl p-4 transition-all duration-300 md:w-[240px]"
       style={{ ...cardStyle, opacity: 0.96 }}
     >
@@ -267,7 +257,7 @@ function ParentDashboardPreview() {
         className="mb-3 text-[13px] font-semibold"
         style={{ color: L.text, fontFamily: "'Inter', sans-serif" }}
       >
-        Parent Dashboard
+        {t("landing.journey.preview.parentDashboard.title")}
       </h3>
 
       <div
@@ -275,10 +265,10 @@ function ParentDashboardPreview() {
         style={{ background: L.accentMuted, border: `1px solid ${L.journeyCardBorder}` }}
       >
         <p className="text-[10px] font-medium" style={{ color: L.textLight, fontFamily: "'Inter', sans-serif" }}>
-          Today&apos;s Exercises
+          {t("landing.journey.preview.parentDashboard.todaysExercises")}
         </p>
         <p className="mt-0.5 text-[12px] font-semibold" style={{ color: L.text, fontFamily: "'Inter', sans-serif" }}>
-          2 Completed · 1 Remaining
+          {t("landing.journey.preview.parentDashboard.exercisesStatus")}
         </p>
         <div className="mt-2 h-1 overflow-hidden rounded-full" style={{ background: "rgba(42, 164, 201, 0.12)" }}>
           <div className="h-full w-2/3 rounded-full" style={{ background: L.primary }} />
@@ -286,11 +276,7 @@ function ParentDashboardPreview() {
       </div>
 
       <ul className="flex flex-col gap-1.5">
-        {[
-          { icon: Calendar, label: "Next Session", detail: "Tomorrow · 10:00 AM" },
-          { icon: MessageSquare, label: "Specialist Feedback", detail: "New feedback available." },
-          { icon: Bell, label: "AI Reminder", detail: "Evening exercise due." },
-        ].map(({ icon: Icon, label, detail }) => (
+        {dashboardItems.map(({ icon: Icon, label, detail }) => (
           <li
             key={label}
             className="flex items-start gap-2 rounded-lg px-2 py-1.5"
@@ -313,6 +299,10 @@ function ParentDashboardPreview() {
 }
 
 export function JourneySection() {
+  const { t } = useLocale();
+  const workflowSteps = useMemo(() => buildLandingWorkflowSteps(t), [t]);
+  const aiWidgets = useMemo(() => buildLandingAiWidgets(t), [t]);
+
   return (
     <section
       id="how-it-works"
@@ -325,21 +315,20 @@ export function JourneySection() {
           className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] md:mb-4"
           style={{ color: L.primary, fontFamily: "'Inter', sans-serif" }}
         >
-          THE JOURNEY
+          {t("landing.journey.eyebrow")}
         </p>
         <h2
           id="journey-heading"
           className="text-[2.125rem] leading-[1.15] tracking-tight sm:text-[2.5rem] md:text-[3rem] lg:text-[3.25rem]"
           style={{ color: L.sectionHeading, fontFamily: "'Playfair Display', serif" }}
         >
-          From First Request to Continuous Progress
+          {t("landing.journey.heading")}
         </h2>
         <p
           className="mx-auto mt-5 max-w-[720px] text-[16px] leading-relaxed md:mt-6 md:text-[17px] lg:text-[18px]"
           style={{ color: L.journeyBody, fontFamily: "'Inter', sans-serif" }}
         >
-          Follow the complete rehabilitation journey—from the parent&apos;s first case request to continuous
-          AI-powered rehabilitation support and measurable patient improvement.
+          {t("landing.journey.description")}
         </p>
       </header>
 
@@ -347,19 +336,19 @@ export function JourneySection() {
         <div className="journey-showcase-inner relative mx-auto min-h-[680px] max-w-[980px] md:min-h-[620px]">
           <div className="journey-card-left absolute left-0 top-0 z-10 md:left-2 md:top-2 lg:left-6">
             <FloatWrap floatClass="journey-float journey-float-left">
-              <AiProgressPreview />
+              <AiProgressPreview t={t} aiWidgets={aiWidgets} />
             </FloatWrap>
           </div>
 
           <div className="journey-card-center absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
             <FloatWrap floatClass="journey-float journey-float-center">
-              <PatientJourneyCard />
+              <PatientJourneyCard t={t} workflowSteps={workflowSteps} />
             </FloatWrap>
           </div>
 
           <div className="journey-card-right absolute bottom-0 right-0 z-20 md:bottom-4 md:right-2 lg:right-6">
             <FloatWrap floatClass="journey-float journey-float-right">
-              <ParentDashboardPreview />
+              <ParentDashboardPreview t={t} />
             </FloatWrap>
           </div>
         </div>
@@ -428,6 +417,28 @@ export function JourneySection() {
         .journey-steps-scroll::-webkit-scrollbar-thumb {
           background: rgba(42, 164, 201, 0.25);
           border-radius: 99px;
+        }
+
+        @media (min-width: 768px) {
+          [dir=rtl] .journey-card-left {
+            left: auto !important;
+            right: 0.5rem;
+          }
+
+          [dir=rtl] .journey-card-right {
+            right: auto !important;
+            left: 0.5rem;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          [dir=rtl] .journey-card-left {
+            right: 1.5rem;
+          }
+
+          [dir=rtl] .journey-card-right {
+            left: 1.5rem;
+          }
         }
 
         @media (max-width: 767px) {

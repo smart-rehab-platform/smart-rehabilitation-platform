@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   FileText,
   Image as ImageIcon,
@@ -5,13 +6,17 @@ import {
   Paperclip,
   Video,
 } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
+import { getAdminPatientDetailsLabels } from "../utils/adminPatientsLocalization.js";
 
-function reviewTone(status) {
-  if (status === "Reviewed") {
+function reviewTone(rawStatus) {
+  const normalized = (rawStatus || "").trim().toLowerCase();
+
+  if (normalized === "reviewed") {
     return "success";
   }
-  if (status === "Needs retry") {
+  if (normalized === "needs_retry") {
     return "warning";
   }
   return "blue";
@@ -37,13 +42,16 @@ function submissionMediaIcon(mediaTypeLabel) {
 }
 
 export function AdminPatientRecentSubmissions({ submissions }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminPatientDetailsLabels(t), [t]);
+
   return (
-    <section className="pd-admin-patient-section pd-section-enter" aria-label="Recent exercise submissions">
-      <h2 className="pd-admin-patient-section-title">Recent Exercise Submissions</h2>
+    <section className="pd-admin-patient-section pd-section-enter" aria-label={labels.recentSubmissions}>
+      <h2 className="pd-admin-patient-section-title">{labels.recentSubmissions}</h2>
 
       {submissions.length === 0 ? (
         <div className="pd-card pd-card-pad">
-          <p className="pd-admin-patient-empty-copy">No recent submissions.</p>
+          <p className="pd-admin-patient-empty-copy">{labels.noSubmissions}</p>
         </div>
       ) : (
         <ul className="pd-admin-patient-item-list">
@@ -58,7 +66,10 @@ export function AdminPatientRecentSubmissions({ submissions }) {
                 <div className="pd-admin-patient-submission-body">
                   <div className="pd-admin-patient-submission-head">
                     <strong>{submission.exerciseTitle}</strong>
-                    <StatusBadge label={submission.reviewStatus} tone={reviewTone(submission.reviewStatus)} />
+                    <StatusBadge
+                      label={submission.reviewStatus}
+                      tone={reviewTone(submission.reviewStatusRaw)}
+                    />
                   </div>
                   <p className="pd-admin-patient-row-meta">
                     {[submission.mediaTypeLabel, submission.submittedAtLabel].filter(Boolean).join(" · ")}

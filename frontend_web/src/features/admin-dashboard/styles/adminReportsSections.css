@@ -21,7 +21,7 @@
 
 .pd-preview .pd-admin-reports-search-icon {
   position: absolute;
-  left: 12px;
+  inset-inline-start: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--pd-text-muted);
@@ -32,7 +32,8 @@
   width: 100%;
   border: 1px solid var(--pd-border-soft, var(--pd-border));
   border-radius: 10px;
-  padding: 10px 12px 10px 38px;
+  padding-block: 10px;
+  padding-inline: 38px 12px;
   background: var(--pd-surface);
   color: var(--pd-text);
   font: inherit;
@@ -242,6 +243,10 @@
   margin-top: auto;
 }
 
+[dir="rtl"] .pd-preview .pd-admin-report-card-action svg {
+  transform: scaleX(-1);
+}
+
 .pd-preview .pd-admin-report-card.is-skeleton {
   gap: 10px;
 }
@@ -345,6 +350,10 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+[dir="rtl"] .pd-preview .pd-admin-report-back svg {
+  transform: scaleX(-1);
 }
 
 .pd-preview .pd-admin-report-details-hero-top {

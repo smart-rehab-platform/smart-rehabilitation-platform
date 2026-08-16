@@ -1,7 +1,23 @@
 import { readNumber, readString } from "./parentDashboardMappers";
-import { formatChildDate } from "./parentChildrenUtils";
+import { resolveMapperContext } from "./parentLocalizationCore";
+import {
+  formatProgressPeriodLabel,
+  getProgressEmptyMessage,
+  getProgressPeriodLabel,
+  PROGRESS_EMPTY_MESSAGE,
+  PROGRESS_PERIOD_LABELS,
+} from "./parentProgressLocalization";
 
-export function mapProgressSnapshot(row) {
+export {
+  formatProgressPeriodLabel,
+  getProgressEmptyMessage,
+  getProgressPeriodLabel,
+  PROGRESS_EMPTY_MESSAGE,
+  PROGRESS_PERIOD_LABELS,
+};
+
+export function mapProgressSnapshot(row, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const period = readString(row, ["period"]) || "weekly";
   const periodStart = readString(row, ["period_start", "periodStart"]);
   const periodEnd = readString(row, ["period_end", "periodEnd"]);
@@ -11,19 +27,19 @@ export function mapProgressSnapshot(row) {
     period,
     periodStart,
     periodEnd,
-    periodLabel: formatProgressPeriodLabel(periodStart, periodEnd),
+    periodLabel: formatProgressPeriodLabel(periodStart, periodEnd, locale, t),
     exercisesCompleted: readNumber(row, ["exercises_completed", "exercisesCompleted"]),
     averagePerformance: readNumber(row, ["average_performance", "averagePerformance"]),
     improvementPercentage: readNumber(row, ["improvement_percentage", "improvementPercentage"]),
   };
 }
 
-export function mapProgressSnapshots(rows) {
+export function mapProgressSnapshots(rows, options = {}) {
   if (!Array.isArray(rows)) {
     return [];
   }
 
-  return rows.map(mapProgressSnapshot);
+  return rows.map((row) => mapProgressSnapshot(row, options));
 }
 
 export function mapImprovementPercentage(payload) {
@@ -53,17 +69,6 @@ export function mapPerformanceMetrics(payload) {
   };
 }
 
-function formatProgressPeriodLabel(start, end) {
-  const startLabel = formatChildDate(start);
-  const endLabel = formatChildDate(end);
-
-  if (startLabel && endLabel) {
-    return `${startLabel} – ${endLabel}`;
-  }
-
-  return startLabel || endLabel || null;
-}
-
 export function hasProgressData(state) {
   return Boolean(
     state?.improvementPercentage != null
@@ -73,12 +78,3 @@ export function hasProgressData(state) {
     || state?.monthly?.length,
   );
 }
-
-export const PROGRESS_EMPTY_MESSAGE =
-  "Progress data will appear once exercises are tracked.";
-
-export const PROGRESS_PERIOD_LABELS = {
-  daily: "Daily",
-  weekly: "Weekly",
-  monthly: "Monthly",
-};

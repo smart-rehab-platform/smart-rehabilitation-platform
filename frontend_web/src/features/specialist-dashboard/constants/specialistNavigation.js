@@ -1,13 +1,39 @@
-export const SPECIALIST_NAV_ITEMS = [
-  { id: "dashboard", label: "Dashboard", icon: "dashboard" },
-  { id: "patients", label: "Patients", icon: "patients" },
-  { id: "caseRequests", label: "Case Requests", icon: "caseRequests" },
-  { id: "exercises", label: "Exercises", icon: "exercises" },
-  { id: "sessions", label: "Sessions", icon: "sessions" },
-  { id: "reviews", label: "Reviews", icon: "reviews" },
-  { id: "treatmentPlans", label: "Treatment Plans", icon: "treatmentPlans" },
-  { id: "reports", label: "Reports", icon: "reports" },
-  { id: "messages", label: "Messages", icon: "messages", badgeKey: "messages" },
-  { id: "notifications", label: "Notifications", icon: "notifications", badgeKey: "notifications" },
-  { id: "profile", label: "Profile", icon: "profile" },
+export const SPECIALIST_NAV_ITEM_DEFS = [
+
+  { id: "dashboard", icon: "dashboard" },
+
+  { id: "patients", icon: "patients" },
+
+  { id: "caseRequests", icon: "caseRequests" },
+
+  { id: "exercises", icon: "exercises" },
+
+  { id: "sessions", icon: "sessions" },
+
+  { id: "reviews", icon: "reviews" },
+
+  { id: "treatmentPlans", icon: "treatmentPlans" },
+
+  { id: "reports", icon: "reports" },
+
+  { id: "messages", icon: "messages", badgeKey: "messages" },
+
+  { id: "notifications", icon: "notifications", badgeKey: "notifications" },
+
+  { id: "supportRequests", icon: "supportRequests" },
+
+  { id: "profile", icon: "profile" },
+
 ];
+
+
+
+/** @deprecated Use buildSpecialistNavItems(t) for localized labels. */
+
+export const SPECIALIST_NAV_ITEMS = SPECIALIST_NAV_ITEM_DEFS.map((item) => ({
+
+  ...item,
+
+  label: item.id,
+
+}));

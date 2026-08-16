@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   createTreatmentPlan,
   loadSpecialistAssignedPatients,
   verifyPatientAssignment,
 } from "../../../services/specialistTreatmentPlanService";
 import { formatDateOnlyForApi } from "../utils/specialistTreatmentPlanMappers";
+import {
+  getTreatmentPlanValidationMessage,
+  validateTreatmentPlanForm,
+} from "../utils/specialistTreatmentPlansLocalization";
 import { notifySpecialistTreatmentPlanRefresh } from "../utils/specialistTreatmentPlanRefresh";
 
 function resolveErrorMessage(error, fallback) {
@@ -23,6 +28,7 @@ export function useSpecialistTreatmentPlanCreate(
   specialistUserId,
   { patientId = "", patientName = "" } = {},
 ) {
+  const { t } = useLocale();
   const scopedPatientId = patientId?.trim() || "";
   const scopedPatientName = patientName?.trim() || "";
   const isPatientLocked = Boolean(scopedPatientId);
@@ -38,6 +44,12 @@ export function useSpecialistTreatmentPlanCreate(
   const [startDate, setStartDate] = useState(todayDateOnly());
   const [endDate, setEndDate] = useState("");
   const loadTokenRef = useRef(0);
+
+  const loadPatientsFailedMessage = t("specialist.treatmentPlans.errors.loadPatientsFailed");
+  const pleaseWaitMessage = t("specialist.treatmentPlans.pleaseWait");
+  const createFailedMessage = t("specialist.treatmentPlans.errors.createFailed");
+  const patientAccessDeniedMessage = t("specialist.treatmentPlans.errors.patientAccessDenied");
+  const signInRequiredMessage = t("specialist.treatmentPlans.errors.signInRequiredCreate");
 
   const effectivePatientId = isPatientLocked ? scopedPatientId : selectedPatientId;
   const effectivePatientName = isPatientLocked
@@ -65,7 +77,7 @@ export function useSpecialistTreatmentPlanCreate(
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setError(resolveErrorMessage(loadError, "Failed to load patients."));
+        setError(resolveErrorMessage(loadError, loadPatientsFailedMessage));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoadingPatients(false);
@@ -78,33 +90,24 @@ export function useSpecialistTreatmentPlanCreate(
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId]);
+  }, [specialistUserId, loadPatientsFailedMessage]);
 
-  const validate = useCallback(() => {
-    if (!effectivePatientId.trim()) {
-      return "Patient is required";
-    }
-    if (!title.trim()) {
-      return "Plan title is required";
-    }
-    if (!startDate) {
-      return "Start date is required";
-    }
-    if (endDate && endDate < startDate) {
-      return "End date cannot be before start date";
-    }
-    return null;
-  }, [effectivePatientId, title, startDate, endDate]);
+  const validate = useCallback(() => validateTreatmentPlanForm({
+    patientId: effectivePatientId,
+    title,
+    startDate,
+    endDate,
+  }), [effectivePatientId, title, startDate, endDate]);
 
   const create = useCallback(async () => {
     const validation = validate();
     if (validation) {
       setValidationMessage(validation);
-      return { ok: false, message: validation };
+      return { ok: false, message: getTreatmentPlanValidationMessage(validation, t) };
     }
 
     if (isSaving) {
-      return { ok: false, message: "Please wait…" };
+      return { ok: false, message: pleaseWaitMessage };
     }
 
     setIsSaving(true);
@@ -114,7 +117,7 @@ export function useSpecialistTreatmentPlanCreate(
     try {
       const allowed = await verifyPatientAssignment(specialistUserId, effectivePatientId);
       if (!allowed) {
-        throw new Error("You do not have access to this patient.");
+        throw new Error(patientAccessDeniedMessage);
       }
 
       const payload = {
@@ -131,7 +134,7 @@ export function useSpecialistTreatmentPlanCreate(
       notifySpecialistTreatmentPlanRefresh();
       return { ok: true };
     } catch (createError) {
-      const message = resolveErrorMessage(createError, "Failed to create treatment plan. Please try again.");
+      const message = resolveErrorMessage(createError, createFailedMessage);
       setError(message);
       return { ok: false, message };
     } finally {
@@ -145,6 +148,10 @@ export function useSpecialistTreatmentPlanCreate(
     title,
     startDate,
     endDate,
+    t,
+    pleaseWaitMessage,
+    createFailedMessage,
+    patientAccessDeniedMessage,
   ]);
 
   const selectPatient = useCallback((patient) => {
@@ -161,7 +168,7 @@ export function useSpecialistTreatmentPlanCreate(
       patients: [],
       isLoadingPatients: false,
       isSaving: false,
-      error: "Please sign in to create a treatment plan.",
+      error: signInRequiredMessage,
       validationMessage: null,
       selectedPatientId: effectivePatientId,
       selectedPatientName: effectivePatientName,

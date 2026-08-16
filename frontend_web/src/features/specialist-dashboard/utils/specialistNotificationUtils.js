@@ -109,6 +109,15 @@ export function mapSpecialistNotificationTypeToPopoverUi(type) {
     return { icon: "message", tone: "blue" };
   }
 
+  if (
+    normalized.includes("support_request")
+    || normalized === "support_request_submitted"
+    || normalized === "support_request_reply"
+    || normalized === "support_request_status_changed"
+  ) {
+    return { icon: "message", tone: "blue" };
+  }
+
   if (normalized.includes("session") || normalized.includes("case_request")) {
     return { icon: "calendar", tone: "green" };
   }
@@ -240,5 +249,36 @@ export function mapSpecialistNotificationsForPopover(notifications) {
     icon: item.icon,
     tone: item.tone,
     unread: item.unread,
+    relatedEntityType: item.relatedEntityType,
+    relatedEntityId: item.relatedEntityId,
+    type: item.type,
   }));
+}
+
+/**
+ * Resolves a specialist notification to an in-app route when one exists.
+ * @param {object|null|undefined} notification
+ * @param {{ buildSupportRequestDetailPath?: (id: string) => string, buildMessagesPath?: (id: string) => string }} builders
+ */
+export function resolveSpecialistNotificationRoute(notification, builders = {}) {
+  if (!notification?.relatedEntityId) {
+    return null;
+  }
+
+  const entityType = notification.relatedEntityType?.trim().toLowerCase();
+  const type = normalizeSpecialistNotificationType(notification.type);
+
+  if (entityType === "support_request" && typeof builders.buildSupportRequestDetailPath === "function") {
+    return builders.buildSupportRequestDetailPath(notification.relatedEntityId);
+  }
+
+  if (
+    entityType === "conversation"
+    && type === "new_message"
+    && typeof builders.buildMessagesPath === "function"
+  ) {
+    return builders.buildMessagesPath(notification.relatedEntityId);
+  }
+
+  return null;
 }

@@ -1,6 +1,4 @@
-import { getPatientInitials } from "./adminPatientsMappers";
-
-export const PARENT_RELATIONSHIP_OPTIONS = ["mother", "father", "guardian", "other"];
+import { getPatientInitials } from "./adminPatientsMappers.js";
 
 function readString(record, keys) {
   if (!record || typeof record !== "object") {

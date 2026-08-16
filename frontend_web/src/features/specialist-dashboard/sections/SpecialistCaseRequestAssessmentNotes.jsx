@@ -1,3 +1,5 @@
+import { useLocale } from "../../../context/useLocale";
+
 export function SpecialistCaseRequestAssessmentNotes({
   detail,
   notesDraft,
@@ -7,6 +9,8 @@ export function SpecialistCaseRequestAssessmentNotes({
   canSave = false,
   disabled = false,
 }) {
+  const { t } = useLocale();
+
   if (!detail) {
     return null;
   }
@@ -14,9 +18,11 @@ export function SpecialistCaseRequestAssessmentNotes({
   if (detail.canEditAssessmentNotes) {
     return (
       <section className="pd-card pd-card-pad pd-specialist-case-section">
-        <h2 className="pd-specialist-case-section-title">Preliminary Assessment Notes</h2>
+        <h2 className="pd-specialist-case-section-title">
+          {t("specialist.caseRequests.preliminaryAssessmentNotes")}
+        </h2>
         <label className="pd-form-label" htmlFor="sp-case-assessment-notes">
-          Assessment notes
+          {t("specialist.caseRequests.assessmentNotesLabel")}
         </label>
         <textarea
           id="sp-case-assessment-notes"
@@ -26,7 +32,7 @@ export function SpecialistCaseRequestAssessmentNotes({
           value={notesDraft}
           disabled={disabled}
           onChange={(event) => onNotesChange?.(event.target.value)}
-          placeholder="Enter preliminary assessment notes"
+          placeholder={t("specialist.caseRequests.assessmentNotesPlaceholder")}
         />
         <div className="pd-specialist-case-notes-actions">
           <button
@@ -35,7 +41,7 @@ export function SpecialistCaseRequestAssessmentNotes({
             disabled={!canSave || isSaving || disabled}
             onClick={onSave}
           >
-            {isSaving ? "Saving..." : "Save Notes"}
+            {isSaving ? t("specialist.caseRequests.savingNotes") : t("specialist.caseRequests.saveNotes")}
           </button>
         </div>
       </section>
@@ -45,8 +51,10 @@ export function SpecialistCaseRequestAssessmentNotes({
   if (detail.showReadOnlyNotes) {
     return (
       <section className="pd-card pd-card-pad pd-specialist-case-section">
-        <h2 className="pd-specialist-case-section-title">Preliminary Assessment Notes</h2>
-        <p className="pd-specialist-case-field-value">{detail.assessmentNotes}</p>
+        <h2 className="pd-specialist-case-section-title">
+          {t("specialist.caseRequests.preliminaryAssessmentNotes")}
+        </h2>
+        <p className="pd-specialist-case-field-value" dir="auto">{detail.assessmentNotes}</p>
       </section>
     );
   }

@@ -1,7 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistPatientSpeechAnalysisPath,
@@ -12,12 +13,14 @@ import { useSpecialistExerciseReview } from "./hooks/useSpecialistExerciseReview
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
 import { SpecialistReviewForm } from "./sections/SpecialistReviewForm";
+import { applyReviewBundleLocalization } from "./utils/specialistReviewsLocalization";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistReviewExercisePage() {
   const navigate = useNavigate();
   const { submissionId } = useParams();
+  const { t, locale } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -62,7 +65,14 @@ export default function SpecialistReviewExercisePage() {
     isUpdate,
   } = useSpecialistExerciseReview(submissionId, specialistUserId);
 
-  const hasAudio = bundle?.media?.some((item) => item.mediaType.toLowerCase() === "audio") ?? false;
+  const localizedBundle = useMemo(
+    () => applyReviewBundleLocalization(bundle, { t, locale }),
+    [bundle, t, locale],
+  );
+
+  const hasAudio = localizedBundle?.media?.some(
+    (item) => item.mediaType.toLowerCase() === "audio",
+  ) ?? false;
 
   const handleBack = useCallback(() => {
     if (window.history.length > 1) {
@@ -75,24 +85,24 @@ export default function SpecialistReviewExercisePage() {
   const handleSubmit = useCallback(async () => {
     const ok = await submitReview();
     if (ok) {
-      showToast("Review submitted successfully");
+      showToast(t("specialist.reviews.submittedSuccess"));
       handleBack();
     }
-  }, [submitReview, showToast, handleBack]);
+  }, [submitReview, showToast, handleBack, t]);
 
   const handleSpeechAnalysis = useCallback(() => {
-    const patientId = bundle?.submission?.patientId;
+    const patientId = localizedBundle?.submission?.patientId;
     if (!patientId || !submissionId) {
       return;
     }
     navigate(buildSpecialistPatientSpeechAnalysisPath(patientId, submissionId));
-  }, [bundle, submissionId, navigate]);
+  }, [localizedBundle, submissionId, navigate]);
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading submission...</p>
+          <p className="pd-inline-loading">{t("specialist.reviews.loadingSubmission")}</p>
         </section>
       );
     }
@@ -102,25 +112,25 @@ export default function SpecialistReviewExercisePage() {
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
     }
 
-    if (!bundle?.submission) {
+    if (!localizedBundle?.submission) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">Submission not found.</p>
+          <p className="pd-section-sub">{t("specialist.reviews.submissionNotFound")}</p>
         </section>
       );
     }
 
     return (
       <div className="pd-specialist-review-content">
-        <SpecialistReviewHeader submission={bundle.submission} />
+        <SpecialistReviewHeader submission={localizedBundle.submission} />
         <div className="pd-specialist-review-body-grid">
-          <SpecialistSubmissionMedia mediaItems={bundle.media} />
+          <SpecialistSubmissionMedia mediaItems={localizedBundle.media} />
           <SpecialistReviewForm
             starRating={starRating}
             onStarRatingChange={setStarRating}
@@ -132,7 +142,7 @@ export default function SpecialistReviewExercisePage() {
             submitError={submitError}
             isUpdate={isUpdate}
             onSubmit={handleSubmit}
-            showSpeechAnalysis={hasAudio && Boolean(bundle.submission.patientId)}
+            showSpeechAnalysis={hasAudio && Boolean(localizedBundle.submission.patientId)}
             onSpeechAnalysis={handleSpeechAnalysis}
           />
         </div>
@@ -170,11 +180,11 @@ export default function SpecialistReviewExercisePage() {
             <header className="pd-specialist-review-page-header">
               <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
                 <ArrowLeft size={18} aria-hidden="true" />
-                Back to Reviews
+                {t("specialist.reviews.back")}
               </button>
-              <h1 className="pd-section-title">Review Exercise</h1>
+              <h1 className="pd-section-title">{t("specialist.reviews.exerciseTitle")}</h1>
               <p className="pd-specialist-review-page-subtitle">
-                Review the submitted exercise media and provide feedback.
+                {t("specialist.reviews.exerciseSubtitle")}
               </p>
             </header>
             {renderContent()}

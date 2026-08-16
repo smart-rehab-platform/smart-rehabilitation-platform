@@ -44,11 +44,11 @@ function resolveSpecialistConversationSubtitle(row) {
   const patientName = readString(row, ["patient_name", "patientName"]);
 
   if (caseChild && !patientId) {
-    return `Regarding ${caseChild}`;
+    return { kind: "regardingChild", name: caseChild };
   }
 
   if (patientName) {
-    return `Patient: ${patientName}`;
+    return { kind: "patient", name: patientName };
   }
 
   return null;
@@ -56,7 +56,7 @@ function resolveSpecialistConversationSubtitle(row) {
 
 export function mapSpecialistConversation(row) {
   const id = readString(row, ["id", "_id"]);
-  const parentName = readString(row, ["parent_name", "parentName"]) || "Parent";
+  const parentName = readString(row, ["parent_name", "parentName"]) || "";
 
   return {
     id,
@@ -74,28 +74,8 @@ export function mapSpecialistConversation(row) {
       "childName",
     ]),
     createdAt: readString(row, ["created_at", "createdAt"]),
-    title: parentName,
-    subtitle: resolveSpecialistConversationSubtitle(row),
-    startedLabel: formatConversationStarted(row),
+    subtitleContext: resolveSpecialistConversationSubtitle(row),
   };
-}
-
-function formatConversationStarted(row) {
-  const createdAt = readString(row, ["created_at", "createdAt"]);
-  if (!createdAt) {
-    return null;
-  }
-
-  const date = new Date(createdAt);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return `Started ${date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })}`;
 }
 
 export function mapSpecialistConversations(rows) {
@@ -146,85 +126,6 @@ export function mapSpecialistMessages(rows) {
 
 export { getLatestReadOutgoingMessageId } from "../../shared-dashboard/utils/messageReadReceiptUtils";
 
-export function formatMessageTime(sentAt) {
-  if (!sentAt) {
-    return "";
-  }
-
-  const date = new Date(sentAt);
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return date.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-function startOfDay(date) {
-  const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
-  return copy.getTime();
-}
-
-export function formatMessageDaySeparator(sentAt, now = new Date()) {
-  if (!sentAt) {
-    return "";
-  }
-
-  const date = new Date(sentAt);
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  const dayDiff = Math.round((startOfDay(now) - startOfDay(date)) / 86400000);
-
-  if (dayDiff === 0) {
-    return "Today";
-  }
-
-  if (dayDiff === 1) {
-    return "Yesterday";
-  }
-
-  return date.toLocaleDateString(undefined, {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-export function buildMessageThreadItems(messages) {
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return [];
-  }
-
-  const items = [];
-  let previousDay = null;
-
-  messages.forEach((message) => {
-    const dayKey = message.sentAt ? startOfDay(new Date(message.sentAt)) : null;
-    if (dayKey != null && dayKey !== previousDay) {
-      items.push({
-        type: "separator",
-        key: `day-${dayKey}`,
-        label: formatMessageDaySeparator(message.sentAt),
-      });
-      previousDay = dayKey;
-    }
-
-    items.push({
-      type: "message",
-      key: message.id,
-      message,
-    });
-  });
-
-  return items;
-}
-
 export function filterSpecialistConversations(conversations, query) {
   const trimmed = typeof query === "string" ? query.trim().toLowerCase() : "";
   if (!trimmed) {
@@ -238,6 +139,3 @@ export function filterSpecialistConversations(conversations, query) {
     return parent.includes(trimmed) || patient.includes(trimmed) || caseChild.includes(trimmed);
   });
 }
-
-export const SPECIALIST_MESSAGES_EMPTY = "No parent conversations yet.";
-export const SPECIALIST_MESSAGES_CHAT_EMPTY = "No messages yet. Start the conversation.";

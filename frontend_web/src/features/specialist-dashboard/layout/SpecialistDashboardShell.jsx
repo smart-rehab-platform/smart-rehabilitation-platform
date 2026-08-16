@@ -1,5 +1,6 @@
 import { LogOut } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { useLocale } from "../../../context/useLocale.js";
 import smartRehabIcon from "../../../assets/branding/smart_rehab_icon.png";
 import { resolveSpecialistSidebarActiveId } from "../../../routes/specialistDashboardRoutes";
 import { NotificationPopover } from "../../shared-dashboard/components/NotificationPopover";
@@ -30,9 +31,9 @@ export function SpecialistDashboardShell({
   onMessages,
   onViewAllNotifications,
   onNotificationSelect,
-  showToast,
   children,
 }) {
+  const { t } = useLocale();
   const { pathname } = useLocation();
   const activeNavId = resolveSpecialistSidebarActiveId(pathname);
 
@@ -46,10 +47,10 @@ export function SpecialistDashboardShell({
           navItems={navItems}
           badges={badges}
           activeId={activeNavId}
-          navigationAriaLabel="Specialist navigation"
+          navigationAriaLabel={t("specialist.shell.navigationAriaLabel")}
           logoSrc={smartRehabIcon}
-          brandTitle="Smart Rehabilitation"
-          brandSubtitle="Where Recovery Never Stops"
+          brandTitle={t("specialist.shell.brandTitle")}
+          brandSubtitle={t("specialist.shell.brandSubtitle")}
           onToggleCollapse={onToggleCollapse}
           onCloseMobile={onCloseMobile}
           onNavAction={onNavAction}
@@ -57,28 +58,14 @@ export function SpecialistDashboardShell({
           renderNavIcon={(item) => (
             <SpecialistNavIcon navId={item.id} iconKey={item.icon} size={18} />
           )}
-          supportSlot={
-            <div className="pd-help-card">
-              <strong>Help & Support</strong>
-              <p>Questions about patients or sessions?</p>
-              <button
-                type="button"
-                className="pd-link"
-                onClick={() => showToast?.("Contact support is not available on web yet.")}
-              >
-                Contact Support →
-              </button>
-            </div>
-          }
           signOutIcon={<LogOut size={18} aria-hidden="true" />}
-          signOutLabel="Sign Out"
         />
       }
       header={
         <DashboardTopHeader
           onOpenMobileNav={onOpenMobileNav}
-          searchPlaceholder="Search patients, sessions, reports..."
-          searchAriaLabel="Search patients, sessions, reports"
+          searchPlaceholder={t("specialist.shell.searchPlaceholder")}
+          searchAriaLabel={t("specialist.shell.searchAriaLabel")}
           onMessages={onMessages}
           messagesBadge={badges?.messages ?? null}
           notificationPopover={

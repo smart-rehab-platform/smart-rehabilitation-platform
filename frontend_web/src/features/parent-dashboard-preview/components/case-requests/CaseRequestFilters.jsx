@@ -1,7 +1,9 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
 import {
-  CASE_REQUEST_SORT_OPTIONS,
-  CASE_REQUEST_STATUS_FILTER_OPTIONS,
-} from "../../utils/parentCaseRequestsUtils";
+  buildCaseRequestSortOptions,
+  buildCaseRequestStatusFilterOptions,
+} from "../../utils/parentCaseRequestsLocalization";
 
 export function CaseRequestFilters({
   search,
@@ -11,17 +13,29 @@ export function CaseRequestFilters({
   sortKey,
   onSortChange,
 }) {
+  const { t } = useLocale();
+
+  const statusOptions = useMemo(
+    () => buildCaseRequestStatusFilterOptions(t),
+    [t],
+  );
+
+  const sortOptions = useMemo(
+    () => buildCaseRequestSortOptions(t),
+    [t],
+  );
+
   return (
     <div className="pd-task-hub-filters pd-case-request-filters">
       <div className="pd-task-hub-filter pd-task-hub-filter-search">
         <label className="pd-form-label" htmlFor="pd-case-requests-search">
-          Search
+          {t("common.search")}
         </label>
         <input
           id="pd-case-requests-search"
           type="search"
           className="pd-form-input"
-          placeholder="Search request..."
+          placeholder={t("parent.caseRequests.searchPlaceholder")}
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
         />
@@ -29,7 +43,7 @@ export function CaseRequestFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-case-requests-status">
-          Status
+          {t("parent.common.status")}
         </label>
         <select
           id="pd-case-requests-status"
@@ -37,7 +51,7 @@ export function CaseRequestFilters({
           value={status}
           onChange={(event) => onStatusChange(event.target.value)}
         >
-          {CASE_REQUEST_STATUS_FILTER_OPTIONS.map((option) => (
+          {statusOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>
@@ -47,7 +61,7 @@ export function CaseRequestFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-case-requests-sort">
-          Sort
+          {t("parent.caseRequests.sortLabel")}
         </label>
         <select
           id="pd-case-requests-sort"
@@ -55,7 +69,7 @@ export function CaseRequestFilters({
           value={sortKey}
           onChange={(event) => onSortChange(event.target.value)}
         >
-          {CASE_REQUEST_SORT_OPTIONS.map((option) => (
+          {sortOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>

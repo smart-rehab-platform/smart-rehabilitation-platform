@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 
 export function SpecialistAddNoteDialog({ open, onClose, onSubmit, isSaving }) {
+  const { t } = useLocale();
   const [note, setNote] = useState("");
   const [error, setError] = useState(null);
 
@@ -12,7 +14,7 @@ export function SpecialistAddNoteDialog({ open, onClose, onSubmit, isSaving }) {
     event.preventDefault();
     const trimmed = note.trim();
     if (!trimmed) {
-      setError("Note is required.");
+      setError(t("specialist.patientDetails.noteRequired"));
       return;
     }
 
@@ -22,7 +24,7 @@ export function SpecialistAddNoteDialog({ open, onClose, onSubmit, isSaving }) {
       return;
     }
 
-    setError("Unable to save note. Please try again.");
+    setError(t("specialist.patientDetails.saveNoteFailed"));
   };
 
   return (
@@ -34,10 +36,12 @@ export function SpecialistAddNoteDialog({ open, onClose, onSubmit, isSaving }) {
         aria-labelledby="specialist-add-note-title"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 id="specialist-add-note-title" className="pd-modal-title">Add Specialist Note</h2>
+        <h2 id="specialist-add-note-title" className="pd-modal-title">
+          {t("specialist.patientDetails.addNoteTitle")}
+        </h2>
         <form onSubmit={handleSubmit}>
           <label className="pd-field-label" htmlFor="specialist-note-input">
-            Note
+            {t("specialist.patientDetails.noteLabel")}
           </label>
           <textarea
             id="specialist-note-input"
@@ -45,16 +49,16 @@ export function SpecialistAddNoteDialog({ open, onClose, onSubmit, isSaving }) {
             rows={5}
             value={note}
             onChange={(event) => setNote(event.target.value)}
-            placeholder="Enter clinical note..."
+            placeholder={t("specialist.patientDetails.notePlaceholder")}
             disabled={isSaving}
           />
           {error ? <p className="pd-inline-error">{error}</p> : null}
           <div className="pd-modal-actions">
             <button type="button" className="pd-btn pd-btn-soft" onClick={() => onClose?.()} disabled={isSaving}>
-              Cancel
+              {t("common.cancel")}
             </button>
             <button type="submit" className="pd-btn pd-btn-primary" disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save Note"}
+              {isSaving ? t("specialist.patientDetails.savingNote") : t("specialist.patientDetails.saveNote")}
             </button>
           </div>
         </form>

@@ -5,147 +5,69 @@ import {
   readNumber,
   readString,
 } from "./parentDashboardMappers";
+import { resolveMapperContext } from "./parentLocalizationCore";
+import {
+  buildPreferredTimePeriodOptions,
+  buildSessionHubAreaOptions,
+  buildSessionListTabOptions,
+  buildSessionRequestReasonOptions,
+  buildSessionStatusFilterOptions,
+  formatSessionDisplayDate,
+  formatSessionDisplayTime,
+  formatSessionRequestCreatedDate,
+  getMeetingLinkCopyError,
+  getMeetingLinkUnavailableError,
+  getPreferredTimePeriodLabel,
+  getSessionEmptyMessages,
+  getSessionRequestReasonLabel,
+  getSessionRequestStatusMeta,
+  getSessionRequestValidationMessages,
+  getSessionStatusMeta,
+  PREFERRED_TIME_PERIODS,
+  SESSION_EMPTY_MESSAGES,
+  SESSION_HUB_AREAS,
+  SESSION_LIST_TABS,
+  SESSION_REQUEST_REASONS,
+  SESSION_REQUEST_STATUS_META,
+  SESSION_STATUS_FILTER_OPTIONS,
+  SESSION_STATUS_META,
+} from "./parentSessionsLocalization";
 
-export const SESSION_HUB_AREAS = [
-  { id: "sessions", label: "Sessions" },
-  { id: "requests", label: "Session Requests" },
-];
-
-export const SESSION_LIST_TABS = [
-  { id: "upcoming", label: "Upcoming" },
-  { id: "history", label: "History" },
-];
-
-export const SESSION_STATUS_FILTER_OPTIONS = [
-  { id: "all", label: "All statuses" },
-  { id: "scheduled", label: "Scheduled" },
-  { id: "completed", label: "Completed" },
-  { id: "cancelled", label: "Cancelled" },
-  { id: "no_show", label: "No Show" },
-];
-
-export const SESSION_REQUEST_REASONS = [
-  { id: "regular_follow_up", label: "Regular Follow-up" },
-  { id: "replacement_cancelled", label: "Replacement (Cancelled Session)" },
-  { id: "replacement_missed", label: "Replacement (Missed Session)" },
-  { id: "additional_session", label: "Additional Session" },
-  { id: "consultation", label: "Consultation" },
-  { id: "other", label: "Other" },
-];
-
-export const PREFERRED_TIME_PERIODS = [
-  { id: "morning", label: "Morning" },
-  { id: "afternoon", label: "Afternoon" },
-  { id: "evening", label: "Evening" },
-  { id: "flexible", label: "Flexible" },
-];
-
-export const SESSION_STATUS_META = {
-  scheduled: { label: "Scheduled", tone: "blue" },
-  completed: { label: "Completed", tone: "success" },
-  cancelled: { label: "Cancelled", tone: "gray" },
-  no_show: { label: "No Show", tone: "danger" },
+export {
+  buildPreferredTimePeriodOptions,
+  buildSessionHubAreaOptions,
+  buildSessionListTabOptions,
+  buildSessionRequestReasonOptions,
+  buildSessionStatusFilterOptions,
+  getMeetingLinkCopyError,
+  getMeetingLinkUnavailableError,
+  getPreferredTimePeriodLabel,
+  getSessionEmptyMessages,
+  getSessionRequestReasonLabel,
+  getSessionRequestStatusMeta,
+  getSessionStatusMeta,
+  PREFERRED_TIME_PERIODS,
+  SESSION_EMPTY_MESSAGES,
+  SESSION_HUB_AREAS,
+  SESSION_LIST_TABS,
+  SESSION_REQUEST_REASONS,
+  SESSION_REQUEST_STATUS_META,
+  SESSION_STATUS_FILTER_OPTIONS,
+  SESSION_STATUS_META,
 };
-
-export const SESSION_REQUEST_STATUS_META = {
-  pending: { label: "Pending", tone: "blue" },
-  approved: { label: "Approved", tone: "success" },
-  rejected: { label: "Rejected", tone: "danger" },
-};
-
-export const SESSION_EMPTY_MESSAGES = {
-  upcoming: "No upcoming sessions.",
-  history: "No session history.",
-  filtered: "No sessions match your filters.",
-  requests: "No session requests yet.",
-};
-
-const REASON_LABELS = Object.fromEntries(
-  SESSION_REQUEST_REASONS.map((option) => [option.id, option.label]),
-);
-
-const PERIOD_LABELS = Object.fromEntries(
-  PREFERRED_TIME_PERIODS.map((option) => [option.id, option.label]),
-);
 
 /**
  * @param {string|null|undefined} reason
  */
-export function getSessionRequestReasonLabel(reason) {
-  const normalized = reason?.trim();
-  if (!normalized) {
-    return null;
-  }
-
-  return REASON_LABELS[normalized] || normalized.replace(/_/g, " ");
+export function getSessionRequestReasonLabelLocalized(reason, t = null) {
+  return getSessionRequestReasonLabel(reason, t);
 }
 
 /**
  * @param {string|null|undefined} period
  */
-export function getPreferredTimePeriodLabel(period) {
-  const normalized = period?.trim();
-  if (!normalized) {
-    return null;
-  }
-
-  return PERIOD_LABELS[normalized] || normalized.replace(/_/g, " ");
-}
-
-/**
- * @param {string|null|undefined} status
- */
-export function getSessionStatusMeta(status) {
-  const normalized = normalizeSessionStatus(status);
-  if (!normalized) {
-    return null;
-  }
-
-  return SESSION_STATUS_META[normalized] || {
-    label: normalized.replace(/_/g, " "),
-    tone: "gray",
-  };
-}
-
-/**
- * @param {string|null|undefined} status
- */
-export function getSessionRequestStatusMeta(status) {
-  const normalized = status?.trim().toLowerCase();
-  if (!normalized) {
-    return null;
-  }
-
-  return SESSION_REQUEST_STATUS_META[normalized] || {
-    label: normalized.replace(/_/g, " "),
-    tone: "gray",
-  };
-}
-
-function formatDisplayDate(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatDisplayTime(dateValue) {
-  const date = dateValue ? new Date(dateValue) : null;
-  if (!date || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
+export function getPreferredTimePeriodLabelLocalized(period, t = null) {
+  return getPreferredTimePeriodLabel(period, t);
 }
 
 function getScheduledTimestamp(sessionRow) {
@@ -179,8 +101,10 @@ export function isPastSession(session, now = Date.now()) {
 
 /**
  * @param {Record<string, unknown>} sessionRow
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapSessionRowToHubItem(sessionRow) {
+export function mapSessionRowToHubItem(sessionRow, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const id = readString(sessionRow, ["id", "_id"]);
   if (!id) {
     return null;
@@ -193,7 +117,7 @@ export function mapSessionRowToHubItem(sessionRow) {
   const meetingUrl = extractMeetingUrl(locationOrLink);
   const status = readString(sessionRow, ["status"]);
   const endTime = scheduledAtMs != null && durationMinutes != null
-    ? formatDisplayTime(new Date(scheduledAtMs + durationMinutes * 60000).toISOString())
+    ? formatSessionDisplayTime(new Date(scheduledAtMs + durationMinutes * 60000).toISOString(), locale)
     : null;
 
   return {
@@ -201,12 +125,12 @@ export function mapSessionRowToHubItem(sessionRow) {
     patientId: readString(sessionRow, ["patient_id", "patientId"]),
     childName: readString(sessionRow, ["patient_name", "patientName"]),
     specialistName: readString(sessionRow, ["specialist_name", "specialistName"]),
-    sessionDate: formatDisplayDate(scheduledAtRaw),
-    startTime: formatDisplayTime(scheduledAtRaw),
+    sessionDate: formatSessionDisplayDate(scheduledAtRaw, locale, t),
+    startTime: formatSessionDisplayTime(scheduledAtRaw, locale),
     endTime,
     durationMinutes,
     status,
-    statusMeta: getSessionStatusMeta(status),
+    statusMeta: getSessionStatusMeta(status, t),
     locationOrLink,
     meetingUrl,
     isOnline: meetingUrl != null,
@@ -219,22 +143,25 @@ export function mapSessionRowToHubItem(sessionRow) {
 
 /**
  * @param {Array<Record<string, unknown>>} sessions
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapSessionRowsToHubItems(sessions) {
+export function mapSessionRowsToHubItems(sessions, options = {}) {
   if (!Array.isArray(sessions)) {
     return [];
   }
 
   return sessions
-    .map((row) => mapSessionRowToHubItem(row))
+    .map((row) => mapSessionRowToHubItem(row, options))
     .filter(Boolean);
 }
 
 /**
  * @param {Record<string, unknown>} requestRow
  * @param {Record<string, unknown>|null} [approvedSessionRow]
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function mapSessionRequestRowToHubItem(requestRow, approvedSessionRow = null) {
+export function mapSessionRequestRowToHubItem(requestRow, approvedSessionRow = null, options = {}) {
+  const { t, locale } = resolveMapperContext(options);
   const id = readString(requestRow, ["id", "_id"]);
   if (!id) {
     return null;
@@ -242,7 +169,7 @@ export function mapSessionRequestRowToHubItem(requestRow, approvedSessionRow = n
 
   const reason = readString(requestRow, ["reason"]);
   const approvedSession = approvedSessionRow
-    ? mapSessionRowToHubItem(approvedSessionRow)
+    ? mapSessionRowToHubItem(approvedSessionRow, options)
     : null;
 
   return {
@@ -252,20 +179,23 @@ export function mapSessionRequestRowToHubItem(requestRow, approvedSessionRow = n
     specialistId: readString(requestRow, ["specialist_id", "specialistId"]),
     specialistName: readString(requestRow, ["specialist_name", "specialistName"]),
     reason,
-    reasonLabel: getSessionRequestReasonLabel(reason),
+    reasonLabel: getSessionRequestReasonLabel(reason, t),
     reasonOtherText: readString(requestRow, ["reason_other_text", "reasonOtherText"]),
     preferredDate: readString(requestRow, ["preferred_date", "preferredDate"]),
     preferredTimePeriod: readString(requestRow, ["preferred_time_period", "preferredTimePeriod"]),
     preferredTimePeriodLabel: getPreferredTimePeriodLabel(
       readString(requestRow, ["preferred_time_period", "preferredTimePeriod"]),
+      t,
     ),
     notes: readString(requestRow, ["notes"]),
     status: readString(requestRow, ["status"]),
-    statusMeta: getSessionRequestStatusMeta(readString(requestRow, ["status"])),
+    statusMeta: getSessionRequestStatusMeta(readString(requestRow, ["status"]), t),
     rejectionReason: readString(requestRow, ["rejection_reason", "rejectionReason"]),
     approvedSessionId: readString(requestRow, ["approved_session_id", "approvedSessionId"]),
-    createdAt: formatDisplayDate(
+    createdAt: formatSessionRequestCreatedDate(
       requestRow.created_at ?? requestRow.createdAt,
+      locale,
+      t,
     ),
     approvedSession,
   };
@@ -352,36 +282,39 @@ export function getTodayDateInputValue() {
 
 /**
  * @param {Record<string, unknown>} form
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function validateSessionRequestForm(form) {
+export function validateSessionRequestForm(form, options = {}) {
+  const { t } = resolveMapperContext(options);
+  const messages = getSessionRequestValidationMessages(t);
   const errors = {};
 
   if (!form.patientId) {
-    errors.patientId = "Select a child.";
+    errors.patientId = messages.patientId;
   }
 
   if (!form.specialistId) {
-    errors.specialistId = "Select a specialist.";
+    errors.specialistId = messages.specialistId;
   }
 
   if (!form.reason) {
-    errors.reason = "Select a reason.";
+    errors.reason = messages.reason;
   }
 
   if (form.reason === "other" && !String(form.reasonOtherText || "").trim()) {
-    errors.reasonOtherText = "Describe the reason when selecting Other.";
+    errors.reasonOtherText = messages.reasonOtherText;
   }
 
   if (!form.preferredDate) {
-    errors.preferredDate = "Preferred date is required.";
+    errors.preferredDate = messages.preferredDate;
   } else if (!/^\d{4}-\d{2}-\d{2}$/.test(form.preferredDate)) {
-    errors.preferredDate = "Use a valid date.";
+    errors.preferredDate = messages.preferredDateInvalid;
   } else if (form.preferredDate < getTodayDateInputValue()) {
-    errors.preferredDate = "Preferred date cannot be in the past.";
+    errors.preferredDate = messages.preferredDatePast;
   }
 
   if (!form.preferredTimePeriod) {
-    errors.preferredTimePeriod = "Select a preferred time period.";
+    errors.preferredTimePeriod = messages.preferredTimePeriod;
   }
 
   return errors;
@@ -399,10 +332,13 @@ export function mapSpecialistOption(row) {
 /**
  * Copies a meeting URL with graceful fallback messaging.
  * @param {string} url
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export async function copyMeetingUrl(url) {
+export async function copyMeetingUrl(url, options = {}) {
+  const { t } = resolveMapperContext(options);
+
   if (!url) {
-    throw new Error("Meeting link is unavailable.");
+    throw new Error(getMeetingLinkUnavailableError(t));
   }
 
   if (navigator.clipboard?.writeText) {
@@ -421,7 +357,7 @@ export async function copyMeetingUrl(url) {
   try {
     const copied = document.execCommand("copy");
     if (!copied) {
-      throw new Error("Unable to copy the meeting link.");
+      throw new Error(getMeetingLinkCopyError(t));
     }
   } finally {
     document.body.removeChild(textarea);
@@ -431,10 +367,13 @@ export async function copyMeetingUrl(url) {
 /**
  * Opens a meeting URL in a new tab safely.
  * @param {string} url
+ * @param {{ t?: Function, locale?: string }} [options]
  */
-export function openMeetingUrl(url) {
+export function openMeetingUrl(url, options = {}) {
+  const { t } = resolveMapperContext(options);
+
   if (!url) {
-    throw new Error("Meeting link is unavailable.");
+    throw new Error(getMeetingLinkUnavailableError(t));
   }
 
   window.open(url, "_blank", "noopener,noreferrer");

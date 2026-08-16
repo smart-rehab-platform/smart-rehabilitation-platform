@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   buildParentCaseRequestDetailPath,
   buildParentCaseRequestsPath,
 } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import {
   useParentCaseCategories,
@@ -17,12 +17,10 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  CASE_REQUEST_GENDER_OPTIONS,
-  PREFERRED_CONTACT_PERIODS,
+  buildCaseRequestGenderOptions,
+  buildPreferredContactPeriodOptions,
 } from "./utils/parentCaseRequestsUtils";
-import {
-  CaseRequestChildPhoto,
-} from "./components/case-requests/CaseRequestChildPhoto";
+import { CaseRequestChildPhoto } from "./components/case-requests/CaseRequestChildPhoto";
 import { useCaseRequestChildPhotoState } from "./hooks/useCaseRequestChildPhotoState";
 import "./styles/parentDashboardTokens.css";
 
@@ -71,6 +69,9 @@ function CaseRequestFormFields({
   onFieldChange,
   onSubmit,
   photoState,
+  t,
+  genderOptions,
+  contactPeriodOptions,
 }) {
   return (
     <form className="pd-case-form pd-card pd-card-pad" onSubmit={onSubmit}>
@@ -85,7 +86,7 @@ function CaseRequestFormFields({
       />
 
       <label className="pd-form-field">
-        <span>Child name</span>
+        <span>{t("parent.caseRequests.childName")}</span>
         <input
           type="text"
           required
@@ -96,7 +97,7 @@ function CaseRequestFormFields({
       </label>
 
       <label className="pd-form-field">
-        <span>Date of birth</span>
+        <span>{t("parent.caseRequests.dateOfBirth")}</span>
         <input
           type="date"
           required
@@ -106,27 +107,27 @@ function CaseRequestFormFields({
       </label>
 
       <label className="pd-form-field">
-        <span>Gender</span>
+        <span>{t("parent.caseRequests.genderField")}</span>
         <select
           required
           value={form.gender}
           onChange={(event) => onFieldChange("gender", event.target.value)}
         >
-          <option value="" disabled>Select gender</option>
-          {CASE_REQUEST_GENDER_OPTIONS.map((option) => (
+          <option value="" disabled>{t("parent.caseRequests.selectGender")}</option>
+          {genderOptions.map((option) => (
             <option key={option.value} value={option.value}>{option.label}</option>
           ))}
         </select>
       </label>
 
       <label className="pd-form-field">
-        <span>Category</span>
+        <span>{t("parent.caseRequests.categoryField")}</span>
         <select
           required
           value={form.categoryId}
           onChange={(event) => onFieldChange("categoryId", event.target.value)}
         >
-          <option value="">Select a category</option>
+          <option value="">{t("parent.caseRequests.selectCategory")}</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>{category.name}</option>
           ))}
@@ -134,7 +135,7 @@ function CaseRequestFormFields({
       </label>
 
       <label className="pd-form-field">
-        <span>Case description</span>
+        <span>{t("parent.caseRequests.caseDescriptionField")}</span>
         <textarea
           required
           rows={4}
@@ -145,7 +146,7 @@ function CaseRequestFormFields({
       </label>
 
       <label className="pd-form-field">
-        <span>Observed difficulties</span>
+        <span>{t("parent.caseRequests.observedDifficultiesField")}</span>
         <textarea
           rows={3}
           maxLength={5000}
@@ -160,12 +161,12 @@ function CaseRequestFormFields({
           checked={form.hasPreviousDiagnosis}
           onChange={(event) => onFieldChange("hasPreviousDiagnosis", event.target.checked)}
         />
-        <span>Has previous diagnosis</span>
+        <span>{t("parent.caseRequests.hasPreviousDiagnosis")}</span>
       </label>
 
       {form.hasPreviousDiagnosis ? (
         <label className="pd-form-field">
-          <span>Previous diagnosis details</span>
+          <span>{t("parent.caseRequests.previousDiagnosisDetails")}</span>
           <textarea
             rows={2}
             value={form.previousDiagnosisDetails}
@@ -186,12 +187,12 @@ function CaseRequestFormFields({
             event.target.checked,
           )}
         />
-        <span>Currently receiving treatment</span>
+        <span>{t("parent.caseRequests.currentlyReceivingTreatment")}</span>
       </label>
 
       {form.isCurrentlyReceivingTreatment ? (
         <label className="pd-form-field">
-          <span>Current treatment details</span>
+          <span>{t("parent.caseRequests.currentTreatmentDetails")}</span>
           <textarea
             rows={2}
             value={form.currentTreatmentDetails}
@@ -204,7 +205,7 @@ function CaseRequestFormFields({
       ) : null}
 
       <label className="pd-form-field">
-        <span>Preferred contact period</span>
+        <span>{t("parent.caseRequests.preferredContactPeriod")}</span>
         <select
           required
           value={form.preferredContactPeriod}
@@ -213,7 +214,7 @@ function CaseRequestFormFields({
             event.target.value,
           )}
         >
-          {PREFERRED_CONTACT_PERIODS.map((option) => (
+          {contactPeriodOptions.map((option) => (
             <option key={option.value} value={option.value}>{option.label}</option>
           ))}
         </select>
@@ -226,7 +227,11 @@ function CaseRequestFormFields({
         className="pd-btn pd-btn-primary"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Saving..." : isEditMode ? "Update Request" : "Submit Request"}
+        {isSubmitting
+          ? t("parent.caseRequests.saving")
+          : isEditMode
+            ? t("parent.caseRequests.updateRequest")
+            : t("parent.caseRequests.submitRequest")}
       </button>
     </form>
   );
@@ -239,6 +244,7 @@ function CaseRequestFormEditor({
   requestId,
   onSuccess,
 }) {
+  const { t } = useLocale();
   const [form, setForm] = useState(() => mapRequestToForm(request));
   const photoState = useCaseRequestChildPhotoState({
     persistedImageUrl: request?.childImageUrl ?? null,
@@ -247,6 +253,9 @@ function CaseRequestFormEditor({
     requestId: isEditMode ? requestId : null,
     onSuccess,
   });
+
+  const genderOptions = useMemo(() => buildCaseRequestGenderOptions(t), [t]);
+  const contactPeriodOptions = useMemo(() => buildPreferredContactPeriodOptions(t), [t]);
 
   const updateField = useCallback((field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -267,6 +276,9 @@ function CaseRequestFormEditor({
       onFieldChange={updateField}
       onSubmit={handleSubmit}
       photoState={photoState}
+      t={t}
+      genderOptions={genderOptions}
+      contactPeriodOptions={contactPeriodOptions}
     />
   );
 }
@@ -275,6 +287,7 @@ export default function ParentCaseRequestFormPage() {
   const navigate = useNavigate();
   const { requestId } = useParams();
   const isEditMode = Boolean(requestId);
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -370,7 +383,6 @@ export default function ParentCaseRequestFormPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -392,22 +404,24 @@ export default function ParentCaseRequestFormPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back
+              {t("parent.common.back")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
             <h1 className="pd-task-hub-title">
-              {isEditMode ? "Edit Case Request" : "Submit Case Request"}
+              {isEditMode
+                ? t("parent.caseRequests.formTitleEdit")
+                : t("parent.caseRequests.formTitleNew")}
             </h1>
             <p className="pd-task-hub-subtitle">
-              Share preliminary information for admin review and specialist assignment.
+              {t("parent.caseRequests.formSubtitle")}
             </p>
           </header>
 
           {isLoading ? (
             <section className="pd-card pd-card-pad pd-task-hub-state">
-              <p className="pd-inline-loading">Loading form...</p>
+              <p className="pd-inline-loading">{t("parent.caseRequests.loadingForm")}</p>
             </section>
           ) : (
             <CaseRequestFormEditor

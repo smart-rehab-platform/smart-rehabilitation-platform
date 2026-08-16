@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import { Bell } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { PlatformNotificationIcon } from "./PlatformNotificationIcon";
 
 function NotifIcon({ type }) {
@@ -16,10 +17,14 @@ export function NotificationPopover({
   onSelect,
   onViewAll,
 }) {
+  const { t } = useLocale();
   const rootRef = useRef(null);
   const menuId = useId();
   const visible = notifications.slice(0, 3);
   const showBadge = !isLoading && !error && badgeCount > 0;
+  const triggerAriaLabel = showBadge
+    ? t("header.notificationsUnreadAriaLabel", { count: badgeCount })
+    : t("header.notificationsAriaLabel");
 
   useEffect(() => {
     if (!open) return undefined;
@@ -46,7 +51,7 @@ export function NotificationPopover({
       <button
         type="button"
         className="pd-icon-btn"
-        aria-label={`Notifications${showBadge ? `, ${badgeCount} unread` : ""}`}
+        aria-label={triggerAriaLabel}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={menuId}
@@ -65,19 +70,19 @@ export function NotificationPopover({
           id={menuId}
           className="pd-dropdown pd-notif-dropdown"
           role="dialog"
-          aria-label="Recent notifications"
+          aria-label={t("notifications.recentAriaLabel")}
         >
           <div className="pd-notif-dropdown-head">
-            <strong>Notifications</strong>
+            <strong>{t("notifications.title")}</strong>
           </div>
           {isLoading ? (
-            <p className="pd-inline-loading pd-notif-dropdown-state">Loading notifications...</p>
+            <p className="pd-inline-loading pd-notif-dropdown-state">{t("notifications.loading")}</p>
           ) : null}
           {!isLoading && error ? (
             <p className="pd-inline-error pd-notif-dropdown-state">{error}</p>
           ) : null}
           {!isLoading && !error && visible.length === 0 ? (
-            <p className="pd-notif-dropdown-state">No notifications yet.</p>
+            <p className="pd-notif-dropdown-state">{t("notifications.empty")}</p>
           ) : null}
           {!isLoading && !error && visible.length > 0 ? (
           <ul className="pd-notif-dropdown-list">
@@ -95,8 +100,8 @@ export function NotificationPopover({
                     <NotifIcon type={item.icon} />
                   </span>
                   <span className="pd-notif-copy">
-                    <strong>{item.title}</strong>
-                    <small>{item.timeAgo}</small>
+                    <strong dir="auto">{item.title}</strong>
+                    <small dir="auto">{item.timeAgo}</small>
                   </span>
                   {item.unread ? <span className="pd-unread-dot" aria-hidden="true" /> : null}
                 </button>
@@ -112,7 +117,7 @@ export function NotificationPopover({
               onOpenChange(false);
             }}
           >
-            View All Notifications
+            {t("notifications.viewAll")}
           </button>
         </div>
       ) : null}

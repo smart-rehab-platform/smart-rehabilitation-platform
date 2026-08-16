@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { loadSpecialistSessions } from "../../../services/specialistSessionService";
 import {
-  filterVisibleSessions,
+  applySessionListItemLocalization,
   getSessionListEmptyMessage,
+} from "../utils/specialistSessionsLocalization";
+import {
+  filterVisibleSessions,
   getSessionsForDate,
   hasSessionsOnDate,
 } from "../utils/specialistSessionMappers";
@@ -13,6 +17,7 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistSessions(specialistUserId, { initialFilterId = "all" } = {}) {
+  const { t, locale } = useLocale();
   const [sessions, setSessions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,6 +25,7 @@ export function useSpecialistSessions(specialistUserId, { initialFilterId = "all
   const [filterId, setFilterId] = useState(initialFilterId);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+  const loadFailedError = t("specialist.sessions.errors.loadFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -51,7 +57,7 @@ export function useSpecialistSessions(specialistUserId, { initialFilterId = "all
           return;
         }
         setSessions([]);
-        setError(resolveErrorMessage(loadError, "Failed to load sessions."));
+        setError(resolveErrorMessage(loadError, loadFailedError));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -64,33 +70,38 @@ export function useSpecialistSessions(specialistUserId, { initialFilterId = "all
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, refreshToken]);
+  }, [specialistUserId, refreshToken, loadFailedError]);
+
+  const localizedSessions = useMemo(
+    () => sessions.map((session) => applySessionListItemLocalization(session, { t, locale })),
+    [sessions, t, locale],
+  );
 
   const visibleSessions = useMemo(
-    () => filterVisibleSessions(sessions, { searchQuery, filterId }),
-    [sessions, searchQuery, filterId],
+    () => filterVisibleSessions(localizedSessions, { searchQuery, filterId }),
+    [localizedSessions, searchQuery, filterId],
   );
 
   const emptyMessage = useMemo(
     () => getSessionListEmptyMessage({
-      hasSessions: sessions.length > 0,
+      hasSessions: localizedSessions.length > 0,
       hasVisible: visibleSessions.length > 0,
-    }),
-    [sessions.length, visibleSessions.length],
+    }, t),
+    [localizedSessions.length, visibleSessions.length, t],
   );
 
   const getDaySessions = useCallback(
-    (date) => getSessionsForDate(sessions, date),
-    [sessions],
+    (date) => getSessionsForDate(localizedSessions, date),
+    [localizedSessions],
   );
 
   const dayHasSessions = useCallback(
-    (date) => hasSessionsOnDate(sessions, date),
-    [sessions],
+    (date) => hasSessionsOnDate(localizedSessions, date),
+    [localizedSessions],
   );
 
   return {
-    sessions,
+    sessions: localizedSessions,
     visibleSessions,
     isLoading,
     error,

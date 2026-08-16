@@ -1,7 +1,10 @@
+import { useMemo } from "react";
 import { ChevronRight, Paperclip } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
+import { getAdminCaseRequestsLabels } from "../utils/adminCaseRequestsLocalization.js";
 
-function ViewAction({ onView }) {
+function ViewAction({ onView, label }) {
   return (
     <button
       type="button"
@@ -11,8 +14,8 @@ function ViewAction({ onView }) {
         onView?.();
       }}
     >
-      View
-      <ChevronRight size={16} aria-hidden="true" />
+      {label}
+      <ChevronRight size={16} aria-hidden="true" className="pd-admin-case-requests-view-chevron" />
     </button>
   );
 }
@@ -44,27 +47,36 @@ function SkeletonRows() {
   );
 }
 
+function TableHeader({ labels }) {
+  return (
+    <thead>
+      <tr>
+        <th scope="col">{labels.columns.child}</th>
+        <th scope="col">{labels.columns.parent}</th>
+        <th scope="col">{labels.columns.category}</th>
+        <th scope="col">{labels.columns.status}</th>
+        <th scope="col">{labels.columns.submitted}</th>
+        <th scope="col">{labels.columns.attachments}</th>
+        <th scope="col"><span className="pd-sr-only">{labels.columns.view}</span></th>
+      </tr>
+    </thead>
+  );
+}
+
 export function AdminCaseRequestsTable({
   items,
   isLoading,
   emptyKind,
   onViewRequest,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminCaseRequestsLabels(t), [t]);
+
   if (isLoading) {
     return (
       <section className="pd-card pd-admin-case-requests-table-wrap pd-section-enter" aria-busy="true">
         <table className="pd-admin-case-requests-table">
-          <thead>
-            <tr>
-              <th scope="col">Child</th>
-              <th scope="col">Parent</th>
-              <th scope="col">Category</th>
-              <th scope="col">Status</th>
-              <th scope="col">Submitted</th>
-              <th scope="col">Attachments</th>
-              <th scope="col"><span className="pd-sr-only">View</span></th>
-            </tr>
-          </thead>
+          <TableHeader labels={labels} />
           <tbody>
             <SkeletonRows />
           </tbody>
@@ -76,7 +88,7 @@ export function AdminCaseRequestsTable({
   if (emptyKind === "no-requests") {
     return (
       <section className="pd-card pd-card-pad pd-admin-case-requests-empty pd-section-enter">
-        <p className="pd-admin-case-requests-empty-copy">No case requests have been submitted yet.</p>
+        <p className="pd-admin-case-requests-empty-copy">{labels.empty}</p>
       </section>
     );
   }
@@ -84,25 +96,15 @@ export function AdminCaseRequestsTable({
   if (emptyKind === "no-matches") {
     return (
       <section className="pd-card pd-card-pad pd-admin-case-requests-empty pd-section-enter">
-        <p className="pd-admin-case-requests-empty-copy">No case requests match your search or filters.</p>
+        <p className="pd-admin-case-requests-empty-copy">{labels.emptyFiltered}</p>
       </section>
     );
   }
 
   return (
-    <section className="pd-card pd-admin-case-requests-table-wrap pd-section-enter" aria-label="Case requests list">
+    <section className="pd-card pd-admin-case-requests-table-wrap pd-section-enter" aria-label={labels.tableAriaLabel}>
       <table className="pd-admin-case-requests-table">
-        <thead>
-          <tr>
-            <th scope="col">Child</th>
-            <th scope="col">Parent</th>
-            <th scope="col">Category</th>
-            <th scope="col">Status</th>
-            <th scope="col">Submitted</th>
-            <th scope="col">Attachments</th>
-            <th scope="col"><span className="pd-sr-only">View</span></th>
-          </tr>
-        </thead>
+        <TableHeader labels={labels} />
         <tbody>
           {items.map((item) => (
             <tr
@@ -117,20 +119,20 @@ export function AdminCaseRequestsTable({
                 }
               }}
             >
-              <td data-label="Child">
-                <strong>{item.childName}</strong>
+              <td data-label={labels.columns.child}>
+                <strong dir="auto">{item.childName}</strong>
               </td>
-              <td data-label="Parent">{item.parentName}</td>
-              <td data-label="Category">{item.categoryName}</td>
-              <td data-label="Status">
+              <td data-label={labels.columns.parent} dir="auto">{item.parentName}</td>
+              <td data-label={labels.columns.category}>{item.categoryName}</td>
+              <td data-label={labels.columns.status}>
                 <StatusBadge label={item.statusLabel} tone={item.statusTone} />
               </td>
-              <td data-label="Submitted">{item.submittedLabel}</td>
-              <td data-label="Attachments">
+              <td data-label={labels.columns.submitted}>{item.submittedLabel}</td>
+              <td data-label={labels.columns.attachments}>
                 <AttachmentsCell countLabel={item.attachmentCountLabel} />
               </td>
-              <td data-label="View">
-                <ViewAction onView={() => onViewRequest(item.id)} />
+              <td data-label={labels.columns.view}>
+                <ViewAction onView={() => onViewRequest(item.id)} label={labels.view} />
               </td>
             </tr>
           ))}

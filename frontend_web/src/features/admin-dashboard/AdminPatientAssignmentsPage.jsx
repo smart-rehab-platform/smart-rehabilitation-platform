@@ -71,6 +71,7 @@ export default function AdminPatientAssignmentsPage() {
     unlinkSpecialist,
     unlinkParent,
     retryRelationships,
+    labels,
   } = useAdminPatientAssignments(preferredPatientId);
 
   useEffect(() => {
@@ -112,16 +113,16 @@ export default function AdminPatientAssignmentsPage() {
 
     if (unlinkDialog.kind === "specialist") {
       return {
-        title: "Unlink Specialist",
-        message: `Are you sure you want to unlink ${unlinkDialog.target.specialistName} from this patient?`,
+        title: labels.unlinkSpecialistTitle,
+        message: labels.unlinkSpecialistConfirm(unlinkDialog.target.specialistName),
       };
     }
 
     return {
-      title: "Unlink Parent",
-      message: `Are you sure you want to unlink ${unlinkDialog.target.parentName} from this patient?`,
+      title: labels.unlinkParentTitle,
+      message: labels.unlinkParentConfirm(unlinkDialog.target.parentName),
     };
-  }, [unlinkDialog]);
+  }, [labels, unlinkDialog]);
 
   const openUnlinkSpecialistDialog = useCallback((link) => {
     setUnlinkDialog({
@@ -190,35 +191,35 @@ export default function AdminPatientAssignmentsPage() {
 
     setUnlinkDialog((current) => ({
       ...current,
-      error: result.message ?? "Unable to unlink.",
+      error: result.message ?? labels.unlinkFailed,
     }));
-  }, [unlinkDialog, unlinkParent, unlinkSpecialist, showToast]);
+  }, [labels.unlinkFailed, unlinkDialog, unlinkParent, unlinkSpecialist, showToast]);
 
   let body;
 
   if (isLoading) {
     body = (
       <div className="pd-admin-assignments-page">
-        <section className="pd-admin-assignments-header pd-section-enter" aria-label="Patient assignments header">
-          <h1 className="pd-section-title">Patient Assignments</h1>
-          <p className="pd-section-sub">Manage specialists and parent relationships for patients.</p>
+        <section className="pd-admin-assignments-header pd-section-enter" aria-label={labels.headerAriaLabel}>
+          <h1 className="pd-section-title">{labels.title}</h1>
+          <p className="pd-section-sub">{labels.subtitle}</p>
         </section>
         <div className="pd-card pd-card-pad">
-          <p className="pd-admin-assignments-empty-copy">Loading assignment data...</p>
+          <p className="pd-admin-assignments-empty-copy">{labels.loading}</p>
         </div>
       </div>
     );
   } else if (initError) {
     body = (
       <div className="pd-admin-assignments-page">
-        <section className="pd-admin-assignments-header pd-section-enter" aria-label="Patient assignments header">
-          <h1 className="pd-section-title">Patient Assignments</h1>
-          <p className="pd-section-sub">Manage specialists and parent relationships for patients.</p>
+        <section className="pd-admin-assignments-header pd-section-enter" aria-label={labels.headerAriaLabel}>
+          <h1 className="pd-section-title">{labels.title}</h1>
+          <p className="pd-section-sub">{labels.subtitle}</p>
         </section>
         <div className="pd-card pd-card-pad pd-admin-assignments-inline-error">
           <p className="pd-inline-error">{initError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-            Retry
+            {labels.retry}
           </button>
         </div>
       </div>
@@ -226,15 +227,16 @@ export default function AdminPatientAssignmentsPage() {
   } else {
     body = (
       <div className="pd-admin-assignments-page">
-        <section className="pd-admin-assignments-header pd-section-enter" aria-label="Patient assignments header">
-          <h1 className="pd-section-title">Patient Assignments</h1>
-          <p className="pd-section-sub">Manage specialists and parent relationships for patients.</p>
+        <section className="pd-admin-assignments-header pd-section-enter" aria-label={labels.headerAriaLabel}>
+          <h1 className="pd-section-title">{labels.title}</h1>
+          <p className="pd-section-sub">{labels.subtitle}</p>
         </section>
 
         <AdminPatientAssignmentsPatientSelector
           patients={patients}
           selectedPatientId={selectedPatientId}
           onSelectPatient={selectPatient}
+          labels={labels}
         />
 
         <div className="pd-admin-assignments-forms-grid">
@@ -248,6 +250,7 @@ export default function AdminPatientAssignmentsPage() {
             onSelectSpecialist={setSelectedSpecialistId}
             onPrimaryChange={setIsPrimarySpecialist}
             onSubmit={handleAssignSpecialist}
+            labels={labels}
           />
           <AdminPatientAssignmentsLinkParent
             parents={parents}
@@ -261,11 +264,12 @@ export default function AdminPatientAssignmentsPage() {
             onSelectRelationship={setSelectedRelationship}
             onPrimaryChange={setIsPrimaryContact}
             onSubmit={handleLinkParent}
+            labels={labels}
           />
         </div>
 
         <p className="pd-admin-assignments-info-note">
-          To change an assignment, unlink the current specialist or parent, then assign or link the new one.
+          {labels.changeHint}
         </p>
 
         <div className="pd-admin-assignments-lists-grid">
@@ -277,6 +281,7 @@ export default function AdminPatientAssignmentsPage() {
             isUnlinking={isUnlinking}
             onRetry={retryRelationships}
             onUnlink={openUnlinkSpecialistDialog}
+            labels={labels}
           />
           <AdminPatientAssignmentsParentsList
             linkedParents={linkedParents}
@@ -286,6 +291,7 @@ export default function AdminPatientAssignmentsPage() {
             isUnlinking={isUnlinking}
             onRetry={retryRelationships}
             onUnlink={openUnlinkParentDialog}
+            labels={labels}
           />
         </div>
       </div>
@@ -328,6 +334,7 @@ export default function AdminPatientAssignmentsPage() {
         error={unlinkDialog.error}
         onClose={closeUnlinkDialog}
         onConfirm={handleConfirmUnlink}
+        labels={labels}
       />
     </div>
   );

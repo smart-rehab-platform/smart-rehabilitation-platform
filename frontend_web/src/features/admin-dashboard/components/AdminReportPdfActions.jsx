@@ -5,6 +5,7 @@ import { mapAdminReportExportResult } from "../utils/adminReportsMappers";
 
 export function AdminReportPdfActions({
   report,
+  labels,
   onReportUpdated,
   onRefresh,
   showToast,
@@ -13,8 +14,9 @@ export function AdminReportPdfActions({
   const [exportError, setExportError] = useState(null);
   const [copyError, setCopyError] = useState(null);
   const exportLockRef = useRef(false);
+  const pdfActions = labels?.pdfActions ?? {};
 
-  if (!report) {
+  if (!report || !labels) {
     return null;
   }
 
@@ -25,16 +27,18 @@ export function AdminReportPdfActions({
     setCopyError(null);
 
     if (!canView) {
-      setCopyError("PDF link is unavailable.");
+      const message = labels.pdfLinkUnavailable;
+      setCopyError(message);
       return;
     }
 
     try {
       await navigator.clipboard.writeText(resolvedUrl);
-      showToast?.("PDF link copied.");
+      showToast?.(pdfActions.linkCopied);
     } catch {
-      setCopyError("Unable to copy PDF link.");
-      showToast?.("Unable to copy PDF link.");
+      const message = pdfActions.copyFailed;
+      setCopyError(message);
+      showToast?.(message);
     }
   };
 
@@ -57,11 +61,11 @@ export function AdminReportPdfActions({
         await onRefresh?.();
       }
 
-      showToast?.("PDF generated successfully.");
+      showToast?.(pdfActions.generatedSuccess);
     } catch (error) {
       const message = error instanceof Error
         ? error.message
-        : "Failed to export report PDF.";
+        : pdfActions.generateFailed;
       setExportError(message);
     } finally {
       exportLockRef.current = false;
@@ -70,8 +74,11 @@ export function AdminReportPdfActions({
   };
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-report-section pd-section-enter" aria-label="PDF actions">
-      <h2 className="pd-admin-report-section-title">PDF Actions</h2>
+    <section
+      className="pd-card pd-card-pad pd-admin-report-section pd-section-enter"
+      aria-label={labels.pdfActionsTitle}
+    >
+      <h2 className="pd-admin-report-section-title">{labels.pdfActionsTitle}</h2>
 
       {canView ? (
         <div className="pd-admin-report-pdf-actions">
@@ -80,10 +87,10 @@ export function AdminReportPdfActions({
             href={resolvedUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="View PDF report"
+            aria-label={pdfActions.viewPdfAria}
           >
             <ExternalLink size={16} aria-hidden="true" />
-            View PDF
+            {pdfActions.viewPdf}
           </a>
           <button
             type="button"
@@ -91,14 +98,14 @@ export function AdminReportPdfActions({
             onClick={handleCopyPdfLink}
           >
             <Copy size={16} aria-hidden="true" />
-            Copy PDF Link
+            {pdfActions.copyPdfLink ?? pdfActions.copyLink}
           </button>
         </div>
       ) : (
         <div className="pd-admin-report-pdf-actions">
           {report.hasPdf && !resolvedUrl ? (
             <p className="pd-admin-report-empty-copy" role="alert">
-              PDF attachment is unavailable.
+              {labels.pdfUnavailable}
             </p>
           ) : null}
           <button
@@ -109,7 +116,7 @@ export function AdminReportPdfActions({
             aria-busy={isExporting}
           >
             <FilePlus2 size={16} aria-hidden="true" />
-            {isExporting ? "Generating PDF..." : "Generate PDF"}
+            {isExporting ? pdfActions.generating : pdfActions.generatePdf}
           </button>
         </div>
       )}

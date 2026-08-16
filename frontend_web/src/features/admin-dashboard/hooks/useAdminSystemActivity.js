@@ -1,10 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchWeeklySystemActivity } from "../../../services/adminDashboardService";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   clampWeekOffset,
-  formatSystemActivityPeriodLabel,
   SYSTEM_ACTIVITY_PRESET_OFFSETS,
 } from "../utils/adminDashboardMappers";
+import {
+  formatAdminSystemActivityPeriodLabel,
+  getAdminAnalyticsLabels,
+  localizeSystemActivityDays,
+} from "../utils/adminDashboardLocalization.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -18,6 +23,8 @@ const EMPTY_ACTIVITY = {
 };
 
 export function useAdminSystemActivity(adminUserId) {
+  const { t, locale } = useLocale();
+  const analyticsLabels = useMemo(() => getAdminAnalyticsLabels(t), [t]);
   const [weekOffset, setWeekOffsetState] = useState(0);
   const [activity, setActivity] = useState(EMPTY_ACTIVITY);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,11 +32,16 @@ export function useAdminSystemActivity(adminUserId) {
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
 
-  const periodLabel = formatSystemActivityPeriodLabel({
+  const periodLabel = formatAdminSystemActivityPeriodLabel({
     weekOffset,
     weekStart: activity.weekStart,
     weekEnd: activity.weekEnd,
-  });
+  }, { t, locale });
+
+  const localizedActivity = useMemo(() => ({
+    ...activity,
+    days: localizeSystemActivityDays(activity.days, locale),
+  }), [activity, locale]);
 
   const setWeekOffset = useCallback((nextOffset) => {
     setWeekOffsetState(clampWeekOffset(nextOffset));
@@ -67,7 +79,7 @@ export function useAdminSystemActivity(adminUserId) {
         setError(
           resolveErrorMessage(
             loadError,
-            "Failed to load system activity. Please try again.",
+            analyticsLabels.loadFailed,
           ),
         );
       } finally {
@@ -82,7 +94,7 @@ export function useAdminSystemActivity(adminUserId) {
     return () => {
       cancelled = true;
     };
-  }, [adminUserId, weekOffset, refreshToken]);
+  }, [adminUserId, weekOffset, refreshToken, analyticsLabels.loadFailed]);
 
   const showPreviousWeek = useCallback(() => {
     setWeekOffsetState((current) => clampWeekOffset(current + 1));
@@ -107,7 +119,7 @@ export function useAdminSystemActivity(adminUserId) {
   }, []);
 
   return {
-    activity,
+    activity: localizedActivity,
     weekOffset,
     periodLabel,
     isLoading,

@@ -1,3 +1,7 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
+import { getAdminUsersLabels } from "../utils/adminUsersLocalization.js";
+
 export function AdminUserStatusDialog({
   open,
   user,
@@ -6,6 +10,9 @@ export function AdminUserStatusDialog({
   onClose,
   onConfirm,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminUsersLabels(t), [t]);
+
   if (!open || !user) {
     return null;
   }
@@ -22,12 +29,10 @@ export function AdminUserStatusDialog({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="admin-user-status-title" className="pd-admin-modal-title">
-          {willDeactivate ? "Deactivate User" : "Activate User"}
+          {willDeactivate ? labels.dialogs.deactivateTitle : labels.dialogs.activateTitle}
         </h2>
         <p className="pd-admin-modal-copy">
-          {willDeactivate
-            ? "This user will lose access to the platform until reactivated."
-            : "This user will regain access to the platform."}
+          {willDeactivate ? labels.dialogs.deactivateBody : labels.dialogs.activateBody}
         </p>
 
         {error ? <p className="pd-inline-error">{error}</p> : null}
@@ -39,7 +44,7 @@ export function AdminUserStatusDialog({
             onClick={() => onClose?.()}
             disabled={isSubmitting}
           >
-            Cancel
+            {labels.form.cancel}
           </button>
           <button
             type="button"
@@ -48,10 +53,10 @@ export function AdminUserStatusDialog({
             disabled={isSubmitting}
           >
             {isSubmitting
-              ? "Saving..."
+              ? labels.form.saving
               : willDeactivate
-                ? "Deactivate"
-                : "Activate"}
+                ? labels.actions.deactivate
+                : labels.actions.activate}
           </button>
         </div>
       </div>

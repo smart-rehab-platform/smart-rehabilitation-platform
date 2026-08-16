@@ -1,4 +1,5 @@
 import { Dumbbell, Loader2, Wand2 } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 import { AI_RECOMMENDATION_TYPE } from "../utils/specialistAiRecommendationMappers";
 
 export function SpecialistAiGenerateCard({
@@ -7,6 +8,7 @@ export function SpecialistAiGenerateCard({
   onGenerateExercise,
   onGeneratePlanAdjustment,
 }) {
+  const { t } = useLocale();
   const isGeneratingExercise = isGenerating
     && generatingTypeId === AI_RECOMMENDATION_TYPE.exerciseSuggestion;
   const isGeneratingPlan = isGenerating
@@ -14,9 +16,9 @@ export function SpecialistAiGenerateCard({
 
   return (
     <section className="pd-card pd-card-pad pd-specialist-ai-generate-card">
-      <h2 className="pd-specialist-ai-section-title">Generate Recommendation</h2>
+      <h2 className="pd-specialist-ai-section-title">{t("specialist.aiRecommendations.generate.title")}</h2>
       <p className="pd-specialist-ai-section-sub">
-        Create AI-assisted exercise or plan recommendations from patient context.
+        {t("specialist.aiRecommendations.generate.subtitle")}
       </p>
       <div className="pd-specialist-ai-generate-actions">
         <button
@@ -30,7 +32,9 @@ export function SpecialistAiGenerateCard({
           ) : (
             <Dumbbell size={18} aria-hidden="true" />
           )}
-          {isGeneratingExercise ? "Generating..." : "Generate Exercise Suggestion"}
+          {isGeneratingExercise
+            ? t("specialist.aiRecommendations.generate.generating")
+            : t("specialist.aiRecommendations.generate.exerciseSuggestion")}
         </button>
         <button
           type="button"
@@ -43,7 +47,9 @@ export function SpecialistAiGenerateCard({
           ) : (
             <Wand2 size={18} aria-hidden="true" />
           )}
-          {isGeneratingPlan ? "Generating..." : "Generate Plan Adjustment"}
+          {isGeneratingPlan
+            ? t("specialist.aiRecommendations.generate.generating")
+            : t("specialist.aiRecommendations.generate.planAdjustment")}
         </button>
       </div>
     </section>

@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 import { SpecialistTreatmentPlanCard } from "../components/SpecialistTreatmentPlanCard";
 import { SpecialistTreatmentPlanFilters } from "../components/SpecialistTreatmentPlanFilters";
 import { SpecialistTreatmentPlanSearch } from "../components/SpecialistTreatmentPlanSearch";
@@ -16,10 +17,12 @@ export function SpecialistTreatmentPlansList({
   onPlanClick,
   onAddPlan,
 }) {
+  const { t } = useLocale();
+
   if (isLoading) {
     return (
       <section className="pd-card pd-card-pad pd-task-hub-state">
-        <p className="pd-inline-loading">Loading treatment plans...</p>
+        <p className="pd-inline-loading">{t("specialist.treatmentPlans.loading")}</p>
       </section>
     );
   }
@@ -29,7 +32,7 @@ export function SpecialistTreatmentPlansList({
       <section className="pd-card pd-card-pad pd-task-hub-state">
         <p className="pd-inline-error">{error}</p>
         <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-          Retry
+          {t("common.retry")}
         </button>
       </section>
     );
@@ -44,22 +47,22 @@ export function SpecialistTreatmentPlansList({
         <div className="pd-specialist-treatment-plan-inline-error">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onRetry}>
-            Retry
+            {t("common.retry")}
           </button>
         </div>
       ) : null}
 
       {plans.length === 0 ? (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">No treatment plans found.</p>
+          <p className="pd-section-sub">{t("specialist.treatmentPlans.empty.none")}</p>
           <button type="button" className="pd-btn pd-btn-outline pd-specialist-treatment-plan-add-btn" onClick={onAddPlan}>
             <Plus size={16} aria-hidden="true" />
-            Add Treatment Plan
+            {t("specialist.treatmentPlans.addPlan")}
           </button>
         </section>
       ) : visiblePlans.length === 0 ? (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">No plans match your search or filter.</p>
+          <p className="pd-section-sub">{t("specialist.treatmentPlans.empty.filtered")}</p>
         </section>
       ) : (
         <ul className="pd-specialist-treatment-plans-list">

@@ -1,3 +1,7 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale.js";
+import { getAdminUsersLabels } from "../utils/adminUsersLocalization.js";
+
 export function AdminUserDeleteDialog({
   open,
   user,
@@ -7,6 +11,9 @@ export function AdminUserDeleteDialog({
   onClose,
   onConfirm,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminUsersLabels(t), [t]);
+
   if (!open || !user) {
     return null;
   }
@@ -21,12 +28,12 @@ export function AdminUserDeleteDialog({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="admin-user-delete-title" className="pd-admin-modal-title">
-          {isSelfDelete ? "Delete your account?" : "Delete user?"}
+          {isSelfDelete ? labels.dialogs.deleteSelfTitle : labels.dialogs.deleteTitle}
         </h2>
         <p className="pd-admin-modal-copy">
           {isSelfDelete
-            ? "You are about to delete your own admin account. This action cannot be undone."
-            : `Are you sure you want to delete ${user.fullName}? This action cannot be undone.`}
+            ? labels.dialogs.deleteSelfBody
+            : t("admin.users.dialogs.deleteBody", { name: user.fullName })}
         </p>
 
         {error ? <p className="pd-inline-error">{error}</p> : null}
@@ -38,7 +45,7 @@ export function AdminUserDeleteDialog({
             onClick={() => onClose?.()}
             disabled={isSubmitting}
           >
-            Cancel
+            {labels.form.cancel}
           </button>
           <button
             type="button"
@@ -46,7 +53,7 @@ export function AdminUserDeleteDialog({
             onClick={() => onConfirm?.()}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Deleting..." : "Delete"}
+            {isSubmitting ? labels.dialogs.deleting : labels.actions.delete}
           </button>
         </div>
       </div>

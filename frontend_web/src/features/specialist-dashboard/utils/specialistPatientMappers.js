@@ -1,3 +1,14 @@
+import { resolveSpecialistMapperContext } from "./specialistDashboardLocalization.js";
+import {
+  formatPatientDisplayDate,
+  formatPatientDisplayDateTime,
+  getPatientExerciseStatusLabel,
+  getPatientGoalTermLabel,
+  getPatientMediaTypeLabel,
+  getPatientPlanStatusMeta,
+  getPatientReviewStatusLabel,
+} from "./specialistPatientsLocalization.js";
+
 function readString(record, keys) {
   if (!record || typeof record !== "object") {
     return "";
@@ -77,36 +88,12 @@ export function calculateAgeFromBirthDate(dateValue) {
   return years >= 0 ? years : null;
 }
 
-export function formatPatientDate(dateValue) {
-  if (!dateValue) {
-    return null;
-  }
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
+export function formatPatientDate(dateValue, locale = "en") {
+  return formatPatientDisplayDate(dateValue, locale);
 }
 
-export function formatPatientDateTime(dateValue) {
-  if (!dateValue) {
-    return null;
-  }
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(date);
+export function formatPatientDateTime(dateValue, locale = "en") {
+  return formatPatientDisplayDateTime(dateValue, locale);
 }
 
 function normalizeImprovementPercentage(map) {
@@ -121,54 +108,20 @@ function normalizeImprovementPercentage(map) {
   return Math.max(0, Math.min(1, normalized));
 }
 
-function formatReviewStatus(status) {
-  const normalized = (status || "").trim().toLowerCase();
-  if (normalized === "reviewed") {
-    return "Reviewed";
-  }
-  if (normalized === "needs_retry") {
-    return "Needs retry";
-  }
-  return "Pending";
+function formatReviewStatus(status, t = null) {
+  return getPatientReviewStatusLabel(status, t);
 }
 
-export function mediaTypeFromRaw(raw) {
-  const normalized = (raw || "").trim().toLowerCase();
-  if (!normalized) {
-    return "—";
-  }
-  if (normalized.includes("video")) {
-    return "Video";
-  }
-  if (normalized.includes("audio")) {
-    return "Audio";
-  }
-  if (normalized.includes("image")) {
-    return "Image";
-  }
-  return raw.trim();
+export function mediaTypeFromRaw(raw, t = null) {
+  return getPatientMediaTypeLabel(raw, t);
 }
 
-function formatGoalTerm(term) {
-  const normalized = (term || "").trim().toLowerCase();
-  if (normalized === "short_term") {
-    return "Short-term";
-  }
-  if (normalized === "long_term") {
-    return "Long-term";
-  }
-  return term || "Goal";
+function formatGoalTerm(term, t = null) {
+  return getPatientGoalTermLabel(term, t);
 }
 
-function formatPlanStatus(status) {
-  const normalized = (status || "").trim().toLowerCase();
-  if (normalized === "completed") {
-    return { label: "Completed", tone: "gray" };
-  }
-  if (normalized === "archived") {
-    return { label: "Archived", tone: "gray" };
-  }
-  return { label: "Active", tone: "success" };
+function formatPlanStatus(status, t = null) {
+  return getPatientPlanStatusMeta(status, t);
 }
 
 export function mapSpecialistPatientListItem(row) {
@@ -216,21 +169,24 @@ export function mapPatientDiagnosisSummary(diagnosisRows) {
   return readString(first, ["diagnosis_title", "diagnosisTitle", "title"]) || null;
 }
 
-export function selectActiveTreatmentPlan(planRows) {
+export function selectActiveTreatmentPlan(planRows, context = {}) {
   if (!Array.isArray(planRows) || planRows.length === 0) {
     return null;
   }
-  const mapped = planRows.map(mapTreatmentPlan).filter(Boolean);
+  const mapped = planRows.map((row) => mapTreatmentPlan(row, context)).filter(Boolean);
   return mapped.find((plan) => plan.isActive) || mapped[0] || null;
 }
 
-export function mapTreatmentPlan(row) {
+export function mapTreatmentPlan(row, context = {}) {
+  const { t, locale } = resolveSpecialistMapperContext(context);
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
   }
   const status = readString(row, ["status"]) || "active";
-  const statusMeta = formatPlanStatus(status);
+  const statusMeta = formatPlanStatus(status, t);
+  const startDate = readDateValue(row, ["start_date", "startDate"]);
+  const endDate = readDateValue(row, ["end_date", "endDate"]);
   return {
     id,
     title: readString(row, ["title"]) || "Treatment Plan",
@@ -238,14 +194,15 @@ export function mapTreatmentPlan(row) {
     statusLabel: statusMeta.label,
     statusTone: statusMeta.tone,
     isActive: status.trim().toLowerCase() === "active",
-    startDate: readDateValue(row, ["start_date", "startDate"]),
-    endDate: readDateValue(row, ["end_date", "endDate"]),
-    startDateLabel: formatPatientDate(readDateValue(row, ["start_date", "startDate"])),
-    endDateLabel: formatPatientDate(readDateValue(row, ["end_date", "endDate"])),
+    startDate,
+    endDate,
+    startDateLabel: formatPatientDate(startDate, locale),
+    endDateLabel: formatPatientDate(endDate, locale),
   };
 }
 
-export function mapPatientGoal(row, completionPercentage = 0) {
+export function mapPatientGoal(row, completionPercentage = 0, context = {}) {
+  const { t } = resolveSpecialistMapperContext(context);
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
@@ -257,55 +214,64 @@ export function mapPatientGoal(row, completionPercentage = 0) {
     id,
     title: readString(row, ["title"]) || "Goal",
     term,
-    termLabel: formatGoalTerm(term),
+    termLabel: formatGoalTerm(term, t),
     isAchieved: readBoolean(row, ["is_achieved", "isAchieved"]),
     completionPercent: percent,
     description: readString(row, ["description"]) || null,
   };
 }
 
-export function mapAssignedExercise(row) {
+export function mapAssignedExercise(row, context = {}) {
+  const { t, locale } = resolveSpecialistMapperContext(context);
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
   }
   const isActive = readBoolean(row, ["is_active", "isActive"]);
+  const dueDate = readDateValue(row, ["due_date", "dueDate"]);
   return {
     id,
     exerciseTitle: readString(row, ["exercise_title", "exerciseTitle", "title"]) || "Exercise",
     category: readString(row, ["category_name", "categoryName", "category"]) || null,
-    dueDateLabel: formatPatientDate(readDateValue(row, ["due_date", "dueDate"])),
-    statusLabel: isActive ? "Active" : "Inactive",
+    dueDate,
+    dueDateLabel: formatPatientDate(dueDate, locale),
+    statusLabel: getPatientExerciseStatusLabel(isActive, t),
     isActive,
   };
 }
 
-export function mapPatientSubmission(row, mediaTypeLabel = "—") {
+export function mapPatientSubmission(row, mediaTypeLabel = "—", context = {}) {
+  const { t, locale } = resolveSpecialistMapperContext(context);
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
   }
   const status = readString(row, ["status"]) || "pending";
+  const submittedAt = readDateValue(row, ["submitted_at", "submittedAt"]);
   return {
     id,
     exerciseTitle: readString(row, ["exercise_title", "exerciseTitle", "title"]) || "Exercise",
     mediaTypeLabel,
-    submittedAtLabel: formatPatientDateTime(readDateValue(row, ["submitted_at", "submittedAt"])),
-    reviewStatus: formatReviewStatus(status),
+    submittedAt,
+    submittedAtLabel: formatPatientDateTime(submittedAt, locale),
+    reviewStatus: formatReviewStatus(status, t),
     reviewStatusRaw: status.trim().toLowerCase(),
   };
 }
 
-export function mapPatientNote(row) {
+export function mapPatientNote(row, context = {}) {
+  const { locale } = resolveSpecialistMapperContext(context);
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
   }
+  const createdAt = readDateValue(row, ["created_at", "createdAt"]);
   return {
     id,
     note: readString(row, ["note"]) || "",
     specialistName: readString(row, ["specialist_name", "specialistName"]) || "Specialist",
-    createdAtLabel: formatPatientDateTime(readDateValue(row, ["created_at", "createdAt"])),
+    createdAt,
+    createdAtLabel: formatPatientDateTime(createdAt, locale),
   };
 }
 
@@ -389,7 +355,7 @@ export function buildPatientQuickStats({
   };
 }
 
-export async function buildPatientDetailsBundle(rawBundle, goals = []) {
+export async function buildPatientDetailsBundle(rawBundle, goals = [], context = {}) {
   const patient = mapPatientProfile(rawBundle.patientMap);
   if (!patient) {
     throw new Error("Patient not found.");
@@ -397,15 +363,15 @@ export async function buildPatientDetailsBundle(rawBundle, goals = []) {
 
   const diagnosis = mapPatientDiagnosisSummary(rawBundle.diagnosisRows);
   const overallProgress = normalizeImprovementPercentage(rawBundle.improvementMap);
-  const treatmentPlan = selectActiveTreatmentPlan(rawBundle.treatmentPlanRows);
+  const treatmentPlan = selectActiveTreatmentPlan(rawBundle.treatmentPlanRows, context);
   const assignedExercises = (rawBundle.assignedExerciseRows || [])
-    .map(mapAssignedExercise)
+    .map((row) => mapAssignedExercise(row, context))
     .filter(Boolean);
 
   const recentSubmissions = rawBundle.recentSubmissions || [];
 
   const notes = (rawBundle.noteRows || [])
-    .map(mapPatientNote)
+    .map((row) => mapPatientNote(row, context))
     .filter(Boolean)
     .reverse();
 
@@ -430,27 +396,29 @@ export async function buildPatientDetailsBundle(rawBundle, goals = []) {
   };
 }
 
-export async function buildRecentSubmissionsWithMedia(submissionRows, getSubmissionMedia) {
+export async function buildRecentSubmissionsWithMedia(submissionRows, getSubmissionMedia, context = {}) {
+  const { t } = resolveSpecialistMapperContext(context);
   const recentSubmissionRows = (submissionRows || []).slice(0, 5);
   const recentSubmissions = await Promise.all(
     recentSubmissionRows.map(async (row) => {
       const submissionId = readString(row, ["id", "_id"]);
-      let mediaTypeLabel = "—";
+      let mediaTypeLabel = getPatientMediaTypeLabel(null, t);
       if (submissionId) {
         const mediaRows = await getSubmissionMedia(submissionId);
         if (mediaRows.length > 0) {
           mediaTypeLabel = mediaTypeFromRaw(
             readString(mediaRows[0], ["media_type", "mediaType"]),
+            t,
           );
         }
       }
-      return mapPatientSubmission(row, mediaTypeLabel);
+      return mapPatientSubmission(row, mediaTypeLabel, context);
     }),
   );
   return recentSubmissions.filter(Boolean);
 }
 
-export async function fetchGoalsWithProgress(planId, getTreatmentPlanGoalsFn, getGoalProgressFn) {
+export async function fetchGoalsWithProgress(planId, getTreatmentPlanGoalsFn, getGoalProgressFn, context = {}) {
   const goalRows = await getTreatmentPlanGoalsFn(planId);
   if (!Array.isArray(goalRows) || goalRows.length === 0) {
     return [];
@@ -469,7 +437,7 @@ export async function fetchGoalsWithProgress(planId, getTreatmentPlanGoalsFn, ge
           ]) ?? 0;
         }
       }
-      return mapPatientGoal(row, completion);
+      return mapPatientGoal(row, completion, context);
     }),
   );
 

@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistMessagesPath,
@@ -38,6 +39,7 @@ import "./styles/specialistDashboardSections.css";
 export default function SpecialistPatientDetailsPage() {
   const navigate = useNavigate();
   const { patientId } = useParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -85,6 +87,7 @@ export default function SpecialistPatientDetailsPage() {
     openMessageParent,
     loadFamilyPatternDetailsPanel,
     retryFamilyPattern,
+    getMessageParentError,
   } = useSpecialistPatientDetails(patientId, specialistUserId);
 
   const scrollToSection = useCallback((target) => {
@@ -114,17 +117,17 @@ export default function SpecialistPatientDetailsPage() {
         navigate(buildSpecialistMessagesPath(conversationId));
       }
     } catch (messageError) {
-      showToast(messageError instanceof Error ? messageError.message : "Unable to open conversation.");
+      showToast(getMessageParentError(messageError));
     }
-  }, [openMessageParent, navigate, showToast]);
+  }, [openMessageParent, navigate, showToast, getMessageParentError]);
 
   const handleAddNote = useCallback(async (noteText) => {
     const ok = await addNote(noteText);
     if (ok) {
-      showToast("Note saved");
+      showToast(t("specialist.patientDetails.noteSaved"));
     }
     return ok;
-  }, [addNote, showToast]);
+  }, [addNote, showToast, t]);
 
   const handleReviewExercises = useCallback(() => {
     const pending = (details?.recentSubmissions || []).filter(
@@ -147,18 +150,18 @@ export default function SpecialistPatientDetailsPage() {
   const handleAssignExercise = useCallback(() => {
     const plan = details?.treatmentPlan;
     if (!plan?.isActive) {
-      showToast("An active treatment plan is required before assigning an exercise.");
+      showToast(t("specialist.patientDetails.toast.activePlanRequired"));
       navigate(SPECIALIST_WEB_ROUTES.treatmentPlans);
       return;
     }
     navigate(buildSpecialistPatientAssignExercisePath(patientId, plan.id));
-  }, [details, navigate, patientId, showToast]);
+  }, [details, navigate, patientId, showToast, t]);
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading patient details...</p>
+          <p className="pd-inline-loading">{t("specialist.patientDetails.loading")}</p>
         </section>
       );
     }
@@ -168,7 +171,7 @@ export default function SpecialistPatientDetailsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -177,7 +180,7 @@ export default function SpecialistPatientDetailsPage() {
     if (!details) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">Patient not found.</p>
+          <p className="pd-section-sub">{t("specialist.patientDetails.notFound")}</p>
         </section>
       );
     }
@@ -257,7 +260,7 @@ export default function SpecialistPatientDetailsPage() {
             if (details.treatmentPlan?.id) {
               navigate(buildSpecialistEditTreatmentPlanPath(details.treatmentPlan.id));
             } else {
-              showToast("No treatment plan found for this patient.");
+              showToast(t("specialist.patientDetails.toast.noTreatmentPlan"));
             }
           }}
           onAiRecommendations={() => navigate(buildSpecialistPatientAiRecommendationsPath(patientId))}
@@ -296,7 +299,7 @@ export default function SpecialistPatientDetailsPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
-              Back to Patients
+              {t("specialist.patientDetails.back")}
             </button>
           </div>
           <div className="pd-task-hub-panel">{renderContent()}</div>

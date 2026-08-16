@@ -1,54 +1,37 @@
-import { exerciseStatusMeta } from "../../mock/parentDashboardMock";
+import { useLocale } from "../../../../context/useLocale.js";
 import { StatusBadge } from "../StatusBadge";
+import { getFeedbackStatusMeta } from "../../utils/parentFeedbackUtils";
 
 export function ReviewCard({ review }) {
-  const statusMeta = exerciseStatusMeta[review.status] || exerciseStatusMeta.reviewed;
+  const { t } = useLocale();
+  const statusMeta = getFeedbackStatusMeta(review.status, t);
 
   return (
-    <article className="pd-card pd-card-pad pd-task-hub-card pd-feedback-card pd-section-enter">
-      <div className="pd-task-hub-card-head">
-        <div className="pd-task-hub-card-copy">
-          {review.exerciseTitle ? (
-            <h3 className="pd-task-hub-card-title">{review.exerciseTitle}</h3>
-          ) : null}
+    <article className="pd-card pd-card-pad pd-feedback-card pd-section-enter">
+      <div className="pd-feedback-card-head">
+        <div className="pd-feedback-card-copy">
+          <h3 className="pd-feedback-card-title" dir="auto">{review.exerciseTitle}</h3>
           {review.childName ? (
-            <p className="pd-task-hub-card-child">For {review.childName}</p>
+            <p className="pd-feedback-card-child">{review.childName}</p>
           ) : null}
         </div>
         <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
       </div>
 
-      {review.requiresRetry ? (
-        <p className="pd-feedback-retry-badge" role="status">
-          Requires Retry
+      {review.reviewedAtLabel ? (
+        <p className="pd-feedback-card-date">{review.reviewedAtLabel}</p>
+      ) : null}
+
+      {review.rating != null ? (
+        <p className="pd-feedback-card-rating">
+          {t("parent.feedback.rating")}: {review.rating}/5
         </p>
       ) : null}
 
-      {(review.reviewedAt || review.specialistName || review.performanceRating != null) ? (
-        <ul className="pd-task-hub-card-meta">
-          {review.reviewedAt ? (
-            <li>
-              <strong>Review date</strong>
-              <span>{review.reviewedAt}</span>
-            </li>
-          ) : null}
-          {review.specialistName ? (
-            <li>
-              <strong>Specialist</strong>
-              <span>{review.specialistName}</span>
-            </li>
-          ) : null}
-          {review.performanceRating != null ? (
-            <li>
-              <strong>Performance rating</strong>
-              <span>{review.performanceRating}/10</span>
-            </li>
-          ) : null}
-        </ul>
-      ) : null}
-
-      {review.feedback ? (
-        <blockquote className="pd-feedback-quote">&ldquo;{review.feedback}&rdquo;</blockquote>
+      {review.feedbackText ? (
+        <blockquote className="pd-feedback-card-quote" dir="auto">
+          {review.feedbackText}
+        </blockquote>
       ) : null}
     </article>
   );

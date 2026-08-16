@@ -23,6 +23,7 @@ function ExerciseCategoryIcon({ categoryName }) {
 }
 
 export function AdminExerciseCard({
+  labels,
   exercise,
   canEdit = true,
   onOpen,
@@ -30,7 +31,7 @@ export function AdminExerciseCard({
 }) {
   const iconColor = resolveExerciseCategoryIconColor(exercise.categoryName);
   const iconBackground = resolveExerciseCategoryIconBackground(exercise.categoryName);
-  const previewText = exercise.previewText || "No instructions available.";
+  const previewText = exercise.previewText || labels.noInstructionsAvailable;
 
   const handleCardClick = () => {
     onOpen?.(exercise.id);
@@ -55,7 +56,7 @@ export function AdminExerciseCard({
       tabIndex={0}
       onClick={handleCardClick}
       onKeyDown={handleCardKeyDown}
-      aria-label={`Open ${exercise.title}`}
+      aria-label={`${labels.viewDetails}: ${exercise.title}`}
     >
       <div className="pd-admin-exercise-card-top">
         <div
@@ -70,7 +71,7 @@ export function AdminExerciseCard({
         </div>
 
         <div className="pd-admin-exercise-card-heading">
-          <h2 className="pd-admin-exercise-card-title">{exercise.title}</h2>
+          <h2 className="pd-admin-exercise-card-title" dir="auto">{exercise.title}</h2>
         </div>
 
         {canEdit ? (
@@ -78,27 +79,27 @@ export function AdminExerciseCard({
             type="button"
             className="pd-admin-exercise-card-edit"
             onClick={handleEditClick}
-            aria-label={`Edit ${exercise.title}`}
+            aria-label={`${labels.edit} ${exercise.title}`}
           >
             <Pencil size={15} aria-hidden="true" />
-            <span>Edit</span>
+            <span>{labels.edit}</span>
           </button>
         ) : null}
       </div>
 
       <div className="pd-admin-exercise-card-meta">
-        {exercise.categoryName ? (
-          <span className="pd-admin-exercise-card-category">{exercise.categoryName}</span>
+        {exercise.categoryLabel ? (
+          <span className="pd-admin-exercise-card-category">{exercise.categoryLabel}</span>
         ) : null}
         <span className="pd-admin-exercise-card-language">{exercise.languageLabel}</span>
       </div>
 
-      <p className="pd-admin-exercise-card-preview">{previewText}</p>
+      <p className="pd-admin-exercise-card-preview" dir="auto">{previewText}</p>
 
       {exercise.hasMedia ? (
-        <div className="pd-admin-exercise-card-media">
+        <div className="pd-admin-exercise-card-media" aria-label={labels.hasMedia}>
           <ImageIcon size={14} aria-hidden="true" />
-          <span>Includes instruction media</span>
+          <span>{labels.includesMedia}</span>
         </div>
       ) : null}
     </article>

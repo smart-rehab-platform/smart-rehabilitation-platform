@@ -1,52 +1,31 @@
+import {
+  buildHubSortOptions,
+  buildHubStatusFilterOptions,
+  buildHubTaskTabOptions,
+  getHubEmptyMessages,
+  getTaskHubActionLabel,
+  getTaskStatusLabel,
+  getTaskStatusMeta,
+  getTaskStatusTone,
+} from "./parentDailyTasksLocalization";
+
+export {
+  buildHubSortOptions,
+  buildHubStatusFilterOptions,
+  buildHubTaskTabOptions,
+  getHubEmptyMessages,
+  getTaskHubActionLabel,
+  getTaskStatusLabel,
+  getTaskStatusMeta,
+  getTaskStatusTone,
+};
+
 const ACTIONABLE_RANK = {
   needs_retry: 0,
   todo: 1,
   submitted: 2,
   reviewed: 3,
 };
-
-export const HUB_TASK_TABS = [
-  { id: "daily", label: "Daily" },
-  { id: "weekly", label: "Weekly" },
-  { id: "assigned", label: "Assigned" },
-];
-
-export const HUB_SORT_OPTIONS = [
-  { id: "actionable", label: "Most actionable" },
-  { id: "dueDate", label: "Due date" },
-  { id: "newest", label: "Newest assigned" },
-  { id: "alphabetical", label: "Alphabetical" },
-];
-
-export const HUB_STATUS_FILTER_OPTIONS = [
-  { id: "all", label: "All statuses" },
-  { id: "todo", label: "To Do" },
-  { id: "needs_retry", label: "Needs Retry" },
-  { id: "submitted", label: "Submitted" },
-  { id: "reviewed", label: "Reviewed" },
-];
-
-export const HUB_EMPTY_MESSAGES = {
-  daily: "No daily exercises.",
-  weekly: "No weekly exercises.",
-  assigned: "No assigned exercises.",
-  filtered: "No exercises match the current filters.",
-};
-
-/**
- * @param {string|null|undefined} status
- */
-export function getTaskHubActionLabel(status) {
-  if (status === "needs_retry") {
-    return "Resume Exercise";
-  }
-
-  if (status === "submitted" || status === "reviewed") {
-    return "View Details";
-  }
-
-  return "Open Exercise";
-}
 
 /**
  * @param {Array<Record<string, unknown>>} tasks

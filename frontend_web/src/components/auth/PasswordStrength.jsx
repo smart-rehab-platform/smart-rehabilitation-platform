@@ -1,47 +1,34 @@
 import { CheckCircle2, Circle } from "lucide-react";
 import { C } from "./tokens";
-import { getPasswordStrength } from "./authHelpers";
-
-const levelStyles = {
-  weak: {
-    label: "Weak",
-    color: "#ef4444",
-    activeBars: 1,
-  },
-  medium: {
-    label: "Medium",
-    color: "#f59e0b",
-    activeBars: 2,
-  },
-  strong: {
-    label: "Strong",
-    color: "#22c55e",
-    activeBars: 3,
-  },
-};
+import { getPasswordStrength, getPasswordStrengthLabel } from "./authLocalization";
+import { useLocale } from "../../context/useLocale.js";
 
 export function PasswordStrength({ password }) {
+  const { t } = useLocale();
+
   if (!password) {
     return null;
   }
 
-  const strength = getPasswordStrength(password);
-  const style = levelStyles[strength.level];
+  const strength = getPasswordStrength(password, t);
+  const levelColor =
+    strength.level === "strong" ? "#22c55e" : strength.level === "medium" ? "#f59e0b" : "#ef4444";
+  const activeBars = strength.level === "strong" ? 3 : strength.level === "medium" ? 2 : 1;
 
   return (
     <div
       className="rounded-xl p-3 border"
       style={{
         background: "rgba(255, 255, 255, 0.65)",
-        borderColor: `${style.color}40`,
+        borderColor: `${levelColor}40`,
       }}
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-semibold" style={{ color: "#4A6580" }}>
-          Password strength
+          {t("auth.password.strengthTitle")}
         </p>
-        <p className="text-xs font-semibold" style={{ color: style.color }}>
-          {style.label}
+        <p className="text-xs font-semibold" style={{ color: levelColor }}>
+          {getPasswordStrengthLabel(strength.level, t)}
         </p>
       </div>
 
@@ -51,7 +38,7 @@ export function PasswordStrength({ password }) {
             key={index}
             className="h-1.5 rounded-full"
             style={{
-              background: index < style.activeBars ? style.color : "rgba(44, 79, 121, 0.35)",
+              background: index < activeBars ? levelColor : "rgba(44, 79, 121, 0.35)",
             }}
           />
         ))}

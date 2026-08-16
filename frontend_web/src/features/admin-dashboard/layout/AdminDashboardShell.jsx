@@ -1,8 +1,13 @@
 import { useCallback, useMemo } from "react";
 import { LogOut } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import smartRehabIcon from "../../../assets/branding/smart_rehab_icon.png";
-import { resolveAdminSidebarActiveId } from "../../../routes/adminDashboardRoutes";
+import { useLocale } from "../../../context/useLocale.js";
+import {
+  buildAdminComplaintDetailsPath,
+  buildAdminSupportRequestDetailsPath,
+  resolveAdminSidebarActiveId,
+} from "../../../routes/adminDashboardRoutes";
 import { ProfileMenu } from "../../shared-dashboard/components/ProfileMenu";
 import { DashboardShell } from "../../shared-dashboard/layout/DashboardShell";
 import { DashboardSidebar } from "../../shared-dashboard/layout/DashboardSidebar";
@@ -12,7 +17,9 @@ import { AdminHeaderSearch } from "../components/AdminHeaderSearch";
 import { AdminNotificationPopover } from "../components/AdminNotificationPopover";
 import { AdminNotificationsProvider } from "../context/AdminNotificationsContext";
 import { useAdminNotificationsContext } from "../context/adminNotificationsContextValue";
-import { mapAdminNotificationsForPopover } from "../utils/adminNotificationsMappers";
+import { getAdminShellLabels } from "../utils/adminDashboardLocalization.js";
+import { getAdminNotificationsPopoverLabels } from "../utils/adminNotificationsLocalization.js";
+import { mapAdminNotificationsForPopover, resolveAdminNotificationRoute } from "../utils/adminNotificationsMappers";
 
 function AdminDashboardShellInner({
   collapsed,
@@ -32,6 +39,13 @@ function AdminDashboardShellInner({
   children,
 }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { t } = useLocale();
+  const shellLabels = useMemo(() => getAdminShellLabels(t), [t]);
+  const notificationPopoverLabels = useMemo(
+    () => getAdminNotificationsPopoverLabels(t),
+    [t],
+  );
   const activeNavId = resolveAdminSidebarActiveId(pathname);
 
   const {
@@ -62,12 +76,28 @@ function AdminDashboardShellInner({
 
   const handleNotificationSelect = useCallback(async (item) => {
     const id = typeof item?.id === "string" ? item.id : "";
-    if (!id || item?.unread === false) {
-      return true;
+    if (!id) {
+      return false;
     }
 
-    return markAsRead(id);
-  }, [markAsRead]);
+    const fullNotification = fullNotifications.find((entry) => entry.id === id) ?? item;
+    const route = resolveAdminNotificationRoute(fullNotification, {
+      buildSupportRequestDetailPath: buildAdminSupportRequestDetailsPath,
+      buildComplaintDetailPath: buildAdminComplaintDetailsPath,
+    });
+
+    let markedRead = true;
+    if (item?.unread !== false) {
+      markedRead = await markAsRead(id);
+    }
+
+    if (route) {
+      onNotificationsOpenChange(false);
+      navigate(route);
+    }
+
+    return markedRead;
+  }, [fullNotifications, markAsRead, navigate, onNotificationsOpenChange]);
 
   return (
     <DashboardShell
@@ -79,10 +109,10 @@ function AdminDashboardShellInner({
           navItems={navItems}
           badges={badges}
           activeId={activeNavId}
-          navigationAriaLabel="Admin navigation"
+          navigationAriaLabel={shellLabels.navigationAriaLabel}
           logoSrc={smartRehabIcon}
-          brandTitle="Smart Rehabilitation"
-          brandSubtitle="Where Recovery Never Stops"
+          brandTitle={t("specialist.shell.brandTitle")}
+          brandSubtitle={t("specialist.shell.brandSubtitle")}
           onToggleCollapse={onToggleCollapse}
           onCloseMobile={onCloseMobile}
           onNavAction={onNavAction}
@@ -91,7 +121,7 @@ function AdminDashboardShellInner({
             <AdminNavIcon navId={item.id} iconKey={item.icon} size={18} />
           )}
           signOutIcon={<LogOut size={18} aria-hidden="true" />}
-          signOutLabel="Sign Out"
+          signOutLabel={shellLabels.signOutLabel}
         />
       }
       header={
@@ -102,6 +132,7 @@ function AdminDashboardShellInner({
             <AdminNotificationPopover
               open={notificationsOpen}
               onOpenChange={onNotificationsOpenChange}
+              labels={notificationPopoverLabels}
               notifications={popoverNotifications}
               badgeCount={notificationBadgeCount}
               unreadCount={unreadCount}

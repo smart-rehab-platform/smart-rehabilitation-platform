@@ -39,13 +39,14 @@ export function AuthTextarea({
           maxLength={maxLength}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="auth-textarea peer w-full resize-none rounded-2xl px-4 pb-2 pt-6 text-sm leading-5 outline-none transition-all duration-200"
+          className="auth-textarea peer w-full resize-none rounded-2xl pb-2 pt-6 text-sm leading-5 outline-none transition-all duration-200"
           style={{
             background: G.inputGlass,
             border: `1px solid ${borderColor}`,
             color: C.white,
             fontFamily: "'Inter', sans-serif",
             boxShadow: G.inputInnerShadow,
+            paddingInline: "1rem",
           }}
           onFocus={(e) => {
             e.currentTarget.style.boxShadow = focusShadow;
@@ -61,10 +62,10 @@ export function AuthTextarea({
 
         <label
           htmlFor={textareaId}
-          className={`auth-input-label auth-textarea-label pointer-events-none absolute left-4 z-10 origin-left transition-all duration-200 ${
+          className={`auth-input-label auth-textarea-label pointer-events-none absolute z-10 origin-left transition-all duration-200 ${
             hasValue ? "auth-input-label-floating" : ""
           }`}
-          style={{ color: C.textLight }}
+          style={{ color: C.textLight, insetInlineStart: "1rem" }}
         >
           {label}
         </label>
@@ -72,13 +73,14 @@ export function AuthTextarea({
         {state === "error" && (
           <AlertCircle
             size={16}
-            className="absolute right-3.5 top-4 z-10"
+            className="absolute top-4 z-10"
+            style={{ insetInlineEnd: "0.875rem" }}
             color="#ef4444"
           />
         )}
       </div>
 
-      <div className="flex items-start justify-between gap-3 pl-1">
+      <div className="flex items-start justify-between gap-3" style={{ paddingInlineStart: "0.25rem" }}>
         {message ? (
           <p className="text-xs" style={{ color: state === "error" ? "#ef4444" : G.success }}>
             {message}

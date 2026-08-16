@@ -1,5 +1,8 @@
 /**
  * Parent dashboard routes registered in frontend_web App.jsx.
+ *
+ * For localized "not available on web" toasts, use
+ * buildParentNavUnavailable(t) from utils/parentRouteMessages.js via useParentDashboardNavigation.
  */
 export const PARENT_WEB_ROUTES = {
   dashboard: "/dashboard/parent",
@@ -15,6 +18,8 @@ export const PARENT_WEB_ROUTES = {
   children: "/dashboard/parent/children",
   progress: "/dashboard/parent/progress",
   caseRequests: "/dashboard/parent/case-requests",
+  complaints: "/dashboard/parent/complaints",
+  complaintNew: "/dashboard/parent/complaints/new",
   messages: "/dashboard/parent/messages",
   login: "/login",
 };
@@ -29,6 +34,8 @@ export const SIDEBAR_NAV_ROUTE_KEYS = {
   sessions: "sessions",
   reports: "reports",
   feedback: "feedback",
+  reportSpecialist: "complaintNew",
+  myComplaints: "complaints",
   messages: "messages",
   ai: "aiAssistant",
   notifications: "notifications",
@@ -75,6 +82,14 @@ export function isImplementedParentPath(path) {
   }
 
   if (pathname.startsWith(`${PARENT_WEB_ROUTES.caseRequests}/`)) {
+    return true;
+  }
+
+  if (pathname.startsWith(`${PARENT_WEB_ROUTES.complaints}/`)) {
+    return true;
+  }
+
+  if (pathname === PARENT_WEB_ROUTES.complaints) {
     return true;
   }
 
@@ -263,6 +278,26 @@ export function buildParentMessagesPath(conversationId = null) {
   return `${PARENT_WEB_ROUTES.messages}/${encodeURIComponent(conversationId)}`;
 }
 
+export function buildParentComplaintsPath() {
+  return PARENT_WEB_ROUTES.complaints;
+}
+
+export function buildParentComplaintNewPath() {
+  return PARENT_WEB_ROUTES.complaintNew;
+}
+
+/**
+ * Builds the parent complaint detail path.
+ * @param {string|null|undefined} complaintId
+ */
+export function buildParentComplaintDetailPath(complaintId) {
+  if (!complaintId) {
+    return null;
+  }
+
+  return `${PARENT_WEB_ROUTES.complaints}/${encodeURIComponent(complaintId)}`;
+}
+
 export function buildParentProfilePath() {
   return PARENT_WEB_ROUTES.profile;
 }
@@ -315,6 +350,20 @@ export function resolveParentSidebarActiveId(pathname) {
 
   if (pathname.startsWith(PARENT_WEB_ROUTES.profile)) {
     return "profile";
+  }
+
+  if (pathname === PARENT_WEB_ROUTES.complaintNew) {
+    return "reportSpecialist";
+  }
+
+  if (
+    pathname === PARENT_WEB_ROUTES.complaints
+    || (
+      pathname.startsWith(`${PARENT_WEB_ROUTES.complaints}/`)
+      && !pathname.startsWith(`${PARENT_WEB_ROUTES.complaints}/new`)
+    )
+  ) {
+    return "myComplaints";
   }
 
   if (

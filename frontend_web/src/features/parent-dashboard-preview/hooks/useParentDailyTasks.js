@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getChildren,
   getChildrenProgress,
@@ -32,6 +33,7 @@ async function loadChildTaskBundle(child) {
 }
 
 export function useParentDailyTasks(parentUserId) {
+  const { t } = useLocale();
   const [children, setChildren] = useState([]);
   const [dailyTasks, setDailyTasks] = useState([]);
   const [weeklyTasks, setWeeklyTasks] = useState([]);
@@ -91,7 +93,7 @@ export function useParentDailyTasks(parentUserId) {
         setAssignedTasks(bundles.flatMap((bundle) => bundle.assignedTasks));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setError(resolveErrorMessage(loadError, "Failed to load exercises."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadExercisesFailed")));
           setDailyTasks([]);
           setWeeklyTasks([]);
           setAssignedTasks([]);
@@ -108,7 +110,7 @@ export function useParentDailyTasks(parentUserId) {
     return () => {
       cancelled = true;
     };
-  }, [parentUserId, refreshToken]);
+  }, [parentUserId, refreshToken, t]);
 
   const tasksByTab = useMemo(() => ({
     daily: dailyTasks,
@@ -121,7 +123,7 @@ export function useParentDailyTasks(parentUserId) {
       children: [],
       tasksByTab: { daily: [], weekly: [], assigned: [] },
       isLoading: false,
-      error: "Please sign in to view exercises.",
+      error: t("parent.hooks.signInExercises"),
       refetch,
     };
   }

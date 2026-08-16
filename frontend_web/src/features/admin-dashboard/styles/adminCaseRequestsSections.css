@@ -9,6 +9,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  text-align: start;
 }
 
 .pd-preview .pd-admin-case-requests-controls {
@@ -40,7 +41,7 @@
 }
 
 .pd-preview .pd-admin-case-requests-table thead th {
-  text-align: left;
+  text-align: start;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--pd-text-muted);
@@ -103,6 +104,7 @@
   margin: 0;
   color: var(--pd-text-muted);
   font-size: 0.875rem;
+  text-align: start;
 }
 
 .pd-preview .pd-admin-case-requests-skeleton-line {
@@ -147,6 +149,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  text-align: start;
 }
 
 .pd-preview .pd-admin-case-request-back {
@@ -168,6 +171,7 @@
   font-size: 1.375rem;
   font-weight: 800;
   color: var(--pd-text);
+  text-align: start;
 }
 
 .pd-preview .pd-admin-case-request-summary-meta,
@@ -196,6 +200,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--pd-text);
+  text-align: start;
 }
 
 .pd-preview .pd-admin-case-request-timeline-list {
@@ -422,11 +427,11 @@
 }
 
 .pd-preview .pd-admin-case-request-alert {
-  border-left: 3px solid rgba(245, 158, 11, 0.55);
+  border-inline-start: 3px solid rgba(245, 158, 11, 0.55);
 }
 
 .pd-preview .pd-admin-case-request-alert.is-success {
-  border-left-color: rgba(16, 185, 129, 0.55);
+  border-inline-start-color: rgba(16, 185, 129, 0.55);
 }
 
 .pd-preview .pd-admin-case-request-assign-action {
@@ -451,7 +456,7 @@
 
 .pd-preview .pd-admin-matching-specialist-card {
   position: relative;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   min-width: 0;
   width: 100%;
@@ -468,7 +473,7 @@
 .pd-preview .pd-admin-matching-specialist-check {
   position: absolute;
   top: 12px;
-  right: 12px;
+  inset-inline-end: 12px;
   width: 22px;
   height: 22px;
   border-radius: 999px;
@@ -484,7 +489,7 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
-  padding-right: 28px;
+  padding-inline-end: 28px;
 }
 
 .pd-preview .pd-admin-matching-specialist-avatar-shell,
@@ -567,6 +572,14 @@
   100% {
     background-position: -200% 0;
   }
+}
+
+[dir="rtl"] .pd-preview .pd-admin-case-request-back svg {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .pd-preview .pd-admin-case-requests-view-chevron {
+  transform: scaleX(-1);
 }
 
 @media (max-width: 1100px) {

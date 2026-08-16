@@ -1,17 +1,18 @@
 import { ArrowRight } from "lucide-react";
 import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
+import { useLocale } from "../../../context/useLocale.js";
 
-function buildUpdates({ latestReport, recentFeedback }) {
+function buildUpdates({ latestReport, recentFeedback, t }) {
   const items = [];
 
   if (latestReport) {
     items.push({
       id: "latest-report",
       type: "report",
-      title: latestReport.title || "Weekly Progress Report",
+      title: latestReport.title || t("parent.home.weeklyProgressReport"),
       description: latestReport.preview || null,
       timestamp: latestReport.date || null,
-      actionLabel: "Open Report",
+      actionLabel: t("parent.home.openReport"),
     });
   }
 
@@ -19,10 +20,10 @@ function buildUpdates({ latestReport, recentFeedback }) {
     items.push({
       id: "latest-feedback",
       type: "feedback",
-      title: "Latest Specialist Feedback",
+      title: t("parent.home.latestSpecialistFeedback"),
       description: recentFeedback.quote || null,
       timestamp: [recentFeedback.specialistName, recentFeedback.date].filter(Boolean).join(" · "),
-      actionLabel: "View Feedback",
+      actionLabel: t("parent.home.viewFeedback"),
     });
   }
 
@@ -46,18 +47,19 @@ export function LatestUpdatesSection({
   onItemAction,
   onViewAll,
 }) {
-  const updates = buildUpdates({ latestReport, recentFeedback });
+  const { t } = useLocale();
+  const updates = buildUpdates({ latestReport, recentFeedback, t });
 
   if (updates.length === 0) {
     return null;
   }
 
   return (
-    <section className="pd-card pd-card-pad pd-latest-updates pd-section-enter" aria-label="Latest updates">
+    <section className="pd-card pd-card-pad pd-latest-updates pd-section-enter" aria-label={t("parent.home.latestUpdates")}>
       <div className="pd-card-header">
-        <h2 className="pd-section-title">Latest Updates</h2>
+        <h2 className="pd-section-title">{t("parent.home.latestUpdates")}</h2>
         <button type="button" className="pd-link" onClick={onViewAll}>
-          See All
+          {t("parent.home.seeAll")}
         </button>
       </div>
 

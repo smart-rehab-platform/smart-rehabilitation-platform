@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/useAuth";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   ADMIN_SIDEBAR_NAV_ROUTE_KEYS,
   ADMIN_WEB_ROUTES,
   getAdminRoutePath,
 } from "../../../routes/adminDashboardRoutes";
-import { ADMIN_NAV_ITEMS } from "../constants/adminNavigation";
+import {
+  buildAdminNavItems,
+  getAdminShellLabels,
+} from "../utils/adminDashboardLocalization.js";
 import { mapAdminFromAuth } from "../utils/adminDashboardUtils";
 
 /**
@@ -16,6 +20,8 @@ import { mapAdminFromAuth } from "../utils/adminDashboardUtils";
 export function useAdminShell() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useLocale();
+  const shellLabels = useMemo(() => getAdminShellLabels(t), [t]);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -61,9 +67,11 @@ export function useAdminShell() {
       await logout();
       navigate(ADMIN_WEB_ROUTES.login, { replace: true });
     } catch {
-      showToast("Unable to sign out. Please try again.");
+      showToast(shellLabels.signOutFailed);
     }
-  }, [logout, navigate, showToast]);
+  }, [logout, navigate, showToast, shellLabels.signOutFailed]);
+
+  const navItems = useMemo(() => buildAdminNavItems(t), [t]);
 
   const handleViewProfile = useCallback(() => {
     navigateToRouteKey("profile");
@@ -88,7 +96,7 @@ export function useAdminShell() {
     mobileNavOpen,
     notificationsOpen,
     toast,
-    navItems: ADMIN_NAV_ITEMS,
+    navItems,
     setSidebarCollapsed,
     setMobileNavOpen,
     setNotificationsOpen,

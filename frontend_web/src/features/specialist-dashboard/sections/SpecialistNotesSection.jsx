@@ -1,24 +1,28 @@
+import { useLocale } from "../../../context/useLocale";
+
 export function SpecialistNotesSection({ notes, onAddNote }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-specialist-patient-section" id="specialist-patient-notes">
       <div className="pd-specialist-section-head">
-        <h2 className="pd-section-title">Latest Specialist Notes</h2>
+        <h2 className="pd-section-title">{t("specialist.patientDetails.latestNotes")}</h2>
         <button type="button" className="pd-btn pd-btn-primary pd-btn-sm" onClick={onAddNote}>
-          Add Specialist Note
+          {t("specialist.patientDetails.addSpecialistNote")}
         </button>
       </div>
 
       {notes.length === 0 ? (
         <div className="pd-card pd-card-pad">
-          <p className="pd-section-sub">No specialist notes yet.</p>
+          <p className="pd-section-sub">{t("specialist.patientDetails.noNotes")}</p>
         </div>
       ) : (
         <div className="pd-specialist-patient-stack">
           {notes.map((note) => (
             <article key={note.id} className="pd-card pd-card-pad">
-              <p>{note.note}</p>
+              <p dir="auto">{note.note}</p>
               <p className="pd-section-sub">
-                {note.specialistName}
+                <span dir="auto">{note.specialistName}</span>
                 {note.createdAtLabel ? ` · ${note.createdAtLabel}` : ""}
               </p>
             </article>
@@ -38,28 +42,30 @@ export function SpecialistPatientFooterActions({
   onSpeechAnalysis,
   hasActivePlan,
 }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-specialist-patient-footer-actions">
       <button type="button" className="pd-btn pd-btn-soft" onClick={onReviewExercises}>
-        Review Exercises
+        {t("specialist.patientDetails.reviewExercises")}
       </button>
       <button type="button" className="pd-btn pd-btn-soft" onClick={onViewReports}>
-        View Reports
+        {t("specialist.patientDetails.viewReports")}
       </button>
       {hasActivePlan ? (
         <button type="button" className="pd-btn pd-btn-soft" onClick={onEditTreatmentPlan}>
-          Edit Treatment Plan
+          {t("specialist.patientDetails.editTreatmentPlan")}
         </button>
       ) : (
         <button type="button" className="pd-btn pd-btn-soft" onClick={onCreateTreatmentPlan}>
-          Create Treatment Plan
+          {t("specialist.patientDetails.createTreatmentPlan")}
         </button>
       )}
       <button type="button" className="pd-btn pd-btn-soft" onClick={onAiRecommendations}>
-        AI Recommendations
+        {t("specialist.patientDetails.aiRecommendations")}
       </button>
       <button type="button" className="pd-btn pd-btn-soft" onClick={onSpeechAnalysis}>
-        Speech Analysis
+        {t("specialist.patientDetails.speechAnalysis")}
       </button>
     </section>
   );

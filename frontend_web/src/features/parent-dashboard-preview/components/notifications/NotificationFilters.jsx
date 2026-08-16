@@ -1,6 +1,8 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
 import {
-  NOTIFICATION_READ_FILTER_OPTIONS,
-  NOTIFICATION_SORT_OPTIONS,
+  buildNotificationReadFilterOptions,
+  buildNotificationSortOptions,
 } from "../../utils/parentNotificationsUtils";
 
 export function NotificationFilters({
@@ -17,17 +19,21 @@ export function NotificationFilters({
   children = [],
   notificationTypeOptions = [],
 }) {
+  const { t } = useLocale();
+  const readOptions = useMemo(() => buildNotificationReadFilterOptions(t), [t]);
+  const sortOptions = useMemo(() => buildNotificationSortOptions(t), [t]);
+
   return (
     <div className="pd-task-hub-filters">
       <div className="pd-task-hub-filter pd-task-hub-filter-search">
         <label className="pd-form-label" htmlFor="pd-notifications-hub-search">
-          Search
+          {t("parent.common.search")}
         </label>
         <input
           id="pd-notifications-hub-search"
           type="search"
           className="pd-form-input"
-          placeholder="Search by title, message, or child"
+          placeholder={t("parent.notificationsPage.searchPlaceholder")}
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
         />
@@ -35,7 +41,7 @@ export function NotificationFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-notifications-hub-read">
-          Status
+          {t("parent.common.status")}
         </label>
         <select
           id="pd-notifications-hub-read"
@@ -43,7 +49,7 @@ export function NotificationFilters({
           value={readState}
           onChange={(event) => onReadStateChange(event.target.value)}
         >
-          {NOTIFICATION_READ_FILTER_OPTIONS.map((option) => (
+          {readOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>
@@ -53,7 +59,7 @@ export function NotificationFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-notifications-hub-type">
-          Type
+          {t("parent.common.type")}
         </label>
         <select
           id="pd-notifications-hub-type"
@@ -71,7 +77,7 @@ export function NotificationFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-notifications-hub-child">
-          Child
+          {t("parent.common.child")}
         </label>
         <select
           id="pd-notifications-hub-child"
@@ -79,7 +85,7 @@ export function NotificationFilters({
           value={childId}
           onChange={(event) => onChildChange(event.target.value)}
         >
-          <option value="all">All children</option>
+          <option value="all">{t("parent.common.allChildren")}</option>
           {children.map((child) => (
             <option key={child.id} value={child.id}>
               {child.fullName}
@@ -90,7 +96,7 @@ export function NotificationFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-notifications-hub-sort">
-          Sort by
+          {t("parent.common.sortBy")}
         </label>
         <select
           id="pd-notifications-hub-sort"
@@ -98,7 +104,7 @@ export function NotificationFilters({
           value={sortKey}
           onChange={(event) => onSortChange(event.target.value)}
         >
-          {NOTIFICATION_SORT_OPTIONS.map((option) => (
+          {sortOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>

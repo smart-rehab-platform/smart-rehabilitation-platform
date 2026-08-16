@@ -1,13 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
+import { useLocale } from "../../../../context/useLocale.js";
 import { AiComposer } from "./AiComposer";
 import { AiEmptyState } from "./AiEmptyState";
 import { AiErrorState } from "./AiErrorState";
 import { AiMessageBubble } from "./AiMessageBubble";
 import {
-  AI_DISCLAIMER_TEXT,
-  AI_EMPTY_MESSAGES,
-  AI_QUICK_PROMPTS,
+  buildAiQuickPrompts,
+  getAiDisclaimerText,
+  getAiEmptyMessages,
 } from "../../utils/parentAiAssistantUtils";
 
 export function AiChatPanel({
@@ -25,7 +26,11 @@ export function AiChatPanel({
   showBackButton = false,
   disabled = false,
 }) {
+  const { t } = useLocale();
   const scrollRef = useRef(null);
+  const emptyMessages = useMemo(() => getAiEmptyMessages(t), [t]);
+  const quickPrompts = useMemo(() => buildAiQuickPrompts(t), [t]);
+  const disclaimer = useMemo(() => getAiDisclaimerText(t), [t]);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -39,7 +44,7 @@ export function AiChatPanel({
     if (isLoadingMessages) {
       return (
         <div className="pd-ai-panel-state">
-          <p className="pd-inline-loading">Loading message history...</p>
+          <p className="pd-inline-loading">{t("parent.aiAssistant.loadingHistory")}</p>
         </div>
       );
     }
@@ -49,16 +54,16 @@ export function AiChatPanel({
     }
 
     if (!conversationId) {
-      return <AiEmptyState message={AI_EMPTY_MESSAGES.noConversationSelected} />;
+      return <AiEmptyState message={emptyMessages.noConversationSelected} />;
     }
 
     if (messages.length === 0 && !isSending) {
       return (
         <AiEmptyState
-          message={AI_EMPTY_MESSAGES.noMessages}
+          message={emptyMessages.noMessages}
           action={(
-            <div className="pd-ai-quick-prompts" aria-label="Suggested prompts">
-              {AI_QUICK_PROMPTS.map((prompt) => (
+            <div className="pd-ai-quick-prompts" aria-label={t("parent.aiAssistant.suggestedPromptsAria")}>
+              {quickPrompts.map((prompt) => (
                 <button
                   key={prompt}
                   type="button"
@@ -82,7 +87,7 @@ export function AiChatPanel({
         ))}
         {isSending ? (
           <AiMessageBubble
-            message={{ role: "assistant", senderLabel: "AI Assistant", content: "" }}
+            message={{ role: "assistant", senderLabel: t("parent.aiAssistant.sender.assistant"), content: "" }}
             isWaiting
           />
         ) : null}
@@ -91,21 +96,21 @@ export function AiChatPanel({
   };
 
   return (
-    <section className="pd-ai-chat-panel" aria-label="AI chat">
+    <section className="pd-ai-chat-panel" aria-label={t("parent.aiAssistant.title")}>
       <div className="pd-ai-chat-panel-header">
         {showBackButton ? (
           <button
             type="button"
             className="pd-btn pd-btn-icon pd-ai-back-button"
-            aria-label="Back to conversations"
+            aria-label={t("parent.aiAssistant.backToConversations")}
             onClick={onBackToList}
           >
             <ArrowLeft size={18} aria-hidden="true" />
           </button>
         ) : null}
         <div className="pd-ai-chat-panel-copy">
-          <h2 className="pd-ai-panel-title">AI Assistant</h2>
-          <p className="pd-ai-disclaimer">{AI_DISCLAIMER_TEXT}</p>
+          <h2 className="pd-ai-panel-title">{t("parent.aiAssistant.title")}</h2>
+          <p className="pd-ai-disclaimer">{disclaimer}</p>
         </div>
       </div>
 

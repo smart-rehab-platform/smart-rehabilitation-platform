@@ -1,4 +1,5 @@
 import { ProgressBar } from "../../shared-dashboard/components/ProgressBar";
+import { useLocale } from "../../../context/useLocale.js";
 
 function PreviewCardHeader({ title, subtitle, actionLabel, onAction }) {
   return (
@@ -21,29 +22,31 @@ export function SpecialistRecentPatientProgress({
   onRetry,
   onViewAll,
 }) {
+  const { t } = useLocale();
+
   return (
     <section
       className="pd-card pd-card-pad pd-specialist-preview-card"
-      aria-label="Recent patient progress"
+      aria-label={t("specialist.dashboard.progress.ariaLabel")}
     >
       <PreviewCardHeader
-        title="Recent Patient Progress"
-        subtitle="Latest progress across your active cases"
-        actionLabel="View All"
+        title={t("specialist.dashboard.progress.title")}
+        subtitle={t("specialist.dashboard.progress.subtitle")}
+        actionLabel={t("specialist.dashboard.viewAll")}
         onAction={onViewAll}
       />
 
       {isLoading ? (
-        <p className="pd-inline-loading pd-specialist-preview-loading">Loading patient progress...</p>
+        <p className="pd-inline-loading pd-specialist-preview-loading">{t("specialist.dashboard.progress.loading")}</p>
       ) : error ? (
         <div className="pd-specialist-preview-error">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
-            Retry
+            {t("common.retry")}
           </button>
         </div>
       ) : progressItems.length === 0 ? (
-        <p className="pd-specialist-preview-empty">No patient progress available yet.</p>
+        <p className="pd-specialist-preview-empty">{t("specialist.dashboard.progress.empty")}</p>
       ) : (
         <div className="pd-specialist-progress-list">
           {progressItems.map((item) => (

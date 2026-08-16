@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 import { SpecialistSessionCard } from "../components/SpecialistSessionCard";
 import { SpecialistSessionFilters } from "../components/SpecialistSessionFilters";
 
@@ -10,6 +11,8 @@ export function SpecialistSessionsList({
   onFilterChange,
   emptyMessage,
 }) {
+  const { t } = useLocale();
+
   return (
     <div className="pd-specialist-sessions-list-view">
       <label className="pd-specialist-treatment-plan-search pd-specialist-session-search">
@@ -18,8 +21,8 @@ export function SpecialistSessionsList({
           type="search"
           value={searchQuery}
           onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Search by patient name"
-          aria-label="Search by patient name"
+          placeholder={t("specialist.sessions.searchPlaceholder")}
+          aria-label={t("specialist.sessions.searchAriaLabel")}
         />
       </label>
 

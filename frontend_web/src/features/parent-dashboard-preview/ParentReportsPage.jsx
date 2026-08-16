@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { ReportCard } from "./components/reports/ReportCard";
 import { ReportFilters } from "./components/reports/ReportFilters";
@@ -13,7 +13,7 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  REPORT_EMPTY_MESSAGES,
+  getReportEmptyMessages,
   buildReportTypeFilterOptions,
   filterReports,
   sortReports,
@@ -23,6 +23,7 @@ import "./styles/parentDashboardTokens.css";
 export default function ParentReportsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
   const notificationUserId = parentUserId;
@@ -99,8 +100,8 @@ export default function ParentReportsPage() {
   }, [mobileNavOpen]);
 
   const reportTypeOptions = useMemo(
-    () => buildReportTypeFilterOptions(reports),
-    [reports],
+    () => buildReportTypeFilterOptions(reports, t),
+    [reports, t],
   );
 
   const filteredReports = useMemo(
@@ -117,17 +118,19 @@ export default function ParentReportsPage() {
     [filteredReports, sortKey],
   );
 
+  const reportEmptyMessages = useMemo(() => getReportEmptyMessages(t), [t]);
+
   const emptyMessage = useMemo(() => {
     if (reports.length === 0) {
-      return REPORT_EMPTY_MESSAGES.none;
+      return reportEmptyMessages.none;
     }
 
     if (visibleReports.length === 0) {
-      return REPORT_EMPTY_MESSAGES.filtered;
+      return reportEmptyMessages.filtered;
     }
 
     return null;
-  }, [reports.length, visibleReports.length]);
+  }, [reports.length, visibleReports.length, reportEmptyMessages]);
 
   const badges = useMemo(() => ({
     notifications:
@@ -152,7 +155,7 @@ export default function ParentReportsPage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading reports...</p>
+          <p className="pd-inline-loading">{t("parent.pages.reports.loading")}</p>
         </section>
       );
     }
@@ -162,7 +165,7 @@ export default function ParentReportsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -190,7 +193,6 @@ export default function ParentReportsPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -212,15 +214,19 @@ export default function ParentReportsPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-ghost pd-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
-              Back to Dashboard
+              {t("parent.common.backToDashboard")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Reports</h1>
+            <h1 className="pd-task-hub-title">{t("parent.pages.reports.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              View progress reports for your linked children.
-              {!isLoading && !error ? ` ${reportCount} report${reportCount === 1 ? "" : "s"} loaded.` : ""}
+              {t("parent.pages.reports.subtitle")}
+              {!isLoading && !error ? (
+                ` ${reportCount === 1
+                  ? t("parent.pages.reports.countLoaded", { count: reportCount })
+                  : t("parent.pages.reports.countLoadedPlural", { count: reportCount })}`
+              ) : ""}
             </p>
           </header>
 

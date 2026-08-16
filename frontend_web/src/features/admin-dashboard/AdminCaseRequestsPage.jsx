@@ -31,6 +31,7 @@ export default function AdminCaseRequestsPage() {
   } = useAdminShell();
 
   const {
+    labels,
     items,
     categoryOptions,
     pagination,
@@ -87,7 +88,7 @@ export default function AdminCaseRequestsPage() {
           <div className="pd-admin-case-requests-error pd-section-enter">
             <p className="pd-inline-error">{error}</p>
             <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-              Retry
+              {labels.retry}
             </button>
           </div>
         ) : (
@@ -105,7 +106,7 @@ export default function AdminCaseRequestsPage() {
                   <>
                     <p className="pd-inline-error">{loadMoreError}</p>
                     <button type="button" className="pd-btn pd-btn-soft" onClick={retryLoadMore}>
-                      Retry
+                      {labels.retry}
                     </button>
                   </>
                 ) : (
@@ -115,7 +116,7 @@ export default function AdminCaseRequestsPage() {
                     onClick={loadMore}
                     disabled={isLoadingMore}
                   >
-                    {isLoadingMore ? "Loading..." : "Load more"}
+                    {isLoadingMore ? labels.loadingMore : labels.loadMore}
                   </button>
                 )}
               </div>

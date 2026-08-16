@@ -17,7 +17,7 @@ export function OnboardingRoleCard({
       whileHover={selected ? undefined : { y: -2 }}
       animate={{ scale: selected ? 1.02 : 1 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="onboarding-role-card group relative w-full cursor-pointer rounded-[20px] border px-4 py-3.5 text-left transition-all duration-[250ms]"
+      className="onboarding-role-card group relative w-full cursor-pointer rounded-[20px] border px-4 py-3.5 text-start transition-all duration-[250ms]"
       style={{
         background: selected
           ? "rgba(79, 166, 248, 0.1)"
@@ -33,15 +33,15 @@ export function OnboardingRoleCard({
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full"
-          style={{ background: C.primary }}
+          className="absolute top-3 flex h-5 w-5 items-center justify-center rounded-full"
+          style={{ background: C.primary, insetInlineEnd: "0.75rem" }}
           aria-hidden
         >
           <Check size={11} color={C.white} strokeWidth={3} />
         </motion.span>
       )}
 
-      <div className="flex items-start gap-3 pr-5">
+      <div className="flex items-start gap-3 pe-5">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors duration-[250ms]"
           style={{

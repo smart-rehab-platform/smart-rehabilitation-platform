@@ -107,18 +107,18 @@
 }
 
 .pd-preview .pd-main {
-  margin-left: var(--pd-sidebar-width);
+  margin-inline-start: var(--pd-sidebar-width);
   width: calc(100% - var(--pd-sidebar-width));
   min-width: 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--pd-bg);
-  transition: margin-left 0.2s ease, width 0.2s ease;
+  transition: margin-inline-start 0.2s ease, width 0.2s ease;
 }
 
 .pd-preview .pd-shell.is-collapsed .pd-main {
-  margin-left: var(--pd-sidebar-collapsed);
+  margin-inline-start: var(--pd-sidebar-collapsed);
   width: calc(100% - var(--pd-sidebar-collapsed));
 }
 
@@ -452,7 +452,7 @@
 .pd-preview .pd-sidebar {
   position: fixed;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
   bottom: 0;
   width: var(--pd-sidebar-width);
   height: 100vh;
@@ -462,7 +462,7 @@
   display: flex;
   flex-direction: column;
   z-index: 50;
-  border-right: 1px solid var(--pd-sidebar-border);
+  border-inline-end: 1px solid var(--pd-sidebar-border);
   transition: width 0.2s ease, transform 0.2s ease;
   overflow: hidden;
 }
@@ -591,7 +591,7 @@
   font-size: 0.84rem;
   font-weight: 500;
   cursor: pointer;
-  text-align: left;
+  text-align: start;
 }
 
 .pd-preview .pd-nav-item:hover {
@@ -608,7 +608,7 @@
 .pd-preview .pd-nav-item.is-active::before {
   content: "";
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   top: 7px;
   bottom: 7px;
   width: 3px;
@@ -622,7 +622,7 @@
 }
 
 .pd-preview .pd-nav-badge {
-  margin-left: auto;
+  margin-inline-start: auto;
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
@@ -643,28 +643,6 @@
   gap: 8px;
   border-top: 1px solid var(--pd-sidebar-border);
   flex-shrink: 0;
-}
-
-.pd-preview .pd-help-card {
-  background: var(--pd-sidebar-elevated);
-  border-radius: 12px;
-  padding: 10px 12px;
-}
-
-.pd-preview .pd-help-card strong {
-  display: block;
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.pd-preview .pd-help-card p {
-  margin: 0 0 6px;
-  font-size: 0.72rem;
-  font-weight: 400;
-  color: var(--pd-sidebar-muted);
-  line-height: 1.35;
 }
 
 .pd-preview .pd-signout {
@@ -729,13 +707,14 @@
   font-weight: 400;
   color: var(--pd-text);
   min-width: 0;
+  text-align: start;
 }
 
 .pd-preview .pd-header-actions {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .pd-preview .pd-icon-btn,
@@ -767,7 +746,7 @@
 .pd-preview .pd-icon-badge {
   position: absolute;
   top: 5px;
-  right: 5px;
+  inset-inline-end: 5px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
@@ -793,7 +772,9 @@
   gap: 8px;
   min-height: 38px;
   height: 38px;
-  padding: 3px 8px 3px 3px;
+  padding-block: 3px;
+  padding-inline-end: 8px;
+  padding-inline-start: 3px;
   border-radius: 11px;
   border: 1px solid var(--pd-border-soft);
   background: transparent;
@@ -841,7 +822,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  text-align: left;
+  text-align: start;
   line-height: 1.15;
 }
 
@@ -861,7 +842,7 @@
 .pd-preview .pd-dropdown {
   position: absolute;
   top: calc(100% + 6px);
-  right: 0;
+  inset-inline-end: 0;
   z-index: 60;
   min-width: 200px;
   margin: 0;
@@ -874,8 +855,8 @@
 }
 
 .pd-preview .pd-child-selector .pd-dropdown {
-  left: 0;
-  right: auto;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
 }
 
 .pd-preview .pd-child-selector-dropdown {
@@ -896,7 +877,7 @@
   background: transparent;
   cursor: pointer;
   color: var(--pd-text);
-  text-align: left;
+  text-align: start;
   font-size: 0.8125rem;
   font-weight: 500;
 }
@@ -4115,18 +4096,18 @@ body.pd-preview-drawer-open {
 
 @media (max-width: 900px) {
   .pd-preview .pd-main {
-    margin-left: 0;
+    margin-inline-start: 0;
     width: 100%;
   }
 
   .pd-preview .pd-shell.is-collapsed .pd-main {
-    margin-left: 0;
+    margin-inline-start: 0;
     width: 100%;
   }
 
   .pd-preview .pd-sidebar {
     position: fixed;
-    left: 0;
+    inset-inline-start: 0;
     top: 0;
     bottom: 0;
     transform: translateX(-105%);
@@ -4134,6 +4115,10 @@ body.pd-preview-drawer-open {
     height: 100vh;
     height: 100dvh;
     box-shadow: 0 18px 44px rgba(15, 23, 42, 0.32);
+  }
+
+  :dir(rtl) .pd-preview .pd-sidebar {
+    transform: translateX(105%);
   }
 
   .pd-preview .pd-sidebar.is-collapsed {
@@ -4792,6 +4777,13 @@ body.pd-preview-drawer-open {
   align-items: center;
 }
 
+.pd-preview .pd-task-hub-toolbar.pd-notifications-page-toolbar {
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .pd-preview .pd-task-hub-header {
   display: flex;
   flex-direction: column;
@@ -5265,7 +5257,7 @@ body.pd-preview-drawer-open {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .pd-preview .pd-notification-feed-panel {
@@ -5303,7 +5295,7 @@ body.pd-preview-drawer-open {
   border: 1px solid var(--pd-border-soft);
   border-radius: 12px;
   background: var(--pd-surface);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   color: inherit;
   transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
@@ -5409,7 +5401,7 @@ body.pd-preview-drawer-open {
   font-size: 0.75rem;
   color: var(--pd-text-muted);
   line-height: 1.3;
-  text-align: right;
+  text-align: end;
   white-space: nowrap;
 }
 
@@ -5466,7 +5458,7 @@ body.pd-preview-drawer-open {
 @media (max-width: 768px) {
   .pd-preview .pd-notification-hub-toolbar-actions {
     width: 100%;
-    margin-left: 0;
+    justify-content: end;
   }
 
   .pd-preview .pd-notification-hub-toolbar-actions .pd-btn {
@@ -5638,7 +5630,7 @@ body.pd-preview-drawer-open {
   min-height: 320px;
   max-height: min(58vh, 640px);
   overflow: auto;
-  padding-right: 4px;
+  padding-inline-end: 4px;
 }
 
 .pd-preview .pd-ai-message-list {
@@ -5693,6 +5685,7 @@ body.pd-preview-drawer-open {
   overflow-wrap: anywhere;
   line-height: 1.55;
   color: var(--pd-text-primary);
+  text-align: start;
 }
 
 .pd-preview .pd-ai-suggested-practice {
@@ -6624,7 +6617,7 @@ body.pd-preview-drawer-open {
   flex-direction: column;
   gap: 10px;
   margin: 8px 0 0;
-  padding-right: 4px;
+  padding-inline-end: 4px;
   container-type: size;
   container-name: pd-messages-thread;
 }
@@ -6634,6 +6627,13 @@ body.pd-preview-drawer-open {
   padding: 10px 12px;
   border-radius: 14px;
   background: var(--pd-surface-muted);
+}
+
+.pd-preview .pd-message-bubble p {
+  margin: 0;
+  text-align: start;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .pd-preview .pd-message-bubble.is-own {
@@ -6749,7 +6749,7 @@ body.pd-preview-drawer-open {
 .pd-preview .pd-messages-attach-popover {
   position: absolute;
   bottom: calc(100% + 8px);
-  left: 0;
+  inset-inline-start: 0;
   z-index: 30;
   min-width: 168px;
   padding: 6px;
@@ -6771,7 +6771,7 @@ body.pd-preview-drawer-open {
   color: var(--pd-text-primary);
   font: inherit;
   font-size: 0.875rem;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 

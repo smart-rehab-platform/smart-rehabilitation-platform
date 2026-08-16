@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   buildCreateUserPayload,
   buildUpdateUserPayload,
@@ -6,6 +7,10 @@ import {
   filterAdminUsers,
   mapAdminUserRecord,
 } from "../utils/adminUsersMappers";
+import {
+  applyAdminUsersLocalization,
+  getAdminUsersLabels,
+} from "../utils/adminUsersLocalization.js";
 import {
   createAdminUser,
   deleteAdminUser,
@@ -20,6 +25,9 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useAdminUsers() {
+  const { t, locale } = useLocale();
+  const labels = useMemo(() => getAdminUsersLabels(t), [t]);
+
   const [users, setUsers] = useState([]);
   const [presenceById, setPresenceById] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -33,9 +41,14 @@ export function useAdminUsers() {
   const [isDeleting, setIsDeleting] = useState(false);
   const loadTokenRef = useRef(0);
 
+  const localizedUsers = useMemo(
+    () => applyAdminUsersLocalization(users, { t, locale }),
+    [users, t, locale],
+  );
+
   const filteredUsers = useMemo(
-    () => filterAdminUsers(users, { search: searchQuery, roleFilter }),
-    [users, searchQuery, roleFilter],
+    () => filterAdminUsers(localizedUsers, { search: searchQuery, roleFilter }),
+    [localizedUsers, searchQuery, roleFilter],
   );
 
   const reload = useCallback(() => {
@@ -77,7 +90,7 @@ export function useAdminUsers() {
 
         setUsers([]);
         setPresenceById({});
-        setError(resolveErrorMessage(loadError, "Failed to load users."));
+        setError(resolveErrorMessage(loadError, labels.loadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -90,7 +103,7 @@ export function useAdminUsers() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [refreshToken, labels.loadFailed]);
 
   const createUser = useCallback(async (form) => {
     setIsCreating(true);
@@ -99,11 +112,11 @@ export function useAdminUsers() {
       reload();
       return null;
     } catch (mutationError) {
-      return resolveErrorMessage(mutationError, "Failed to create user.");
+      return resolveErrorMessage(mutationError, labels.createFailed);
     } finally {
       setIsCreating(false);
     }
-  }, [reload]);
+  }, [reload, labels.createFailed]);
 
   const updateUser = useCallback(async (id, form) => {
     setIsUpdating(true);
@@ -112,11 +125,11 @@ export function useAdminUsers() {
       reload();
       return null;
     } catch (mutationError) {
-      return resolveErrorMessage(mutationError, "Failed to update user.");
+      return resolveErrorMessage(mutationError, labels.updateFailed);
     } finally {
       setIsUpdating(false);
     }
-  }, [reload]);
+  }, [reload, labels.updateFailed]);
 
   const updateUserStatus = useCallback(async (id, isActive) => {
     setIsUpdatingStatus(true);
@@ -125,11 +138,11 @@ export function useAdminUsers() {
       reload();
       return null;
     } catch (mutationError) {
-      return resolveErrorMessage(mutationError, "Failed to update user status.");
+      return resolveErrorMessage(mutationError, labels.updateStatusFailed);
     } finally {
       setIsUpdatingStatus(false);
     }
-  }, [reload]);
+  }, [reload, labels.updateStatusFailed]);
 
   const deleteUser = useCallback(async (id) => {
     setIsDeleting(true);
@@ -138,14 +151,14 @@ export function useAdminUsers() {
       reload();
       return null;
     } catch (mutationError) {
-      return resolveErrorMessage(mutationError, "Failed to delete user.");
+      return resolveErrorMessage(mutationError, labels.deleteFailed);
     } finally {
       setIsDeleting(false);
     }
-  }, [reload]);
+  }, [reload, labels.deleteFailed]);
 
   return {
-    users,
+    users: localizedUsers,
     filteredUsers,
     presenceById,
     isLoading,
@@ -163,5 +176,6 @@ export function useAdminUsers() {
     isUpdating,
     isUpdatingStatus,
     isDeleting,
+    labels,
   };
 }

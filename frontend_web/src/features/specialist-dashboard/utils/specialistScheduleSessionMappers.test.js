@@ -6,6 +6,7 @@ import {
   getDefaultScheduleDateValue,
   validateScheduleSessionForm,
 } from "./specialistScheduleSessionMappers.js";
+import { SCHEDULE_SESSION_VALIDATION_KEYS } from "./specialistScheduleSessionMappers.js";
 
 describe("specialistScheduleSessionMappers", () => {
   it("defaults schedule date to tomorrow", () => {
@@ -30,10 +31,10 @@ describe("specialistScheduleSessionMappers", () => {
     });
 
     assert.equal(result.isValid, false);
-    assert.ok(result.errors.title);
-    assert.ok(result.errors.patientId);
-    assert.ok(result.errors.duration);
-    assert.ok(result.errors.dateTime);
+    assert.equal(result.errors.title, SCHEDULE_SESSION_VALIDATION_KEYS.TITLE_REQUIRED);
+    assert.equal(result.errors.patientId, SCHEDULE_SESSION_VALIDATION_KEYS.PATIENT_REQUIRED);
+    assert.equal(result.errors.duration, SCHEDULE_SESSION_VALIDATION_KEYS.DURATION_RANGE);
+    assert.equal(result.errors.dateTime, SCHEDULE_SESSION_VALIDATION_KEYS.FUTURE_DATETIME_REQUIRED);
   });
 
   it("builds create payload matching Flutter fields", () => {

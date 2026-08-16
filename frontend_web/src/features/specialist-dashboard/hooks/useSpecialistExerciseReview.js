@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale";
 import {
   createExerciseReview,
   loadReviewExerciseBundle,
@@ -12,6 +13,7 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useSpecialistExerciseReview(submissionId, specialistUserId) {
+  const { t } = useLocale();
   const [bundle, setBundle] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,6 +24,8 @@ export function useSpecialistExerciseReview(submissionId, specialistUserId) {
   const [submitError, setSubmitError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+  const loadFailedError = t("specialist.reviews.errors.loadSubmissionFailed");
+  const submitFailedError = t("specialist.reviews.errors.submitFailed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -62,7 +66,7 @@ export function useSpecialistExerciseReview(submissionId, specialistUserId) {
           return;
         }
         setBundle(null);
-        setError(resolveErrorMessage(loadError, "Failed to load submission."));
+        setError(resolveErrorMessage(loadError, loadFailedError));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -75,7 +79,7 @@ export function useSpecialistExerciseReview(submissionId, specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [submissionId, refreshToken]);
+  }, [submissionId, refreshToken, loadFailedError]);
 
   const submitReview = useCallback(async () => {
     if (!submissionId || !specialistUserId || isSubmitting) {
@@ -104,7 +108,7 @@ export function useSpecialistExerciseReview(submissionId, specialistUserId) {
       notifySpecialistReviewRefresh();
       return true;
     } catch (submitErr) {
-      setSubmitError(resolveErrorMessage(submitErr, "Failed to submit review."));
+      setSubmitError(resolveErrorMessage(submitErr, submitFailedError));
       return false;
     } finally {
       setIsSubmitting(false);
@@ -117,6 +121,7 @@ export function useSpecialistExerciseReview(submissionId, specialistUserId) {
     feedback,
     requiresRetry,
     bundle,
+    submitFailedError,
   ]);
 
   return {

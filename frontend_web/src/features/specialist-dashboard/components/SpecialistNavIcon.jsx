@@ -1,4 +1,4 @@
-import { Bell, User } from "lucide-react";
+import { Bell, LifeBuoy, User } from "lucide-react";
 import calendarMonthIcon from "../../../assets/icons/calendar-month.svg";
 import clipboardCheckMultipleIcon from "../../../assets/icons/clipboard-check-multiple.svg";
 import dumbbellIcon from "../../../assets/icons/dumbbell.svg";
@@ -31,6 +31,13 @@ const NOTIFICATION_ICON_KEYS = new Set(["notifications"]);
 
 const PROFILE_NAV_IDS = new Set(["profile"]);
 const PROFILE_ICON_KEYS = new Set(["profile"]);
+
+const SUPPORT_REQUESTS_NAV_IDS = new Set(["supportRequests"]);
+const SUPPORT_REQUESTS_ICON_KEYS = new Set(["supportRequests"]);
+
+function isSupportRequestsIcon({ navId, iconKey }) {
+  return SUPPORT_REQUESTS_NAV_IDS.has(navId) || SUPPORT_REQUESTS_ICON_KEYS.has(iconKey);
+}
 
 function isReportsIcon({ navId, iconKey }) {
   return REPORTS_NAV_IDS.has(navId) || REPORTS_ICON_KEYS.has(iconKey);
@@ -78,6 +85,17 @@ export function SpecialistNavIcon({ navId, iconKey, size = 18 }) {
         size={size}
         strokeWidth={2}
         color="#79C7FF"
+        aria-hidden="true"
+      />
+    );
+  }
+
+  if (isSupportRequestsIcon({ navId, iconKey })) {
+    return (
+      <LifeBuoy
+        size={size}
+        strokeWidth={2}
+        color={SPECIALIST_SIDEBAR_ICON_COLOR}
         aria-hidden="true"
       />
     );

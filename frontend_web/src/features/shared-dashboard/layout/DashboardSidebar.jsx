@@ -1,7 +1,10 @@
 import {
   PanelLeftClose,
   PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
 } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 
 export function DashboardSidebar({
   collapsed,
@@ -9,7 +12,7 @@ export function DashboardSidebar({
   navItems,
   badges,
   activeId = "dashboard",
-  navigationAriaLabel = "Navigation",
+  navigationAriaLabel,
   logoSrc,
   brandTitle,
   brandSubtitle,
@@ -20,22 +23,29 @@ export function DashboardSidebar({
   renderNavIcon,
   supportSlot = null,
   signOutIcon,
-  signOutLabel = "Sign Out",
+  signOutLabel,
 }) {
+  const { t, isRtl } = useLocale();
+  const resolvedNavigationLabel = navigationAriaLabel ?? t("common.navigation");
+  const resolvedSignOutLabel = signOutLabel ?? t("profile.signOut");
+  const CollapseIcon = collapsed
+    ? (isRtl ? PanelRightOpen : PanelLeftOpen)
+    : (isRtl ? PanelRightClose : PanelLeftClose);
+
   return (
     <>
       {mobileOpen ? (
         <button
           type="button"
           className="pd-overlay"
-          aria-label="Close navigation menu"
+          aria-label={t("header.closeNavigationMenu")}
           onClick={onCloseMobile}
         />
       ) : null}
 
       <aside
         className={`pd-sidebar${collapsed ? " is-collapsed" : ""}${mobileOpen ? " is-mobile-open" : ""}`}
-        aria-label={navigationAriaLabel}
+        aria-label={resolvedNavigationLabel}
       >
         <div className="pd-sidebar-top">
           <div className="pd-brand">
@@ -57,10 +67,10 @@ export function DashboardSidebar({
           <button
             type="button"
             className="pd-sidebar-collapse"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
             onClick={onToggleCollapse}
           >
-            {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+            <CollapseIcon size={18} />
           </button>
         </div>
 
@@ -70,7 +80,7 @@ export function DashboardSidebar({
             const isActive = item.id === activeId;
 
             const navLabel = badge && collapsed
-              ? `${item.label}, ${badge} unread`
+              ? `${item.label}, ${t("sidebar.unreadBadgeAriaLabel", { count: badge })}`
               : item.label;
 
             return (
@@ -86,7 +96,10 @@ export function DashboardSidebar({
                 {renderNavIcon?.(item)}
                 {!collapsed ? <span>{item.label}</span> : null}
                 {!collapsed && badge ? (
-                  <span className="pd-nav-badge" aria-label={`${badge} unread`}>
+                  <span
+                    className="pd-nav-badge"
+                    aria-label={t("sidebar.unreadBadgeAriaLabel", { count: badge })}
+                  >
                     {badge}
                   </span>
                 ) : null}
@@ -101,12 +114,12 @@ export function DashboardSidebar({
           <button
             type="button"
             className="pd-nav-item pd-signout"
-            aria-label="Sign out"
+            aria-label={t("sidebar.signOutAriaLabel")}
             onClick={onSignOut}
-            title={collapsed ? signOutLabel : undefined}
+            title={collapsed ? resolvedSignOutLabel : undefined}
           >
             {signOutIcon}
-            {!collapsed ? <span>{signOutLabel}</span> : null}
+            {!collapsed ? <span>{resolvedSignOutLabel}</span> : null}
           </button>
         </div>
       </aside>

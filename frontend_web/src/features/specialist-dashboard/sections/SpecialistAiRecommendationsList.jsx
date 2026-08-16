@@ -1,3 +1,4 @@
+import { useLocale } from "../../../context/useLocale";
 import { SpecialistAiRecommendationCard } from "../components/SpecialistAiRecommendationCard";
 
 export function SpecialistAiRecommendationsList({
@@ -6,10 +7,12 @@ export function SpecialistAiRecommendationsList({
   onAccept,
   onReject,
 }) {
+  const { t } = useLocale();
+
   if (!recommendations.length) {
     return (
       <section className="pd-card pd-card-pad pd-task-hub-state pd-specialist-ai-empty">
-        <p className="pd-section-sub">Generate your first AI recommendation</p>
+        <p className="pd-section-sub">{t("specialist.aiRecommendations.empty")}</p>
       </section>
     );
   }

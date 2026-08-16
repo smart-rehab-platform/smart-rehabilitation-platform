@@ -1,6 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { UserProfileAvatar } from "./profile/UserProfileAvatar";
 
 function getPortalRoot() {
@@ -18,6 +19,7 @@ function getDropdownPosition(triggerEl) {
 }
 
 export function ChildSelector({ items, selectedChildId, isLoading = false, onSelect }) {
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState(null);
   const rootRef = useRef(null);
@@ -79,7 +81,7 @@ export function ChildSelector({ items, selectedChildId, isLoading = false, onSel
       ref={dropdownRef}
       className="pd-dropdown pd-child-selector-dropdown"
       role="listbox"
-      aria-label="Select child"
+      aria-label={t("parent.home.selectChildAriaLabel")}
       style={dropdownStyle}
     >
       {items.map((child) => (
@@ -131,8 +133,10 @@ export function ChildSelector({ items, selectedChildId, isLoading = false, onSel
           className="pd-avatar-photo"
         />
         <span className="pd-child-copy">
-          <strong>{isLoading ? "Loading children..." : selected?.fullName || "No children"}</strong>
-          <small>{isLoading ? "Please wait" : selected?.status || "—"}</small>
+          <strong>
+            {isLoading ? t("parent.home.loadingChildren") : selected?.fullName || t("parent.home.noChildren")}
+          </strong>
+          <small>{isLoading ? t("parent.home.pleaseWait") : selected?.status || "—"}</small>
         </span>
         <ChevronDown size={16} aria-hidden="true" />
       </button>

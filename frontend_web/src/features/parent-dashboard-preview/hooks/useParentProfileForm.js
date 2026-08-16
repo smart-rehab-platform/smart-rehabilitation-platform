@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   createParentProfile,
   updateParentProfile,
@@ -39,6 +40,8 @@ export function useParentProfileForm({
   onProfileSaved,
   onRefreshSession,
 }) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const profileSnapshot = buildProfileSnapshot(profile);
   const [syncedSnapshot, setSyncedSnapshot] = useState(profileSnapshot);
   const [formValues, setFormValues] = useState(() => mapProfileToFormValues(profile));
@@ -90,7 +93,7 @@ export function useParentProfileForm({
   }, []);
 
   const handleAvatarSelect = useCallback((file) => {
-    const validationMessage = validateProfileImageFile(file);
+    const validationMessage = validateProfileImageFile(file, mapperOptions);
     if (validationMessage) {
       setAvatarError(validationMessage);
       return;
@@ -100,7 +103,7 @@ export function useParentProfileForm({
     setPendingAvatarFile(file);
     setSaveError(null);
     setSuccessMessage(null);
-  }, []);
+  }, [mapperOptions]);
 
   const resetForm = useCallback(() => {
     setSyncedSnapshot(buildProfileSnapshot(profile));
@@ -121,7 +124,7 @@ export function useParentProfileForm({
       return { ok: false };
     }
 
-    const validationErrors = validateProfileForm(formValues);
+    const validationErrors = validateProfileForm(formValues, mapperOptions);
     if (Object.keys(validationErrors).length > 0) {
       setFieldErrors(validationErrors);
       const firstError = Object.values(validationErrors)[0];
@@ -158,9 +161,7 @@ export function useParentProfileForm({
           "profileImageUrl",
         ]);
         if (!savedImageUrl) {
-          throw new Error(
-            "Profile image upload succeeded but no image URL was returned.",
-          );
+          throw new Error(t("parent.hooks.profileImageNoUrl"));
         }
       }
 
@@ -183,6 +184,7 @@ export function useParentProfileForm({
           relationship_notes: formValues.relationshipNotes.trim() || null,
           created_at: profile.createdAt,
         },
+        mapperOptions,
       );
 
       onProfileSaved?.(nextProfile);
@@ -193,12 +195,12 @@ export function useParentProfileForm({
           "profile_image_url",
           "profileImageUrl",
         ])) {
-          throw new Error("Session refresh did not return the updated profile image.");
+          throw new Error(t("parent.hooks.profileSessionRefreshFailed"));
         }
       } catch (refreshError) {
         const message = refreshError instanceof Error
           ? refreshError.message
-          : "Profile saved but the session could not be refreshed. Please reload the page.";
+          : t("parent.hooks.profileSessionRefreshFailed");
         setSaveError(message);
         setSyncedSnapshot(buildProfileSnapshot(nextProfile));
         setFormValues(mapProfileToFormValues(nextProfile));
@@ -209,10 +211,10 @@ export function useParentProfileForm({
       setSyncedSnapshot(buildProfileSnapshot(nextProfile));
       setFormValues(mapProfileToFormValues(nextProfile));
       setPendingAvatarFile(null);
-      setSuccessMessage("Profile updated successfully.");
+      setSuccessMessage(t("parent.hooks.profileUpdated"));
       return { ok: true };
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to save profile.";
+      const message = error instanceof Error ? error.message : t("parent.hooks.profileSaveFailed");
       setSaveError(message);
       return { ok: false, message };
     } finally {
@@ -227,6 +229,8 @@ export function useParentProfileForm({
     pendingAvatarFile,
     onProfileSaved,
     onRefreshSession,
+    mapperOptions,
+    t,
   ]);
 
   return {

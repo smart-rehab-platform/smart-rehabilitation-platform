@@ -42,7 +42,8 @@ export default function AdminCaseRequestDetailsPage() {
     handleSidebarNav,
   } = useAdminShell();
 
-  const { detail, isLoading, error, reload } = useAdminCaseRequestDetails(requestId);
+  const { detail, isLoading, error, reload, labels } = useAdminCaseRequestDetails(requestId);
+  const pageLabels = detail?.labels ?? labels;
 
   const handleBack = useCallback(() => {
     navigate(ADMIN_WEB_ROUTES.caseRequests);
@@ -55,7 +56,7 @@ export default function AdminCaseRequestDetailsPage() {
     navigate(buildAdminCaseRequestSpecialistsPath(requestId));
   }, [navigate, requestId]);
 
-  const handleCopy = useCallback(async (label, value) => {
+  const handleCopyEmail = useCallback(async (value) => {
     const trimmed = (value || "").trim();
     if (!trimmed) {
       return;
@@ -63,11 +64,25 @@ export default function AdminCaseRequestDetailsPage() {
 
     try {
       await navigator.clipboard.writeText(trimmed);
-      showToast(`${label} copied.`);
+      showToast(pageLabels.copyEmail);
     } catch {
-      showToast(`Unable to copy ${label.toLowerCase()}.`);
+      showToast(pageLabels.copyFailed);
     }
-  }, [showToast]);
+  }, [pageLabels.copyEmail, pageLabels.copyFailed, showToast]);
+
+  const handleCopyPhone = useCallback(async (value) => {
+    const trimmed = (value || "").trim();
+    if (!trimmed) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(trimmed);
+      showToast(pageLabels.copyPhone);
+    } catch {
+      showToast(pageLabels.copyFailed);
+    }
+  }, [pageLabels.copyFailed, pageLabels.copyPhone, showToast]);
 
   let body;
 
@@ -76,10 +91,10 @@ export default function AdminCaseRequestDetailsPage() {
       <div className="pd-admin-case-request-details">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-case-request-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Case Requests
+          {labels.back}
         </button>
         <div className="pd-card pd-card-pad">
-          <p className="pd-admin-case-request-empty-copy">Loading case request...</p>
+          <p className="pd-admin-case-request-empty-copy">{labels.loadingDetails}</p>
         </div>
       </div>
     );
@@ -88,12 +103,12 @@ export default function AdminCaseRequestDetailsPage() {
       <div className="pd-admin-case-request-details">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-case-request-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Case Requests
+          {labels.back}
         </button>
         <div className="pd-card pd-card-pad pd-admin-case-requests-error">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-            Retry
+            {labels.retry}
           </button>
         </div>
       </div>
@@ -103,10 +118,10 @@ export default function AdminCaseRequestDetailsPage() {
       <div className="pd-admin-case-request-details">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-case-request-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Case Requests
+          {labels.back}
         </button>
         <div className="pd-card pd-card-pad">
-          <p className="pd-admin-case-request-empty-copy">Case request not found.</p>
+          <p className="pd-admin-case-request-empty-copy">{labels.notFound}</p>
         </div>
       </div>
     );
@@ -115,35 +130,35 @@ export default function AdminCaseRequestDetailsPage() {
       <div className="pd-admin-case-request-details">
         <button type="button" className="pd-btn pd-btn-soft pd-admin-case-request-back" onClick={handleBack}>
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Case Requests
+          {pageLabels.back}
         </button>
 
-        <AdminCaseRequestSummary detail={detail} />
-        <AdminCaseRequestTimeline steps={detail.timelineSteps} />
+        <AdminCaseRequestSummary detail={detail} labels={pageLabels} />
+        <AdminCaseRequestTimeline steps={detail.timelineSteps} labels={pageLabels} />
 
         {detail.rejectionReason ? (
           <section className="pd-card pd-card-pad pd-admin-case-request-alert pd-section-enter">
-            <h2 className="pd-admin-case-request-section-title">Rejection Reason</h2>
-            <p>{detail.rejectionReason}</p>
+            <h2 className="pd-admin-case-request-section-title">{pageLabels.rejectionReason}</h2>
+            <p dir="auto">{detail.rejectionReason}</p>
           </section>
         ) : null}
 
         {detail.status === "converted_to_patient" && detail.patientId ? (
           <section className="pd-card pd-card-pad pd-admin-case-request-alert is-success pd-section-enter">
-            <h2 className="pd-admin-case-request-section-title">Profile Created</h2>
-            <p>Patient profile ID: {detail.patientId}</p>
+            <h2 className="pd-admin-case-request-section-title">{pageLabels.profileCreated}</h2>
+            <p>{pageLabels.patientProfileId(detail.patientId)}</p>
           </section>
         ) : null}
 
         <div className="pd-admin-case-request-details-grid">
           <div className="pd-admin-case-request-details-main">
-            <AdminCaseChildInfo detail={detail} />
-            <AdminCaseInformation detail={detail} />
-            <AdminCasePreviousTreatment detail={detail} />
+            <AdminCaseChildInfo detail={detail} labels={pageLabels} />
+            <AdminCaseInformation detail={detail} labels={pageLabels} />
+            <AdminCasePreviousTreatment detail={detail} labels={pageLabels} />
             {detail.assessmentNotes ? (
-              <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label="Assessment notes">
-                <h2 className="pd-admin-case-request-section-title">Assessment Notes</h2>
-                <p>{detail.assessmentNotes}</p>
+              <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={pageLabels.assessmentNotes}>
+                <h2 className="pd-admin-case-request-section-title">{pageLabels.assessmentNotes}</h2>
+                <p dir="auto">{detail.assessmentNotes}</p>
               </section>
             ) : null}
           </div>
@@ -151,18 +166,19 @@ export default function AdminCaseRequestDetailsPage() {
           <div className="pd-admin-case-request-details-side">
             <AdminCaseParentInfo
               parent={detail.parent}
-              onCopyEmail={(value) => handleCopy("Email", value)}
-              onCopyPhone={(value) => handleCopy("Phone number", value)}
+              labels={pageLabels}
+              onCopyEmail={handleCopyEmail}
+              onCopyPhone={handleCopyPhone}
             />
-            <AdminCaseAttachments attachments={detail.attachments} />
-            <AdminCaseAssignedSpecialist assignedSpecialist={detail.assignedSpecialist} />
+            <AdminCaseAttachments attachments={detail.attachments} labels={pageLabels} />
+            <AdminCaseAssignedSpecialist assignedSpecialist={detail.assignedSpecialist} labels={pageLabels} />
           </div>
         </div>
 
         {detail.canAssignSpecialist ? (
           <div className="pd-admin-case-request-assign-action pd-section-enter">
             <button type="button" className="pd-btn pd-btn-primary" onClick={handleAssignSpecialist}>
-              Assign Specialist
+              {pageLabels.assignSpecialist}
             </button>
           </div>
         ) : null}

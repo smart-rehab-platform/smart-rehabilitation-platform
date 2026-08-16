@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { getReportById } from "../../../services/parentDashboardService";
 import { mapReportRowToHubItem } from "../utils/parentReportsUtils";
 
@@ -7,6 +8,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useParentReportDetail(reportId) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [report, setReport] = useState(null);
   const [isLoading, setIsLoading] = useState(Boolean(reportId));
   const [error, setError] = useState(null);
@@ -36,10 +39,10 @@ export function useParentReportDetail(reportId) {
           return;
         }
 
-        const mapped = mapReportRowToHubItem(row);
+        const mapped = mapReportRowToHubItem(row, null, mapperOptions);
         if (!mapped) {
           setReport(null);
-          setError("Report not found.");
+          setError(t("parent.hooks.reportNotFound"));
           return;
         }
 
@@ -47,7 +50,7 @@ export function useParentReportDetail(reportId) {
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setReport(null);
-          setError(resolveErrorMessage(loadError, "Failed to load report details."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadReportDetailFailed")));
         }
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -61,13 +64,13 @@ export function useParentReportDetail(reportId) {
     return () => {
       cancelled = true;
     };
-  }, [reportId, refreshToken]);
+  }, [reportId, refreshToken, mapperOptions, t]);
 
   if (!reportId) {
     return {
       report: null,
       isLoading: false,
-      error: "Report not found.",
+      error: t("parent.hooks.reportNotFound"),
       refetch,
     };
   }

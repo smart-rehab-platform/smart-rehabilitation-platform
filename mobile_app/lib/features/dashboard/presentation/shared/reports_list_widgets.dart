@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_reports_models.dart';
+import '../../providers/admin_reports_provider.dart';
 import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
@@ -201,6 +202,7 @@ class ReportsListBody extends ConsumerWidget {
     required this.onReportTap,
     this.refreshIndicatorColor = DashboardColors.brandCyan,
     this.patientId,
+    this.useAdminScope = false,
   });
 
   final TextEditingController searchController;
@@ -211,8 +213,19 @@ class ReportsListBody extends ConsumerWidget {
   /// When set, only reports for this patient are loaded/shown.
   final String? patientId;
 
+  /// When true, loads platform-wide admin reports instead of specialist scope.
+  final bool useAdminScope;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (useAdminScope) {
+      return _AdminReportsListBody(
+        searchController: searchController,
+        onReportTap: onReportTap,
+        refreshIndicatorColor: refreshIndicatorColor,
+      );
+    }
+
     final state = ref.watch(specialistReportsProvider(patientId));
     final notifier = ref.read(specialistReportsProvider(patientId).notifier);
     final visible = state.visibleReports;
@@ -266,6 +279,85 @@ class ReportsListBody extends ConsumerWidget {
                   ? l10n.specialistNoReports
                   : l10n.specialistNoReportsForPatient,
             )
+          else if (visible.isEmpty)
+            DashboardEmptyCard(message: l10n.specialistNoReportsMatchFilter)
+          else
+            ...visible.map(
+              (report) => ReportListCard(
+                report: report,
+                onTap: () => onReportTap(context, report),
+              ),
+            ),
+          SizedBox(height: context.dashSpacing),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdminReportsListBody extends ConsumerWidget {
+  const _AdminReportsListBody({
+    required this.searchController,
+    required this.onReportTap,
+    required this.refreshIndicatorColor,
+  });
+
+  final TextEditingController searchController;
+  final void Function(BuildContext context, SpecialistReportListItem report)
+  onReportTap;
+  final Color refreshIndicatorColor;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(adminReportsProvider);
+    final notifier = ref.read(adminReportsProvider.notifier);
+    final visible = state.visibleReports;
+    final l10n = AppLocalizations.of(context)!;
+    final localizedError = state.errorMessage != null
+        ? mapSpecialistReportsError(l10n, state.errorMessage!)
+        : null;
+
+    if (state.isLoading) {
+      return const Center(child: DashboardLoadingCard());
+    }
+
+    if (localizedError != null && state.reports.isEmpty) {
+      return Padding(
+        padding: context.dashPadding,
+        child: DashboardErrorCard(
+          message: localizedError,
+          onRetry: notifier.refresh,
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: notifier.refresh,
+      color: refreshIndicatorColor,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: context.dashPadding,
+        children: [
+          buildSharedReportSearchField(
+            context: context,
+            controller: searchController,
+            onChanged: notifier.setSearchQuery,
+          ),
+          SizedBox(height: context.dashSpacing * 0.75),
+          ReportFilterChips(
+            selected: state.filter,
+            onChanged: notifier.setFilter,
+          ),
+          if (localizedError != null) ...[
+            SizedBox(height: context.dashSpacing * 0.75),
+            DashboardErrorCard(
+              message: localizedError,
+              onRetry: notifier.refresh,
+            ),
+          ],
+          SizedBox(height: context.dashSpacing * 0.75),
+          if (state.reports.isEmpty)
+            DashboardEmptyCard(message: l10n.specialistNoReports)
           else if (visible.isEmpty)
             DashboardEmptyCard(message: l10n.specialistNoReportsMatchFilter)
           else

@@ -12,6 +12,9 @@ export const SPECIALIST_WEB_ROUTES = {
   progress: "/dashboard/specialist/progress",
   messages: "/dashboard/specialist/messages",
   notifications: "/dashboard/specialist/notifications",
+  supportRequests: "/dashboard/specialist/support-requests",
+  supportRequestNew: "/dashboard/specialist/support-requests/new",
+  supportRequestDetails: "/dashboard/specialist/support-requests/:requestId",
   reports: "/dashboard/specialist/reports",
   profile: "/dashboard/specialist/profile",
   profileEdit: "/dashboard/specialist/profile/edit",
@@ -30,6 +33,7 @@ export const SPECIALIST_SIDEBAR_NAV_ROUTE_KEYS = {
   reports: "reports",
   messages: "messages",
   notifications: "notifications",
+  supportRequests: "supportRequests",
   profile: "profile",
 };
 
@@ -63,6 +67,7 @@ const SIDEBAR_ACTIVE_ROUTE_MATCHERS = [
   { prefix: SPECIALIST_WEB_ROUTES.treatmentPlans, navId: "treatmentPlans" },
   { prefix: SPECIALIST_WEB_ROUTES.messages, navId: "messages" },
   { prefix: SPECIALIST_WEB_ROUTES.notifications, navId: "notifications" },
+  { prefix: SPECIALIST_WEB_ROUTES.supportRequests, navId: "supportRequests" },
   { prefix: SPECIALIST_WEB_ROUTES.profile, navId: "profile" },
 ];
 
@@ -79,6 +84,23 @@ export function buildSpecialistMessagesPath(conversationId = null) {
   }
 
   return `${SPECIALIST_WEB_ROUTES.messages}/${encodeURIComponent(conversationId)}`;
+}
+
+export function buildSpecialistSupportRequestsPath() {
+  return SPECIALIST_WEB_ROUTES.supportRequests;
+}
+
+export function buildSpecialistSupportRequestNewPath() {
+  return SPECIALIST_WEB_ROUTES.supportRequestNew;
+}
+
+export function buildSpecialistSupportRequestDetailPath(requestId) {
+  const id = typeof requestId === "string" ? requestId.trim() : "";
+  if (!id) {
+    return SPECIALIST_WEB_ROUTES.supportRequests;
+  }
+
+  return `/dashboard/specialist/support-requests/${encodeURIComponent(id)}`;
 }
 
 export function buildSpecialistPatientDetailPath(patientId) {
@@ -244,6 +266,7 @@ export function isImplementedSpecialistPath(path) {
     || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.sessions}/`)
     || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.exercises}/`)
     || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.treatmentPlans}/`)
+    || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.supportRequests}/`)
     || pathname === SPECIALIST_WEB_ROUTES.profile
     || pathname.startsWith(`${SPECIALIST_WEB_ROUTES.profile}/`);
 }

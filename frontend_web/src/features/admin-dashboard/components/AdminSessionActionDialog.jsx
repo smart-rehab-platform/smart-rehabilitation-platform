@@ -1,50 +1,43 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   cancelAdminSession,
   completeAdminSession,
   markAdminSessionNoShow,
 } from "../../../services/adminSessionsService";
 import { useAdminDialogEscape } from "../hooks/useAdminDialogEscape";
+import {
+  formatAdminSessionDateTimeLabel,
+  getAdminSessionsLabels,
+} from "../utils/adminSessionsLocalization.js";
 
-const ACTION_CONFIG = {
-  complete: {
-    title: "Complete Session",
-    message: "Are you sure you want to mark this session as completed?",
-    dismissLabel: "Cancel",
-    confirmLabel: "Complete",
-    confirmClassName: "pd-btn-success",
-    run: completeAdminSession,
-  },
-  cancel: {
-    title: "Cancel Session",
-    message: "Are you sure you want to cancel this session?",
-    dismissLabel: "Keep Session",
-    confirmLabel: "Cancel Session",
-    confirmClassName: "pd-btn-danger",
-    run: cancelAdminSession,
-  },
-  noShow: {
-    title: "Mark No Show",
-    message: "Are you sure you want to mark this session as no-show?",
-    dismissLabel: "Cancel",
-    confirmLabel: "Mark No Show",
-    confirmClassName: "pd-btn-warning",
-    run: markAdminSessionNoShow,
-  },
-};
-
-function formatSessionContext(scheduledAt) {
-  if (!scheduledAt) {
-    return null;
-  }
-
-  const date = new Date(scheduledAt);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  const pad = (value) => String(value).padStart(2, "0");
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} • ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+function buildActionConfig(labels) {
+  return {
+    complete: {
+      title: labels.dialogs.completeTitle,
+      message: labels.dialogs.completeBody,
+      dismissLabel: labels.dialogs.cancel,
+      confirmLabel: labels.complete,
+      confirmClassName: "pd-btn-success",
+      run: completeAdminSession,
+    },
+    cancel: {
+      title: labels.dialogs.cancelTitle,
+      message: labels.dialogs.cancelBody,
+      dismissLabel: labels.dialogs.keepSession,
+      confirmLabel: labels.cancelSession,
+      confirmClassName: "pd-btn-danger",
+      run: cancelAdminSession,
+    },
+    noShow: {
+      title: labels.dialogs.noShowTitle,
+      message: labels.dialogs.noShowBody,
+      dismissLabel: labels.dialogs.cancel,
+      confirmLabel: labels.markNoShow,
+      confirmClassName: "pd-btn-warning",
+      run: markAdminSessionNoShow,
+    },
+  };
 }
 
 function AdminSessionActionDialogInner({
@@ -54,7 +47,10 @@ function AdminSessionActionDialogInner({
   onSuccess,
   onErrorRefresh,
 }) {
-  const config = ACTION_CONFIG[actionType];
+  const { t, locale } = useLocale();
+  const labels = useMemo(() => getAdminSessionsLabels(t), [t]);
+  const actionConfig = useMemo(() => buildActionConfig(labels), [labels]);
+  const config = actionConfig[actionType];
   const [apiError, setApiError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -64,7 +60,7 @@ function AdminSessionActionDialogInner({
     return null;
   }
 
-  const scheduleLabel = formatSessionContext(session.scheduledAt);
+  const scheduleLabel = formatAdminSessionDateTimeLabel(session.scheduledAt, { t, locale });
 
   const handleConfirm = async () => {
     if (isSubmitting) {
@@ -80,7 +76,7 @@ function AdminSessionActionDialogInner({
     } catch (submitError) {
       const message = submitError instanceof Error
         ? submitError.message
-        : "Action failed.";
+        : labels.toast.actionFailed;
       setApiError(message);
       await onErrorRefresh?.();
     } finally {
@@ -109,11 +105,11 @@ function AdminSessionActionDialogInner({
 
         <div className="pd-admin-session-action-context">
           <p className="pd-admin-modal-copy">
-            Patient: <strong>{session.patientName}</strong>
+            {labels.dialogs.patient}: <strong dir="auto">{session.patientName}</strong>
           </p>
-          {scheduleLabel ? (
+          {scheduleLabel && scheduleLabel !== labels.emptyDisplay ? (
             <p className="pd-admin-modal-copy">
-              Scheduled: <strong>{scheduleLabel}</strong>
+              {labels.dialogs.scheduled}: <strong>{scheduleLabel}</strong>
             </p>
           ) : null}
         </div>
@@ -135,7 +131,7 @@ function AdminSessionActionDialogInner({
             onClick={handleConfirm}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Processing..." : config.confirmLabel}
+            {isSubmitting ? labels.dialogs.processing : config.confirmLabel}
           </button>
         </div>
       </div>

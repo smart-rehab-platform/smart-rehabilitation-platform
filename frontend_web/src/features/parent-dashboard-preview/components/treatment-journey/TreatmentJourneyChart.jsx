@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
 import {
   calculateXAxisLabelIndices,
   formatChartXAxisLabel,
@@ -70,17 +71,30 @@ export function TreatmentJourneyChart({
   isLoading = false,
   className = "",
 }) {
+  const { t, locale } = useLocale();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectionAnchor, setSelectionAnchor] = useState({ period, pointCount: 0 });
   const hasData = journeyHasData({ chartPoints: points });
 
-  useEffect(() => {
-    if (!points.length) {
-      setSelectedIndex(0);
-      return;
-    }
+  const latestPointKey = points.length
+    ? points[points.length - 1]?.date?.getTime?.() ?? points.length
+    : 0;
 
-    setSelectedIndex(points.length - 1);
-  }, [points, period]);
+  if (
+    selectionAnchor.period !== period
+    || selectionAnchor.pointCount !== points.length
+    || selectionAnchor.latestPointKey !== latestPointKey
+  ) {
+    const nextIndex = points.length ? points.length - 1 : 0;
+    setSelectionAnchor({ period, pointCount: points.length, latestPointKey });
+    if (selectedIndex !== nextIndex) {
+      setSelectedIndex(nextIndex);
+    }
+  }
+
+  const safeSelectedIndex = points.length
+    ? Math.min(selectedIndex, points.length - 1)
+    : 0;
 
   const scores = useMemo(
     () => points.map((point) => point.score),
@@ -92,7 +106,7 @@ export function TreatmentJourneyChart({
     [points.length],
   );
 
-  const selectedPoint = points[selectedIndex] ?? points[points.length - 1] ?? null;
+  const selectedPoint = points[safeSelectedIndex] ?? points[points.length - 1] ?? null;
   const width = 640;
   const height = CHART_HEIGHT;
   const { points: plotPoints } = buildPlotGeometry(width, height, scores);
@@ -123,14 +137,14 @@ export function TreatmentJourneyChart({
     return (
       <section
         className={`pd-tj-chart pd-tj-chart-empty ${className}`.trim()}
-        aria-label="Treatment progress chart, no data yet"
+        aria-label={t("parent.treatmentJourney.chart.ariaEmpty")}
       >
-        <p>Progress will appear after exercises are reviewed.</p>
+        <p>{t("parent.treatmentJourney.emptyProgress")}</p>
       </section>
     );
   }
 
-  const chartLabel = `Treatment progress chart with ${points.length} points`;
+  const chartLabel = t("parent.treatmentJourney.chart.ariaWithPoints", { count: points.length });
 
   return (
     <section className={`pd-tj-chart ${className}`.trim()} aria-label={chartLabel}>
@@ -183,7 +197,7 @@ export function TreatmentJourneyChart({
 
           {plotPoints.map((point) => {
             const isLatest = point.index === plotPoints.length - 1;
-            const isSelected = point.index === selectedIndex;
+            const isSelected = point.index === safeSelectedIndex;
             const radius = isSelected ? (isLatest ? 7 : 5.5) : (isLatest ? 5 : 3.5);
 
             return (
@@ -223,7 +237,7 @@ export function TreatmentJourneyChart({
                 textAnchor="middle"
                 className="pd-tj-chart-axis-label"
               >
-                {formatChartXAxisLabel(labelPoint.date, period)}
+                {formatChartXAxisLabel(labelPoint.date, period, locale)}
               </text>
             );
           })}
@@ -232,7 +246,7 @@ export function TreatmentJourneyChart({
         {isLoading ? (
           <div className="pd-tj-chart-loading" aria-live="polite">
             <span className="pd-tj-chart-spinner" aria-hidden="true" />
-            <span className="pd-inline-loading">Updating chart…</span>
+            <span className="pd-inline-loading">{t("parent.treatmentJourney.chart.updating")}</span>
           </div>
         ) : null}
       </div>
@@ -240,23 +254,26 @@ export function TreatmentJourneyChart({
       {selectedPoint ? (
         <div
           className="pd-tj-chart-selected"
-          aria-label={`Selected point score ${formatTreatmentJourneyPercent(selectedPoint.score)}, date ${formatTreatmentJourneyDisplayDate(selectedPoint.date)}`}
+          aria-label={t("parent.treatmentJourney.chart.selectedPointAria", {
+            score: formatTreatmentJourneyPercent(selectedPoint.score),
+            date: formatTreatmentJourneyDisplayDate(selectedPoint.date, locale, t),
+          })}
         >
           <div className="pd-tj-chart-selected-grid">
             <div>
-              <span className="pd-tj-metric-label">Score</span>
+              <span className="pd-tj-metric-label">{t("parent.treatmentJourney.chart.score")}</span>
               <strong>{formatTreatmentJourneyPercent(selectedPoint.score)}</strong>
             </div>
             <div>
-              <span className="pd-tj-metric-label">Date</span>
-              <strong>{formatTreatmentJourneyDisplayDate(selectedPoint.date)}</strong>
+              <span className="pd-tj-metric-label">{t("parent.common.date")}</span>
+              <strong>{formatTreatmentJourneyDisplayDate(selectedPoint.date, locale, t)}</strong>
             </div>
             <div>
-              <span className="pd-tj-metric-label">Exercises</span>
+              <span className="pd-tj-metric-label">{t("parent.treatmentJourney.chart.exercises")}</span>
               <strong>{selectedPoint.exercisesCompleted ?? 0}</strong>
             </div>
             <div>
-              <span className="pd-tj-metric-label">Improvement</span>
+              <span className="pd-tj-metric-label">{t("parent.progress.improvement")}</span>
               <strong>{formatTreatmentJourneyImprovement(selectedPoint.improvementPercentage)}</strong>
             </div>
           </div>

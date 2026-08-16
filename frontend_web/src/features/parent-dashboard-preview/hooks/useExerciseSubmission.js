@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   attachMediaToExerciseSubmission,
   createExerciseSubmission,
@@ -9,20 +10,13 @@ import {
   validateSubmissionMediaFile,
 } from "../utils/parentDashboardMappers";
 
-/**
- * @typedef {"upload"|"attach"} PartialFailureStage
- */
-
-/**
- * @typedef {{ submissionId: string, stage: PartialFailureStage, uploadedUrl?: string, mediaType?: "image"|"video"|"audio" }} PartialFailureState
- */
-
 export function useExerciseSubmission({
   assignedExerciseId,
   isActionable,
   onSuccess,
   onRefresh,
 }) {
+  const { t } = useLocale();
   const [parentNotes, setParentNotes] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [validationError, setValidationError] = useState(null);
@@ -48,7 +42,7 @@ export function useExerciseSubmission({
       return;
     }
 
-    const validation = validateSubmissionMediaFile(file);
+    const validation = validateSubmissionMediaFile(file, { t });
     if (!validation.valid) {
       setSelectedFile(null);
       setValidationError(validation.error);
@@ -57,7 +51,7 @@ export function useExerciseSubmission({
 
     setValidationError(null);
     setSelectedFile(file);
-  }, [clearSelectedFile]);
+  }, [clearSelectedFile, t]);
 
   const submitExercise = useCallback(async () => {
     if (isSubmitting || !assignedExerciseId) {
@@ -69,7 +63,7 @@ export function useExerciseSubmission({
     }
 
     if (selectedFile) {
-      const validation = validateSubmissionMediaFile(selectedFile);
+      const validation = validateSubmissionMediaFile(selectedFile, { t });
       if (!validation.valid) {
         setValidationError(validation.error);
         return;
@@ -77,7 +71,7 @@ export function useExerciseSubmission({
     }
 
     if (partialFailure?.stage === "upload" && !selectedFile) {
-      setSubmitError("Select a file to retry the upload.");
+      setSubmitError(t("parent.common.somethingWrong"));
       return;
     }
 
@@ -105,7 +99,7 @@ export function useExerciseSubmission({
           mediaType = detectSubmissionMediaTypeFromFile(selectedFile);
 
           if (!mediaType) {
-            setValidationError("This file type is not supported. Use an image, video, or audio file.");
+            setValidationError(t("parent.dashboard.submission.unsupportedType"));
             return;
           }
 
@@ -120,7 +114,7 @@ export function useExerciseSubmission({
               setSubmitError(
                 uploadError instanceof Error
                   ? uploadError.message
-                  : "Your exercise was submitted, but the file could not be uploaded. Select the file and tap Retry Upload.",
+                  : t("parent.common.somethingWrong"),
               );
               return;
             }
@@ -143,7 +137,7 @@ export function useExerciseSubmission({
             setSubmitError(
               attachError instanceof Error
                 ? attachError.message
-                : "Your exercise was submitted and the file uploaded, but linking the attachment failed. Tap Retry Attachment.",
+                : t("parent.common.somethingWrong"),
             );
             return;
           }
@@ -158,7 +152,7 @@ export function useExerciseSubmission({
     } catch (error) {
       if (!submissionId) {
         setSubmitError(
-          error instanceof Error ? error.message : "Submission failed.",
+          error instanceof Error ? error.message : t("parent.common.somethingWrong"),
         );
       }
     } finally {
@@ -173,15 +167,16 @@ export function useExerciseSubmission({
     parentNotes,
     partialFailure,
     selectedFile,
+    t,
   ]);
 
   const submitLabel = (() => {
     if (partialFailure?.stage === "upload") {
-      return "Retry Upload";
+      return t("common.retry");
     }
 
     if (partialFailure?.stage === "attach") {
-      return "Retry Attachment";
+      return t("common.retry");
     }
 
     return null;

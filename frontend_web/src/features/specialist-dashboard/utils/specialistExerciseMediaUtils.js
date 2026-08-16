@@ -1,15 +1,10 @@
 export const EXERCISE_MEDIA_MAX_BYTES = 50 * 1024 * 1024;
 
-export const EXERCISE_MEDIA_EMPTY_MESSAGE =
-  "No media selected. Images, audio, PDF, and MP4/MOV video are supported (max 50 MB).";
-
-export const EXERCISE_MEDIA_UNSUPPORTED_MESSAGE =
-  "Unsupported media type. Use image, audio, PDF, or MP4/MOV video.";
-
-export const EXERCISE_MEDIA_SIZE_MESSAGE = "File is too large. Maximum size is 50 MB.";
-
-export const EXERCISE_MEDIA_REMOVAL_PENDING_MESSAGE =
-  "Instructional media will be removed when you save.";
+export const EXERCISE_MEDIA_VALIDATION_KEYS = {
+  UNABLE_READ: "unableReadFile",
+  UNSUPPORTED: "unsupportedType",
+  TOO_LARGE: "fileTooLarge",
+};
 
 export const ALLOWED_EXERCISE_MEDIA_MIME_TYPES = new Set([
   "image/jpeg",
@@ -143,16 +138,16 @@ export function getExerciseMediaTypeLabel(kind) {
 
 export function validateExerciseMediaFile(file) {
   if (!(file instanceof File)) {
-    return "Unable to read the selected file.";
+    return EXERCISE_MEDIA_VALIDATION_KEYS.UNABLE_READ;
   }
 
   const resolvedMime = inferExerciseMediaMimeType(file.name, file.type);
   if (!resolvedMime || !ALLOWED_EXERCISE_MEDIA_MIME_TYPES.has(resolvedMime)) {
-    return EXERCISE_MEDIA_UNSUPPORTED_MESSAGE;
+    return EXERCISE_MEDIA_VALIDATION_KEYS.UNSUPPORTED;
   }
 
   if (file.size > EXERCISE_MEDIA_MAX_BYTES) {
-    return EXERCISE_MEDIA_SIZE_MESSAGE;
+    return EXERCISE_MEDIA_VALIDATION_KEYS.TOO_LARGE;
   }
 
   return null;

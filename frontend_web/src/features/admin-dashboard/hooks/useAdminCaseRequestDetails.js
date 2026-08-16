@@ -1,12 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { fetchAdminCaseRequestById } from "../../../services/adminCaseRequestsService";
-import { mapAdminCaseRequestDetail } from "../utils/adminCaseRequestsMappers";
+import {
+  applyAdminCaseRequestDetailLocalization,
+  getAdminCaseRequestsLabels,
+} from "../utils/adminCaseRequestsLocalization.js";
+import { mapAdminCaseRequestDetail } from "../utils/adminCaseRequestsMappers.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
 export function useAdminCaseRequestDetails(requestId) {
+  const { t, locale } = useLocale();
+  const mapperContext = useMemo(() => ({ t, locale }), [t, locale]);
+  const labels = useMemo(() => getAdminCaseRequestsLabels(t), [t]);
   const [detail, setDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,7 +34,7 @@ export function useAdminCaseRequestDetails(requestId) {
     async function loadDetail() {
       if (!normalizedId) {
         setDetail(null);
-        setError("Case request not found.");
+        setError(labels.notFound);
         setIsLoading(false);
         return;
       }
@@ -43,18 +51,18 @@ export function useAdminCaseRequestDetails(requestId) {
         const mapped = mapAdminCaseRequestDetail(row);
         if (!mapped) {
           setDetail(null);
-          setError("Case request not found.");
+          setError(labels.notFound);
           return;
         }
 
-        setDetail(mapped);
+        setDetail(applyAdminCaseRequestDetailLocalization(mapped, mapperContext));
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
 
         setDetail(null);
-        setError(resolveErrorMessage(loadError, "Failed to load case request."));
+        setError(resolveErrorMessage(loadError, labels.toast.detailsLoadFailed));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -67,12 +75,13 @@ export function useAdminCaseRequestDetails(requestId) {
     return () => {
       cancelled = true;
     };
-  }, [requestId, refreshToken]);
+  }, [labels, mapperContext, requestId, refreshToken]);
 
   return {
     detail,
     isLoading,
     error,
     reload,
+    labels,
   };
 }

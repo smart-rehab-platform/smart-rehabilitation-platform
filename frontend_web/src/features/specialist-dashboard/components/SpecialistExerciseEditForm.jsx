@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale";
+import { applyExerciseCategoryListLocalization } from "../utils/specialistExercisesLocalization";
 import { SpecialistExerciseMediaSection } from "./SpecialistExerciseMediaSection";
 
 /**
@@ -12,6 +15,7 @@ export function SpecialistExerciseEditForm({
   description,
   instructions,
   categories,
+  localizedCategories,
   fieldErrors,
   isBusy,
   isUploading,
@@ -31,12 +35,18 @@ export function SpecialistExerciseEditForm({
   onCancel,
   onSave,
 }) {
+  const { t } = useLocale();
   const isCreate = mode === "create";
   const saveLabel = isUploading
-    ? "Uploading media..."
+    ? t("specialist.exercises.media.uploading")
     : isBusy
-      ? (isCreate ? "Creating..." : "Saving...")
-      : (isCreate ? "Add Exercise" : "Save Changes");
+      ? (isCreate ? t("specialist.exercises.creating") : t("specialist.exercises.saving"))
+      : (isCreate ? t("specialist.exercises.addExercise") : t("specialist.exercises.saveChanges"));
+
+  const categoryOptions = useMemo(
+    () => localizedCategories ?? applyExerciseCategoryListLocalization(categories, { t }),
+    [localizedCategories, categories, t],
+  );
 
   const handleMediaSelect = (file, validationError) => {
     if (validationError) {
@@ -55,12 +65,12 @@ export function SpecialistExerciseEditForm({
       }}
     >
       <section className="pd-card pd-card-pad pd-specialist-exercise-form-card">
-        <h2 className="pd-specialist-exercise-form-heading">Exercise Information</h2>
+        <h2 className="pd-specialist-exercise-form-heading">{t("specialist.exercises.formHeading")}</h2>
 
         <div className="pd-specialist-exercise-form-row">
           <div className={`pd-specialist-exercise-field${fieldErrors.categoryId ? " has-error" : ""}`}>
             <label className="pd-specialist-exercise-label" htmlFor="exercise-category">
-              Category
+              {t("specialist.exercises.fields.category")}
             </label>
             <select
               id="exercise-category"
@@ -69,10 +79,10 @@ export function SpecialistExerciseEditForm({
               onChange={(event) => onCategoryChange(event.target.value)}
               disabled={isBusy}
             >
-              <option value="">Select category</option>
-              {categories.map((category) => (
+              <option value="">{t("specialist.exercises.fields.selectCategory")}</option>
+              {categoryOptions.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {category.displayName ?? category.name}
                 </option>
               ))}
             </select>
@@ -83,7 +93,7 @@ export function SpecialistExerciseEditForm({
 
           <div className="pd-specialist-exercise-field">
             <label className="pd-specialist-exercise-label" htmlFor="exercise-language">
-              Language
+              {t("specialist.exercises.fields.language")}
             </label>
             <select
               id="exercise-language"
@@ -92,24 +102,25 @@ export function SpecialistExerciseEditForm({
               onChange={(event) => onLanguageChange(event.target.value)}
               disabled={isBusy}
             >
-              <option value="en">English</option>
-              <option value="ar">Arabic</option>
+              <option value="en">{t("common.english")}</option>
+              <option value="ar">{t("common.arabic")}</option>
             </select>
           </div>
         </div>
 
         <div className={`pd-specialist-exercise-field${fieldErrors.title ? " has-error" : ""}`}>
           <label className="pd-specialist-exercise-label" htmlFor="exercise-title">
-            Title
+            {t("specialist.exercises.fields.title")}
           </label>
           <input
             id="exercise-title"
             type="text"
             className="pd-specialist-exercise-control"
-            placeholder="Exercise title"
+            placeholder={t("specialist.exercises.fields.titlePlaceholder")}
             value={title}
             onChange={(event) => onTitleChange(event.target.value)}
             disabled={isBusy}
+            dir="auto"
           />
           {fieldErrors.title ? (
             <p className="pd-specialist-exercise-error">{fieldErrors.title}</p>
@@ -118,7 +129,7 @@ export function SpecialistExerciseEditForm({
 
         <div className="pd-specialist-exercise-field">
           <label className="pd-specialist-exercise-label" htmlFor="exercise-description">
-            Description (optional)
+            {t("specialist.exercises.fields.descriptionOptional")}
           </label>
           <textarea
             id="exercise-description"
@@ -127,21 +138,23 @@ export function SpecialistExerciseEditForm({
             value={description}
             onChange={(event) => onDescriptionChange(event.target.value)}
             disabled={isBusy}
+            dir="auto"
           />
         </div>
 
         <div className="pd-specialist-exercise-field">
           <label className="pd-specialist-exercise-label" htmlFor="exercise-instructions">
-            Instructions
+            {t("specialist.exercises.fields.instructions")}
           </label>
           <textarea
             id="exercise-instructions"
             className="pd-specialist-exercise-control pd-specialist-exercise-textarea"
             rows={6}
-            placeholder="Detailed instructions"
+            placeholder={t("specialist.exercises.fields.instructionsPlaceholder")}
             value={instructions}
             onChange={(event) => onInstructionsChange(event.target.value)}
             disabled={isBusy}
+            dir="auto"
           />
         </div>
 
@@ -168,7 +181,7 @@ export function SpecialistExerciseEditForm({
             onClick={onCancel}
             disabled={isBusy}
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"

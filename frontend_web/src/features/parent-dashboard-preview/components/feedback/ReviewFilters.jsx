@@ -1,6 +1,8 @@
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
 import {
-  FEEDBACK_SORT_OPTIONS,
-  FEEDBACK_STATUS_FILTER_OPTIONS,
+  buildFeedbackSortOptions,
+  buildFeedbackStatusFilterOptions,
 } from "../../utils/parentFeedbackUtils";
 
 export function ReviewFilters({
@@ -14,17 +16,29 @@ export function ReviewFilters({
   onSortChange,
   children = [],
 }) {
+  const { t } = useLocale();
+
+  const statusOptions = useMemo(
+    () => buildFeedbackStatusFilterOptions(t),
+    [t],
+  );
+
+  const sortOptions = useMemo(
+    () => buildFeedbackSortOptions(t),
+    [t],
+  );
+
   return (
     <div className="pd-task-hub-filters">
       <div className="pd-task-hub-filter pd-task-hub-filter-search">
         <label className="pd-form-label" htmlFor="pd-feedback-hub-search">
-          Search
+          {t("parent.common.search")}
         </label>
         <input
           id="pd-feedback-hub-search"
           type="search"
           className="pd-form-input"
-          placeholder="Search by exercise title"
+          placeholder={t("parent.feedback.searchPlaceholder")}
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
         />
@@ -32,7 +46,7 @@ export function ReviewFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-feedback-hub-child">
-          Child
+          {t("parent.common.child")}
         </label>
         <select
           id="pd-feedback-hub-child"
@@ -40,7 +54,7 @@ export function ReviewFilters({
           value={childId}
           onChange={(event) => onChildChange(event.target.value)}
         >
-          <option value="all">All children</option>
+          <option value="all">{t("parent.common.allChildren")}</option>
           {children.map((child) => (
             <option key={child.id} value={child.id}>
               {child.fullName}
@@ -51,7 +65,7 @@ export function ReviewFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-feedback-hub-status">
-          Status
+          {t("parent.common.status")}
         </label>
         <select
           id="pd-feedback-hub-status"
@@ -59,7 +73,7 @@ export function ReviewFilters({
           value={status}
           onChange={(event) => onStatusChange(event.target.value)}
         >
-          {FEEDBACK_STATUS_FILTER_OPTIONS.map((option) => (
+          {statusOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>
@@ -69,7 +83,7 @@ export function ReviewFilters({
 
       <div className="pd-task-hub-filter">
         <label className="pd-form-label" htmlFor="pd-feedback-hub-sort">
-          Sort by
+          {t("parent.common.sortBy")}
         </label>
         <select
           id="pd-feedback-hub-sort"
@@ -77,7 +91,7 @@ export function ReviewFilters({
           value={sortKey}
           onChange={(event) => onSortChange(event.target.value)}
         >
-          {FEEDBACK_SORT_OPTIONS.map((option) => (
+          {sortOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>

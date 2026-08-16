@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   buildSpecialistReviewExercisePath,
   buildSpecialistSessionsPath,
@@ -22,6 +23,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistDashboardPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -50,10 +52,10 @@ export default function SpecialistDashboardPage() {
     handleSidebarNav,
   } = useSpecialistShell(specialistUserId);
 
-  const specialistFirstName = useMemo(
-    () => getSpecialistFirstName(specialist.fullName),
-    [specialist.fullName],
-  );
+  const specialistFirstName = useMemo(() => {
+    const firstName = getSpecialistFirstName(specialist.fullName);
+    return firstName === "Specialist" ? t("roles.specialist") : firstName;
+  }, [specialist.fullName, t]);
 
   const {
     overview,
@@ -128,8 +130,8 @@ export default function SpecialistDashboardPage() {
       >
         <SpecialistGreeting firstName={specialistFirstName} />
 
-        <section className="pd-specialist-overview pd-section-enter" aria-label="Overview">
-          <h2 className="pd-section-title">Overview</h2>
+        <section className="pd-specialist-overview pd-section-enter" aria-label={t("specialist.dashboard.overviewAriaLabel")}>
+          <h2 className="pd-section-title">{t("specialist.dashboard.overviewTitle")}</h2>
 
           {overviewError ? (
             <div className="pd-specialist-overview-error">
@@ -139,7 +141,7 @@ export default function SpecialistDashboardPage() {
                 className="pd-btn pd-btn-soft"
                 onClick={reloadOverview}
               >
-                Retry
+                {t("common.retry")}
               </button>
             </div>
           ) : (

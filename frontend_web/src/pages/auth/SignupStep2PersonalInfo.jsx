@@ -6,11 +6,17 @@ import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { ProfilePhotoUpload } from "../../components/auth/ProfilePhotoUpload";
 import { Toast } from "../../components/auth/Toast";
 import {
+  getAuthBackLabel,
+  getAuthContinueLabel,
+  getAuthInvalidEmailMessage,
+} from "../../components/auth/authLocalization";
+import {
   getDisplayProfileImage,
   getStepAfterPersonalInfo,
   revokeWizardProfileImagePreview,
 } from "./signupWizardHelpers";
 import { readAuthApiMessage } from "../../components/auth/authHelpers";
+import { useLocale } from "../../context/useLocale.js";
 import { useSignupWizard } from "../../context/SignupWizardContext";
 import api from "../../services/api";
 
@@ -18,6 +24,7 @@ const DUPLICATE_EMAIL_TOAST_DURATION = 7000;
 
 export function SignupStep2PersonalInfo({ onBack }) {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const {
     wizardData,
     updateWizardData,
@@ -36,6 +43,10 @@ export function SignupStep2PersonalInfo({ onBack }) {
   const [toastDuration, setToastDuration] = useState(3000);
   const [nameTouched, setNameTouched] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
+
+  const invalidEmailMessage = getAuthInvalidEmailMessage(t);
+  const fullNameRequiredMessage = t("auth.signup.fullNameRequired");
+  const phoneRequiredMessage = t("auth.signup.phoneRequired");
 
   const displayProfileImage = getDisplayProfileImage(wizardData);
   const serverEmailError = serverErrors.email ?? "";
@@ -113,18 +124,18 @@ export function SignupStep2PersonalInfo({ onBack }) {
 
   const emailMessage = serverEmailError ? (
     <>
-      This email is already registered. Use a different email or{" "}
+      {t("auth.signup.duplicateEmailInlinePrompt")}{" "}
       <button
         type="button"
         onClick={handleSignIn}
         className="auth-footer-link font-semibold underline-offset-2 hover:underline"
       >
-        sign in
+        {t("auth.signup.duplicateEmailSignInLink")}
       </button>
       .
     </>
   ) : emailState === "error" ? (
-    "Invalid email address"
+    invalidEmailMessage
   ) : (
     ""
   );
@@ -137,12 +148,12 @@ export function SignupStep2PersonalInfo({ onBack }) {
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
     if (!allowedTypes.includes(file.type)) {
-      showToast("Please select a JPG, PNG, or WEBP image", "error");
+      showToast(t("auth.signup.invalidImageType"), "error");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      showToast("Image must be smaller than 5MB", "error");
+      showToast(t("auth.signup.imageTooLarge"), "error");
       return;
     }
 
@@ -184,7 +195,7 @@ export function SignupStep2PersonalInfo({ onBack }) {
         profileImagePreview: previousPreview,
         profile_image_url: previousImageUrl,
       });
-      showToast(readAuthApiMessage(error, "Image upload failed"), "error");
+      showToast(readAuthApiMessage(error, t("auth.signup.imageUploadFailed")), "error");
     } finally {
       setUploadingPhoto(false);
     }
@@ -195,12 +206,12 @@ export function SignupStep2PersonalInfo({ onBack }) {
     setPhoneTouched(true);
 
     if (!nameValid) {
-      showToast("Please enter your full name", "error");
+      showToast(fullNameRequiredMessage, "error");
       return;
     }
 
     if (!emailValid) {
-      showToast("Invalid email address", "error");
+      showToast(invalidEmailMessage, "error");
       return;
     }
 
@@ -210,7 +221,7 @@ export function SignupStep2PersonalInfo({ onBack }) {
     }
 
     if (!phoneValid) {
-      showToast("Please enter your phone number", "error");
+      showToast(phoneRequiredMessage, "error");
       return;
     }
 
@@ -242,21 +253,21 @@ export function SignupStep2PersonalInfo({ onBack }) {
           />
 
           <AuthInput
-            label="Full Name"
+            label={t("auth.signup.fullNameLabel")}
             icon={<User size={16} />}
-            placeholder="Dr. Sarah Johnson"
+            placeholder={t("auth.signup.fullNamePlaceholder")}
             value={wizardData.full_name}
             onChange={(value) => updateWizardData({ full_name: value })}
             state={nameState}
-            message={nameState === "error" ? "Please enter your full name" : ""}
+            message={nameState === "error" ? fullNameRequiredMessage : ""}
             onBlur={() => setNameTouched(true)}
           />
 
           <AuthInput
-            label="Email Address"
+            label={t("auth.signup.emailLabel")}
             icon={<Mail size={16} />}
             type="email"
-            placeholder="name@example.com"
+            placeholder={t("auth.signIn.emailPlaceholder")}
             value={wizardData.email}
             onChange={handleEmailChange}
             state={emailState}
@@ -265,24 +276,24 @@ export function SignupStep2PersonalInfo({ onBack }) {
           />
 
           <AuthInput
-            label="Phone Number"
+            label={t("auth.signup.phoneLabel")}
             icon={<Phone size={16} />}
-            placeholder="+970 59 000 0000"
+            placeholder={t("auth.signup.phonePlaceholder")}
             value={wizardData.phone}
             onChange={(value) => updateWizardData({ phone: value })}
             state={phoneState}
-            message={phoneState === "error" ? "Please enter your phone number" : ""}
+            message={phoneState === "error" ? phoneRequiredMessage : ""}
             onBlur={() => setPhoneTouched(true)}
           />
         </div>
 
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={onBack} className="auth-secondary-btn flex-1">
-            Back
+            {getAuthBackLabel(t)}
           </button>
           <div className="flex-1">
             <PrimaryButton disabled={!canContinue} onClick={handleContinue}>
-              <span>Continue</span>
+              <span>{getAuthContinueLabel(t)}</span>
               <ChevronRight size={16} className="auth-btn-arrow" />
             </PrimaryButton>
           </div>

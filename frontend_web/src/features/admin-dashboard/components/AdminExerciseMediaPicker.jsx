@@ -1,4 +1,4 @@
-import { useId, useRef } from "react";
+import { useId, useMemo, useRef } from "react";
 import {
   FileText,
   Film,
@@ -7,15 +7,16 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
 import {
   EXERCISE_MEDIA_ACCEPT,
-  EXERCISE_MEDIA_MAX_BYTES,
   formatExerciseMediaFileSize,
   getExerciseMediaFileKind,
   guessInstructionMediaKind,
   resolveExerciseMediaFilename,
 } from "../utils/adminExerciseMediaUtils";
+import { getAdminExercisesLabels } from "../utils/adminExercisesLocalization.js";
 
 function MediaTypeIcon({ kind, size = 18 }) {
   if (kind === "image") {
@@ -50,20 +51,20 @@ function ExistingMediaPreview({ mediaUrl }) {
 
       {kind === "video" ? (
         <video className="pd-admin-exercise-media-current-video" controls preload="metadata" src={resolvedUrl}>
-          Your browser does not support video playback.
+          <track kind="captions" />
         </video>
       ) : null}
 
       {kind === "audio" ? (
         <audio className="pd-admin-exercise-media-current-audio" controls preload="metadata" src={resolvedUrl}>
-          Your browser does not support audio playback.
+          <track kind="captions" />
         </audio>
       ) : null}
 
       {(kind === "pdf" || kind === "unknown") ? (
         <div className="pd-admin-exercise-media-current-file">
           <MediaTypeIcon kind={kind} />
-          <span>{filename}</span>
+          <span dir="auto">{filename}</span>
         </div>
       ) : null}
     </div>
@@ -82,11 +83,15 @@ export function AdminExerciseMediaPicker({
   onRemoveNewMedia,
   onRemoveExistingMedia,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminExercisesLabels(t), [t]);
   const inputId = useId();
   const inputRef = useRef(null);
 
   const hasNewFile = Boolean(newMediaFile);
-  const addLabel = isEdit && (showExistingMedia || hasNewFile) ? "Replace media" : "Add media";
+  const addLabel = isEdit && (showExistingMedia || hasNewFile)
+    ? t("specialist.exercises.media.replaceMedia")
+    : t("specialist.exercises.media.addMedia");
   const newFileKind = newMediaFile ? getExerciseMediaFileKind(newMediaFile) : "unknown";
 
   const handleInputChange = (event) => {
@@ -104,13 +109,13 @@ export function AdminExerciseMediaPicker({
   };
 
   return (
-    <section className="pd-admin-exercise-form-media" aria-label="Instructional media">
+    <section className="pd-admin-exercise-form-media" aria-label={labels.form.mediaSection}>
       <div className="pd-admin-exercise-form-media-header">
         <label className="pd-admin-exercise-form-label" htmlFor={inputId}>
-          Instructional media (optional)
+          {t("specialist.exercises.media.sectionTitle")}
         </label>
         <p className="pd-admin-exercise-form-help">
-          Supported: images, audio, PDF, MP4/MOV video. Maximum file size: 50 MB.
+          {labels.form.mediaHelp}
         </p>
       </div>
 
@@ -127,13 +132,13 @@ export function AdminExerciseMediaPicker({
       {showExistingMedia ? (
         <div className="pd-admin-exercise-media-current">
           <div className="pd-admin-exercise-media-current-copy">
-            <strong>Current media attached</strong>
-            <span>{resolveExerciseMediaFilename(currentMediaUrl)}</span>
+            <strong>{t("specialist.exercises.media.currentMediaAttached")}</strong>
+            <span dir="auto">{resolveExerciseMediaFilename(currentMediaUrl)}</span>
           </div>
           <ExistingMediaPreview mediaUrl={currentMediaUrl} />
           <div className="pd-admin-exercise-media-current-actions">
             <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={openFilePicker} disabled={isBusy}>
-              Replace media
+              {t("specialist.exercises.media.replaceMedia")}
             </button>
             <button
               type="button"
@@ -142,7 +147,7 @@ export function AdminExerciseMediaPicker({
               disabled={isBusy}
             >
               <Trash2 size={14} aria-hidden="true" />
-              Remove
+              {t("specialist.exercises.media.remove")}
             </button>
           </div>
         </div>
@@ -155,7 +160,7 @@ export function AdminExerciseMediaPicker({
               <MediaTypeIcon kind={newFileKind} />
             </span>
             <div className="pd-admin-exercise-media-selected-copy">
-              <strong>{newMediaFile.name}</strong>
+              <strong dir="auto">{newMediaFile.name}</strong>
               <span>{formatExerciseMediaFileSize(newMediaFile.size)}</span>
             </div>
           </div>
@@ -170,7 +175,7 @@ export function AdminExerciseMediaPicker({
 
           <div className="pd-admin-exercise-media-selected-actions">
             <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={openFilePicker} disabled={isBusy}>
-              Replace
+              {t("specialist.exercises.media.replaceMedia")}
             </button>
             <button
               type="button"
@@ -179,7 +184,7 @@ export function AdminExerciseMediaPicker({
               disabled={isBusy}
             >
               <Trash2 size={14} aria-hidden="true" />
-              Remove
+              {t("specialist.exercises.media.remove")}
             </button>
           </div>
         </div>
@@ -188,7 +193,7 @@ export function AdminExerciseMediaPicker({
       {!showExistingMedia && !hasNewFile ? (
         <div className="pd-admin-exercise-media-dropzone">
           <Upload size={20} aria-hidden="true" />
-          <p>No media selected.</p>
+          <p>{t("specialist.exercises.media.noMediaSelected")}</p>
           <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={openFilePicker} disabled={isBusy}>
             {addLabel}
           </button>
@@ -198,12 +203,6 @@ export function AdminExerciseMediaPicker({
       {mediaError ? (
         <p className="pd-admin-exercise-form-error" role="alert">{mediaError}</p>
       ) : null}
-
-      <p className="pd-admin-exercise-form-help pd-admin-exercise-form-help-muted">
-        Max upload size:
-        {" "}
-        {formatExerciseMediaFileSize(EXERCISE_MEDIA_MAX_BYTES)}
-      </p>
     </section>
   );
 }

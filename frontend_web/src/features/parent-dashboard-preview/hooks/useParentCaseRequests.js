@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   createCaseRequest,
   getCaseCategories,
@@ -19,6 +20,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useParentCaseRequests() {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,7 +46,7 @@ export function useParentCaseRequests() {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setRequests(mapCaseRequests(rows));
+        setRequests(mapCaseRequests(rows, mapperOptions));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setError(resolveErrorMessage(loadError, "Failed to load case requests."));
@@ -61,12 +64,14 @@ export function useParentCaseRequests() {
     return () => {
       cancelled = true;
     };
-  }, [refreshToken]);
+  }, [refreshToken, mapperOptions]);
 
   return { requests, isLoading, error, refetch };
 }
 
 export function useParentCaseRequestDetail(requestId) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [request, setRequest] = useState(null);
   const [isLoading, setIsLoading] = useState(Boolean(requestId));
   const [error, setError] = useState(null);
@@ -95,7 +100,7 @@ export function useParentCaseRequestDetail(requestId) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setRequest(mapCaseRequest(row));
+        setRequest(mapCaseRequest(row, mapperOptions));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setError(resolveErrorMessage(loadError, "Failed to load case request."));
@@ -113,12 +118,14 @@ export function useParentCaseRequestDetail(requestId) {
     return () => {
       cancelled = true;
     };
-  }, [requestId, refreshToken]);
+  }, [requestId, refreshToken, mapperOptions]);
 
   return { request, isLoading, error, refetch };
 }
 
 export function useParentCaseCategories() {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -135,7 +142,7 @@ export function useParentCaseCategories() {
         if (cancelled) {
           return;
         }
-        setCategories(rows.map(mapCaseCategory).filter((item) => item.id && item.isActive));
+        setCategories(rows.map((row) => mapCaseCategory(row, mapperOptions)).filter((item) => item.id && item.isActive));
       } catch (loadError) {
         if (!cancelled) {
           setError(resolveErrorMessage(loadError, "Failed to load case categories."));
@@ -152,7 +159,7 @@ export function useParentCaseCategories() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [mapperOptions]);
 
   return { categories, isLoading, error };
 }

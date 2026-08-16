@@ -1,17 +1,22 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, LogOut } from "lucide-react";
+import { LanguageSelector } from "../../../components/localization/LanguageSelector.jsx";
 import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
+import { useLocale } from "../../../context/useLocale.js";
+import { getRoleDisplayLabel } from "../utils/profileDisplayUtils.js";
 import { UserProfileAvatar } from "./UserProfileAvatar";
 
 export function ProfileMenu({ user, onViewProfile, onSignOut }) {
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
   const menuId = useId();
+  const roleLabel = getRoleDisplayLabel(user?.role, t);
 
   useEffect(() => {
     if (!open) return undefined;
 
-    const onPointerDown = (event) => {
+    const onOutsideClick = (event) => {
       if (!rootRef.current?.contains(event.target)) {
         setOpen(false);
       }
@@ -20,10 +25,10 @@ export function ProfileMenu({ user, onViewProfile, onSignOut }) {
       if (event.key === "Escape") setOpen(false);
     };
 
-    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("click", onOutsideClick);
     document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("click", onOutsideClick);
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
@@ -41,14 +46,14 @@ export function ProfileMenu({ user, onViewProfile, onSignOut }) {
         <UserProfileAvatar
           imageUrl={user.profileImageUrl}
           initials={user.initials}
-          alt={`${user.fullName} profile photo`}
+          alt={t("profile.photoAlt", { name: user.fullName })}
           shellClassName="pd-avatar"
           fallbackClassName="pd-avatar"
           className="pd-avatar-photo"
         />
         <span className="pd-profile-copy">
-          <strong>{user.fullName}</strong>
-          <small>{user.role}</small>
+          <strong dir="auto">{user.fullName}</strong>
+          <small dir="auto">{roleLabel}</small>
         </span>
         <ChevronDown size={16} aria-hidden="true" />
       </button>
@@ -65,8 +70,14 @@ export function ProfileMenu({ user, onViewProfile, onSignOut }) {
             }}
           >
             <PlatformMaterialIcon icon="profile" size={16} />
-            View profile
+            {t("profile.viewProfile")}
           </button>
+
+          <LanguageSelector
+            variant="profileMenu"
+            onSelected={() => setOpen(false)}
+          />
+
           <button
             type="button"
             className="pd-dropdown-item"
@@ -77,7 +88,7 @@ export function ProfileMenu({ user, onViewProfile, onSignOut }) {
             }}
           >
             <LogOut size={16} aria-hidden="true" />
-            Sign out
+            {t("profile.signOut")}
           </button>
         </div>
       ) : null}

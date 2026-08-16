@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { loadSpecialistDashboardOverview } from "../../../services/specialistDashboardService";
 import { subscribeSpecialistReviewRefresh } from "../utils/specialistReviewRefresh";
 import { subscribeSpecialistSessionRefresh } from "../utils/specialistSessionRefresh";
@@ -8,9 +9,8 @@ function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
-const SIGNED_OUT_ERROR = "Please sign in to view the specialist dashboard.";
-
 export function useSpecialistDashboardOverview(specialistUserId) {
+  const { t } = useLocale();
   const [overview, setOverview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -52,7 +52,7 @@ export function useSpecialistDashboardOverview(specialistUserId) {
         }
 
         setOverview(null);
-        setError(resolveErrorMessage(loadError, "Failed to load dashboard overview."));
+        setError(resolveErrorMessage(loadError, t("specialist.dashboard.errors.overviewLoadFailed")));
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
           setIsLoading(false);
@@ -65,13 +65,13 @@ export function useSpecialistDashboardOverview(specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [specialistUserId, refreshToken]);
+  }, [specialistUserId, refreshToken, t]);
 
   if (!specialistUserId) {
     return {
       overview: null,
       isLoading: false,
-      error: SIGNED_OUT_ERROR,
+      error: t("specialist.dashboard.errors.signInRequired"),
       reload,
     };
   }

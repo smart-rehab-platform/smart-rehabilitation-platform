@@ -1,0 +1,4094 @@
+{
+  "common": {
+    "language": "اللغة",
+    "english": "English",
+    "arabic": "العربية",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "search": "بحث",
+    "loading": "جارٍ التحميل",
+    "retry": "إعادة المحاولة",
+    "close": "إغلاق",
+    "remove": "إزالة",
+    "unknown": "غير معروف",
+    "dateUnavailable": "التاريخ غير متاح",
+    "unread": "غير مقروء",
+    "navigation": "التنقل",
+    "today": "اليوم",
+    "yesterday": "أمس"
+  },
+  "nav": {
+    "messages": "الرسائل",
+    "notifications": "الإشعارات",
+    "profile": "الملف الشخصي"
+  },
+  "profile": {
+    "viewProfile": "عرض الملف الشخصي",
+    "signOut": "تسجيل الخروج",
+    "photoAlt": "صورة ملف {name} الشخصي"
+  },
+  "roles": {
+    "parent": "ولي الأمر",
+    "specialist": "الأخصائي",
+    "admin": "المسؤول",
+    "user": "المستخدم"
+  },
+  "auth": {
+    "shared": {
+      "signIn": "تسجيل الدخول",
+      "createAccount": "إنشاء حساب",
+      "continue": "متابعة",
+      "back": "رجوع",
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور",
+      "showConfirmPassword": "إظهار تأكيد كلمة المرور",
+      "hideConfirmPassword": "إخفاء تأكيد كلمة المرور",
+      "emptyDisplay": "—",
+      "copyright": "© 2026 منصة إعادة التأهيل الذكية"
+    },
+    "hero": {
+      "brandAriaLabel": "Smart Rehabilitation",
+      "leadLine1": "نُمكّن كل",
+      "leadHighlight": "رحلة إعادة التأهيل",
+      "leadLine2": "",
+      "description": "علاج ذكي، تقدم مخصص، وتعاون سلس بين الأخصائيين والعائلات.",
+      "backToHome": "العودة إلى الرئيسية",
+      "aiBadge": "Smart Rehabilitation AI"
+    },
+    "signIn": {
+      "title": "مرحباً بعودتك",
+      "subtitle": "سجّل الدخول للمتابعة",
+      "emailLabel": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "goToEmailVerification": "الانتقال إلى التحقق من البريد",
+      "signingIn": "جارٍ تسجيل الدخول…",
+      "noAccountPrompt": "ليس لديك حساب؟",
+      "sessionExpired": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
+      "success": "تم تسجيل الدخول بنجاح! جارٍ التحويل…",
+      "unableToDetermineRole": "تعذر تحديد دور حسابك. يرجى التواصل مع الدعم.",
+      "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+    },
+    "signup": {
+      "createYourAccount": "إنشاء حسابك",
+      "stepProgress": "الخطوة {current} من {total}",
+      "stepSubtitleRole": "اختر كيف ستستخدم إعادة التأهيل الذكية.",
+      "stepSubtitlePersonal": "أخبرنا قليلاً عن نفسك.",
+      "stepSubtitleProfessional": "أخبرنا عن خلفيتك المهنية.",
+      "stepSubtitleSecurity": "أمّن حسابك بكلمة مرور قوية.",
+      "stepSubtitleReview": "راجع تفاصيلك قبل إنشاء حسابك.",
+      "alreadyHaveAccount": "لديك حساب بالفعل؟",
+      "selectRoleRequired": "يرجى اختيار دورك",
+      "profilePhoto": "صورة الملف الشخصي",
+      "uploadProfilePhotoAria": "رفع صورة الملف الشخصي",
+      "clickToUpload": "اضغط للرفع",
+      "changePhoto": "تغيير الصورة",
+      "uploading": "جارٍ الرفع...",
+      "fullNameLabel": "الاسم الكامل",
+      "fullNamePlaceholder": "د. سارة جونسون",
+      "fullNameRequired": "يرجى إدخال اسمك الكامل",
+      "emailLabel": "عنوان البريد الإلكتروني",
+      "phoneLabel": "رقم الهاتف",
+      "phonePlaceholder": "+970 59 000 0000",
+      "phoneRequired": "يرجى إدخال رقم هاتفك",
+      "duplicateEmailToast": "هذا البريد الإلكتروني مسجل بالفعل.",
+      "duplicateEmailInline": "هذا البريد الإلكتروني مسجل بالفعل. يرجى استخدام بريد مختلف أو تسجيل الدخول.",
+      "duplicateEmailInlinePrompt": "هذا البريد الإلكتروني مسجل بالفعل. استخدم بريداً مختلفاً أو",
+      "duplicateEmailSignInLink": "سجّل الدخول",
+      "invalidImageType": "يرجى اختيار صورة JPG أو PNG أو WEBP",
+      "imageTooLarge": "يجب أن تكون الصورة أصغر من 5 ميجابايت",
+      "imageUploadFailed": "فشل رفع الصورة",
+      "specializationLabel": "التخصص",
+      "specializationPlaceholder": "علاج النطق",
+      "licenseNumberLabel": "رقم الترخيص",
+      "yearsOfExperienceLabel": "سنوات الخبرة",
+      "bioLabel": "نبذة",
+      "bioPlaceholder": "نبذة مهنية مختصرة",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "8 أحرف على الأقل",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
+      "confirmPasswordRequired": "تأكيد كلمة المرور مطلوب.",
+      "passwordRequired": "كلمة المرور مطلوبة.",
+      "termsAgreementPrefix": "أوافق على",
+      "termsOfService": "شروط الخدمة",
+      "termsAnd": "و",
+      "privacyPolicy": "سياسة الخصوصية",
+      "termsAcceptAria": "الموافقة على شروط الخدمة وسياسة الخصوصية",
+      "accountType": "نوع الحساب",
+      "personalDetails": "التفاصيل الشخصية",
+      "professionalDetails": "التفاصيل المهنية",
+      "securitySection": "الأمان",
+      "experienceLabel": "الخبرة",
+      "experienceOneYear": "سنة واحدة",
+      "experienceYears": "{count} سنوات",
+      "passwordCreatedSecurely": "تم إنشاء كلمة المرور بأمان",
+      "reviewConfirmAccuracy": "بإنشاء هذا الحساب، تؤكد أن المعلومات أعلاه دقيقة.",
+      "edit": "تعديل",
+      "editAccountTypeAria": "تعديل نوع الحساب",
+      "editPersonalDetailsAria": "تعديل التفاصيل الشخصية",
+      "editProfessionalDetailsAria": "تعديل التفاصيل المهنية",
+      "editSecurityAria": "تعديل أمان الحساب",
+      "reviewRegionAria": "مراجعة الحساب",
+      "creatingAccount": "جارٍ إنشاء الحساب...",
+      "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+      "verificationEmailFailed": "فشل إرسال رسالة التحقق.",
+      "checkEmailTitle": "تحقق من بريدك الإلكتروني",
+      "checkEmailSentTo": "أرسلنا رابط تحقق إلى:",
+      "checkEmailVerifyBeforeSignIn": "يرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول.",
+      "goToSignIn": "الانتقال لتسجيل الدخول",
+      "resendVerificationEmail": "إعادة إرسال رسالة التحقق",
+      "resending": "جارٍ الإرسال..."
+    },
+    "roles": {
+      "parent": "ولي الأمر",
+      "parentDescription": "تابع تقدم طفلك، تواصل مع الأخصائيين، وأكمل تمارين المنزل.",
+      "specialist": "الأخصائي",
+      "specialistDescription": "أدر المرضى، أنشئ خطط العلاج، راجع التقدم، وقدّم الإرشاد المهني."
+    },
+    "forgotPassword": {
+      "title": "نسيت كلمة المرور",
+      "subtitle": "أدخل عنوان بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين آمن لكلمة المرور.",
+      "enterEmail": "يرجى إدخال عنوان بريدك الإلكتروني",
+      "sending": "جارٍ إرسال رابط إعادة التعيين...",
+      "sendLink": "إرسال رابط إعادة التعيين",
+      "successTitle": "تم إرسال رسالة إعادة التعيين",
+      "successMessage": "إذا كان هناك حساب بهذا البريد الإلكتروني، فقد أُرسل رابط إعادة تعيين كلمة المرور.",
+      "failedSend": "فشل إرسال رابط إعادة التعيين",
+      "backToSignIn": "العودة لتسجيل الدخول",
+      "rememberedPassword": "تذكرت كلمة المرور؟"
+    },
+    "resetPassword": {
+      "title": "إعادة تعيين كلمة المرور",
+      "subtitle": "أدخل كلمة المرور الجديدة أدناه.",
+      "newPasswordLabel": "كلمة المرور الجديدة",
+      "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+      "confirmPasswordLabel": "تأكيد كلمة المرور الجديدة",
+      "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور الجديدة",
+      "resetting": "جارٍ إعادة التعيين...",
+      "completeTitle": "اكتملت إعادة تعيين كلمة المرور",
+      "completeMessage": "تم تغيير كلمة المرور بنجاح.",
+      "failed": "فشل إعادة تعيين كلمة المرور",
+      "backToSignIn": "العودة لتسجيل الدخول",
+      "backToPrefix": "العودة إلى",
+      "linkExpiredTitle": "انتهت صلاحية رابط إعادة التعيين",
+      "linkExpiredMessage": "رابط إعادة تعيين كلمة المرور هذا لم يعد صالحاً. يرجى طلب رسالة إعادة تعيين جديدة.",
+      "requestNewLink": "طلب رابط جديد"
+    },
+    "verifyEmail": {
+      "checkTitle": "تحقق من بريدك الإلكتروني",
+      "checkMessage": "أرسلنا رابط تحقق إلى عنوان بريدك الإلكتروني. افتح الرابط على هذا الجهاز لتفعيل حسابك.",
+      "verifyingTitle": "جارٍ التحقق من البريد",
+      "verifyingMessage": "يرجى الانتظار بينما نؤكد عنوان بريدك الإلكتروني.",
+      "successTitle": "تم التحقق من البريد",
+      "successMessage": "تم التحقق من بريدك الإلكتروني بنجاح.",
+      "successDefault": "تم التحقق من البريد الإلكتروني بنجاح.",
+      "goToLogin": "الانتقال لتسجيل الدخول",
+      "goToDashboard": "الانتقال إلى لوحة التحكم",
+      "failedTitle": "فشل التحقق",
+      "failedMessage": "تعذر التحقق من بريدك الإلكتروني بهذا الرابط. يرجى طلب رسالة تحقق جديدة إذا لزم الأمر.",
+      "resending": "جارٍ الإرسال...",
+      "resend": "إعادة إرسال رسالة التحقق",
+      "showManual": "لديك رابط تحقق بالفعل؟",
+      "hideManual": "إخفاء التحقق اليدوي",
+      "tokenLabel": "رابط أو رمز التحقق",
+      "tokenPlaceholder": "الصق الرابط أو الرمز من بريدك الإلكتروني",
+      "verifyButton": "التحقق من البريد",
+      "verifyingButton": "جارٍ التحقق...",
+      "enterToken": "أدخل رمز التحقق أو الصق رابط التحقق الكامل.",
+      "emailMissing": "عنوان البريد الإلكتروني مفقود. يرجى التسجيل مجدداً أو التواصل مع الدعم.",
+      "resendFailed": "تعذر إعادة إرسال رسالة التحقق الآن.",
+      "verifyFailed": "تعذر التحقق من بريدك الإلكتروني الآن.",
+      "backToSignIn": "العودة لتسجيل الدخول"
+    },
+    "validation": {
+      "invalidEmail": "عنوان بريد إلكتروني غير صالح",
+      "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين.",
+      "passwordRequirements": "يجب أن تكون كلمة المرور 8 أحرف على الأقل وتتضمن حرفاً كبيراً وحرفاً صغيراً ورقماً ورمزاً خاصاً.",
+      "specializationRequired": "التخصص مطلوب.",
+      "specializationMax": "يجب ألا يتجاوز التخصص 150 حرفاً.",
+      "licenseRequired": "رقم الرخصة مطلوب.",
+      "licenseMax": "يجب ألا يتجاوز رقم الرخصة 100 حرف.",
+      "experienceRequired": "سنوات الخبرة مطلوبة.",
+      "experienceMin": "يجب أن تكون سنوات الخبرة 0 على الأقل.",
+      "bioMax": "يجب ألا تتجاوز النبذة 500 حرف.",
+      "selectAccountType": "يرجى اختيار نوع الحساب.",
+      "fullNameRequired": "يرجى إدخال اسمك الكامل.",
+      "phoneRequired": "يرجى إدخال رقم هاتفك.",
+      "validPasswordRequired": "يرجى إنشاء كلمة مرور صالحة.",
+      "termsRequired": "يجب الموافقة على شروط الخدمة وسياسة الخصوصية.",
+      "completePersonalFields": "يرجى إكمال جميع الحقول الشخصية المطلوبة"
+    },
+    "password": {
+      "strengthTitle": "قوة كلمة المرور",
+      "strengthWeak": "ضعيفة",
+      "strengthMedium": "متوسطة",
+      "strengthStrong": "قوية",
+      "ruleMinLength": "8 أحرف على الأقل",
+      "ruleUppercase": "تحتوي على حرف كبير",
+      "ruleLowercase": "تحتوي على حرف صغير",
+      "ruleNumber": "تحتوي على رقم",
+      "ruleSpecialCharacter": "تحتوي على رمز خاص"
+    }
+  },
+  "header": {
+    "openNavigationMenu": "فتح قائمة التنقل",
+    "closeNavigationMenu": "إغلاق قائمة التنقل",
+    "searchPlaceholder": "بحث...",
+    "searchAriaLabel": "بحث في لوحة التحكم",
+    "messagesAriaLabel": "الرسائل",
+    "messagesUnreadAriaLabel": "الرسائل، {count} غير مقروء",
+    "notificationsAriaLabel": "الإشعارات",
+    "notificationsUnreadAriaLabel": "الإشعارات، {count} غير مقروء"
+  },
+  "sidebar": {
+    "expand": "توسيع الشريط الجانبي",
+    "collapse": "طي الشريط الجانبي",
+    "signOutAriaLabel": "تسجيل الخروج",
+    "unreadBadgeAriaLabel": "{count} غير مقروء"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "recentAriaLabel": "الإشعارات الأخيرة",
+    "loading": "جارٍ تحميل الإشعارات...",
+    "empty": "لا توجد إشعارات بعد.",
+    "viewAll": "عرض جميع الإشعارات"
+  },
+  "supportRequests": {
+    "status": {
+      "pending": "قيد الانتظار",
+      "inProgress": "قيد المعالجة",
+      "resolved": "محلول",
+      "unknown": "غير معروف"
+    },
+    "category": {
+      "technicalIssue": "مشكلة تقنية",
+      "patientCaseIssue": "مشكلة مريض / حالة",
+      "sessionSchedulingIssue": "مشكلة جلسة / جدولة",
+      "accountProfileIssue": "مشكلة حساب / ملف شخصي",
+      "exerciseContentIssue": "مشكلة تمرين / محتوى",
+      "other": "أخرى"
+    },
+    "filters": {
+      "allStatuses": "جميع الحالات",
+      "allCategories": "جميع الفئات",
+      "allSpecialists": "جميع الأخصائيين"
+    },
+    "conversation": "المحادثة",
+    "conversationEmpty": "لا توجد رسائل بعد.",
+    "reply": "رد",
+    "message": "الرسالة",
+    "messagePlaceholder": "اكتب رسالتك...",
+    "sendReply": "إرسال الرد",
+    "sending": "جارٍ الإرسال...",
+    "attachmentOptional": "مرفق (اختياري)",
+    "attachmentHelp": "الصيغ المدعومة: JPEG وPNG وWebP وPDF. الحد الأقصى 10 ميجابايت.",
+    "addAttachment": "إضافة مرفق",
+    "viewAttachment": "عرض المرفق",
+    "resolvedTitle": "تم حل هذا الطلب",
+    "resolved": "محلول",
+    "resolvedReadOnly": "المحادثة أصبحت للقراءة فقط.",
+    "created": "تاريخ الإنشاء",
+    "lastActivity": "آخر نشاط",
+    "resolvedDate": "تاريخ الحل",
+    "specialist": "الأخصائي",
+    "email": "البريد الإلكتروني",
+    "defaultSubject": "طلب الدعم",
+    "errors": {
+      "attachmentInvalidType": "نوع المرفق غير مدعوم. المسموح: JPEG وPNG وWebP وPDF.",
+      "attachmentTooLarge": "حجم المرفق كبير جداً. الحد الأقصى المسموح 10 ميغابايت.",
+      "attachmentUrlMissing": "لم يُرجع رفع المرفق رابط ملف."
+    }
+  },
+  "parent": {
+    "nav": {
+      "home": "الرئيسية",
+      "myChildren": "أطفالي",
+      "caseRequests": "طلبات الحالة",
+      "exercises": "التمارين",
+      "progress": "التقدم",
+      "sessions": "الجلسات",
+      "reports": "التقارير",
+      "feedback": "الملاحظات",
+      "reportSpecialist": "الإبلاغ عن أخصائي",
+      "myComplaints": "شكاواي",
+      "messages": "الرسائل",
+      "aiAssistant": "المساعد الذكي",
+      "notifications": "الإشعارات",
+      "profile": "الملف الشخصي"
+    },
+    "brand": {
+      "title": "Smart Rehabilitation",
+      "subtitle": "حيث لا يتوقف التعافي",
+      "navigationAriaLabel": "تنقل ولي الأمر"
+    },
+    "header": {
+      "searchPlaceholder": "بحث في لوحة التحكم",
+      "searchAriaLabel": "بحث في لوحة التحكم"
+    },
+    "routes": {
+      "unavailable": {
+        "aiAssistant": "المساعد الذكي غير متاح على الويب بعد.",
+        "dailyTasks": "المهام اليومية غير متاحة على الويب بعد.",
+        "exerciseDetails": "تفاصيل التمرين غير متاحة على الويب بعد.",
+        "sessions": "الجلسات غير متاحة على الوеб بعد.",
+        "sessionDetails": "تفاصيل الجلسة غير متاحة على الويب بعد.",
+        "feedback": "تفاصيل الملاحظات غير متاحة على الويب بعد.",
+        "profile": "الملف الشخصي غير متاح على الويب بعد.",
+        "summary": "هذا القسم غير متاح على الويب بعد.",
+        "generic": "هذه الميزة غير متاحة على الويب بعد."
+      }
+    },
+    "toast": {
+      "signOutFailed": "تعذر تسجيل الخروج. يرجى المحاولة مرة أخرى.",
+      "selectChildForAi": "اختر طفلاً لاستخدام المساعد الذكي.",
+      "selectChildForExercise": "اختر طفلاً لبدء تمرين.",
+      "noActionableExercises": "لا توجد تمارين قابلة للتنفيذ اليوم.",
+      "exerciseUnavailable": "هذا التمرين غير متاح حالياً.",
+      "exerciseAlreadySubmitted": "تم إرسال هذا التمرين أو مراجعته بالفعل.",
+      "selectChildForDetails": "اختر طفلاً لعرض التفاصيل."
+    },
+    "common": {
+      "all": "الكل",
+      "allStatuses": "جميع الحالات",
+      "loading": "جارٍ التحميل...",
+      "retry": "إعادة المحاولة",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "submit": "إرسال",
+      "edit": "تعديل",
+      "view": "عرض",
+      "viewAll": "عرض الكل",
+      "back": "رجوع",
+      "next": "التالي",
+      "previous": "السابق",
+      "noData": "لا توجد بيانات",
+      "somethingWrong": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+      "child": "الطفل",
+      "specialist": "الأخصائي",
+      "category": "الفئة",
+      "status": "الحالة",
+      "description": "الوصف",
+      "attachment": "مرفق",
+      "date": "التاريخ",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "address": "العنوان",
+      "notes": "ملاحظات",
+      "optional": "اختياري",
+      "required": "مطلوب",
+      "filters": {
+        "all": "الكل",
+        "allStatuses": "جميع الحالات",
+        "allTypes": "جميع الأنواع",
+        "read": "مقروء",
+        "unread": "غير مقروء"
+      },
+      "clearFilters": "مسح عوامل التصفية",
+      "search": "بحث",
+      "actions": "إجراءات",
+      "details": "التفاصيل",
+      "notAvailable": "غير متاح",
+      "unknown": "غير معروف",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "backToReports": "العودة إلى التقارير",
+      "backToProfile": "العودة إلى الملف الشخصي",
+      "backToMyComplaints": "العودة إلى شكاواي",
+      "exercise": "التمرين",
+      "emptyDisplay": "—",
+      "today": "اليوم",
+      "tomorrow": "غداً",
+      "yesterday": "أمس",
+      "upcoming": "قادمة",
+      "recently": "مؤخراً",
+      "justNow": "الآن",
+      "minutesAgo": "منذ {count} د",
+      "hoursAgo": "منذ {count} س",
+      "daysAgo": "منذ {count} ي",
+      "allChildren": "جميع الأطفال",
+      "searchPlaceholder": "بحث...",
+      "sortBy": "ترتيب حسب",
+      "type": "النوع",
+      "reportType": "نوع التقرير",
+      "reason": "السبب",
+      "clear": "مسح",
+      "frequency": "التكرار",
+      "dueDate": "تاريخ الاستحقاق",
+      "generated": "تاريخ الإنشاء",
+      "location": "الموقع",
+      "startTime": "وقت البداية",
+      "endTime": "وقت النهاية",
+      "duration": "المدة",
+      "durationMinutes": "{count} د",
+      "selectChild": "اختر طفلاً",
+      "selectSpecialist": "اختر أخصائياً",
+      "selectReason": "اختر سبباً",
+      "loadingSpecialists": "جارٍ تحميل الأخصائيين...",
+      "viewDetails": "عرض التفاصيل",
+      "refresh": "تحديث",
+      "conversation": "المحادثة",
+      "reviewDate": "تاريخ المراجعة",
+      "performanceRating": "تقييم الأداء",
+      "reasonDetails": "تفاصيل السبب",
+      "preferredDate": "التاريخ المفضل",
+      "preferredTimePeriod": "الفترة الزمنية المفضلة",
+      "additionalNotes": "ملاحظات إضافية",
+      "optionalDetailsPlaceholder": "تفاصيل اختيارية للأخصائي",
+      "submitRequest": "إرسال الطلب",
+      "submitting": "جارٍ الإرسال...",
+      "copyLink": "نسخ الرابط",
+      "openMeeting": "فتح الاجتماع",
+      "signInRequired": "يرجى تسجيل الدخول للمتابعة.",
+      "sort": {
+        "newest": "الأحدث أولاً",
+        "oldest": "الأقدم أولاً",
+        "alphabetical": "أبجدياً"
+      }
+    },
+    "home": {
+      "title": "الرئيسية",
+      "greeting": "مرحباً بعودتك",
+      "greetingMorning": "صباح الخير، {name}!",
+      "startTodaysExercise": "ابدأ تمرين اليوم",
+      "selectChild": "اختر طفلاً",
+      "selectChildAriaLabel": "اختر الطفل",
+      "loadingChildren": "جارٍ تحميل الأطفال...",
+      "noChildren": "لا يوجد أطفال",
+      "pleaseWait": "يرجى الانتظار",
+      "loadingSummary": "جارٍ تحميل الملخص...",
+      "summaryUnavailable": "الملخص غير متاح.",
+      "noLinkedChildren": "لم يتم ربط أي أطفال بعد.",
+      "todaysTasks": "مهام اليوم",
+      "loadingTodaysTasks": "جارٍ تحميل مهام اليوم...",
+      "unableToLoadTodaysTasks": "تعذر تحميل مهام اليوم. {error}",
+      "upcomingSession": "الجلسة القادمة",
+      "upcomingSchedule": "الجدول القادم",
+      "loadingUpcomingSchedule": "جارٍ تحميل الجدول القادم...",
+      "upcomingScheduleUnavailable": "الجدول القادم غير متاح حالياً.",
+      "calendar": "التقويم",
+      "loadingCalendar": "جارٍ تحميل التقويم...",
+      "calendarUnavailable": "التقويم غير متاح حالياً.",
+      "calendarFor": "التقويم لـ {monthLabel}",
+      "previousMonth": "الشهر السابق",
+      "nextMonth": "الشهر التالي",
+      "sessionLegend": "جلسة",
+      "exerciseLegend": "تمرين",
+      "latestUpdates": "آخر التحديثات",
+      "loadingLatestUpdates": "جارٍ تحميل آخر التحديثات...",
+      "latestUpdatesUnavailable": "آخر التحديثات غير متاحة حالياً.",
+      "unableToLoadLatestUpdates": "تعذر تحميل آخر التحديثات.",
+      "noUpdatesYet": "لا توجد تحديثات لهذا الطفل بعد.",
+      "latestReportUnavailable": "آخر تقرير غير متاح.",
+      "specialistFeedbackUnavailable": "ملاحظات الأخصائي غير متاحة.",
+      "loadingChildProgress": "جارٍ تحميل تقدم الطفل...",
+      "overallProgressAriaLabel": "التقدم العام",
+      "todaysSummary": "ملخص اليوم",
+      "tasksLabel": "المهام",
+      "nextSession": "الجلسة التالية",
+      "overallProgress": "التقدم العام",
+      "summaryNavigateAria": "{label}: {value}. انتقل إلى {destination}.",
+      "completedCount": "{completed} من {total} مكتمل",
+      "tasksProgressAria": "{completed} من {total} مهام مكتملة",
+      "seeAll": "عرض الكل",
+      "noTasksToday": "لا توجد مهام مُسندة لليوم.",
+      "weeklyProgressReport": "تقرير التقدم الأسبوعي",
+      "latestSpecialistFeedback": "آخر ملاحظات الأخصائي",
+      "openReport": "فتح التقرير",
+      "viewFeedback": "عرض الملاحظات",
+      "rehabilitationFollowUp": "متابعة إعادة التأهيل",
+      "exercisesCompletedToday": "{completed} من {total} تمارين مكتملة اليوم",
+      "exercisesCompletedThisWeek": "{count} تمارين مكتملة هذا الأسبوع",
+      "nextSessionLabel": "الجلسة التالية:",
+      "noSessionScheduled": "لا توجد جلسة مجدولة",
+      "noUpcomingSessions": "لا توجد جلسات قادمة مجدولة.",
+      "onlineMeeting": "اجتماع عبر الإنترنت",
+      "inPersonSession": "جلسة حضورية",
+      "openMeeting": "فتح الاجتماع",
+      "viewSessionDetails": "عرض تفاصيل الجلسة",
+      "aiAssistantCard": "المساعد الذكي",
+      "aiDailyGuidance": "إرشاد يومي",
+      "aiAssistantHint": "اسأل عن التمارين أو التقارير أو الجلسات أو إرشادات التدريب المنزلي.",
+      "aiSuggestionExplainExercise": "اشرح تمريناً",
+      "aiSuggestionUnderstandProgress": "افهم التقدم",
+      "suggestedTopicsAriaLabel": "موضوعات مقترحة",
+      "askAi": "اسأل الذكاء الاصطناعي",
+      "viewAllExercises": "عرض جميع التمارين",
+      "viewDetails": "عرض التفاصيل",
+      "openAiAssistant": "فتح المساعد الذكي",
+      "needQuickGuidance": "هل تحتاج إلى إرشاد سريع؟",
+      "aiSupportBody": "اسأل المساعد الذكي عن تمارين اليوم أو الاستعداد للجلسة أو نصائح التقدم.",
+      "quickSummary": "ملخص سريع",
+      "noRecentUpdates": "لا توجد تقارير أو ملاحظات أخصائي حديثة بعد.",
+      "latestReport": "آخر تقرير",
+      "treatmentJourney": "رحلة العلاج"
+    },
+    "children": {
+      "title": "أطفالي",
+      "subtitle": "ملفات الأطفال المرتبطة بحساب ولي الأمر.",
+      "detailTitle": "تفاصيل الطفل",
+      "detailSubtitle": "الملف والتمارين والتقارير والجلسات للطفل المرتبط.",
+      "backToDashboard": "العودة إلى الرئيسية",
+      "backToChildren": "العودة إلى أطفالي",
+      "noChildren": "لا يوجد أطفال مرتبطون بعد. تواصل مع الأخصائي لربط ملف طفل.",
+      "empty": {
+        "none": "لا يوجد أطفال مرتبطون بعد. تواصل مع الأخصائي لربط ملف طفل.",
+        "notFound": "ملف هذا الطفل غير مرتبط بحسابك أو تعذر العثور عليه."
+      },
+      "loading": "جارٍ تحميل الأطفال المرتبطين...",
+      "loadingDetails": "جارٍ تحميل تفاصيل الطفل...",
+      "notFound": "ملف هذا الطفل غير مرتبط بحسابك أو تعذر العثور عليه.",
+      "ageYears": "{count} سنوات",
+      "progressPercent": "التقدم: {percent}%",
+      "age": "العمر",
+      "diagnosis": "التشخيص",
+      "specialist": "الأخصائي",
+      "treatmentPlan": "الخطة العلاجية",
+      "goals": "الأهداف",
+      "assignedExercises": "التمارين المُسندة",
+      "noAssignedExercises": "لا توجد تمارين مُسندة بعد.",
+      "reports": "التقارير",
+      "noReports": "لا توجد تقارير بعد.",
+      "sessions": "الجلسات",
+      "noSessions": "لا توجد جلسات مجدولة.",
+      "specialistFeedback": "ملاحظات الأخصائي",
+      "recentSubmissions": "التسليمات الأخيرة",
+      "viewProgress": "عرض التقدم",
+      "viewSessions": "عرض الجلسات",
+      "viewReports": "عرض التقارير"
+    },
+    "caseRequests": {
+      "title": "طلبات الحالات",
+      "subtitle": "طلبات أولية يراجعها فريق الإدارة ويعيّن الأخصائيين المناسبين.",
+      "detailTitle": "تفاصيل طلب الحالة",
+      "formTitleNew": "تقديم طلب حالة",
+      "formTitleEdit": "تعديل طلب الحالة",
+      "formSubtitle": "شارك معلومات أولية لمراجعة الإدارة وتعيين الأخصائي.",
+      "backToDashboard": "العودة إلى الرئيسية",
+      "backToList": "العودة إلى طلبات الحالات",
+      "newRequest": "طلب حالة جديد",
+      "empty": {
+        "none": "لم تُقدّم أي طلبات حالات بعد.",
+        "filtered": "لا توجد طلبات حالات تطابق البحث أو عوامل التصفية."
+      },
+      "loading": "جارٍ تحميل طلبات الحالات...",
+      "loadingDetail": "جارٍ تحميل طلب الحالة...",
+      "loadingForm": "جارٍ تحميل النموذج...",
+      "notFound": "طلب الحالة غير موجود.",
+      "viewRequestAria": "عرض طلب الحالة لـ {childName}",
+      "submittedOn": "تاريخ الإرسال {date}",
+      "genderLabel": "الجنس: {gender}",
+      "categoryLabel": "الفئة: {category}",
+      "submitted": "تاريخ الإرسال {date}",
+      "assignedSpecialist": "الأخصائي: {name}",
+      "caseDescription": "وصف الحالة",
+      "observedDifficulties": "الصعوبات الملاحظة",
+      "rejectionReason": "سبب الرفض",
+      "editRequest": "تعديل الطلب",
+      "openMessages": "فتح الرسائل",
+      "childName": "اسم الطفل",
+      "dateOfBirth": "تاريخ الميلاد",
+      "genderField": "الجنس",
+      "selectGender": "اختر الجنس",
+      "categoryField": "الفئة",
+      "selectCategory": "اختر فئة",
+      "caseDescriptionField": "وصف الحالة",
+      "observedDifficultiesField": "الصعوبات الملاحظة",
+      "hasPreviousDiagnosis": "يوجد تشخيص سابق",
+      "previousDiagnosisDetails": "تفاصيل التشخيص السابق",
+      "currentlyReceivingTreatment": "يتلقى علاجاً حالياً",
+      "currentTreatmentDetails": "تفاصيل العلاج الحالي",
+      "preferredContactPeriod": "فترة التواصل المفضلة",
+      "saving": "جارٍ الحفظ...",
+      "updateRequest": "تحديث الطلب",
+      "submitRequest": "إرسال الطلب",
+      "searchPlaceholder": "ابحث في الطلبات...",
+      "sortLabel": "الترتيب",
+      "sort": {
+        "newest": "الأحدث أولاً",
+        "oldest": "الأقدم أولاً",
+        "alphabetical": "أبجدياً"
+      },
+      "status": {
+        "all": "جميع الحالات",
+        "pending": "قيد المراجعة",
+        "assigned": "تم تعيين أخصائي",
+        "under_assessment": "قيد التقييم",
+        "accepted": "مقبول",
+        "rejected": "مرفوض",
+        "converted_to_patient": "تم إنشاء الملف"
+      },
+      "statusSubtitle": {
+        "pending": "في انتظار مراجعة الإدارة.",
+        "assigned": "تم تعيين أخصائي؛ تبدأ المراجعة.",
+        "under_assessment": "الأخصائي يقيّم الحالة.",
+        "accepted": "تم قبول الحالة؛ قد يُنشأ الملف قريباً.",
+        "rejected": "لم يُقبل الطلب. راجع السبب أدناه.",
+        "converted_to_patient": "تم قبول الحالة وإنشاء ملف المريض."
+      },
+      "categories": {
+        "speechAndLanguageTherapy": "علاج النطق واللغة",
+        "behavioralTherapy": "العلاج السلوكي",
+        "occupationalTherapy": "العلاج الوظيفي",
+        "learningDifficulties": "صعوبات التعلم",
+        "autismSupport": "دعم التوحد",
+        "developmentalDelay": "التأخر النمائي",
+        "motorRehabilitation": "إعادة تأهيل الحركة"
+      },
+      "gender": {
+        "male": "ذكر",
+        "female": "أنثى",
+        "other": "آخر",
+        "notSpecified": "غير محدد"
+      },
+      "childPhoto": {
+        "title": "صورة الطفل",
+        "addPhoto": "إضافة صورة الطفل",
+        "changePhoto": "تغيير صورة الطفل",
+        "removePhoto": "إزالة الصورة"
+      },
+      "imageHint": "اختياري. JPEG أو PNG أو WebP حتى 5 ميجابايت.",
+      "validation": {
+        "selectImage": "يرجى اختيار ملف صورة.",
+        "invalidImageType": "نوع الصورة غير مدعوم. استخدم JPEG أو PNG أو WebP.",
+        "imageTooLarge": "الصورة كبيرة جداً. الحد الأقصى 5 ميجابايت."
+      },
+      "contactPeriod": {
+        "morning": "صباحاً",
+        "afternoon": "ظهراً",
+        "evening": "مساءً",
+        "flexible": "مرن"
+      }
+    },
+    "exercises": {
+      "title": "المهام اليومية",
+      "detailTitle": "تفاصيل التمرين",
+      "tabs": {
+        "daily": "يومي",
+        "weekly": "أسبوعي",
+        "assigned": "مُسند"
+      },
+      "status": {
+        "todo": "للتنفيذ",
+        "submitted": "مُرسَل",
+        "reviewed": "تمت المراجعة",
+        "needs_retry": "يحتاج إعادة"
+      },
+      "sort": {
+        "actionable": "الأكثر إلحاحاً",
+        "dueDate": "تاريخ الاستحقاق",
+        "newest": "الأحدث إسناداً",
+        "alphabetical": "أبجدياً"
+      },
+      "empty": {
+        "daily": "لا توجد تمارين يومية.",
+        "weekly": "لا توجد تمارين أسبوعية.",
+        "assigned": "لا توجد تمارين مُسندة.",
+        "filtered": "لا توجد تمارين تطابق عوامل التصفية الحالية."
+      },
+      "actions": {
+        "open": "فتح التمرين",
+        "resume": "متابعة التمرين",
+        "viewDetails": "عرض التفاصيل"
+      },
+      "loading": "جارٍ تحميل التمارين...",
+      "instructions": "التعليمات",
+      "uploadSubmission": "رفع التسليم",
+      "notes": "ملاحظات"
+    },
+    "progress": {
+      "title": "رحلة العلاج",
+      "subtitle": "التقدم طوال فترة العلاج",
+      "viewDetails": "عرض التفاصيل",
+      "loadError": "تعذر تحميل تقدم العلاج.",
+      "emptyMessage": "سيظهر التقدم بعد مراجعة التمارين.",
+      "startedAt": "البداية",
+      "currentProgress": "التقدم الحالي",
+      "scoreChange": "تغير النقاط",
+      "semanticsLoading": "رحلة العلاج، جارٍ تحميل التقدم",
+      "semanticsError": "رحلة العلاج، تعذر تحميل تقدم العلاج",
+      "semanticsEmpty": "رحلة العلاج، سيظهر التقدم بعد مراجعة التمارين",
+      "semanticsLoaded": "رحلة العلاج، التقدم الحالي {score} بالمئة، {trend}",
+      "openDetailsAria": "{summary}. افتح تفاصيل رحلة العلاج.",
+      "trendImproving": "تحسن",
+      "trendNeedsAttention": "يحتاج اهتماماً",
+      "trendStable": "مستقر",
+      "scoreChangePositive": "+{points} نقطة",
+      "scoreChangeNegative": "{points} نقطة",
+      "scoreChangeZero": "0 نقطة",
+      "period": {
+        "daily": "يومي",
+        "weekly": "أسبوعي",
+        "monthly": "شهري",
+        "full": "العلاج الكامل"
+      },
+      "improvement": "نسبة التحسن",
+      "goalProgress": "تقدم الهدف",
+      "trend": {
+        "up": "التقدم في اتجاه تصاعدي",
+        "down": "التقدم يحتاج إلى اهتمام",
+        "steady": "تحسن مستمر",
+        "building": "جارٍ بناء رحلتك"
+      },
+      "empty": "ستظهر بيانات التقدم بعد بدء تتبع التمارين.",
+      "loading": "جارٍ تحميل التقدم..."
+    },
+    "sessions": {
+      "title": "الجلسات",
+      "hub": {
+        "sessions": "الجلسات",
+        "requests": "طلبات الجلسات"
+      },
+      "tabs": {
+        "upcoming": "القادمة",
+        "history": "السابقة"
+      },
+      "status": {
+        "scheduled": "مجدولة",
+        "completed": "مكتملة",
+        "cancelled": "ملغاة",
+        "no_show": "لم يحضر",
+        "noShow": "لم يحضر"
+      },
+      "requestStatus": {
+        "pending": "قيد الانتظار",
+        "approved": "موافق عليه",
+        "rejected": "مرفوض"
+      },
+      "reason": {
+        "regular_follow_up": "متابعة دورية",
+        "replacement_cancelled": "بديل (جلسة ملغاة)",
+        "replacement_missed": "بديل (جلسة فائتة)",
+        "additional_session": "جلسة إضافية",
+        "consultation": "استشارة",
+        "other": "أخرى",
+        "regularFollowUp": "متابعة دورية",
+        "replacementCancelled": "بديل (جلسة ملغاة)",
+        "replacementMissed": "بديل (جلسة فائتة)",
+        "additionalSession": "جلسة إضافية"
+      },
+      "timePeriod": {
+        "morning": "صباحاً",
+        "afternoon": "بعد الظهر",
+        "evening": "مساءً",
+        "flexible": "مرن"
+      },
+      "empty": {
+        "upcoming": "لا توجد جلسات قادمة.",
+        "history": "لا يوجد سجل جلسات.",
+        "filtered": "لا توجد جلسات تطابق عوامل التصفية.",
+        "requests": "لا توجد طلبات جلسات بعد."
+      },
+      "requestSession": "طلب جلسة",
+      "joinMeeting": "انضم للاجتماع",
+      "loading": "جارٍ تحميل الجلسات...",
+      "errors": {
+        "meetingLinkUnavailable": "رابط الاجتماع غير متاح.",
+        "meetingLinkCopyFailed": "تعذر نسخ رابط الاجتماع.",
+        "meetingLinkCopied": "تم نسخ رابط الاجتماع."
+      },
+      "validation": {
+        "selectChild": "اختر طفلاً.",
+        "selectSpecialist": "اختر أخصائياً.",
+        "selectReason": "اختر سبباً.",
+        "otherReason": "صف السبب عند اختيار أخرى.",
+        "preferredDateRequired": "التاريخ المفضل مطلوب.",
+        "preferredDateInvalid": "استخدم تاريخاً صالحاً.",
+        "preferredDatePast": "لا يمكن أن يكون التاريخ المفضل في الماضي.",
+        "selectTimePeriod": "اختر فترة الوقت المفضلة."
+      },
+      "searchPlaceholder": "ابحث بالطفل أو الأخصائي",
+      "formTitle": "طلب جلسة",
+      "formSubtitle": "قدّم طلباً ليراجعه الأخصائي ويجدوله.",
+      "formAriaLabel": "طلب جلسة",
+      "startTime": "وقت البدء",
+      "endTime": "وقت الانتهاء",
+      "duration": "المدة",
+      "location": "الموقع",
+      "openMeeting": "فتح الاجتماع",
+      "copyLink": "نسخ الرابط",
+      "hubAreasAriaLabel": "مناطق مركز الجلسات",
+      "listTabsAriaLabel": "قوائم الجلسات",
+      "requested": "تاريخ الطلب",
+      "preferredTime": "الوقت المفضل",
+      "approvedSession": "الجلسة المعتمدة",
+      "response": "الرد",
+      "time": "الوقت",
+      "date": "التاريخ",
+      "meetingLink": "رابط الاجتماع"
+    },
+    "reports": {
+      "title": "التقارير",
+      "detailTitle": "تفاصيل التقرير",
+      "empty": {
+        "none": "لا توجد تقارير متاحة بعد.",
+        "filtered": "لا توجد تقارير تطابق عوامل التصفية."
+      },
+      "loading": "جارٍ تحميل التقارير...",
+      "generated": "تاريخ الإنشاء",
+      "viewReport": "عرض التقرير",
+      "download": "تنزيل",
+      "sections": {
+        "executiveSummary": "الملخص التنفيذي",
+        "clinicalInsights": "رؤى سريرية",
+        "nextSteps": "الخطوات التالية"
+      },
+      "type": {
+        "weekly": "أسبوعي",
+        "monthly": "شهري",
+        "assessment": "تقييم",
+        "progress": "تقدم"
+      },
+      "sort": {
+        "childName": "اسم الطفل",
+        "reportType": "نوع التقرير"
+      },
+      "errors": {
+        "fileUnavailable": "ملف التقرير غير متاح."
+      },
+      "summary": {
+        "executiveSummary": "الملخص التنفيذي",
+        "patientProgress": "تقدم المريض",
+        "speechAnalysis": "تحليل النطق",
+        "exerciseAdherence": "الالتزام بالتمارين",
+        "goalProgress": "تقدم الأهداف",
+        "clinicalInsights": "رؤى سريرية",
+        "risksOrRegressions": "المخاطر أو التراجع",
+        "recommendations": "التوصيات",
+        "nextSteps": "الخطوات التالية"
+      },
+      "openReport": "فتح التقرير",
+      "downloadReport": "تنزيل التقرير",
+      "searchPlaceholder": "ابحث بالعنوان أو الطفل أو الأخصائي أو الملخص",
+      "fileNotAvailable": "الملف غير متاح بعد",
+      "viewDetailsAria": "عرض تفاصيل {title}",
+      "viewReportDetails": "عرض تفاصيل التقرير",
+      "forChild": "لـ {name}",
+      "summaryTitle": "الملخص",
+      "openReportFile": "فتح ملف التقرير",
+      "openReportLabel": "فتح التقرير: {title}",
+      "fileUnavailableYet": "ملف التقرير غير متاح بعد."
+    },
+    "feedback": {
+      "title": "ملاحظات الأخصائي",
+      "empty": {
+        "none": "لا توجد ملاحظات على التمارين بعد.",
+        "filtered": "لا توجد مراجعات تطابق عوامل التصفية."
+      },
+      "loading": "جارٍ تحميل الملاحظات...",
+      "rating": "التقييم",
+      "needsRetry": "يحتاج إعادة",
+      "newest": "أحدث مراجعة",
+      "requiresRetryFirst": "إعادة المحاولة أولاً",
+      "sort": {
+        "newest": "أحدث مراجعة",
+        "oldest": "أقدم مراجعة",
+        "retryFirst": "إعادة المحاولة أولاً"
+      },
+      "searchPlaceholder": "ابحث بعنوان التمرين",
+      "reviewDate": "تاريخ المراجعة",
+      "performanceRating": "تقييم الأداء",
+      "forChild": "لـ {name}",
+      "requiresRetry": "يحتاج إعادة"
+    },
+    "complaints": {
+      "title": "شكاواي",
+      "formTitle": "الإبلاغ عن أخصائي",
+      "detailTitle": "تفاصيل الشكوى",
+      "empty": "لم تُقدّم أي شكاوى بعد. استخدم الإبلاغ عن أخصائي عندما تحتاج إلى مراجعة الإدارة.",
+      "intro": "ستتم مراجعة شكواك من قبل الإدارة فقط ولن تُرسل مباشرة إلى الأخصائي.",
+      "child": "الطفل",
+      "specialist": "الأخصائي",
+      "category": "فئة الشكوى",
+      "description": "الوصف",
+      "descriptionHint": "صف مخاوفك بالتفصيل (20 حرفًا على الأقل)",
+      "attachment": {
+        "title": "مرفق (اختياري)",
+        "openError": "تعذر فتح هذا المرفق.",
+        "view": "عرض المرفق",
+        "alt": "مرفق الشكوى",
+        "add": "إضافة مرفق",
+        "help": "الصيغ المدعومة: JPEG وPNG وWebP وPDF. الحد الأقصى 10 ميجابايت."
+      },
+      "addAttachment": "إضافة مرفق",
+      "removeAttachment": "إزالة المرفق",
+      "submit": "إرسال الشكوى",
+      "submitting": "جارٍ الإرسال...",
+      "submittedSuccess": "تم إرسال شكواك بنجاح وستتم مراجعتها من قبل الإدارة.",
+      "adminResponse": "رد الإدارة",
+      "submitted": "تاريخ الإرسال",
+      "statusLabel": "الحالة",
+      "categoryLabels": {
+        "specialist_not_responding": "الأخصائي لا يرد",
+        "poor_follow_up": "متابعة ضعيفة",
+        "repeated_session_cancellations": "إلغاءات متكررة للجلسات",
+        "delayed_exercise_feedback": "تأخر ملاحظات التمارين",
+        "inappropriate_communication": "تواصل غير لائق",
+        "other": "أخرى"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "under_review": "قيد المراجعة",
+        "resolved": "محلولة",
+        "rejected": "مرفوضة"
+      },
+      "validation": {
+        "selectChild": "يرجى اختيار طفل.",
+        "selectSpecialist": "يرجى اختيار أخصائي.",
+        "selectCategory": "يرجى اختيار فئة الشكوى.",
+        "descriptionTooShort": "يجب أن يكون الوصف 20 حرفاً على الأقل.",
+        "descriptionTooLong": "يجب ألا يتجاوز الوصف 1000 حرف.",
+        "noSpecialistAssigned": "لا يوجد أخصائي مُعيّن لهذا الطفل.",
+        "attachmentInvalidType": "نوع المرفق غير مدعوم. المسموح: الصور وPDF.",
+        "attachmentTooLarge": "المرفق كبير جداً. الحد الأقصى 10 ميجابايت.",
+        "attachmentPickFailed": "تعذر قراءة الملف المحدد.",
+        "attachmentUploadFailed": "فشل رفع المرفق. يرجى المحاولة مرة أخرى.",
+        "submitFailed": "فشل إرسال الشكوى. يرجى المحاولة مرة أخرى.",
+        "duplicateActive": "توجد شكوى نشطة بالفعل لهذا الطفل والأخصائي والفئة.",
+        "specialistNotAssigned": "الأخصائي المحدد غير مُعيّن لهذا الطفل.",
+        "childNotAuthorized": "غير مصرح لك بتقديم شكوى لهذا الطفل."
+      },
+      "notFound": "لم يتم العثور على الشكوى.",
+      "notSignedIn": "يرجى تسجيل الدخول لتقديم شكوى.",
+      "form": {
+        "selectChild": "الطفل",
+        "selectSpecialist": "الأخصائي",
+        "category": "الفئة",
+        "complaintCategory": "فئة الشكوى",
+        "selectCategory": "اختر فئة",
+        "description": "الوصف",
+        "descriptionPlaceholder": "صف مخاوفك بالتفصيل (20 حرفاً على الأقل)",
+        "loadingSpecialist": "جارٍ تحميل الأخصائي...",
+        "noSpecialist": "لا يوجد أخصائي مُعيّن لهذا الطفل.",
+        "submit": "إرسال الشكوى",
+        "submitting": "جارٍ الإرسال...",
+        "uploadingAttachment": "جارٍ رفع المرفق..."
+      },
+      "introShort": "ستتم مراجعة شكواك من قبل الإدارة فقط ولن تُرسل مباشرة إلى الأخصائي.",
+      "attachmentPreview": {
+        "pdfTitle": "مرفق PDF",
+        "pdfHint": "افتح لعرض الملف المُرسل",
+        "openAttachment": "فتح المرفق",
+        "openFullImage": "فتح الصورة كاملة"
+      },
+      "attachmentFieldHelpShort": "الصيغ المدعومة: صورة أو PDF."
+    },
+    "messages": {
+      "title": "الرسائل",
+      "conversations": "المحادثات",
+      "searchPlaceholder": "ابحث في المحادثات...",
+      "empty": {
+        "conversations": "لا توجد محادثات بعد.",
+        "chat": "لا توجد رسائل بعد. ابدأ المحادثة أدناه."
+      },
+      "chatEmpty": "لا توجد رسائل بعد. ابدأ المحادثة.",
+      "send": "إرسال",
+      "loading": "جارٍ تحميل الرسائل...",
+      "attachment": "مرفق",
+      "unread": "غير مقروء",
+      "regardingChild": "بخصوص {name}",
+      "patientLabel": "المريض: {name}",
+      "subtitle": "محادثات آمنة مع الأخصائيين حول أطفالك.",
+      "selectConversationView": "اختر محادثة لعرض الرسائل.",
+      "conversationDefault": "محادثة",
+      "conversationsButton": "المحادثات",
+      "composer": {
+        "placeholder": "اكتب رسالة...",
+        "stopRecording": "إيقاف التسجيل",
+        "addAttachment": "إضافة مرفق",
+        "image": "صورة",
+        "video": "فيديو",
+        "recordVoice": "تسجيل صوت",
+        "file": "ملف",
+        "uploading": "جارٍ الرفع… {percent}%",
+        "selectedImageAlt": "معاينة الصورة المحددة",
+        "sending": "جارٍ الإرسال..."
+      },
+      "lightbox": {
+        "preview": "معاينة الصورة",
+        "closePreview": "إغلاق المعاينة",
+        "close": "إغلاق"
+      },
+      "pdfDocument": "مستند PDF",
+      "attachments": {
+        "imageUnavailable": "الصورة غير متاحة",
+        "videoUnavailable": "الفيديو غير متاح",
+        "audioUnavailable": "الصوت غير متاح",
+        "downloadVideo": "تنزيل الفيديو",
+        "viewImage": "عرض الصورة: {label}"
+      }
+    },
+    "instructionMedia": {
+      "title": "وسائط تعليمية",
+      "imageLoadFailed": "تعذر تحميل معاينة الصورة.",
+      "videoUnsupported": "متصفحك لا يدعم تشغيل الفيديو.",
+      "audioUnsupported": "متصفحك لا يدعم تشغيل الصوت.",
+      "pdfDocument": "مستند PDF",
+      "mediaFile": "ملف وسائط",
+      "openHint": "افتح الملف المقدم من الأخصائي في علامة تبويب جديدة.",
+      "open": "فتح"
+    },
+    "aiAssistant": {
+      "title": "المساعد الذكي",
+      "inputPlaceholder": "اسأل عن التمارين أو التقدم أو الاستعداد للجلسة...",
+      "newConversation": "محادثة جديدة",
+      "sending": "جارٍ الإرسال...",
+      "failedToSend": "تعذر إرسال الرسالة",
+      "emptyIntro": "اسأل عن تمارين طفلك أو تقدمه أو خطة إعادة التأهيل.",
+      "disclaimer": "إرشادات الذكاء الاصطناعي تدعمك ولا تغني عن أخصائي طفلك.",
+      "suggested": {
+        "explainExercise": "اشرح تمرين اليوم",
+        "summarizeProgress": "لخّص التقدم الأخير",
+        "focusToday": "على ماذا نركز اليوم؟",
+        "explainReport": "اشرح آخر تقرير"
+      },
+      "loading": "جارٍ تحميل المحادثة...",
+      "safetyNotice": "إرشادات الذكاء الاصطناعي للدعم فقط. اتبع دائماً تعليمات الأخصائي.",
+      "prompt": {
+        "explainExercise": "اشرح تمرين اليوم",
+        "summarizeProgress": "لخّص تقدم طفلي",
+        "focusToday": "على ماذا ينبغي أن أركز اليوم؟",
+        "explainReport": "اشرح آخر تقرير"
+      },
+      "empty": {
+        "noChild": "اختر طفلاً للبدء.",
+        "noConversations": "لا توجد محادثات بعد.",
+        "noConversationSelected": "ابدأ محادثة حول الممارسة المنزلية أو تقدم طفلك.",
+        "noMessages": "اسألني عن تمارين طفلك أو تقاريره أو تقدمه."
+      },
+      "sender": {
+        "you": "أنت",
+        "assistant": "المساعد الذكي"
+      },
+      "suggestedHomePractice": "ممارسة منزلية مقترحة",
+      "subtitle": "اسأل عن الممارسة المنزلية والتمارين والتقدم لطفلك المرتبط.",
+      "loadingChildren": "جارٍ تحميل الأطفال...",
+      "thinking": "المساعد الذكي يفكر...",
+      "creating": "جارٍ الإنشاء...",
+      "newShort": "جديد",
+      "conversationsTitle": "المحادثات",
+      "loadingHistory": "جارٍ تحميل سجل الرسائل...",
+      "backToConversations": "العودة إلى المحادثات",
+      "messageInputLabel": "رسالة إلى المساعد الذكي",
+      "composerHint": "Enter للإرسال، Shift+Enter لسطر جديد",
+      "sendMessageAria": "إرسال رسالة",
+      "messageAria": "رسالة {sender}",
+      "suggestedPromptsAria": "اقتراحات سريعة",
+      "childLabel": "الطفل"
+    },
+    "notificationsPage": {
+      "title": "الإشعارات",
+      "markAllRead": "تحديد الكل كمقروء",
+      "empty": "لا توجد إشعارات بعد.",
+      "filteredEmpty": "لا توجد إشعارات تطابق عوامل التصفية.",
+      "loading": "جارٍ تحميل الإشعارات...",
+      "filters": {
+        "all": "الكل",
+        "unread": "غير مقروء",
+        "read": "مقروء"
+      },
+      "sort": {
+        "newest": "الأحدث أولاً",
+        "oldest": "الأقدم أولاً",
+        "unreadFirst": "غير المقروء أولاً"
+      },
+      "types": {
+        "exercise_reminder": "تذكير بتمرين",
+        "session_reminder": "تذكير بجلسة",
+        "feedback_received": "تم استلام ملاحظات",
+        "report_ready": "التقرير جاهز",
+        "new_message": "رسالة جديدة",
+        "general": "عام",
+        "session_request": "طلب جلسة",
+        "case_request_submitted": "تم تقديم طلب حالة",
+        "case_request_assigned": "تم تعيين طلب حالة",
+        "case_request_accepted": "تم قبول طلب حالة",
+        "case_request_rejected": "تم رفض طلب حالة",
+        "case_request_converted": "تم تحويل طلب الحالة"
+      },
+      "searchPlaceholder": "ابحث بالعنوان أو الرسالة أو الطفل",
+      "summaryCount": "{count} إشعار",
+      "summaryCountPlural": "{count} إشعارات",
+      "unreadSummary": " · {count} غير مقروء",
+      "subtitleUnread": "{unread} غير مقروء من {total} إشعار.",
+      "subtitleUnreadPlural": "{unread} غير مقروء من {total} إشعارات.",
+      "unreadNotificationAria": "إشعار غير مقروء: {title}",
+      "notificationAria": "إشعار: {title}"
+    },
+    "profilePage": {
+      "title": "الملف الشخصي",
+      "editTitle": "تعديل الملف الشخصي",
+      "fullName": "الاسم الكامل",
+      "phone": "الهاتف",
+      "address": "العنوان",
+      "relationshipNotes": "ملاحظات العلاقة",
+      "profilePhoto": "صورة الملف الشخصي",
+      "changePhoto": "تغيير الصورة",
+      "saveChanges": "حفظ التغييرات",
+      "personalInfo": "المعلومات الشخصية",
+      "parentDetails": "تفاصيل ولي الأمر",
+      "loading": "جارٍ تحميل الملف الشخصي...",
+      "notAvailable": "الملف الشخصي غير متاح.",
+      "updatedSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "fullNameRequired": "الاسم الكامل مطلوب",
+      "loadFailed": "تعذر تحميل الملف الشخصي",
+      "saveFailed": "تعذر حفظ الملف الشخصي",
+      "notSignedIn": "غير مسجل الدخول"
+    },
+    "pages": {
+      "dailyTasks": {
+        "title": "المهام اليومية",
+        "subtitle": "راجع التمارين اليومية والأسبوعية والمُسندة لأطفالك.",
+        "loading": "جارٍ تحميل التمارين..."
+      },
+      "exerciseDetail": {
+        "noExerciseSpecified": "لم يُحدد تمرين. ارجع إلى لوحة التحكم واختر مهمة.",
+        "loading": "جارٍ تحميل تفاصيل التمرين...",
+        "unavailable": "تفاصيل التمرين غير متاحة.",
+        "forChild": "لـ {name}",
+        "frequency": "التكرار",
+        "dueDate": "تاريخ الاستحقاق",
+        "instructions": "التعليمات",
+        "instructionsEmpty": "اتبع تعليمات الأخصائي لهذا التمرين.",
+        "submission": "الإرسال",
+        "submittedSuccess": "تم إرسال التمرين بنجاح.",
+        "parentNotes": "ملاحظات ولي الأمر",
+        "optional": "(اختياري)",
+        "notesPlaceholder": "أضف ملاحظات عن أداء التمرين أو أي معلومات تريد أن يعرفها الأخصائي.",
+        "mediaAttachment": "مرفق وسائط",
+        "mediaHelp": "أرفق ملف صورة أو فيديو أو صوت حتى 50 ميجابايت.",
+        "chooseFile": "اختر ملفاً",
+        "replaceFile": "استبدال الملف",
+        "submitExercise": "إرسال التمرين",
+        "submitExerciseAgain": "إرسال التمرين مرة أخرى",
+        "submitting": "جارٍ الإرسال...",
+        "submitAriaLabel": "إرسال التمرين",
+        "removeFile": "إزالة {name}",
+        "previewOf": "معاينة {name}",
+        "mediaType": {
+          "image": "صورة",
+          "video": "فيديو",
+          "audio": "صوت",
+          "file": "ملف"
+        }
+      },
+      "progress": {
+        "title": "رحلة العلاج",
+        "subtitle": "اطلع على كيفية تغير تقدم طفلك بمرور الوقت.",
+        "loading": "جارٍ تحميل التقدم...",
+        "loadingSupporting": "جارٍ تحميل تفاصيل التقدم الداعمة...",
+        "noChildren": "لا يوجد أطفال مرتبطون لمتابعة التقدم.",
+        "selectChild": "اختر طفلاً لعرض تقدم رحلة العلاج.",
+        "supportingTitle": "تفاصيل التقدم الداعمة",
+        "improvement": "التحسن: {percent}%",
+        "completedExercises": "التمارين المكتملة: {count}",
+        "exercisesCompleted": "{count} تمارين مكتملة",
+        "snapshot": "لقطة التقدم"
+      },
+      "sessions": {
+        "title": "الجلسات",
+        "subtitle": "اعرض جلسات العلاج واطلب مواعيد جديدة لأطفالك.",
+        "loading": "جارٍ تحميل الجلسات...",
+        "loadingRequests": "جارٍ تحميل طلبات الجلسات...",
+        "myRequests": "طلباتي",
+        "requestSubmitted": "تم إرسال طلب الجلسة."
+      },
+      "reports": {
+        "title": "التقارير",
+        "subtitle": "اعرض تقارير التقدم للأطفال المرتبطين.",
+        "countLoaded": "تم تحميل {count} تقرير.",
+        "countLoadedPlural": "تم تحميل {count} تقارير.",
+        "loading": "جارٍ تحميل التقارير...",
+        "detailTitle": "تفاصيل التقرير",
+        "loadingDetail": "جارٍ تحميل تفاصيل التقرير...",
+        "notFound": "التقرير غير موجود.",
+        "generated": "تاريخ الإنشاء"
+      },
+      "feedback": {
+        "title": "ملاحظات التمارين",
+        "subtitle": "مراجعات الأخصائي للتمارين المُرسلة عبر أطفالك.",
+        "loading": "جارٍ تحميل ملاحظات التمارين..."
+      },
+      "complaints": {
+        "title": "شكاواي",
+        "subtitle": "راجع الشكاوى التي قدمتها لمراجعة الإدارة.",
+        "loading": "جارٍ تحميل الشكاوى...",
+        "reportSpecialist": "الإبلاغ عن أخصائي",
+        "empty": "لم تقدم أي شكاوى بعد. استخدم الإبلاغ عن أخصائي عند الحاجة لمراجعة الإدارة.",
+        "formTitle": "الإبلاغ عن أخصائي",
+        "formSubtitle": "قدّم مخاوفك لمراجعة الإدارة.",
+        "loadingChildren": "جارٍ تحميل الأطفال...",
+        "noChildren": "لم يتم العثور على أطفال مرتبطين. أضف طفلاً قبل تقديم شكوى.",
+        "submitSuccess": "تم إرسال شكواك بنجاح وستتم مراجعتها من قبل الإدارة.",
+        "detailTitle": "تفاصيل الشكوى",
+        "detailSubtitle": "راجع المعلومات المقدمة لمراجعة الإدارة.",
+        "loadingDetail": "جارٍ تحميل تفاصيل الشكوى...",
+        "notFound": "الشكوى غير موجودة.",
+        "description": "الوصف",
+        "adminResponse": "رد الإدارة",
+        "submitted": "تاريخ التقديم",
+        "status": "الحالة",
+        "intro": "صف مخاوفك بالتفصيل. ستراجع الإدارة طلبك وترد عند الإمكان.",
+        "viewMyComplaints": "شكاواي",
+        "viewDetails": "عرض التفاصيل",
+        "submittedLabel": "تاريخ التقديم {date}"
+      },
+      "messages": {
+        "title": "الرسائل",
+        "loading": "جارٍ تحميل المحادثات...",
+        "loadingThread": "جارٍ تحميل الرسائل...",
+        "selectConversation": "اختر محادثة لبدء المراسلة.",
+        "backToList": "العودة إلى المحادثات"
+      },
+      "aiAssistant": {
+        "title": "المساعد الذكي",
+        "loading": "جارٍ تحميل المساعد الذكي..."
+      },
+      "notifications": {
+        "title": "الإشعارات",
+        "subtitle": "ابقَ على اطلاع بالتمارين والجلسات والتقارير والرسائل.",
+        "loading": "جارٍ تحميل الإشعارات...",
+        "markAllRead": "تحديد الكل كمقروء"
+      },
+      "profile": {
+        "title": "الملف الشخصي",
+        "subtitle": "إدارة معلوماتك الشخصية والحساب.",
+        "editTitle": "تعديل الملف الشخصي",
+        "editSubtitle": "حدّث بيانات الاتصال ومعلومات ولي الأمر.",
+        "loading": "جارٍ تحميل الملف الشخصي...",
+        "unavailable": "الملف الشخصي غير متاح.",
+        "updatedSuccess": "تم تحديث الملف الشخصي بنجاح"
+      }
+    },
+    "dailyTasks": {
+      "tabs": {
+        "daily": "يومي",
+        "weekly": "أسبوعي",
+        "assigned": "مُسند"
+      },
+      "sort": {
+        "actionable": "الأكثر إلحاحاً",
+        "dueDate": "تاريخ الاستحقاق",
+        "newest": "الأحدث إسناداً"
+      },
+      "status": {
+        "todo": "للتنفيذ",
+        "needsRetry": "يلزم إعادة المحاولة",
+        "submitted": "مُرسل",
+        "reviewed": "مُراجع"
+      },
+      "action": {
+        "open": "فتح التمرين",
+        "resume": "متابعة التمرين",
+        "viewDetails": "عرض التفاصيل"
+      },
+      "empty": {
+        "daily": "لا توجد تمارين يومية.",
+        "weekly": "لا توجد تمارين أسبوعية.",
+        "assigned": "لا توجد تمارين مُسندة.",
+        "filtered": "لا توجد تمارين تطابق عوامل التصفية الحالية."
+      }
+    },
+    "dashboard": {
+      "frequency": {
+        "oneTime": "مرة واحدة"
+      },
+      "dueToday": "مستحق اليوم",
+      "noSessionScheduled": "لا توجد جلسة مجدولة",
+      "defaultProgressReport": "تقرير التقدم",
+      "defaultFeedbackQuote": "مراجعة متاحة لآخر إرسال تمرين.",
+      "reps": "{count} تكرار",
+      "improvementTrend": "تحسّن {sign}{percent}%",
+      "status": {
+        "activeTreatmentPlan": "خطة علاج نشطة"
+      },
+      "sessionMode": {
+        "online": "عبر الإنترنت",
+        "inPerson": "حضوري"
+      },
+      "exerciseState": {
+        "submitted": "تم إرسال هذا التمرين وهو بانتظار مراجعة الأخصائي.",
+        "reviewed": "راجع الأخصائي هذا التمرين.",
+        "needsRetry": "طلب الأخصائي إعادة هذا التمرين. أرسل تسجيلاً أو ملاحظات جديدة أدناه."
+      },
+      "aiGuidance": {
+        "default": "اسأل عن التمارين أو التقارير أو الجلسات أو إرشادات الممارسة المنزلية.",
+        "pending": "لا يزال لديك تمارين لإكمالها اليوم. اطلب من المساعد مساعدتك في فهم التعليمات.",
+        "complete": "اكتملت تمارين اليوم. اطلب من المساعد إرشادات للممارسة المنزلية."
+      },
+      "submission": {
+        "unsupportedType": "نوع الملف غير مدعوم. استخدم صورة أو فيديو أو ملف صوتي.",
+        "tooLarge": "يتجاوز الملف 50 ميجابايت. اختر ملفاً أصغر."
+      }
+    },
+    "treatmentJourney": {
+      "period": {
+        "full": "العلاج الكامل"
+      },
+      "trend": {
+        "improving": "تحسّن",
+        "declining": "يحتاج اهتماماً",
+        "stable": "مستقر"
+      },
+      "scoreChangePositive": "+{points} نقطة",
+      "scoreChangeNegative": "{points} نقطة",
+      "scoreChangeZero": "0 نقطة",
+      "startedAt": "تاريخ البدء",
+      "currentProgress": "التقدم الحالي",
+      "scoreChange": "تغير النتيجة",
+      "treatmentPeriod": "فترة العلاج",
+      "periodStart": "البداية",
+      "periodEnd": "النهاية",
+      "selectedView": "العرض المحدد",
+      "periodSelectorAria": "فترة رحلة العلاج",
+      "summaryAria": "ملخص رحلة العلاج",
+      "interpretationAria": "تفسير رحلة العلاج",
+      "periodInfoAria": "معلومات فترة العلاج",
+      "refresh": "تحديث",
+      "refreshAria": "تحديث رحلة العلاج",
+      "loadFailedDefault": "تعذر تحميل رحلة العلاج.",
+      "emptyProgress": "سيظهر التقدم بعد مراجعة التمارين.",
+      "subtitleNamed": "اطلع على كيفية تغير تقدم {name} بمرور الوقت",
+      "subtitleGeneric": "اطلع على كيفية تغير تقدم طفلك بمرور الوقت",
+      "childPhotoAlt": "صورة ملف الطفل",
+      "interpretation": {
+        "buildingTitle": "بناء رحلتك",
+        "earlyTitle": "تم تسجيل تقدم مبكر",
+        "needMoreData": "يلزم المزيد من سجلات التقدم لتحديد الاتجاه.",
+        "improvingTitle": "التقدم في اتجاه صاعد",
+        "improvingBody": "النتيجة الحالية أعلى من نقطة البداية.",
+        "decliningTitle": "التقدم يحتاج اهتماماً",
+        "decliningBody": "النتيجة الأخيرة أقل من الفترة السابقة. راجع الملاحظات الأخيرة أو تواصل مع الأخصائي.",
+        "stableTitle": "التقدم مستقر حالياً",
+        "stableBody": "النتائج الأخيرة تبقى ضمن نطاق متقارب."
+      },
+      "errors": {
+        "signInRequired": "يرجى تسجيل الدخول لعرض تقدم رحلة العلاج.",
+        "accessDenied": "ليس لديك صلاحية الوصول إلى رحلة علاج هذا الطفل.",
+        "notFound": "لم يتم العثور على بيانات رحلة العلاج لهذا الطفل.",
+        "loadFailed": "فشل تحميل رحلة العلاج. يرجى المحاولة مرة أخرى."
+      },
+      "chart": {
+        "updating": "جارٍ تحديث الرسم البياني…",
+        "score": "النتيجة",
+        "exercises": "التمارين",
+        "ariaEmpty": "رسم تقدم العلاج، لا توجد بيانات بعد",
+        "ariaWithPoints": "رسم تقدم العلاج بـ {count} نقطة",
+        "selectedPointAria": "النقطة المحددة نتيجة {score}، تاريخ {date}"
+      }
+    },
+    "notifications": {
+      "defaultTitle": "إشعار",
+      "sort": {
+        "unreadFirst": "غير المقروء أولاً"
+      },
+      "empty": {
+        "none": "لا توجد إشعارات بعد.",
+        "filtered": "لا توجد إشعارات تطابق عوامل التصفية."
+      },
+      "type": {
+        "exerciseReminder": "تذكير تمرين",
+        "sessionReminder": "تذكير جلسة",
+        "feedbackReceived": "تم استلام ملاحظات",
+        "reportReady": "التقرير جاهز",
+        "newMessage": "رسالة جديدة",
+        "general": "عام",
+        "sessionRequest": "طلب جلسة",
+        "caseRequestSubmitted": "تم تقديم طلب حالة",
+        "caseRequestAssigned": "تم تعيين طلب حالة",
+        "caseRequestAccepted": "تم قبول طلب الحالة",
+        "caseRequestRejected": "تم رفض طلب الحالة",
+        "caseRequestConverted": "تم تحويل طلب الحالة"
+      },
+      "systemText": {
+        "newMessageFrom": "رسالة جديدة من {name}",
+        "newMessageFromParticipant": "رسالة جديدة من مشارك",
+        "sentImage": "أُرسلت صورة",
+        "sentAudio": "أُرسل تسجيل صوتي",
+        "sentPdf": "أُرسل ملف PDF",
+        "sentVideo": "أُرسل فيديو",
+        "sentFile": "أُرسل ملف"
+      }
+    },
+    "profile": {
+      "empty": {
+        "loadError": "تعذر تحميل ملفك الشخصي حالياً."
+      },
+      "validation": {
+        "fullNameRequired": "الاسم الكامل مطلوب.",
+        "imageRequired": "يرجى اختيار ملف صورة."
+      },
+      "photoTitle": "صورة الملف الشخصي",
+      "accountInfo": "معلومات الحساب",
+      "accountReadOnly": "تفاصيل الحساب للقراءة فقط.",
+      "personalInfo": "المعلومات الشخصية",
+      "parentInfo": "معلومات ولي الأمر",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "role": "الدور",
+      "address": "العنوان",
+      "relationshipNotes": "ملاحظات العلاقة",
+      "emailStatus": "حالة البريد",
+      "verified": "موثّق",
+      "notVerified": "غير موثّق",
+      "memberSince": "عضو منذ",
+      "editProfile": "تعديل الملف الشخصي",
+      "saveChanges": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ...",
+      "changePhoto": "تغيير الصورة",
+      "avatarHint": "ملفات JPG أو PNG مدعومة.",
+      "phoneNumber": "رقم الهاتف",
+      "relationshipNotesLower": "ملاحظات العلاقة",
+      "profilePhotoAlt": "صورة {name} الشخصية"
+    },
+    "hooks": {
+      "loadComplaintsFailed": "فشل تحميل الشكاوى.",
+      "complaintNotFound": "الشكوى غير موجودة.",
+      "loadComplaintDetailFailed": "فشل تحميل تفاصيل الشكوى.",
+      "loadChildrenFailed": "فشل تحميل الأطفال المرتبطين.",
+      "signInComplaint": "يرجى تسجيل الدخول لتقديم شكوى.",
+      "loadSessionsFailed": "فشل تحميل الجلسات.",
+      "signInSessions": "يرجى تسجيل الدخول لعرض الجلسات.",
+      "loadSessionRequestsFailed": "فشل تحميل طلبات الجلسات.",
+      "submitSessionRequestFailed": "تعذر إرسال طلب الجلسة.",
+      "signInSessionRequests": "يرجى تسجيل الدخول لعرض طلبات الجلسات.",
+      "loadReportsFailed": "فشل تحميل التقارير.",
+      "signInReports": "يرجى تسجيل الدخول لعرض التقارير.",
+      "reportNotFound": "التقرير غير موجود.",
+      "loadReportDetailFailed": "فشل تحميل تفاصيل التقرير.",
+      "loadFeedbackFailed": "فشل تحميل ملاحظات التمارين.",
+      "signInFeedback": "يرجى تسجيل الدخول لعرض ملاحظات التمارين.",
+      "loadExercisesFailed": "فشل تحميل التمارين.",
+      "signInExercises": "يرجى تسجيل الدخول لعرض التمارين.",
+      "exerciseNotFound": "التمرين غير موجود.",
+      "exerciseWrongChild": "هذا التمرين لا ينتمي إلى الطفل المحدد.",
+      "loadExerciseDetailFailed": "فشل تحميل تفاصيل التمرين.",
+      "loadProgressFailed": "فشل تحميل التقدم.",
+      "signInProgress": "يرجى تسجيل الدخول لعرض التقدم.",
+      "loadProfileFailed": "فشل تحميل الملف الشخصي.",
+      "loadConversationsFailed": "فشل تحميل المحادثات.",
+      "signInMessages": "يرجى تسجيل الدخول لعرض الرسائل.",
+      "loadMessagesFailed": "فشل تحميل الرسائل.",
+      "sendMessageFailed": "فشل إرسال الرسالة.",
+      "loadNotificationsFailed": "فشل تحميل الإشعارات.",
+      "loadAiChildrenFailed": "فشل تحميل الأطفال.",
+      "loadAiConversationsFailed": "فشل تحميل المحادثات.",
+      "createAiConversationFailed": "فشل إنشاء محادثة.",
+      "aiConversationWrongChild": "هذه المحادثة تخص طفلاً آخر.",
+      "loadAiMessagesFailed": "فشل تحميل سجل الرسائل.",
+      "sendAiMessageFailed": "فشل إرسال الرسالة.",
+      "profileSaveFailed": "فشل حفظ الملف الشخصي.",
+      "profileUpdated": "تم تحديث الملف الشخصي بنجاح.",
+      "profileImageNoUrl": "نجح رفع الصورة لكن لم يُرجع عنوان URL.",
+      "profileSessionRefreshFailed": "تم حفظ الملف الشخصي لكن تعذر تحديث الجلسة. يرجى إعادة تحميل الصفحة."
+    }
+  },
+  "specialist": {
+    "nav": {
+      "home": "الرئيسية",
+      "patients": "المرضى",
+      "caseRequests": "طلبات الحالات",
+      "exercises": "التمارين",
+      "sessions": "الجلسات",
+      "reviews": "المراجعات",
+      "treatmentPlans": "الخطط العلاجية",
+      "reports": "التقارير",
+      "support": "الدعم"
+    },
+    "shell": {
+      "navigationAriaLabel": "تنقل الأخصائي",
+      "brandTitle": "Smart Rehabilitation",
+      "brandSubtitle": "Where Recovery Never Stops",
+      "searchPlaceholder": "ابحث عن المرضى أو الجلسات أو التقارير...",
+      "searchAriaLabel": "ابحث عن المرضى أو الجلسات أو التقارير"
+    },
+    "dashboard": {
+      "greeting": "مرحباً بعودتك، {name}",
+      "greetingSubtitle": "إليك نظرة عامة على عملك السريري اليوم.",
+      "greetingAriaLabel": "تحية الأخصائي",
+      "overviewTitle": "نظرة عامة",
+      "overviewAriaLabel": "نظرة عامة",
+      "overviewLoadingAriaLabel": "جاري تحميل ملخص النظرة العامة",
+      "viewAll": "عرض الكل",
+      "kpi": {
+        "activeCases": "الحالات النشطة",
+        "pendingReviews": "بانتظار المراجعة",
+        "todaysSessions": "جلسات اليوم",
+        "treatmentPlans": "الخطط العلاجية",
+        "loading": "جاري التحميل...",
+        "loadingAriaLabel": "جاري تحميل {label}",
+        "valueAriaLabel": "{label}: {value}"
+      },
+      "schedule": {
+        "title": "الجدول الأسبوعي",
+        "subtitle": "جلساتك لهذا الأسبوع",
+        "ariaLabel": "الجدول الأسبوعي",
+        "currentWeekAriaLabel": "الأسبوع الحالي",
+        "weekDayAriaLabel": "{weekday} {day}{hasSessions}",
+        "weekDayHasSessions": "، توجد جلسات",
+        "viewCalendar": "← عرض التقويم",
+        "loading": "جاري تحميل الجدول...",
+        "emptyWeek": "لا توجد جلسات مجدولة هذا الأسبوع.",
+        "nextSession": "الجلسة التالية",
+        "viewSession": "عرض الجلسة",
+        "onlineMeeting": "جلسة عبر الإنترنت",
+        "durationMinutes": "{minutes} د",
+        "noSessionsThisDayTitle": "لا توجد جلسات مجدولة لهذا اليوم.",
+        "noSessionsThisDayHint": "ستظهر الجلسات المجدولة هنا عند تعيينها.",
+        "noSessionsToday": "لا توجد جلسات مجدولة لليوم.",
+        "noMoreSessionsToday": "لا مزيد من الجلسات اليوم.",
+        "sessionRemainingToday": "جلسة واحدة متبقية اليوم",
+        "sessionsRemainingToday": "{count} جلسات متبقية اليوم",
+        "noSessionsThisDay": "لا توجد جلسات مجدولة لهذا اليوم.",
+        "scheduledSessionSingular": "جلسة واحدة مجدولة",
+        "scheduledSessionCount": "{count} جلسات مجدولة",
+        "nextSessionToday": "اليوم، {time}",
+        "nextSessionTomorrow": "غداً، {time}",
+        "sessionDateTime": "{date} • {time}",
+        "patientPhotoAlt": "صورة {name} الشخصية"
+      },
+      "reviews": {
+        "title": "بانتظار المراجعة",
+        "subtitle": "تقديمات بانتظار ملاحظاتك",
+        "ariaLabel": "المراجعات المعلقة",
+        "loading": "جاري تحميل المراجعات المعلقة...",
+        "empty": "لا توجد مراجعات معلّقة حالياً.",
+        "submittedRecently": "تم التقديم مؤخراً",
+        "submittedMinutesAgo": "تم التقديم منذ {minutes} د",
+        "submittedHoursAgo": "تم التقديم منذ {hours} س",
+        "submittedDaysAgo": "تم التقديم منذ {count} أيام",
+        "submittedOnDate": "تم التقديم {date}"
+      },
+      "progress": {
+        "title": "تقدم المرضى الأخير",
+        "subtitle": "أحدث التقدم عبر حالاتك النشطة",
+        "ariaLabel": "تقدم المرضى الأخير",
+        "loading": "جاري تحميل تقدم المرضى...",
+        "empty": "لا تتوفر بيانات تقدم بعد."
+      },
+      "errors": {
+        "signInRequired": "يرجى تسجيل الدخول كأخصائي لعرض لوحة التحكم.",
+        "overviewLoadFailed": "فشل تحميل نظرة عامة على لوحة التحكم.",
+        "scheduleSignInRequired": "يرجى تسجيل الدخول لعرض جدول الأخصائي.",
+        "scheduleLoadFailed": "فشل تحميل الجدول الأسبوعي.",
+        "reviewsSignInRequired": "يرجى تسجيل الدخول لعرض المراجعات المعلقة.",
+        "reviewsLoadFailed": "فشل تحميل المراجعات المعلقة.",
+        "progressSignInRequired": "يرجى تسجيل الدخول لعرض تقدم المرضى.",
+        "progressLoadFailed": "فشل تحميل تقدم المرضى."
+      }
+    },
+    "patients": {
+      "title": "المرضى",
+      "subtitle": "اعرض مرضاك المعيّنين وأدِرهم.",
+      "loading": "جارٍ تحميل المرضى...",
+      "empty": "لا يوجد مرضى نشطون معيّنون بعد.",
+      "cardAriaLabel": "عرض المريض {name}",
+      "errors": {
+        "loadFailed": "فشل تحميل المرضى.",
+        "signInRequired": "يرجى تسجيل الدخول لعرض المرضى."
+      }
+    },
+    "patientDetails": {
+      "back": "العودة إلى المرضى",
+      "loading": "جارٍ تحميل تفاصيل المريض...",
+      "notFound": "لم يتم العثور على المريض.",
+      "overallProgress": "التقدم العام",
+      "noProgressData": "لا تتوفر بيانات تقدم بعد.",
+      "messageParent": "مراسلة ولي الأمر",
+      "openingConversation": "جارٍ الفتح...",
+      "quickStatistics": "إحصائيات سريعة",
+      "treatmentPlan": "خطة العلاج",
+      "createTreatmentPlan": "إنشاء خطة علاج",
+      "editTreatmentPlan": "تعديل خطة العلاج",
+      "noTreatmentPlanYet": "لم تُعيَّن خطة علاج بعد.",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "goals": "الأهداف",
+      "manageGoals": "إدارة الأهداف",
+      "noGoals": "لم تُحدَّد أهداف لهذا المريض.",
+      "completion": "الإكمال",
+      "assignedExercises": "التمارين المعيّنة",
+      "assignExercise": "تعيين تمرين",
+      "noExercises": "لم تُعيَّن تمارين بعد.",
+      "dueDate": "الاستحقاق {date}",
+      "recentSubmissions": "أحدث تسليمات التمارين",
+      "reviewExercises": "مراجعة التمارين",
+      "noSubmissions": "لا توجد تسليمات تمارين بعد.",
+      "latestNotes": "أحدث ملاحظات الأخصائي",
+      "addSpecialistNote": "إضافة ملاحظة أخصائي",
+      "noNotes": "لا توجد ملاحظات أخصائي بعد.",
+      "addNoteTitle": "إضافة ملاحظة أخصائي",
+      "noteLabel": "ملاحظة",
+      "notePlaceholder": "أدخل ملاحظة سريرية...",
+      "noteRequired": "الملاحظة مطلوبة.",
+      "saveNote": "حفظ الملاحظة",
+      "savingNote": "جارٍ الحفظ...",
+      "saveNoteFailed": "تعذّر حفظ الملاحظة. يرجى المحاولة مرة أخرى.",
+      "noteSaved": "تم حفظ الملاحظة",
+      "viewReports": "عرض التقارير",
+      "aiRecommendations": "توصيات الذكاء الاصطناعي",
+      "speechAnalysis": "تحليل النطق",
+      "noDiagnosis": "لا يوجد تشخيص مسجّل",
+      "ageDiagnosis": "العمر {age} • {diagnosis}",
+      "ageOneYear": "سنة واحدة",
+      "ageYears": "{count} سنوات",
+      "familyPatternInsight": "رؤية النمط العائلي",
+      "clinicalSummary": "ملخص سريري",
+      "loadingFamilyPattern": "جارٍ تحميل رؤية النمط العائلي...",
+      "familyPatternNeutralSummary": "لم تُكتشف خصائص سريرية متكررة في السجلات المتاحة.",
+      "familyPatternDisclaimer": "تحدد هذه الميزة الخصائص المتكررة بين الأطفال المرتبطين بحساب ولي الأمر نفسه. ولا تُستخدم لتشخيص الحالات الوراثية أو الجينية.",
+      "evidenceLevel": "مستوى الدليل: {level}",
+      "reviewMatchedChildren": "مراجعة الأطفال المطابقين",
+      "matchedChildren": "الأطفال المطابقون",
+      "noMatchedChildrenDetails": "لا تتوفر تفاصيل الأطفال المطابقين.",
+      "close": "إغلاق",
+      "stats": {
+        "activeGoals": "الأهداف النشطة",
+        "assignedExercises": "التمارين المعيّنة",
+        "pendingReviews": "المراجعات المعلّقة",
+        "reports": "التقارير"
+      },
+      "planStatus": {
+        "active": "نشطة",
+        "completed": "مكتملة",
+        "archived": "مؤرشفة"
+      },
+      "goalTerm": {
+        "shortTerm": "قصير المدى",
+        "longTerm": "طويل المدى",
+        "default": "هدف"
+      },
+      "exerciseStatus": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "reviewStatus": {
+        "pending": "قيد الانتظار",
+        "reviewed": "تمت المراجعة",
+        "needsRetry": "يحتاج إعادة محاولة"
+      },
+      "mediaType": {
+        "video": "فيديو",
+        "audio": "صوت",
+        "image": "صورة"
+      },
+      "toast": {
+        "activePlanRequired": "يلزم وجود خطة علاج نشطة قبل تعيين تمرين.",
+        "noTreatmentPlan": "لم يتم العثور على خطة علاج لهذا المريض."
+      },
+      "errors": {
+        "loadFailed": "تعذّر تحميل تفاصيل المريض.",
+        "notFoundOrUnassigned": "لم يتم العثور على المريض أو أنه غير معيّن لك.",
+        "familyPatternLoadFailed": "تعذّر تحميل رؤية النمط العائلي.",
+        "noParentLinked": "لم يُربَط أي ولي أمر بهذا المريض بعد.",
+        "openConversationFailed": "تعذّر فتح المحادثة."
+      }
+    },
+    "caseRequests": {
+      "title": "طلبات الحالة",
+      "subtitle": "راجع الحالات المعيّنة وتابع حالة تقييمها.",
+      "loading": "جارٍ تحميل طلبات الحالة المعيّنة...",
+      "loadingMore": "جارٍ تحميل المزيد...",
+      "back": "العودة إلى طلبات الحالة",
+      "backShort": "رجوع",
+      "detailsTitle": "طلب الحالة",
+      "detailsIntro": "راجع المعلومات المقدّمة قبل بدء التقييم.",
+      "loadingDetails": "جارٍ تحميل طلب الحالة...",
+      "notFound": "لم يتم العثور على طلب الحالة.",
+      "parentLabel": "ولي الأمر: {name}",
+      "statusTimeline": "الجدول الزمني للحالة",
+      "rejectionReason": "سبب الرفض",
+      "noRejectionReason": "لم يُقدَّم سبب للرفض.",
+      "profileCreated": "تم إنشاء ملف المريض بنجاح.",
+      "openPatientProfile": "فتح ملف المريض",
+      "convertedMissingPatientId": "حالة التحويل موجودة، لكن لم يُعاد معرّف ملف المريض.",
+      "childInformation": "معلومات الطفل",
+      "caseInformation": "معلومات الحالة",
+      "previousDiagnosisTreatment": "التشخيص السابق والعلاج",
+      "parentInformation": "معلومات ولي الأمر",
+      "preliminaryAssessmentNotes": "ملاحظات التقييم الأولي",
+      "assessmentNotesLabel": "ملاحظات التقييم",
+      "assessmentNotesPlaceholder": "أدخل ملاحظات التقييم الأولي",
+      "saveNotes": "حفظ الملاحظات",
+      "savingNotes": "جارٍ الحفظ...",
+      "attachments": "المرفقات",
+      "noAttachments": "لا توجد مرفقات",
+      "openConversation": "فتح المحادثة",
+      "acceptCase": "قبول الحالة",
+      "creatingPatientProfile": "جارٍ إنشاء ملف المريض...",
+      "rejectCase": "رفض الحالة",
+      "rejecting": "جارٍ الرفض...",
+      "startAssessment": "بدء التقييم",
+      "startingAssessment": "جارٍ البدء...",
+      "copy": "نسخ",
+      "copyEmail": "تم نسخ البريد الإلكتروني",
+      "copyPhone": "تم نسخ رقم الهاتف",
+      "copyFailed": "تعذّر النسخ.",
+      "clearFilters": "مسح الفلاتر",
+      "notProvided": "غير متوفر",
+      "yes": "نعم",
+      "no": "لا",
+      "assignedOn": "تعيين {date}",
+      "submittedOn": "تقديم {date}",
+      "oneAttachment": "مرفق واحد",
+      "attachmentCount": "{count} مرفقات",
+      "conversationAvailable": "المحادثة متاحة",
+      "unnamedChild": "طفل بدون اسم",
+      "filters": {
+        "ariaLabel": "فلاتر طلبات الحالة",
+        "searchLabel": "البحث باسم الطفل",
+        "searchPlaceholder": "البحث باسم الطفل",
+        "clearSearchAriaLabel": "مسح البحث",
+        "statusLabel": "الحالة",
+        "categoryLabel": "الفئة",
+        "allStatuses": "جميع الحالات",
+        "allCategories": "جميع الفئات"
+      },
+      "fields": {
+        "dateOfBirth": "تاريخ الميلاد",
+        "age": "العمر",
+        "gender": "الجنس",
+        "caseDescription": "وصف الحالة",
+        "observedDifficulties": "الصعوبات الملحوظة",
+        "preferredContactPeriod": "فترة التواصل المفضلة",
+        "previousDiagnosis": "تشخيص سابق",
+        "diagnosisDetails": "تفاصيل التشخيص",
+        "currentlyReceivingTreatment": "يتلقى علاجاً حالياً",
+        "treatmentDetails": "تفاصيل العلاج",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف"
+      },
+      "gender": {
+        "male": "ذكر",
+        "female": "أنثى",
+        "other": "آخر"
+      },
+      "contactPeriod": {
+        "morning": "صباحاً",
+        "afternoon": "بعد الظهر",
+        "evening": "مساءً",
+        "flexible": "مرن"
+      },
+      "age": {
+        "unavailable": "غير متاح",
+        "oneYear": "سنة واحدة",
+        "years": "{count} سنوات"
+      },
+      "attachmentType": {
+        "image": "صورة",
+        "audio": "صوت",
+        "video": "فيديو",
+        "file": "ملف"
+      },
+      "category": {
+        "default": "الفئة",
+        "speechAndLanguageTherapy": "علاج النطق واللغة",
+        "behavioralTherapy": "العلاج السلوكي",
+        "occupationalTherapy": "العلاج الوظيفي",
+        "learningDifficulties": "صعوبات التعلم",
+        "autismSupport": "دعم التوحد",
+        "developmentalDelay": "تأخر النمو",
+        "motorRehabilitation": "إعادة التأهيل الحركي"
+      },
+      "status": {
+        "pending": "قيد المراجعة",
+        "assigned": "تم تعيين أخصائي",
+        "under_assessment": "قيد التقييم",
+        "accepted": "مقبول",
+        "rejected": "مرفوض",
+        "converted_to_patient": "تم إنشاء الملف"
+      },
+      "timeline": {
+        "assigned": "معيّن",
+        "underAssessment": "قيد التقييم",
+        "accepted": "مقبول",
+        "converted": "تم التحويل",
+        "inProgress": "قيد التقدّم"
+      },
+      "dialogs": {
+        "startAssessmentTitle": "بدء التقييم",
+        "startAssessmentBody": "تواصل مع ولي الأمر أولاً إن لم تكن قد فعلت. هل تريد بدء التقييم الأولي لهذه الحالة؟",
+        "acceptTitle": "قبول الحالة",
+        "acceptBody": "هل تريد قبول هذه الحالة لمتابعة إعادة التأهيل؟\n\nلن يتم إنشاء ملف المريض بعد.",
+        "rejectTitle": "رفض الحالة",
+        "rejectBody": "سيكون هذا السبب مرئياً لولي الأمر.",
+        "rejectReasonLabel": "سبب الرفض",
+        "rejectReasonPlaceholder": "أدخل سبب الرفض"
+      },
+      "validation": {
+        "assessmentNotesRequired": "ملاحظات التقييم مطلوبة.",
+        "assessmentNotesMaxLength": "يجب ألا تتجاوز ملاحظات التقييم 10000 حرف.",
+        "rejectReasonMinLength": "يجب أن يكون السبب 5 أحرف على الأقل.",
+        "rejectReasonMaxLength": "يجب ألا يتجاوز السبب 2000 حرف.",
+        "saveNotesBeforeAccept": "احفظ ملاحظات التقييم قبل قبول هذه الحالة.",
+        "saveNotesBeforeAcceptDirty": "احفظ ملاحظات التقييم قبل القبول."
+      },
+      "toast": {
+        "assessmentNotesUpdated": "تم تحديث ملاحظات التقييم بنجاح",
+        "assessmentStarted": "تم بدء التقييم بنجاح",
+        "patientProfileCreated": "تم إنشاء ملف المريض بنجاح.",
+        "caseRejected": "تم رفض طلب الحالة بنجاح",
+        "patientProfileUnavailable": "ملف المريض غير متاح لهذا الطلب.",
+        "attachmentOpenFailed": "تعذّر فتح هذا المرفق.",
+        "waitSavingNotes": "يرجى الانتظار أثناء حفظ ملاحظات التقييم.",
+        "waitCreatingProfile": "يرجى الانتظار أثناء إنشاء ملف المريض.",
+        "waitRejecting": "يرجى الانتظار أثناء رفض الحالة.",
+        "waitStartingAssessment": "يرجى الانتظار أثناء بدء التقييم."
+      },
+      "empty": {
+        "none": "لا توجد طلبات حالة معيّنة بعد.\nستظهر الحالات المعيّنة هنا بعد أن يختارك المسؤول لطلب.",
+        "filtered": "لا توجد طلبات حالة تطابق الفلاتر المحددة."
+      },
+      "errors": {
+        "signInRequired": "يرجى تسجيل الدخول لعرض طلبات الحالة.",
+        "loadFailed": "فشل تحميل طلبات الحالة المعيّنة.",
+        "loadMoreFailed": "فشل تحميل المزيد من طلبات الحالة.",
+        "loadDetailsFailed": "فشل تحميل طلب الحالة.",
+        "startAssessmentFailed": "فشل بدء التقييم.",
+        "updateNotesFailed": "فشل تحديث ملاحظات التقييم.",
+        "acceptFailed": "فشل قبول طلب الحالة.",
+        "rejectFailed": "فشل رفض طلب الحالة."
+      }
+    },
+    "exercises": {
+      "title": "مكتبة التمارين",
+      "subtitle": "تصفّح تمارين العلاج حسب الفئة والبحث.",
+      "addExercise": "إضافة تمرين",
+      "back": "رجوع",
+      "backToExercises": "العودة إلى التمارين",
+      "detailsTitle": "تفاصيل التمرين",
+      "createTitle": "إضافة تمرين",
+      "editTitle": "تعديل التمرين",
+      "formSubtitle": "أضف تمارين علاجية إلى المكتبة المشتركة للتعيين.",
+      "formHeading": "معلومات التمرين",
+      "editExercise": "تعديل التمرين",
+      "includesMedia": "يتضمن وسائط تعليمية",
+      "loading": "جارٍ تحميل التمارين...",
+      "loadingExercise": "جارٍ تحميل التمرين...",
+      "loadingCategories": "جارٍ تحميل الفئات...",
+      "creating": "جارٍ الإنشاء...",
+      "saving": "جارٍ الحفظ...",
+      "saveChanges": "حفظ التغييرات",
+      "createExercise": "إنشاء تمرين",
+      "pleaseWait": "يرجى الانتظار…",
+      "filters": {
+        "all": "الكل",
+        "ariaLabel": "فلاتر فئات التمارين"
+      },
+      "search": {
+        "placeholder": "ابحث بالعنوان أو الفئة أو التعليمات...",
+        "ariaLabel": "البحث في التمارين"
+      },
+      "fields": {
+        "category": "الفئة",
+        "selectCategory": "اختر الفئة",
+        "language": "لغة التمرين",
+        "title": "العنوان",
+        "titlePlaceholder": "عنوان التمرين",
+        "descriptionOptional": "الوصف (اختياري)",
+        "instructions": "التعليمات",
+        "instructionsPlaceholder": "تعليمات مفصلة"
+      },
+      "details": {
+        "languageLine": "اللغة: {language}",
+        "createdBy": "أنشأه {name}",
+        "description": "الوصف",
+        "noDescription": "لا يوجد وصف متاح.",
+        "instructions": "التعليمات",
+        "noInstructions": "لا توجد تعليمات متاحة.",
+        "instructionMedia": "وسائط تعليمية",
+        "unableLoadImage": "تعذّر تحميل معاينة الصورة.",
+        "pdfAttached": "مرفق PDF تعليمي. افتحه خارجياً للعرض.",
+        "mediaAttached": "وسائط مرفقة. افتحها خارجياً للعرض.",
+        "openPdf": "فتح PDF",
+        "openExternally": "فتح خارجياً",
+        "mediaPreviewAlt": "معاينة {filename}",
+        "currentMediaPreviewAlt": "الوسائط الحالية {filename}"
+      },
+      "empty": {
+        "none": "لا توجد تمارين متاحة.",
+        "filtered": "لا توجد تمارين تطابق البحث أو الفئة المحددة.",
+        "noCategories": "لا توجد فئات تمارين متاحة بعد.",
+        "notFound": "لم يتم العثور على التمرين.",
+        "forbidden": "ليس لديك إذن لتعديل هذا التمرين."
+      },
+      "category": {
+        "speechArticulation": "نطق الكلام",
+        "fluency": "الطلاقة",
+        "languageDevelopment": "تنمية اللغة",
+        "voiceAndBreathing": "الصوت والتنفس",
+        "fineMotorSkills": "المهارات الحركية الدقيقة",
+        "grossMotorSkills": "المهارات الحركية الكبرى",
+        "sensoryIntegration": "التكامل الحسي",
+        "dailyLivingSkills": "مهارات الحياة اليومية",
+        "motorRehabilitation": "إعادة التأهيل الحركي",
+        "behavioralSkills": "المهارات السلوكية",
+        "socialCommunication": "التواصل الاجتماعي",
+        "autismSupport": "دعم التوحد",
+        "developmentalActivities": "أنشطة تنموية",
+        "learningAndCognitiveSkills": "التعلم والمهارات المعرفية",
+        "speechTherapy": "العلاج النطقي"
+      },
+      "validation": {
+        "selectCategory": "يرجى اختيار فئة.",
+        "titleRequired": "العنوان مطلوب."
+      },
+      "media": {
+        "sectionTitle": "وسائط تعليمية (اختياري)",
+        "selectedMedia": "الوسائط المحددة",
+        "currentMediaAttached": "وسائط مرفقة حالياً",
+        "noMediaSelected": "لم يتم اختيار وسائط. الصور والصوت وPDF وفيديو MP4/MOV مدعومة (بحد أقصى 50 ميغابايت).",
+        "removalPending": "ستُزال الوسائط التعليمية عند الحفظ.",
+        "uploading": "جارٍ رفع الوسائط...",
+        "replaceMedia": "استبدال الوسائط",
+        "addMedia": "إضافة وسائط",
+        "remove": "إزالة",
+        "removeTooltip": "إزالة الوسائط",
+        "undo": "تراجع",
+        "type": {
+          "image": "صورة",
+          "video": "فيديو",
+          "audio": "صوت",
+          "pdf": "PDF",
+          "file": "ملف"
+        },
+        "validation": {
+          "unableReadFile": "تعذّر قراءة الملف المحدد.",
+          "unsupportedType": "نوع الوسائط غير مدعوم. استخدم صورة أو صوت أو PDF أو فيديو MP4/MOV.",
+          "fileTooLarge": "الملف كبير جداً. الحد الأقصى للحجم 50 ميغابايت."
+        }
+      },
+      "toast": {
+        "createdSuccess": "تم إنشاء التمرين بنجاح",
+        "updatedSuccess": "تم تحديث التمرين بنجاح"
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل التمارين.",
+        "loadExerciseFailed": "تعذّر تحميل التمرين. يرجى المحاولة مرة أخرى.",
+        "loadCategoriesFailed": "تعذّر تحميل الفئات. يرجى المحاولة مرة أخرى.",
+        "createFailed": "فشل إنشاء التمرين.",
+        "saveFailed": "تعذّر حفظ التمرين. يرجى المحاولة مرة أخرى.",
+        "uploadFailed": "فشل رفع الوسائط التعليمية."
+      }
+    },
+    "treatmentPlans": {
+      "title": "الخطط العلاجية",
+      "subtitle": "إدارة خطط العلاج للمرضى المعيّنين لك.",
+      "createTitle": "إنشاء خطة علاج",
+      "createSubtitle": "أنشئ خطة علاج وحدّد فترة نشاطها.",
+      "editTitle": "تعديل خطة العلاج",
+      "addPlan": "إضافة خطة علاجية",
+      "addPlanAriaLabel": "إضافة خطة علاجية",
+      "back": "رجوع",
+      "loading": "جارٍ تحميل الخطط العلاجية...",
+      "loadingPlan": "جارٍ تحميل خطة العلاج...",
+      "loadingPatients": "جارٍ تحميل المرضى...",
+      "creating": "جارٍ الإنشاء...",
+      "saving": "جارٍ الحفظ...",
+      "saveChanges": "حفظ التغييرات",
+      "createPlan": "إنشاء خطة علاج",
+      "pleaseWait": "يرجى الانتظار…",
+      "dateRangeSeparator": " ← ",
+      "filters": {
+        "all": "الكل",
+        "ariaLabel": "فلاتر الخطط العلاجية"
+      },
+      "search": {
+        "placeholder": "ابحث بعنوان الخطة أو اسم المريض",
+        "ariaLabel": "البحث بعنوان الخطة أو اسم المريض"
+      },
+      "fields": {
+        "patient": "المريض",
+        "selectPatient": "اختر المريض",
+        "assignedPatient": "مريض معيّن",
+        "planTitle": "عنوان الخطة",
+        "planTitlePlaceholder": "عنوان خطة العلاج",
+        "status": "الحالة",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء (اختياري)",
+        "clearDate": "مسح",
+        "planInformation": "معلومات الخطة",
+        "statusAriaLabel": "حالة الخطة"
+      },
+      "status": {
+        "active": "نشطة",
+        "completed": "مكتملة",
+        "archived": "مؤرشفة",
+        "newPlanHelper": "تُنشأ الخطط الجديدة بحالة نشطة."
+      },
+      "goal": {
+        "currentGoals": "الأهداف الحالية",
+        "noGoals": "لم تُحدَّد أهداف لهذه الخطة.",
+        "completion": "الإكمال"
+      },
+      "patientSummary": {
+        "title": "ملخص المريض",
+        "ageYears": "العمر: {count} سنة",
+        "noProgress": "لا تتوفر بيانات تقدم بعد.",
+        "overallProgress": "التقدم العام"
+      },
+      "picker": {
+        "title": "اختر المريض",
+        "noPatients": "لا يوجد مرضى معيّنون متاحون.",
+        "hasActivePlan": "لدى هذا المريض خطة علاج نشطة بالفعل.",
+        "noActivePlan": "لا توجد خطة نشطة"
+      },
+      "empty": {
+        "none": "لم يتم العثور على خطط علاج.",
+        "filtered": "لا توجد خطط تطابق البحث أو الفلتر.",
+        "notFound": "لم يتم العثور على خطة العلاج.",
+        "unauthorized": "لم يتم العثور على خطة العلاج أو ليس لديك صلاحية الوصول."
+      },
+      "validation": {
+        "patientRequired": "المريض مطلوب",
+        "titleRequired": "عنوان الخطة مطلوب",
+        "startDateRequired": "تاريخ البدء مطلوب",
+        "endDateBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء"
+      },
+      "toast": {
+        "createdSuccess": "تم إنشاء خطة العلاج بنجاح",
+        "updatedSuccess": "تم تحديث خطة العلاج بنجاح",
+        "noPatients": "لا يوجد مرضى معيّنون متاحون."
+      },
+      "errors": {
+        "signInRequired": "يرجى تسجيل الدخول لعرض الخطط العلاجية.",
+        "signInRequiredCreate": "يرجى تسجيل الدخول لإنشاء خطة علاج.",
+        "loadFailed": "فشل تحميل الخطط العلاجية.",
+        "loadPatientsFailed": "فشل تحميل المرضى.",
+        "loadPlanFailed": "فشل تحميل خطة العلاج.",
+        "createFailed": "تعذّر إنشاء خطة العلاج. يرجى المحاولة مرة أخرى.",
+        "saveFailed": "تعذّر حفظ خطة العلاج. يرجى المحاولة مرة أخرى.",
+        "patientAccessDenied": "ليس لديك صلاحية الوصول إلى هذا المريض."
+      }
+    },
+    "progress": {
+      "title": "تقدم المريض",
+      "subtitle": "راجع التقدم عبر مرضاك المعيّنين",
+      "loading": "جارٍ تحميل تقدم المرضى...",
+      "empty": "لا تتوفر بيانات تقدم بعد.",
+      "latestUpdate": "آخر تحديث: {date}",
+      "viewPatient": "عرض المريض",
+      "viewPatientAria": "عرض المريض {name}"
+    },
+    "reviews": {
+      "title": "المراجعات",
+      "subtitle": "تسليمات بانتظار ملاحظاتك",
+      "loading": "جارٍ تحميل المراجعات المعلّقة...",
+      "empty": "لا توجد مراجعات معلّقة حالياً.",
+      "back": "العودة إلى المراجعات",
+      "exerciseTitle": "مراجعة التمرين",
+      "exerciseSubtitle": "راجع وسائط التمرين المُرسلة وقدّم ملاحظاتك.",
+      "loadingSubmission": "جارٍ تحميل التسليم...",
+      "submissionNotFound": "لم يتم العثور على التسليم.",
+      "submittedSuccess": "تم إرسال المراجعة بنجاح",
+      "labels": {
+        "patient": "المريض",
+        "exercise": "التمرين",
+        "submitted": "تاريخ الإرسال"
+      },
+      "form": {
+        "section": "المراجعة",
+        "rating": "التقييم",
+        "ratingAriaLabel": "تقييم الأداء",
+        "starAriaLabel": "{count} نجمة",
+        "feedback": "الملاحظات",
+        "feedbackPlaceholder": "اكتب ملاحظات للوالد والمريض...",
+        "status": "الحالة",
+        "decisionAriaLabel": "قرار المراجعة",
+        "submit": "إرسال المراجعة",
+        "update": "تحديث المراجعة",
+        "submitting": "جارٍ الإرسال...",
+        "speechAnalysis": "عرض تحليل النطق"
+      },
+      "decision": {
+        "approved": "مقبول",
+        "needsRetry": "يحتاج إعادة محاولة"
+      },
+      "media": {
+        "title": "الوسائط المرفوعة",
+        "empty": "لم يتم رفع وسائط لهذا التسليم.",
+        "submissionAlt": "وسائط التسليم",
+        "loadFailedVideo": "تعذّر تحميل الفيديو.",
+        "loadFailedAudio": "تعذّر تحميل الصوت.",
+        "loadFailedImage": "تعذّر تحميل الصورة.",
+        "unsupportedType": "نوع وسائط غير مدعوم للمعاينة.",
+        "type": {
+          "image": "صورة",
+          "audio": "صوت",
+          "video": "فيديو",
+          "pdf": "PDF",
+          "file": "ملف"
+        }
+      },
+      "errors": {
+        "signInRequired": "يرجى تسجيل الدخول لعرض المراجعات المعلّقة.",
+        "loadFailed": "فشل تحميل المراجعات المعلّقة.",
+        "loadSubmissionFailed": "تعذّر تحميل التسليم.",
+        "submitFailed": "تعذّر إرسال المراجعة."
+      }
+    },
+    "sessions": {
+      "title": "الجلسات",
+      "subtitle": "إدارة جلسات العلاج وطلبات أولياء الأمور.",
+      "scheduleSession": "جدولة جلسة",
+      "loading": "جارٍ تحميل الجلسات...",
+      "loadingRequests": "جارٍ تحميل طلبات الجلسات...",
+      "searchPlaceholder": "البحث باسم المريض",
+      "searchAriaLabel": "البحث باسم المريض",
+      "meetingLink": "رابط الاجتماع",
+      "openMeetingLink": "فتح رابط الاجتماع",
+      "tabs": {
+        "sessions": "الجلسات",
+        "requests": "الطلبات",
+        "sectionsAriaLabel": "أقسام الجلسات"
+      },
+      "view": {
+        "list": "القائمة",
+        "calendar": "التقويم",
+        "ariaLabel": "عرض الجلسات"
+      },
+      "filters": {
+        "ariaLabel": "تصفية الجلسات",
+        "requestAriaLabel": "تصفية طلبات الجلسات",
+        "all": "الكل",
+        "today": "اليوم",
+        "upcoming": "القادمة",
+        "past": "السابقة",
+        "pending": "قيد الانتظار",
+        "approved": "مقبول",
+        "rejected": "مرفوض"
+      },
+      "empty": {
+        "noSessions": "لم يتم العثور على جلسات.",
+        "noMatch": "لا توجد جلسات تطابق البحث أو التصفية.",
+        "noSessionsOnDate": "لا توجد جلسات مجدولة في هذا التاريخ.",
+        "noRequests": "لا توجد طلبات جلسات بعد.",
+        "noPendingRequests": "لا توجد طلبات جلسات معلّقة.",
+        "noRequestsMatchFilter": "لا توجد طلبات جلسات تطابق هذا التصفية."
+      },
+      "calendar": {
+        "previousMonth": "الشهر السابق",
+        "nextMonth": "الشهر التالي",
+        "durationMinutes": "{minutes} د"
+      },
+      "location": {
+        "online": "عن بُعد",
+        "inPerson": "حضورياً"
+      },
+      "request": {
+        "preferredDate": "التاريخ المفضل",
+        "preferredTime": "الوقت المفضل",
+        "requested": "تاريخ الطلب",
+        "scheduledAt": "مجدولة: {dateTime}",
+        "duration": "المدة:",
+        "reason": {
+          "regularFollowUp": "متابعة دورية",
+          "replacementCancelled": "بديل لجلسة ملغاة",
+          "replacementMissed": "بديل لجلسة فائتة",
+          "additionalSession": "جلسة إضافية",
+          "consultation": "استشارة",
+          "other": "أخرى",
+          "default": "طلب جلسة"
+        },
+        "timePeriod": {
+          "morning": "صباحاً",
+          "afternoon": "بعد الظهر",
+          "evening": "مساءً",
+          "flexible": "مرن"
+        }
+      },
+      "schedule": {
+        "title": "جدولة جلسة",
+        "subtitle": "جدولة جلسة لأحد المرضى المعيّنين لك.",
+        "back": "رجوع",
+        "loadingPatients": "جارٍ تحميل المرضى...",
+        "noAssignedPatients": "لم يتم العثور على مرضى معيّنين. عيّن مريضاً قبل الجدولة.",
+        "patient": "المريض",
+        "selectPatient": "اختر مريضاً",
+        "sessionTypeTitle": "نوع الجلسة / العنوان",
+        "sessionTypePlaceholder": "جلسة علاج",
+        "duration": "المدة (بالدقائق)",
+        "durationUnit": "دقائق",
+        "date": "التاريخ",
+        "startTime": "وقت البدء",
+        "locationOrLink": "الموقع أو رابط الاجتماع",
+        "locationHint": "غرفة العيادة أو https://…",
+        "notesOptional": "ملاحظات (اختياري)",
+        "notesPlaceholder": "تفاصيل إضافية لهذه الجلسة",
+        "formHelper": "راجع تفاصيل الجلسة قبل الجدولة.",
+        "scheduling": "جارٍ الجدولة...",
+        "scheduleSession": "جدولة جلسة",
+        "scheduledSuccess": "تمت جدولة الجلسة بنجاح.",
+        "signInRequired": "يرجى تسجيل الدخول لجدولة جلسة.",
+        "pleaseWait": "يرجى الانتظار…"
+      },
+      "validation": {
+        "titleRequired": "أدخل نوع الجلسة أو العنوان.",
+        "patientRequired": "اختر مريضاً معيّناً.",
+        "durationRange": "يجب أن تكون المدة بين 1 و480 دقيقة.",
+        "futureDateTimeRequired": "يجب أن يكون تاريخ ووقت الجدولة في المستقبل."
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل الجلسات.",
+        "loadPatientsFailed": "فشل تحميل المرضى.",
+        "createFailed": "تعذّر إنشاء الجلسة. يرجى المحاولة مرة أخرى.",
+        "loadRequestsFailed": "فشل تحميل طلبات الجلسات.",
+        "signInRequiredCreate": "يرجى تسجيل الدخول للمتابعة."
+      }
+    },
+    "reports": {
+      "title": "التقارير",
+      "patientTitle": "تقارير المريض",
+      "subtitle": "عرض التقارير لمرضاك النشطين.",
+      "subtitleForPatient": "تقارير {name}",
+      "backToPatient": "العودة إلى المريض",
+      "backToReports": "العودة إلى التقارير",
+      "detailTitle": "تفاصيل التقرير",
+      "loading": "جارٍ تحميل التقارير...",
+      "loadingDetail": "جارٍ تحميل التقرير...",
+      "notFound": "لم يتم العثور على التقرير.",
+      "searchPlaceholder": "البحث بالمريض أو العنوان",
+      "searchAriaLabel": "البحث بالمريض أو العنوان",
+      "filters": {
+        "ariaLabel": "فلاتر التقارير",
+        "all": "الكل",
+        "weekly": "أسبوعي",
+        "monthly": "شهري",
+        "assessment": "التقييم",
+        "aiReports": "تقارير الذكاء الاصطناعي",
+        "recent": "الأحدث"
+      },
+      "empty": {
+        "none": "لا توجد تقارير متاحة بعد.",
+        "nonePatient": "لا توجد تقارير متاحة لهذا المريض بعد.",
+        "filtered": "لا توجد تقارير تطابق البحث أو الفلتر الحالي."
+      },
+      "labels": {
+        "patient": "المريض",
+        "specialist": "الأخصائي",
+        "reportType": "نوع التقرير",
+        "createdDate": "تاريخ الإنشاء",
+        "period": "الفترة",
+        "status": "الحالة",
+        "reportInformation": "معلومات التقرير"
+      },
+      "status": {
+        "pdfReady": "PDF جاهز"
+      },
+      "type": {
+        "ai": "ذكاء اصطناعي",
+        "aiReport": "تقرير ذكاء اصطناعي",
+        "report": "تقرير",
+        "weekly": "أسبوعي",
+        "monthly": "شهري",
+        "assessment": "التقييم",
+        "daily": "يومي",
+        "progress": "التقدم",
+        "clinical": "سريري",
+        "summary": "الملخص"
+      },
+      "titleLabels": {
+        "weeklyProgress": "تقرير التقدم الأسبوعي",
+        "monthlyProgress": "تقرير التقدم الشهري",
+        "assessment": "تقرير التقييم",
+        "progress": "تقرير التقدم",
+        "aiWeeklySummary": "ملخص أسبوعي بالذكاء الاصطناعي",
+        "aiMonthlySummary": "ملخص شهري بالذكاء الاصطناعي",
+        "aiClinicalSummary": "الملخص السريري بالذكاء الاصطناعي",
+        "aiAssessmentSummary": "ملخص التقييم بالذكاء الاصطناعي",
+        "aiTypeSummary": "ملخص {type} بالذكاء الاصطناعي",
+        "typeReport": "تقرير {type}"
+      },
+      "sections": {
+        "summary": "الملخص",
+        "aiSummary": "ملخص الذكاء الاصطناعي"
+      },
+      "pdf": {
+        "view": "عرض PDF",
+        "copyLink": "نسخ رابط PDF",
+        "generate": "إنشاء PDF",
+        "generating": "جارٍ إنشاء PDF...",
+        "linkCopied": "تم نسخ رابط PDF إلى الحافظة",
+        "copyFailed": "تعذّر نسخ رابط PDF.",
+        "generatedSuccess": "تم إنشاء PDF بنجاح"
+      },
+      "errors": {
+        "signInRequired": "يرجى تسجيل الدخول لعرض التقارير.",
+        "loadFailed": "فشل تحميل التقارير.",
+        "loadDetailFailed": "فشل تحميل التقرير.",
+        "generatePdfFailed": "فشل إنشاء PDF."
+      }
+    },
+    "aiRecommendations": {
+      "title": "توصيات الذكاء الاصطناعي",
+      "backToPatient": "العودة إلى المريض",
+      "patientSubtitle": "توصيات سريرية مدعومة بالذكاء الاصطناعي",
+      "loading": "جارٍ تحميل توصيات الذكاء الاصطناعي...",
+      "sectionTitle": "التوصيات",
+      "generate": {
+        "title": "إنشاء توصية",
+        "subtitle": "أنشئ توصيات تمارين أو تعديلات على الخطة من سياق المريض.",
+        "exerciseSuggestion": "إنشاء اقتراح تمرين",
+        "planAdjustment": "إنشاء تعديل على الخطة",
+        "generating": "جارٍ الإنشاء..."
+      },
+      "empty": "أنشئ أول توصية بالذكاء الاصطناعي",
+      "sections": {
+        "summary": "الملخص",
+        "reason": "السبب",
+        "clinicalAnalysis": "التحليل السريري",
+        "suggestedExercises": "التمارين المقترحة",
+        "planAdjustment": "تعديل الخطة",
+        "confidence": "الثقة"
+      },
+      "type": {
+        "exerciseSuggestion": "اقتراح تمرين",
+        "planAdjustment": "تعديل الخطة",
+        "recommendation": "توصية"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "accepted": "مقبول",
+        "rejected": "مرفوض",
+        "unknown": "غير معروف"
+      },
+      "priority": {
+        "label": "الأولوية",
+        "high": "مرتفع",
+        "medium": "متوسط",
+        "low": "منخفض"
+      },
+      "suggestedExerciseFallback": "تمرين مقترح",
+      "actions": {
+        "accept": "قبول",
+        "reject": "رفض",
+        "saving": "جارٍ الحفظ..."
+      },
+      "toast": {
+        "generated": "تم إنشاء توصية الذكاء الاصطناعي",
+        "accepted": "تم قبول التوصية",
+        "rejected": "تم رفض التوصية"
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل توصيات الذكاء الاصطناعي.",
+        "generateFailed": "فشل إنشاء التوصية.",
+        "acceptFailed": "فشل قبول التوصية.",
+        "rejectFailed": "فشل رفض التوصية.",
+        "generateFailedWithReason": "فشل إنشاء التوصية: {reason}",
+        "acceptFailedWithReason": "فشل قبول التوصية: {reason}",
+        "rejectFailedWithReason": "فشل رفض التوصية: {reason}"
+      }
+    },
+    "messages": {
+      "title": "الرسائل",
+      "subtitle": "محادثات مع أولياء الأمور حول مرضاك",
+      "conversations": "المحادثات",
+      "searchLabel": "البحث في المحادثات",
+      "searchPlaceholder": "ابحث عن ولي أمر أو مريض",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "conversationDefault": "محادثة",
+      "selectConversation": "اختر محادثة لعرض الرسائل.",
+      "loadingConversations": "جارٍ تحميل المحادثات...",
+      "loadingMessages": "جارٍ تحميل الرسائل...",
+      "empty": {
+        "conversations": "لا توجد محادثات مع أولياء الأمور بعد.",
+        "filtered": "لا توجد محادثات تطابق بحثك.",
+        "chat": "لا توجد رسائل بعد. ابدأ المحادثة."
+      },
+      "regardingChild": "بخصوص {name}",
+      "patientLabel": "المريض: {name}",
+      "startedOn": "بدأت {date}",
+      "composer": {
+        "placeholder": "اكتب رسالة...",
+        "send": "إرسال",
+        "sending": "جارٍ الإرسال...",
+        "removeAttachment": "إزالة",
+        "stopRecording": "إيقاف التسجيل",
+        "addAttachment": "إضافة مرفق",
+        "chooseImage": "اختر صورة",
+        "recordAudio": "تسجيل صوت",
+        "chooseFile": "اختر ملفًا",
+        "chooseVideo": "اختر فيديو",
+        "selectedImageAlt": "معاينة الصورة المحددة",
+        "uploading": "جارٍ الرفع… {percent}%"
+      },
+      "presence": {
+        "online": "متصل",
+        "offline": "غير متصل",
+        "checkingStatus": "جارٍ التحقق من الحالة...",
+        "lastSeenJustNow": "آخر ظهور للتو",
+        "lastSeenMinutes": "آخر ظهور منذ {count} د",
+        "lastSeenHours": "آخر ظهور منذ {count} س",
+        "lastSeenAt": "آخر ظهور {datetime}"
+      },
+      "attachments": {
+        "imageUnavailable": "الصورة غير متاحة",
+        "videoUnavailable": "الفيديو غير متاح",
+        "audioUnavailable": "الصوت غير متاح",
+        "downloadVideo": "تنزيل الفيديو",
+        "pdfDocument": "مستند PDF",
+        "viewImage": "عرض الصورة: {label}"
+      },
+      "lightbox": {
+        "preview": "معاينة الصورة",
+        "closePreview": "إغلاق المعاينة",
+        "close": "إغلاق"
+      },
+      "systemText": {
+        "sentImage": "أرسل صورة",
+        "sentAudio": "أرسل تسجيلًا صوتيًا",
+        "sentPdf": "أرسل ملف PDF",
+        "sentVideo": "أرسل فيديو",
+        "sentFile": "أرسل ملفًا"
+      },
+      "attachmentValidation": {
+        "selectFile": "يرجى اختيار ملف.",
+        "unsupportedType": "نوع الملف غير مدعوم.",
+        "tooLarge": "الملف كبير جدًا. الحد الأقصى المسموح هو {size}.",
+        "recordingNotSupported": "تسجيل الصوت غير مدعوم في هذا المتصفح.",
+        "micPermission": "يلزم إذن الميكروفون لتسجيل الصوت.",
+        "micAccessFailed": "تعذّر الوصول إلى الميكروفون.",
+        "recordingFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+        "noAudioRecorded": "لم يتم تسجيل أي صوت.",
+        "processRecordingFailed": "تعذّر معالجة التسجيل."
+      },
+      "errors": {
+        "signInRequired": "يرجى تسجيل الدخول لعرض الرسائل.",
+        "loadConversationsFailed": "فشل تحميل المحادثات.",
+        "loadMessagesFailed": "فشل تحميل الرسائل.",
+        "sendFailed": "فشل إرسال الرسالة.",
+        "attachmentUrlMissing": "لم يُرجع رفع المرفق عنوان URL للملف."
+      }
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "subtitle": "ابقَ على اطلاع بمرضاك والنشاط السريري",
+      "loading": "جارٍ تحميل الإشعارات...",
+      "empty": {
+        "none": "لا توجد إشعارات بعد."
+      },
+      "markAllRead": "تحديد الكل كمقروء",
+      "markAllReadFailed": "تعذّر تحديد جميع الإشعارات كمقروءة.",
+      "markReadFailed": "تعذّر تحديد الإشعار كمقروء.",
+      "defaultTitle": "إشعار",
+      "unread": "غير مقروء",
+      "unreadNotification": "إشعار غير مقروء: {title}",
+      "notification": "إشعار: {title}",
+      "time": {
+        "justNow": "الآن",
+        "minutesAgo": "منذ {count} د",
+        "hoursAgo": "منذ {count} س",
+        "daysAgo": "منذ {count} ي",
+        "recently": "مؤخرًا"
+      },
+      "type": {
+        "exerciseReminder": "تذكير بتمرين",
+        "sessionReminder": "تذكير بجلسة",
+        "feedbackReceived": "تم استلام ملاحظات",
+        "reportReady": "التقرير جاهز",
+        "newMessage": "رسالة جديدة",
+        "general": "عام",
+        "sessionRequest": "طلب جلسة",
+        "caseRequestSubmitted": "تم تقديم طلب حالة",
+        "caseRequestAssigned": "تم تعيين طلب حالة",
+        "caseRequestAccepted": "تم قبول طلب حالة",
+        "caseRequestRejected": "تم رفض طلب حالة",
+        "caseRequestConverted": "تم تحويل طلب حالة",
+        "supportRequestSubmitted": "تم تقديم طلب دعم",
+        "supportRequestReply": "رد على طلب الدعم",
+        "supportRequestStatusChanged": "تغيّرت حالة طلب الدعم",
+        "update": "تحديث"
+      },
+      "systemText": {
+        "newMessageFrom": "رسالة جديدة من {name}",
+        "sentImage": "أرسل صورة",
+        "sentAudio": "أرسل تسجيلًا صوتيًا",
+        "sentPdf": "أرسل ملف PDF",
+        "sentVideo": "أرسل فيديو",
+        "sentFile": "أرسل ملفًا"
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل الإشعارات."
+      }
+    },
+    "support": {
+      "title": "الدعم",
+      "subtitle": "تواصل مع الإدارة للمسائل التشغيلية ودعم المنصة.",
+      "newRequest": "طلب جديد",
+      "backToList": "العودة إلى طلبات الدعم",
+      "viewRequest": "عرض الطلب",
+      "lastActivity": "آخر نشاط {date}",
+      "created": "تاريخ الإنشاء {date}",
+      "loading": "جارٍ تحميل طلبات الدعم...",
+      "empty": {
+        "none": "لم تقدّم أي طلبات دعم بعد.",
+        "filtered": "لا توجد طلبات دعم تطابق عوامل التصفية المحددة."
+      },
+      "filters": {
+        "status": "الحالة",
+        "category": "الفئة",
+        "clear": "مسح عوامل التصفية"
+      },
+      "form": {
+        "title": "طلب دعم جديد",
+        "subtitle": "صف المشكلة حتى تتمكن الإدارة من المراجعة والرد في سلسلة الطلب.",
+        "intro": "قدّم طلب دعم منظمًا للإدارة. هذا ليس محادثة مباشرة مع أولياء الأمور.",
+        "category": "الفئة",
+        "selectCategory": "اختر فئة",
+        "subject": "الموضوع",
+        "description": "الوصف",
+        "submit": "إرسال الطلب",
+        "submitting": "جارٍ الإرسال...",
+        "submitSuccess": "تم إرسال طلب الدعم بنجاح."
+      },
+      "detail": {
+        "loading": "جارٍ تحميل طلب الدعم...",
+        "unavailable": "طلب الدعم غير متاح.",
+        "replySuccess": "تم إرسال الرد بنجاح."
+      },
+      "validation": {
+        "messageRequired": "محتوى الرسالة أو المرفق مطلوب."
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل طلبات الدعم.",
+        "submitFailed": "فشل إرسال طلب الدعم.",
+        "notFound": "طلب الدعم غير موجود.",
+        "attachmentUrlMissing": "لم يُرجع رفع المرفق عنوان URL للملف."
+      }
+    },
+    "profile": {
+      "title": "الملف الشخصي",
+      "subtitle": "إدارة معلوماتك الشخصية والمهنية.",
+      "editTitle": "تعديل الملف الشخصي",
+      "editSubtitle": "حدّث بياناتك الشخصية والمهنية.",
+      "backToProfile": "العودة إلى الملف الشخصي",
+      "loading": "جارٍ تحميل الملف الشخصي...",
+      "unavailable": "الملف الشخصي غير متاح.",
+      "updatedSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "editProfile": "تعديل الملف الشخصي",
+      "personalInfo": "المعلومات الشخصية",
+      "professionalInfo": "المعلومات المهنية",
+      "profilePhoto": "صورة الملف الشخصي",
+      "changePhoto": "تغيير الصورة",
+      "photoHint": "اختر صورة جديدة. سيتم رفعها عند حفظ التغييرات.",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "role": "الدور",
+      "specialization": "التخصص",
+      "licenseNumber": "رقم الترخيص",
+      "yearsOfExperience": "سنوات الخبرة",
+      "bio": "نبذة",
+      "saveChanges": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ...",
+      "validation": {
+        "fullNameRequired": "الاسم الكامل مطلوب",
+        "yearsInvalid": "يجب أن تكون سنوات الخبرة رقمًا صالحًا",
+        "imageRequired": "يرجى اختيار ملف صورة."
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل الملف الشخصي.",
+        "saveFailed": "فشل حفظ الملف الشخصي.",
+        "imageUploadPartial": "تم حفظ بيانات الملف الشخصي، لكن فشل رفع الصورة: {reason}",
+        "imageUploadPartialGeneric": "تم حفظ بيانات الملف الشخصي، لكن فشل رفع الصورة.",
+        "imageNoUrl": "نجح رفع صورة الملف الشخصي لكن لم يُرجع عنوان URL.",
+        "sessionRefreshFailed": "تم حفظ الملف الشخصي لكن تعذّر تحديث الجلسة. يرجى إعادة تحميل الصفحة.",
+        "sessionImageRefreshFailed": "لم يُرجع تحديث الجلسة صورة الملف الشخصي المحدّثة."
+      }
+    },
+    "status": {
+      "session": {
+        "scheduled": "مجدولة",
+        "completed": "مكتملة",
+        "cancelled": "ملغاة",
+        "noShow": "لم يحضر",
+        "unknown": "{status}"
+      }
+    },
+    "toast": {
+      "signOutFailed": "تعذّر تسجيل الخروج. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "admin": {
+    "nav": {
+      "home": "الرئيسية",
+      "users": "المستخدمون",
+      "patients": "المرضى",
+      "patientAssignments": "إسناد المرضى",
+      "caseRequests": "طلبات الحالات",
+      "complaints": "الشكاوى",
+      "supportRequests": "طلبات الدعم",
+      "exercises": "التمارين",
+      "sessions": "الجلسات",
+      "reports": "التقارير",
+      "aiCenter": "مركز الذكاء الاصطناعي",
+      "auditLogs": "سجلات التدقيق"
+    },
+    "shell": {
+      "navigationAriaLabel": "تنقل المسؤول",
+      "signOutFailed": "تعذّر تسجيل الخروج. يرجى المحاولة مرة أخرى."
+    },
+    "search": {
+      "placeholder": "انتقل إلى صفحة...",
+      "inputAriaLabel": "انتقل إلى صفحة",
+      "panelAriaLabel": "صفحات المسؤول",
+      "empty": "لا توجد صفحات مطابقة."
+    },
+    "dashboard": {
+      "greetingAriaLabel": "تحية المسؤول",
+      "welcome": "مرحبًا، {name}",
+      "subtitle": "أدِر منصة إعادة التأهيل من مكان واحد.",
+      "signInRequired": "يرجى تسجيل الدخول كمسؤول لعرض لوحة التحكم.",
+      "loadFailed": "تعذّر تحميل لوحة تحكم المسؤول.",
+      "summary": {
+        "overviewAriaLabel": "ملخص النظرة العامة",
+        "overviewLoadingAriaLabel": "جارٍ تحميل ملخص النظرة العامة",
+        "loadingCardAria": "جارٍ تحميل {label}",
+        "valueAria": "{label}: {value}",
+        "specialists": "الأخصائيون",
+        "newSignups": "تسجيلات جديدة",
+        "newSignupsThisWeek": "+{count} هذا الأسبوع",
+        "thisWeek": "هذا الأسبوع"
+      },
+      "analytics": {
+        "sectionAriaLabel": "تحليلات النظام",
+        "title": "تحليلات النظام",
+        "legend": "نشاط النظام",
+        "chartAriaLabel": "مخطط نشاط النظام الأسبوعي",
+        "emptyTitle": "لا يوجد نشاط للنظام خلال هذه الفترة.",
+        "emptyHint": "جرّب اختيار أسبوع آخر.",
+        "loadingChart": "جارٍ تحميل المخطط...",
+        "loadFailed": "تعذّر تحميل نشاط النظام. يرجى المحاولة مرة أخرى.",
+        "previousWeek": "الأسبوع السابق",
+        "nextWeek": "الأسبوع التالي",
+        "selectPeriod": "اختيار الفترة",
+        "periodAriaLabel": "فترة نشاط النظام",
+        "period": {
+          "thisWeek": "هذا الأسبوع",
+          "lastWeek": "الأسبوع الماضي",
+          "last2Weeks": "آخر أسبوعين",
+          "lastMonth": "الشهر الماضي",
+          "range": "{start} – {end}"
+        },
+        "weeksAgo": "منذ {count} أسابيع",
+        "event": "حدث",
+        "events": "أحداث",
+        "dayEvents": "{day}: {count} {eventLabel}"
+      },
+      "quickActions": {
+        "sectionAriaLabel": "إجراءات سريعة",
+        "patientAssignmentsHint": "عيّن الأخصائيين واربط أولياء الأمور بالمرضى"
+      },
+      "recentUsers": {
+        "sectionAriaLabel": "المستخدمون الجدد",
+        "title": "المستخدمون الجدد",
+        "seeAll": "عرض الكل",
+        "empty": "لا يوجد مستخدمون حديثون.",
+        "loadingListAriaLabel": "جارٍ تحميل المستخدمين الجدد",
+        "loadingUser": "جارٍ تحميل المستخدم..."
+      }
+    },
+    "users": {
+      "title": "المستخدمون",
+      "subtitle": "إدارة حسابات مستخدمي المنصة",
+      "toolbarAriaLabel": "شريط أدوات المستخدمين",
+      "addUser": "إضافة مستخدم",
+      "searchAriaLabel": "بحث المستخدمين",
+      "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني أو الدور",
+      "roleFiltersAriaLabel": "مرشحات الأدوار",
+      "filterAll": "الكل",
+      "tableAriaLabel": "قائمة المستخدمين",
+      "columns": {
+        "user": "المستخدم",
+        "email": "البريد الإلكتروني",
+        "role": "الدور",
+        "status": "الحالة",
+        "lastSeen": "آخر ظهور",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "online": "متصل",
+        "offline": "غير متصل",
+        "lastSeenJustNow": "آخر ظهور الآن",
+        "lastSeenMinutesAgo": "آخر ظهور منذ {count} د",
+        "lastSeenHoursAgo": "آخر ظهور منذ {count} س",
+        "lastSeenYesterday": "آخر ظهور أمس",
+        "lastSeenDate": "آخر ظهور {date}"
+      },
+      "actions": {
+        "edit": "تعديل",
+        "activate": "تفعيل",
+        "deactivate": "إلغاء التفعيل",
+        "delete": "حذف"
+      },
+      "loading": "جارٍ تحميل المستخدمين...",
+      "empty": "لم يتم إنشاء أي مستخدمين بعد.",
+      "emptyFiltered": "لا يوجد مستخدمون يطابقون البحث أو المرشح.",
+      "loadFailed": "تعذّر تحميل المستخدمين.",
+      "createFailed": "تعذّر إنشاء المستخدم.",
+      "updateFailed": "تعذّر تحديث المستخدم.",
+      "updateStatusFailed": "تعذّر تحديث حالة المستخدم.",
+      "deleteFailed": "تعذّر حذف المستخدم.",
+      "createdSuccess": "تم إنشاء المستخدم بنجاح.",
+      "updatedSuccess": "تم تحديث المستخدم بنجاح.",
+      "activatedSuccess": "تم تفعيل المستخدم.",
+      "deactivatedSuccess": "تم إلغاء تفعيل المستخدم.",
+      "deletedSuccess": "تم حذف المستخدم بنجاح.",
+      "form": {
+        "addTitle": "إضافة مستخدم",
+        "editTitle": "تعديل المستخدم",
+        "fullName": "الاسم الكامل",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "phoneOptional": "الهاتف (اختياري)",
+        "role": "الدور",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "create": "إنشاء",
+        "saving": "جارٍ الحفظ...",
+        "passwordRequirementsAriaLabel": "متطلبات كلمة المرور"
+      },
+      "validation": {
+        "fullNameRequired": "الاسم الكامل مطلوب.",
+        "fullNameMinLength": "يجب أن يكون الاسم الكامل 3 أحرف على الأقل.",
+        "fullNameMaxLength": "يجب ألا يتجاوز الاسم الكامل 150 حرفًا.",
+        "emailRequired": "البريد الإلكتروني مطلوب.",
+        "emailInvalid": "يرجى إدخال بريد إلكتروني صالح.",
+        "passwordRequired": "كلمة المرور مطلوبة.",
+        "passwordInvalid": "يرجى إنشاء كلمة مرور صالحة.",
+        "roleRequired": "الدور مطلوب."
+      },
+      "dialogs": {
+        "activateTitle": "تفعيل المستخدم",
+        "deactivateTitle": "إلغاء تفعيل المستخدم",
+        "activateBody": "سيستعيد هذا المستخدم الوصول إلى المنصة.",
+        "deactivateBody": "سيفقد هذا المستخدم الوصول إلى المنصة حتى إعادة التفعيل.",
+        "deleteTitle": "حذف المستخدم؟",
+        "deleteSelfTitle": "حذف حسابك؟",
+        "deleteBody": "هل أنت متأكد من حذف {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+        "deleteSelfBody": "أنت على وشك حذف حساب المسؤول الخاص بك. لا يمكن التراجع عن هذا الإجراء.",
+        "deleting": "جارٍ الحذف..."
+      }
+    },
+    "patients": {
+      "title": "المرضى",
+      "subtitle": "عرض وإدارة جميع المرضى المسجلين.",
+      "toolbarAriaLabel": "شريط أدوات المرضى",
+      "searchAriaLabel": "بحث المرضى",
+      "searchPlaceholder": "ابحث عن المرضى أو الحالة",
+      "filterAriaLabel": "تصفية حسب الحالة",
+      "allConditions": "جميع الحالات",
+      "tableAriaLabel": "قائمة المرضى",
+      "columns": {
+        "patient": "المريض",
+        "gender": "الجنس",
+        "condition": "الحالة",
+        "previousSession": "الجلسة السابقة",
+        "view": "عرض"
+      },
+      "gender": {
+        "male": "ذكر",
+        "female": "أنثى",
+        "unknown": "—"
+      },
+      "noCondition": "لا توجد حالة",
+      "noPreviousSession": "لا توجد جلسة سابقة",
+      "unknownDate": "تاريخ غير معروف",
+      "view": "عرض",
+      "viewDetailsAria": "عرض تفاصيل {name}",
+      "loading": "جارٍ تحميل المرضى...",
+      "empty": "لم يتم تسجيل أي مرضى بعد.",
+      "emptyFiltered": "لا يوجد مرضى يطابقون البحث أو المرشح.",
+      "loadFailed": "تعذّر تحميل المرضى.",
+      "notFound": "المريض غير موجود.",
+      "sessionStatus": {
+        "notCompleted": "غير مكتملة"
+      }
+    },
+    "patientDetails": {
+      "back": "العودة إلى المرضى",
+      "idRequired": "معرّف المريض مطلوب.",
+      "loadFailed": "تعذّر تحميل تفاصيل المريض.",
+      "notFound": "المريض غير موجود.",
+      "overviewAriaLabel": "نظرة عامة على المريض",
+      "overallProgressAriaLabel": "التقدم العام",
+      "ageYears": "العمر {count} سنة",
+      "ageUnknown": "العمر —",
+      "achieved": "متحقق",
+      "noDueDate": "لا يوجد تاريخ استحقاق",
+      "assignmentsTitle": "إسناد المرضى",
+      "assignmentsHint": "إدارة الأخصائيين المرتبطين وأولياء الأمور",
+      "assignmentsAriaLabel": "إجراءات المريض"
+    },
+    "assignments": {
+      "title": "إسناد المرضى",
+      "subtitle": "إدارة علاقات الأخصائيين وأولياء الأمور للمرضى.",
+      "headerAriaLabel": "رأس صفحة إسناد المرضى",
+      "loading": "جارٍ تحميل بيانات الإسناد...",
+      "loadFailed": "تعذّر تحميل بيانات الإسناد.",
+      "loadRelationshipsFailed": "تعذّر تحميل إسنادات المريض.",
+      "changeHint": "لتغيير الإسناد، ألغِ ربط الأخصائي أو ولي الأمر الحالي، ثم عيّن أو اربط الجديد.",
+      "patientLabel": "المريض",
+      "selectPatient": "اختر مريضًا",
+      "selectPatientHint": "اختر مريضًا لعرض الإسنادات.",
+      "searchPatients": "بحث المرضى",
+      "searchPatientsPlaceholder": "ابحث عن المرضى بالاسم أو الحالة",
+      "noPatients": "لا يوجد مرضى متاحون.",
+      "noPatientsMatch": "لا يوجد مرضى يطابقون البحث.",
+      "assignSpecialist": "تعيين أخصائي",
+      "linkParent": "ربط ولي أمر",
+      "specialistLabel": "الأخصائي",
+      "parentLabel": "ولي الأمر",
+      "noSpecialists": "لا يوجد أخصائيون متاحون",
+      "noParents": "لا توجد حسابات أولياء أمور متاحة",
+      "selectSpecialist": "اختر أخصائيًا",
+      "selectParent": "اختر ولي أمر",
+      "primarySpecialist": "الأخصائي الرئيسي",
+      "primaryContact": "جهة الاتصال الرئيسية",
+      "relationship": "صلة القرابة",
+      "assigning": "جارٍ التعيين...",
+      "linking": "جارٍ الربط...",
+      "assignSpecialistAction": "تعيين أخصائي للمريض",
+      "linkParentAction": "ربط ولي أمر بالمريض",
+      "assignedSpecialists": "الأخصائيون المعيّنون",
+      "linkedParents": "أولياء الأمور المرتبطون",
+      "loadingRelationships": "جارٍ تحميل الأخصائيين المعيّنين...",
+      "loadingParents": "جارٍ تحميل أولياء الأمور المرتبطين...",
+      "selectPatientForAssignments": "اختر مريضًا لإدارة الإسنادات.",
+      "noSpecialistsAssigned": "لا يوجد أخصائيون معيّنون لهذا المريض حاليًا.",
+      "noParentsLinked": "لا يوجد أولياء أمور مرتبطون بهذا المريض حاليًا.",
+      "specialistRole": "أخصائي",
+      "primarySpecialistBadge": "الأخصائي الرئيسي",
+      "primaryContactBadge": "جهة الاتصال الرئيسية",
+      "unlinkSpecialistAria": "إلغاء ربط {name}",
+      "unlinkParentAria": "إلغاء ربط {name}",
+      "unlinkSpecialistTitle": "إلغاء ربط الأخصائي",
+      "unlinkParentTitle": "إلغاء ربط ولي الأمر",
+      "unlinkSpecialistConfirm": "هل أنت متأكد من إلغاء ربط {name} من هذا المريض؟",
+      "unlinkParentConfirm": "هل أنت متأكد من إلغاء ربط {name} من هذا المريض؟",
+      "unlinking": "جارٍ إلغاء الربط...",
+      "unlink": "إلغاء الربط",
+      "unlinkFailed": "تعذّر إلغاء الربط.",
+      "unlinkInProgress": "يوجد بالفعل إلغاء ربط قيد التنفيذ.",
+      "selectPatientRequired": "يرجى اختيار مريض.",
+      "selectSpecialistRequired": "يرجى اختيار أخصائي.",
+      "selectParentRequired": "يرجى اختيار ولي أمر.",
+      "specialistIdMissing": "معرّف الأخصائي مفقود.",
+      "parentIdMissing": "معرّف ولي الأمر مفقود.",
+      "assignSpecialistSuccess": "تم تعيين الأخصائي للمريض بنجاح.",
+      "assignSpecialistFailed": "تعذّر تعيين الأخصائي.",
+      "linkParentSuccess": "تم ربط ولي الأمر بالمريض بنجاح.",
+      "linkParentFailed": "تعذّر ربط ولي الأمر.",
+      "unlinkSpecialistSuccess": "تم إلغاء ربط الأخصائي بنجاح.",
+      "unlinkParentSuccess": "تم إلغاء ربط ولي الأمر بنجاح.",
+      "unlinkSpecialistFailed": "تعذّر إلغاء ربط الأخصائي.",
+      "unlinkParentFailed": "تعذّر إلغاء ربط ولي الأمر.",
+      "requestFailed": "فشل الطلب. يرجى المحاولة مرة أخرى.",
+      "alreadyLinked": "هذا المريض مرتبط بالفعل بهذا المستخدم.",
+      "relationshipOptions": {
+        "mother": "الأم",
+        "father": "الأب",
+        "guardian": "الوصي",
+        "other": "أخرى"
+      }
+    },
+    "caseRequests": {
+      "title": "طلبات الحالات",
+      "subtitle": "راجع طلبات الحالات الأولية للأطفال وتتبّع حالتها الحالية.",
+      "toolbarAriaLabel": "شريط أدوات طلبات الحالات",
+      "statusFilterAriaLabel": "تصفية حسب الحالة",
+      "tableAriaLabel": "قائمة طلبات الحالات",
+      "columns": {
+        "child": "الطفل",
+        "parent": "ولي الأمر",
+        "category": "الفئة",
+        "status": "الحالة",
+        "submitted": "تاريخ الإرسال",
+        "attachments": "المرفقات",
+        "view": "عرض"
+      },
+      "view": "عرض",
+      "loading": "جارٍ تحميل طلبات الحالات...",
+      "empty": "لم يتم العثور على طلبات حالات.",
+      "emptyFiltered": "لا توجد طلبات تطابق عوامل التصفية المحددة.",
+      "loadFailed": "فشل تحميل طلبات الحالات.",
+      "assignSpecialist": "تعيين أخصائي",
+      "assignedSpecialist": "الأخصائي المعيّن",
+      "noSpecialistAssigned": "لم يتم تعيين أخصائي بعد.",
+      "fields": {
+        "specialization": "التخصص",
+        "licenseNumber": "رقم الترخيص"
+      },
+      "specialistsPage": {
+        "title": "تعيين أخصائي",
+        "subtitle": "اختر أخصائياً لتعيينه على هذه الحالة.",
+        "back": "العودة إلى طلب الحالة",
+        "loading": "جارٍ تحميل الأخصائيين...",
+        "empty": "لا يوجد أخصائيون مطابقون متاحون.",
+        "continue": "متابعة",
+        "activePatients": "{count} مريض نشط",
+        "currentRequests": "{count} طلب حالي",
+        "yearsExperience": "{count} سنة",
+        "oneYearExperience": "سنة واحدة"
+      },
+      "dialogs": {
+        "assignTitle": "تعيين أخصائي",
+        "assignBody": "تعيين {name} على طلب الحالة هذا؟",
+        "assignConfirm": "تعيين أخصائي",
+        "assigning": "جارٍ التعيين..."
+      },
+      "toast": {
+        "assignSuccess": "تم تعيين الأخصائي بنجاح.",
+        "assignFailed": "فشل تعيين الأخصائي.",
+        "stalePending": "لم يعد هذا الطلب معلقاً ولا يمكن تعيين أخصائي له.",
+        "specialistCategoryMismatch": "الأخصائي المحدد غير مُسند إلى فئة هذه الحالة.",
+        "loadSpecialistsFailed": "فشل تحميل الأخصائيين المطابقين."
+      },
+      "timeline": {
+        "submitted": "مُرسَل"
+      }
+    },
+    "complaints": {
+      "title": "إدارة الشكاوى",
+      "subtitle": "راجع شكاوى الأخصائيين المقدمة من أولياء الأمور واتخذ إجراءات المراجعة.",
+      "toolbarAriaLabel": "شريط أدوات الشكاوى",
+      "updating": "جارٍ تحديث الشكاوى",
+      "filters": {
+        "status": "الحالة",
+        "category": "الفئة",
+        "specialist": "الأخصائي",
+        "from": "من",
+        "to": "إلى",
+        "allStatuses": "جميع الحالات",
+        "allCategories": "جميع الفئات",
+        "allSpecialists": "جميع الأخصائيين",
+        "clearFilters": "مسح عوامل التصفية",
+        "specialistUnavailable": "عامل تصفية الأخصائي غير متاح: {error}",
+        "dateRangeInvalid": "لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية."
+      },
+      "tableAriaLabel": "قائمة الشكاوى",
+      "columns": {
+        "parent": "ولي الأمر",
+        "patient": "المريض",
+        "specialist": "الأخصائي",
+        "category": "الفئة",
+        "status": "الحالة",
+        "submitted": "تاريخ الإرسال",
+        "view": "عرض"
+      },
+      "view": "عرض",
+      "viewDetails": "عرض التفاصيل",
+      "loading": "جارٍ تحميل الشكاوى...",
+      "loadingMore": "جارٍ تحميل المزيد...",
+      "empty": "لا توجد شكاوى.",
+      "emptyFiltered": "لا توجد شكاوى تطابق عوامل التصفية المحددة.",
+      "loadFailed": "فشل تحميل الشكاوى.",
+      "loadMore": "تحميل المزيد",
+      "back": "العودة إلى الشكاوى",
+      "loadingDetails": "جارٍ تحميل تفاصيل الشكوى...",
+      "detailsLoadingAriaLabel": "جارٍ تحميل تفاصيل الشكوى",
+      "notFound": "لم يتم العثور على الشكوى.",
+      "summaryAriaLabel": "ملخص الشكوى",
+      "submittedAt": "تاريخ الإرسال {date}",
+      "complaintInformation": "معلومات الشكوى",
+      "complaintInformationAriaLabel": "معلومات الشكوى",
+      "reviewer": "تمت المراجعة بواسطة",
+      "reviewDate": "تاريخ المراجعة",
+      "descriptionTitle": "وصف الشكوى",
+      "descriptionAriaLabel": "وصف الشكوى",
+      "attachmentTitle": "المرفق",
+      "attachmentAriaLabel": "المرفق",
+      "attachmentPdf": "مرفق PDF",
+      "attachmentImage": "مرفق صورة",
+      "attachmentHint": "افتح لعرض الملف المُرسَل",
+      "openAttachment": "فتح المرفق",
+      "parties": "الأطراف",
+      "parentInformation": "معلومات ولي الأمر",
+      "childInformation": "معلومات الطفل",
+      "specialistInformation": "معلومات الأخصائي",
+      "adminNotesAriaLabel": "ملاحظات الإدارة",
+      "reviewActionsAriaLabel": "إجراءات الشكوى",
+      "submittedBy": "مُقدَّم من",
+      "reportedSpecialist": "الأخصائي المُبلَّغ عنه",
+      "adminNotes": "ملاحظات الإدارة",
+      "resolution": "الحل",
+      "reviewActions": "إجراءات المراجعة",
+      "reviewActionsHint": "حدّث حالة هذه الشكوى وفق نتيجة مراجعتك.",
+      "actions": {
+        "startReview": "بدء المراجعة",
+        "resolve": "حل الشكوى",
+        "reject": "رفض الشكوى"
+      },
+      "dialogs": {
+        "startReviewTitle": "بدء المراجعة؟",
+        "startReviewBody": "ستُعلَّم هذه الشكوى على أنها قيد المراجعة.",
+        "resolveTitle": "حل الشكوى؟",
+        "rejectTitle": "رفض الشكوى؟",
+        "adminNotesLabel": "ملاحظات الإدارة",
+        "adminNotesPlaceholder": "أدخل ملاحظات الإدارة لهذا القرار",
+        "parentResponseLabel": "رد لولي الأمر (اختياري)",
+        "parentResponsePlaceholder": "رسالة اختيارية تظهر لولي الأمر",
+        "confirm": "تأكيد",
+        "submitting": "جارٍ الإرسال...",
+        "starting": "جارٍ البدء...",
+        "resolving": "جارٍ الحل...",
+        "rejecting": "جارٍ الرفض...",
+        "categoryLabel": "الفئة",
+        "childLabel": "الطفل"
+      },
+      "validation": {
+        "adminNotesRequired": "ملاحظات الإدارة مطلوبة.",
+        "adminNotesMinLength": "يجب ألا تقل ملاحظات الإدارة عن {min} حرف.",
+        "adminNotesMaxLength": "يجب ألا تزيد ملاحظات الإدارة عن {max} حرف."
+      },
+      "toast": {
+        "startReviewSuccess": "تم وضع الشكوى قيد المراجعة.",
+        "resolveSuccess": "تم حل الشكوى بنجاح.",
+        "rejectSuccess": "تم رفض الشكوى بنجاح.",
+        "actionFailed": "تعذّر تحديث حالة الشكوى.",
+        "invalidTransition": "لا يُسمح بهذا التغيير في الحالة للشكوى الحالية.",
+        "specialistsLoadFailed": "فشل تحميل الأخصائيين."
+      }
+    },
+    "support": {
+      "title": "طلبات الدعم",
+      "subtitle": "راجع طلبات دعم الأخصائيين ورد عليها.",
+      "toolbarAriaLabel": "عوامل تصفية طلبات الدعم",
+      "filters": {
+        "status": "الحالة",
+        "category": "الفئة",
+        "specialist": "الأخصائي",
+        "filters": "عوامل التصفية",
+        "clearFilters": "مسح عوامل التصفية"
+      },
+      "refresh": "تحديث",
+      "refreshing": "جارٍ التحديث...",
+      "tableAriaLabel": "قائمة طلبات الدعم",
+      "columns": {
+        "subject": "الموضوع",
+        "category": "الفئة",
+        "status": "الحالة",
+        "action": "إجراء"
+      },
+      "view": "عرض",
+      "loading": "جارٍ تحميل طلبات الدعم...",
+      "loadingMore": "جارٍ تحميل المزيد...",
+      "loadMore": "تحميل المزيد",
+      "empty": "لا توجد طلبات دعم بعد.",
+      "emptyFiltered": "لا توجد طلبات دعم تطابق عوامل التصفية المحددة.",
+      "loadFailed": "فشل تحميل طلبات الدعم.",
+      "specialistsLoadFailed": "فشل تحميل الأخصائيين.",
+      "back": "العودة إلى طلبات الدعم",
+      "loadingDetails": "جارٍ تحميل طلب الدعم...",
+      "notFound": "طلب الدعم غير موجود.",
+      "unavailable": "طلب الدعم غير متاح.",
+      "requestStatus": "حالة الطلب:",
+      "actionsAriaLabel": "إجراءات حالة طلب الدعم",
+      "markInProgress": "وضع قيد المعالجة",
+      "resolveRequest": "وضع محلول",
+      "statusDialog": {
+        "markInProgressTitle": "وضع قيد المعالجة؟",
+        "markInProgressBody": "سيُعلَّم طلب الدعم هذا على أنه قيد المعالجة.",
+        "markResolvedTitle": "وضع محلول؟",
+        "markResolvedBody": "سيُعلَّم طلب الدعم هذا على أنه محلول ويصبح للقراءة فقط.",
+        "updating": "جارٍ التحديث..."
+      },
+      "toast": {
+        "replySent": "تم إرسال الرد بنجاح.",
+        "replyFailed": "فشل إرسال الرد.",
+        "markInProgressSuccess": "تم وضع طلب الدعم قيد المعالجة.",
+        "markResolvedSuccess": "تم وضع طلب الدعم محلولًا.",
+        "statusUpdated": "تم تحديث حالة طلب الدعم.",
+        "statusUpdateFailed": "فشل تحديث حالة طلب الدعم."
+      }
+    },
+    "exercises": {
+      "title": "التمارين",
+      "subtitle": "تصفّح مكتبة تمارين المنصة وأدِرها.",
+      "toolbarAriaLabel": "شريط أدوات التمارين",
+      "searchAriaLabel": "البحث في التمارين",
+      "searchPlaceholder": "البحث بالعنوان أو الفئة أو التعليمات...",
+      "categoryFiltersAriaLabel": "فلاتر فئات التمارين",
+      "addExercise": "إضافة تمرين",
+      "viewDetails": "عرض التفاصيل",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "deleteExercise": "حذف التمرين",
+      "hasMedia": "يحتوي على وسائط",
+      "includesMedia": "يتضمن وسائط تعليمية",
+      "loading": "جارٍ تحميل التمارين...",
+      "empty": "لم تُضف أي تمارين بعد.",
+      "emptyFiltered": "لا توجد تمارين تطابق البحث أو الفلتر.",
+      "loadFailed": "فشل تحميل التمارين.",
+      "loadDetailsFailed": "فشل تحميل تفاصيل التمرين.",
+      "clearFilters": "مسح عوامل التصفية",
+      "back": "العودة إلى التمارين",
+      "backToDetails": "العودة إلى تفاصيل التمرين",
+      "detailsTitle": "تفاصيل التمرين",
+      "loadingDetails": "جارٍ تحميل التمرين...",
+      "notFound": "لم يتم العثور على التمرين.",
+      "editExercise": "تعديل التمرين",
+      "category": "الفئة",
+      "description": "الوصف",
+      "instructions": "التعليمات",
+      "media": "الوسائط",
+      "language": "اللغة",
+      "createdBy": "أنشأه",
+      "created": "تاريخ الإنشاء",
+      "updated": "تاريخ التحديث",
+      "noDescription": "لا يوجد وصف.",
+      "noInstructions": "لا توجد تعليمات.",
+      "noMedia": "لا توجد وسائط مرفقة.",
+      "noInstructionsAvailable": "لا تتوفر تعليمات.",
+      "form": {
+        "createTitle": "إنشاء تمرين",
+        "editTitle": "تعديل التمرين",
+        "subtitle": "أضف تفاصيل التمرين ووسائط تعليمية اختيارية.",
+        "title": "العنوان",
+        "titlePlaceholder": "عنوان التمرين",
+        "category": "الفئة",
+        "selectCategory": "اختر فئة",
+        "description": "الوصف",
+        "descriptionOptional": "الوصف (اختياري)",
+        "descriptionPlaceholder": "وصف اختياري",
+        "instructions": "التعليمات",
+        "instructionsDetailed": "تعليمات مفصلة",
+        "instructionsPlaceholder": "تعليمات خطوة بخطوة",
+        "language": "اللغة",
+        "mediaSection": "وسائط التعليمات",
+        "chooseFile": "اختر ملفاً",
+        "replace": "استبدال",
+        "remove": "إزالة",
+        "mediaHelp": "الصيغ المدعومة: صورة، صوت، PDF، أو فيديو MP4/MOV. الحد الأقصى 50 ميجابايت.",
+        "preview": "معاينة",
+        "create": "إنشاء",
+        "saveChanges": "حفظ التغييرات",
+        "saving": "جارٍ الحفظ...",
+        "creating": "جارٍ الإنشاء...",
+        "uploadingMedia": "جارٍ رفع الوسائط...",
+        "noCategories": "لا توجد فئات متاحة"
+      },
+      "validation": {
+        "titleMaxLength": "يجب ألا يزيد العنوان عن {max} حرفاً.",
+        "descriptionMaxLength": "يجب ألا يزيد الوصف عن {max} حرفاً.",
+        "instructionsMaxLength": "يجب ألا تزيد التعليمات عن {max} حرفاً."
+      },
+      "dialogs": {
+        "deleteTitle": "حذف التمرين",
+        "deleteBody": "هل أنت متأكد أنك تريد حذف {title}؟ لا يمكن التراجع عن هذا الإجراء.",
+        "deleting": "جارٍ الحذف...",
+        "confirm": "حذف"
+      },
+      "toast": {
+        "createSuccess": "تم إنشاء التمرين بنجاح.",
+        "updateSuccess": "تم تحديث التمرين بنجاح.",
+        "deleteSuccess": "تم حذف التمرين بنجاح.",
+        "createFailed": "فشل إنشاء التمرين.",
+        "updateFailed": "فشل تحديث التمرين.",
+        "deleteFailed": "فشل حذف التمرين.",
+        "uploadFailed": "فشل رفع الوسائط.",
+        "categoriesLoadFailed": "فشل تحميل فئات التمارين."
+      }
+    },
+    "sessions": {
+      "title": "الجلسات",
+      "subtitle": "عرض جلسات إعادة التأهيل المجدولة وإدارتها.",
+      "toolbarAriaLabel": "شريط أدوات الجلسات",
+      "searchAriaLabel": "البحث في الجلسات",
+      "searchPlaceholder": "البحث بالمريض أو الأخصائي",
+      "statusFilterAriaLabel": "تصفية حسب الحالة",
+      "tableAriaLabel": "قائمة الجلسات",
+      "clearFilters": "مسح عوامل التصفية",
+      "columns": {
+        "patient": "المريض",
+        "specialist": "الأخصائي",
+        "dateTime": "التاريخ والوقت",
+        "duration": "المدة",
+        "location": "الموقع",
+        "locationLink": "الموقع / الرابط",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "filters": {
+        "allStatuses": "جميع الحالات"
+      },
+      "loading": "جارٍ تحميل الجلسات...",
+      "empty": "لم تُجدَل أي جلسات بعد.",
+      "emptyFiltered": "لا توجد جلسات تطابق البحث أو الفلتر.",
+      "loadFailed": "فشل تحميل الجلسات.",
+      "edit": "تعديل",
+      "complete": "إكمال",
+      "cancelSession": "إلغاء",
+      "markNoShow": "تسجيل غياب",
+      "dialogs": {
+        "editTitle": "تعديل الجلسة",
+        "completeTitle": "إكمال الجلسة",
+        "cancelTitle": "إلغاء الجلسة",
+        "noShowTitle": "تسجيل غياب",
+        "completeBody": "هل تريد وضع هذه الجلسة كمكتملة؟",
+        "cancelBody": "هل تريد إلغاء هذه الجلسة؟",
+        "noShowBody": "هل تريد تسجيل هذه الجلسة كغياب؟",
+        "patient": "المريض",
+        "specialist": "الأخصائي",
+        "scheduled": "مجدولة",
+        "date": "التاريخ",
+        "dateHint": "التاريخ (YYYY-MM-DD)",
+        "time": "الوقت",
+        "timeHint": "الوقت (HH:MM)",
+        "duration": "المدة (بالدقائق)",
+        "location": "الموقع أو رابط الاجتماع",
+        "locationLink": "الموقع / الرابط",
+        "status": "الحالة",
+        "statusFinalNote": "الحالة نهائية ولا يمكن تغييرها.",
+        "cancellationReason": "سبب الإلغاء",
+        "cancellationReasonPlaceholder": "أدخل سبب الإلغاء",
+        "keepSession": "الإبقاء على الجلسة",
+        "saving": "جارٍ الحفظ...",
+        "confirm": "تأكيد",
+        "confirming": "جارٍ التأكيد...",
+        "processing": "جارٍ المعالجة..."
+      },
+      "validation": {
+        "cancellationReasonRequired": "سبب الإلغاء مطلوب.",
+        "dateRequired": "التاريخ مطلوب.",
+        "timeRequired": "الوقت مطلوب.",
+        "invalidDateTime": "تاريخ أو وقت غير صالح."
+      },
+      "toast": {
+        "updateSuccess": "تم تحديث الجلسة بنجاح.",
+        "completeSuccess": "تم وضع الجلسة كمكتملة.",
+        "cancelSuccess": "تم إلغاء الجلسة بنجاح.",
+        "noShowSuccess": "تم تسجيل الجلسة كغياب.",
+        "updateFailed": "فشل تحديث الجلسة.",
+        "actionFailed": "تعذّر تحديث حالة الجلسة."
+      },
+      "actionAria": {
+        "edit": "تعديل جلسة {name}",
+        "complete": "إكمال جلسة {name}",
+        "cancel": "إلغاء جلسة {name}",
+        "noShow": "تسجيل غياب جلسة {name}"
+      }
+    },
+    "reports": {
+      "title": "التقارير",
+      "subtitle": "راجع تقدم المرضى والتقارير السريرية المولّدة بالذكاء الاصطناعي.",
+      "toolbarAriaLabel": "شريط أدوات التقارير",
+      "searchAriaLabel": "البحث في التقارير",
+      "searchPlaceholder": "البحث بالمريض أو العنوان",
+      "filterAriaLabel": "فلاتر التقارير",
+      "gridAriaLabel": "قائمة التقارير",
+      "viewReport": "عرض التقرير",
+      "viewDetails": "عرض التفاصيل",
+      "loading": "جارٍ تحميل التقارير...",
+      "empty": "لم يتم إنشاء أي تقارير بعد.",
+      "emptyFiltered": "لا توجد تقارير تطابق البحث أو الفلتر.",
+      "loadFailed": "فشل تحميل التقارير.",
+      "clearFilters": "مسح عوامل التصفية",
+      "aiLoadWarning": "تعذّر تحميل بعض تقارير الذكاء الاصطناعي.",
+      "back": "العودة إلى التقارير",
+      "detailsTitle": "تفاصيل التقرير",
+      "loadingDetails": "جارٍ تحميل التقرير...",
+      "notFound": "لم يتم العثور على التقرير.",
+      "invalidSource": "مصدر التقرير غير صالح.",
+      "patient": "المريض",
+      "specialist": "الأخصائي",
+      "generatedBy": "أنشأه",
+      "reportType": "نوع التقرير",
+      "date": "التاريخ",
+      "createdDate": "تاريخ الإنشاء",
+      "period": "الفترة",
+      "periodRange": "الفترة: {start} – {end}",
+      "summary": "الملخص",
+      "aiSummary": "ملخص الذكاء الاصطناعي",
+      "noSummary": "لا يتوفر ملخص.",
+      "progress": "التقدم",
+      "recommendations": "التوصيات",
+      "pdf": "PDF",
+      "attachment": "المرفق",
+      "attachments": "المرفقات",
+      "reportInformation": "معلومات التقرير",
+      "status": "الحالة",
+      "pdfActionsTitle": "إجراءات PDF",
+      "pdfReport": "تقرير PDF",
+      "pdfUnavailable": "مرفق PDF غير متاح.",
+      "pdfLinkUnavailable": "رابط PDF غير متاح.",
+      "pdfActions": {
+        "viewPdf": "عرض PDF",
+        "viewPdfAria": "عرض تقرير PDF",
+        "generatePdf": "إنشاء PDF",
+        "generating": "جارٍ إنشاء PDF...",
+        "copyLink": "نسخ الرابط",
+        "copyPdfLink": "نسخ رابط PDF",
+        "linkCopied": "تم نسخ الرابط.",
+        "copyFailed": "تعذّر نسخ الرابط.",
+        "openFailed": "تعذّر فتح PDF.",
+        "generateFailed": "فشل إنشاء PDF.",
+        "generatedSuccess": "تم إنشاء PDF بنجاح."
+      },
+      "toast": {
+        "detailsLoadFailed": "فشل تحميل تفاصيل التقرير."
+      }
+    },
+    "ai": {
+      "title": "رؤى الذكاء الاصطناعي",
+      "subtitle": "تحليل الكلام والتوصيات والتقارير السريرية",
+      "toolbarAriaLabel": "رأس مركز الذكاء الاصطناعي",
+      "loading": "جارٍ تحميل مركز الذكاء الاصطناعي...",
+      "loadFailed": "فشل تحميل مركز الذكاء الاصطناعي.",
+      "recently": "مؤخرًا",
+      "summary": {
+        "ariaLabel": "ملخص الذكاء الاصطناعي",
+        "loadingAriaLabel": "جارٍ تحميل ملخص الذكاء الاصطناعي",
+        "loading": "جارٍ التحميل...",
+        "speechAnalyses": "تحليلات الكلام",
+        "recommendations": "توصيات الذكاء الاصطناعي",
+        "reports": "تقارير الذكاء الاصطناعي",
+        "needsAttention": "يتطلب اهتمامًا",
+        "avgScore": "متوسط النتيجة {score}",
+        "pendingReviews": "{count} مراجعات معلّقة"
+      },
+      "attention": {
+        "title": "مرضى يحتاجون إلى اهتمام",
+        "ariaLabel": "مرضى يحتاجون إلى اهتمام",
+        "loadingAriaLabel": "جارٍ تحميل المرضى الذين يحتاجون إلى اهتمام",
+        "loadingPatient": "جارٍ تحميل المريض...",
+        "empty": "لا يوجد مرضى يحتاجون إلى اهتمام حاليًا.",
+        "speechScore": "الكلام {score}",
+        "viewPatientAria": "عرض المريض {name}"
+      },
+      "speech": {
+        "title": "أحدث تحليلات الكلام",
+        "empty": "لا توجد تحليلات كلام بعد.",
+        "scoreDetail": "النتيجة {score} • {date}"
+      },
+      "recommendations": {
+        "title": "أحدث توصيات الذكاء الاصطناعي",
+        "empty": "لا توجد توصيات ذكاء اصطناعي بعد.",
+        "status": {
+          "approved": "موافق عليه",
+          "completed": "مكتمل"
+        }
+      },
+      "reports": {
+        "title": "أحدث تقارير الذكاء الاصطناعي",
+        "empty": "لا توجد تقارير ذكاء اصطناعي بعد.",
+        "detail": "{type} • {date}"
+      },
+      "records": {
+        "loading": "جارٍ تحميل السجل...",
+        "loadingAriaLabel": "جارٍ تحميل السجلات",
+        "patientFallback": "المريض"
+      }
+    },
+    "audit": {
+      "title": "سجلات التدقيق",
+      "subtitle": "راقب النشاط الإداري ونشاط النظام.",
+      "toolbarAriaLabel": "شريط أدوات سجلات التدقيق",
+      "tableAriaLabel": "قائمة سجلات التدقيق",
+      "tableLoadingAriaLabel": "جارٍ تحميل سجلات التدقيق",
+      "clearFilters": "مسح عوامل التصفية",
+      "updating": "جارٍ التحديث…",
+      "loadFailed": "فشل تحميل سجلات التدقيق.",
+      "usersLoadFailed": "فشل تحميل المستخدمين.",
+      "systemUser": "النظام",
+      "systemUserInitials": "نظ",
+      "empty": "لم يتم العثور على سجلات تدقيق.",
+      "emptyFiltered": "لا توجد سجلات تدقيق تطابق عوامل التصفية.",
+      "unknownAction": "إجراء غير معروف",
+      "unknownEntity": "كيان غير معروف",
+      "filters": {
+        "user": "المستخدم",
+        "action": "الإجراء",
+        "entity": "الكيان",
+        "fromDate": "من تاريخ",
+        "toDate": "إلى تاريخ",
+        "allUsers": "جميع المستخدمين",
+        "allActions": "جميع الإجراءات",
+        "allEntities": "جميع الكيانات",
+        "usersUnavailable": "تعذّر تحميل خيارات تصفية المستخدم.",
+        "dateRangeInvalid": "لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية.",
+        "userFallback": "المستخدم"
+      },
+      "columns": {
+        "action": "الإجراء",
+        "user": "المستخدم",
+        "entity": "الكيان",
+        "dateTime": "التاريخ والوقت",
+        "details": "التفاصيل"
+      },
+      "details": {
+        "button": "التفاصيل",
+        "referenceId": "معرّف المرجع"
+      },
+      "badges": {
+        "create": "إنشاء",
+        "update": "تحديث",
+        "complete": "إكمال",
+        "delete": "حذف",
+        "assign": "تعيين",
+        "login": "تسجيل الدخول",
+        "logout": "تسجيل الخروج",
+        "cancel": "إلغاء",
+        "activity": "نشاط"
+      },
+      "actions": {
+        "activity": "نشاط",
+        "login": "تسجيل الدخول",
+        "logout": "تسجيل الخروج",
+        "user_create": "تم إنشاء المستخدم",
+        "user_activate": "تم تفعيل المستخدم",
+        "user_deactivate": "تم إلغاء تفعيل المستخدم",
+        "user_update": "تم تحديث المستخدم",
+        "user_delete": "تم حذف المستخدم",
+        "patient_create": "تم إنشاء المريض",
+        "patient_update": "تم تحديث المريض",
+        "patient_delete": "تم حذف المريض",
+        "session_create": "تم إنشاء الجلسة",
+        "session_update": "تم تحديث الجلسة",
+        "session_delete": "تم حذف الجلسة",
+        "session_complete": "اكتملت الجلسة",
+        "session_cancel": "أُلغيت الجلسة",
+        "session_no_show": "تم تعليم الجلسة كغياب",
+        "treatment_plan_create": "تم إنشاء خطة العلاج",
+        "treatment_plan_created": "تم إنشاء خطة العلاج",
+        "goal_add": "تمت إضافة الهدف",
+        "goal_added": "تمت إضافة الهدف",
+        "goal_create": "تمت إضافة الهدف",
+        "exercise_assign": "تم تعيين التمرين",
+        "exercise_assigned": "تم تعيين التمرين",
+        "parent_link": "تم ربط ولي الأمر",
+        "parent_linked": "تم ربط ولي الأمر",
+        "specialist_assign": "تم تعيين الأخصائي",
+        "specialist_assigned": "تم تعيين الأخصائي",
+        "case_category_create": "تم إنشاء فئة الحالة",
+        "case_category_update": "تم تحديث فئة الحالة",
+        "specialist_case_categories_update": "تم تحديث فئات الأخصائي",
+        "case_intake_request_create": "تم إنشاء طلب الحالة",
+        "case_intake_request_update": "تم تحديث طلب الحالة",
+        "case_intake_request_assign": "تم تعيين طلب الحالة",
+        "case_intake_request_accept": "تم قبول طلب الحالة",
+        "case_intake_request_reject": "تم رفض طلب الحالة",
+        "case_intake_request_convert": "تم تحويل الحالة إلى مريض",
+        "case_intake_attachment_add": "تمت إضافة مرفق",
+        "case_intake_attachment_delete": "تم حذف المرفق",
+        "case_intake_assessment_start": "بدأ التقييم",
+        "case_intake_assessment_notes_update": "تم تحديث ملاحظات التقييم",
+        "complaint_submitted": "تم تقديم الشكوى",
+        "complaint_review_started": "بدأت مراجعة الشكوى",
+        "complaint_resolved": "تم حل الشكوى",
+        "complaint_rejected": "تم رفض الشكوى",
+        "specialist_warning_issued": "تم إصدار تحذير للأخصائي",
+        "create": "إنشاء",
+        "created": "إنشاء",
+        "update": "تحديث",
+        "updated": "تحديث",
+        "delete": "حذف",
+        "deleted": "حذف",
+        "activate": "تفعيل",
+        "deactivate": "إلغاء التفعيل",
+        "assign": "تعيين",
+        "unassign": "إلغاء التعيين",
+        "approve": "موافقة",
+        "reject": "رفض",
+        "accept": "قبول",
+        "complete": "إكمال",
+        "cancel": "إلغاء",
+        "archive": "أرشفة",
+        "upload": "رفع",
+        "generate": "إنشاء",
+        "review": "مراجعة",
+        "mark_read": "تعليم كمقروء",
+        "read_all": "قراءة الكل"
+      },
+      "entities": {
+        "system": "النظام",
+        "user": "المستخدم",
+        "users": "المستخدم",
+        "patient": "المريض",
+        "patients": "المريض",
+        "session": "الجلسة",
+        "sessions": "الجلسة",
+        "case_category": "فئة الحالة",
+        "case_intake_request": "طلب الحالة",
+        "case_request": "طلب الحالة",
+        "complaint": "الشكوى",
+        "specialist_warning": "تحذير الأخصائي",
+        "goal": "الهدف",
+        "goals": "الهدف",
+        "exercise": "التمرين",
+        "exercises": "التمرين",
+        "treatment_plan": "خطة العلاج",
+        "report": "التقرير",
+        "reports": "التقرير",
+        "parent": "ولي الأمر",
+        "specialist": "الأخصائي",
+        "notification": "الإشعار",
+        "notifications": "الإشعار",
+        "assigned_exercise": "تمرين معيّن",
+        "submission": "إرسال",
+        "review": "مراجعة",
+        "speech_analysis": "تحليل الكلام",
+        "ai_recommendation": "توصية الذكاء الاصطناعي",
+        "ai_report": "تقرير الذكاء الاصطناعي"
+      }
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "toolbarAriaLabel": "رأس الإشعارات",
+      "listAriaLabel": "قائمة الإشعارات",
+      "listLoadingAriaLabel": "جارٍ تحميل الإشعارات",
+      "markAllRead": "تعليم الكل كمقروء",
+      "empty": "لا توجد إشعارات بعد.",
+      "loading": "جارٍ تحميل الإشعارات...",
+      "markingAsRead": "جارٍ التعليم كمقروء",
+      "unreadNotification": "إشعار غير مقروء: {title}. تعليم كمقروء.",
+      "notification": "إشعار: {title}",
+      "popover": {
+        "trigger": "الإشعارات",
+        "triggerWithUnread": "الإشعارات، {count} غير مقروء",
+        "dialogAriaLabel": "أحدث الإشعارات",
+        "viewAll": "عرض جميع الإشعارات"
+      },
+      "type": {
+        "complaintSubmitted": "تم تقديم شكوى",
+        "specialistWarningIssued": "تم إصدار تحذير للأخصائي"
+      },
+      "systemText": {
+        "titles": {
+          "complaintSubmitted": "تم تقديم شكوى جديدة ضد أخصائي",
+          "caseRequestSubmitted": "طلب حالة أولية جديد",
+          "caseRequestAccepted": "تم قبول طلب الحالة",
+          "caseRequestRejected": "تم رفض طلب الحالة",
+          "caseRequestConverted": "تم تحويل طلب الحالة إلى مريض",
+          "patientCreated": "تم إنشاء مريض",
+          "parentLinked": "تم ربط ولي الأمر",
+          "specialistAssigned": "تم تعيين الأخصائي",
+          "userDeleted": "تم حذف المستخدم",
+          "userActivated": "تم تفعيل المستخدم",
+          "userDeactivated": "تم إلغاء تفعيل المستخدم",
+          "supportRequestSubmitted": "طلب دعم جديد من أخصائي",
+          "supportRequestReply": "رد أخصائي على طلب دعم",
+          "specialistWarningThreshold": "بلغ أخصائي عتبة التحذير",
+          "userRegistered": "مستخدم جديد مسجّل",
+          "reportGenerated": "تم إنشاء تقرير",
+          "treatmentPlanCreated": "تم إنشاء خطة علاج"
+        },
+        "bodies": {
+          "complaintSubmitted": "قدّم ولي أمر شكوى ضد أخصائي لمراجعة الإدارة.",
+          "caseRequestSubmitted": "قدّم {name} طلب حالة أولية جديدًا.",
+          "caseRequestAccepted": "قبل أخصائي طلب حالة أولية.",
+          "caseRequestRejected": "رفض أخصائي طلب حالة أولية.",
+          "caseRequestConverted": "تم تحويل طلب الحالة الأولية لـ {name} إلى ملف مريض رسمي.",
+          "patientCreated": "تمت إضافة {name} إلى النظام.",
+          "parentLinked": "تم ربط {parent} بالمريض {patient}.",
+          "specialistAssigned": "تم تعيين {specialist} للمريض {patient}.",
+          "treatmentPlanCreated": "تم إنشاء خطة العلاج \"{planTitle}\" للمريض {patient}.",
+          "userActivated": "تم تفعيل {name}.",
+          "userDeactivated": "تم إلغاء تفعيل {name}.",
+          "userDeleted": "تم حذف {name} من النظام.",
+          "supportRequestSubmitted": "قدّم أخصائي طلب دعم: {subject}",
+          "supportRequestAttachment": "أضاف الأخصائي مرفقًا إلى طلب الدعم.",
+          "specialistWarningThreshold": "بلغ أخصائي {count} شكاوى مؤكدة خلال {days} يومًا.",
+          "userRegistered": "سجّل {name} كـ {role}.",
+          "reportGenerated": "تم إنشاء التقرير \"{reportTitle}\" للمريض {patient}."
+        }
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل الإشعارات.",
+        "markReadFailed": "فشل تعليم الإشعار كمقروء.",
+        "markAllReadFailed": "فشل تعليم جميع الإشعارات كمقروءة.",
+        "signedOut": "يرجى تسجيل الدخول لعرض الإشعارات."
+      }
+    },
+    "profile": {
+      "title": "الملف الشخصي",
+      "subtitle": "إدارة معلومات حسابك.",
+      "editTitle": "تعديل الملف الشخصي",
+      "editSubtitle": "حدّث بيانات الاتصال وصورة الملف الشخصي.",
+      "backToProfile": "العودة إلى الملف الشخصي",
+      "loading": "جارٍ تحميل الملف الشخصي...",
+      "unavailable": "الملف الشخصي غير متاح.",
+      "updatedSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "editProfile": "تعديل الملف الشخصي",
+      "personalInfo": "المعلومات الشخصية",
+      "accountInfo": "معلومات الحساب",
+      "profilePhoto": "صورة الملف الشخصي",
+      "changePhoto": "تغيير الصورة",
+      "photoHint": "ملفات JPG أو PNG مدعومة.",
+      "fullName": "الاسم الكامل",
+      "phone": "الهاتف",
+      "phoneNumber": "رقم الهاتف",
+      "email": "البريد الإلكتروني",
+      "role": "الدور",
+      "emailStatus": "حالة البريد الإلكتروني",
+      "verified": "موثّق",
+      "notVerified": "غير موثّق",
+      "saveChanges": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ...",
+      "validation": {
+        "fullNameRequired": "الاسم الكامل مطلوب.",
+        "imageRequired": "يرجى اختيار ملف صورة."
+      },
+      "errors": {
+        "loadError": "تعذّر تحميل ملفك الشخصي حاليًا.",
+        "loadFailed": "فشل تحميل الملف الشخصي.",
+        "saveFailed": "فشل حفظ الملف الشخصي.",
+        "imageNoUrl": "نجح رفع الصورة لكن لم يُعاد رابط الصورة.",
+        "sessionRefreshFailed": "تم حفظ الملف الشخصي لكن تعذّر تحديث الجلسة. يرجى إعادة تحميل الصفحة.",
+        "sessionImageRefreshFailed": "لم يُرجع تحديث الجلسة صورة الملف الشخصي المحدّثة."
+      }
+    }
+  },
+  "landing": {
+    "nav": {
+      "home": "الرئيسية",
+      "features": "الميزات",
+      "howItWorks": "كيف يعمل",
+      "aiSolutions": "حلول الذكاء الاصطناعي",
+      "whoItsFor": "لمن المنصة",
+      "about": "عن المنصة",
+      "faq": "الأسئلة الشائعة",
+      "joinUs": "انضم إلينا",
+      "signIn": "تسجيل الدخول",
+      "getStarted": "ابدأ الآن"
+    },
+    "hero": {
+      "badge": "مدعوم بالذكاء الاصطناعي • يركز على العائلة • بإشراف الأخصائي",
+      "headline": {
+        "line1": "تأهيلٌ أذكى.",
+        "line2Prefix": "دعمٌ عائليٌّ",
+        "line2Highlight": "أقوى.",
+        "line3": "تقدمٌ أوضح."
+      },
+      "description": "منصة واحدة مترابطة تجمع العائلات والأخصائيين وأدوات التأهيل الذكية لدعم رحلة إعادة التأهيل لكل مريض.",
+      "getStarted": "ابدأ الآن",
+      "explorePlatform": "استكشف المنصة"
+    },
+    "features": {
+      "aiInsights": "رؤى مدعومة بالذكاء الاصطناعي",
+      "connectedRoles": "{count} أدوار مترابطة",
+      "continuousProgress": "تقدم مستمر"
+    },
+    "valueStrip": {
+      "ariaLabel": "قيم المنصة",
+      "families": {
+        "title": "مصممة للعائلات",
+        "subtitle": "دعم واضح وسهل الوصول"
+      },
+      "specialists": {
+        "title": "مصممة للأخصائيين",
+        "subtitle": "أدوات سريرية ورؤية كاملة للحالات"
+      },
+      "ai": {
+        "title": "مدعومة بالذكاء الاصطناعي",
+        "subtitle": "ملخصات وتوصيات ذكية"
+      },
+      "progress": {
+        "title": "تركز على التقدم",
+        "subtitle": "تحسن مستمر وقابل للقياس"
+      }
+    },
+    "whoItsFor": {
+      "eyebrow": "لمن المنصة",
+      "heading": "منصة واحدة. ثلاث تجارب مترابطة.",
+      "family": {
+        "eyebrow": "للعائلات",
+        "title": "كل ما يحتاجه أولياء الأمور في مكان واحد",
+        "description": "تابع التمارين والمهام اليومية والجلسات وتقارير الذكاء الاصطناعي والإشعارات وتواصل مباشرة مع الأخصائيين.",
+        "badges": {
+          "exerciseTracking": "متابعة التمارين",
+          "aiReports": "تقارير الذكاء الاصطناعي",
+          "parentDashboard": "لوحة ولي الأمر",
+          "secureCommunication": "تواصل آمن"
+        }
+      },
+      "specialist": {
+        "eyebrow": "للأخصائيين",
+        "title": "إدارة شاملة لإعادة التأهيل",
+        "description": "أدِر المرضى والتقييمات والخطط العلاجية والتمارين والمراجعات والتقارير وأدوات إعادة التأهيل المدعومة بالذكاء الاصطناعي.",
+        "badges": {
+          "patientManagement": "إدارة المرضى",
+          "treatmentPlans": "الخطط العلاجية",
+          "speechAnalysis": "تحليل النطق",
+          "aiRecommendations": "توصيات الذكاء الاصطناعي"
+        }
+      },
+      "admin": {
+        "eyebrow": "للمسؤولين",
+        "title": "إشراف كامل على المنصة",
+        "description": "أدِر المستخدمين والأخصائيين والمرضى وطلبات الحالات والتكليفات والفئات ونشاط النظام من مساحة عمل مركزية واحدة.",
+        "badges": {
+          "userManagement": "إدارة المستخدمين",
+          "caseRequests": "طلبات الحالات",
+          "specialistAssignments": "إسناد الأخصائيين",
+          "systemAnalytics": "تحليلات النظام"
+        }
+      }
+    },
+    "problemSolution": {
+      "heading": {
+        "line1": "التأهيل لا ينبغي أن يتوقف",
+        "line2": "بعد انتهاء الجلسة"
+      },
+      "description": "غالباً ما تواجه العائلات صعوبة في متابعة الخطط العلاجية في المنزل، ويفتقر الأخصائيون إلى رؤية مستمرة للأداء اليومي، وتتشتت معلومات التقدم بين المكالمات والرسائل والمواعيد والتقارير.",
+      "challenges": {
+        "a": {
+          "label": "التحدي أ",
+          "title": "متابعة مجزّأة",
+          "description": "غالباً ما تنتشر التواصل والتقارير وتحديثات التقدم عبر أدوات مختلفة."
+        },
+        "b": {
+          "label": "التحدي ب",
+          "title": "إرشاد منزلي محدود",
+          "description": "لا تحصل العائلات دائماً على دعم واضح ومستمر لأنشطة التأهيل اليومية."
+        },
+        "c": {
+          "label": "التحدي ج",
+          "title": "تأخر رؤية التقدم",
+          "description": "قد لا يحصل الأخصائيون على رؤية كافية لأداء المريض بين الجلسات."
+        }
+      },
+      "solution": {
+        "label": "الحل",
+        "text": "Smart Rehabilitation تجمع رحلة الرعاية الكاملة في منصة واحدة مترابطة."
+      }
+    },
+    "journey": {
+      "eyebrow": "الرحلة",
+      "heading": "من أول طلب إلى تقدم مستمر",
+      "description": "تابع رحلة إعادة التأهيل الكاملة — من أول طلب حالة من ولي الأمر إلى دعم مستمر مدعوم بالذكاء الاصطناعي وتحسن ملموس للمريض.",
+      "preview": {
+        "patientJourney": {
+          "ariaLabel": "رحلة إعادة التأهيل الكاملة للمريض",
+          "title": "رحلة المريض",
+          "badge": "تأهيل نشط",
+          "progress": "التقدم"
+        },
+        "aiReport": {
+          "ariaLabel": "معاينة تقرير التقدم بالذكاء الاصطناعي",
+          "title": "تقرير التقدم بالذكاء الاصطناعي",
+          "widgets": {
+            "speechAnalysis": "تحليل النطق",
+            "weeklySummary": "الملخص الأسبوعي",
+            "progressScore": "درجة التقدم",
+            "aiRecommendation": "توصية الذكاء الاصطناعي"
+          }
+        },
+        "parentDashboard": {
+          "ariaLabel": "معاينة لوحة ولي الأمر",
+          "title": "لوحة ولي الأمر",
+          "todaysExercises": "تمارين اليوم",
+          "exercisesStatus": "2 مكتمل · 1 متبقٍ",
+          "nextSession": {
+            "label": "الجلسة القادمة",
+            "detail": "غداً · 10:00 ص"
+          },
+          "specialistFeedback": {
+            "label": "ملاحظات الأخصائي",
+            "detail": "ملاحظات جديدة متاحة."
+          },
+          "aiReminder": {
+            "label": "تذكير الذكاء الاصطناعي",
+            "detail": "تمرين مسائي مستحق."
+          }
+        }
+      },
+      "steps": {
+        "submitCaseRequest": {
+          "title": "تقديم طلب حالة",
+          "description": "يقدّم ولي الأمر معلومات الطفل والفئة ووصف الحالة والمرفقات."
+        },
+        "specialistAssignment": {
+          "title": "تعيين الأخصائي",
+          "description": "يراجع المسؤول الطلب ويعيّن الأخصائي المناسب."
+        },
+        "assessmentCommunication": {
+          "title": "التقييم والتواصل",
+          "description": "يتواصل الأخصائي مع العائلة ويجري التقييم."
+        },
+        "acceptCreatePatient": {
+          "title": "القبول وإنشاء المريض",
+          "description": "تتحول الحالة المقبولة إلى ملف مريض نشط."
+        },
+        "treatmentPlan": {
+          "title": "الخطة العلاجية",
+          "description": "ينشئ الأخصائي الخطة العلاجية والأهداف."
+        },
+        "homeExercises": {
+          "title": "التمارين المنزلية",
+          "description": "يكمل ولي الأمر التمارين المخصصة ويرفع الفيديو والصوت والملاحظات."
+        },
+        "specialistReview": {
+          "title": "مراجعة الأخصائي",
+          "description": "يراجع الأخصائي التسليمات ويقدّم الملاحظات ويطلب إعادة المحاولة عند الحاجة."
+        },
+        "aiProgressTracking": {
+          "title": "متابعة التقدم بالذكاء الاصطناعي",
+          "description": "ينشئ الذكاء الاصطناعي تحليل النطق وتقارير التقدم والملخصات الأسبوعية والتوصيات."
+        }
+      }
+    },
+    "modules": {
+      "eyebrow": "وحدات المنصة",
+      "heading": "كل ما يلزم لرحلة تأهيل مترابطة",
+      "description": "استكشف منصة Smart Rehabilitation الكاملة واكتشف كيف تعمل كل وحدة معاً لدعم العائلات والأخصائيين والمسؤولين والمرضى طوال رحلة إعادة التأهيل.",
+      "carousel": {
+        "previous": "الوحدة السابقة",
+        "next": "الوحدة التالية",
+        "label": "عرض وحدات المنصة",
+        "goTo": "الانتقال إلى {module}"
+      },
+      "items": {
+        "caseManagement": {
+          "title": "إدارة الحالات",
+          "description": "أدِر كل طلب تأهيل من التقديم حتى تحويله إلى مريض.",
+          "features": {
+            "intake": "طلبات استقبال الحالات",
+            "assignment": "التكليف حسب الفئة",
+            "assessment": "سير عمل التقييم",
+            "conversion": "تحويل إلى مريض",
+            "linking": "ربط ولي الأمر والأخصائي"
+          }
+        },
+        "treatmentManagement": {
+          "title": "إدارة العلاج",
+          "description": "أنشئ خطط تأهيل مخصصة وراقب الأهداف العلاجية طويلة المدى.",
+          "features": {
+            "assessments": "التقييمات",
+            "treatmentPlans": "الخطط العلاجية",
+            "shortTermGoals": "أهداف قصيرة المدى",
+            "longTermGoals": "أهداف طويلة المدى",
+            "goalProgress": "متابعة تقدم الأهداف"
+          }
+        },
+        "homeExerciseSupport": {
+          "title": "دعم التمارين المنزلية",
+          "description": "ادعم العائلات بتمارين التأهيل اليومية والمتابعة المنزلية.",
+          "features": {
+            "tasks": "مهام يومية وأسبوعية",
+            "instructions": "تعليمات التمارين",
+            "submissions": "تسليم فيديو وصوت وصور",
+            "notes": "ملاحظات ولي الأمر",
+            "retry": "سير عمل إعادة المحاولة"
+          }
+        },
+        "specialistReview": {
+          "title": "مراجعة الأخصائي",
+          "description": "راجع تسليمات المرضى وقدّم ملاحظات تأهيلية مهنية.",
+          "features": {
+            "review": "مراجعة التسليمات",
+            "rating": "تقييم الأداء",
+            "feedback": "ملاحظات مكتوبة",
+            "approveRetry": "الموافقة أو طلب إعادة المحاولة",
+            "history": "سجل المراجعات"
+          }
+        },
+        "sessions": {
+          "title": "الجلسات",
+          "description": "أدِر مواعيد التأهيل وجلسات العلاج عن بُعد.",
+          "features": {
+            "upcoming": "الجلسات القادمة",
+            "onlineLinks": "روابط الجلسات عن بُعد",
+            "requests": "طلبات الجلسات",
+            "approval": "الموافقة والرفض",
+            "statuses": "مكتملة وملغاة وفائتة"
+          }
+        },
+        "communication": {
+          "title": "التواصل",
+          "description": "ابقِ أولياء الأمور والأخصائيين على تواصل آمن.",
+          "features": {
+            "chat": "محادثة ولي الأمر والأخصائي",
+            "presence": "متصل وآخر ظهور",
+            "attachments": "صور وصوت وفيديو وPDF",
+            "readStatus": "حالة القراءة",
+            "notifications": "إشعارات غير مقروءة"
+          }
+        },
+        "progressReports": {
+          "title": "التقدم والتقارير",
+          "description": "تابع تقدم التأهيل بتحليلات وتقارير ذكية.",
+          "features": {
+            "periods": "تقدم يومي وأسبوعي وشهري",
+            "goalCompletion": "إنجاز الأهداف",
+            "improvement": "نسبة التحسن",
+            "specialistReports": "تقارير الأخصائي",
+            "pdfExports": "تصدير PDF"
+          }
+        }
+      }
+    },
+    "ai": {
+      "eyebrow": "الذكاء الاصطناعي",
+      "heading": {
+        "line1": "ذكاء اصطناعي يدعم —",
+        "highlight": "لا يستبدل",
+        "line2": "— الأخصائيين"
+      },
+      "description": "يحوّل الذكاء الاصطناعي بيانات التأهيل إلى ملخصات مفيدة وتحليل نطق وتقارير وتوصيات ذكية مع بقاء القرارات السريرية بالكامل تحت إشراف الأخصائي.",
+      "cards": {
+        "speechAnalysis": {
+          "title": "تحليل النطق بالذكاء الاصطناعي",
+          "description": "حلّل النطق والطلاقة وجودة الكلام من التسجيلات المرفوعة.",
+          "widget": {
+            "speechScore": "درجة النطق",
+            "trend": "اتجاه ↑",
+            "comparedToPrevious": "مقارنة بالجلسة السابقة"
+          }
+        },
+        "clinicalSummary": {
+          "title": "الملخص السريري",
+          "description": "أنشئ ملخصات تأهيلية أسبوعية وشهرية منظمة.",
+          "widget": {
+            "title": "الملخص الأسبوعي",
+            "goalCompletion": "إنجاز الأهداف +23%",
+            "speechClarity": "وضوح النطق +18%",
+            "fluencyImproved": "تحسّن الطلاقة",
+            "generatedToday": "أُنشئ اليوم"
+          }
+        },
+        "recommendations": {
+          "title": "توصيات الذكاء الاصطناعي",
+          "description": "يقترح الذكاء الاصطناعي تعديلات علاجية بينما يتخذ الأخصائيون القرار النهائي دائماً.",
+          "widget": {
+            "suggestedExercise": "تمرين مقترح",
+            "increaseWarmUp": "زيادة الإحماء الحركي للفم",
+            "durationChange": "من 10 → 15 دقيقة.",
+            "approve": "موافقة",
+            "reject": "رفض"
+          }
+        },
+        "reportGenerator": {
+          "title": "مولّد التقارير بالذكاء الاصطناعي",
+          "description": "أنشئ تلقائياً تقارير تقدم منظمة جاهزة للتصدير.",
+          "widget": {
+            "filename": "Omar_Progress_Report.pdf",
+            "progress": "التقدم",
+            "exportPdf": "تصدير PDF"
+          }
+        }
+      }
+    },
+    "whyChooseUs": {
+      "eyebrow": "لماذا نحن",
+      "heading": "لماذا Smart Rehabilitation؟",
+      "columns": {
+        "traditional": "المتابعة التقليدية",
+        "smart": "Smart Rehabilitation"
+      },
+      "comparisons": {
+        "communication": {
+          "traditional": "تواصل متفرق",
+          "smart": "منصة واحدة مترابطة"
+        },
+        "progress": {
+          "traditional": "تقدم ورقي",
+          "smart": "تحليلات تقدم مرئية"
+        },
+        "homeGuidance": {
+          "traditional": "إرشاد منزلي محدود",
+          "smart": "تمارين يومية موجهة"
+        },
+        "feedback": {
+          "traditional": "ملاحظات متأخرة",
+          "smart": "مراجعات مباشرة من الأخصائي"
+        },
+        "summaries": {
+          "traditional": "ملخصات يدوية",
+          "smart": "ملخصات بمساعدة الذكاء الاصطناعي"
+        },
+        "tools": {
+          "traditional": "أدوات منفصلة",
+          "smart": "منظومة جوال + ويب + ذكاء اصطناعي"
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "الأسئلة الشائعة",
+      "heading": "الأسئلة الشائعة",
+      "items": {
+        "whoCanUse": {
+          "question": "من يمكنه استخدام المنصة؟",
+          "answer": "صُممت المنصة للعائلات وأخصائيي إعادة التأهيل والمسؤولين، مع أدوات وصلاحيات مخصصة لكل دور."
+        },
+        "childJoin": {
+          "question": "كيف ينضم الطفل إلى المنصة؟",
+          "answer": "يقدّم أولياء الأمور طلب حالة. بعد المراجعة، يقبل الأخصائي الحالة وينشئ ملف المريض."
+        },
+        "familyCommunication": {
+          "question": "هل يمكن للعائلات التواصل مع الأخصائيين؟",
+          "answer": "نعم. يمكن للعائلات والأخصائيين التواصل بأمان عبر المحادثة المدمجة ومشاركة الملفات ومتابعة حالة القراءة والتواجد."
+        },
+        "homeExercises": {
+          "question": "هل يمكن لأولياء الأمور إكمال التمارين في المنزل؟",
+          "answer": "نعم. يمكن لأولياء الأمور اتباع تعليمات التمارين وإكمال المهام اليومية أو الأسبوعية ورفع فيديو وصوت وصور وملاحظات لمراجعة الأخصائي."
+        },
+        "onlineSessions": {
+          "question": "هل تدعم المنصة الجلسات عن بُعد؟",
+          "answer": "نعم. يمكن للأخصائيين جدولة الجلسات وتوفير روابط الاجتماعات، بينما يمكن للعائلات عرض الجلسات القادمة وطلب مواعيد جديدة."
+        },
+        "progressMonitoring": {
+          "question": "هل يمكن متابعة التقدم بمرور الوقت؟",
+          "answer": "نعم. تتابع المنصة التقدم اليومي والأسبوعي والشهري وإنجاز الأهداف وأداء التمارين واتجاهات التحسن."
+        },
+        "aiUsage": {
+          "question": "كيف يُستخدم الذكاء الاصطناعي في المنصة؟",
+          "answer": "يساعد الذكاء الاصطناعي الأخصائيين بإنشاء الملخصات وتحليل النطق والتوصيات والتقارير. تبقى القرارات السريرية دائماً تحت إشراف الأخصائي."
+        },
+        "security": {
+          "question": "هل معلومات المرضى آمنة؟",
+          "answer": "نعم. تُحمى معلومات المرضى عبر الوصول الموثّق والصلاحيات حسب الدور والتحكم في الوصول إلى السجلات السريرية والشخصية."
+        },
+        "mobileWeb": {
+          "question": "هل المنصة متاحة على الجوال والويب؟",
+          "answer": "نعم. يمكن للعائلات والأخصائيين استخدام تطبيق الجوال، بينما توفر منصة الويب الوصول إلى سير العمل المدعومة والأدوات الإدارية."
+        },
+        "anywhere": {
+          "question": "هل يمكنني استخدام المنصة من أي مكان؟",
+          "answer": "نعم. يمكن للعائلات متابعة أنشطة التأهيل من المنزل، ويمكن للأخصائيين والمسؤولين الوصول إلى أدوات المنصة المدعومة عبر الإنترنت."
+        }
+      }
+    },
+    "finalCta": {
+      "eyebrow": "انضم إلى المنصة",
+      "heading": "هل أنت مستعد لبدء رحلة التأهيل؟",
+      "description": "انضم إلى منصة واحدة مترابطة تمكّن العائلات والأخصائيين والمسؤولين من تحقيق نتائج تأهيل أفضل من خلال التعاون والدعم المدعوم بالذكاء الاصطناعي.",
+      "benefits": {
+        "ariaLabel": "مزايا المنصة",
+        "quickStart": "ابدأ خلال دقائق",
+        "aiAssisted": "تأهيل بمساعدة الذكاء الاصطناعي",
+        "mobileWeb": "وصول عبر الجوال والويب",
+        "secure": "منصة آمنة حسب الأدوار"
+      },
+      "getStarted": "ابدأ الآن",
+      "signIn": "تسجيل الدخول"
+    },
+    "footer": {
+      "description": "منصة تأهيل مترابطة تجمع العائلات والأخصائيين والمسؤولين والأدوات السريرية المدعومة بالذكاء الاصطناعي لدعم نتائج إعادة تأهيل أفضل.",
+      "platform": {
+        "title": "المنصة",
+        "features": "الميزات",
+        "howItWorks": "كيف يعمل",
+        "aiSolutions": "حلول الذكاء الاصطناعي",
+        "whoItsFor": "لمن المنصة",
+        "about": "عن المنصة",
+        "joinUs": "انضم إلينا"
+      },
+      "access": {
+        "title": "الوصول",
+        "signIn": "تسجيل الدخول",
+        "createAccount": "إنشاء حساب"
+      },
+      "copyright": "© 2026 Smart Rehabilitation Platform. جميع الحقوق محفوظة."
+    },
+    "a11y": {
+      "openMenu": "فتح القائمة",
+      "closeMenu": "إغلاق القائمة"
+    }
+  }
+}

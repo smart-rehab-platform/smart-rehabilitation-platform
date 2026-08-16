@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getConversationMessages,
   getUserConversations,
@@ -43,6 +44,8 @@ function mergeMessages(existing, incoming) {
 }
 
 export function useParentMessages(userId) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(Boolean(userId));
   const [error, setError] = useState(null);
@@ -82,10 +85,10 @@ export function useParentMessages(userId) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
         }
-        setConversations(mapConversations(rows));
+        setConversations(mapConversations(rows, mapperOptions));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setError(resolveErrorMessage(loadError, "Failed to load conversations."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadConversationsFailed")));
           setConversations([]);
         }
       } finally {
@@ -100,13 +103,13 @@ export function useParentMessages(userId) {
     return () => {
       cancelled = true;
     };
-  }, [userId, refreshToken]);
+  }, [userId, refreshToken, mapperOptions, t]);
 
   if (!userId) {
     return {
       conversations: [],
       isLoading: false,
-      error: "Please sign in to view messages.",
+      error: t("parent.hooks.signInMessages"),
       refetch,
       upsertConversation,
     };
@@ -117,6 +120,7 @@ export function useParentMessages(userId) {
 
 export function useParentConversation(conversationId, currentUserId, options = {}) {
   const { onIncomingMessages } = options;
+  const { t } = useLocale();
   const [messages, setMessages] = useState([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(Boolean(conversationId));
   const [messagesError, setMessagesError] = useState(null);
@@ -191,7 +195,7 @@ export function useParentConversation(conversationId, currentUserId, options = {
         onIncomingMessages?.(mapped);
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setMessagesError(resolveErrorMessage(loadError, "Failed to load messages."));
+          setMessagesError(resolveErrorMessage(loadError, t("parent.hooks.loadMessagesFailed")));
           setMessages([]);
         }
       } finally {
@@ -206,7 +210,7 @@ export function useParentConversation(conversationId, currentUserId, options = {
     return () => {
       cancelled = true;
     };
-  }, [conversationId, currentUserId, refreshToken, markIncomingMessagesRead, onIncomingMessages]);
+  }, [conversationId, currentUserId, refreshToken, markIncomingMessagesRead, onIncomingMessages, t]);
 
   useEffect(() => {
     if (!conversationId) {
@@ -261,6 +265,7 @@ export function useParentConversation(conversationId, currentUserId, options = {
 }
 
 export function useParentMessageComposer({ conversationId, onSendSuccess, setSendingState }) {
+  const { t } = useLocale();
   const [isSending, setIsSending] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null);
   const [sendError, setSendError] = useState(null);
@@ -291,7 +296,7 @@ export function useParentMessageComposer({ conversationId, onSendSuccess, setSen
         );
         const fileUrl = uploaded?.url;
         if (!fileUrl) {
-          throw new Error("Attachment upload did not return a file URL.");
+          throw new Error(t("parent.common.somethingWrong"));
         }
 
         row = await sendConversationAttachmentMessage(conversationId, {
@@ -307,7 +312,7 @@ export function useParentMessageComposer({ conversationId, onSendSuccess, setSen
       onSendSuccess?.(mapped);
       return { ok: true, message: mapped };
     } catch (error) {
-      const message = resolveErrorMessage(error, "Failed to send message.");
+      const message = resolveErrorMessage(error, t("parent.hooks.sendMessageFailed"));
       setSendError(message);
       return { ok: false, message };
     } finally {
@@ -316,7 +321,7 @@ export function useParentMessageComposer({ conversationId, onSendSuccess, setSen
       setSendingState?.(false);
       setUploadProgress(null);
     }
-  }, [conversationId, isSending, onSendSuccess, setSendingState]);
+  }, [conversationId, isSending, onSendSuccess, setSendingState, t]);
 
   const clearSendError = useCallback(() => {
     setSendError(null);

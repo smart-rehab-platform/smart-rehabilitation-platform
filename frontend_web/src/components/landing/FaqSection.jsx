@@ -1,59 +1,8 @@
-import { useId, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useLocale } from "../../context/useLocale.js";
+import { buildLandingFaqItems } from "./landingLocalization.js";
 import { L } from "./landingTokens";
-
-const FAQ_ITEMS = [
-  {
-    question: "Who can use the platform?",
-    answer:
-      "The platform is designed for families, rehabilitation specialists, and administrators, with each role receiving tools and access tailored to their responsibilities.",
-  },
-  {
-    question: "How does a child join the platform?",
-    answer:
-      "Parents submit a case request. After review, a specialist accepts the case and creates the patient profile.",
-  },
-  {
-    question: "Can families communicate with specialists?",
-    answer:
-      "Yes. Families and specialists can communicate securely through built-in chat, share files, and view message read and presence status.",
-  },
-  {
-    question: "Can parents complete exercises at home?",
-    answer:
-      "Yes. Parents can follow exercise instructions, complete daily or weekly tasks, and upload video, audio, images, and notes for specialist review.",
-  },
-  {
-    question: "Does the platform support online sessions?",
-    answer:
-      "Yes. Specialists can schedule sessions and provide online meeting links, while families can view upcoming sessions and request new appointments.",
-  },
-  {
-    question: "Can progress be monitored over time?",
-    answer:
-      "Yes. The platform tracks daily, weekly, and monthly progress, goal completion, exercise performance, and improvement trends.",
-  },
-  {
-    question: "How is AI used in the platform?",
-    answer:
-      "AI assists specialists by generating summaries, speech analysis, recommendations, and reports. Clinical decisions always remain under specialist supervision.",
-  },
-  {
-    question: "Is patient information secure?",
-    answer:
-      "Yes. Patient information is protected through authenticated access, role-based permissions, and controlled access to clinical and personal records.",
-  },
-  {
-    question: "Is the platform available on mobile and web?",
-    answer:
-      "Yes. Families and specialists can use the mobile application, while the web platform provides access to supported workflows and administrative tools.",
-  },
-  {
-    question: "Can I use the platform from anywhere?",
-    answer:
-      "Yes. Families can follow rehabilitation activities from home, and specialists and administrators can access supported platform tools online.",
-  },
-];
 
 function FaqAccordionItem({ item, index, isOpen, onToggle, idPrefix }) {
   const buttonId = `${idPrefix}-button-${index}`;
@@ -71,7 +20,7 @@ function FaqAccordionItem({ item, index, isOpen, onToggle, idPrefix }) {
       <button
         type="button"
         id={buttonId}
-        className="faq-item-button flex w-full items-center justify-between gap-4 px-5 py-4 text-left md:px-[22px] md:py-[17px]"
+        className="faq-item-button flex w-full items-center justify-between gap-4 px-5 py-4 text-start md:px-[22px] md:py-[17px]"
         aria-expanded={isOpen}
         aria-controls={panelId}
         onClick={() => onToggle(index)}
@@ -128,6 +77,9 @@ function FaqAccordionItem({ item, index, isOpen, onToggle, idPrefix }) {
 }
 
 export function FaqSection() {
+  const { t } = useLocale();
+  const faqItems = useMemo(() => buildLandingFaqItems(t), [t]);
+
   const [openIndex, setOpenIndex] = useState(0);
   const idPrefix = useId().replace(/:/g, "");
 
@@ -148,21 +100,21 @@ export function FaqSection() {
             className="mb-3 text-[12px] font-semibold uppercase tracking-[0.12em] md:mb-4 md:text-[13px]"
             style={{ color: L.primary, fontFamily: "'Inter', sans-serif" }}
           >
-            FAQ
+            {t("landing.faq.eyebrow")}
           </p>
           <h2
             id="faq-heading"
             className="text-[2rem] leading-[1.15] tracking-tight sm:text-[2.5rem] md:text-[2.75rem] lg:text-[3.25rem]"
             style={{ color: L.sectionHeading, fontFamily: "'Playfair Display', serif" }}
           >
-            Frequently Asked Questions
+            {t("landing.faq.heading")}
           </h2>
         </header>
 
         <div className="flex flex-col gap-3">
-          {FAQ_ITEMS.map((item, index) => (
+          {faqItems.map((item, index) => (
             <FaqAccordionItem
-              key={item.question}
+              key={item.key}
               item={item}
               index={index}
               isOpen={openIndex === index}

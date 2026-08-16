@@ -4,37 +4,36 @@ import { Camera, CheckCircle2, Lock, Mail } from "lucide-react";
 import { PrimaryButton } from "../../components/auth/PrimaryButton";
 import { Toast } from "../../components/auth/Toast";
 import { readAuthApiMessage } from "../../components/auth/authHelpers";
+import {
+  formatAuthExperienceYears,
+  getAuthBackLabel,
+  getAuthCreateAccountLabel,
+  getAuthRoleLabel,
+} from "../../components/auth/authLocalization";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { useSignupWizard } from "../../context/SignupWizardContext";
 import {
   buildRegistrationPayload,
-  DUPLICATE_EMAIL_INLINE_MESSAGE,
-  DUPLICATE_EMAIL_TOAST_MESSAGE,
   EMPTY_SPECIALIST_PROFILE,
   getClearWizardProfileImagePatch,
   getDisplayProfileImage,
+  getDuplicateEmailCopy,
   getSecurityStep,
   isDuplicateEmailError,
   revokeWizardProfileImagePreview,
   validateWizardForSubmission,
 } from "./signupWizardHelpers";
 
-function formatRoleLabel(role) {
-  if (role === "specialist") return "Specialist";
-  if (role === "parent") return "Parent";
-  return "—";
-}
-
-function formatExperience(years) {
-  if (years === null || years === undefined || years === "") {
-    return "—";
-  }
-
-  const value = Number(years);
-  return `${value} year${value === 1 ? "" : "s"}`;
-}
-
-function ReviewSection({ title, editLabel, onEdit, disabled, children, isLast = false }) {
+function ReviewSection({
+  title,
+  editLabel,
+  editButtonLabel,
+  onEdit,
+  disabled,
+  children,
+  isLast = false,
+}) {
   return (
     <section className="signup-review-section" aria-labelledby={`review-${title.replace(/\s+/g, "-").toLowerCase()}`}>
       <div className="mb-1.5 flex items-center justify-between gap-2">
@@ -52,7 +51,7 @@ function ReviewSection({ title, editLabel, onEdit, disabled, children, isLast = 
           className="signup-review-edit auth-footer-link rounded px-1 py-0.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(79,166,248,0.35)] disabled:cursor-not-allowed disabled:opacity-45"
           aria-label={editLabel}
         >
-          Edit
+          {editButtonLabel}
         </button>
       </div>
       <div className="signup-review-section-body">{children}</div>
@@ -81,6 +80,7 @@ function ReviewValue({ label, value, clamp = false }) {
 
 export function SignupStep5Review({ onBack }) {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const auth = useAuth();
   const {
     wizardData,
@@ -104,12 +104,13 @@ export function SignupStep5Review({ onBack }) {
   const submitLockRef = useRef(false);
 
   const profile = wizardData.specialist_profile ?? EMPTY_SPECIALIST_PROFILE;
-  const validation = useMemo(() => validateWizardForSubmission(wizardData), [wizardData]);
+  const validation = useMemo(() => validateWizardForSubmission(wizardData, t), [wizardData, t]);
   const isBusy = isRegistrationSubmitting || resending;
   const canSubmit = validation.valid && !isBusy;
+  const emptyDisplay = t("auth.shared.emptyDisplay");
 
   const displayProfileImage = getDisplayProfileImage(wizardData);
-  const roleLabel = formatRoleLabel(wizardData.role);
+  const roleLabel = getAuthRoleLabel(wizardData.role, t);
 
   useEffect(() => {
     setAvatarBroken(false);
@@ -156,7 +157,7 @@ export function SignupStep5Review({ onBack }) {
       return;
     }
 
-    const result = validateWizardForSubmission(wizardData);
+    const result = validateWizardForSubmission(wizardData, t);
     if (!result.valid) {
       if (result.message) {
         showToast(result.message, "error");
@@ -177,15 +178,16 @@ export function SignupStep5Review({ onBack }) {
       clearSensitiveWizardData();
       setRegistrationComplete(true);
     } catch (error) {
-      const message = readAuthApiMessage(error, "Registration failed. Please try again.");
+      const message = readAuthApiMessage(error, t("auth.signup.registrationFailed"));
 
       if (isDuplicateEmailError(message)) {
+        const duplicateEmailCopy = getDuplicateEmailCopy(t);
         setServerErrors({
-          email: DUPLICATE_EMAIL_INLINE_MESSAGE,
+          email: duplicateEmailCopy.inline,
         });
         setWizardNotice({
           step: 2,
-          message: DUPLICATE_EMAIL_TOAST_MESSAGE,
+          message: duplicateEmailCopy.toast,
           variant: "error",
           focusField: "email",
           duration: 7000,
@@ -216,7 +218,7 @@ export function SignupStep5Review({ onBack }) {
       const message = await auth.sendVerification(registeredEmail);
       showToast(message, "success");
     } catch (error) {
-      showToast(readAuthApiMessage(error, "Failed to send verification email."), "error");
+      showToast(readAuthApiMessage(error, t("auth.signup.verificationEmailFailed")), "error");
     } finally {
       setResending(false);
     }
@@ -251,22 +253,22 @@ export function SignupStep5Review({ onBack }) {
               className="mt-4 text-[1.35rem] font-bold leading-tight outline-none sm:text-[1.5rem]"
               style={{ fontFamily: "'Syne', sans-serif", color: "#0F2342" }}
             >
-              Check your email
+              {t("auth.signup.checkEmailTitle")}
             </h2>
 
             <p className="mt-2 text-[13px] leading-relaxed" style={{ color: "#5A7390" }}>
-              We sent a verification link to:
+              {t("auth.signup.checkEmailSentTo")}
             </p>
             <p className="mt-1 text-[14px] font-semibold break-all" style={{ color: "#0F2342" }}>
               {registeredEmail}
             </p>
             <p className="mt-2 text-[13px] leading-relaxed" style={{ color: "#5A7390" }}>
-              Please verify your email before signing in.
+              {t("auth.signup.checkEmailVerifyBeforeSignIn")}
             </p>
 
             <div className="mt-5 w-full space-y-2.5">
               <PrimaryButton onClick={handleGoToSignIn}>
-                <span>Go to Sign In</span>
+                <span>{t("auth.signup.goToSignIn")}</span>
               </PrimaryButton>
               <button
                 type="button"
@@ -274,7 +276,7 @@ export function SignupStep5Review({ onBack }) {
                 disabled={resending}
                 className="auth-secondary-btn w-full disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {resending ? "Sending..." : "Resend Verification Email"}
+                {resending ? t("auth.signup.resending") : t("auth.signup.resendVerificationEmail")}
               </button>
             </div>
           </div>
@@ -291,11 +293,12 @@ export function SignupStep5Review({ onBack }) {
         <div
           className="signup-review-scroll mb-2.5 flex flex-col gap-0"
           role="region"
-          aria-label="Account review"
+          aria-label={t("auth.signup.reviewRegionAria")}
         >
           <ReviewSection
-            title="Account Type"
-            editLabel="Edit account type"
+            title={t("auth.signup.accountType")}
+            editLabel={t("auth.signup.editAccountTypeAria")}
+            editButtonLabel={t("auth.signup.edit")}
             onEdit={() => handleEditStep(1)}
             disabled={isBusy}
           >
@@ -303,8 +306,9 @@ export function SignupStep5Review({ onBack }) {
           </ReviewSection>
 
           <ReviewSection
-            title="Personal Details"
-            editLabel="Edit personal details"
+            title={t("auth.signup.personalDetails")}
+            editLabel={t("auth.signup.editPersonalDetailsAria")}
+            editButtonLabel={t("auth.signup.edit")}
             onEdit={() => handleEditStep(2)}
             disabled={isBusy}
           >
@@ -329,13 +333,13 @@ export function SignupStep5Review({ onBack }) {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[14px] font-semibold leading-tight" style={{ color: "#0F2342" }}>
-                  {wizardData.full_name.trim() || "—"}
+                  {wizardData.full_name.trim() || emptyDisplay}
                 </p>
                 <p className="mt-0.5 truncate text-[12px] leading-snug" style={{ color: "#5A7390" }}>
-                  {wizardData.email.trim() || "—"}
+                  {wizardData.email.trim() || emptyDisplay}
                 </p>
                 <p className="mt-0.5 truncate text-[12px] leading-snug" style={{ color: "#5A7390" }}>
-                  {wizardData.phone.trim() || "—"}
+                  {wizardData.phone.trim() || emptyDisplay}
                 </p>
               </div>
             </div>
@@ -343,27 +347,38 @@ export function SignupStep5Review({ onBack }) {
 
           {wizardData.role === "specialist" && (
             <ReviewSection
-              title="Professional Details"
-              editLabel="Edit professional details"
+              title={t("auth.signup.professionalDetails")}
+              editLabel={t("auth.signup.editProfessionalDetailsAria")}
+              editButtonLabel={t("auth.signup.edit")}
               onEdit={() => handleEditStep(3)}
               disabled={isBusy}
             >
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <ReviewValue label="Specialization" value={profile.specialization.trim() || "—"} />
-                <ReviewValue label="License Number" value={profile.license_number.trim() || "—"} />
-                <ReviewValue label="Experience" value={formatExperience(profile.years_of_experience)} />
+                <ReviewValue
+                  label={t("auth.signup.specializationLabel")}
+                  value={profile.specialization.trim() || emptyDisplay}
+                />
+                <ReviewValue
+                  label={t("auth.signup.licenseNumberLabel")}
+                  value={profile.license_number.trim() || emptyDisplay}
+                />
+                <ReviewValue
+                  label={t("auth.signup.experienceLabel")}
+                  value={formatAuthExperienceYears(profile.years_of_experience, t)}
+                />
               </div>
               {profile.bio?.trim() ? (
                 <div className="mt-2">
-                  <ReviewValue label="Bio" value={profile.bio.trim()} clamp />
+                  <ReviewValue label={t("auth.signup.bioLabel")} value={profile.bio.trim()} clamp />
                 </div>
               ) : null}
             </ReviewSection>
           )}
 
           <ReviewSection
-            title="Security"
-            editLabel="Edit account security"
+            title={t("auth.signup.securitySection")}
+            editLabel={t("auth.signup.editSecurityAria")}
+            editButtonLabel={t("auth.signup.edit")}
             onEdit={() => handleEditStep(getSecurityStep())}
             disabled={isBusy}
             isLast
@@ -372,14 +387,14 @@ export function SignupStep5Review({ onBack }) {
               <CheckCircle2 size={14} style={{ color: "#22c55e" }} aria-hidden />
               <Lock size={14} style={{ color: "#6B849F" }} aria-hidden />
               <p className="text-[13px] font-medium" style={{ color: "#0F2342" }}>
-                Password created securely
+                {t("auth.signup.passwordCreatedSecurely")}
               </p>
             </div>
           </ReviewSection>
         </div>
 
         <p className="mb-2.5 text-[11px] leading-relaxed" style={{ color: "#6B849F" }}>
-          By creating this account, you confirm that the information above is accurate.
+          {t("auth.signup.reviewConfirmAccuracy")}
         </p>
 
         <div className="flex gap-3 pt-1">
@@ -389,7 +404,7 @@ export function SignupStep5Review({ onBack }) {
             disabled={isBusy}
             className="auth-secondary-btn flex-1 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Back
+            {getAuthBackLabel(t)}
           </button>
           <div className="flex-1">
             <PrimaryButton
@@ -398,7 +413,11 @@ export function SignupStep5Review({ onBack }) {
               onClick={handleCreateAccount}
               aria-busy={isRegistrationSubmitting}
             >
-              <span>{isRegistrationSubmitting ? "Creating Account..." : "Create Account"}</span>
+              <span>
+                {isRegistrationSubmitting
+                  ? t("auth.signup.creatingAccount")
+                  : getAuthCreateAccountLabel(t)}
+              </span>
             </PrimaryButton>
           </div>
         </div>

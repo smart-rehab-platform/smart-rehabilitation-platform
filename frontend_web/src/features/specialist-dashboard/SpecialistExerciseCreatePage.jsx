@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistExerciseDetailPath,
@@ -15,6 +16,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistExerciseCreatePage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -78,25 +80,25 @@ export default function SpecialistExerciseCreatePage() {
   const handleSave = useCallback(async () => {
     const result = await save();
     if (result.ok && result.exercise?.id) {
-      showToast("Exercise created successfully");
+      showToast(t("specialist.exercises.toast.createdSuccess"));
       navigate(buildSpecialistExerciseDetailPath(result.exercise.id));
       return;
     }
     if (result.ok) {
-      showToast("Exercise created successfully");
+      showToast(t("specialist.exercises.toast.createdSuccess"));
       navigate(SPECIALIST_WEB_ROUTES.exercises);
       return;
     }
     if (result.message) {
       showToast(result.message);
     }
-  }, [save, showToast, navigate]);
+  }, [save, showToast, navigate, t]);
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading categories...</p>
+          <p className="pd-inline-loading">{t("specialist.exercises.loadingCategories")}</p>
         </section>
       );
     }
@@ -106,7 +108,7 @@ export default function SpecialistExerciseCreatePage() {
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -115,7 +117,7 @@ export default function SpecialistExerciseCreatePage() {
     if (categories.length === 0) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">No exercise categories available yet.</p>
+          <p className="pd-section-sub">{t("specialist.exercises.empty.noCategories")}</p>
         </section>
       );
     }
@@ -180,12 +182,10 @@ export default function SpecialistExerciseCreatePage() {
           <header className="pd-specialist-exercise-page-header">
             <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back
+              {t("specialist.exercises.back")}
             </button>
-            <h1 className="pd-section-title">Add Exercise</h1>
-            <p className="pd-section-sub">
-              Add therapy exercises to the shared library for assignment.
-            </p>
+            <h1 className="pd-section-title">{t("specialist.exercises.createTitle")}</h1>
+            <p className="pd-section-sub">{t("specialist.exercises.formSubtitle")}</p>
           </header>
 
           {error && categories.length > 0 ? (

@@ -1,4 +1,5 @@
 import { AudioLines } from "lucide-react";
+import { useLocale } from "../../../context/useLocale";
 import { SpecialistReviewDecision } from "../components/SpecialistReviewDecision";
 import { SpecialistStarRating } from "../components/SpecialistStarRating";
 
@@ -16,18 +17,20 @@ export function SpecialistReviewForm({
   showSpeechAnalysis = false,
   onSpeechAnalysis,
 }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-card pd-card-pad pd-specialist-review-form">
-      <h3 className="pd-specialist-review-section-title">Review</h3>
+      <h3 className="pd-specialist-review-section-title">{t("specialist.reviews.form.section")}</h3>
 
       <div className="pd-specialist-review-field">
-        <span className="pd-specialist-review-field-label">Rating</span>
+        <span className="pd-specialist-review-field-label">{t("specialist.reviews.form.rating")}</span>
         <SpecialistStarRating rating={starRating} onChange={onStarRatingChange} />
       </div>
 
       <div className="pd-specialist-review-field">
         <label className="pd-specialist-review-field-label" htmlFor="specialist-review-feedback">
-          Feedback
+          {t("specialist.reviews.form.feedback")}
         </label>
         <textarea
           id="specialist-review-feedback"
@@ -35,13 +38,14 @@ export function SpecialistReviewForm({
           rows={5}
           value={feedback}
           onChange={(event) => onFeedbackChange(event.target.value)}
-          placeholder="Write feedback for the parent and patient..."
+          placeholder={t("specialist.reviews.form.feedbackPlaceholder")}
           disabled={isSubmitting}
+          dir="auto"
         />
       </div>
 
       <div className="pd-specialist-review-field">
-        <span className="pd-specialist-review-field-label">Status</span>
+        <span className="pd-specialist-review-field-label">{t("specialist.reviews.form.status")}</span>
         <SpecialistReviewDecision
           requiresRetry={requiresRetry}
           onChange={onRequiresRetryChange}
@@ -59,7 +63,7 @@ export function SpecialistReviewForm({
             disabled={isSubmitting}
           >
             <AudioLines size={16} aria-hidden="true" />
-            View Speech Analysis
+            {t("specialist.reviews.form.speechAnalysis")}
           </button>
         ) : null}
 
@@ -69,7 +73,11 @@ export function SpecialistReviewForm({
           onClick={onSubmit}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : isUpdate ? "Update Review" : "Submit Review"}
+          {isSubmitting
+            ? t("specialist.reviews.form.submitting")
+            : isUpdate
+              ? t("specialist.reviews.form.update")
+              : t("specialist.reviews.form.submit")}
         </button>
       </div>
     </section>

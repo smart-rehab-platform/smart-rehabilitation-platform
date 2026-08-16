@@ -1,13 +1,16 @@
+import { useLocale } from "../../../../context/useLocale.js";
+import { getAiSenderLabel } from "../../utils/parentAiAssistantUtils";
 import { SuggestedHomePracticeCard } from "./SuggestedHomePracticeCard";
 
 export function AiMessageBubble({ message, isWaiting = false }) {
+  const { t } = useLocale();
   const isUser = message?.role === "user";
-  const label = message?.senderLabel || (isUser ? "You" : "AI Assistant");
+  const label = message?.senderLabel || getAiSenderLabel(isUser ? "user" : "assistant", t);
 
   return (
     <article
       className={`pd-ai-message${isUser ? " is-user" : " is-assistant"}${isWaiting ? " is-waiting" : ""}`}
-      aria-label={`${label} message`}
+      aria-label={t("parent.aiAssistant.messageAria", { sender: label })}
     >
       <header className="pd-ai-message-header">
         <span className="pd-ai-message-role">{label}</span>
@@ -21,10 +24,10 @@ export function AiMessageBubble({ message, isWaiting = false }) {
       <div className="pd-ai-message-body">
         {isWaiting ? (
           <p className="pd-inline-loading" aria-live="polite">
-            AI Assistant is thinking...
+            {t("parent.aiAssistant.thinking")}
           </p>
         ) : (
-          <p className="pd-ai-message-text">{message?.content}</p>
+          <p className="pd-ai-message-text" dir="auto">{message?.content}</p>
         )}
       </div>
 

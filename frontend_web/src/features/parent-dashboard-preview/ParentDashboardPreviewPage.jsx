@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { buildParentProgressPath } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { GreetingAndActions } from "./sections/GreetingAndActions";
 import { SummaryStrip } from "./sections/SummaryStrip";
@@ -27,10 +27,10 @@ import "./styles/parentDashboardTokens.css";
 
 const today = new Date();
 
-function SessionCardState({ message, isError = false }) {
+function SessionCardState({ message, isError = false, t }) {
   return (
-    <section className="pd-session-minimal pd-schedule-card pd-section-enter" aria-label="Upcoming schedule">
-      <h2 className="pd-overview-title">Upcoming Schedule</h2>
+    <section className="pd-session-minimal pd-schedule-card pd-section-enter" aria-label={t("parent.home.upcomingSchedule")}>
+      <h2 className="pd-overview-title">{t("parent.home.upcomingSchedule")}</h2>
       <p className={isError ? "pd-inline-error pd-schedule-empty" : "pd-inline-loading pd-schedule-empty"}>
         {message}
       </p>
@@ -38,10 +38,10 @@ function SessionCardState({ message, isError = false }) {
   );
 }
 
-function CalendarCardState({ message, isError = false }) {
+function CalendarCardState({ message, isError = false, t }) {
   return (
-    <section className="pd-calendar-minimal pd-section-enter" aria-label="Calendar">
-      <h2 className="pd-overview-title">Calendar</h2>
+    <section className="pd-calendar-minimal pd-section-enter" aria-label={t("parent.home.calendar")}>
+      <h2 className="pd-overview-title">{t("parent.home.calendar")}</h2>
       <p className={isError ? "pd-inline-error pd-today-tasks-empty" : "pd-inline-loading pd-today-tasks-empty"}>
         {message}
       </p>
@@ -49,11 +49,11 @@ function CalendarCardState({ message, isError = false }) {
   );
 }
 
-function TasksSectionState({ message, isError = false }) {
+function TasksSectionState({ message, isError = false, t }) {
   return (
-    <section className="pd-card pd-card-pad pd-today-tasks pd-section-enter" aria-label="Today's tasks">
+    <section className="pd-card pd-card-pad pd-today-tasks pd-section-enter" aria-label={t("parent.home.todaysTasks")}>
       <div className="pd-card-header">
-        <h2 className="pd-section-title">Today&apos;s Tasks</h2>
+        <h2 className="pd-section-title">{t("parent.home.todaysTasks")}</h2>
       </div>
       <p className={isError ? "pd-inline-error pd-today-tasks-empty" : "pd-inline-loading pd-today-tasks-empty"}>
         {message}
@@ -62,20 +62,20 @@ function TasksSectionState({ message, isError = false }) {
   );
 }
 
-function SummarySectionState({ message }) {
+function SummarySectionState({ message, t }) {
   return (
-    <section className="pd-quick-summary pd-section-enter" aria-label="Quick summary">
+    <section className="pd-quick-summary pd-section-enter" aria-label={t("parent.home.quickSummary")}>
       <div className="pd-quick-summary-item pd-quick-summary-item-static">
         <span className="pd-inline-loading">{message}</span>
       </div>
     </section>
   );
 }
-function UpdatesSectionState({ message, isError = false }) {
+function UpdatesSectionState({ message, isError = false, t }) {
   return (
-    <section className="pd-card pd-card-pad pd-latest-updates pd-section-enter" aria-label="Latest updates">
+    <section className="pd-card pd-card-pad pd-latest-updates pd-section-enter" aria-label={t("parent.home.latestUpdates")}>
       <div className="pd-card-header">
-        <h2 className="pd-section-title">Latest Updates</h2>
+        <h2 className="pd-section-title">{t("parent.home.latestUpdates")}</h2>
       </div>
       <p className={isError ? "pd-inline-error pd-today-tasks-empty" : "pd-inline-loading pd-today-tasks-empty"}>
         {message}
@@ -84,9 +84,9 @@ function UpdatesSectionState({ message, isError = false }) {
   );
 }
 
-function HeroCardState({ message, isError = false }) {
+function HeroCardState({ message, isError = false, t }) {
   return (
-    <section className="pd-section-enter" aria-label="Overall progress">
+    <section className="pd-section-enter" aria-label={t("parent.home.overallProgressAriaLabel")}>
       <div className="pd-progress-hero-card pd-progress-hero-card-static">
         <div className="pd-progress-hero-state">
           <p className={isError ? "pd-inline-error" : "pd-inline-loading"}>{message}</p>
@@ -99,6 +99,7 @@ function HeroCardState({ message, isError = false }) {
 export default function ParentDashboardPreviewPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLocale();
   const restoredChildIdRef = useRef(null);
   const { user, isInitializing } = useAuth();
   const notificationUserId = isInitializing ? null : user?.id ?? null;
@@ -111,7 +112,6 @@ export default function ParentDashboardPreviewPage() {
   const [calMonth, setCalMonth] = useState(today.getMonth());
   const [selectedDay, setSelectedDay] = useState(today.getDate());
 
-  const mock = parentDashboardMock;
   const parent = useMemo(() => mapParentFromAuth(user), [user]);
 
   const {
@@ -360,11 +360,11 @@ export default function ParentDashboardPreviewPage() {
 
   const renderSummaryStrip = () => {
     if (isLoadingChildren || isLoadingHero) {
-      return <SummarySectionState message="Loading summary..." />;
+      return <SummarySectionState message={t("parent.home.loadingSummary")} t={t} />;
     }
 
     if (!summary) {
-      return <SummarySectionState message="Summary unavailable." />;
+      return <SummarySectionState message={t("parent.home.summaryUnavailable")} t={t} />;
     }
 
     return (
@@ -377,14 +377,15 @@ export default function ParentDashboardPreviewPage() {
 
   const renderTodaysTasks = () => {
     if (isLoadingChildren || isLoadingHero) {
-      return <TasksSectionState message="Loading today's tasks..." />;
+      return <TasksSectionState message={t("parent.home.loadingTodaysTasks")} t={t} />;
     }
 
     if (tasksError) {
       return (
         <TasksSectionState
-          message={`Unable to load today's tasks. ${tasksError}`}
+          message={t("parent.home.unableToLoadTodaysTasks", { error: tasksError })}
           isError
+          t={t}
         />
       );
     }
@@ -401,14 +402,15 @@ export default function ParentDashboardPreviewPage() {
 
   const renderUpcomingSessionCard = () => {
     if (isLoadingChildren) {
-      return <SessionCardState message="Loading upcoming schedule..." />;
+      return <SessionCardState message={t("parent.home.loadingUpcomingSchedule")} t={t} />;
     }
 
     if (foundationError) {
       return (
         <SessionCardState
-          message="Upcoming schedule unavailable right now."
+          message={t("parent.home.upcomingScheduleUnavailable")}
           isError
+          t={t}
         />
       );
     }
@@ -424,14 +426,15 @@ export default function ParentDashboardPreviewPage() {
 
   const renderCalendarCard = () => {
     if (isLoadingChildren) {
-      return <CalendarCardState message="Loading calendar..." />;
+      return <CalendarCardState message={t("parent.home.loadingCalendar")} t={t} />;
     }
 
     if (foundationError) {
       return (
         <CalendarCardState
-          message="Calendar unavailable right now."
+          message={t("parent.home.calendarUnavailable")}
           isError
+          t={t}
         />
       );
     }
@@ -454,14 +457,15 @@ export default function ParentDashboardPreviewPage() {
   };
   const renderLatestUpdates = () => {
     if (isLoadingChildren || isLoadingHero) {
-      return <UpdatesSectionState message="Loading latest updates..." />;
+      return <UpdatesSectionState message={t("parent.home.loadingLatestUpdates")} t={t} />;
     }
 
     if (foundationError) {
       return (
         <UpdatesSectionState
-          message="Latest updates unavailable right now."
+          message={t("parent.home.latestUpdatesUnavailable")}
           isError
+          t={t}
         />
       );
     }
@@ -472,26 +476,27 @@ export default function ParentDashboardPreviewPage() {
     if (!hasContent && hasErrors) {
       return (
         <UpdatesSectionState
-          message="Unable to load latest updates."
+          message={t("parent.home.unableToLoadLatestUpdates")}
           isError
+          t={t}
         />
       );
     }
 
     if (!hasContent) {
-      return <UpdatesSectionState message="No updates yet for this child." />;
+      return <UpdatesSectionState message={t("parent.home.noUpdatesYet")} t={t} />;
     }
 
     return (
       <>
         {reportsError && !latestReport ? (
           <p className="pd-inline-error pd-inline-error-banner" role="status">
-            Latest report unavailable.
+            {t("parent.home.latestReportUnavailable")}
           </p>
         ) : null}
         {reviewsError && !recentFeedback ? (
           <p className="pd-inline-error pd-inline-error-banner" role="status">
-            Specialist feedback unavailable.
+            {t("parent.home.specialistFeedbackUnavailable")}
           </p>
         ) : null}
         <LatestUpdatesSection
@@ -506,7 +511,7 @@ export default function ParentDashboardPreviewPage() {
 
   const renderHeroCard = () => {
     if (isLoadingChildren || isLoadingHero) {
-      return <HeroCardState message="Loading child progress..." />;
+      return <HeroCardState message={t("parent.home.loadingChildProgress")} t={t} />;
     }
 
     if (foundationError) {
@@ -514,6 +519,7 @@ export default function ParentDashboardPreviewPage() {
         <HeroCardState
           message={foundationError}
           isError
+          t={t}
         />
       );
     }
@@ -521,8 +527,9 @@ export default function ParentDashboardPreviewPage() {
     if (!heroViewModel) {
       return (
         <HeroCardState
-          message="No linked children found yet."
+          message={t("parent.home.noLinkedChildren")}
           isError
+          t={t}
         />
       );
     }
@@ -553,7 +560,6 @@ export default function ParentDashboardPreviewPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={mock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}

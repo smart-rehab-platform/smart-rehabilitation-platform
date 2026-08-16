@@ -1,24 +1,42 @@
 export const CASE_REQUEST_STATUS_ALL = "all";
 export const CASE_REQUEST_CATEGORY_ALL = "all";
 
-/** Filter dropdown options — Flutter specialist list order/labels. */
-export const CASE_REQUEST_STATUS_FILTERS = [
-  { id: CASE_REQUEST_STATUS_ALL, label: "All Statuses", apiValue: null },
-  { id: "assigned", label: "Assigned", apiValue: "assigned" },
-  { id: "under_assessment", label: "Under Assessment", apiValue: "under_assessment" },
-  { id: "accepted", label: "Accepted", apiValue: "accepted" },
-  { id: "converted_to_patient", label: "Converted to Patient", apiValue: "converted_to_patient" },
-  { id: "rejected", label: "Rejected", apiValue: "rejected" },
-];
+export {
+  CASE_REQUEST_STATUS_FILTER_DEFS,
+  CASE_REQUEST_STATUS_FILTERS,
+  CASE_REQUEST_STATUS_VALUES,
+  applyCaseRequestDetailLocalization,
+  applyCaseRequestListItemLocalization,
+  buildCaseRequestStatusFilters,
+  buildCaseRequestTimelineSteps,
+  formatCaseRequestAgeLabel,
+  formatCaseRequestAssignedDateLabel,
+  formatCaseRequestAttachmentCountLabel,
+  formatCaseRequestDisplayDate,
+  formatCaseRequestDisplayDateTime,
+  formatCaseRequestGenderLabel,
+  formatPreferredContactPeriodLabel,
+  getCaseRequestAttachmentTypeLabel,
+  getCaseRequestCategoryLabel,
+  getCaseRequestListEmptyMessage,
+  getCaseRequestStatusLabel,
+  yesNoLabel,
+} from "./specialistCaseRequestsLocalization.js";
 
-const STATUS_CHIP_LABELS = {
-  pending: "Pending Review",
-  assigned: "Specialist Assigned",
-  under_assessment: "Under Assessment",
-  accepted: "Accepted",
-  rejected: "Rejected",
-  converted_to_patient: "Profile Created",
-};
+import {
+  applyCaseRequestDetailLocalization,
+  applyCaseRequestListItemLocalization,
+  formatCaseRequestAgeLabel,
+  formatCaseRequestAssignedDateLabel,
+  formatCaseRequestAttachmentCountLabel,
+  formatCaseRequestDisplayDate,
+  formatCaseRequestDisplayDateTime,
+  formatCaseRequestGenderLabel,
+  formatPreferredContactPeriodLabel,
+  getCaseRequestAttachmentTypeLabel,
+  getCaseRequestCategoryLabel,
+  getCaseRequestStatusLabel,
+} from "./specialistCaseRequestsLocalization.js";
 
 const STATUS_TONES = {
   pending: "warning",
@@ -70,65 +88,28 @@ function parseDate(value) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export function formatCaseRequestDate(value) {
-  const date = parseDate(value);
-  if (!date) {
-    return null;
-  }
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+export function formatCaseRequestDate(value, locale = "en") {
+  return formatCaseRequestDisplayDate(value, locale);
 }
 
-export function formatCaseRequestDateTime(value) {
-  const date = parseDate(value);
-  if (!date) {
-    return null;
-  }
-  const datePart = date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-  const timePart = date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-  return `${datePart} · ${timePart}`;
+export function formatCaseRequestDateTime(value, locale = "en") {
+  return formatCaseRequestDisplayDateTime(value, locale);
 }
 
-export function getCaseRequestStatusChipLabel(status) {
-  return STATUS_CHIP_LABELS[parseStatus(status)] || "Assigned";
+export function getCaseRequestStatusChipLabel(status, t = null) {
+  return getCaseRequestStatusLabel(status, t);
 }
 
 export function getCaseRequestStatusTone(status) {
   return STATUS_TONES[parseStatus(status)] || "blue";
 }
 
-export function formatCaseRequestGender(gender) {
-  const normalized = typeof gender === "string" ? gender.trim().toLowerCase() : "";
-  if (normalized === "male") return "Male";
-  if (normalized === "female") return "Female";
-  if (normalized === "other") return "Other";
-  return gender?.trim() || "—";
+export function formatCaseRequestGender(gender, t = null) {
+  return formatCaseRequestGenderLabel(gender, t);
 }
 
-export function formatPreferredContactPeriod(value) {
-  const normalized = typeof value === "string" ? value.trim().toLowerCase() : "";
-  switch (normalized) {
-    case "morning":
-      return "Morning";
-    case "afternoon":
-      return "Afternoon";
-    case "evening":
-      return "Evening";
-    case "flexible":
-      return "Flexible";
-    default:
-      return value?.trim() || "—";
-  }
+export function formatPreferredContactPeriod(value, t = null) {
+  return formatPreferredContactPeriodLabel(value, t);
 }
 
 export function calculateAgeYears(dateOfBirth, now = new Date()) {
@@ -144,12 +125,8 @@ export function calculateAgeYears(dateOfBirth, now = new Date()) {
   return age >= 0 ? age : null;
 }
 
-export function formatAgeLabel(dateOfBirth) {
-  const age = calculateAgeYears(dateOfBirth);
-  if (age === null) {
-    return "Unavailable";
-  }
-  return age === 1 ? "1 year" : `${age} years`;
+export function formatAgeLabel(dateOfBirth, t = null) {
+  return formatCaseRequestAgeLabel(dateOfBirth, t);
 }
 
 function mapParentSummary(row, { includeContact = false } = {}) {
@@ -189,7 +166,7 @@ function guessAttachmentKind(fileType, fileUrl, originalName) {
   return "file";
 }
 
-export function mapCaseRequestAttachment(row) {
+export function mapCaseRequestAttachment(row, t = null) {
   if (!row || typeof row !== "object") {
     return null;
   }
@@ -201,15 +178,6 @@ export function mapCaseRequestAttachment(row) {
   const originalName = readNullableString(row, ["original_name", "originalName"]);
   const fileType = readNullableString(row, ["file_type", "fileType"]);
   const kind = guessAttachmentKind(fileType, fileUrl, originalName);
-  const typeLabel = kind === "pdf"
-    ? "PDF"
-    : kind === "image"
-      ? "Image"
-      : kind === "audio"
-        ? "Audio"
-        : kind === "video"
-          ? "Video"
-          : (fileType || "File");
 
   return {
     id: id || fileUrl,
@@ -218,12 +186,12 @@ export function mapCaseRequestAttachment(row) {
     originalName,
     displayName: originalName || "Attachment",
     kind,
-    typeLabel,
+    typeLabel: getCaseRequestAttachmentTypeLabel(kind, fileType, t),
     createdAt: parseDate(row.created_at ?? row.createdAt),
   };
 }
 
-export function mapSpecialistCaseRequestListItem(row) {
+export function mapSpecialistCaseRequestListItem(row, context = {}) {
   if (!row || typeof row !== "object") {
     return null;
   }
@@ -237,29 +205,25 @@ export function mapSpecialistCaseRequestListItem(row) {
   const submittedAt = parseDate(row.submitted_at ?? row.submittedAt);
   const attachmentCount = Number(row.attachment_count ?? row.attachmentCount ?? 0) || 0;
   const conversationId = readNullableString(row, ["conversation_id", "conversationId"]);
-  const dateLabel = assignedAt
-    ? `Assigned ${formatCaseRequestDate(assignedAt)}`
-    : submittedAt
-      ? `Submitted ${formatCaseRequestDate(submittedAt)}`
-      : "Date unavailable";
+  const category = mapCategory(row.category);
 
-  return {
+  const item = {
     id,
     childName: readString(row, ["child_name", "childName"]) || "Unnamed child",
     status,
     statusLabel: getCaseRequestStatusChipLabel(status),
     statusTone: getCaseRequestStatusTone(status),
-    category: mapCategory(row.category),
-    categoryName: mapCategory(row.category)?.name || "",
+    category,
+    categoryName: category?.name || "",
     parent: mapParentSummary(row.parent),
     parentName: mapParentSummary(row.parent)?.fullName || "",
     assignedAt,
     submittedAt,
     acceptedAt: parseDate(row.accepted_at ?? row.acceptedAt),
     convertedAt: parseDate(row.converted_at ?? row.convertedAt),
-    dateLabel,
+    dateLabel: formatCaseRequestAssignedDateLabel(assignedAt, submittedAt),
     attachmentCount,
-    attachmentCountLabel: attachmentCount === 1 ? "1 attachment" : `${attachmentCount} attachments`,
+    attachmentCountLabel: formatCaseRequestAttachmentCountLabel(attachmentCount),
     conversationId,
     conversationAvailable: Boolean(conversationId),
     patientId: readNullableString(row, ["patient_id", "patientId"]),
@@ -267,91 +231,39 @@ export function mapSpecialistCaseRequestListItem(row) {
     gender: readNullableString(row, ["gender"]),
     childImageUrl: readNullableString(row, ["child_image_url", "childImageUrl"]),
   };
+
+  return applyCaseRequestListItemLocalization(item, context);
 }
 
-export function mapSpecialistCaseRequestList(rows) {
+export function mapSpecialistCaseRequestList(rows, context = {}) {
   if (!Array.isArray(rows)) {
     return [];
   }
-  return rows.map(mapSpecialistCaseRequestListItem).filter(Boolean);
+  return rows.map((row) => mapSpecialistCaseRequestListItem(row, context)).filter(Boolean);
 }
 
-export function mapCaseCategoryItem(row) {
+export function mapCaseCategoryItem(row, context = {}) {
   const category = mapCategory(row);
   if (!category?.id) {
     return null;
   }
-  return category;
+  return {
+    ...category,
+    name: getCaseRequestCategoryLabel(category.name, context.t),
+  };
 }
 
-export function mapCaseCategoryList(rows) {
+export function mapCaseCategoryList(rows, context = {}) {
   if (!Array.isArray(rows)) {
     return [];
   }
   return rows
-    .map(mapCaseCategoryItem)
+    .map((row) => mapCaseCategoryItem(row, context))
     .filter((item) => item && item.isActive !== false)
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/**
- * Flutter timeline: Assigned → Under Assessment → Accepted → Converted
- * (labels/subtitles match specialist_case_request_details_screen.dart)
- */
-export function buildCaseRequestTimelineSteps(detail) {
-  const status = detail?.status || "assigned";
-  const assignedLabel = formatCaseRequestDateTime(detail?.assignedAt);
-  const acceptedLabel = formatCaseRequestDateTime(detail?.acceptedAt);
-  const convertedLabel = formatCaseRequestDateTime(detail?.convertedAt);
-
-  const base = [
-    { id: "assigned", title: "Assigned" },
-    { id: "under_assessment", title: "Under Assessment" },
-    { id: "accepted", title: "Accepted" },
-    { id: "converted", title: "Converted" },
-  ];
-
-  const withStates = (states, subtitles = {}) => base.map((step, index) => ({
-    ...step,
-    state: states[index] || "upcoming",
-    subtitle: subtitles[step.id] || null,
-  }));
-
-  if (status === "rejected") {
-    return withStates(
-      ["completed", "upcoming", "upcoming", "upcoming"],
-      { assigned: assignedLabel },
-    );
-  }
-  if (status === "under_assessment") {
-    return withStates(
-      ["completed", "current", "upcoming", "upcoming"],
-      { assigned: assignedLabel, under_assessment: "In progress" },
-    );
-  }
-  if (status === "accepted") {
-    return withStates(
-      ["completed", "completed", "current", "upcoming"],
-      { assigned: assignedLabel, accepted: acceptedLabel },
-    );
-  }
-  if (status === "converted_to_patient") {
-    return withStates(
-      ["completed", "completed", "completed", "completed"],
-      {
-        assigned: assignedLabel,
-        accepted: acceptedLabel,
-        converted: convertedLabel,
-      },
-    );
-  }
-  return withStates(
-    ["current", "upcoming", "upcoming", "upcoming"],
-    { assigned: assignedLabel },
-  );
-}
-
-export function mapSpecialistCaseRequestDetail(row) {
+export function mapSpecialistCaseRequestDetail(row, context = {}) {
   if (!row || typeof row !== "object") {
     return null;
   }
@@ -365,7 +277,7 @@ export function mapSpecialistCaseRequestDetail(row) {
   const submittedAt = parseDate(row.submitted_at ?? row.submittedAt);
   const dateOfBirth = parseDate(row.date_of_birth ?? row.dateOfBirth);
   const attachments = Array.isArray(row.attachments)
-    ? row.attachments.map(mapCaseRequestAttachment).filter(Boolean)
+    ? row.attachments.map((attachment) => mapCaseRequestAttachment(attachment, context.t)).filter(Boolean)
     : [];
   const parent = mapParentSummary(row.parent, { includeContact: true });
   const category = mapCategory(row.category);
@@ -376,17 +288,11 @@ export function mapSpecialistCaseRequestDetail(row) {
     row.is_currently_receiving_treatment ?? row.isCurrentlyReceivingTreatment,
   );
 
-  const headerDate = assignedAt
-    ? `Assigned ${formatCaseRequestDate(assignedAt)}`
-    : submittedAt
-      ? `Submitted ${formatCaseRequestDate(submittedAt)}`
-      : "Unavailable";
-
   const detail = {
     id,
     childName: readString(row, ["child_name", "childName"]) || "Unnamed child",
     status,
-    statusLabel: getCaseRequestStatusChipLabel(status),
+    statusLabel: getCaseRequestStatusChipLabel(status, context.t),
     statusTone: getCaseRequestStatusTone(status),
     category,
     categoryName: category?.name || "",
@@ -398,30 +304,20 @@ export function mapSpecialistCaseRequestDetail(row) {
     submittedAt,
     acceptedAt: parseDate(row.accepted_at ?? row.acceptedAt),
     convertedAt: parseDate(row.converted_at ?? row.convertedAt),
-    headerDateLabel: headerDate,
+    headerDateLabel: formatCaseRequestAssignedDateLabel(assignedAt, submittedAt),
     dateOfBirth,
     dateOfBirthLabel: formatCaseRequestDate(dateOfBirth) || "Not provided",
-    ageLabel: formatAgeLabel(dateOfBirth),
+    ageLabel: formatAgeLabel(dateOfBirth, context.t),
     gender: readNullableString(row, ["gender"]),
-    genderLabel: (() => {
-      const normalized = typeof row.gender === "string" ? row.gender.trim().toLowerCase() : "";
-      if (normalized === "male") return "Male";
-      if (normalized === "female") return "Female";
-      if (normalized === "other") return "Other";
-      if (typeof row.gender === "string" && row.gender.trim()) return row.gender.trim();
-      return "Not provided";
-    })(),
+    genderLabel: formatCaseRequestGender(row.gender, context.t),
     childImageUrl: readNullableString(row, ["child_image_url", "childImageUrl"]),
     caseDescription: readNullableString(row, ["case_description", "caseDescription"]),
     observedDifficulties: readNullableString(row, ["observed_difficulties", "observedDifficulties"]),
     preferredContactPeriod: readNullableString(row, ["preferred_contact_period", "preferredContactPeriod"]),
-    preferredContactPeriodLabel: (() => {
-      const raw = row.preferred_contact_period ?? row.preferredContactPeriod;
-      if (!raw || (typeof raw === "string" && !raw.trim())) {
-        return "Not provided";
-      }
-      return formatPreferredContactPeriod(raw);
-    })(),
+    preferredContactPeriodLabel: formatPreferredContactPeriod(
+      row.preferred_contact_period ?? row.preferredContactPeriod,
+      context.t,
+    ),
     hasPreviousDiagnosis,
     previousDiagnosisDetails: readNullableString(row, [
       "previous_diagnosis_details",
@@ -450,20 +346,5 @@ export function mapSpecialistCaseRequestDetail(row) {
       && Boolean(readNullableString(row, ["assessment_notes", "assessmentNotes"])),
   };
 
-  detail.timelineSteps = buildCaseRequestTimelineSteps(detail);
-  return detail;
-}
-
-export function getCaseRequestListEmptyMessage({ hasItems, hasFilters }) {
-  if (!hasItems && hasFilters) {
-    return "No case requests match the selected filters.";
-  }
-  if (!hasItems) {
-    return "No assigned case requests yet. Assigned cases will appear here after an admin selects you for a request.";
-  }
-  return null;
-}
-
-export function yesNoLabel(value) {
-  return value ? "Yes" : "No";
+  return applyCaseRequestDetailLocalization(detail, context);
 }

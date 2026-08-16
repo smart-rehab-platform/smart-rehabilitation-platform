@@ -1,12 +1,19 @@
-import { EXERCISE_SEARCH_PLACEHOLDER } from "../utils/specialistExerciseMappers";
+import { useLocale } from "../../../context/useLocale";
+import { getExerciseCategoryLabel } from "../utils/specialistExercisesLocalization";
 
 export function SpecialistExerciseCategoryFilters({ categories, selectedCategory, onChange }) {
+  const { t } = useLocale();
+
   if (!Array.isArray(categories) || categories.length === 0) {
     return null;
   }
 
   return (
-    <div className="pd-specialist-exercise-filters" role="group" aria-label="Exercise category filters">
+    <div
+      className="pd-specialist-exercise-filters"
+      role="group"
+      aria-label={t("specialist.exercises.filters.ariaLabel")}
+    >
       {categories.map((category) => {
         const isSelected = selectedCategory === category;
         return (
@@ -17,7 +24,7 @@ export function SpecialistExerciseCategoryFilters({ categories, selectedCategory
             onClick={() => onChange(category)}
             aria-pressed={isSelected}
           >
-            {category}
+            {getExerciseCategoryLabel(category, t)}
           </button>
         );
       })}
@@ -26,6 +33,8 @@ export function SpecialistExerciseCategoryFilters({ categories, selectedCategory
 }
 
 export function SpecialistExerciseSearchField({ value, onChange }) {
+  const { t } = useLocale();
+
   return (
     <label className="pd-specialist-exercise-search">
       <svg viewBox="0 0 24 24" aria-hidden="true" className="pd-specialist-exercise-search-icon">
@@ -41,8 +50,8 @@ export function SpecialistExerciseSearchField({ value, onChange }) {
       <input
         type="search"
         className="pd-specialist-exercise-search-input"
-        aria-label="Search exercises"
-        placeholder={EXERCISE_SEARCH_PLACEHOLDER}
+        aria-label={t("specialist.exercises.search.ariaLabel")}
+        placeholder={t("specialist.exercises.search.placeholder")}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />

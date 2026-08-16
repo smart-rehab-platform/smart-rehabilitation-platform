@@ -1,4 +1,4 @@
-import { Bell, History, User, Users } from "lucide-react";
+import { Bell, History, LifeBuoy, User, Users } from "lucide-react";
 import assignUserLineIcon from "../../../assets/icons/clarity--assign-user-line.svg";
 import calendarMonthIcon from "../../../assets/icons/calendar-month.svg";
 import complaintIcon from "../../../assets/icons/hugeicons--complaint.svg";
@@ -33,6 +33,13 @@ const AUDIT_LOGS_ICON_KEYS = new Set(["auditLogs"]);
 
 const USERS_NAV_IDS = new Set(["users"]);
 const USERS_ICON_KEYS = new Set(["users"]);
+
+const SUPPORT_REQUESTS_NAV_IDS = new Set(["supportRequests"]);
+const SUPPORT_REQUESTS_ICON_KEYS = new Set(["supportRequests"]);
+
+function isSupportRequestsIcon({ navId, iconKey }) {
+  return SUPPORT_REQUESTS_NAV_IDS.has(navId) || SUPPORT_REQUESTS_ICON_KEYS.has(iconKey);
+}
 
 function isNotificationIcon({ navId, iconKey }) {
   return NOTIFICATION_NAV_IDS.has(navId) || NOTIFICATION_ICON_KEYS.has(iconKey);
@@ -93,6 +100,17 @@ export function AdminNavIcon({ navId, iconKey, size = 18 }) {
   if (isUsersIcon({ navId, iconKey })) {
     return (
       <Users
+        size={size}
+        strokeWidth={2}
+        color={PLATFORM_ICON_BLUE}
+        aria-hidden="true"
+      />
+    );
+  }
+
+  if (isSupportRequestsIcon({ navId, iconKey })) {
+    return (
+      <LifeBuoy
         size={size}
         strokeWidth={2}
         color={PLATFORM_ICON_BLUE}

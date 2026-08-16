@@ -1,4 +1,7 @@
+import { useMemo } from "react";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
+import { useLocale } from "../../../context/useLocale.js";
+import { getAdminRecentUsersLabels } from "../utils/adminDashboardLocalization.js";
 import { getAdminRoleTone, getAvatarInitial } from "../utils/adminDashboardMappers";
 
 function RecentUserRow({ user }) {
@@ -14,7 +17,7 @@ function RecentUserRow({ user }) {
       />
       <span className="pd-admin-recent-user-copy">
         <span className="pd-admin-recent-user-top">
-          <strong className="pd-admin-recent-user-name">{user.name}</strong>
+          <strong className="pd-admin-recent-user-name" dir="auto">{user.name}</strong>
           <span className="pd-admin-recent-user-time">{user.registeredLabel}</span>
         </span>
         <span className="pd-admin-recent-user-role">{user.role}</span>
@@ -23,14 +26,14 @@ function RecentUserRow({ user }) {
   );
 }
 
-function LoadingRows() {
+function LoadingRows({ loadingUserLabel, listAriaLabel }) {
   return (
-    <ul className="pd-admin-recent-users-list" aria-label="Recent users loading">
+    <ul className="pd-admin-recent-users-list" aria-label={listAriaLabel}>
       {[0, 1, 2].map((index) => (
         <li key={index} className="pd-admin-recent-user-row pd-admin-recent-user-row-loading">
           <span className="pd-admin-recent-avatar pd-inline-loading" aria-hidden="true" />
           <span className="pd-admin-recent-user-copy">
-            <span className="pd-inline-loading">Loading user...</span>
+            <span className="pd-inline-loading">{loadingUserLabel}</span>
           </span>
         </li>
       ))}
@@ -41,21 +44,33 @@ function LoadingRows() {
 export function AdminRecentUsers({
   users = [],
   isLoading = false,
+  sectionId,
+  highlighted = false,
   onSeeAll,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminRecentUsersLabels(t), [t]);
+
   return (
-    <section className="pd-card pd-card-pad pd-admin-side-card pd-admin-recent-users" aria-label="Recent users">
+    <section
+      id={sectionId}
+      className={`pd-card pd-card-pad pd-admin-side-card pd-admin-recent-users${highlighted ? " is-scroll-target-highlight" : ""}`}
+      aria-label={labels.sectionAriaLabel}
+    >
       <div className="pd-admin-section-header">
-        <h2 className="pd-section-title">Recent Users</h2>
+        <h2 className="pd-section-title">{labels.title}</h2>
         <button type="button" className="pd-link-btn" onClick={onSeeAll}>
-          See all
+          {labels.seeAll}
         </button>
       </div>
 
       {isLoading ? (
-        <LoadingRows />
+        <LoadingRows
+          loadingUserLabel={labels.loadingUser}
+          listAriaLabel={labels.loadingListAriaLabel}
+        />
       ) : users.length === 0 ? (
-        <p className="pd-admin-empty-copy">No recent users.</p>
+        <p className="pd-admin-empty-copy">{labels.empty}</p>
       ) : (
         <ul className="pd-admin-recent-users-list">
           {users.map((user) => (

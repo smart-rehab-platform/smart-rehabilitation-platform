@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   buildParentExerciseDetailsPath,
   PARENT_WEB_ROUTES,
 } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { TaskCard } from "./components/daily-tasks/TaskCard";
 import { TaskEmptyState } from "./components/daily-tasks/TaskEmptyState";
@@ -18,7 +18,7 @@ import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigati
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
   filterHubTasks,
-  HUB_EMPTY_MESSAGES,
+  getHubEmptyMessages,
   sortHubTasks,
 } from "./utils/parentDailyTasksUtils";
 import "./styles/parentDashboardTokens.css";
@@ -26,6 +26,7 @@ import "./styles/parentDashboardTokens.css";
 export default function ParentDailyTasksPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
   const notificationUserId = parentUserId;
@@ -43,6 +44,7 @@ export default function ParentDailyTasksPage() {
   const [toast, setToast] = useState(null);
 
   const parent = useMemo(() => mapParentFromAuth(user), [user]);
+  const hubEmptyMessages = useMemo(() => getHubEmptyMessages(t), [t]);
 
   const {
     children,
@@ -128,15 +130,15 @@ export default function ParentDailyTasksPage() {
 
   const emptyMessage = useMemo(() => {
     if (tabTasks.length === 0) {
-      return HUB_EMPTY_MESSAGES[activeTab];
+      return hubEmptyMessages[activeTab];
     }
 
     if (visibleTasks.length === 0) {
-      return HUB_EMPTY_MESSAGES.filtered;
+      return hubEmptyMessages.filtered;
     }
 
     return null;
-  }, [activeTab, tabTasks.length, visibleTasks.length]);
+  }, [activeTab, tabTasks.length, visibleTasks.length, hubEmptyMessages]);
 
   const badges = useMemo(() => ({
     notifications:
@@ -160,18 +162,18 @@ export default function ParentDailyTasksPage() {
   const handleOpenTask = useCallback((task) => {
     const path = buildParentExerciseDetailsPath(task);
     if (!path) {
-      showToast("This exercise is unavailable right now.");
+      showToast(t("parent.toast.exerciseUnavailable"));
       return;
     }
 
     navigate(path);
-  }, [navigate, showToast]);
+  }, [navigate, showToast, t]);
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading exercises...</p>
+          <p className="pd-inline-loading">{t("parent.pages.dailyTasks.loading")}</p>
         </section>
       );
     }
@@ -181,7 +183,7 @@ export default function ParentDailyTasksPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -205,7 +207,6 @@ export default function ParentDailyTasksPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -227,14 +228,14 @@ export default function ParentDailyTasksPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Dashboard
+              {t("parent.common.backToDashboard")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
-            <h1 className="pd-task-hub-title">Daily Tasks</h1>
+            <h1 className="pd-task-hub-title">{t("parent.pages.dailyTasks.title")}</h1>
             <p className="pd-task-hub-subtitle">
-              Review daily, weekly, and assigned exercises for your children.
+              {t("parent.pages.dailyTasks.subtitle")}
             </p>
           </header>
 

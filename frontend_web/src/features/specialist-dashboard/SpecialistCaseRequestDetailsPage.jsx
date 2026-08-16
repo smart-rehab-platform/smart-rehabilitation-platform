@@ -2,6 +2,7 @@ import { ArrowLeft, MessagesSquare } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistMessagesPath,
@@ -26,6 +27,7 @@ const NOTES_MAX = 10000;
 export default function SpecialistCaseRequestDetailsPage() {
   const navigate = useNavigate();
   const { caseRequestId } = useParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -102,12 +104,12 @@ export default function SpecialistCaseRequestDetailsPage() {
     if (hasActiveMutation) {
       showToast(
         isSavingNotes
-          ? "Please wait while assessment notes are being saved."
+          ? t("specialist.caseRequests.toast.waitSavingNotes")
           : isAccepting
-            ? "Please wait while the patient profile is being created."
+            ? t("specialist.caseRequests.toast.waitCreatingProfile")
             : isRejecting
-              ? "Please wait while the case is being rejected."
-              : "Please wait while the assessment is starting.",
+              ? t("specialist.caseRequests.toast.waitRejecting")
+              : t("specialist.caseRequests.toast.waitStartingAssessment"),
       );
       return;
     }
@@ -119,6 +121,7 @@ export default function SpecialistCaseRequestDetailsPage() {
     isRejecting,
     navigate,
     showToast,
+    t,
   ]);
 
   const copyText = useCallback(async (value, successMessage) => {
@@ -130,9 +133,9 @@ export default function SpecialistCaseRequestDetailsPage() {
       await navigator.clipboard.writeText(trimmed);
       showToast(successMessage);
     } catch {
-      showToast("Unable to copy.");
+      showToast(t("specialist.caseRequests.copyFailed"));
     }
-  }, [showToast]);
+  }, [showToast, t]);
 
   const handleOpenConversation = useCallback(() => {
     if (!detail?.conversationId) {
@@ -143,55 +146,55 @@ export default function SpecialistCaseRequestDetailsPage() {
 
   const handleOpenPatient = useCallback(() => {
     if (!detail?.patientId) {
-      showToast("Patient profile is unavailable for this request.");
+      showToast(t("specialist.caseRequests.toast.patientProfileUnavailable"));
       return;
     }
     navigate(buildSpecialistPatientDetailPath(detail.patientId));
-  }, [detail, navigate, showToast]);
+  }, [detail, navigate, showToast, t]);
 
   const handleSaveNotes = useCallback(async () => {
     const notes = notesDraft.trim();
     if (!notes) {
-      showToast("Assessment notes are required.");
+      showToast(t("specialist.caseRequests.validation.assessmentNotesRequired"));
       return;
     }
     if (notes.length > NOTES_MAX) {
-      showToast("Assessment notes must not exceed 10000 characters.");
+      showToast(t("specialist.caseRequests.validation.assessmentNotesMaxLength"));
       return;
     }
     const success = await saveAssessmentNotes(notes);
     if (success) {
       setNotesDraft(notes);
       setNotesSeedKey(detail?.id || null);
-      showToast("Assessment notes updated successfully");
+      showToast(t("specialist.caseRequests.toast.assessmentNotesUpdated"));
     }
-  }, [notesDraft, saveAssessmentNotes, showToast, detail?.id]);
+  }, [notesDraft, saveAssessmentNotes, showToast, detail?.id, t]);
 
   const handleConfirmStart = useCallback(async () => {
     setConfirmDialog(null);
     const success = await startAssessment();
     if (success) {
-      showToast("Assessment started successfully");
+      showToast(t("specialist.caseRequests.toast.assessmentStarted"));
     }
-  }, [startAssessment, showToast]);
+  }, [startAssessment, showToast, t]);
 
   const handleConfirmAccept = useCallback(async () => {
     setConfirmDialog(null);
     const patientId = await acceptCase();
     if (patientId) {
-      showToast("Patient profile created successfully.");
+      showToast(t("specialist.caseRequests.toast.patientProfileCreated"));
       navigate(buildSpecialistPatientDetailPath(patientId));
     }
-  }, [acceptCase, navigate, showToast]);
+  }, [acceptCase, navigate, showToast, t]);
 
   const handleConfirmReject = useCallback(async () => {
     const reason = rejectReason.trim();
     if (reason.length < 5) {
-      setRejectError("reason must be at least 5 characters");
+      setRejectError(t("specialist.caseRequests.validation.rejectReasonMinLength"));
       return;
     }
     if (reason.length > 2000) {
-      setRejectError("reason must not exceed 2000 characters");
+      setRejectError(t("specialist.caseRequests.validation.rejectReasonMaxLength"));
       return;
     }
     setRejectError("");
@@ -199,22 +202,22 @@ export default function SpecialistCaseRequestDetailsPage() {
     const success = await rejectCase(reason);
     if (success) {
       setRejectReason("");
-      showToast("Case request rejected successfully");
+      showToast(t("specialist.caseRequests.toast.caseRejected"));
     }
-  }, [rejectReason, rejectCase, showToast]);
+  }, [rejectReason, rejectCase, showToast, t]);
 
   const openAcceptFlow = useCallback(() => {
     const savedNotes = detail?.assessmentNotes?.trim() || "";
     if (!savedNotes) {
-      showToast("Save assessment notes before accepting this case.");
+      showToast(t("specialist.caseRequests.validation.saveNotesBeforeAccept"));
       return;
     }
     if (notesDirty) {
-      showToast("Save your assessment notes before accepting.");
+      showToast(t("specialist.caseRequests.validation.saveNotesBeforeAcceptDirty"));
       return;
     }
     setConfirmDialog("accept");
-  }, [detail?.assessmentNotes, notesDirty, showToast]);
+  }, [detail?.assessmentNotes, notesDirty, showToast, t]);
 
   const openRejectFlow = useCallback(() => {
     setRejectReason("");
@@ -251,15 +254,15 @@ export default function SpecialistCaseRequestDetailsPage() {
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={18} aria-hidden="true" />
-              Back to Case Requests
+              {t("specialist.caseRequests.back")}
             </button>
           </div>
 
           <header className="pd-task-hub-header">
             <div>
-              <h1>Case Request</h1>
+              <h1>{t("specialist.caseRequests.detailsTitle")}</h1>
               <p className="pd-section-sub">
-                Review the submitted information before starting the assessment.
+                {t("specialist.caseRequests.detailsIntro")}
               </p>
             </div>
           </header>
@@ -274,13 +277,13 @@ export default function SpecialistCaseRequestDetailsPage() {
 
           {!isLoading && !detail ? (
             <div className="pd-card pd-card-pad pd-specialist-case-state-card">
-              <p>{error || "Case request not found."}</p>
+              <p>{error || t("specialist.caseRequests.notFound")}</p>
               <div className="pd-specialist-case-state-actions">
                 <button type="button" className="pd-btn pd-btn-primary" onClick={reload}>
-                  Retry
+                  {t("common.retry")}
                 </button>
                 <button type="button" className="pd-btn pd-btn-ghost" onClick={handleBack}>
-                  Back
+                  {t("specialist.caseRequests.backShort")}
                 </button>
               </div>
             </div>
@@ -292,14 +295,14 @@ export default function SpecialistCaseRequestDetailsPage() {
                 <div className="pd-card pd-card-pad pd-specialist-case-state-card">
                   <p>{error}</p>
                   <button type="button" className="pd-btn pd-btn-primary" onClick={reload}>
-                    Retry
+                    {t("common.retry")}
                   </button>
                 </div>
               ) : null}
 
               <section className="pd-card pd-card-pad pd-specialist-case-summary">
                 <div className="pd-specialist-case-summary-main">
-                  <strong className="pd-specialist-case-summary-title">{detail.childName}</strong>
+                  <strong className="pd-specialist-case-summary-title" dir="auto">{detail.childName}</strong>
                   {detail.categoryName ? (
                     <span className="pd-specialist-case-summary-category">{detail.categoryName}</span>
                   ) : null}
@@ -308,7 +311,9 @@ export default function SpecialistCaseRequestDetailsPage() {
                     <span>{detail.headerDateLabel}</span>
                   </div>
                   {detail.parentName ? (
-                    <p className="pd-specialist-case-summary-parent">Parent: {detail.parentName}</p>
+                    <p className="pd-specialist-case-summary-parent">
+                      {t("specialist.caseRequests.parentLabel", { name: detail.parentName })}
+                    </p>
                   ) : null}
                 </div>
               </section>
@@ -320,9 +325,11 @@ export default function SpecialistCaseRequestDetailsPage() {
 
               {detail.isRejected ? (
                 <section className="pd-card pd-card-pad pd-specialist-case-rejection">
-                  <h2 className="pd-specialist-case-section-title">Rejection Reason</h2>
-                  <p className="pd-specialist-case-field-value">
-                    {detail.rejectionReason?.trim() || "No rejection reason was provided."}
+                  <h2 className="pd-specialist-case-section-title">
+                    {t("specialist.caseRequests.rejectionReason")}
+                  </h2>
+                  <p className="pd-specialist-case-field-value" dir="auto">
+                    {detail.rejectionReason?.trim() || t("specialist.caseRequests.noRejectionReason")}
                   </p>
                 </section>
               ) : null}
@@ -330,7 +337,7 @@ export default function SpecialistCaseRequestDetailsPage() {
               {detail.isConverted ? (
                 <section className="pd-card pd-card-pad pd-specialist-case-conversion">
                   <h2 className="pd-specialist-case-section-title">
-                    Patient profile created successfully.
+                    {t("specialist.caseRequests.profileCreated")}
                   </h2>
                   {detail.patientId ? (
                     <button
@@ -338,11 +345,11 @@ export default function SpecialistCaseRequestDetailsPage() {
                       className="pd-btn pd-btn-primary"
                       onClick={handleOpenPatient}
                     >
-                      Open Patient Profile
+                      {t("specialist.caseRequests.openPatientProfile")}
                     </button>
                   ) : (
                     <p className="pd-section-sub">
-                      Converted status is present, but no patient profile id was returned.
+                      {t("specialist.caseRequests.convertedMissingPatientId")}
                     </p>
                   )}
                 </section>
@@ -355,8 +362,8 @@ export default function SpecialistCaseRequestDetailsPage() {
 
               <SpecialistCaseRequestParentInfo
                 detail={detail}
-                onCopyEmail={() => copyText(detail.parent?.email, "Email copied")}
-                onCopyPhone={() => copyText(detail.parent?.phone, "Phone number copied")}
+                onCopyEmail={() => copyText(detail.parent?.email, t("specialist.caseRequests.copyEmail"))}
+                onCopyPhone={() => copyText(detail.parent?.phone, t("specialist.caseRequests.copyPhone"))}
               />
 
               <SpecialistCaseRequestAttachments
@@ -383,7 +390,7 @@ export default function SpecialistCaseRequestDetailsPage() {
                     disabled={hasActiveMutation}
                   >
                     <MessagesSquare size={16} aria-hidden="true" />
-                    Open Conversation
+                    {t("specialist.caseRequests.openConversation")}
                   </button>
                 ) : null}
 
@@ -395,7 +402,9 @@ export default function SpecialistCaseRequestDetailsPage() {
                       onClick={openAcceptFlow}
                       disabled={hasActiveMutation}
                     >
-                      {isAccepting ? "Creating patient profile..." : "Accept Case"}
+                      {isAccepting
+                        ? t("specialist.caseRequests.creatingPatientProfile")
+                        : t("specialist.caseRequests.acceptCase")}
                     </button>
                     <button
                       type="button"
@@ -403,7 +412,9 @@ export default function SpecialistCaseRequestDetailsPage() {
                       onClick={openRejectFlow}
                       disabled={hasActiveMutation}
                     >
-                      {isRejecting ? "Rejecting..." : "Reject Case"}
+                      {isRejecting
+                        ? t("specialist.caseRequests.rejecting")
+                        : t("specialist.caseRequests.rejectCase")}
                     </button>
                   </>
                 ) : null}
@@ -415,7 +426,9 @@ export default function SpecialistCaseRequestDetailsPage() {
                     onClick={() => setConfirmDialog("start")}
                     disabled={hasActiveMutation}
                   >
-                    {isStartingAssessment ? "Starting..." : "Start Assessment"}
+                    {isStartingAssessment
+                      ? t("specialist.caseRequests.startingAssessment")
+                      : t("specialist.caseRequests.startAssessment")}
                   </button>
                 ) : null}
               </div>
@@ -428,16 +441,14 @@ export default function SpecialistCaseRequestDetailsPage() {
         {confirmDialog === "start" ? (
           <div className="pd-specialist-case-dialog-backdrop" role="presentation">
             <div className="pd-card pd-card-pad pd-specialist-case-dialog" role="dialog" aria-modal="true">
-              <h2>Start Assessment</h2>
-              <p>
-                Contact the parent first if you have not already. Start the preliminary assessment for this case?
-              </p>
+              <h2>{t("specialist.caseRequests.dialogs.startAssessmentTitle")}</h2>
+              <p>{t("specialist.caseRequests.dialogs.startAssessmentBody")}</p>
               <div className="pd-specialist-case-dialog-actions">
                 <button type="button" className="pd-btn pd-btn-ghost" onClick={() => setConfirmDialog(null)}>
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button type="button" className="pd-btn pd-btn-primary" onClick={handleConfirmStart}>
-                  Start Assessment
+                  {t("specialist.caseRequests.startAssessment")}
                 </button>
               </div>
             </div>
@@ -447,19 +458,14 @@ export default function SpecialistCaseRequestDetailsPage() {
         {confirmDialog === "accept" ? (
           <div className="pd-specialist-case-dialog-backdrop" role="presentation">
             <div className="pd-card pd-card-pad pd-specialist-case-dialog" role="dialog" aria-modal="true">
-              <h2>Accept Case</h2>
-              <p>
-                Accept this case for continued rehabilitation follow-up?
-                <br />
-                <br />
-                The patient profile will not be created yet.
-              </p>
+              <h2>{t("specialist.caseRequests.dialogs.acceptTitle")}</h2>
+              <p style={{ whiteSpace: "pre-line" }}>{t("specialist.caseRequests.dialogs.acceptBody")}</p>
               <div className="pd-specialist-case-dialog-actions">
                 <button type="button" className="pd-btn pd-btn-ghost" onClick={() => setConfirmDialog(null)}>
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button type="button" className="pd-btn pd-btn-primary" onClick={handleConfirmAccept}>
-                  Accept Case
+                  {t("specialist.caseRequests.acceptCase")}
                 </button>
               </div>
             </div>
@@ -469,10 +475,10 @@ export default function SpecialistCaseRequestDetailsPage() {
         {confirmDialog === "reject" ? (
           <div className="pd-specialist-case-dialog-backdrop" role="presentation">
             <div className="pd-card pd-card-pad pd-specialist-case-dialog" role="dialog" aria-modal="true">
-              <h2>Reject Case</h2>
-              <p>This reason will be visible to the parent.</p>
+              <h2>{t("specialist.caseRequests.dialogs.rejectTitle")}</h2>
+              <p>{t("specialist.caseRequests.dialogs.rejectBody")}</p>
               <label className="pd-form-label" htmlFor="sp-case-reject-reason">
-                Reason for rejection
+                {t("specialist.caseRequests.dialogs.rejectReasonLabel")}
               </label>
               <textarea
                 id="sp-case-reject-reason"
@@ -481,15 +487,15 @@ export default function SpecialistCaseRequestDetailsPage() {
                 maxLength={2000}
                 value={rejectReason}
                 onChange={(event) => setRejectReason(event.target.value)}
-                placeholder="Enter rejection reason"
+                placeholder={t("specialist.caseRequests.dialogs.rejectReasonPlaceholder")}
               />
               {rejectError ? <p className="pd-specialist-case-reject-error">{rejectError}</p> : null}
               <div className="pd-specialist-case-dialog-actions">
                 <button type="button" className="pd-btn pd-btn-ghost" onClick={() => setConfirmDialog(null)}>
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button type="button" className="pd-btn pd-btn-danger-outline" onClick={handleConfirmReject}>
-                  Reject Case
+                  {t("specialist.caseRequests.rejectCase")}
                 </button>
               </div>
             </div>

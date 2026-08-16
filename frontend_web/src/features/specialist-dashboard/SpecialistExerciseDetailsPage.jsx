@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { SpecialistExerciseInstructionMedia } from "./components/SpecialistExerciseMediaSection";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistExerciseEditPath,
@@ -18,6 +19,7 @@ import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistExerciseDetailsPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { exerciseId } = useParams();
   const { user, isInitializing } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
@@ -73,7 +75,7 @@ export default function SpecialistExerciseDetailsPage() {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading exercise...</p>
+          <p className="pd-inline-loading">{t("specialist.exercises.loadingExercise")}</p>
         </section>
       );
     }
@@ -81,7 +83,7 @@ export default function SpecialistExerciseDetailsPage() {
     if (notFound) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-section-sub">Exercise not found.</p>
+          <p className="pd-section-sub">{t("specialist.exercises.empty.notFound")}</p>
         </section>
       );
     }
@@ -91,7 +93,7 @@ export default function SpecialistExerciseDetailsPage() {
         <section className="pd-card pd-card-pad pd-task-hub-state">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={reload}>
-            Retry
+            {t("common.retry")}
           </button>
         </section>
       );
@@ -103,23 +105,24 @@ export default function SpecialistExerciseDetailsPage() {
 
     const description = exercise.description?.trim();
     const instructions = exercise.instructions?.trim();
+    const categoryLabel = exercise.categoryLabel ?? exercise.category;
 
     return (
       <div className="pd-specialist-exercise-details">
         <section className="pd-card pd-card-pad pd-specialist-exercise-details-hero">
           <div className="pd-specialist-exercise-details-head">
-            <SpecialistExerciseCategoryIcon category={exercise.category} size={24} />
+            <SpecialistExerciseCategoryIcon category={exercise.category} />
             <div className="pd-specialist-exercise-details-copy">
-              <h2 className="pd-specialist-exercise-details-title">{exercise.title}</h2>
-              {exercise.category ? (
-                <SpecialistExerciseCategoryBadge label={exercise.category} />
+              <h2 className="pd-specialist-exercise-details-title" dir="auto">{exercise.title}</h2>
+              {categoryLabel ? (
+                <SpecialistExerciseCategoryBadge category={exercise.category} label={categoryLabel} />
               ) : null}
               <p className="pd-specialist-exercise-details-meta">
-                Language: {exercise.languageLabel}
+                {t("specialist.exercises.details.languageLine", { language: exercise.languageLabel })}
               </p>
               {exercise.createdByName ? (
                 <p className="pd-specialist-exercise-details-meta">
-                  Created by {exercise.createdByName}
+                  {t("specialist.exercises.details.createdBy", { name: exercise.createdByName })}
                 </p>
               ) : null}
             </div>
@@ -130,7 +133,7 @@ export default function SpecialistExerciseDetailsPage() {
                 onClick={handleEdit}
               >
                 <Pencil size={16} aria-hidden="true" />
-                Edit Exercise
+                {t("specialist.exercises.editExercise")}
               </button>
             ) : null}
           </div>
@@ -138,16 +141,16 @@ export default function SpecialistExerciseDetailsPage() {
 
         <div className="pd-specialist-exercise-details-grid">
           <section className="pd-card pd-card-pad pd-specialist-exercise-details-section">
-            <h3 className="pd-specialist-exercise-details-section-title">Description</h3>
-            <p className="pd-specialist-exercise-details-body">
-              {description || "No description available."}
+            <h3 className="pd-specialist-exercise-details-section-title">{t("specialist.exercises.details.description")}</h3>
+            <p className="pd-specialist-exercise-details-body" dir="auto">
+              {description || t("specialist.exercises.details.noDescription")}
             </p>
           </section>
 
           <section className="pd-card pd-card-pad pd-specialist-exercise-details-section">
-            <h3 className="pd-specialist-exercise-details-section-title">Instructions</h3>
-            <p className="pd-specialist-exercise-details-body">
-              {instructions || "No instructions available."}
+            <h3 className="pd-specialist-exercise-details-section-title">{t("specialist.exercises.details.instructions")}</h3>
+            <p className="pd-specialist-exercise-details-body" dir="auto">
+              {instructions || t("specialist.exercises.details.noInstructions")}
             </p>
           </section>
         </div>
@@ -188,9 +191,9 @@ export default function SpecialistExerciseDetailsPage() {
           <header className="pd-specialist-exercise-page-header">
             <button type="button" className="pd-specialist-back-btn" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to Exercises
+              {t("specialist.exercises.backToExercises")}
             </button>
-            <h1 className="pd-section-title">Exercise Details</h1>
+            <h1 className="pd-section-title">{t("specialist.exercises.detailsTitle")}</h1>
           </header>
 
           {renderContent()}

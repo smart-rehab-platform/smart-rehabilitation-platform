@@ -78,11 +78,12 @@ export function formatReviewStatusLabel(status) {
   return "Pending";
 }
 
-export function reviewStatusTone(statusLabel) {
-  if (statusLabel === "Reviewed") {
+export function reviewStatusTone(status) {
+  const normalized = (status || "").trim().toLowerCase();
+  if (normalized === "reviewed") {
     return "success";
   }
-  if (statusLabel === "Needs retry") {
+  if (normalized === "needs_retry") {
     return "warning";
   }
   return "success";
@@ -121,7 +122,7 @@ export function mapReviewSubmissionDetail(row) {
     exerciseTitle: readString(row, ["exercise_title", "exerciseTitle", "title"]) || "Exercise",
     status,
     statusLabel,
-    statusTone: reviewStatusTone(statusLabel),
+    statusTone: reviewStatusTone(status),
     submittedAt,
     submittedAtLabel: formatReviewSubmittedLabel(submittedAt),
     parentNotes: readString(row, ["parent_notes", "parentNotes"]) || null,

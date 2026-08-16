@@ -159,7 +159,7 @@
 }
 
 .pd-preview .pd-admin-audit-table thead th {
-  text-align: left;
+  text-align: start;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--pd-text-muted);

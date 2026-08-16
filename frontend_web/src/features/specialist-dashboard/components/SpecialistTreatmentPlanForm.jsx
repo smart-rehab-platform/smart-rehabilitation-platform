@@ -1,29 +1,13 @@
-import { Calendar } from "lucide-react";
+import { useMemo } from "react";
+import { useLocale } from "../../../context/useLocale";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { getInitials } from "../utils/specialistScheduleUtils";
-import { TREATMENT_PLAN_FILTERS } from "../utils/specialistTreatmentPlanMappers";
+import {
+  buildTreatmentPlanStatusOptions,
+  getTreatmentPlanStatusLabel,
+  resolveTreatmentPlanFieldErrors,
+} from "../utils/specialistTreatmentPlansLocalization";
 import { SpecialistTreatmentPlanPatientSummary } from "./SpecialistTreatmentPlanPatientSummary";
-
-const STATUS_OPTIONS = TREATMENT_PLAN_FILTERS.filter((item) => item.id !== "all");
-
-function resolveTreatmentPlanFieldErrors(validationMessage) {
-  if (!validationMessage) {
-    return {};
-  }
-
-  switch (validationMessage) {
-    case "Patient is required":
-      return { patient: validationMessage };
-    case "Plan title is required":
-      return { title: validationMessage };
-    case "Start date is required":
-      return { startDate: validationMessage };
-    case "End date cannot be before start date":
-      return { endDate: validationMessage };
-    default:
-      return { form: validationMessage };
-  }
-}
 
 function fieldClassName(base, hasError) {
   return `${base}${hasError ? " has-error" : ""}`;
@@ -40,7 +24,7 @@ export function SpecialistTreatmentPlanPatientHeader({ patientName }) {
         fallbackClassName="pd-avatar pd-specialist-treatment-plan-patient-avatar"
         className="pd-avatar-photo"
       />
-      <strong className="pd-specialist-treatment-plan-patient-name">{patientName}</strong>
+      <strong className="pd-specialist-treatment-plan-patient-name" dir="auto">{patientName}</strong>
     </section>
   );
 }
@@ -74,20 +58,25 @@ export function SpecialistTreatmentPlanForm({
   onCancel,
   beforeActions = null,
 }) {
+  const { t } = useLocale();
   const isDesktopLayout = mode === "edit" || mode === "create";
   const isCreateMode = mode === "create";
   const hasSelectedPatient = isPatientLocked || Boolean(String(selectedPatientId || "").trim());
-  const fieldErrors = resolveTreatmentPlanFieldErrors(validationMessage);
-  const formValidationMessage = fieldErrors.form ? validationMessage : null;
+  const fieldErrors = useMemo(
+    () => resolveTreatmentPlanFieldErrors(validationMessage, t),
+    [validationMessage, t],
+  );
+  const statusOptions = useMemo(() => buildTreatmentPlanStatusOptions(t), [t]);
+  const activeStatusLabel = getTreatmentPlanStatusLabel("active", t);
 
   const submitLabel = isSaving
-    ? (mode === "create" ? "Creating..." : "Saving...")
-    : (mode === "create" ? "Create Treatment Plan" : "Save Changes");
+    ? (mode === "create" ? t("specialist.treatmentPlans.creating") : t("specialist.treatmentPlans.saving"))
+    : (mode === "create" ? t("specialist.treatmentPlans.createPlan") : t("specialist.treatmentPlans.saveChanges"));
 
   const planTitleField = (
     <div className={fieldClassName("pd-specialist-treatment-plan-field", fieldErrors.title)}>
       <label className="pd-specialist-treatment-plan-label" htmlFor="treatment-plan-title">
-        Plan title
+        {t("specialist.treatmentPlans.fields.planTitle")}
       </label>
       <input
         id="treatment-plan-title"
@@ -95,9 +84,10 @@ export function SpecialistTreatmentPlanForm({
         className="pd-specialist-treatment-plan-control"
         value={title}
         onChange={(event) => onTitleChange?.(event.target.value)}
-        placeholder="Treatment plan title"
+        placeholder={t("specialist.treatmentPlans.fields.planTitlePlaceholder")}
         disabled={isSaving}
         aria-invalid={Boolean(fieldErrors.title)}
+        dir="auto"
       />
       {fieldErrors.title ? (
         <p className="pd-specialist-treatment-plan-error">{fieldErrors.title}</p>
@@ -107,9 +97,13 @@ export function SpecialistTreatmentPlanForm({
 
   const statusField = showStatusSelector ? (
     <div className="pd-specialist-treatment-plan-field">
-      <span className="pd-specialist-treatment-plan-label">Status</span>
-      <div className="pd-specialist-treatment-plan-status-group" role="group" aria-label="Plan status">
-        {STATUS_OPTIONS.map((option) => {
+      <span className="pd-specialist-treatment-plan-label">{t("specialist.treatmentPlans.fields.status")}</span>
+      <div
+        className="pd-specialist-treatment-plan-status-group"
+        role="group"
+        aria-label={t("specialist.treatmentPlans.fields.statusAriaLabel")}
+      >
+        {statusOptions.map((option) => {
           const isSelected = status === option.id;
           return (
             <button
@@ -130,11 +124,11 @@ export function SpecialistTreatmentPlanForm({
 
   const createStatusInfo = showActiveBadge ? (
     <div className="pd-specialist-treatment-plan-field">
-      <span className="pd-specialist-treatment-plan-label">Status</span>
+      <span className="pd-specialist-treatment-plan-label">{t("specialist.treatmentPlans.fields.status")}</span>
       <div className="pd-specialist-treatment-plan-status-info">
-        <span className="pd-specialist-treatment-plan-status-pill">Active</span>
+        <span className="pd-specialist-treatment-plan-status-pill">{activeStatusLabel}</span>
         <p className="pd-specialist-treatment-plan-status-note">
-          New treatment plans start as Active.
+          {t("specialist.treatmentPlans.status.newPlanHelper")}
         </p>
       </div>
     </div>
@@ -144,7 +138,7 @@ export function SpecialistTreatmentPlanForm({
     <div className="pd-specialist-treatment-plan-date-grid">
       <div className={fieldClassName("pd-specialist-treatment-plan-field", fieldErrors.startDate)}>
         <label className="pd-specialist-treatment-plan-label" htmlFor="treatment-plan-start-date">
-          Start date
+          {t("specialist.treatmentPlans.fields.startDate")}
         </label>
         <div className="pd-specialist-treatment-plan-date-wrap">
           <input
@@ -155,8 +149,8 @@ export function SpecialistTreatmentPlanForm({
             onChange={(event) => onStartDateChange?.(event.target.value)}
             disabled={isSaving}
             aria-invalid={Boolean(fieldErrors.startDate)}
+            dir="ltr"
           />
-          <Calendar size={18} aria-hidden="true" className="pd-specialist-treatment-plan-date-icon" />
         </div>
         {fieldErrors.startDate ? (
           <p className="pd-specialist-treatment-plan-error">{fieldErrors.startDate}</p>
@@ -165,7 +159,7 @@ export function SpecialistTreatmentPlanForm({
 
       <div className={fieldClassName("pd-specialist-treatment-plan-field", fieldErrors.endDate)}>
         <label className="pd-specialist-treatment-plan-label" htmlFor="treatment-plan-end-date">
-          End date (optional)
+          {t("specialist.treatmentPlans.fields.endDate")}
         </label>
         <div className="pd-specialist-treatment-plan-end-date">
           <div className="pd-specialist-treatment-plan-date-wrap">
@@ -177,8 +171,8 @@ export function SpecialistTreatmentPlanForm({
               onChange={(event) => onEndDateChange?.(event.target.value)}
               disabled={isSaving}
               aria-invalid={Boolean(fieldErrors.endDate)}
+              dir="ltr"
             />
-            <Calendar size={18} aria-hidden="true" className="pd-specialist-treatment-plan-date-icon" />
           </div>
           {endDate ? (
             <button
@@ -187,7 +181,7 @@ export function SpecialistTreatmentPlanForm({
               onClick={() => onEndDateChange?.("")}
               disabled={isSaving}
             >
-              Clear
+              {t("specialist.treatmentPlans.fields.clearDate")}
             </button>
           ) : null}
         </div>
@@ -201,7 +195,7 @@ export function SpecialistTreatmentPlanForm({
   const patientSelectField = (
     <div className={fieldClassName("pd-specialist-treatment-plan-field", fieldErrors.patient)}>
       <label className="pd-specialist-treatment-plan-label" htmlFor="treatment-plan-patient">
-        Patient
+        {t("specialist.treatmentPlans.fields.patient")}
       </label>
       <select
         id="treatment-plan-patient"
@@ -215,7 +209,7 @@ export function SpecialistTreatmentPlanForm({
         disabled={isSaving}
         aria-invalid={Boolean(fieldErrors.patient)}
       >
-        <option value="">Select patient</option>
+        <option value="">{t("specialist.treatmentPlans.fields.selectPatient")}</option>
         {patients.map((patient) => (
           <option key={patient.id} value={patient.id}>
             {patient.name}
@@ -232,7 +226,7 @@ export function SpecialistTreatmentPlanForm({
     if (showPatientSelector && !isPatientLocked && !hasSelectedPatient) {
       return (
         <section className="pd-card pd-specialist-treatment-plan-patient-select-card">
-          <h2 className="pd-specialist-treatment-plan-context-label">Patient</h2>
+          <h2 className="pd-specialist-treatment-plan-context-label">{t("specialist.treatmentPlans.fields.patient")}</h2>
           {patientSelectField}
         </section>
       );
@@ -252,7 +246,7 @@ export function SpecialistTreatmentPlanForm({
 
     return (
       <section className="pd-specialist-treatment-plan-patient-context">
-        <h2 className="pd-specialist-treatment-plan-context-label">Patient</h2>
+        <h2 className="pd-specialist-treatment-plan-context-label">{t("specialist.treatmentPlans.fields.patient")}</h2>
         <div className="pd-card pd-specialist-treatment-plan-patient-context-card">
           <div className="pd-specialist-treatment-plan-patient-context-main">
             <UserProfileAvatar
@@ -264,20 +258,24 @@ export function SpecialistTreatmentPlanForm({
               className="pd-avatar-photo"
             />
             <div className="pd-specialist-treatment-plan-patient-context-copy">
-              <strong className="pd-specialist-treatment-plan-patient-name">{patientName || "Patient"}</strong>
-              <p className="pd-specialist-treatment-plan-patient-context-subtitle">Assigned patient</p>
+              <strong className="pd-specialist-treatment-plan-patient-name" dir="auto">{patientName || "Patient"}</strong>
+              <p className="pd-specialist-treatment-plan-patient-context-subtitle">
+                {t("specialist.treatmentPlans.fields.assignedPatient")}
+              </p>
             </div>
           </div>
-          <span className="pd-specialist-treatment-plan-status-pill">Active</span>
+          <span className="pd-specialist-treatment-plan-status-pill">{activeStatusLabel}</span>
         </div>
       </section>
     );
   };
 
+  const resolvedFormError = fieldErrors.form || null;
+
   const feedback = (
     <>
-      {formValidationMessage ? (
-        <p className="pd-specialist-treatment-plan-error">{formValidationMessage}</p>
+      {resolvedFormError ? (
+        <p className="pd-specialist-treatment-plan-error">{resolvedFormError}</p>
       ) : null}
       {errorMessage ? (
         <div className="pd-specialist-treatment-plan-inline-error">
@@ -297,7 +295,7 @@ export function SpecialistTreatmentPlanForm({
             onClick={onCancel}
             disabled={isSaving}
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
@@ -322,7 +320,7 @@ export function SpecialistTreatmentPlanForm({
             onClick={onCancel}
             disabled={isSaving}
           >
-            Cancel
+            {t("common.cancel")}
           </button>
         </>
       )}
@@ -331,7 +329,7 @@ export function SpecialistTreatmentPlanForm({
 
   const infoCard = (
     <section className="pd-card pd-specialist-treatment-plan-info-card">
-      <h2 className="pd-specialist-treatment-plan-info-title">Plan Information</h2>
+      <h2 className="pd-specialist-treatment-plan-info-title">{t("specialist.treatmentPlans.fields.planInformation")}</h2>
       {planTitleField}
       {mode === "create" ? createStatusInfo : statusField}
       {dateFields}

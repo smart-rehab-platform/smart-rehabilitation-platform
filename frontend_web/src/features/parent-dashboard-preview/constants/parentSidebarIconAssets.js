@@ -12,6 +12,7 @@ import homeIcon from "../../../assets/icons/home.svg";
 import messageIcon from "../../../assets/icons/message.svg";
 import neurologyIcon from "../../../assets/icons/neurology.svg";
 import stethoscopeIcon from "../../../assets/icons/stethoscope.svg";
+import complaintIcon from "../../../assets/icons/hugeicons--complaint.svg";
 
 /** Dashboard overview */
 export const SIDEBAR_DASHBOARD_ICON = homeIcon;
@@ -43,6 +44,9 @@ export const SIDEBAR_MESSAGES_ICON = messageIcon;
 /** Landing: FeatureIndicators + ArtificialIntelligenceSection — AI Assistant */
 export const SIDEBAR_AI_ASSISTANT_ICON = neurologyIcon;
 
+/** Admin/parent complaints — report a specialist */
+export const SIDEBAR_REPORT_SPECIALIST_ICON = complaintIcon;
+
 export const PARENT_SIDEBAR_ICON_FALLBACK = SIDEBAR_DASHBOARD_ICON;
 
 /** Resolve by sidebar nav item id */
@@ -55,6 +59,7 @@ export const PARENT_SIDEBAR_ICONS_BY_NAV_ID = {
   sessions: SIDEBAR_SESSIONS_ICON,
   reports: SIDEBAR_REPORTS_ICON,
   feedback: SIDEBAR_FEEDBACK_ICON,
+  reportSpecialist: SIDEBAR_REPORT_SPECIALIST_ICON,
   messages: SIDEBAR_MESSAGES_ICON,
   ai: SIDEBAR_AI_ASSISTANT_ICON,
 };
@@ -79,6 +84,8 @@ export const PARENT_SIDEBAR_ICONS_BY_KEY = {
   reports: SIDEBAR_REPORTS_ICON,
   messageCircle: SIDEBAR_FEEDBACK_ICON,
   feedback: SIDEBAR_FEEDBACK_ICON,
+  complaint: SIDEBAR_REPORT_SPECIALIST_ICON,
+  reportSpecialist: SIDEBAR_REPORT_SPECIALIST_ICON,
   messageSquare: SIDEBAR_MESSAGES_ICON,
   message: SIDEBAR_MESSAGES_ICON,
   messages: SIDEBAR_MESSAGES_ICON,

@@ -10,6 +10,8 @@ export const ADMIN_WEB_ROUTES = {
   caseRequests: "/dashboard/admin/case-requests",
   complaints: "/dashboard/admin/complaints",
   complaintDetails: "/dashboard/admin/complaints/:complaintId",
+  supportRequests: "/dashboard/admin/support-requests",
+  supportRequestDetails: "/dashboard/admin/support-requests/:requestId",
   exercises: "/dashboard/admin/exercises",
   exerciseAdd: "/dashboard/admin/exercises/new",
   exerciseDetails: "/dashboard/admin/exercises/:exerciseId",
@@ -21,6 +23,7 @@ export const ADMIN_WEB_ROUTES = {
   auditLogs: "/dashboard/admin/audit-logs",
   notifications: "/dashboard/admin/notifications",
   profile: "/dashboard/admin/profile",
+  profileEdit: "/dashboard/admin/profile/edit",
   login: "/login",
 };
 
@@ -32,6 +35,7 @@ export const ADMIN_SIDEBAR_NAV_ROUTE_KEYS = {
   patientAssignments: "patientAssignments",
   caseRequests: "caseRequests",
   complaints: "complaints",
+  supportRequests: "supportRequests",
   exercises: "exercises",
   sessions: "sessions",
   reports: "reports",
@@ -47,6 +51,7 @@ const SIDEBAR_ACTIVE_ROUTE_MATCHERS = [
   { prefix: ADMIN_WEB_ROUTES.patients, navId: "patients" },
   { prefix: ADMIN_WEB_ROUTES.caseRequests, navId: "caseRequests" },
   { prefix: ADMIN_WEB_ROUTES.complaints, navId: "complaints" },
+  { prefix: ADMIN_WEB_ROUTES.supportRequests, navId: "supportRequests" },
   { prefix: ADMIN_WEB_ROUTES.exercises, navId: "exercises" },
   { prefix: ADMIN_WEB_ROUTES.sessions, navId: "sessions" },
   { prefix: ADMIN_WEB_ROUTES.reports, navId: "reports" },
@@ -66,6 +71,36 @@ export function getAdminRoutePath(routeKey) {
   }
 
   return ADMIN_WEB_ROUTES[routeKey] ?? null;
+}
+
+/** Raw role values accepted by the Admin Users role filter / `?role=` query param. */
+export const ADMIN_USERS_ROLE_FILTER_VALUES = ["admin", "specialist", "parent"];
+
+/**
+ * Parses a Users page role query param into a supported raw role filter value.
+ * @param {string|null|undefined} value
+ * @returns {"admin"|"specialist"|"parent"|null}
+ */
+export function parseAdminUsersRoleParam(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  return ADMIN_USERS_ROLE_FILTER_VALUES.includes(normalized) ? normalized : null;
+}
+
+/**
+ * Builds the admin users route, optionally preselecting a role filter.
+ * @param {string|null|undefined} role
+ */
+export function buildAdminUsersPath(role) {
+  const parsedRole = parseAdminUsersRoleParam(role);
+  if (!parsedRole) {
+    return ADMIN_WEB_ROUTES.users;
+  }
+
+  return `${ADMIN_WEB_ROUTES.users}?role=${encodeURIComponent(parsedRole)}`;
 }
 
 /**
@@ -105,6 +140,15 @@ export function buildAdminComplaintDetailsPath(complaintId) {
   }
 
   return `/dashboard/admin/complaints/${encodeURIComponent(id)}`;
+}
+
+export function buildAdminSupportRequestDetailsPath(requestId) {
+  const id = typeof requestId === "string" ? requestId.trim() : "";
+  if (!id) {
+    return ADMIN_WEB_ROUTES.supportRequests;
+  }
+
+  return `/dashboard/admin/support-requests/${encodeURIComponent(id)}`;
 }
 
 /**
@@ -172,6 +216,14 @@ export function buildAdminExerciseEditPath(exerciseId) {
  * @param {string} reportId
  * @param {boolean} isAiReport
  */
+export function buildAdminProfilePath() {
+  return ADMIN_WEB_ROUTES.profile;
+}
+
+export function buildAdminEditProfilePath() {
+  return ADMIN_WEB_ROUTES.profileEdit;
+}
+
 export function buildAdminReportDetailsPath(reportId, isAiReport) {
   const id = typeof reportId === "string" ? reportId.trim() : "";
   if (!id) {

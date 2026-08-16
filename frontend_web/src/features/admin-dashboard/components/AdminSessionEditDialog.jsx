@@ -1,18 +1,17 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import { updateAdminSession } from "../../../services/adminSessionsService";
 import { AdminSessionStatusBadge } from "./AdminSessionStatusBadge";
 import {
   buildAdminSessionUpdatePayload,
   combineSessionDateAndTime,
+  SESSION_STATUS_VALUES,
 } from "../utils/adminSessionsMappers";
 import { useAdminDialogEscape } from "../hooks/useAdminDialogEscape";
-
-const SESSION_EDIT_STATUS_OPTIONS = [
-  { value: "scheduled", label: "Scheduled" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
-  { value: "no_show", label: "No Show" },
-];
+import {
+  formatAdminSessionStatusLabel,
+  getAdminSessionsLabels,
+} from "../utils/adminSessionsLocalization.js";
 
 function pad(value) {
   return String(value).padStart(2, "0");
@@ -61,6 +60,16 @@ function AdminSessionEditDialogInner({
   onSuccess,
   onErrorRefresh,
 }) {
+  const { t } = useLocale();
+  const labels = useMemo(() => getAdminSessionsLabels(t), [t]);
+  const statusOptions = useMemo(
+    () => SESSION_STATUS_VALUES.map((value) => ({
+      value,
+      label: formatAdminSessionStatusLabel(value, false, t),
+    })),
+    [t],
+  );
+
   const originallyScheduled = session.isScheduled;
   const [form, setForm] = useState(() => buildInitialForm(session));
   const [validationError, setValidationError] = useState(null);
@@ -90,7 +99,7 @@ function AdminSessionEditDialogInner({
 
     const scheduledAt = combineSessionDateAndTime(form.dateText, form.timeText);
     if (!scheduledAt) {
-      setValidationError("Invalid date or time.");
+      setValidationError(labels.validation.invalidDateTime);
       return;
     }
 
@@ -117,7 +126,7 @@ function AdminSessionEditDialogInner({
     } catch (submitError) {
       const message = submitError instanceof Error
         ? submitError.message
-        : "Failed to update session.";
+        : labels.toast.updateFailed;
       setApiError(message);
       await onErrorRefresh?.();
     } finally {
@@ -141,21 +150,21 @@ function AdminSessionEditDialogInner({
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="admin-session-edit-title" className="pd-admin-modal-title">
-          Edit Session
+          {labels.dialogs.editTitle}
         </h2>
 
         <div className="pd-admin-session-edit-summary">
           <p className="pd-admin-modal-copy">
-            Patient: <strong>{session.patientName}</strong>
+            {labels.dialogs.patient}: <strong dir="auto">{session.patientName}</strong>
           </p>
           <p className="pd-admin-modal-copy">
-            Specialist: <strong>{session.specialistName}</strong>
+            {labels.dialogs.specialist}: <strong dir="auto">{session.specialistName}</strong>
           </p>
         </div>
 
         <form className="pd-admin-form pd-admin-session-edit-form" onSubmit={handleSubmit}>
           <label className="pd-admin-field">
-            <span className="pd-admin-field-label">Date (YYYY-MM-DD)</span>
+            <span className="pd-admin-field-label">{labels.dialogs.dateHint}</span>
             <input
               type="text"
               className="pd-admin-input"
@@ -168,7 +177,7 @@ function AdminSessionEditDialogInner({
           </label>
 
           <label className="pd-admin-field">
-            <span className="pd-admin-field-label">Time (HH:MM)</span>
+            <span className="pd-admin-field-label">{labels.dialogs.timeHint}</span>
             <input
               type="text"
               className="pd-admin-input"
@@ -181,7 +190,7 @@ function AdminSessionEditDialogInner({
           </label>
 
           <label className="pd-admin-field">
-            <span className="pd-admin-field-label">Duration (minutes)</span>
+            <span className="pd-admin-field-label">{labels.dialogs.duration}</span>
             <input
               type="number"
               className="pd-admin-input"
@@ -193,7 +202,7 @@ function AdminSessionEditDialogInner({
           </label>
 
           <label className="pd-admin-field">
-            <span className="pd-admin-field-label">Location / Link</span>
+            <span className="pd-admin-field-label">{labels.dialogs.locationLink}</span>
             <input
               type="text"
               className="pd-admin-input"
@@ -201,19 +210,20 @@ function AdminSessionEditDialogInner({
               onChange={(event) => updateField("locationOrLink", event.target.value)}
               disabled={isSubmitting}
               autoComplete="off"
+              dir="auto"
             />
           </label>
 
           {originallyScheduled ? (
             <label className="pd-admin-field">
-              <span className="pd-admin-field-label">Status</span>
+              <span className="pd-admin-field-label">{labels.dialogs.status}</span>
               <select
                 className="pd-admin-select"
                 value={form.selectedStatus}
                 onChange={(event) => updateField("selectedStatus", event.target.value)}
                 disabled={isSubmitting}
               >
-                {SESSION_EDIT_STATUS_OPTIONS.map((option) => (
+                {statusOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -222,25 +232,27 @@ function AdminSessionEditDialogInner({
             </label>
           ) : (
             <div className="pd-admin-field">
-              <span className="pd-admin-field-label">Status</span>
+              <span className="pd-admin-field-label">{labels.dialogs.status}</span>
               <div className="pd-admin-session-edit-status-readonly">
                 <AdminSessionStatusBadge label={session.statusLabel} tone={session.statusTone} />
               </div>
               <p className="pd-admin-session-edit-status-note">
-                Status is final and cannot be changed.
+                {labels.dialogs.statusFinalNote}
               </p>
             </div>
           )}
 
           {showCancellationReason ? (
             <label className="pd-admin-field">
-              <span className="pd-admin-field-label">Cancellation reason</span>
+              <span className="pd-admin-field-label">{labels.dialogs.cancellationReason}</span>
               <textarea
                 className="pd-admin-textarea"
                 value={form.cancellationReason}
                 onChange={(event) => updateField("cancellationReason", event.target.value)}
                 disabled={isSubmitting}
                 rows={3}
+                placeholder={labels.dialogs.cancellationReasonPlaceholder}
+                dir="auto"
               />
             </label>
           ) : null}
@@ -254,14 +266,14 @@ function AdminSessionEditDialogInner({
               onClick={() => onClose?.()}
               disabled={isSubmitting}
             >
-              Cancel
+              {labels.dialogs.cancel}
             </button>
             <button
               type="submit"
               className="pd-btn pd-btn-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Saving..." : "Save"}
+              {isSubmitting ? labels.dialogs.saving : labels.dialogs.save}
             </button>
           </div>
         </form>

@@ -1,18 +1,22 @@
 import { ArrowLeft } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import { buildSpecialistProfilePath } from "../../routes/specialistDashboardRoutes";
 import { SpecialistProfileForm } from "./components/SpecialistProfileForm";
 import { useSpecialistEditProfile } from "./hooks/useSpecialistEditProfile";
 import { useSpecialistProfile } from "./hooks/useSpecialistProfile";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
+import { getSpecialistProfilePageLabels } from "./utils/specialistProfileLocalization.js";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
 
 export default function SpecialistEditProfilePage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
+  const pageLabels = useMemo(() => getSpecialistProfilePageLabels(t), [t]);
   const { user, isInitializing, refreshSession } = useAuth();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
@@ -78,20 +82,20 @@ export default function SpecialistEditProfilePage() {
   const handleSave = useCallback(async () => {
     const result = await saveProfile();
     if (result.ok) {
-      showToast("Profile updated successfully");
+      showToast(pageLabels.updatedSuccess);
       handleBack();
       return;
     }
     if (result.message) {
       showToast(result.message);
     }
-  }, [saveProfile, showToast, handleBack]);
+  }, [saveProfile, showToast, handleBack, pageLabels.updatedSuccess]);
 
   const renderContent = () => {
     if (isLoading) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-loading">Loading profile...</p>
+          <p className="pd-inline-loading">{pageLabels.loading}</p>
         </section>
       );
     }
@@ -101,7 +105,7 @@ export default function SpecialistEditProfilePage() {
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
           <p className="pd-inline-error">{error}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {pageLabels.retry}
           </button>
         </section>
       );
@@ -110,9 +114,9 @@ export default function SpecialistEditProfilePage() {
     if (!profile) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
-          <p className="pd-inline-error">Profile unavailable.</p>
+          <p className="pd-inline-error">{pageLabels.unavailable}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={refetch}>
-            Retry
+            {pageLabels.retry}
           </button>
         </section>
       );
@@ -167,14 +171,14 @@ export default function SpecialistEditProfilePage() {
               onClick={handleBack}
             >
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to profile
+              {pageLabels.backToProfile}
             </button>
           </div>
 
           <header className="pd-specialist-profile-page-header">
-            <h1 className="pd-task-hub-title">Edit Profile</h1>
+            <h1 className="pd-task-hub-title">{pageLabels.editTitle}</h1>
             <p className="pd-task-hub-subtitle">
-              Update your personal and professional details.
+              {pageLabels.editSubtitle}
             </p>
           </header>
 

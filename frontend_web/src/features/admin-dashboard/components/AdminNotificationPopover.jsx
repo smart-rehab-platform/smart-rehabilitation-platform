@@ -11,6 +11,7 @@ function NotifIcon({ type }) {
 export function AdminNotificationPopover({
   open,
   onOpenChange,
+  labels,
   notifications = [],
   badgeCount = 0,
   unreadCount = 0,
@@ -63,7 +64,7 @@ export function AdminNotificationPopover({
       <button
         type="button"
         className="pd-icon-btn"
-        aria-label={`Notifications${showBadge ? `, ${badgeCount} unread` : ""}`}
+        aria-label={labels.triggerAria(badgeCount)}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={menuId}
@@ -82,10 +83,10 @@ export function AdminNotificationPopover({
           id={menuId}
           className="pd-dropdown pd-notif-dropdown"
           role="dialog"
-          aria-label="Recent notifications"
+          aria-label={labels.dialogAriaLabel}
         >
           <div className="pd-notif-dropdown-head">
-            <strong>Notifications</strong>
+            <strong>{labels.title}</strong>
             {unreadCount > 0 && onMarkAllAsRead ? (
               <button
                 type="button"
@@ -93,7 +94,7 @@ export function AdminNotificationPopover({
                 onClick={() => onMarkAllAsRead()}
                 disabled={isUpdating}
               >
-                Mark all as read
+                {labels.markAllRead}
               </button>
             ) : null}
           </div>
@@ -105,7 +106,7 @@ export function AdminNotificationPopover({
           ) : null}
 
           {isLoading ? (
-            <p className="pd-inline-loading pd-notif-dropdown-state">Loading notifications...</p>
+            <p className="pd-inline-loading pd-notif-dropdown-state">{labels.loading}</p>
           ) : null}
 
           {!isLoading && error ? (
@@ -117,14 +118,14 @@ export function AdminNotificationPopover({
                   className="pd-btn pd-btn-soft pd-btn-sm"
                   onClick={onRetry}
                 >
-                  Retry
+                  {labels.retry}
                 </button>
               ) : null}
             </div>
           ) : null}
 
           {!isLoading && !error && visible.length === 0 ? (
-            <p className="pd-notif-dropdown-state">No notifications yet.</p>
+            <p className="pd-notif-dropdown-state">{labels.empty}</p>
           ) : null}
 
           {!isLoading && !error && visible.length > 0 ? (
@@ -138,14 +139,14 @@ export function AdminNotificationPopover({
                     <li key={item.id}>
                       <div
                         className="pd-notif-item"
-                        aria-label={`Notification: ${item.title}`}
+                        aria-label={labels.notification(item.title)}
                       >
                         <span className={`pd-notif-icon pd-tone-${item.tone}`} aria-hidden="true">
                           <NotifIcon type={item.icon} />
                         </span>
                         <span className="pd-notif-copy">
-                          <strong>{item.title}</strong>
-                          {item.body ? <small>{item.body}</small> : null}
+                          <strong dir="auto">{item.title}</strong>
+                          {item.body ? <small dir="auto">{item.body}</small> : null}
                           <small>{item.timeAgo}</small>
                         </span>
                       </div>
@@ -160,14 +161,14 @@ export function AdminNotificationPopover({
                       className="pd-notif-item is-unread"
                       onClick={() => handleSelect(item)}
                       disabled={isItemUpdating || isUpdating}
-                      aria-label={`Unread notification: ${item.title}. Mark as read.`}
+                      aria-label={labels.unreadNotification(item.title)}
                     >
                       <span className={`pd-notif-icon pd-tone-${item.tone}`} aria-hidden="true">
                         <NotifIcon type={item.icon} />
                       </span>
                       <span className="pd-notif-copy">
-                        <strong>{item.title}</strong>
-                        {item.body ? <small>{item.body}</small> : null}
+                        <strong dir="auto">{item.title}</strong>
+                        {item.body ? <small dir="auto">{item.body}</small> : null}
                         <small>{item.timeAgo}</small>
                       </span>
                       {isItemUpdating ? (
@@ -190,7 +191,7 @@ export function AdminNotificationPopover({
               onOpenChange(false);
             }}
           >
-            View All Notifications
+            {labels.viewAll}
           </button>
         </div>
       ) : null}

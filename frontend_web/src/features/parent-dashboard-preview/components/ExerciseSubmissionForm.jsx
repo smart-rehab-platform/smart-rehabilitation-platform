@@ -1,5 +1,6 @@
 import { useId, useRef } from "react";
 import { Paperclip } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { SelectedSubmissionMedia } from "./SelectedSubmissionMedia";
 import { SUBMISSION_MEDIA_ACCEPT } from "../utils/parentDashboardMappers";
 
@@ -17,12 +18,17 @@ export function ExerciseSubmissionForm({
   isRetryStatus = false,
   onSubmit,
 }) {
+  const { t } = useLocale();
   const notesId = useId();
   const fileInputId = useId();
   const fileInputRef = useRef(null);
 
-  const defaultSubmitLabel = isRetryStatus ? "Submit Exercise Again" : "Submit Exercise";
-  const buttonLabel = isSubmitting ? "Submitting…" : (submitLabel || defaultSubmitLabel);
+  const defaultSubmitLabel = isRetryStatus
+    ? t("parent.pages.exerciseDetail.submitExerciseAgain")
+    : t("parent.pages.exerciseDetail.submitExercise");
+  const buttonLabel = isSubmitting
+    ? t("parent.pages.exerciseDetail.submitting")
+    : (submitLabel || defaultSubmitLabel);
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0] ?? null;
@@ -44,14 +50,20 @@ export function ExerciseSubmissionForm({
   };
 
   return (
-    <section className="pd-card pd-card-pad pd-exercise-submission pd-section-enter" aria-label="Submit exercise">
-      <h2 className="pd-section-title">Submission</h2>
+    <section
+      className="pd-card pd-card-pad pd-exercise-submission pd-section-enter"
+      aria-label={t("parent.pages.exerciseDetail.submitAriaLabel")}
+    >
+      <h2 className="pd-section-title">{t("parent.pages.exerciseDetail.submission")}</h2>
 
       <form className="pd-exercise-submission-form" onSubmit={handleSubmit} noValidate>
         <div className="pd-form-field">
           <label className="pd-form-label" htmlFor={notesId}>
-            Parent Notes
-            <span className="pd-form-label-optional"> (optional)</span>
+            {t("parent.pages.exerciseDetail.parentNotes")}
+            <span className="pd-form-label-optional">
+              {" "}
+              {t("parent.pages.exerciseDetail.optional")}
+            </span>
           </label>
           <textarea
             id={notesId}
@@ -60,17 +72,21 @@ export function ExerciseSubmissionForm({
             value={parentNotes}
             onChange={(event) => onNotesChange(event.target.value)}
             disabled={isSubmitting}
-            placeholder="Add notes about how the exercise went, or anything you'd like the specialist to know."
+            placeholder={t("parent.pages.exerciseDetail.notesPlaceholder")}
+            dir="auto"
           />
         </div>
 
         <div className="pd-form-field">
           <span className="pd-form-label" id={`${fileInputId}-label`}>
-            Media Attachment
-            <span className="pd-form-label-optional"> (optional)</span>
+            {t("parent.pages.exerciseDetail.mediaAttachment")}
+            <span className="pd-form-label-optional">
+              {" "}
+              {t("parent.pages.exerciseDetail.optional")}
+            </span>
           </span>
           <p className="pd-form-help">
-            Attach one image, video, or audio file up to 50 MB.
+            {t("parent.pages.exerciseDetail.mediaHelp")}
           </p>
 
           <input
@@ -92,7 +108,9 @@ export function ExerciseSubmissionForm({
               disabled={isSubmitting}
             >
               <Paperclip size={16} aria-hidden="true" />
-              {selectedFile ? "Replace File" : "Choose File"}
+              {selectedFile
+                ? t("parent.pages.exerciseDetail.replaceFile")
+                : t("parent.pages.exerciseDetail.chooseFile")}
             </button>
           </div>
 

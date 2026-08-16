@@ -7,11 +7,11 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale.js";
 import {
   PARENT_WEB_ROUTES,
   buildParentAiAssistantPath,
 } from "../../routes/parentDashboardRoutes";
-import { parentDashboardMock } from "./mock/parentDashboardMock";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { AiChildSelector } from "./components/ai-assistant/AiChildSelector";
 import { AiChatPanel } from "./components/ai-assistant/AiChatPanel";
@@ -25,7 +25,7 @@ import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
-  AI_EMPTY_MESSAGES,
+  getAiEmptyMessages,
   getConversationPatientId,
 } from "./utils/parentAiAssistantUtils";
 import "./styles/parentDashboardTokens.css";
@@ -37,6 +37,7 @@ export default function ParentAiAssistantPage() {
   const location = useLocation();
   const { conversationId: routeConversationId } = useParams();
   const [searchParams] = useSearchParams();
+  const { t } = useLocale();
   const { user, isInitializing } = useAuth();
   const parentUserId = isInitializing ? null : user?.id ?? null;
 
@@ -276,11 +277,13 @@ export default function ParentAiAssistantPage() {
 
   const chatDisabled = !validChildId;
 
+  const aiEmptyMessages = useMemo(() => getAiEmptyMessages(t), [t]);
+
   const renderWorkspace = () => {
     if (isLoadingChildren) {
       return (
         <section className="pd-card pd-card-pad pd-ai-state pd-section-enter">
-          <p className="pd-inline-loading">Loading children...</p>
+          <p className="pd-inline-loading">{t("parent.aiAssistant.loadingChildren")}</p>
         </section>
       );
     }
@@ -292,7 +295,7 @@ export default function ParentAiAssistantPage() {
     if (!validChildId) {
       return (
         <AiEmptyState
-          message={AI_EMPTY_MESSAGES.noChild}
+          message={aiEmptyMessages.noChild}
           action={(
             <AiChildSelector
               children={children}
@@ -349,7 +352,6 @@ export default function ParentAiAssistantPage() {
       <ParentDashboardShell
         collapsed={sidebarCollapsed}
         mobileOpen={mobileNavOpen}
-        navItems={parentDashboardMock.navItems}
         badges={badges}
         parent={parent}
         notifications={notifications}
@@ -375,15 +377,15 @@ export default function ParentAiAssistantPage() {
               onClick={handleBack}
             >
               <ArrowLeft size={16} aria-hidden="true" />
-              Back to dashboard
+              {t("parent.common.backToDashboard")}
             </button>
           </div>
 
           <header className="pd-ai-page-header">
             <div>
-              <h1 className="pd-task-hub-title">AI Assistant</h1>
+              <h1 className="pd-task-hub-title">{t("parent.aiAssistant.title")}</h1>
               <p className="pd-task-hub-subtitle">
-                Ask about home practice, exercises, and progress for your linked child.
+                {t("parent.aiAssistant.subtitle")}
               </p>
             </div>
             {validChildId ? (

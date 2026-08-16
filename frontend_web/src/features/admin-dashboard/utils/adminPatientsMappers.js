@@ -1,4 +1,4 @@
-import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
+import { resolveUploadedAssetUrl } from "../../../services/apiConfig.js";
 
 function readString(record, keys) {
   if (!record || typeof record !== "object") {
@@ -200,15 +200,10 @@ export function mapAdminPatientRecord(row) {
         id: previousSessionId,
         scheduledAt,
         status: sessionStatus,
-        scheduledAtLabel: formatPreviousSessionDateTime(scheduledAt),
         isPastScheduledNotCompleted: isPastScheduledNotCompleted({
           scheduledAt,
           status: sessionStatus,
         }),
-        statusLabel: formatSessionStatusLabel(
-          sessionStatus,
-          isPastScheduledNotCompleted({ scheduledAt, status: sessionStatus }),
-        ),
         statusTone: getSessionStatusTone(
           sessionStatus,
           isPastScheduledNotCompleted({ scheduledAt, status: sessionStatus }),
@@ -218,6 +213,7 @@ export function mapAdminPatientRecord(row) {
 
   const fullName = readString(row, ["full_name", "fullName", "name"]) || "Patient";
   const conditionRaw = readString(row, ["condition", "diagnosis_title", "diagnosisTitle"]);
+  const genderRaw = readString(row, ["gender"]) || null;
 
   return {
     id,
@@ -225,11 +221,8 @@ export function mapAdminPatientRecord(row) {
     profileImageUrl: resolveProfileImageUrl(
       readString(row, ["profile_image_url", "profileImageUrl", "child_image_url", "childImageUrl"]),
     ),
-    gender: readString(row, ["gender"]) || null,
-    genderLabel: formatPatientGender(readString(row, ["gender"])) || "—",
+    gender: genderRaw,
     condition: conditionRaw || null,
-    conditionLabel: conditionRaw || "No condition",
-    hasCondition: Boolean(conditionRaw),
     initials: getPatientInitials(fullName),
     previousSession,
   };

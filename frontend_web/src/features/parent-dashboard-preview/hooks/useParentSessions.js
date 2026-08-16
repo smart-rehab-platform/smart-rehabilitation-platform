@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getChildren,
   getChildrenProgress,
@@ -12,6 +13,8 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useParentSessions(parentUserId) {
+  const { t, locale } = useLocale();
+  const mapperOptions = useMemo(() => ({ t, locale }), [t, locale]);
   const [children, setChildren] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [isLoading, setIsLoading] = useState(Boolean(parentUserId));
@@ -48,10 +51,10 @@ export function useParentSessions(parentUserId) {
         }
 
         setChildren(mergeChildren(childrenRows, progressRows));
-        setSessions(mapSessionRowsToHubItems(sessionRows));
+        setSessions(mapSessionRowsToHubItems(sessionRows, mapperOptions));
       } catch (loadError) {
         if (!cancelled && loadTokenRef.current === loadToken) {
-          setError(resolveErrorMessage(loadError, "Failed to load sessions."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadSessionsFailed")));
           setSessions([]);
         }
       } finally {
@@ -66,7 +69,7 @@ export function useParentSessions(parentUserId) {
     return () => {
       cancelled = true;
     };
-  }, [parentUserId, refreshToken]);
+  }, [parentUserId, refreshToken, mapperOptions, t]);
 
   const counts = useMemo(() => ({
     upcoming: sessions.filter((session) => session.isUpcoming).length,
@@ -79,7 +82,7 @@ export function useParentSessions(parentUserId) {
       sessions: [],
       counts: { upcoming: 0, history: 0 },
       isLoading: false,
-      error: "Please sign in to view sessions.",
+      error: t("parent.hooks.signInSessions"),
       refetch,
     };
   }

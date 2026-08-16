@@ -1,3 +1,4 @@
+import { useLocale } from "../../../context/useLocale";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
 import { ProgressBar } from "../../shared-dashboard/components/ProgressBar";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
@@ -11,9 +12,11 @@ export function SpecialistTreatmentPlanPatientSummary({
   statusTone = "success",
   showProgress = true,
 }) {
+  const { t } = useLocale();
+
   return (
     <section className="pd-card pd-specialist-treatment-plan-summary-card">
-      <h2 className="pd-specialist-treatment-plan-summary-title">Patient Summary</h2>
+      <h2 className="pd-specialist-treatment-plan-summary-title">{t("specialist.treatmentPlans.patientSummary.title")}</h2>
       <div className="pd-specialist-treatment-plan-summary-body">
         <div className="pd-specialist-treatment-plan-summary-identity">
           <UserProfileAvatar
@@ -25,9 +28,11 @@ export function SpecialistTreatmentPlanPatientSummary({
             className="pd-avatar-photo"
           />
           <div className="pd-specialist-treatment-plan-summary-identity-copy">
-            <strong className="pd-specialist-treatment-plan-patient-name">{patientName}</strong>
+            <strong className="pd-specialist-treatment-plan-patient-name" dir="auto">{patientName}</strong>
             {patientAge != null ? (
-              <p className="pd-specialist-treatment-plan-summary-age">Age: {patientAge} years</p>
+              <p className="pd-specialist-treatment-plan-summary-age">
+                {t("specialist.treatmentPlans.patientSummary.ageYears", { count: patientAge })}
+              </p>
             ) : null}
           </div>
         </div>
@@ -35,10 +40,10 @@ export function SpecialistTreatmentPlanPatientSummary({
           {showProgress ? (
             <div className="pd-specialist-treatment-plan-summary-progress">
               {overallProgressPercent == null ? (
-                <p className="pd-section-sub">No progress data available yet.</p>
+                <p className="pd-section-sub">{t("specialist.treatmentPlans.patientSummary.noProgress")}</p>
               ) : (
                 <ProgressBar
-                  label="Overall Progress"
+                  label={t("specialist.treatmentPlans.patientSummary.overallProgress")}
                   percent={overallProgressPercent}
                   tone="cyan"
                 />

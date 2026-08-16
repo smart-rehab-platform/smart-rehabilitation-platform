@@ -1,22 +1,30 @@
 import { Menu, Search } from "lucide-react";
 import { PlatformMaterialIcon } from "../../../components/platform/PlatformMaterialIcon";
+import { useLocale } from "../../../context/useLocale.js";
 
 export function DashboardTopHeader({
   onOpenMobileNav,
-  searchPlaceholder = "Search exercises, reports, sessions...",
-  searchAriaLabel = "Search exercises, reports, sessions",
+  searchPlaceholder,
+  searchAriaLabel,
   searchContent = null,
   onMessages,
   messagesBadge = null,
   notificationPopover,
   profileMenu,
 }) {
+  const { t } = useLocale();
+  const resolvedSearchPlaceholder = searchPlaceholder ?? t("header.searchPlaceholder");
+  const resolvedSearchAriaLabel = searchAriaLabel ?? t("header.searchAriaLabel");
+  const messagesAriaLabel = messagesBadge
+    ? t("header.messagesUnreadAriaLabel", { count: messagesBadge })
+    : t("header.messagesAriaLabel");
+
   return (
     <header className="pd-top-header">
       <button
         type="button"
         className="pd-mobile-menu"
-        aria-label="Open navigation menu"
+        aria-label={t("header.openNavigationMenu")}
         onClick={onOpenMobileNav}
       >
         <Menu size={20} />
@@ -27,11 +35,11 @@ export function DashboardTopHeader({
       ) : (
         <label className="pd-search">
           <Search size={16} aria-hidden="true" />
-          <span className="pd-sr-only">Search</span>
+          <span className="pd-sr-only">{t("common.search")}</span>
           <input
             type="search"
-            placeholder={searchPlaceholder}
-            aria-label={searchAriaLabel}
+            placeholder={resolvedSearchPlaceholder}
+            aria-label={resolvedSearchAriaLabel}
           />
         </label>
       )}
@@ -41,7 +49,7 @@ export function DashboardTopHeader({
           <button
             type="button"
             className="pd-icon-btn"
-            aria-label={`Messages${messagesBadge ? `, ${messagesBadge} unread` : ""}`}
+            aria-label={messagesAriaLabel}
             onClick={onMessages}
           >
             <PlatformMaterialIcon icon="messageSquare" size={18} />

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getNotifications,
   markAllNotificationsAsRead,
@@ -25,6 +26,7 @@ const EMPTY_NOTIFICATION_STATE = {
 };
 
 export function useParentNotifications(userId) {
+  const { t, locale } = useLocale();
   const [notifications, setNotifications] = useState([]);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
   const [notificationsError, setNotificationsError] = useState(null);
@@ -58,7 +60,7 @@ export function useParentNotifications(userId) {
           return;
         }
 
-        setNotifications(mapNotificationsToViewModels(rows));
+        setNotifications(mapNotificationsToViewModels(rows, { t, locale }));
       } catch (error) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
@@ -66,7 +68,7 @@ export function useParentNotifications(userId) {
 
         setNotifications([]);
         setNotificationsError(
-          resolveErrorMessage(error, "Failed to load notifications."),
+          resolveErrorMessage(error, t("parent.hooks.loadNotificationsFailed")),
         );
       } finally {
         if (!cancelled && loadTokenRef.current === loadToken) {
@@ -80,7 +82,7 @@ export function useParentNotifications(userId) {
     return () => {
       cancelled = true;
     };
-  }, [userId, refreshToken]);
+  }, [userId, refreshToken, t, locale]);
 
   const unreadCount = useMemo(
     () => (notificationsError ? 0 : countUnreadNotifications(notifications)),

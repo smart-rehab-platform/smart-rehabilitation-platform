@@ -1,9 +1,14 @@
-import { SESSION_HUB_AREAS } from "../../utils/parentSessionsUtils";
+import { useMemo } from "react";
+import { useLocale } from "../../../../context/useLocale.js";
+import { buildSessionHubAreaOptions } from "../../utils/parentSessionsUtils";
 
 export function SessionsHubAreas({ activeArea, onChange, sessionCount, requestCount }) {
+  const { t } = useLocale();
+  const areas = useMemo(() => buildSessionHubAreaOptions(t), [t]);
+
   return (
-    <div className="pd-task-hub-tabs" role="tablist" aria-label="Sessions hub areas">
-      {SESSION_HUB_AREAS.map((area) => {
+    <div className="pd-task-hub-tabs" role="tablist" aria-label={t("parent.sessions.hubAreasAriaLabel")}>
+      {areas.map((area) => {
         const count = area.id === "sessions" ? sessionCount : requestCount;
         return (
           <button

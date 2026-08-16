@@ -12,11 +12,14 @@ import {
   authPageSubtitleStyle,
 } from "../../components/auth/authPageStyles";
 import { readAuthApiMessage } from "../../components/auth/authHelpers";
+import { getAuthInvalidEmailMessage } from "../../components/auth/authLocalization";
+import { useLocale } from "../../context/useLocale.js";
 import api from "../../services/api";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLocale();
   const prefilledEmail = location.state?.email?.trim() || "";
   const emailInputRef = useRef(null);
   const didFocusEmailRef = useRef(false);
@@ -30,6 +33,7 @@ export default function ForgotPassword() {
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const emailState = email ? (emailValid ? "success" : "error") : "idle";
+  const invalidEmailMessage = getAuthInvalidEmailMessage(t);
 
   const showToast = (message, variant = "success") => {
     setToastMessage(message);
@@ -61,12 +65,12 @@ export default function ForgotPassword() {
 
   const handleSubmit = async () => {
     if (!email.trim()) {
-      showToast("Please enter your email address", "error");
+      showToast(t("auth.forgotPassword.enterEmail"), "error");
       return;
     }
 
     if (!emailValid) {
-      showToast("Invalid email address", "error");
+      showToast(invalidEmailMessage, "error");
       return;
     }
 
@@ -80,7 +84,7 @@ export default function ForgotPassword() {
       showToast(data.message, "success");
       setSuccess(true);
     } catch (error) {
-      const message = readAuthApiMessage(error, "Failed to send reset link");
+      const message = readAuthApiMessage(error, t("auth.forgotPassword.failedSend"));
       showToast(message, "error");
     } finally {
       setLoading(false);
@@ -98,54 +102,54 @@ export default function ForgotPassword() {
       <Toast message={toastMessage} visible={toast} variant={toastVariant} />
       {success ? (
         <AuthStatusCard
-          title="Reset Email Sent"
-          message="If an account exists with this email, a password reset link has been sent."
-          actionLabel="Back to Sign In"
+          title={t("auth.forgotPassword.successTitle")}
+          message={t("auth.forgotPassword.successMessage")}
+          actionLabel={t("auth.forgotPassword.backToSignIn")}
           onAction={handleBackToSignIn}
         />
       ) : (
         <>
           <div className="mb-6 flex flex-col gap-2">
             <h2 className={authPageHeadingClassName} style={authPageHeadingStyle}>
-              Reset Password
+              {t("auth.forgotPassword.title")}
             </h2>
             <p className={authPageSubtitleClassName} style={authPageSubtitleStyle}>
-              Enter your email address and we&apos;ll send you a secure password reset link.
+              {t("auth.forgotPassword.subtitle")}
             </p>
           </div>
 
           <div className="flex flex-col gap-4">
             <AuthInput
-              label="Email Address"
+              label={t("auth.signIn.emailLabel")}
               icon={<Mail size={16} />}
               type="email"
-              placeholder="name@example.com"
+              placeholder={t("auth.signIn.emailPlaceholder")}
               value={email}
               onChange={setEmail}
               state={emailState}
-              message={emailState === "error" ? "Invalid email address" : ""}
+              message={emailState === "error" ? invalidEmailMessage : ""}
               inputRef={emailInputRef}
             />
 
             <PrimaryButton loading={loading} onClick={handleSubmit}>
               {loading ? (
-                "Sending Reset Link..."
+                t("auth.forgotPassword.sending")
               ) : (
                 <>
-                  <span>Send Reset Link</span>
+                  <span>{t("auth.forgotPassword.sendLink")}</span>
                   <ChevronRight size={16} className="auth-btn-arrow" />
                 </>
               )}
             </PrimaryButton>
 
             <p className="auth-footer-text text-center text-[13px] font-medium leading-relaxed">
-              Remembered your password?{" "}
+              {t("auth.forgotPassword.rememberedPassword")}{" "}
               <button
                 type="button"
                 onClick={handleBackToSignIn}
                 className="auth-footer-link font-semibold transition-colors"
               >
-                Back to Sign In
+                {t("auth.forgotPassword.backToSignIn")}
               </button>
             </p>
           </div>

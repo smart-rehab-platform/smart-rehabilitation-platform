@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getAssignedExerciseById,
   getPatientSubmissions,
@@ -9,14 +10,14 @@ function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
 
-async function loadExerciseDetailData(assignedExerciseId, patientId) {
+async function loadExerciseDetailData(assignedExerciseId, patientId, t) {
   const [assignment, submissionRows] = await Promise.all([
     getAssignedExerciseById(assignedExerciseId),
     patientId ? getPatientSubmissions(patientId) : Promise.resolve([]),
   ]);
 
   if (!assignment) {
-    return { error: "Exercise not found.", assignmentRow: null, submissions: [] };
+    return { error: t("parent.hooks.exerciseNotFound"), assignmentRow: null, submissions: [] };
   }
 
   const assignmentPatientId = readString(assignment, ["patient_id", "patientId"]);
@@ -26,7 +27,7 @@ async function loadExerciseDetailData(assignedExerciseId, patientId) {
     && assignmentPatientId !== patientId
   ) {
     return {
-      error: "This exercise does not belong to the selected child.",
+      error: t("parent.hooks.exerciseWrongChild"),
       assignmentRow: null,
       submissions: [],
     };
@@ -40,6 +41,7 @@ async function loadExerciseDetailData(assignedExerciseId, patientId) {
 }
 
 export function useParentExerciseDetail(assignedExerciseId, patientId) {
+  const { t } = useLocale();
   const [assignmentRow, setAssignmentRow] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [isLoading, setIsLoading] = useState(Boolean(assignedExerciseId));
@@ -68,7 +70,7 @@ export function useParentExerciseDetail(assignedExerciseId, patientId) {
       setSubmissions([]);
 
       try {
-        const result = await loadExerciseDetailData(assignedExerciseId, patientId);
+        const result = await loadExerciseDetailData(assignedExerciseId, patientId, t);
 
         if (cancelled) {
           return;
@@ -83,7 +85,7 @@ export function useParentExerciseDetail(assignedExerciseId, patientId) {
         setSubmissions(result.submissions);
       } catch (loadError) {
         if (!cancelled) {
-          setError(resolveErrorMessage(loadError, "Failed to load exercise details."));
+          setError(resolveErrorMessage(loadError, t("parent.hooks.loadExerciseDetailFailed")));
         }
       } finally {
         if (!cancelled) {
@@ -97,7 +99,7 @@ export function useParentExerciseDetail(assignedExerciseId, patientId) {
     return () => {
       cancelled = true;
     };
-  }, [assignedExerciseId, patientId, refreshToken]);
+  }, [assignedExerciseId, patientId, refreshToken, t]);
 
   const viewModel = useMemo(
     () => buildExerciseDetailViewModel(assignmentRow, submissions),

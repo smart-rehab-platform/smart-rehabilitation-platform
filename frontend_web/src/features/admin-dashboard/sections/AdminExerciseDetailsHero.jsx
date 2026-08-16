@@ -6,6 +6,7 @@ import {
 import { AdminExerciseCategoryIcon } from "../components/AdminExerciseCategoryIcon";
 
 export function AdminExerciseDetailsHero({
+  labels,
   exercise,
   canEdit = true,
   onEdit,
@@ -16,7 +17,7 @@ export function AdminExerciseDetailsHero({
   const createdByName = exercise.createdByName?.trim() || "";
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-exercise-details-hero pd-section-enter" aria-label="Exercise summary">
+    <section className="pd-card pd-card-pad pd-admin-exercise-details-hero pd-section-enter" aria-label={labels.detailsTitle}>
       <div className="pd-admin-exercise-details-hero-main">
         <div className="pd-admin-exercise-details-hero-left">
           <div
@@ -31,18 +32,18 @@ export function AdminExerciseDetailsHero({
           </div>
 
           <div className="pd-admin-exercise-details-hero-copy">
-            <h1 className="pd-admin-exercise-details-title">{exercise.title}</h1>
+            <h1 className="pd-admin-exercise-details-title" dir="auto">{exercise.title}</h1>
 
             <div className="pd-admin-exercise-details-meta">
-              {exercise.categoryName ? (
-                <span className="pd-admin-exercise-details-category">{exercise.categoryName}</span>
+              {exercise.categoryLabel ? (
+                <span className="pd-admin-exercise-details-category">{exercise.categoryLabel}</span>
               ) : null}
               <span className="pd-admin-exercise-details-language">{exercise.languageLabel}</span>
             </div>
 
             {createdByName ? (
-              <p className="pd-admin-exercise-details-created-by">
-                Created by
+              <p className="pd-admin-exercise-details-created-by" dir="auto">
+                {labels.createdBy}
                 {" "}
                 {createdByName}
               </p>
@@ -58,7 +59,7 @@ export function AdminExerciseDetailsHero({
               onClick={onEdit}
             >
               <Pencil size={16} aria-hidden="true" />
-              Edit Exercise
+              {labels.editExercise}
             </button>
             <button
               type="button"
@@ -66,7 +67,7 @@ export function AdminExerciseDetailsHero({
               onClick={onDelete}
             >
               <Trash2 size={16} aria-hidden="true" />
-              Delete Exercise
+              {labels.deleteExercise}
             </button>
           </div>
         ) : null}
