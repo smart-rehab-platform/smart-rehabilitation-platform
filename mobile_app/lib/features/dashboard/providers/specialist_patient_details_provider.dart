@@ -15,6 +15,7 @@ class SpecialistPatientDetailsState {
   const SpecialistPatientDetailsState({
     this.isLoading = false,
     this.isSavingNote = false,
+    this.isSavingDiagnosis = false,
     this.errorMessage,
     this.data,
     this.familyPatternLoading = false,
@@ -24,6 +25,7 @@ class SpecialistPatientDetailsState {
 
   final bool isLoading;
   final bool isSavingNote;
+  final bool isSavingDiagnosis;
   final String? errorMessage;
   final SpecialistPatientDetailsBundle? data;
   final bool familyPatternLoading;
@@ -33,6 +35,7 @@ class SpecialistPatientDetailsState {
   SpecialistPatientDetailsState copyWith({
     bool? isLoading,
     bool? isSavingNote,
+    bool? isSavingDiagnosis,
     Object? errorMessage = _sentinel,
     SpecialistPatientDetailsBundle? data,
     bool? familyPatternLoading,
@@ -42,6 +45,7 @@ class SpecialistPatientDetailsState {
     return SpecialistPatientDetailsState(
       isLoading: isLoading ?? this.isLoading,
       isSavingNote: isSavingNote ?? this.isSavingNote,
+      isSavingDiagnosis: isSavingDiagnosis ?? this.isSavingDiagnosis,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
@@ -156,6 +160,38 @@ class SpecialistPatientDetailsNotifier
         errorMessage: 'Failed to save note: $error',
       );
       return 'Failed to save note';
+    }
+  }
+
+  Future<String?> addDiagnosis({
+    required String diagnosisTitle,
+    String? description,
+    required DateTime diagnosedAt,
+  }) async {
+    final trimmedTitle = diagnosisTitle.trim();
+    if (trimmedTitle.isEmpty) {
+      return 'Diagnosis title is required';
+    }
+
+    _ensureAuthToken();
+    state = state.copyWith(isSavingDiagnosis: true, errorMessage: null);
+
+    try {
+      await _repository.addDiagnosis(
+        patientId: _patientId,
+        diagnosisTitle: trimmedTitle,
+        description: description,
+        diagnosedAt: diagnosedAt,
+      );
+      state = state.copyWith(isSavingDiagnosis: false);
+      await initialize();
+      return null;
+    } catch (error) {
+      state = state.copyWith(
+        isSavingDiagnosis: false,
+        errorMessage: 'Failed to save diagnosis: $error',
+      );
+      return 'Failed to save diagnosis';
     }
   }
 

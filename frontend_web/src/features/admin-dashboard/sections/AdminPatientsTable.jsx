@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { ChevronRight } from "lucide-react";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { useLocale } from "../../../context/useLocale.js";
+import { AdminTablePrimaryAction } from "../components/AdminTablePrimaryAction";
 import { getAdminPatientsLabels } from "../utils/adminPatientsLocalization.js";
 
 function ConditionBadge({ label, hasCondition }) {
@@ -58,9 +59,8 @@ function PatientIdentity({ patient }) {
 
 function ViewAction({ onView, label }) {
   return (
-    <button
-      type="button"
-      className="pd-btn pd-btn-soft pd-btn-compact pd-admin-patients-view-btn"
+    <AdminTablePrimaryAction
+      className="pd-admin-patients-view-btn"
       onClick={(event) => {
         event.stopPropagation();
         onView();
@@ -68,7 +68,7 @@ function ViewAction({ onView, label }) {
     >
       {label}
       <ChevronRight size={16} aria-hidden="true" className="pd-admin-patients-view-chevron" />
-    </button>
+    </AdminTablePrimaryAction>
   );
 }
 

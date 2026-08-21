@@ -121,6 +121,20 @@ require.cache[dbPath] = {
 
       if (
         normalized.includes("FROM ai_reports ar")
+        && normalized.includes("WHERE ar.patient_id")
+      ) {
+        const patientId = params[0];
+        if (patientId === IDS.patientA) {
+          return { rows: [reportA] };
+        }
+        if (patientId === IDS.patientB) {
+          return { rows: [reportB] };
+        }
+        return { rows: [] };
+      }
+
+      if (
+        normalized.includes("FROM ai_reports ar")
         && normalized.includes("ORDER BY ar.generated_at DESC")
       ) {
         return { rows: [reportB, reportA] };

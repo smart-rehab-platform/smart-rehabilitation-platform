@@ -58,11 +58,18 @@ export function mapPendingReviewRow(row, context = {}) {
 
   const submittedAt = parseDateValue(row.submitted_at ?? row.submittedAt);
   const now = context.now instanceof Date ? context.now : new Date();
+  const patientId = readString(row, ["patient_id", "patientId"]);
+  const patientAvatarById = context.patientAvatarById instanceof Map
+    ? context.patientAvatarById
+    : null;
 
   return {
     id,
-    patientId: readString(row, ["patient_id", "patientId"]),
+    patientId,
     patientName: readString(row, ["patient_name", "patientName"]) || "Patient",
+    profileImageUrl: patientId && patientAvatarById
+      ? (patientAvatarById.get(patientId) ?? null)
+      : null,
     exerciseTitle: readString(row, ["exercise_title", "exerciseTitle", "title"])
       || "Exercise review",
     submittedAt,

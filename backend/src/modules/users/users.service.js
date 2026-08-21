@@ -11,6 +11,7 @@ const getAllUsers = async () => {
       role,
       is_active,
       is_email_verified,
+      profile_image_url,
       created_at
     FROM users
     ORDER BY created_at DESC

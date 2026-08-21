@@ -7,6 +7,7 @@ import { getInitials } from "../utils/specialistScheduleUtils";
 export function SpecialistTreatmentPlanPatientSummary({
   patientName,
   patientAge = null,
+  profileImageUrl = null,
   overallProgressPercent = null,
   statusLabel,
   statusTone = "success",
@@ -15,12 +16,12 @@ export function SpecialistTreatmentPlanPatientSummary({
   const { t } = useLocale();
 
   return (
-    <section className="pd-card pd-specialist-treatment-plan-summary-card">
+    <section className={`pd-card pd-specialist-treatment-plan-summary-card${showProgress ? "" : " pd-specialist-treatment-plan-summary-card--compact"}`}>
       <h2 className="pd-specialist-treatment-plan-summary-title">{t("specialist.treatmentPlans.patientSummary.title")}</h2>
       <div className="pd-specialist-treatment-plan-summary-body">
         <div className="pd-specialist-treatment-plan-summary-identity">
           <UserProfileAvatar
-            imageUrl={null}
+            imageUrl={profileImageUrl}
             initials={getInitials(patientName, "P")}
             alt=""
             shellClassName="pd-avatar pd-specialist-treatment-plan-patient-avatar"

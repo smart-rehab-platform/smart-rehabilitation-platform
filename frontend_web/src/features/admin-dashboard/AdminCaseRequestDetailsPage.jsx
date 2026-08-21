@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ADMIN_WEB_ROUTES,
@@ -137,43 +137,64 @@ export default function AdminCaseRequestDetailsPage() {
         <AdminCaseRequestTimeline steps={detail.timelineSteps} labels={pageLabels} />
 
         {detail.rejectionReason ? (
-          <section className="pd-card pd-card-pad pd-admin-case-request-alert pd-section-enter">
-            <h2 className="pd-admin-case-request-section-title">{pageLabels.rejectionReason}</h2>
-            <p dir="auto">{detail.rejectionReason}</p>
-          </section>
+          <div className="pd-admin-case-request-notice is-warning pd-section-enter" role="note">
+            <AlertTriangle size={16} className="pd-admin-case-request-notice-icon" aria-hidden="true" />
+            <div className="pd-admin-case-request-notice-copy">
+              <strong>{pageLabels.rejectionReason}</strong>
+              <span dir="auto">{detail.rejectionReason}</span>
+            </div>
+          </div>
         ) : null}
 
         {detail.status === "converted_to_patient" && detail.patientId ? (
-          <section className="pd-card pd-card-pad pd-admin-case-request-alert is-success pd-section-enter">
-            <h2 className="pd-admin-case-request-section-title">{pageLabels.profileCreated}</h2>
-            <p>{pageLabels.patientProfileId(detail.patientId)}</p>
+          <div className="pd-admin-case-request-notice is-success pd-section-enter" role="status">
+            <CheckCircle2 size={16} className="pd-admin-case-request-notice-icon" aria-hidden="true" />
+            <div className="pd-admin-case-request-notice-copy">
+              <strong>{pageLabels.profileCreated}</strong>
+              <span>{pageLabels.patientProfileId(detail.patientId)}</span>
+            </div>
+          </div>
+        ) : null}
+
+        <section className="pd-admin-case-request-page-section pd-section-enter" aria-label={pageLabels.caseOverviewSection}>
+          <h2 className="pd-admin-case-request-page-section-title">{pageLabels.caseOverviewSection}</h2>
+          <div className="pd-admin-case-request-info-columns">
+            <div className="pd-admin-case-request-info-column">
+              <AdminCaseChildInfo detail={detail} labels={pageLabels} />
+              <AdminCaseInformation detail={detail} labels={pageLabels} />
+            </div>
+            <div className="pd-admin-case-request-info-column">
+              <AdminCaseParentInfo
+                parent={detail.parent}
+                labels={pageLabels}
+                onCopyEmail={handleCopyEmail}
+                onCopyPhone={handleCopyPhone}
+              />
+              <AdminCasePreviousTreatment detail={detail} labels={pageLabels} />
+            </div>
+          </div>
+        </section>
+
+        <section className="pd-admin-case-request-page-section pd-section-enter" aria-label={pageLabels.careTeam}>
+          <h2 className="pd-admin-case-request-page-section-title">{pageLabels.careTeam}</h2>
+          <div className="pd-card pd-card-pad pd-admin-case-care-team-card">
+            <h3 className="pd-admin-case-info-card-title">{pageLabels.assignedSpecialist}</h3>
+            <AdminCaseAssignedSpecialist assignedSpecialist={detail.assignedSpecialist} labels={pageLabels} />
+          </div>
+        </section>
+
+        {detail.assessmentNotes ? (
+          <section className="pd-admin-case-request-page-section pd-section-enter" aria-label={pageLabels.assessmentNotes}>
+            <h2 className="pd-admin-case-request-page-section-title">{pageLabels.assessmentNotes}</h2>
+            <div className="pd-card pd-card-pad pd-admin-case-notes-card">
+              <p className="pd-admin-case-notes-body">
+                <bdi dir="auto">{detail.assessmentNotes}</bdi>
+              </p>
+            </div>
           </section>
         ) : null}
 
-        <div className="pd-admin-case-request-details-grid">
-          <div className="pd-admin-case-request-details-main">
-            <AdminCaseChildInfo detail={detail} labels={pageLabels} />
-            <AdminCaseInformation detail={detail} labels={pageLabels} />
-            <AdminCasePreviousTreatment detail={detail} labels={pageLabels} />
-            {detail.assessmentNotes ? (
-              <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={pageLabels.assessmentNotes}>
-                <h2 className="pd-admin-case-request-section-title">{pageLabels.assessmentNotes}</h2>
-                <p dir="auto">{detail.assessmentNotes}</p>
-              </section>
-            ) : null}
-          </div>
-
-          <div className="pd-admin-case-request-details-side">
-            <AdminCaseParentInfo
-              parent={detail.parent}
-              labels={pageLabels}
-              onCopyEmail={handleCopyEmail}
-              onCopyPhone={handleCopyPhone}
-            />
-            <AdminCaseAttachments attachments={detail.attachments} labels={pageLabels} />
-            <AdminCaseAssignedSpecialist assignedSpecialist={detail.assignedSpecialist} labels={pageLabels} />
-          </div>
-        </div>
+        <AdminCaseAttachments attachments={detail.attachments} labels={pageLabels} />
 
         {detail.canAssignSpecialist ? (
           <div className="pd-admin-case-request-assign-action pd-section-enter">

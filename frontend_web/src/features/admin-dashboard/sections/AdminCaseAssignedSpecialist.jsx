@@ -2,13 +2,11 @@ import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfile
 
 export function AdminCaseAssignedSpecialist({ assignedSpecialist, labels }) {
   return (
-    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={labels.assignedSpecialist}>
-      <h2 className="pd-admin-case-request-section-title">{labels.assignedSpecialist}</h2>
-
+    <div className="pd-admin-case-care-team-content">
       {!assignedSpecialist ? (
         <p className="pd-admin-case-request-empty-copy">{labels.noSpecialistAssigned}</p>
       ) : (
-        <div className="pd-admin-case-assigned-specialist">
+        <div className="pd-admin-case-assigned-specialist-row">
           <UserProfileAvatar
             imageUrl={assignedSpecialist.profileImageUrl}
             initials={assignedSpecialist.initials}
@@ -19,16 +17,22 @@ export function AdminCaseAssignedSpecialist({ assignedSpecialist, labels }) {
             className="pd-avatar-photo"
           />
           <div className="pd-admin-case-assigned-specialist-copy">
-            <strong dir="auto">{assignedSpecialist.fullName}</strong>
+            <strong>
+              <bdi dir="auto">{assignedSpecialist.fullName}</bdi>
+            </strong>
             {assignedSpecialist.specialization ? (
-              <span dir="auto">{assignedSpecialist.specialization}</span>
+              <span>
+                <bdi dir="auto">{assignedSpecialist.specialization}</bdi>
+              </span>
             ) : null}
             {assignedSpecialist.email ? (
-              <span dir="auto">{assignedSpecialist.email}</span>
+              <span>
+                <bdi dir="auto">{assignedSpecialist.email}</bdi>
+              </span>
             ) : null}
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }

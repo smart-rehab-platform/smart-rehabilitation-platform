@@ -154,12 +154,20 @@ function AdminSessionEditDialogInner({
         </h2>
 
         <div className="pd-admin-session-edit-summary">
-          <p className="pd-admin-modal-copy">
-            {labels.dialogs.patient}: <strong dir="auto">{session.patientName}</strong>
-          </p>
-          <p className="pd-admin-modal-copy">
-            {labels.dialogs.specialist}: <strong dir="auto">{session.specialistName}</strong>
-          </p>
+          <div className="pd-admin-session-edit-summary-grid">
+            <div className="pd-admin-session-edit-summary-item">
+              <span className="pd-admin-session-edit-summary-label">{labels.dialogs.patient}</span>
+              <span className="pd-admin-session-edit-summary-value">
+                <bdi dir="auto">{session.patientName}</bdi>
+              </span>
+            </div>
+            <div className="pd-admin-session-edit-summary-item">
+              <span className="pd-admin-session-edit-summary-label">{labels.dialogs.specialist}</span>
+              <span className="pd-admin-session-edit-summary-value">
+                <bdi dir="auto">{session.specialistName}</bdi>
+              </span>
+            </div>
+          </div>
         </div>
 
         <form className="pd-admin-form pd-admin-session-edit-form" onSubmit={handleSubmit}>
@@ -234,7 +242,11 @@ function AdminSessionEditDialogInner({
             <div className="pd-admin-field">
               <span className="pd-admin-field-label">{labels.dialogs.status}</span>
               <div className="pd-admin-session-edit-status-readonly">
-                <AdminSessionStatusBadge label={session.statusLabel} tone={session.statusTone} />
+                <AdminSessionStatusBadge
+                  label={session.statusLabel}
+                  tone={session.statusTone}
+                  variant="dot"
+                />
               </div>
               <p className="pd-admin-session-edit-status-note">
                 {labels.dialogs.statusFinalNote}

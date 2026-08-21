@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import { useLocale } from "../../../context/useLocale.js";
+import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
+import { AdminUserActionsMenu } from "../components/AdminUserActionsMenu";
 import {
   formatAdminPresenceLabel,
   getAdminUsersLabels,
@@ -7,9 +9,14 @@ import {
 
 function UserAvatar({ user }) {
   return (
-    <span className={`pd-admin-users-avatar pd-admin-role-${user.roleTone}`}>
-      {user.avatarInitial}
-    </span>
+    <UserProfileAvatar
+      imageUrl={user.profileImageUrl}
+      initials={user.avatarInitial}
+      alt={user.fullName}
+      shellClassName="pd-admin-users-avatar-shell"
+      fallbackClassName={`pd-admin-users-avatar pd-admin-role-${user.roleTone}`}
+      className="pd-avatar-photo"
+    />
   );
 }
 
@@ -40,25 +47,13 @@ function StatusBadge({ isActive, labels }) {
 
 function UserActions({ user, labels, onEdit, onToggleStatus, onDelete }) {
   return (
-    <div className="pd-admin-users-actions">
-      <button type="button" className="pd-btn pd-btn-soft pd-btn-compact" onClick={() => onEdit(user)}>
-        {labels.actions.edit}
-      </button>
-      <button
-        type="button"
-        className="pd-btn pd-btn-soft pd-btn-compact"
-        onClick={() => onToggleStatus(user)}
-      >
-        {user.isActive ? labels.actions.deactivate : labels.actions.activate}
-      </button>
-      <button
-        type="button"
-        className="pd-btn pd-btn-soft pd-btn-compact pd-btn-danger-outline"
-        onClick={() => onDelete(user)}
-      >
-        {labels.actions.delete}
-      </button>
-    </div>
+    <AdminUserActionsMenu
+      user={user}
+      labels={labels}
+      onEdit={onEdit}
+      onToggleStatus={onToggleStatus}
+      onDelete={onDelete}
+    />
   );
 }
 

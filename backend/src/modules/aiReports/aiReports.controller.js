@@ -6,7 +6,9 @@ const generateWeeklyReport = async (req, res) => {
       patient_id: req.body.patient_id,
       period_start: req.body.period_start,
       period_end: req.body.period_end,
-      type: "weekly"
+      type: "weekly",
+      generated_by: req.user.id,
+      language: req.body.language,
     });
 
     res.status(201).json({
@@ -28,7 +30,9 @@ const generateMonthlyReport = async (req, res) => {
       patient_id: req.body.patient_id,
       period_start: req.body.period_start,
       period_end: req.body.period_end,
-      type: "monthly"
+      type: "monthly",
+      generated_by: req.user.id,
+      language: req.body.language,
     });
 
     res.status(201).json({

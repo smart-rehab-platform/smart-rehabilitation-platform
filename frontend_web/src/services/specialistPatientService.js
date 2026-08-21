@@ -115,6 +115,59 @@ export async function getGoalProgress(goalId) {
   }
 }
 
+export async function createTreatmentPlanGoal(planId, payload) {
+  const id = requireId(planId, "Treatment plan id");
+  const title = typeof payload?.title === "string" ? payload.title.trim() : "";
+  if (!title) {
+    throw new Error("Goal title is required.");
+  }
+
+  try {
+    const response = await api.post(
+      `/goals/treatment-plans/${encodeURIComponent(id)}/goals`,
+      payload,
+    );
+    return extractMap(response);
+  } catch (error) {
+    throwServiceError(error, "Failed to create goal.");
+  }
+}
+
+export async function updateGoal(goalId, payload) {
+  const id = requireId(goalId, "Goal id");
+  try {
+    const response = await api.put(
+      `/goals/goals/${encodeURIComponent(id)}`,
+      payload,
+    );
+    return extractMap(response);
+  } catch (error) {
+    throwServiceError(error, "Failed to update goal.");
+  }
+}
+
+export async function createGoalProgress(goalId, payload) {
+  const id = requireId(goalId, "Goal id");
+  try {
+    const response = await api.post(
+      `/goals/goals/${encodeURIComponent(id)}/progress`,
+      payload,
+    );
+    return extractMap(response);
+  } catch (error) {
+    throwServiceError(error, "Failed to update goal progress.");
+  }
+}
+
+export async function achieveGoal(goalId) {
+  const id = requireId(goalId, "Goal id");
+  try {
+    await api.patch(`/goals/goals/${encodeURIComponent(id)}/achieve`);
+  } catch (error) {
+    throwServiceError(error, "Failed to mark goal as achieved.");
+  }
+}
+
 export async function getPatientAssignedExercises(patientId) {
   const id = requireId(patientId, "Patient id");
   try {
@@ -176,6 +229,37 @@ export async function createPatientNote(patientId, note) {
     return extractMap(response);
   } catch (error) {
     throwServiceError(error, "Failed to save specialist note.");
+  }
+}
+
+export async function createPatientDiagnosis(patientId, payload) {
+  const id = requireId(patientId, "Patient id");
+  const diagnosisTitle =
+    typeof payload?.diagnosis_title === "string" ? payload.diagnosis_title.trim() : "";
+  if (!diagnosisTitle) {
+    throw new Error("Diagnosis title is required.");
+  }
+
+  const body = {
+    diagnosis_title: diagnosisTitle,
+  };
+
+  if (typeof payload?.description === "string" && payload.description.trim()) {
+    body.description = payload.description.trim();
+  }
+
+  if (typeof payload?.diagnosed_at === "string" && payload.diagnosed_at.trim()) {
+    body.diagnosed_at = payload.diagnosed_at.trim();
+  }
+
+  try {
+    const response = await api.post(
+      `/patients/${encodeURIComponent(id)}/diagnoses`,
+      body,
+    );
+    return extractMap(response);
+  } catch (error) {
+    throwServiceError(error, "Failed to save diagnosis.");
   }
 }
 

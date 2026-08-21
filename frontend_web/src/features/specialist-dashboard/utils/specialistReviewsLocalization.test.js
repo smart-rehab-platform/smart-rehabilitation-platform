@@ -107,7 +107,7 @@ describe("specialistReviewsLocalization", () => {
   });
 
   it("maps review decision labels in EN/AR", () => {
-    assert.equal(getReviewDecisionLabel(false, tFactory("en")), "Approved");
+    assert.equal(getReviewDecisionLabel(false, tFactory("en")), "Completed");
     assert.equal(getReviewDecisionLabel(true, tFactory("ar")), "يحتاج إعادة محاولة");
   });
 

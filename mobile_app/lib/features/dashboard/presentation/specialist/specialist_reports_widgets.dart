@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../models/specialist_reports_models.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -122,9 +121,7 @@ class SpecialistReportInformationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dateLabel = reportDateLabel(detail.createdAt);
-    final specialistLabel = detail.isAiReport
-        ? '—'
-        : _nonEmptyLabel(detail.specialistName);
+    final specialistLabel = _nonEmptyLabel(detail.specialistName);
 
     return DashboardSurfaceCard(
       child: Column(
@@ -203,67 +200,54 @@ class _ReportInfoRow extends StatelessWidget {
 }
 
 class SpecialistReportSectionCard extends StatelessWidget {
-  const SpecialistReportSectionCard({super.key, required this.section});
+  const SpecialistReportSectionCard({
+    super.key,
+    required this.section,
+    this.textDirection,
+  });
 
   final SpecialistReportSection section;
+  final TextDirection? textDirection;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    return DashboardSurfaceCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            section.title,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: DashboardColors.textPrimary,
-            ),
+    final content = Column(
+      crossAxisAlignment: textDirection == TextDirection.rtl
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        Text(
+          section.title,
+          textAlign: textDirection == TextDirection.rtl
+              ? TextAlign.right
+              : TextAlign.left,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: DashboardColors.textPrimary,
           ),
-          SizedBox(height: context.dashSpacing * 0.45),
-          Text(
-            section.content,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: DashboardColors.textSecondary,
-              height: 1.45,
-            ),
+        ),
+        SizedBox(height: context.dashSpacing * 0.45),
+        Text(
+          section.content,
+          textAlign: textDirection == TextDirection.rtl
+              ? TextAlign.right
+              : TextAlign.left,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: DashboardColors.textSecondary,
+            height: 1.45,
           ),
-        ],
-      ),
+        ),
+      ],
     );
-  }
-}
-
-class SpecialistReportAttachmentCard extends StatelessWidget {
-  const SpecialistReportAttachmentCard({super.key, required this.pdfUrl});
-
-  final String pdfUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final resolved = ApiConstants.resolveMediaUrl(pdfUrl) ?? pdfUrl;
 
     return DashboardSurfaceCard(
-      child: Row(
-        children: [
-          Icon(
-            Icons.picture_as_pdf_outlined,
-            color: DashboardColors.brandCyan,
-            size: context.dashSpacing * 0.65,
-          ),
-          SizedBox(width: context.dashSpacing * 0.5),
-          Expanded(
-            child: Text(
-              resolved,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: DashboardColors.textSecondary,
-              ),
+      child: textDirection == null
+          ? content
+          : Directionality(
+              textDirection: textDirection!,
+              child: content,
             ),
-          ),
-        ],
-      ),
     );
   }
 }

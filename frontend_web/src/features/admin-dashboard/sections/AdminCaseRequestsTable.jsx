@@ -2,13 +2,13 @@ import { useMemo } from "react";
 import { ChevronRight, Paperclip } from "lucide-react";
 import { useLocale } from "../../../context/useLocale.js";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
+import { AdminTablePrimaryAction } from "../components/AdminTablePrimaryAction";
 import { getAdminCaseRequestsLabels } from "../utils/adminCaseRequestsLocalization.js";
 
 function ViewAction({ onView, label }) {
   return (
-    <button
-      type="button"
-      className="pd-btn pd-btn-soft pd-btn-compact pd-admin-case-requests-view-btn"
+    <AdminTablePrimaryAction
+      className="pd-admin-case-requests-view-btn"
       onClick={(event) => {
         event.stopPropagation();
         onView?.();
@@ -16,7 +16,7 @@ function ViewAction({ onView, label }) {
     >
       {label}
       <ChevronRight size={16} aria-hidden="true" className="pd-admin-case-requests-view-chevron" />
-    </button>
+    </AdminTablePrimaryAction>
   );
 }
 

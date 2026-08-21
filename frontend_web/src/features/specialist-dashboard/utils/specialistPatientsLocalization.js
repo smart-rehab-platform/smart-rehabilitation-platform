@@ -243,6 +243,11 @@ export function applyPatientDetailsLocalization(details, context = {}) {
     createdAtLabel: formatPatientDisplayDateTime(note.createdAt, locale),
   }));
 
+  const diagnoses = (details.diagnoses || []).map((entry) => ({
+    ...entry,
+    diagnosedAtLabel: formatPatientDisplayDate(entry.diagnosedAt, locale) || emptyDisplay,
+  }));
+
   return {
     ...details,
     treatmentPlan,
@@ -250,5 +255,6 @@ export function applyPatientDetailsLocalization(details, context = {}) {
     assignedExercises,
     recentSubmissions,
     notes,
+    diagnoses,
   };
 }

@@ -33,39 +33,43 @@ export function SpecialistNotesSection({ notes, onAddNote }) {
   );
 }
 
-export function SpecialistPatientFooterActions({
+export function SpecialistPatientActions({
   onReviewExercises,
   onViewReports,
   onCreateTreatmentPlan,
   onEditTreatmentPlan,
   onAiRecommendations,
   onSpeechAnalysis,
+  onManageDiagnosis,
   hasActivePlan,
 }) {
   const { t } = useLocale();
 
   return (
-    <section className="pd-specialist-patient-footer-actions">
-      <button type="button" className="pd-btn pd-btn-soft" onClick={onReviewExercises}>
+    <section className="pd-specialist-patient-actions">
+      <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onReviewExercises}>
         {t("specialist.patientDetails.reviewExercises")}
       </button>
-      <button type="button" className="pd-btn pd-btn-soft" onClick={onViewReports}>
+      <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onViewReports}>
         {t("specialist.patientDetails.viewReports")}
       </button>
       {hasActivePlan ? (
-        <button type="button" className="pd-btn pd-btn-soft" onClick={onEditTreatmentPlan}>
+        <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onEditTreatmentPlan}>
           {t("specialist.patientDetails.editTreatmentPlan")}
         </button>
       ) : (
-        <button type="button" className="pd-btn pd-btn-soft" onClick={onCreateTreatmentPlan}>
+        <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onCreateTreatmentPlan}>
           {t("specialist.patientDetails.createTreatmentPlan")}
         </button>
       )}
-      <button type="button" className="pd-btn pd-btn-soft" onClick={onAiRecommendations}>
+      <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onAiRecommendations}>
         {t("specialist.patientDetails.aiRecommendations")}
       </button>
-      <button type="button" className="pd-btn pd-btn-soft" onClick={onSpeechAnalysis}>
+      <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onSpeechAnalysis}>
         {t("specialist.patientDetails.speechAnalysis")}
+      </button>
+      <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onManageDiagnosis}>
+        {t("specialist.patientDetails.manageDiagnosis")}
       </button>
     </section>
   );

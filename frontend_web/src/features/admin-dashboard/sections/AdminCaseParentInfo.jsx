@@ -4,16 +4,16 @@ import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfile
 export function AdminCaseParentInfo({ parent, labels, onCopyEmail, onCopyPhone }) {
   if (!parent) {
     return (
-      <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={labels.parentInformation}>
-        <h2 className="pd-admin-case-request-section-title">{labels.parentInformation}</h2>
+      <article className="pd-admin-case-info-card pd-section-enter" aria-label={labels.parentInformation}>
+        <h3 className="pd-admin-case-info-card-title">{labels.parentInformation}</h3>
         <p className="pd-admin-case-request-empty-copy">{labels.notProvided}</p>
-      </section>
+      </article>
     );
   }
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={labels.parentInformation}>
-      <h2 className="pd-admin-case-request-section-title">{labels.parentInformation}</h2>
+    <article className="pd-admin-case-info-card pd-section-enter" aria-label={labels.parentInformation}>
+      <h3 className="pd-admin-case-info-card-title">{labels.parentInformation}</h3>
 
       <div className="pd-admin-case-parent-head">
         <UserProfileAvatar
@@ -25,43 +25,51 @@ export function AdminCaseParentInfo({ parent, labels, onCopyEmail, onCopyPhone }
           fallbackClassName="pd-admin-case-parent-avatar-fallback"
           className="pd-avatar-photo"
         />
-        <strong dir="auto">{parent.fullName}</strong>
+        <div className="pd-admin-case-parent-head-copy">
+          <strong>
+            <bdi dir="auto">{parent.fullName}</bdi>
+          </strong>
+        </div>
       </div>
 
-      <dl className="pd-admin-case-request-fields is-stack">
-        <div className="pd-admin-case-parent-contact-row">
-          <div>
-            <dt>{labels.fields.email}</dt>
-            <dd dir="auto">{parent.email || labels.notProvided}</dd>
+      <div className="pd-admin-case-info-stack">
+        <div className="pd-admin-case-info-block">
+          <span className="pd-admin-case-info-label">{labels.fields.email}</span>
+          <div className="pd-admin-case-contact-value-row">
+            <span className="pd-admin-case-info-value">
+              <bdi dir="auto">{parent.email || labels.notProvided}</bdi>
+            </span>
+            {parent.email ? (
+              <button
+                type="button"
+                className="pd-admin-case-copy-btn"
+                aria-label={labels.copyEmailAria}
+                onClick={() => onCopyEmail?.(parent.email)}
+              >
+                <Copy size={14} aria-hidden="true" />
+              </button>
+            ) : null}
           </div>
-          {parent.email ? (
-            <button
-              type="button"
-              className="pd-admin-case-copy-btn"
-              aria-label={labels.copyEmailAria}
-              onClick={() => onCopyEmail?.(parent.email)}
-            >
-              <Copy size={16} aria-hidden="true" />
-            </button>
-          ) : null}
         </div>
-        <div className="pd-admin-case-parent-contact-row">
-          <div>
-            <dt>{labels.fields.phone}</dt>
-            <dd dir="auto">{parent.phone || labels.notProvided}</dd>
+        <div className="pd-admin-case-info-block">
+          <span className="pd-admin-case-info-label">{labels.fields.phone}</span>
+          <div className="pd-admin-case-contact-value-row">
+            <span className="pd-admin-case-info-value">
+              <bdi dir="auto">{parent.phone || labels.notProvided}</bdi>
+            </span>
+            {parent.phone ? (
+              <button
+                type="button"
+                className="pd-admin-case-copy-btn"
+                aria-label={labels.copyPhoneAria}
+                onClick={() => onCopyPhone?.(parent.phone)}
+              >
+                <Copy size={14} aria-hidden="true" />
+              </button>
+            ) : null}
           </div>
-          {parent.phone ? (
-            <button
-              type="button"
-              className="pd-admin-case-copy-btn"
-              aria-label={labels.copyPhoneAria}
-              onClick={() => onCopyPhone?.(parent.phone)}
-            >
-              <Copy size={16} aria-hidden="true" />
-            </button>
-          ) : null}
         </div>
-      </dl>
-    </section>
+      </div>
+    </article>
   );
 }

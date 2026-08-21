@@ -316,33 +316,6 @@
   color: var(--pd-text-muted);
 }
 
-.pd-preview .pd-admin-audit-details-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: 1px solid rgba(14, 165, 233, 0.24);
-  border-radius: 999px;
-  padding: 5px 10px;
-  background: rgba(14, 165, 233, 0.08);
-  color: var(--pd-primary);
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.pd-preview .pd-admin-audit-details-btn:hover,
-.pd-preview .pd-admin-audit-details-btn.is-expanded {
-  background: rgba(14, 165, 233, 0.14);
-  border-color: rgba(14, 165, 233, 0.34);
-}
-
-.pd-preview .pd-admin-audit-details-btn:focus-visible {
-  outline: 2px solid rgba(14, 165, 233, 0.35);
-  outline-offset: 2px;
-}
-
 .pd-preview .pd-admin-audit-row.is-expanded td {
   border-bottom-color: transparent;
 }

@@ -115,9 +115,17 @@ export function getAdminSessionsLabels(t = null) {
     loadFailed: translateKey(t, "admin.sessions.loadFailed", "Failed to load sessions."),
     retry: translateKey(t, "common.retry", "Retry"),
     edit: translateKey(t, "admin.sessions.edit", "Edit"),
+    manage: translateKey(t, "admin.sessions.manage", "Manage"),
+    view: translateKey(t, "admin.sessions.view", "View"),
     complete: translateKey(t, "admin.sessions.complete", "Complete"),
     cancelSession: translateKey(t, "admin.sessions.cancelSession", "Cancel"),
     markNoShow: translateKey(t, "admin.sessions.markNoShow", "Mark No Show"),
+    menu: {
+      editSession: translateKey(t, "admin.sessions.menu.editSession", "Edit session"),
+      completeSession: translateKey(t, "admin.sessions.menu.completeSession", "Complete session"),
+      cancelSession: translateKey(t, "admin.sessions.menu.cancelSession", "Cancel session"),
+      markNoShow: translateKey(t, "admin.sessions.menu.markNoShow", "Mark no show"),
+    },
     actionAria: {
       edit: (name) => translateKey(
         t,
@@ -142,6 +150,30 @@ export function getAdminSessionsLabels(t = null) {
         "admin.sessions.actionAria.noShow",
         "Mark session as no show for {name}",
         { name },
+      ),
+      manage: (name) => translateKey(
+        t,
+        "admin.sessions.actionAria.manage",
+        "Manage session for {name}",
+        { name },
+      ),
+      view: (name) => translateKey(
+        t,
+        "admin.sessions.actionAria.view",
+        "View session for {name}",
+        { name },
+      ),
+      menuTrigger: (name) => translateKey(
+        t,
+        "admin.sessions.actionAria.menuTrigger",
+        "More actions for session with {name}",
+        { name },
+      ),
+      openLink: (url) => translateKey(
+        t,
+        "admin.sessions.actionAria.openLink",
+        "Open meeting link: {url}",
+        { url },
       ),
     },
     dialogs: {

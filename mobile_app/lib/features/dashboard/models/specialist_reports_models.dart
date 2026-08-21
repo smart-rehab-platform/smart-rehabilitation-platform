@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../../core/utils/api_response_parser.dart';
+import 'specialist_ai_report_generation.dart';
 
 enum SpecialistReportFilter {
   all,
@@ -78,6 +79,29 @@ class SpecialistReportSummary {
   }
 }
 
+String resolveAiReportLanguage(Map<String, dynamic> map, {String? summary}) {
+  final direct = ApiResponseParser.readString(map, const ['language', 'locale']);
+  if (direct != null && direct.trim().isNotEmpty) {
+    return normalizeAiReportLanguage(direct);
+  }
+
+  final rawSummary = summary ?? map['summary'];
+  if (rawSummary is String && rawSummary.trim().startsWith('{')) {
+    try {
+      final decoded = jsonDecode(rawSummary);
+      if (decoded is Map && decoded['language'] != null) {
+        return normalizeAiReportLanguage(decoded['language'].toString());
+      }
+    } catch (_) {
+      // ignore malformed summary JSON
+    }
+  } else if (rawSummary is Map && rawSummary['language'] != null) {
+    return normalizeAiReportLanguage(rawSummary['language'].toString());
+  }
+
+  return 'en';
+}
+
 class SpecialistReportListItem {
   const SpecialistReportListItem({
     required this.id,
@@ -90,6 +114,7 @@ class SpecialistReportListItem {
     this.summary,
     this.pdfUrl,
     this.specialistName,
+    this.language = 'en',
   });
 
   final String id;
@@ -102,6 +127,7 @@ class SpecialistReportListItem {
   final String? summary;
   final String? pdfUrl;
   final String? specialistName;
+  final String language;
 
   bool get hasPdf {
     final url = pdfUrl;
@@ -194,6 +220,7 @@ class SpecialistReportListItem {
         'generatedByName',
         'specialist_name',
       ]),
+      language: 'en',
     );
   }
 
@@ -201,6 +228,7 @@ class SpecialistReportListItem {
     final reportType =
         ApiResponseParser.readString(map, const ['type', 'report_type']);
     final rawTitle = ApiResponseParser.readString(map, const ['title']);
+    final summary = SpecialistReportSummary.normalize(map['summary']);
 
     return SpecialistReportListItem(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
@@ -223,9 +251,14 @@ class SpecialistReportListItem {
       createdAt: ApiResponseParser.readDate(
         map['generated_at'] ?? map['created_at'] ?? map['createdAt'],
       ),
-      summary: SpecialistReportSummary.normalize(map['summary']),
+      summary: summary,
       pdfUrl: ApiResponseParser.readString(map, const ['pdf_url', 'pdfUrl']),
-      specialistName: null,
+      specialistName: ApiResponseParser.readString(map, const [
+        'generated_by_name',
+        'generatedByName',
+        'specialist_name',
+      ]),
+      language: resolveAiReportLanguage(map),
     );
   }
 
@@ -277,8 +310,8 @@ String? _cleanEmbeddedPatientTitle(String? rawTitle) {
     return null;
   }
 
-  // Strip patterns like "Weekly â€” Omar" / "Monthly - Patient".
-  final parts = trimmed.split(RegExp(r'\s+[â€”â€“-]\s+'));
+  // Strip patterns like "Weekly  Omar" / "Monthly - Patient".
+  final parts = trimmed.split(RegExp(r'\s+[-]\s+'));
   if (parts.length >= 2) {
     final left = parts.first.trim();
     if (left.isNotEmpty) {
@@ -316,6 +349,7 @@ class SpecialistReportDetail {
     this.pdfUrl,
     this.periodStart,
     this.periodEnd,
+    this.language = 'en',
   });
 
   final String id;
@@ -330,6 +364,7 @@ class SpecialistReportDetail {
   final String? pdfUrl;
   final DateTime? periodStart;
   final DateTime? periodEnd;
+  final String language;
 
   bool get hasPdf {
     final url = pdfUrl;
@@ -400,6 +435,7 @@ class SpecialistReportDetail {
       ),
       summary: SpecialistReportSummary.normalize(map['summary']),
       pdfUrl: ApiResponseParser.readString(map, const ['pdf_url', 'pdfUrl']),
+      language: 'en',
     );
   }
 
@@ -407,6 +443,7 @@ class SpecialistReportDetail {
     final reportType =
         ApiResponseParser.readString(map, const ['type', 'report_type']);
     final rawTitle = ApiResponseParser.readString(map, const ['title']);
+    final summary = SpecialistReportSummary.normalize(map['summary']);
 
     return SpecialistReportDetail(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
@@ -425,11 +462,16 @@ class SpecialistReportDetail {
         'patient_name',
         'patientName',
       ]),
+      specialistName: ApiResponseParser.readString(map, const [
+        'generated_by_name',
+        'generatedByName',
+        'specialist_name',
+      ]),
       reportType: reportType,
       createdAt: ApiResponseParser.readDate(
         map['generated_at'] ?? map['created_at'],
       ),
-      summary: SpecialistReportSummary.normalize(map['summary']),
+      summary: summary,
       pdfUrl: ApiResponseParser.readString(map, const ['pdf_url', 'pdfUrl']),
       periodStart: ApiResponseParser.readDate(
         map['period_start'] ?? map['periodStart'],
@@ -437,6 +479,7 @@ class SpecialistReportDetail {
       periodEnd: ApiResponseParser.readDate(
         map['period_end'] ?? map['periodEnd'],
       ),
+      language: resolveAiReportLanguage(map),
     );
   }
 }

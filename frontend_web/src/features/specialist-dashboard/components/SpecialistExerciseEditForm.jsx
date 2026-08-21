@@ -1,7 +1,9 @@
 import { useMemo } from "react";
 import { useLocale } from "../../../context/useLocale";
 import { applyExerciseCategoryListLocalization } from "../utils/specialistExercisesLocalization";
+import { isSpeechArticulationCategory, resolveExerciseCategoryName } from "../utils/specialistExerciseMappers";
 import { SpecialistExerciseMediaSection } from "./SpecialistExerciseMediaSection";
+import { SpecialistExerciseSpeechTargetsSection } from "./SpecialistExerciseSpeechTargetsSection";
 
 /**
  * Shared create/edit exercise form. Mode controls labels and field copy only.
@@ -14,6 +16,9 @@ export function SpecialistExerciseEditForm({
   language,
   description,
   instructions,
+  expectedText = "",
+  targetWord = "",
+  targetPhoneme = "",
   categories,
   localizedCategories,
   fieldErrors,
@@ -29,6 +34,9 @@ export function SpecialistExerciseEditForm({
   onLanguageChange,
   onDescriptionChange,
   onInstructionsChange,
+  onExpectedTextChange,
+  onTargetWordChange,
+  onTargetPhonemeChange,
   onSelectMediaFile,
   onRemoveMedia,
   onUndoMediaRemoval,
@@ -47,6 +55,11 @@ export function SpecialistExerciseEditForm({
     () => localizedCategories ?? applyExerciseCategoryListLocalization(categories, { t }),
     [localizedCategories, categories, t],
   );
+
+  const showSpeechTargets = useMemo(() => {
+    const categoryName = resolveExerciseCategoryName(categoryId, categories);
+    return isSpeechArticulationCategory(categoryName);
+  }, [categoryId, categories]);
 
   const handleMediaSelect = (file, validationError) => {
     if (validationError) {
@@ -157,6 +170,19 @@ export function SpecialistExerciseEditForm({
             dir="auto"
           />
         </div>
+
+        {showSpeechTargets ? (
+          <SpecialistExerciseSpeechTargetsSection
+            expectedText={expectedText}
+            targetWord={targetWord}
+            targetPhoneme={targetPhoneme}
+            fieldErrors={fieldErrors}
+            isBusy={isBusy}
+            onExpectedTextChange={onExpectedTextChange}
+            onTargetWordChange={onTargetWordChange}
+            onTargetPhonemeChange={onTargetPhonemeChange}
+          />
+        ) : null}
 
         <SpecialistExerciseMediaSection
           existingMediaUrl={instructionMediaUrl}

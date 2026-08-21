@@ -1,7 +1,12 @@
+import { useLocale } from "../../../context/useLocale";
 import {
   formatSpeechDateOnly,
   formatSpeechScoreDelta,
 } from "../utils/specialistSpeechAnalysisMappers";
+import {
+  getSpecialistSpeechAnalysisLabels,
+  getSpeechComparisonTrendLabel,
+} from "../utils/specialistSpeechAnalysisLocalization";
 
 function ComparisonRow({ label, delta }) {
   let tone = "neutral";
@@ -24,6 +29,9 @@ function ComparisonRow({ label, delta }) {
 }
 
 export function SpecialistSpeechComparison({ comparison }) {
+  const { t } = useLocale();
+  const labels = getSpecialistSpeechAnalysisLabels(t);
+
   if (!comparison?.hasComparison) {
     return null;
   }
@@ -33,20 +41,22 @@ export function SpecialistSpeechComparison({ comparison }) {
   return (
     <section className="pd-card pd-card-pad pd-specialist-speech-comparison-card">
       <div className="pd-specialist-speech-comparison-header">
-        <h3 className="pd-specialist-speech-card-title">Comparison with Previous</h3>
+        <h3 className="pd-specialist-speech-card-title">{labels.comparisonTitle}</h3>
         <span
           className={`pd-specialist-speech-trend-badge pd-specialist-speech-trend-${comparison.trendTone || "stable"}`}
         >
-          {comparison.trendLabel || "—"}
+          {getSpeechComparisonTrendLabel(comparison.trend, t)}
         </span>
       </div>
       <div className="pd-specialist-speech-comparison-rows">
-        <ComparisonRow label="Pronunciation" delta={comparison.pronunciationChange} />
-        <ComparisonRow label="Fluency" delta={comparison.fluencyChange} />
-        <ComparisonRow label="Overall" delta={comparison.overallScoreChange} />
+        <ComparisonRow label={labels.pronunciation} delta={comparison.pronunciationChange} />
+        <ComparisonRow label={labels.fluency} delta={comparison.fluencyChange} />
+        <ComparisonRow label={labels.overall} delta={comparison.overallScoreChange} />
       </div>
       {previousLabel ? (
-        <p className="pd-specialist-speech-comparison-previous">Previous: {previousLabel}</p>
+        <p className="pd-specialist-speech-comparison-previous">
+          {labels.previousLine.replace("{date}", previousLabel)}
+        </p>
       ) : null}
     </section>
   );

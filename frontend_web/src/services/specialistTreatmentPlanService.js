@@ -1,10 +1,11 @@
 import api from "./api";
-import { loadSpecialistPatients } from "./specialistPatientService";
+import { getPatientById, loadSpecialistPatients } from "./specialistPatientService";
 import {
   buildEditTreatmentPlanBundle,
   mapPatientPickerItem,
   mapTreatmentPlanList,
 } from "../features/specialist-dashboard/utils/specialistTreatmentPlanMappers";
+import { mapPatientProfile } from "../features/specialist-dashboard/utils/specialistPatientMappers";
 
 function extractList(response) {
   const payload = response?.data;
@@ -151,6 +152,18 @@ export async function loadEditTreatmentPlanBundle(specialistUserId, planId) {
     getTreatmentPlanGoalsFn: fetchTreatmentPlanGoals,
     getGoalProgressFn: fetchGoalProgress,
   });
+
+  if (bundle && patientId) {
+    try {
+      const patientRow = await getPatientById(patientId);
+      const patient = mapPatientProfile(patientRow);
+      if (patient?.profileImageUrl) {
+        bundle.patientProfileImageUrl = patient.profileImageUrl;
+      }
+    } catch {
+      // Profile image is optional; initials fallback remains when unavailable.
+    }
+  }
 
   return { bundle, unauthorized: false };
 }

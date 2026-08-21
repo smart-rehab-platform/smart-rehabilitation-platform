@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   buildRecentPatientProgressPreview,
   buildSpecialistPatientProgressList,
+  mapPendingReviewRow,
 } from "./specialistPreviewMappers.js";
 
 const patients = [
@@ -72,5 +73,42 @@ describe("specialistPreviewMappers progress", () => {
   it("returns empty list when assigned patients have no progress snapshots", () => {
     const full = buildSpecialistPatientProgressList(patients, []);
     assert.deepEqual(full, []);
+  });
+});
+
+describe("specialistPreviewMappers pending reviews", () => {
+  it("attaches patient profile images when avatar map is provided", () => {
+    const patientAvatarById = new Map([
+      ["patient-1", "https://example.com/layla.jpg"],
+      ["patient-2", null],
+    ]);
+
+    const review = mapPendingReviewRow(
+      {
+        id: "review-1",
+        patient_id: "patient-1",
+        patient_name: "Layla Hassan",
+        exercise_title: "Breathing drill",
+        submitted_at: "2026-01-02T10:00:00.000Z",
+        status: "pending",
+      },
+      { patientAvatarById },
+    );
+
+    assert.equal(review.profileImageUrl, "https://example.com/layla.jpg");
+
+    const reviewWithoutImage = mapPendingReviewRow(
+      {
+        id: "review-2",
+        patient_id: "patient-2",
+        patient_name: "Omar Ali",
+        exercise_title: "Sound practice",
+        submitted_at: "2026-01-03T10:00:00.000Z",
+        status: "pending",
+      },
+      { patientAvatarById },
+    );
+
+    assert.equal(reviewWithoutImage.profileImageUrl, null);
   });
 });

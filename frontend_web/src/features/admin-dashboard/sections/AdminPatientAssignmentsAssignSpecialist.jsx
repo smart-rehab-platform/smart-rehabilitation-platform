@@ -13,10 +13,10 @@ export function AdminPatientAssignmentsAssignSpecialist({
   const hasSpecialists = specialists.length > 0;
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-assignments-form-card" aria-label={labels.assignSpecialist}>
-      <h2 className="pd-admin-assignments-card-title">{labels.assignSpecialist}</h2>
+    <div className="pd-admin-assignments-manage-column" aria-label={labels.assignSpecialist}>
+      <h3 className="pd-admin-assignments-column-title">{labels.assignSpecialist}</h3>
 
-      <div className="pd-admin-form">
+      <div className="pd-admin-form pd-admin-assignments-column-form">
         <label className="pd-admin-field">
           <span className="pd-admin-field-label">{labels.specialistLabel}</span>
           <select
@@ -62,6 +62,6 @@ export function AdminPatientAssignmentsAssignSpecialist({
           {isSubmitting ? labels.assigning : labels.assignSpecialistAction}
         </button>
       </div>
-    </section>
+    </div>
   );
 }

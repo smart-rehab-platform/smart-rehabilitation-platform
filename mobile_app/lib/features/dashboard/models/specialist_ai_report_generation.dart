@@ -29,12 +29,14 @@ class SpecialistAiReportGenerateRequest {
     required this.type,
     required this.periodStart,
     required this.periodEnd,
+    this.language = 'en',
   });
 
   final String patientId;
   final SpecialistAiReportType type;
   final DateTime periodStart;
   final DateTime periodEnd;
+  final String language;
 
   /// Backend body. Does not include specialist_id.
   Map<String, dynamic> toJson() {
@@ -42,8 +44,18 @@ class SpecialistAiReportGenerateRequest {
       'patient_id': patientId.trim(),
       'period_start': formatSpecialistAiReportDate(periodStart),
       'period_end': formatSpecialistAiReportDate(periodEnd),
+      'language': normalizeAiReportLanguage(language),
     };
   }
+}
+
+String normalizeAiReportLanguage(String? value) {
+  final normalized = value?.trim().toLowerCase().replaceAll('_', '-') ?? '';
+  final primary = normalized.split('-').first;
+  if (primary == 'ar') {
+    return 'ar';
+  }
+  return 'en';
 }
 
 /// Calendar date only: YYYY-MM-DD from local date parts (no UTC conversion).

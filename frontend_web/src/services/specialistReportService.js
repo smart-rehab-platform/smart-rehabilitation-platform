@@ -1,5 +1,10 @@
 import api from "./api";
 import {
+  AI_REPORT_TYPES,
+  buildAiReportGeneratePayload,
+  resolveAiReportGeneratePath,
+} from "../features/specialist-dashboard/utils/specialistAiReportGeneration";
+import {
   buildPatientNameMap,
   mapAiReportDetail,
   mapAiReportRow,
@@ -163,6 +168,59 @@ export async function loadReportDetail(reportId, isAiReport) {
     }
     throwServiceError(error, "Failed to load report.");
   }
+}
+
+async function postGenerateAiReport({ reportType, patientId, periodStart, periodEnd, language }) {
+  const path = resolveAiReportGeneratePath(reportType);
+  if (!path) {
+    throw new Error("Report type must be weekly or monthly.");
+  }
+
+  const { reportType: _reportType, ...body } = buildAiReportGeneratePayload({
+    patientId,
+    reportType,
+    periodStart,
+    periodEnd,
+    language,
+  });
+
+  try {
+    const response = await api.post(path, body);
+    const row = extractMap(response);
+    if (!row) {
+      throw new Error("Invalid AI report generation response.");
+    }
+    return mapAiReportDetail(row) ?? mapAiReportRow(row);
+  } catch (error) {
+    throwServiceError(error, "Failed to generate AI report.");
+  }
+}
+
+export async function generateAiWeeklyReport({ patientId, periodStart, periodEnd, language }) {
+  return postGenerateAiReport({
+    reportType: AI_REPORT_TYPES.WEEKLY,
+    patientId,
+    periodStart,
+    periodEnd,
+    language,
+  });
+}
+
+export async function generateAiMonthlyReport({ patientId, periodStart, periodEnd, language }) {
+  return postGenerateAiReport({
+    reportType: AI_REPORT_TYPES.MONTHLY,
+    patientId,
+    periodStart,
+    periodEnd,
+    language,
+  });
+}
+
+export async function generateAiReport({ reportType, patientId, periodStart, periodEnd, language }) {
+  if (reportType === AI_REPORT_TYPES.MONTHLY) {
+    return generateAiMonthlyReport({ patientId, periodStart, periodEnd, language });
+  }
+  return generateAiWeeklyReport({ patientId, periodStart, periodEnd, language });
 }
 
 export async function exportReportPdf(reportId, isAiReport) {

@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   buildAdminComplaintDetailsPath,
@@ -48,19 +47,52 @@ function AdminNotificationsPageContent() {
     await markAllAsRead();
   }, [markAllAsRead]);
 
-  const showInitialSkeleton = isLoading && notifications.length === 0;
+  const showInitialLoading = isLoading && notifications.length === 0;
   const showBlockingError = Boolean(error) && !isLoading && notifications.length === 0;
   const showEmpty = !isLoading && !error && notifications.length === 0;
-  const showList = showInitialSkeleton || (!error && notifications.length > 0);
+
+  const renderContent = () => {
+    if (showInitialLoading) {
+      return (
+        <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
+          <p className="pd-inline-loading">{labels.loading}</p>
+        </section>
+      );
+    }
+
+    if (showBlockingError) {
+      return (
+        <section className="pd-card pd-card-pad pd-task-hub-state pd-section-enter">
+          <p className="pd-inline-error">{error}</p>
+          <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
+            {labels.retry}
+          </button>
+        </section>
+      );
+    }
+
+    if (showEmpty) {
+      return (
+        <section className="pd-card pd-card-pad pd-task-hub-empty pd-section-enter">
+          <p className="pd-task-hub-empty-message">{labels.empty}</p>
+        </section>
+      );
+    }
+
+    return (
+      <AdminNotificationsList
+        notifications={notifications}
+        labels={labels}
+        updatingNotificationId={updatingNotificationId}
+        onMarkAsRead={handleMarkAsRead}
+      />
+    );
+  };
 
   return (
-    <>
-      <section className="pd-admin-notif-toolbar pd-section-enter" aria-label={labels.toolbarAriaLabel}>
-        <div className="pd-admin-notif-heading">
-          <h1 className="pd-section-title">{labels.title}</h1>
-        </div>
-
-        <div className="pd-admin-notif-toolbar-actions">
+    <div className="pd-task-hub-page">
+      <div className="pd-task-hub-toolbar pd-notifications-page-toolbar">
+        <div className="pd-notification-hub-toolbar-actions">
           <button
             type="button"
             className="pd-btn pd-btn-soft pd-btn-sm"
@@ -73,15 +105,20 @@ function AdminNotificationsPageContent() {
           {unreadCount > 0 ? (
             <button
               type="button"
-              className="pd-btn pd-btn-soft pd-btn-sm"
+              className="pd-btn pd-btn-primary pd-btn-sm"
               onClick={handleMarkAllAsRead}
-              disabled={isUpdating}
+              disabled={isUpdating || isLoading}
             >
               {labels.markAllRead}
             </button>
           ) : null}
         </div>
-      </section>
+      </div>
+
+      <header className="pd-task-hub-header" aria-label={labels.toolbarAriaLabel}>
+        <h1 className="pd-task-hub-title">{labels.title}</h1>
+        <p className="pd-task-hub-subtitle">{labels.subtitle}</p>
+      </header>
 
       {mutationError ? (
         <div className="pd-admin-notif-mutation-error pd-section-enter" role="alert">
@@ -89,34 +126,8 @@ function AdminNotificationsPageContent() {
         </div>
       ) : null}
 
-      {showBlockingError ? (
-        <section className="pd-card pd-card-pad pd-admin-notif-state pd-section-enter">
-          <p className="pd-inline-error">{error}</p>
-          <button type="button" className="pd-btn pd-btn-soft" onClick={refresh}>
-            {labels.retry}
-          </button>
-        </section>
-      ) : null}
-
-      {showEmpty ? (
-        <section className="pd-card pd-card-pad pd-admin-notif-empty pd-section-enter">
-          <span className="pd-admin-notif-empty-icon" aria-hidden="true">
-            <Bell size={22} strokeWidth={2} />
-          </span>
-          <p className="pd-admin-notif-empty-copy">{labels.empty}</p>
-        </section>
-      ) : null}
-
-      {showList ? (
-        <AdminNotificationsList
-          notifications={notifications}
-          labels={labels}
-          isLoading={showInitialSkeleton}
-          updatingNotificationId={updatingNotificationId}
-          onMarkAsRead={handleMarkAsRead}
-        />
-      ) : null}
-    </>
+      <div className="pd-task-hub-panel">{renderContent()}</div>
+    </div>
   );
 }
 

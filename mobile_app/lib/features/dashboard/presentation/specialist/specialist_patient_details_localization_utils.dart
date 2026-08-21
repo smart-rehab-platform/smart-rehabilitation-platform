@@ -24,6 +24,24 @@ String mapSpecialistPatientDetailsSaveNoteError(
   return message;
 }
 
+String mapSpecialistPatientDetailsSaveDiagnosisError(
+  AppLocalizations l10n,
+  String message,
+) {
+  if (message == 'Diagnosis title is required') {
+    return l10n.specialistPatientDetailsDiagnosisTitleRequired;
+  }
+  if (message == 'Failed to save diagnosis') {
+    return l10n.specialistPatientDetailsSaveDiagnosisFailedGeneric;
+  }
+  if (message.startsWith('Failed to save diagnosis:')) {
+    return l10n.specialistPatientDetailsSaveDiagnosisFailed(
+      message.substring('Failed to save diagnosis:'.length).trim(),
+    );
+  }
+  return message;
+}
+
 String localizedTreatmentPlanStatus(AppLocalizations l10n, String status) {
   final normalized = status.trim().toLowerCase();
   return switch (normalized) {

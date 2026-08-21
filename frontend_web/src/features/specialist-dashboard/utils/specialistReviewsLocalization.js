@@ -56,7 +56,7 @@ export function getReviewDecisionLabel(requiresRetry, t = null) {
   if (requiresRetry) {
     return translateKey(t, "specialist.reviews.decision.needsRetry", "Needs retry");
   }
-  return translateKey(t, "specialist.reviews.decision.approved", "Approved");
+  return translateKey(t, "specialist.reviews.decision.approved", "Completed");
 }
 
 export function getReviewMediaTypeLabel(mediaType, t = null) {

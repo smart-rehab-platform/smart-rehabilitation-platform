@@ -221,47 +221,53 @@ export default function SpecialistSessionsPage() {
               ) : null}
             </header>
 
-            <div
-              className="pd-specialist-sessions-segmented"
-              role="tablist"
-              aria-label={t("specialist.sessions.tabs.sectionsAriaLabel")}
-            >
-              {sectionTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={sectionTab === tab.id}
-                  className={`pd-specialist-sessions-segment${sectionTab === tab.id ? " is-active" : ""}`}
-                  onClick={() => setSectionTab(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            <div className="pd-specialist-sessions-nav">
+              <div
+                className="pd-specialist-sessions-nav-group"
+                role="tablist"
+                aria-label={t("specialist.sessions.tabs.sectionsAriaLabel")}
+              >
+                {sectionTabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={sectionTab === tab.id}
+                    className={`pd-specialist-sessions-segment${sectionTab === tab.id ? " is-active" : ""}`}
+                    onClick={() => setSectionTab(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {sectionTab === "sessions" ? (
+                <>
+                  <div className="pd-specialist-sessions-nav-divider" aria-hidden="true" />
+                  <div
+                    className="pd-specialist-sessions-nav-group"
+                    role="tablist"
+                    aria-label={t("specialist.sessions.view.ariaLabel")}
+                  >
+                    {viewTabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={viewMode === tab.id}
+                        className={`pd-specialist-sessions-view-tab${viewMode === tab.id ? " is-active" : ""}`}
+                        onClick={() => setViewMode(tab.id)}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : null}
             </div>
 
             {sectionTab === "sessions" ? (
-              <>
-                <div
-                  className="pd-specialist-sessions-view-toggle"
-                  role="tablist"
-                  aria-label={t("specialist.sessions.view.ariaLabel")}
-                >
-                  {viewTabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={viewMode === tab.id}
-                      className={`pd-specialist-sessions-view-tab${viewMode === tab.id ? " is-active" : ""}`}
-                      onClick={() => setViewMode(tab.id)}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-                {renderSessionsContent()}
-              </>
+              renderSessionsContent()
             ) : (
               renderRequestsContent()
             )}
