@@ -7,21 +7,22 @@ import {
   getChildren,
   getChildrenProgress,
 } from "../../services/parentDashboardService";
-import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { NotificationCard } from "./components/notifications/NotificationCard";
-import { NotificationFilters } from "./components/notifications/NotificationFilters";
 import { NotificationEmptyState } from "./components/notifications/NotificationEmptyState";
 import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
-import { mapParentFromAuth, mergeChildren, resolveNotificationRoute } from "./utils/parentDashboardMappers";
+import { mapParentFromAuth, mergeChildren } from "./utils/parentDashboardMappers";
+import { resolveParentNotificationDestination } from "./utils/parentNotificationNavigation";
 import {
-  buildNotificationTypeFilterOptions,
   enrichNotificationsForHub,
-  filterNotifications,
   getNotificationEmptyMessages,
   sortNotifications,
 } from "./utils/parentNotificationsUtils";
+import {
+  isImplementedParentPath,
+  PARENT_WEB_ROUTES,
+} from "../../routes/parentDashboardRoutes";
 import "./styles/parentDashboardTokens.css";
 
 function buildChildNameLookup(children) {
@@ -42,11 +43,6 @@ export default function ParentNotificationsPage() {
   const initialChildId = searchParams.get("childId")?.trim() || "all";
 
   const [children, setChildren] = useState([]);
-  const [search, setSearch] = useState("");
-  const [readFilter, setReadFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [childFilter, setChildFilter] = useState(initialChildId);
-  const [sortKey, setSortKey] = useState("newest");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -76,7 +72,7 @@ export default function ParentNotificationsPage() {
   }, []);
 
   const navigation = useParentDashboardNavigation({
-    selectedChildId: childFilter !== "all" ? childFilter : null,
+    selectedChildId: initialChildId !== "all" ? initialChildId : null,
     exercises: [],
     upcomingSession: null,
     latestReport: null,
@@ -152,24 +148,11 @@ export default function ParentNotificationsPage() {
     [notifications, childNameByPatientId, t, locale],
   );
 
-  const notificationTypeOptions = useMemo(
-    () => buildNotificationTypeFilterOptions(hubNotifications, t),
-    [hubNotifications, t],
-  );
-
-  const filteredNotifications = useMemo(
-    () => filterNotifications(hubNotifications, {
-      search,
-      readState: readFilter,
-      notificationType: typeFilter,
-      childId: childFilter,
-    }),
-    [hubNotifications, search, readFilter, typeFilter, childFilter],
-  );
-
   const visibleNotifications = useMemo(
-    () => sortNotifications(filteredNotifications, sortKey),
-    [filteredNotifications, sortKey],
+    // No filter/search/sort controls on this page; keep the default chronological
+    // ordering that matches the previous "Newest first" state.
+    () => sortNotifications(hubNotifications, "newest"),
+    [hubNotifications],
   );
 
   const emptyMessages = useMemo(() => getNotificationEmptyMessages(t), [t]);
@@ -201,9 +184,9 @@ export default function ParentNotificationsPage() {
 
   const handleBack = useCallback(() => {
     navigate(PARENT_WEB_ROUTES.dashboard, {
-      state: childFilter !== "all" ? { selectedChildId: childFilter } : undefined,
+      state: initialChildId !== "all" ? { selectedChildId: initialChildId } : undefined,
     });
-  }, [navigate, childFilter]);
+  }, [navigate, initialChildId]);
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -214,8 +197,8 @@ export default function ParentNotificationsPage() {
       await markNotificationRead(notification.id);
     }
 
-    const route = resolveNotificationRoute(notification);
-    if (route) {
+    const route = resolveParentNotificationDestination(notification);
+    if (route && isImplementedParentPath(route)) {
       navigate(route);
     }
   }, [markNotificationRead, navigate]);
@@ -351,23 +334,6 @@ export default function ParentNotificationsPage() {
               {subtitleSuffix}
             </p>
           </header>
-
-          {!isLoadingNotifications && !notificationsError && hubNotifications.length > 0 ? (
-            <NotificationFilters
-              search={search}
-              onSearchChange={setSearch}
-              readState={readFilter}
-              onReadStateChange={setReadFilter}
-              notificationType={typeFilter}
-              onNotificationTypeChange={setTypeFilter}
-              childId={childFilter}
-              onChildChange={setChildFilter}
-              sortKey={sortKey}
-              onSortChange={setSortKey}
-              children={children}
-              notificationTypeOptions={notificationTypeOptions}
-            />
-          ) : null}
 
           <div className="pd-task-hub-panel">{renderContent()}</div>
         </div>

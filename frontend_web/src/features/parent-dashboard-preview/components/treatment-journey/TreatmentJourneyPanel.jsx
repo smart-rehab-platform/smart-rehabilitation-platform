@@ -66,12 +66,37 @@ function SummaryMetric({ label, value, trend, trendLabel, emphasized = false }) 
   );
 }
 
-function JourneySummarySection({ journey, t, locale }) {
+function JourneySummarySection({ journey, child, t, locale }) {
   const trend = journey?.trend ?? "stable";
+
+  const childName = child?.fullName || t("parent.common.child");
+  const firstName = childName.split(" ")[0] || t("parent.common.child");
+  const avatarAlt = child?.fullName
+    ? `${child.fullName} profile photo`
+    : t("parent.treatmentJourney.childPhotoAlt");
 
   return (
     <section className="pd-card pd-card-pad pd-tj-summary" aria-label={t("parent.treatmentJourney.summaryAria")}>
       <div className="pd-tj-summary-grid">
+        <div className="pd-tj-summary-identity">
+          {child?.profileImageUrl ? (
+            <img
+              src={child.profileImageUrl}
+              alt={avatarAlt}
+              className="pd-avatar pd-avatar-photo pd-tj-panel-avatar pd-tj-summary-avatar"
+            />
+          ) : (
+            <span className="pd-avatar pd-tj-panel-avatar pd-tj-summary-avatar" aria-hidden="true">
+              {(child?.fullName || "C").slice(0, 1).toUpperCase()}
+            </span>
+          )}
+          <div>
+            <h3 className="pd-section-title">{t("parent.progress.title")}</h3>
+            <p className="pd-section-sub">
+              {t("parent.treatmentJourney.subtitleNamed", { name: firstName })}
+            </p>
+          </div>
+        </div>
         <SummaryMetric
           label={t("parent.treatmentJourney.startedAt")}
           value={formatTreatmentJourneyPercent(journey?.startingScore, { t, locale })}
@@ -154,6 +179,9 @@ function TreatmentPeriodInfo({ journey, period, t, locale }) {
 export function TreatmentJourneyPanel({
   child,
   hasMultipleChildren = false,
+  childOptions = [],
+  selectedChildId,
+  onChildChange,
   journey,
   period,
   isLoading,
@@ -163,46 +191,45 @@ export function TreatmentJourneyPanel({
   onPeriodChange,
   onRetry,
   onRefresh,
+  supportingSections = null,
 }) {
   const { t, locale } = useLocale();
   const hasData = journeyHasData(journey);
   const showInitialSkeleton = isLoading && !journey;
-  const childName = child?.fullName || t("parent.pages.progress.title");
-  const firstName = childName.split(" ")[0] || t("parent.common.child");
-  const avatarAlt = child?.fullName
-    ? `${child.fullName} profile photo`
-    : t("parent.treatmentJourney.childPhotoAlt");
 
   return (
     <div className="pd-tj-panel pd-section-enter">
-      <header className="pd-tj-panel-header">
-        <div className="pd-tj-panel-identity">
-          {child?.profileImageUrl ? (
-            <img
-              src={child.profileImageUrl}
-              alt={avatarAlt}
-              className="pd-avatar pd-avatar-photo pd-tj-panel-avatar"
-            />
-          ) : (
-            <span className="pd-avatar pd-tj-panel-avatar" aria-hidden="true">
-              {(child?.fullName || "C").slice(0, 1).toUpperCase()}
-            </span>
-          )}
-          <div>
-            <h2 className="pd-section-title">
-              {hasMultipleChildren ? t("parent.pages.progress.title") : childName}
-            </h2>
-            <p className="pd-section-sub">
-              {hasMultipleChildren
-                ? t("parent.treatmentJourney.subtitleNamed", { name: firstName })
-                : t("parent.treatmentJourney.subtitleGeneric")}
-            </p>
-          </div>
+      <div className="pd-tj-controls-row" role="region">
+        <div className="pd-tj-controls-group">
+          {hasMultipleChildren ? (
+            <div className="pd-progress-filter pd-tj-child-filter">
+              <label htmlFor="pd-progress-child-filter">{t("parent.common.child")}</label>
+              <select
+                id="pd-progress-child-filter"
+                className="pd-select"
+                value={selectedChildId || ""}
+                onChange={onChildChange}
+              >
+                {childOptions.map((childOption) => (
+                  <option key={childOption.id} value={childOption.id}>
+                    {childOption.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
+
+          <JourneyPeriodSelector
+            selectedPeriod={period}
+            onSelected={onPeriodChange}
+            disabled={isLoading && !journey}
+            t={t}
+          />
         </div>
 
         <button
           type="button"
-          className="pd-btn pd-btn-soft pd-tj-refresh-btn"
+          className="pd-btn pd-btn-primary pd-btn-sm pd-tj-refresh-btn"
           onClick={onRefresh}
           disabled={isRefreshing || isLoading}
           aria-label={t("parent.treatmentJourney.refreshAria")}
@@ -210,33 +237,29 @@ export function TreatmentJourneyPanel({
           <RefreshCw size={16} aria-hidden="true" className={isRefreshing ? "is-spinning" : ""} />
           {t("parent.treatmentJourney.refresh")}
         </button>
-      </header>
-
-      <JourneyPeriodSelector
-        selectedPeriod={period}
-        onSelected={onPeriodChange}
-        disabled={isLoading && !journey}
-        t={t}
-      />
+      </div>
 
       {error ? <JourneyErrorBanner message={error} onRetry={onRetry} t={t} /> : null}
 
       {showInitialSkeleton ? (
         <JourneySummarySkeleton />
       ) : (
-        <JourneySummarySection journey={journey} t={t} locale={locale} />
+        <JourneySummarySection journey={journey} child={child} t={t} locale={locale} />
       )}
 
-      <TreatmentJourneyChart
-        points={journey?.chartPoints ?? []}
-        period={period}
-        isLoading={isPeriodLoading && Boolean(journey)}
-      />
+      <section className="pd-card pd-card-pad pd-tj-chart-card">
+        <TreatmentJourneyChart
+          points={journey?.chartPoints ?? []}
+          period={period}
+          isLoading={isPeriodLoading && Boolean(journey)}
+        />
+      </section>
 
       {!hasData && !showInitialSkeleton && !error ? (
         <p className="pd-tj-empty-copy">{t("parent.treatmentJourney.emptyProgress")}</p>
       ) : null}
 
+      {supportingSections}
       <JourneyInterpretationCard journey={journey} t={t} />
       <TreatmentPeriodInfo journey={journey} period={period} t={t} locale={locale} />
     </div>

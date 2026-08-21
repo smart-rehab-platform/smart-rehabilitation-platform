@@ -7,6 +7,19 @@ import {
   openMeetingUrl,
 } from "../../utils/parentSessionsUtils";
 
+function SessionMetric({ label, value }) {
+  if (!value) {
+    return null;
+  }
+
+  return (
+    <div className="pd-session-card-metric">
+      <span className="pd-session-card-metric-label">{label}</span>
+      <span className="pd-session-card-metric-value">{value}</span>
+    </div>
+  );
+}
+
 export function SessionCard({ session, onCopySuccess, onCopyError, onOpenError }) {
   const { t } = useLocale();
   const statusMeta = session.statusMeta;
@@ -28,56 +41,51 @@ export function SessionCard({ session, onCopySuccess, onCopyError, onOpenError }
     }
   };
 
+  const locationValue = !session.meetingUrl && session.physicalLocation
+    ? session.physicalLocation
+    : null;
+
   return (
-    <article className="pd-card pd-card-pad pd-task-hub-card pd-session-hub-card pd-section-enter">
-      <div className="pd-task-hub-card-head">
-        <div className="pd-task-hub-card-copy">
-          {session.sessionDate ? (
-            <h3 className="pd-task-hub-card-title">{session.sessionDate}</h3>
-          ) : null}
-          {session.childName ? (
-            <p className="pd-task-hub-card-child">
-              {t("parent.reports.forChild", { name: session.childName })}
-            </p>
-          ) : null}
-        </div>
+    <article className="pd-card pd-card-pad pd-session-hub-card pd-section-enter">
+      <div className="pd-session-card-top">
+        {session.sessionDate ? (
+          <h3 className="pd-session-card-date">{session.sessionDate}</h3>
+        ) : <span aria-hidden="true" />}
         {statusMeta ? (
           <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
         ) : null}
       </div>
 
-      <ul className="pd-task-hub-card-meta">
-        {session.startTime ? (
-          <li>
-            <strong>{t("parent.sessions.startTime")}</strong>
-            <span>{session.startTime}</span>
-          </li>
-        ) : null}
-        {session.endTime ? (
-          <li>
-            <strong>{t("parent.sessions.endTime")}</strong>
-            <span>{session.endTime}</span>
-          </li>
-        ) : null}
-        {session.durationMinutes != null ? (
-          <li>
-            <strong>{t("parent.sessions.duration")}</strong>
-            <span>{t("parent.common.durationMinutes", { count: session.durationMinutes })}</span>
-          </li>
-        ) : null}
-        {session.specialistName ? (
-          <li>
-            <strong>{t("parent.common.specialist")}</strong>
-            <span>{session.specialistName}</span>
-          </li>
-        ) : null}
-        {!session.meetingUrl && session.physicalLocation ? (
-          <li className="pd-session-location-row">
-            <strong>{t("parent.sessions.location")}</strong>
-            <span className="pd-session-location-text" dir="auto">{session.physicalLocation}</span>
-          </li>
-        ) : null}
-      </ul>
+      {session.childName ? (
+        <p className="pd-session-card-child">
+          {t("parent.reports.forChild", { name: session.childName })}
+        </p>
+      ) : null}
+
+      {(session.startTime || session.endTime || session.durationMinutes != null) ? (
+        <div className="pd-session-card-metrics">
+          <SessionMetric label={t("parent.sessions.startTime")} value={session.startTime} />
+          <SessionMetric label={t("parent.sessions.endTime")} value={session.endTime} />
+          {session.durationMinutes != null ? (
+            <SessionMetric
+              label={t("parent.sessions.duration")}
+              value={t("parent.common.durationMinutes", { count: session.durationMinutes })}
+            />
+          ) : null}
+        </div>
+      ) : null}
+
+      {(session.specialistName || locationValue) ? (
+        <div className="pd-session-card-metrics pd-session-card-metrics-secondary">
+          <SessionMetric label={t("parent.common.specialist")} value={session.specialistName} />
+          {locationValue ? (
+            <SessionMetric
+              label={t("parent.sessions.location")}
+              value={locationValue}
+            />
+          ) : null}
+        </div>
+      ) : null}
 
       {session.meetingUrl ? (
         <div className="pd-session-hub-link-actions">

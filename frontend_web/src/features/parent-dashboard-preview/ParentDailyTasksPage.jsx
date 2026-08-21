@@ -10,7 +10,6 @@ import {
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { TaskCard } from "./components/daily-tasks/TaskCard";
 import { TaskEmptyState } from "./components/daily-tasks/TaskEmptyState";
-import { TaskFilters } from "./components/daily-tasks/TaskFilters";
 import { TaskTabs } from "./components/daily-tasks/TaskTabs";
 import { useParentDailyTasks } from "./hooks/useParentDailyTasks";
 import { useParentNotifications } from "./hooks/useParentNotifications";
@@ -19,9 +18,9 @@ import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
   filterHubTasks,
   getHubEmptyMessages,
-  sortHubTasks,
 } from "./utils/parentDailyTasksUtils";
 import "./styles/parentDashboardTokens.css";
+import "./styles/parentDailyTasksSections.css";
 
 export default function ParentDailyTasksPage() {
   const navigate = useNavigate();
@@ -34,10 +33,7 @@ export default function ParentDailyTasksPage() {
   const initialChildId = searchParams.get("childId")?.trim() || "all";
 
   const [activeTab, setActiveTab] = useState("daily");
-  const [search, setSearch] = useState("");
   const [childFilter, setChildFilter] = useState(initialChildId);
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortKey, setSortKey] = useState("actionable");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -108,18 +104,9 @@ export default function ParentDailyTasksPage() {
     [tasksByTab, activeTab],
   );
 
-  const filteredTasks = useMemo(
-    () => filterHubTasks(tabTasks, {
-      search,
-      childId: childFilter,
-      status: statusFilter,
-    }),
-    [tabTasks, search, childFilter, statusFilter],
-  );
-
   const visibleTasks = useMemo(
-    () => sortHubTasks(filteredTasks, sortKey),
-    [filteredTasks, sortKey],
+    () => filterHubTasks(tabTasks, { childId: childFilter }),
+    [tabTasks, childFilter],
   );
 
   const tabCounts = useMemo(() => ({
@@ -194,7 +181,7 @@ export default function ParentDailyTasksPage() {
     }
 
     return (
-      <div className="pd-task-hub-list">
+      <div className="pd-task-hub-list pd-daily-tasks-list">
         {visibleTasks.map((task) => (
           <TaskCard key={`${task.patientId}-${task.id}`} task={task} onOpen={handleOpenTask} />
         ))}
@@ -224,7 +211,7 @@ export default function ParentDailyTasksPage() {
         onViewProfile={navigation.handleViewProfile}
         onMessages={navigation.handleMessages}
       >
-        <div className="pd-task-hub-page">
+        <div className="pd-task-hub-page pd-daily-tasks-page">
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
@@ -239,19 +226,32 @@ export default function ParentDailyTasksPage() {
             </p>
           </header>
 
-          <TaskTabs activeTab={activeTab} onChange={setActiveTab} counts={tabCounts} />
+          <div className="pd-daily-tasks-controls">
+            <div className="pd-tj-controls-row" role="region" aria-label={t("parent.exercises.title")}>
+              <div className="pd-tj-controls-group">
+                <div className="pd-progress-filter pd-tj-child-filter">
+                  <label htmlFor="pd-daily-tasks-child-filter">
+                    {t("parent.common.child")}
+                  </label>
+                  <select
+                    id="pd-daily-tasks-child-filter"
+                    className="pd-select"
+                    value={childFilter}
+                    onChange={(event) => setChildFilter(event.target.value)}
+                  >
+                    <option value="all">{t("parent.common.allChildren")}</option>
+                    {children.map((child) => (
+                      <option key={child.id} value={child.id}>
+                        {child.fullName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-          <TaskFilters
-            search={search}
-            onSearchChange={setSearch}
-            childId={childFilter}
-            onChildChange={setChildFilter}
-            status={statusFilter}
-            onStatusChange={setStatusFilter}
-            sortKey={sortKey}
-            onSortChange={setSortKey}
-            children={children}
-          />
+                <TaskTabs activeTab={activeTab} onChange={setActiveTab} counts={tabCounts} />
+              </div>
+            </div>
+          </div>
 
           <div
             id={`pd-task-panel-${activeTab}`}

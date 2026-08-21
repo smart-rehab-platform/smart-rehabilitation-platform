@@ -114,6 +114,24 @@ export function SessionRequestForm({
           ) : null}
         </div>
 
+        <div className="pd-form-field">
+          <label className="pd-form-label" htmlFor="pd-session-request-date">
+            {t("parent.common.preferredDate")}
+          </label>
+          <input
+            id="pd-session-request-date"
+            type="date"
+            className="pd-form-input"
+            min={getTodayDateInputValue()}
+            value={form.preferredDate}
+            onChange={(event) => onFieldChange("preferredDate", event.target.value)}
+            disabled={isSubmitting}
+          />
+          {formErrors.preferredDate ? (
+            <p className="pd-form-error">{formErrors.preferredDate}</p>
+          ) : null}
+        </div>
+
         {form.reason === "other" ? (
           <div className="pd-form-field pd-form-field-wide">
             <label className="pd-form-label" htmlFor="pd-session-request-reason-other">
@@ -133,25 +151,7 @@ export function SessionRequestForm({
           </div>
         ) : null}
 
-        <div className="pd-form-field">
-          <label className="pd-form-label" htmlFor="pd-session-request-date">
-            {t("parent.common.preferredDate")}
-          </label>
-          <input
-            id="pd-session-request-date"
-            type="date"
-            className="pd-form-input"
-            min={getTodayDateInputValue()}
-            value={form.preferredDate}
-            onChange={(event) => onFieldChange("preferredDate", event.target.value)}
-            disabled={isSubmitting}
-          />
-          {formErrors.preferredDate ? (
-            <p className="pd-form-error">{formErrors.preferredDate}</p>
-          ) : null}
-        </div>
-
-        <div className="pd-form-field">
+        <div className="pd-form-field pd-session-request-form-time-period">
           <label className="pd-form-label" htmlFor="pd-session-request-period">
             {t("parent.common.preferredTimePeriod")}
           </label>

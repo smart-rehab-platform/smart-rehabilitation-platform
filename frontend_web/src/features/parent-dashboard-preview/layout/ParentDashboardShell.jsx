@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { resolveParentSidebarActiveId } from "../../../routes/parentDashboardRoutes";
+import "../../shared-dashboard/styles/dashboardTokens.css";
 import { DashboardShell } from "../../shared-dashboard/layout/DashboardShell";
 import { useParentNavItems } from "../hooks/useParentNavItems";
 import { ParentSidebar } from "./ParentSidebar";

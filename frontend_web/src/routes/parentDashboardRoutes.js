@@ -97,6 +97,10 @@ export function isImplementedParentPath(path) {
     return true;
   }
 
+  if (pathname.startsWith(`${PARENT_WEB_ROUTES.feedback}/`)) {
+    return true;
+  }
+
   return pathname === PARENT_WEB_ROUTES.progress;
 }
 
@@ -145,6 +149,23 @@ export function buildParentFeedbackPath(childId) {
 
   const params = new URLSearchParams({ childId });
   return `${PARENT_WEB_ROUTES.feedback}?${params.toString()}`;
+}
+
+/**
+ * Builds the parent feedback detail path for a specialist review.
+ * Uses the review id (exercise_reviews.id) plus patientId for the existing patient reviews API.
+ * @param {string|null|undefined} reviewId
+ * @param {string|null|undefined} patientId
+ */
+export function buildParentFeedbackDetailPath(reviewId, patientId) {
+  const id = typeof reviewId === "string" ? reviewId.trim() : "";
+  const childId = typeof patientId === "string" ? patientId.trim() : "";
+  if (!id || !childId) {
+    return null;
+  }
+
+  const params = new URLSearchParams({ patientId: childId });
+  return `${PARENT_WEB_ROUTES.feedback}/${encodeURIComponent(id)}?${params.toString()}`;
 }
 
 /**

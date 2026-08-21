@@ -20,7 +20,7 @@ export function SessionsListTabs({ activeTab, onChange, counts }) {
           onClick={() => onChange(tab.id)}
         >
           {tab.label}
-          <span className="pd-task-hub-tab-count">{counts[tab.id] ?? 0}</span>
+          <span className="pd-sessions-subtab-count">{counts[tab.id] ?? 0}</span>
         </button>
       ))}
     </div>

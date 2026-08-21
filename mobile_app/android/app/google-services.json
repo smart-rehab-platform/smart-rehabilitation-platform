@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "918900045498",
+    "project_id": "smart-rehabilitation-platform",
+    "storage_bucket": "smart-rehabilitation-platform.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918900045498:android:7a3412b63492c2d01fb483",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChYeXDfS0-A8ztCXOwrqgzkcYABA6g4ho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

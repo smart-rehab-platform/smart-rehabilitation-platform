@@ -1,13 +1,44 @@
+import { ChevronRight } from "lucide-react";
 import { useLocale } from "../../../../context/useLocale.js";
 import { StatusBadge } from "../StatusBadge";
 import { getFeedbackStatusMeta } from "../../utils/parentFeedbackUtils";
 
-export function ReviewCard({ review }) {
+export function ReviewCard({ review, onOpen }) {
   const { t } = useLocale();
   const statusMeta = getFeedbackStatusMeta(review.status, t);
+  const isInteractive = typeof onOpen === "function";
+  const openLabel = t("parent.feedback.openReview", {
+    title: review.exerciseTitle || t("parent.feedback.title"),
+  });
+
+  const handleActivate = () => {
+    onOpen?.(review);
+  };
+
+  const handleKeyDown = (event) => {
+    if (!isInteractive) {
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleActivate();
+    }
+  };
 
   return (
-    <article className="pd-card pd-card-pad pd-feedback-card pd-section-enter">
+    <article
+      className={
+        isInteractive
+          ? "pd-card pd-card-pad pd-feedback-card pd-feedback-card--interactive pd-section-enter"
+          : "pd-card pd-card-pad pd-feedback-card pd-section-enter"
+      }
+      role={isInteractive ? "link" : undefined}
+      tabIndex={isInteractive ? 0 : undefined}
+      aria-label={isInteractive ? openLabel : undefined}
+      onClick={isInteractive ? handleActivate : undefined}
+      onKeyDown={isInteractive ? handleKeyDown : undefined}
+    >
       <div className="pd-feedback-card-head">
         <div className="pd-feedback-card-copy">
           <h3 className="pd-feedback-card-title" dir="auto">{review.exerciseTitle}</h3>
@@ -15,22 +46,27 @@ export function ReviewCard({ review }) {
             <p className="pd-feedback-card-child">{review.childName}</p>
           ) : null}
         </div>
-        <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
+        <div className="pd-feedback-card-aside">
+          <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
+          {isInteractive ? (
+            <ChevronRight size={16} className="pd-feedback-card-chevron" aria-hidden="true" />
+          ) : null}
+        </div>
       </div>
 
-      {review.reviewedAtLabel ? (
-        <p className="pd-feedback-card-date">{review.reviewedAtLabel}</p>
+      {review.reviewedAt ? (
+        <p className="pd-feedback-card-date">{review.reviewedAt}</p>
       ) : null}
 
-      {review.rating != null ? (
+      {review.performanceRating != null ? (
         <p className="pd-feedback-card-rating">
-          {t("parent.feedback.rating")}: {review.rating}/5
+          {t("parent.feedback.rating")}: {review.performanceRating}/5
         </p>
       ) : null}
 
-      {review.feedbackText ? (
+      {review.feedback ? (
         <blockquote className="pd-feedback-card-quote" dir="auto">
-          {review.feedbackText}
+          {review.feedback}
         </blockquote>
       ) : null}
     </article>

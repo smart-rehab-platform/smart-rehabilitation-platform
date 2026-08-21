@@ -1,5 +1,6 @@
 import {
   formatParentDate,
+  formatParentDateOnly,
   formatParentTime,
   formatParentWeekdayDate,
   translateKey,
@@ -209,6 +210,14 @@ export function formatSessionDisplayTime(value, locale = "en") {
 
 export function formatSessionRequestCreatedDate(value, locale = "en", t = null) {
   return formatParentDate(value, locale, t);
+}
+
+export function formatSessionRequestPreferredDate(value, locale = "en", t = null) {
+  if (value == null || value === "") {
+    return null;
+  }
+
+  return formatParentDateOnly(value, locale, t);
 }
 
 export function getSessionEmptyMessages(t) {

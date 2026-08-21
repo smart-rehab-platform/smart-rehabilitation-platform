@@ -1,6 +1,7 @@
 const express = require("express");
 
 const notificationsController = require("./notifications.controller");
+const deviceTokensController = require("./deviceTokens.controller");
 
 const authenticate = require("../../middleware/auth.middleware");
 const authorizeRoles = require("../../middleware/role.middleware");
@@ -36,6 +37,18 @@ router.patch(
   "/notifications/read-all",
   authenticate,
   notificationsController.markAllAsRead
+);
+
+router.post(
+  "/notifications/device-tokens",
+  authenticate,
+  deviceTokensController.registerDeviceToken
+);
+
+router.delete(
+  "/notifications/device-tokens",
+  authenticate,
+  deviceTokensController.unregisterDeviceToken
 );
 
 router.patch(

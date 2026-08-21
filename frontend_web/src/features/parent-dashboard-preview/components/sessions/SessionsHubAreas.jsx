@@ -7,22 +7,28 @@ export function SessionsHubAreas({ activeArea, onChange, sessionCount, requestCo
   const areas = useMemo(() => buildSessionHubAreaOptions(t), [t]);
 
   return (
-    <div className="pd-task-hub-tabs" role="tablist" aria-label={t("parent.sessions.hubAreasAriaLabel")}>
+    <div
+      className="pd-sessions-primary-nav"
+      role="tablist"
+      aria-label={t("parent.sessions.hubAreasAriaLabel")}
+    >
       {areas.map((area) => {
         const count = area.id === "sessions" ? sessionCount : requestCount;
+        const isActive = activeArea === area.id;
+
         return (
           <button
             key={area.id}
             type="button"
             role="tab"
             id={`pd-sessions-area-${area.id}`}
-            aria-selected={activeArea === area.id}
+            aria-selected={isActive}
             aria-controls={`pd-sessions-panel-${area.id}`}
-            className={`pd-task-hub-tab${activeArea === area.id ? " is-active" : ""}`}
+            className={`pd-sessions-primary-tab${isActive ? " is-active" : ""}`}
             onClick={() => onChange(area.id)}
           >
             {area.label}
-            <span className="pd-task-hub-tab-count">{count}</span>
+            <span className="pd-sessions-primary-tab-count">{count}</span>
           </button>
         );
       })}

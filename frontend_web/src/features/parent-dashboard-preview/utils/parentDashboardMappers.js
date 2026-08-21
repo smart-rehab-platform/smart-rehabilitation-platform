@@ -4,11 +4,6 @@
 
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
 import {
-  PARENT_WEB_ROUTES,
-  buildParentReportDetailPath,
-  buildParentSessionsPath,
-} from "../../../routes/parentDashboardRoutes";
-import {
   formatDisplayDate as formatLocalizedDisplayDate,
   formatEmptyDash,
   formatFrequencyLabel,
@@ -1552,13 +1547,13 @@ const DASHBOARD_TASK_STATUS_RANK = {
   reviewed: 3,
 };
 
-const DASHBOARD_TASKS_VISIBLE_LIMIT = 4;
+const DASHBOARD_TASKS_VISIBLE_LIMIT = 2;
 
 /**
- * Selects up to 4 dashboard Today's Tasks rows by status priority and due date.
+ * Selects up to 2 dashboard Today's Tasks preview rows by status priority and due date.
  * Preserves original backend order as a stable fallback within each status group.
  * @param {Array<{ status?: string, dueDateMs?: number|null }>} exercises
- * @param {number} [limit=4]
+ * @param {number} [limit=2]
  */
 export function getDashboardPriorityTasks(exercises, limit = DASHBOARD_TASKS_VISIBLE_LIMIT) {
   if (!Array.isArray(exercises) || exercises.length === 0) {
@@ -1618,30 +1613,7 @@ export function findActionableExercise(exercises) {
 /**
  * Resolves a notification to an in-app route when one exists.
  * Returns null when no web route is registered for the notification target.
- * @param {{ type?: string|null, relatedEntityType?: string|null, relatedEntityId?: string|null }} notification
+ * @param {{ type?: string|null, relatedEntityType?: string|null, relatedEntityId?: string|null, patientId?: string|null }} notification
  */
-export function resolveNotificationRoute(notification) {
-  if (!notification?.relatedEntityId) {
-    return null;
-  }
+export { resolveParentNotificationDestination, resolveNotificationRoute } from "./parentNotificationNavigation";
 
-  const entityType = notification.relatedEntityType?.trim().toLowerCase();
-  const type = normalizeNotificationType(notification.type);
-
-  if (entityType === "report" || type === "report_ready") {
-    return buildParentReportDetailPath(notification.relatedEntityId);
-  }
-
-  if (entityType === "session" || type === "session_reminder") {
-    return buildParentSessionsPath(null);
-  }
-
-  if (
-    entityType === "exercise_review"
-    || type === "feedback_received"
-  ) {
-    return PARENT_WEB_ROUTES.feedback;
-  }
-
-  return null;
-}

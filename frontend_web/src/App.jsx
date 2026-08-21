@@ -66,6 +66,7 @@ import ParentDashboardPreviewPage from "./features/parent-dashboard-preview/Pare
 import ParentExerciseDetailPage from "./features/parent-dashboard-preview/ParentExerciseDetailPage";
 import ParentDailyTasksPage from "./features/parent-dashboard-preview/ParentDailyTasksPage";
 import ParentFeedbackPage from "./features/parent-dashboard-preview/ParentFeedbackPage";
+import ParentFeedbackDetailPage from "./features/parent-dashboard-preview/ParentFeedbackDetailPage";
 import ParentSessionsPage from "./features/parent-dashboard-preview/ParentSessionsPage";
 import ParentReportsPage from "./features/parent-dashboard-preview/ParentReportsPage";
 import ParentReportDetailPage from "./features/parent-dashboard-preview/ParentReportDetailPage";
@@ -667,6 +668,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ParentFeedbackPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/parent/feedback/:reviewId"
+          element={
+            <ProtectedRoute>
+              <ParentFeedbackDetailPage />
             </ProtectedRoute>
           }
         />

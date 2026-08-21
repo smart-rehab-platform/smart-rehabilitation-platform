@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
+import '../../../core/notifications/push_notification_controller.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../case_intake/models/case_intake_request_model.dart';
@@ -43,6 +44,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initialLoad();
+      ref.read(pushNotificationControllerProvider).schedulePrompt(context);
     });
   }
 

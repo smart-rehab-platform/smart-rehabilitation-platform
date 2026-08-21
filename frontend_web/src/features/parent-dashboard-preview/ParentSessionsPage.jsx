@@ -221,7 +221,7 @@ export default function ParentSessionsPage() {
     }
 
     return (
-      <div className="pd-task-hub-list">
+      <div className="pd-sessions-results-list">
         {visibleSessions.map((session) => (
           <SessionCard
             key={session.id}
@@ -275,7 +275,7 @@ export default function ParentSessionsPage() {
         ) : null}
 
         {!isLoadingRequests && !requestsError && requests.length > 0 ? (
-          <div className="pd-task-hub-list">
+          <div className="pd-sessions-results-list">
             {requests.map((request) => (
               <SessionRequestCard key={request.id} request={request} />
             ))}

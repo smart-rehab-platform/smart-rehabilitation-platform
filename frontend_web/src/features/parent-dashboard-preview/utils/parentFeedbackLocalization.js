@@ -23,7 +23,11 @@ export function buildFeedbackStatusFilterOptions(t) {
 export function getFeedbackEmptyMessages(t) {
   return {
     none: translateKey(t, "parent.feedback.empty.none", "No exercise feedback yet."),
-    filtered: translateKey(t, "parent.feedback.empty.filtered", "No reviews match your filters."),
+    filtered: translateKey(
+      t,
+      "parent.feedback.empty.filtered",
+      "No reviews match your search or selected child.",
+    ),
   };
 }
 

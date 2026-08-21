@@ -159,7 +159,7 @@ export default function ParentCaseRequestsPage() {
     }
 
     return (
-      <div className="pd-task-hub-list pd-case-request-list">
+      <div className="pd-case-request-list">
         {visibleRequests.map((request) => (
           <button
             key={request.id}
@@ -171,21 +171,21 @@ export default function ParentCaseRequestsPage() {
             })}
           >
             <div className="pd-case-request-card-row">
-              <CaseRequestChildAvatar
-                childName={request.childName}
-                imageUrl={request.childImageUrl}
-                size="sm"
-              />
-              <div className="pd-case-request-card-copy">
-                <div className="pd-case-line">
-                  <strong>{request.childName}</strong>
-                  <span className={`pd-status-pill pd-status-${request.status}`}>
-                    {request.statusLabel}
-                  </span>
+              <div className="pd-case-request-card-identity">
+                <CaseRequestChildAvatar
+                  childName={request.childName}
+                  imageUrl={request.childImageUrl}
+                  size="md"
+                />
+                <div className="pd-case-request-card-identity-copy">
+                  <strong className="pd-case-request-card-name">{request.childName}</strong>
+                  {request.categoryName ? (
+                    <p className="pd-case-meta">{request.categoryName}</p>
+                  ) : null}
                 </div>
-                {request.categoryName ? (
-                  <p className="pd-case-meta">{request.categoryName}</p>
-                ) : null}
+              </div>
+
+              <div className="pd-case-request-card-meta">
                 {request.submittedLabel ? (
                   <p className="pd-case-meta pd-case-meta-submitted">
                     {t("parent.caseRequests.submittedOn", { date: request.submittedLabel })}
@@ -194,6 +194,12 @@ export default function ParentCaseRequestsPage() {
                 {request.statusSubtitle ? (
                   <p className="pd-case-status-note">{request.statusSubtitle}</p>
                 ) : null}
+              </div>
+
+              <div className="pd-case-request-card-status">
+                <span className={`pd-status-pill pd-status-${request.status}`}>
+                  {request.statusLabel}
+                </span>
               </div>
             </div>
           </button>

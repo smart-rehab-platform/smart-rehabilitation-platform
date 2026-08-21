@@ -1,0 +1,122 @@
+/* Parent Daily Tasks / Exercises — page-specific layout */
+
+.pd-preview .pd-daily-tasks-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1160px;
+  width: 100%;
+}
+
+.pd-preview .pd-daily-tasks-page > .pd-task-hub-toolbar {
+  margin-bottom: 0;
+}
+
+.pd-preview .pd-daily-tasks-page > .pd-task-hub-header {
+  gap: 4px;
+  padding-bottom: 2px;
+}
+
+.pd-preview .pd-daily-tasks-controls {
+  width: 100%;
+}
+
+.pd-preview .pd-daily-tasks-controls .pd-tj-controls-row {
+  justify-content: flex-start;
+}
+
+.pd-preview .pd-daily-tasks-controls .pd-tj-period-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.pd-preview .pd-daily-tasks-tab-count {
+  margin-inline-start: 6px;
+  font-size: inherit;
+  font-weight: inherit;
+  opacity: 0.92;
+}
+
+.pd-preview .pd-daily-tasks-page .pd-task-hub-panel {
+  gap: 0;
+  padding-top: 4px;
+}
+
+.pd-preview .pd-daily-tasks-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.pd-preview .pd-daily-task-card {
+  gap: 14px;
+  min-height: 0;
+}
+
+.pd-preview .pd-daily-task-card .pd-task-hub-card-head {
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.pd-preview .pd-daily-task-card .pd-task-hub-card-title {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.pd-preview .pd-daily-task-card .pd-task-hub-card-child {
+  margin-top: 2px;
+  font-size: 0.8125rem;
+}
+
+.pd-preview .pd-daily-task-card-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  list-style: none;
+  margin: 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--pd-border-soft);
+}
+
+.pd-preview .pd-daily-task-card-details li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pd-preview .pd-daily-task-card .pd-task-hub-card-preview {
+  margin: 0;
+  padding-top: 2px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-line-clamp: 2;
+}
+
+.pd-preview .pd-daily-task-card .pd-task-hub-card-media {
+  margin-top: -4px;
+}
+
+.pd-preview .pd-daily-task-card .pd-task-hub-card-actions {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+@media (max-width: 960px) {
+  .pd-preview .pd-daily-tasks-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-preview .pd-daily-tasks-list {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-daily-task-card-details {
+    grid-template-columns: 1fr;
+  }
+}

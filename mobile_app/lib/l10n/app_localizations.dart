@@ -5901,6 +5901,30 @@ abstract class AppLocalizations {
   /// **'Seen'**
   String get communicationSeen;
 
+  /// Title of the in-app notification permission prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable notifications'**
+  String get notificationsPermissionTitle;
+
+  /// Explains why the app needs notification permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay up to date on sessions, exercises, messages, feedback, reports, and other account activity.'**
+  String get notificationsPermissionBody;
+
+  /// Confirms the custom prompt and requests the system notification permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable notifications'**
+  String get notificationsPermissionEnable;
+
+  /// Dismisses the custom notification permission prompt without requesting system permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get notificationsPermissionMaybeLater;
+
   /// Chat attachment button hint.
   ///
   /// In en, this message translates to:

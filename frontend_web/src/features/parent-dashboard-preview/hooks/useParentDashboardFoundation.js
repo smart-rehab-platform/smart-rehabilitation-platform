@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../../../context/useLocale.js";
 import {
   getChildren,
   getChildrenProgress,
@@ -20,6 +21,7 @@ function resolveErrorMessage(error, fallback) {
 }
 
 export function useParentDashboardFoundation(parentUserId) {
+  const { t, locale } = useLocale();
   const [children, setChildren] = useState([]);
   const [selectedChildId, setSelectedChildId] = useState(null);
   const [sessions, setSessions] = useState([]);
@@ -62,12 +64,12 @@ export function useParentDashboardFoundation(parentUserId) {
       submissions: childPayload.submissions,
       sessions,
       patientId: selectedChildId,
-    });
+    }, { t, locale });
 
     const updates = buildLatestUpdatesViewModel({
       reports: childPayload.reports,
       reviews: childPayload.reviews,
-    });
+    }, { t, locale });
 
     return {
       heroViewModel: viewModel.hero,
@@ -78,7 +80,7 @@ export function useParentDashboardFoundation(parentUserId) {
       reportsError: childPayload.reportsError,
       reviewsError: childPayload.reviewsError,
     };
-  }, [selectedChild, selectedChildId, childPayload, sessions]);
+  }, [selectedChild, selectedChildId, childPayload, sessions, t, locale]);
 
   const resetChildScopedData = useCallback(() => {
     setIsLoadingHero(true);
