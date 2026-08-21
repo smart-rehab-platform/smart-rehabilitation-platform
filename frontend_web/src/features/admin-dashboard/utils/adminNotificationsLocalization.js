@@ -274,6 +274,11 @@ export function applyAdminNotificationsLocalization(notifications, context = {})
 export function getAdminNotificationsLabels(t = null) {
   return {
     title: translateKey(t, "admin.notifications.title", "Notifications"),
+    subtitle: translateKey(
+      t,
+      "admin.notifications.subtitle",
+      "Stay updated on platform activity and administrative alerts",
+    ),
     toolbarAriaLabel: translateKey(t, "admin.notifications.toolbarAriaLabel", "Notifications header"),
     listAriaLabel: translateKey(t, "admin.notifications.listAriaLabel", "Notifications list"),
     listLoadingAriaLabel: translateKey(
@@ -287,6 +292,7 @@ export function getAdminNotificationsLabels(t = null) {
     loading: translateKey(t, "admin.notifications.loading", "Loading notifications..."),
     retry: translateKey(t, "common.retry", "Retry"),
     markingAsRead: translateKey(t, "admin.notifications.markingAsRead", "Marking as read"),
+    unread: translateKey(t, "specialist.notifications.unread", "Unread"),
     unreadNotification: (title) => translateKey(
       t,
       "admin.notifications.unreadNotification",

@@ -1,5 +1,6 @@
 import { ChevronRight, FileCheck2 } from "lucide-react";
 import { AdminReportTypeBadge } from "./AdminReportTypeBadge";
+import { AdminTablePrimaryAction } from "./AdminTablePrimaryAction";
 
 function getPatientInitials(name) {
   const parts = String(name ?? "")
@@ -65,14 +66,13 @@ export function AdminReportCard({ report, labels, onOpen }) {
         <p className="pd-admin-report-card-summary is-empty">{emptyDisplay}</p>
       )}
 
-      <button
-        type="button"
-        className="pd-btn pd-btn-soft pd-admin-report-card-action"
+      <AdminTablePrimaryAction
+        className="pd-admin-report-card-action"
         onClick={() => onOpen?.(report)}
       >
         {labels.viewDetails}
         <ChevronRight size={16} aria-hidden="true" />
-      </button>
+      </AdminTablePrimaryAction>
     </article>
   );
 }

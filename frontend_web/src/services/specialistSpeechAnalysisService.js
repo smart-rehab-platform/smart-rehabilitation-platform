@@ -1,7 +1,9 @@
 import api from "./api";
 import { getPatientById } from "./specialistPatientService";
 import {
+  buildSpeechProgressScope,
   mapSpeechAnalysisItem,
+  mapSpeechProgressBundle,
   mapSpeechProgressPoint,
   mergeSpeechAnalyses,
   resolvePatientName,
@@ -123,6 +125,38 @@ async function fetchPatientProgress(patientId) {
     `/speech-analyses/patients/${encodeURIComponent(patientId)}/progress`,
   );
   return extractList(response).map(mapSpeechProgressPoint).filter(Boolean);
+}
+
+export async function fetchPatientSpeechProgressBundle(
+  patientId,
+  { exerciseId = null, expectedText = null, targetPhoneme = null } = {},
+) {
+  const scopedPatientId = requireId(patientId, "Patient id");
+  const params = { include_insights: "true" };
+  if (typeof exerciseId === "string" && exerciseId.trim()) {
+    params.exercise_id = exerciseId.trim();
+  }
+  if (typeof expectedText === "string" && expectedText.trim()) {
+    params.expected_text = expectedText.trim();
+  }
+  if (typeof targetPhoneme === "string" && targetPhoneme.trim()) {
+    params.target_phoneme = targetPhoneme.trim();
+  }
+
+  const response = await api.get(
+    `/speech-analyses/patients/${encodeURIComponent(scopedPatientId)}/progress`,
+    { params },
+  );
+  const payload = response?.data;
+  if (payload && typeof payload === "object") {
+    return mapSpeechProgressBundle(payload);
+  }
+  return { insights: null, acousticProgress: null };
+}
+
+export async function fetchSpeechProgressBundleForAnalysis(patientId, analysis) {
+  const scope = buildSpeechProgressScope(analysis);
+  return fetchPatientSpeechProgressBundle(patientId, scope);
 }
 
 export async function fetchSubmissionSpeechAnalysis(

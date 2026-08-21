@@ -41,6 +41,21 @@ export function getAdminAssignmentsLabels(t = null) {
       "admin.assignments.changeHint",
       "To change an assignment, unlink the current specialist or parent, then assign or link the new one.",
     ),
+    manageRelationshipsTitle: translateKey(
+      t,
+      "admin.assignments.manageRelationshipsTitle",
+      "Manage Patient Relationships",
+    ),
+    manageRelationshipsSubtitle: translateKey(
+      t,
+      "admin.assignments.manageRelationshipsSubtitle",
+      "Manage specialists and parents linked to the selected patient.",
+    ),
+    currentRelationshipsTitle: translateKey(
+      t,
+      "admin.assignments.currentRelationshipsTitle",
+      "Current Relationships",
+    ),
     patientLabel: translateKey(t, "admin.assignments.patientLabel", "Patient"),
     selectPatient: translateKey(t, "admin.assignments.selectPatient", "Select a patient"),
     selectPatientHint: translateKey(

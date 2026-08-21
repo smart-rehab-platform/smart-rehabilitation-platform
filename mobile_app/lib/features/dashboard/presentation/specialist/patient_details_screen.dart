@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -18,6 +19,7 @@ import '../communication/conversations_list_screen.dart';
 import '../shared/patient_details_body.dart';
 import 'family_pattern_details_sheet.dart';
 import 'family_pattern_insight_card.dart';
+import '../../utils/specialist_diagnosis_options.dart';
 import 'specialist_patient_details_localization_utils.dart';
 
 class SpecialistPatientDetailsScreen extends ConsumerStatefulWidget {
@@ -58,6 +60,52 @@ class _SpecialistPatientDetailsScreenState
       final l10n = AppLocalizations.of(context)!;
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.specialistPatientDetailsNoteSaved)),
+      );
+    }
+  }
+
+  Future<void> _showManageDiagnosisDialog() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final state = ref.read(specialistPatientDetailsProvider(widget.patientId));
+    final l10n = AppLocalizations.of(context)!;
+
+    if (state.isLoading || state.data == null) {
+      if (state.errorMessage != null) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              mapSpecialistPatientDetailsError(l10n, state.errorMessage!),
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
+    final currentDiagnosis = state.data!.diagnoses.isNotEmpty
+        ? state.data!.diagnoses.first
+        : null;
+
+    final selectorState = resolveDiagnosisSelectorState(
+      l10n,
+      currentDiagnosis?.title,
+    );
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (_) => _ManageSpecialistDiagnosisDialog(
+        patientId: widget.patientId,
+        messenger: messenger,
+        currentDiagnosis: currentDiagnosis,
+        initialSelectedOptionId: selectorState.selectedOptionId,
+        initialCustomTitle: selectorState.customTitle,
+      ),
+    );
+
+    if (!mounted) return;
+    if (result == true) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.specialistPatientDetailsDiagnosisSaved)),
       );
     }
   }
@@ -251,6 +299,7 @@ class _SpecialistPatientDetailsScreenState
           ),
           footer: _SpecialistActionButtons(
             isSavingNote: state.isSavingNote,
+            isSavingDiagnosis: state.isSavingDiagnosis,
             hasActivePlan: data.treatmentPlan?.isActive == true,
             onReviewExercises: () {
               final pending = data.recentSubmissions
@@ -307,6 +356,7 @@ class _SpecialistPatientDetailsScreenState
             onSpeechAnalysis: () => context.push(
               AppRoutes.specialistPatientSpeechAnalysis(widget.patientId),
             ),
+            onManageDiagnosis: _showManageDiagnosisDialog,
           ),
         ),
       );
@@ -347,6 +397,7 @@ class _SpecialistPatientDetailsScreenState
 class _SpecialistActionButtons extends StatelessWidget {
   const _SpecialistActionButtons({
     required this.isSavingNote,
+    required this.isSavingDiagnosis,
     required this.hasActivePlan,
     required this.onReviewExercises,
     required this.onAddNote,
@@ -355,9 +406,11 @@ class _SpecialistActionButtons extends StatelessWidget {
     required this.onCreateTreatmentPlan,
     required this.onAiRecommendations,
     required this.onSpeechAnalysis,
+    required this.onManageDiagnosis,
   });
 
   final bool isSavingNote;
+  final bool isSavingDiagnosis;
   final bool hasActivePlan;
   final VoidCallback onReviewExercises;
   final VoidCallback onAddNote;
@@ -366,6 +419,7 @@ class _SpecialistActionButtons extends StatelessWidget {
   final VoidCallback onCreateTreatmentPlan;
   final VoidCallback onAiRecommendations;
   final VoidCallback onSpeechAnalysis;
+  final VoidCallback onManageDiagnosis;
 
   @override
   Widget build(BuildContext context) {
@@ -478,6 +532,20 @@ class _SpecialistActionButtons extends StatelessWidget {
             ),
           ),
         ),
+        SizedBox(height: context.dashSpacing * 0.5),
+        ElevatedButton.icon(
+          onPressed: isSavingDiagnosis ? null : onManageDiagnosis,
+          icon: const Icon(Icons.medical_information_outlined),
+          label: Text(l10n.specialistPatientDetailsManageDiagnosis),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: DashboardColors.brandCyan,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(vertical: context.dashSpacing * 0.65),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -570,6 +638,274 @@ class _AddSpecialistNoteDialogState
         ),
         FilledButton(
           onPressed: _saving ? null : _save,
+          child: Text(_saving ? l10n.commonSaving : l10n.commonSave),
+        ),
+      ],
+    );
+  }
+}
+
+class _ManageSpecialistDiagnosisDialog extends ConsumerStatefulWidget {
+  const _ManageSpecialistDiagnosisDialog({
+    required this.patientId,
+    required this.messenger,
+    this.currentDiagnosis,
+    required this.initialSelectedOptionId,
+    required this.initialCustomTitle,
+  });
+
+  final String patientId;
+  final ScaffoldMessengerState messenger;
+  final PatientDiagnosisItem? currentDiagnosis;
+  final String initialSelectedOptionId;
+  final String initialCustomTitle;
+
+  @override
+  ConsumerState<_ManageSpecialistDiagnosisDialog> createState() =>
+      _ManageSpecialistDiagnosisDialogState();
+}
+
+class _ManageSpecialistDiagnosisDialogState
+    extends ConsumerState<_ManageSpecialistDiagnosisDialog> {
+  late final TextEditingController _customTitleController;
+  late final TextEditingController _descriptionController;
+  late String? _selectedOptionId;
+  late DateTime _diagnosedAt;
+  late final String _initialDescription;
+  late final DateTime _initialDiagnosedAt;
+  bool _saving = false;
+  String? _validationError;
+
+  @override
+  void initState() {
+    super.initState();
+    final current = widget.currentDiagnosis;
+    _selectedOptionId = widget.initialSelectedOptionId.isEmpty
+        ? null
+        : widget.initialSelectedOptionId;
+    _initialDescription = current?.description?.trim() ?? '';
+    _initialDiagnosedAt = current?.diagnosedAt ?? DateTime.now();
+    _customTitleController = TextEditingController(text: widget.initialCustomTitle);
+    _descriptionController = TextEditingController(text: _initialDescription);
+    _diagnosedAt = _initialDiagnosedAt;
+  }
+
+  bool get _showOtherInput => _selectedOptionId == specialistDiagnosisOptionOther;
+
+  String get _effectiveTitle => resolveEffectiveDiagnosisTitle(
+    selectedOptionId: _selectedOptionId,
+    customTitle: _customTitleController.text,
+  );
+
+  bool get _hasChanges {
+    if (widget.currentDiagnosis == null) {
+      return _effectiveTitle.trim().isNotEmpty;
+    }
+
+    return !isDiagnosisSelectionUnchanged(
+      currentDiagnosisTitle: widget.currentDiagnosis?.title,
+      selectedOptionId: _selectedOptionId,
+      customTitle: _customTitleController.text,
+      description: _descriptionController.text,
+      initialDescription: _initialDescription,
+      diagnosedAt: _diagnosedAt,
+      initialDiagnosedAt: _initialDiagnosedAt,
+    );
+  }
+
+  bool get _canSave => _hasChanges && _effectiveTitle.trim().isNotEmpty && !_saving;
+
+  @override
+  void dispose() {
+    _customTitleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDiagnosedDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      initialDate: _diagnosedAt,
+    );
+    if (picked == null || !mounted) {
+      return;
+    }
+    setState(() {
+      _diagnosedAt = picked;
+      _validationError = null;
+    });
+  }
+
+  void _cancel() {
+    if (_saving) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    Navigator.of(context).pop(false);
+  }
+
+  Future<void> _save() async {
+    if (_saving) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final validationError = validateDiagnosisSelection(
+      l10n,
+      selectedOptionId: _selectedOptionId,
+      customTitle: _customTitleController.text,
+    );
+    if (validationError != null) {
+      setState(() => _validationError = validationError);
+      return;
+    }
+
+    if (!_hasChanges) {
+      Navigator.of(context).pop(false);
+      return;
+    }
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() {
+      _saving = true;
+      _validationError = null;
+    });
+
+    final error = await ref
+        .read(specialistPatientDetailsProvider(widget.patientId).notifier)
+        .addDiagnosis(
+          diagnosisTitle: _effectiveTitle,
+          description: _descriptionController.text,
+          diagnosedAt: _diagnosedAt,
+        );
+
+    if (!mounted) return;
+
+    if (error != null) {
+      setState(() => _saving = false);
+      widget.messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            mapSpecialistPatientDetailsSaveDiagnosisError(l10n, error),
+          ),
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).pop(true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+    final dateLabel = DateFormat.yMMMd(locale).format(_diagnosedAt);
+
+    return AlertDialog(
+      title: Text(l10n.specialistPatientDetailsManageDiagnosisTitle),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DropdownButtonFormField<String>(
+              key: ValueKey(_selectedOptionId),
+              initialValue: _selectedOptionId,
+              isExpanded: true,
+              decoration: InputDecoration(
+                labelText: l10n.specialistPatientDetailsDiagnosisSelectorLabel,
+                border: const OutlineInputBorder(),
+              ),
+              hint: Text(l10n.specialistPatientDetailsSelectDiagnosis),
+              items: [
+                ...kPredefinedDiagnosisOptions.map(
+                  (option) => DropdownMenuItem<String>(
+                    value: option.id,
+                    child: Text(
+                      diagnosisOptionLabel(l10n, option.id),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                DropdownMenuItem<String>(
+                  value: specialistDiagnosisOptionOther,
+                  child: Text(l10n.specialistPatientDetailsDiagnosisOptionOther),
+                ),
+              ],
+              onChanged: _saving
+                  ? null
+                  : (value) => setState(() {
+                      _selectedOptionId = value;
+                      _validationError = null;
+                    }),
+            ),
+            if (_showOtherInput) ...[
+              SizedBox(height: context.dashSpacing * 0.65),
+              TextField(
+                controller: _customTitleController,
+                enabled: !_saving,
+                textInputAction: TextInputAction.next,
+                autocorrect: false,
+                enableSuggestions: false,
+                autofillHints: const <String>[],
+                onChanged: (_) => setState(() {
+                  _validationError = null;
+                }),
+                decoration: InputDecoration(
+                  labelText: l10n.specialistPatientDetailsOtherDiagnosisLabel,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
+            SizedBox(height: context.dashSpacing * 0.65),
+            TextField(
+              controller: _descriptionController,
+              enabled: !_saving,
+              maxLines: 3,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                labelText:
+                    l10n.specialistPatientDetailsDiagnosisDescriptionLabel,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: context.dashSpacing * 0.65),
+            OutlinedButton(
+              onPressed: _saving ? null : _pickDiagnosedDate,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: DashboardColors.brandCyan,
+                side: const BorderSide(color: DashboardColors.brandCyan),
+              ),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  '${l10n.specialistPatientDetailsDiagnosedDateLabel}: $dateLabel',
+                  textDirection: TextDirection.ltr,
+                ),
+              ),
+            ),
+            if (_validationError != null) ...[
+              SizedBox(height: context.dashSpacing * 0.45),
+              Text(
+                _validationError!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : _cancel,
+          child: Text(l10n.commonCancel),
+        ),
+        FilledButton(
+          onPressed: _canSave ? _save : null,
+          style: FilledButton.styleFrom(
+            backgroundColor: DashboardColors.brandCyan,
+            foregroundColor: Colors.white,
+          ),
           child: Text(_saving ? l10n.commonSaving : l10n.commonSave),
         ),
       ],

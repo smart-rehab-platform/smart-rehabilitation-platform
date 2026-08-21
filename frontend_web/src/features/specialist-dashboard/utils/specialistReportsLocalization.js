@@ -53,6 +53,48 @@ const SECTION_TITLE_FALLBACK = {
   "AI Summary": "AI Summary",
 };
 
+const AI_REPORT_SECTION_KEY = {
+  executive_summary: "specialist.reports.details.ai.executiveSummary",
+  patient_progress_summary: "specialist.reports.details.ai.patientProgress",
+  speech_analysis_summary: "specialist.reports.details.ai.speechAnalysis",
+  exercise_adherence_summary: "specialist.reports.details.ai.exerciseAdherence",
+  goal_progress_summary: "specialist.reports.details.ai.goalProgress",
+  clinical_insights: "specialist.reports.details.ai.clinicalInsights",
+  risks_or_regressions: "specialist.reports.details.ai.risksRegressions",
+  recommendations: "specialist.reports.details.ai.recommendations",
+  next_steps: "specialist.reports.details.ai.nextSteps",
+};
+
+const AI_REPORT_SECTION_FALLBACK = {
+  executive_summary: "Executive Summary",
+  patient_progress_summary: "Patient Progress",
+  speech_analysis_summary: "Speech Analysis",
+  exercise_adherence_summary: "Exercise Adherence",
+  goal_progress_summary: "Goal Progress",
+  clinical_insights: "Clinical Insights",
+  risks_or_regressions: "Risks & Regressions",
+  recommendations: "Recommendations",
+  next_steps: "Next Steps",
+};
+
+const AI_REPORT_PRIORITY_KEY = {
+  low: "specialist.reports.details.ai.priorityLow",
+  medium: "specialist.reports.details.ai.priorityMedium",
+  high: "specialist.reports.details.ai.priorityHigh",
+};
+
+const AI_REPORT_PRIORITY_FALLBACK = {
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+};
+
+const AI_REPORT_PRIORITY_TONE = {
+  low: "success",
+  medium: "warning",
+  high: "danger",
+};
+
 function translateKey(t, key, fallback, params) {
   if (typeof t === "function") {
     const translated = t(key, params);
@@ -201,6 +243,41 @@ export function getReportSectionTitleLabel(title, t = null) {
     return translateKey(t, key, SECTION_TITLE_FALLBACK[title] ?? title);
   }
   return title;
+}
+
+export function getAiReportSectionTitleLabel(sectionId, t = null) {
+  const key = AI_REPORT_SECTION_KEY[sectionId];
+  if (key) {
+    return translateKey(t, key, AI_REPORT_SECTION_FALLBACK[sectionId] ?? sectionId);
+  }
+  return sectionId;
+}
+
+export function getAiReportPriorityLabel(priorityLevel, t = null) {
+  if (!priorityLevel) {
+    return null;
+  }
+  const key = AI_REPORT_PRIORITY_KEY[priorityLevel];
+  if (!key) {
+    return null;
+  }
+  return translateKey(t, key, AI_REPORT_PRIORITY_FALLBACK[priorityLevel]);
+}
+
+export function getAiReportPriorityTone(priorityLevel) {
+  return AI_REPORT_PRIORITY_TONE[priorityLevel] || "gray";
+}
+
+export function getAiReportConfidenceLabel(confidencePercent, t = null) {
+  if (confidencePercent == null || !Number.isFinite(confidencePercent)) {
+    return null;
+  }
+  return translateKey(
+    t,
+    "specialist.reports.details.ai.confidenceValue",
+    "{value}%",
+    { value: confidencePercent },
+  );
 }
 
 export function formatReportDateLabel(dateValue, locale = "en", t = null) {

@@ -1995,6 +1995,113 @@ class AppLocalizationsAr extends AppLocalizations {
       'أدخل ملاحظة سريرية...';
 
   @override
+  String get specialistPatientDetailsDiagnosisSectionTitle =>
+      'التشخيص / الحالة';
+
+  @override
+  String get specialistPatientDetailsCurrentDiagnosis => 'التشخيص الحالي';
+
+  @override
+  String get specialistPatientDetailsDiagnosisHistory => 'سجل التشخيص';
+
+  @override
+  String get specialistPatientDetailsManageDiagnosis => 'إدارة التشخيص';
+
+  @override
+  String get specialistPatientDetailsManageDiagnosisTitle => 'إدارة التشخيص';
+
+  @override
+  String get specialistPatientDetailsDiagnosisSelectorLabel =>
+      'التشخيص / الحالة';
+
+  @override
+  String get specialistPatientDetailsSelectDiagnosis => 'اختر التشخيص';
+
+  @override
+  String get specialistPatientDetailsDiagnosisOptionOther => 'أخرى';
+
+  @override
+  String get specialistPatientDetailsOtherDiagnosisLabel => 'تشخيص آخر';
+
+  @override
+  String get specialistPatientDetailsDiagnosisSelectRequired =>
+      'يرجى اختيار التشخيص.';
+
+  @override
+  String get specialistPatientDetailsOtherDiagnosisRequired =>
+      'يرجى إدخال التشخيص.';
+
+  @override
+  String get specialistDiagnosisOptionSpeechDelay => 'تأخر النطق';
+
+  @override
+  String get specialistDiagnosisOptionSpeechLanguageDelay =>
+      'تأخر النطق واللغة';
+
+  @override
+  String get specialistDiagnosisOptionLanguageDelay => 'تأخر اللغة';
+
+  @override
+  String get specialistDiagnosisOptionArticulationDisorder => 'اضطراب النطق';
+
+  @override
+  String get specialistDiagnosisOptionFluencyDisorder => 'اضطراب الطلاقة';
+
+  @override
+  String get specialistDiagnosisOptionVoiceDisorder => 'اضطراب الصوت';
+
+  @override
+  String get specialistDiagnosisOptionAutismSpectrumDisorder =>
+      'اضطراب طيف التوحد';
+
+  @override
+  String get specialistDiagnosisOptionDevelopmentalDelay => 'تأخر نمائي';
+
+  @override
+  String get specialistDiagnosisOptionLearningDifficulty => 'صعوبات تعلم';
+
+  @override
+  String get specialistDiagnosisOptionMotorDelay => 'تأخر حركي';
+
+  @override
+  String get specialistDiagnosisOptionAdhd => 'فرط الحركة وتشتت الانتباه';
+
+  @override
+  String get specialistPatientDetailsDiagnosisTitleLabel => 'عنوان التشخيص';
+
+  @override
+  String get specialistPatientDetailsDiagnosisDescriptionLabel => 'الوصف';
+
+  @override
+  String get specialistPatientDetailsDiagnosedDateLabel => 'تاريخ التشخيص';
+
+  @override
+  String get specialistPatientDetailsDiagnosisTitleRequired =>
+      'عنوان التشخيص مطلوب';
+
+  @override
+  String get specialistPatientDetailsDiagnosisSaved => 'تم حفظ التشخيص';
+
+  @override
+  String specialistPatientDetailsSaveDiagnosisFailed(String error) {
+    return 'تعذّر حفظ التشخيص: $error';
+  }
+
+  @override
+  String get specialistPatientDetailsSaveDiagnosisFailedGeneric =>
+      'تعذّر حفظ التشخيص';
+
+  @override
+  String specialistPatientDetailsDiagnosedOn(String date) {
+    return 'تاريخ التشخيص: $date';
+  }
+
+  @override
+  String specialistPatientDetailsDiagnosedBy(String name) {
+    return 'أُسجّل بواسطة: $name';
+  }
+
+  @override
   String get specialistReviewExercises => 'مراجعة التمارين';
 
   @override

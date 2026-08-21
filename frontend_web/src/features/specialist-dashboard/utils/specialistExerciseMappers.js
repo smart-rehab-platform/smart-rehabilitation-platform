@@ -53,6 +53,9 @@ export function mapExerciseItem(row) {
   const description = readString(row, ["description"]) || null;
   const instructions = readString(row, ["instructions"]) || null;
   const instructionMediaUrl = readString(row, ["instruction_media_url", "instructionMediaUrl"]) || null;
+  const expectedText = readString(row, ["expected_text", "expectedText"]) || null;
+  const targetWord = readString(row, ["target_word", "targetWord"]) || null;
+  const targetPhoneme = readString(row, ["target_phoneme", "targetPhoneme"]) || null;
   const language = parseExerciseLanguage(readString(row, ["language"]));
 
   return {
@@ -63,6 +66,9 @@ export function mapExerciseItem(row) {
     description,
     instructions,
     instructionMediaUrl,
+    expectedText,
+    targetWord,
+    targetPhoneme,
     language,
     languageLabel: getExerciseLanguageLabel(language),
     createdBy: readString(row, ["created_by", "createdBy"]) || null,
@@ -163,6 +169,20 @@ function normalizeCategoryName(category) {
   return category?.trim().toLowerCase() ?? "";
 }
 
+const SPEECH_ARTICULATION_CATEGORY = "speech articulation";
+
+export function isSpeechArticulationCategory(categoryName) {
+  return normalizeCategoryName(categoryName) === SPEECH_ARTICULATION_CATEGORY;
+}
+
+export function resolveExerciseCategoryName(categoryId, categories) {
+  if (!categoryId?.trim() || !Array.isArray(categories)) {
+    return "";
+  }
+  const match = categories.find((category) => category.id === categoryId);
+  return match?.name?.trim() ?? "";
+}
+
 export function getExerciseCategoryIconType(category) {
   const normalized = normalizeCategoryName(category);
   if (
@@ -251,8 +271,12 @@ export function buildExerciseUpdatePayload({
   language,
   instructionMediaUrl,
   clearInstructionMedia = false,
+  expectedText,
+  targetWord,
+  targetPhoneme,
+  isSpeechArticulation = false,
 }) {
-  return {
+  const payload = {
     category_id: categoryId.trim(),
     title: title.trim(),
     language: parseExerciseLanguage(language),
@@ -262,6 +286,18 @@ export function buildExerciseUpdatePayload({
       ? ""
       : (instructionMediaUrl?.trim() ?? ""),
   };
+
+  if (isSpeechArticulation) {
+    payload.expected_text = expectedText?.trim() ?? "";
+    payload.target_word = targetWord?.trim() ?? "";
+    payload.target_phoneme = targetPhoneme?.trim() ?? "";
+  } else {
+    payload.expected_text = "";
+    payload.target_word = "";
+    payload.target_phoneme = "";
+  }
+
+  return payload;
 }
 
 /** Matches Flutter UpsertExerciseRequest.toCreateJson() — omit empty optionals. */
@@ -272,6 +308,10 @@ export function buildExerciseCreatePayload({
   instructions,
   language,
   instructionMediaUrl,
+  expectedText,
+  targetWord,
+  targetPhoneme,
+  isSpeechArticulation = false,
 }) {
   const payload = {
     category_id: categoryId.trim(),
@@ -294,15 +334,40 @@ export function buildExerciseCreatePayload({
     payload.instruction_media_url = trimmedMediaUrl;
   }
 
+  if (isSpeechArticulation) {
+    const trimmedExpectedText = expectedText?.trim() ?? "";
+    if (trimmedExpectedText) {
+      payload.expected_text = trimmedExpectedText;
+    }
+
+    const trimmedTargetWord = targetWord?.trim() ?? "";
+    if (trimmedTargetWord) {
+      payload.target_word = trimmedTargetWord;
+    }
+
+    const trimmedTargetPhoneme = targetPhoneme?.trim() ?? "";
+    if (trimmedTargetPhoneme) {
+      payload.target_phoneme = trimmedTargetPhoneme;
+    }
+  }
+
   return payload;
 }
 
-export function validateExerciseEditForm({ categoryId, title }) {
+export function validateExerciseEditForm({
+  categoryId,
+  title,
+  isSpeechArticulation = false,
+  expectedText,
+}) {
   if (!categoryId?.trim()) {
     return EXERCISE_VALIDATION_KEYS.CATEGORY_REQUIRED;
   }
   if (!title?.trim()) {
     return EXERCISE_VALIDATION_KEYS.TITLE_REQUIRED;
+  }
+  if (isSpeechArticulation && !expectedText?.trim()) {
+    return EXERCISE_VALIDATION_KEYS.EXPECTED_TEXT_REQUIRED;
   }
   return null;
 }

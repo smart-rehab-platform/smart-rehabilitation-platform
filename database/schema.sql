@@ -556,6 +556,8 @@ CREATE TABLE ai_reports (
     period_end    DATE NOT NULL,
     pdf_url       TEXT,
     summary       TEXT,
+    generated_by  UUID REFERENCES users(id),
+    language      VARCHAR(8) NOT NULL DEFAULT 'en',
     generated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

@@ -44,7 +44,9 @@ import SpecialistTreatmentPlansPage from "./features/specialist-dashboard/Specia
 import SpecialistTreatmentPlanCreatePage from "./features/specialist-dashboard/SpecialistTreatmentPlanCreatePage";
 import SpecialistTreatmentPlanEditPage from "./features/specialist-dashboard/SpecialistTreatmentPlanEditPage";
 import SpecialistAiRecommendationsPage from "./features/specialist-dashboard/SpecialistAiRecommendationsPage";
+import SpecialistManageGoalsPage from "./features/specialist-dashboard/SpecialistManageGoalsPage";
 import SpecialistSpeechAnalysisPage from "./features/specialist-dashboard/SpecialistSpeechAnalysisPage";
+import SpecialistAssignExercisePage from "./features/specialist-dashboard/SpecialistAssignExercisePage";
 import SpecialistSessionsPage from "./features/specialist-dashboard/SpecialistSessionsPage";
 import SpecialistScheduleSessionPage from "./features/specialist-dashboard/SpecialistScheduleSessionPage";
 import SpecialistExercisesPage from "./features/specialist-dashboard/SpecialistExercisesPage";
@@ -433,7 +435,7 @@ function App() {
           path="/dashboard/specialist/patients/:patientId/goals"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title={SPECIALIST_PLACEHOLDER_FEATURES.patientGoals.title} />
+              <SpecialistManageGoalsPage />
             </ProtectedRoute>
           }
         />
@@ -457,7 +459,7 @@ function App() {
           path="/dashboard/specialist/patients/:patientId/assign-exercise"
           element={
             <ProtectedRoute>
-              <SpecialistPlaceholderPage title={SPECIALIST_PLACEHOLDER_FEATURES.assignExercise.title} />
+              <SpecialistAssignExercisePage />
             </ProtectedRoute>
           }
         />

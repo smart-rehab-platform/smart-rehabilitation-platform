@@ -1,4 +1,5 @@
 import { getAdminRoleTone, getAvatarInitial } from "./adminDashboardMappers.js";
+import { resolveProfileImageUrl } from "./adminPatientsMappers.js";
 
 const MONTH_LABELS = [
   "Jan",
@@ -56,6 +57,9 @@ export function mapAdminUserRecord(row) {
     role,
     roleTone: getAdminRoleTone(role),
     avatarInitial: getAvatarInitial(fullName),
+    profileImageUrl: resolveProfileImageUrl(
+      readString(row, ["profile_image_url", "profileImageUrl"]),
+    ),
     isActive: row.is_active === true || row.isActive === true,
     createdAt: readDate(row.created_at ?? row.createdAt),
   };

@@ -10,7 +10,7 @@ export function SpecialistAssignedExercises({ exercises, onAssignExercise }) {
     <section className="pd-specialist-patient-section" id="specialist-patient-exercises">
       <div className="pd-specialist-section-head">
         <h2 className="pd-section-title">{t("specialist.patientDetails.assignedExercises")}</h2>
-        <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onAssignExercise}>
+        <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onAssignExercise}>
           {t("specialist.patientDetails.assignExercise")}
         </button>
       </div>

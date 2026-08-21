@@ -35,7 +35,7 @@ export function SpecialistPatientTreatmentPlan({ treatmentPlan, onCreatePlan, on
       <div className="pd-specialist-section-head">
         <h2 className="pd-section-title">{t("specialist.patientDetails.treatmentPlan")}</h2>
         {treatmentPlan ? (
-          <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onEditPlan}>
+          <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onEditPlan}>
             {t("specialist.patientDetails.editTreatmentPlan")}
           </button>
         ) : (

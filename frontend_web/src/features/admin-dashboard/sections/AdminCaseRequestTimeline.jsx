@@ -2,20 +2,20 @@ import { CheckCircle2, Circle, CircleDot } from "lucide-react";
 
 function TimelineIcon({ state }) {
   if (state === "completed") {
-    return <CheckCircle2 size={18} strokeWidth={2.1} aria-hidden="true" />;
+    return <CheckCircle2 size={16} strokeWidth={2.1} aria-hidden="true" />;
   }
 
   if (state === "current") {
-    return <CircleDot size={18} strokeWidth={2.1} aria-hidden="true" />;
+    return <CircleDot size={16} strokeWidth={2.1} aria-hidden="true" />;
   }
 
-  return <Circle size={18} strokeWidth={2.1} aria-hidden="true" />;
+  return <Circle size={16} strokeWidth={2.1} aria-hidden="true" />;
 }
 
 export function AdminCaseRequestTimeline({ steps, labels }) {
   return (
     <section className="pd-card pd-card-pad pd-admin-case-request-timeline pd-section-enter" aria-label={labels.statusTimeline}>
-      <h2 className="pd-admin-case-request-section-title">{labels.statusTimeline}</h2>
+      <h2 className="pd-admin-case-request-page-section-title">{labels.statusTimeline}</h2>
       <ol className="pd-admin-case-request-timeline-list">
         {steps.map((step) => (
           <li

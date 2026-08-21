@@ -8,6 +8,8 @@ import {
 } from "../../../services/specialistExerciseService";
 import {
   buildExerciseUpdatePayload,
+  isSpeechArticulationCategory,
+  resolveExerciseCategoryName,
   validateExerciseEditForm,
 } from "../utils/specialistExerciseMappers";
 import {
@@ -38,6 +40,9 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [expectedText, setExpectedText] = useState("");
+  const [targetWord, setTargetWord] = useState("");
+  const [targetPhoneme, setTargetPhoneme] = useState("");
   const [language, setLanguage] = useState("en");
   const [instructionMediaUrl, setInstructionMediaUrl] = useState("");
   const [originalInstructionMediaUrl, setOriginalInstructionMediaUrl] = useState("");
@@ -98,6 +103,9 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
         setTitle(nextExercise.title || "");
         setDescription(nextExercise.description || "");
         setInstructions(nextExercise.instructions || "");
+        setExpectedText(nextExercise.expectedText || "");
+        setTargetWord(nextExercise.targetWord || "");
+        setTargetPhoneme(nextExercise.targetPhoneme || "");
         setLanguage(nextExercise.language || "en");
         setInstructionMediaUrl(loadedMediaUrl);
         setOriginalInstructionMediaUrl(loadedMediaUrl);
@@ -156,7 +164,14 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
   }, [originalInstructionMediaUrl]);
 
   const save = useCallback(async () => {
-    const validation = validateExerciseEditForm({ categoryId, title });
+    const categoryName = resolveExerciseCategoryName(categoryId, categories);
+    const isSpeechArticulation = isSpeechArticulationCategory(categoryName);
+    const validation = validateExerciseEditForm({
+      categoryId,
+      title,
+      isSpeechArticulation,
+      expectedText,
+    });
     if (validation) {
       setValidationMessage(validation);
       return { ok: false, message: getExerciseValidationMessage(validation, t) };
@@ -203,6 +218,10 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
         language,
         instructionMediaUrl: nextMediaUrl,
         clearInstructionMedia: clearInstructionMedia && !nextMediaUrl,
+        expectedText,
+        targetWord,
+        targetPhoneme,
+        isSpeechArticulation,
       });
 
       const updated = await updateSpecialistExercise(exerciseId, payload);
@@ -233,6 +252,10 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
     title,
     description,
     instructions,
+    expectedText,
+    targetWord,
+    targetPhoneme,
+    categories,
     language,
     instructionMediaUrl,
     clearInstructionMedia,
@@ -269,6 +292,9 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
     title,
     description,
     instructions,
+    expectedText,
+    targetWord,
+    targetPhoneme,
     language,
     instructionMediaUrl,
     originalInstructionMediaUrl,
@@ -278,6 +304,9 @@ export function useSpecialistExerciseEdit(exerciseId, enabled = true) {
     setTitle,
     setDescription,
     setInstructions,
+    setExpectedText,
+    setTargetWord,
+    setTargetPhoneme,
     setLanguage,
     selectMediaFile,
     removeMedia,

@@ -63,6 +63,28 @@ export function getAdminUsersLabels(t = null) {
     },
     statusActive: translateKey(t, "admin.users.status.active", "Active"),
     statusInactive: translateKey(t, "admin.users.status.inactive", "Inactive"),
+    manage: translateKey(t, "admin.users.manage", "Manage"),
+    menu: {
+      editUser: translateKey(t, "admin.users.menu.editUser", "Edit User"),
+      activateUser: translateKey(t, "admin.users.menu.activateUser", "Activate User"),
+      deactivateUser: translateKey(t, "admin.users.menu.deactivateUser", "Deactivate User"),
+      deleteUser: translateKey(t, "admin.users.menu.deleteUser", "Delete User"),
+    },
+    actionAria: {
+      manage: (name) => translateKey(
+        t,
+        "admin.users.actionAria.manage",
+        "Manage user {name}",
+        { name },
+      ),
+      menuTrigger: (name) => translateKey(
+        t,
+        "admin.users.actionAria.menuTrigger",
+        "More actions for {name}",
+        { name },
+      ),
+    },
+    emptyDisplay: translateKey(t, "admin.users.emptyDisplay", "User"),
     actions: {
       edit: translateKey(t, "admin.users.actions.edit", "Edit"),
       activate: translateKey(t, "admin.users.actions.activate", "Activate"),

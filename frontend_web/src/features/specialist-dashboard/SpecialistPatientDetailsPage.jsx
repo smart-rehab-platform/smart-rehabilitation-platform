@@ -19,11 +19,12 @@ import { useSpecialistPatientDetails } from "./hooks/useSpecialistPatientDetails
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
 import { SpecialistAddNoteDialog } from "./components/SpecialistAddNoteDialog";
+import { SpecialistAddDiagnosisDialog } from "./components/SpecialistAddDiagnosisDialog";
 import { SpecialistAssignedExercises } from "./sections/SpecialistAssignedExercises";
 import { SpecialistFamilyPatternInsight } from "./sections/SpecialistFamilyPatternInsight";
 import {
   SpecialistNotesSection,
-  SpecialistPatientFooterActions,
+  SpecialistPatientActions,
 } from "./sections/SpecialistNotesSection";
 import { SpecialistPatientGoals } from "./sections/SpecialistPatientGoals";
 import {
@@ -31,6 +32,7 @@ import {
   SpecialistPatientMessageParentButton,
 } from "./sections/SpecialistPatientHeader";
 import { SpecialistPatientQuickStats } from "./sections/SpecialistPatientQuickStats";
+import { SpecialistPatientDiagnosisSection } from "./sections/SpecialistPatientDiagnosisSection";
 import { SpecialistPatientTreatmentPlan } from "./sections/SpecialistPatientTreatmentPlan";
 import { SpecialistRecentSubmissions } from "./sections/SpecialistRecentSubmissions";
 import "../shared-dashboard/styles/dashboardTokens.css";
@@ -44,6 +46,7 @@ export default function SpecialistPatientDetailsPage() {
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
+  const [diagnosisDialogOpen, setDiagnosisDialogOpen] = useState(false);
   const goalsRef = useRef(null);
   const exercisesRef = useRef(null);
   const submissionsRef = useRef(null);
@@ -77,6 +80,7 @@ export default function SpecialistPatientDetailsPage() {
     isLoading,
     error,
     isSavingNote,
+    isSavingDiagnosis,
     familyPattern,
     familyPatternDetails,
     isLoadingFamilyPattern,
@@ -84,6 +88,7 @@ export default function SpecialistPatientDetailsPage() {
     isOpeningConversation,
     refetch,
     addNote,
+    addDiagnosis,
     openMessageParent,
     loadFamilyPatternDetailsPanel,
     retryFamilyPattern,
@@ -128,6 +133,24 @@ export default function SpecialistPatientDetailsPage() {
     }
     return ok;
   }, [addNote, showToast, t]);
+
+  const handleManageDiagnosisOpen = useCallback(() => {
+    if (isLoading || !details) {
+      if (error) {
+        showToast(error);
+      }
+      return;
+    }
+    setDiagnosisDialogOpen(true);
+  }, [details, error, isLoading, showToast]);
+
+  const handleAddDiagnosis = useCallback(async (payload) => {
+    const result = await addDiagnosis(payload);
+    if (result?.ok) {
+      showToast(t("specialist.patientDetails.diagnosisSaved"));
+    }
+    return result;
+  }, [addDiagnosis, showToast, t]);
 
   const handleReviewExercises = useCallback(() => {
     const pending = (details?.recentSubmissions || []).filter(
@@ -198,7 +221,30 @@ export default function SpecialistPatientDetailsPage() {
           isLoading={isOpeningConversation}
         />
 
+        <SpecialistPatientActions
+          hasActivePlan={Boolean(details.treatmentPlan?.isActive)}
+          onReviewExercises={handleReviewExercises}
+          onViewReports={() => navigate(buildSpecialistPatientReportsPath(patientId))}
+          onCreateTreatmentPlan={() => navigate(
+            buildSpecialistCreateTreatmentPlanPath(patientId, details.patient.fullName),
+          )}
+          onEditTreatmentPlan={() => {
+            if (details.treatmentPlan?.id) {
+              navigate(buildSpecialistEditTreatmentPlanPath(details.treatmentPlan.id));
+            } else {
+              showToast(t("specialist.patientDetails.toast.noTreatmentPlan"));
+            }
+          }}
+          onAiRecommendations={() => navigate(buildSpecialistPatientAiRecommendationsPath(patientId))}
+          onSpeechAnalysis={() => navigate(buildSpecialistPatientSpeechAnalysisPath(patientId))}
+          onManageDiagnosis={handleManageDiagnosisOpen}
+        />
+
         <SpecialistPatientQuickStats stats={details.stats} onStatClick={scrollToSection} />
+
+        <SpecialistPatientDiagnosisSection
+          diagnoses={details.diagnoses}
+        />
 
         <SpecialistFamilyPatternInsight
           insight={familyPattern}
@@ -248,24 +294,6 @@ export default function SpecialistPatientDetailsPage() {
           notes={details.notes}
           onAddNote={() => setNoteDialogOpen(true)}
         />
-
-        <SpecialistPatientFooterActions
-          hasActivePlan={Boolean(details.treatmentPlan?.isActive)}
-          onReviewExercises={handleReviewExercises}
-          onViewReports={() => navigate(buildSpecialistPatientReportsPath(patientId))}
-          onCreateTreatmentPlan={() => navigate(
-            buildSpecialistCreateTreatmentPlanPath(patientId, details.patient.fullName),
-          )}
-          onEditTreatmentPlan={() => {
-            if (details.treatmentPlan?.id) {
-              navigate(buildSpecialistEditTreatmentPlanPath(details.treatmentPlan.id));
-            } else {
-              showToast(t("specialist.patientDetails.toast.noTreatmentPlan"));
-            }
-          }}
-          onAiRecommendations={() => navigate(buildSpecialistPatientAiRecommendationsPath(patientId))}
-          onSpeechAnalysis={() => navigate(buildSpecialistPatientSpeechAnalysisPath(patientId))}
-        />
       </div>
     );
   };
@@ -312,6 +340,15 @@ export default function SpecialistPatientDetailsPage() {
         onClose={() => setNoteDialogOpen(false)}
         onSubmit={handleAddNote}
         isSaving={isSavingNote}
+      />
+
+      <SpecialistAddDiagnosisDialog
+        key={`${diagnosisDialogOpen ? "open" : "closed"}-${details?.diagnoses?.[0]?.id || "new"}`}
+        open={diagnosisDialogOpen}
+        onClose={() => setDiagnosisDialogOpen(false)}
+        onSubmit={handleAddDiagnosis}
+        isSaving={isSavingDiagnosis}
+        currentDiagnosis={details?.diagnoses?.[0] ?? null}
       />
 
       {toast ? (

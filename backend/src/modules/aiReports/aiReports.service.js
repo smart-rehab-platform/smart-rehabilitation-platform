@@ -5,6 +5,10 @@ const { generateAiReportPdfFile } = require("./aiReportPdf.generator");
 const {
   cloneWithoutLegacySpeechScores,
 } = require("../../utils/legacySpeechScores");
+const {
+  DEFAULT_AI_REPORT_LANGUAGE,
+  normalizeAiReportLanguage,
+} = require("./aiReportLanguage");
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -386,12 +390,13 @@ const collectReportContext = async (patientId, type, periodStart, periodEnd) => 
   };
 };
 
-const buildReportPrompt = ({ patient, context, type, periodStart, periodEnd }) => {
+const buildReportPrompt = ({ patient, context, type, periodStart, periodEnd, language = DEFAULT_AI_REPORT_LANGUAGE }) => {
   const promptContext = {
     report_request: {
       type,
       period_start: periodStart,
-      period_end: periodEnd
+      period_end: periodEnd,
+      language,
     },
     patient_profile: patient,
     medical_and_diagnosis: {
@@ -410,6 +415,22 @@ const buildReportPrompt = ({ patient, context, type, periodStart, periodEnd }) =
     ai_progress_notes: context.aiProgressNotes
   };
 
+  const languageInstructions = language === "ar"
+    ? [
+        "LANGUAGE REQUIREMENT (CRITICAL):",
+        "Write ALL human-readable clinical narrative VALUES in professional Modern Standard Arabic.",
+        "This includes executive_summary, patient_progress_summary, speech_analysis_summary, exercise_adherence_summary, goal_progress_summary, clinical_insights, risks_or_regressions, recommendations, and next_steps.",
+        "Use clear clinical Arabic appropriate for a rehabilitation specialist report.",
+        "Do NOT translate JSON property/field names. Keep every JSON key exactly in English as specified.",
+        "Do NOT invent Arabic translations for patient names; keep proper names as provided.",
+        "Keep IDs, numeric measurements, percentages, and dates factually accurate.",
+      ]
+    : [
+        "LANGUAGE REQUIREMENT:",
+        "Write ALL human-readable clinical narrative VALUES in professional clinical English.",
+        "Do NOT translate JSON property/field names. Keep every JSON key exactly in English as specified.",
+      ];
+
   return [
     `Create a structured ${type} rehabilitation report for a specialist.`,
     "Use only the provided patient context.",
@@ -421,12 +442,19 @@ const buildReportPrompt = ({ patient, context, type, periodStart, periodEnd }) =
     "Do not describe overall speech score improvement, decline, pronunciation score, or fluency score.",
     "Focus on recent progress, speech status if available, adherence, goals, risks, and practical next steps.",
     "",
+    ...languageInstructions,
+    "",
     "Patient context:",
     JSON.stringify(promptContext, null, 2)
   ].join("\n");
 };
 
-const buildRuleBasedReportFallback = ({ patient, context, type }) => {
+const buildRuleBasedReportFallback = ({ patient, context, type, language = DEFAULT_AI_REPORT_LANGUAGE }) => {
+  const isAr = language === "ar";
+  const typeLabel = isAr
+    ? (type === "monthly" ? "الشهري" : "الأسبوعي")
+    : type;
+
   const latestProgress = context.progressSnapshots[0] || null;
   const latestSpeech = context.speechAnalyses[0] || null;
   const achievedGoals = context.goals.filter((goal) => goal.is_achieved).length;
@@ -455,118 +483,184 @@ const buildRuleBasedReportFallback = ({ patient, context, type }) => {
     const averagePerformance = toNumber(latestProgress.average_performance);
 
     clinicalInsights.push(
-      `Latest ${type} progress snapshot recorded ${latestProgress.exercises_completed} completed exercises with average performance ${averagePerformance !== null ? averagePerformance.toFixed(2) : "not available"}.`
+      isAr
+        ? `سجّل أحدث ملخص تقدم ${typeLabel} إكمال ${latestProgress.exercises_completed} تمرينًا بمتوسط أداء ${averagePerformance !== null ? averagePerformance.toFixed(2) : "غير متاح"}.`
+        : `Latest ${type} progress snapshot recorded ${latestProgress.exercises_completed} completed exercises with average performance ${averagePerformance !== null ? averagePerformance.toFixed(2) : "not available"}.`
     );
 
     if (improvement !== null) {
       if (improvement >= 10) {
         clinicalInsights.push(
-          `Structured progress data suggests improvement of ${improvement.toFixed(2)}% during the reporting period.`
+          isAr
+            ? `تشير بيانات التقدم المنظّمة إلى تحسّن بنسبة ${improvement.toFixed(2)}% خلال فترة التقرير.`
+            : `Structured progress data suggests improvement of ${improvement.toFixed(2)}% during the reporting period.`
         );
         priorityLevel = "low";
       } else if (improvement < 0) {
         risksOrRegressions.push(
-          `Structured progress data suggests a decline of ${Math.abs(improvement).toFixed(2)}% during the reporting period.`
+          isAr
+            ? `تشير بيانات التقدم المنظّمة إلى تراجع بنسبة ${Math.abs(improvement).toFixed(2)}% خلال فترة التقرير.`
+            : `Structured progress data suggests a decline of ${Math.abs(improvement).toFixed(2)}% during the reporting period.`
         );
         priorityLevel = "high";
       } else {
         clinicalInsights.push(
-          `Progress change during the reporting period appears modest at ${improvement.toFixed(2)}%.`
+          isAr
+            ? `يبدو أن التغيّر في التقدم خلال فترة التقرير محدود بنسبة ${improvement.toFixed(2)}%.`
+            : `Progress change during the reporting period appears modest at ${improvement.toFixed(2)}%.`
         );
       }
     }
   } else {
     clinicalInsights.push(
-      `No ${type} progress snapshot was available for the requested reporting period.`
+      isAr
+        ? `لم يتوفر ملخص تقدم ${typeLabel} لفترة التقرير المطلوبة.`
+        : `No ${type} progress snapshot was available for the requested reporting period.`
     );
   }
 
   if (latestSpeech) {
     clinicalInsights.push(
-      latestSpeech.transcript
-        ? "Latest speech analysis transcript data is available for specialist review."
-        : "Speech analysis data is available for the reporting period for specialist review."
+      isAr
+        ? (latestSpeech.transcript
+          ? "تتوفر بيانات نص تحليل النطق الأخيرة لمراجعة الأخصائي."
+          : "تتوفر بيانات تحليل النطق لفترة التقرير لمراجعة الأخصائي.")
+        : (latestSpeech.transcript
+          ? "Latest speech analysis transcript data is available for specialist review."
+          : "Speech analysis data is available for the reporting period for specialist review.")
     );
   } else {
-    clinicalInsights.push("No speech analysis was available in the requested reporting period.");
+    clinicalInsights.push(
+      isAr
+        ? "لم يتوفر تحليل نطق خلال فترة التقرير المطلوبة."
+        : "No speech analysis was available in the requested reporting period."
+    );
   }
 
   if (totalSubmissions > 0) {
     clinicalInsights.push(
-      `${totalSubmissions} exercise submission${totalSubmissions === 1 ? "" : "s"} were recorded during the reporting period.`
+      isAr
+        ? `تم تسجيل ${totalSubmissions} تسليم تمرين خلال فترة التقرير.`
+        : `${totalSubmissions} exercise submission${totalSubmissions === 1 ? "" : "s"} were recorded during the reporting period.`
     );
   } else {
-    risksOrRegressions.push("Exercise adherence data is limited because no submissions were recorded in the reporting period.");
+    risksOrRegressions.push(
+      isAr
+        ? "بيانات الالتزام بالتمارين محدودة لعدم تسجيل أي تسليمات خلال فترة التقرير."
+        : "Exercise adherence data is limited because no submissions were recorded in the reporting period."
+    );
   }
 
   if (retryCount > 0 || weakReviewCount > 0) {
     risksOrRegressions.push(
-      `${retryCount} retry flag${retryCount === 1 ? "" : "s"} and ${weakReviewCount} low-rated review${weakReviewCount === 1 ? "" : "s"} suggest areas that may need closer follow-up.`
+      isAr
+        ? `تشير ${retryCount} علامة إعادة محاولة و${weakReviewCount} مراجعة منخفضة التقييم إلى مجالات قد تحتاج متابعة أدق.`
+        : `${retryCount} retry flag${retryCount === 1 ? "" : "s"} and ${weakReviewCount} low-rated review${weakReviewCount === 1 ? "" : "s"} suggest areas that may need closer follow-up.`
     );
     priorityLevel = "high";
   }
 
   if (achievedGoals > 0) {
     clinicalInsights.push(
-      `${achievedGoals} goal${achievedGoals === 1 ? " has" : "s have"} been achieved based on the latest treatment-plan data.`
+      isAr
+        ? `تم تحقيق ${achievedGoals} هدف وفق أحدث بيانات خطة العلاج.`
+        : `${achievedGoals} goal${achievedGoals === 1 ? " has" : "s have"} been achieved based on the latest treatment-plan data.`
     );
   }
 
   if (lowProgressGoals > 0) {
     risksOrRegressions.push(
-      `${lowProgressGoals} goal${lowProgressGoals === 1 ? "" : "s"} remain below 40% completion and may need revised short-term planning.`
+      isAr
+        ? `ما زال ${lowProgressGoals} هدفًا دون 40% إنجازًا وقد يحتاج تخطيطًا قصير الأمد منقّحًا.`
+        : `${lowProgressGoals} goal${lowProgressGoals === 1 ? "" : "s"} remain below 40% completion and may need revised short-term planning.`
     );
   }
 
   if (priorityLevel === "high") {
     recommendations.push(
-      "Review the current treatment plan, exercise difficulty, and adherence barriers with the specialist."
+      isAr
+        ? "مراجعة خطة العلاج الحالية وصعوبة التمارين وعوائق الالتزام مع الأخصائي."
+        : "Review the current treatment plan, exercise difficulty, and adherence barriers with the specialist."
     );
     nextSteps.push(
-      "Schedule a closer specialist follow-up and verify whether recent exercises remain developmentally appropriate."
+      isAr
+        ? "جدولة متابعة أقرب مع الأخصائي والتحقق من ملاءمة التمارين الحديثة للنمو."
+        : "Schedule a closer specialist follow-up and verify whether recent exercises remain developmentally appropriate."
     );
   } else if (priorityLevel === "low") {
     recommendations.push(
-      "Continue the current treatment direction while reinforcing the areas already showing improvement."
+      isAr
+        ? "الاستمرار في الاتجاه العلاجي الحالي مع تعزيز المجالات التي تُظهر تحسنًا."
+        : "Continue the current treatment direction while reinforcing the areas already showing improvement."
     );
     nextSteps.push(
-      "Maintain routine monitoring and progress snapshots during the next reporting cycle."
+      isAr
+        ? "الحفاظ على المراقبة الروتينية وملخصات التقدم خلال دورة التقرير التالية."
+        : "Maintain routine monitoring and progress snapshots during the next reporting cycle."
     );
   } else {
     recommendations.push(
-      "Maintain the current treatment direction but monitor the next cycle closely before making major changes."
+      isAr
+        ? "الحفاظ على الاتجاه العلاجي الحالي مع مراقبة الدورة التالية عن كثب قبل إجراء تغييرات كبيرة."
+        : "Maintain the current treatment direction but monitor the next cycle closely before making major changes."
     );
     nextSteps.push(
-      "Collect additional progress, speech, and review data to clarify whether the current pattern is stable or improving."
+      isAr
+        ? "جمع مزيد من بيانات التقدم والنطق والمراجعات لتوضيح ما إذا كان النمط الحالي مستقرًا أو في تحسّن."
+        : "Collect additional progress, speech, and review data to clarify whether the current pattern is stable or improving."
     );
   }
 
   if (recommendations.length === 0) {
     recommendations.push(
-      "Use the available structured context to continue conservative specialist monitoring."
+      isAr
+        ? "استخدام السياق المنظّم المتاح لمواصلة المراقبة السريرية المحافظة."
+        : "Use the available structured context to continue conservative specialist monitoring."
     );
   }
 
   if (nextSteps.length === 0) {
-    nextSteps.push("Continue collecting structured rehabilitation data for the next report.");
+    nextSteps.push(
+      isAr
+        ? "الاستمرار في جمع بيانات التأهيل المنظّمة للتقرير التالي."
+        : "Continue collecting structured rehabilitation data for the next report."
+    );
   }
 
   return {
-    executive_summary: `${patient.full_name}'s ${type} AI report was generated from structured rehabilitation data with${latestProgress ? "" : " limited"} recent progress context available.`,
+    executive_summary: isAr
+      ? `تم إنشاء التقرير الذكي ${typeLabel} لـ ${patient.full_name} من بيانات التأهيل المنظّمة${latestProgress ? "" : " مع سياق تقدم حديث محدود"}.`
+      : `${patient.full_name}'s ${type} AI report was generated from structured rehabilitation data with${latestProgress ? "" : " limited"} recent progress context available.`,
     patient_progress_summary: latestProgress
-      ? `The latest ${type} progress snapshot recorded ${latestProgress.exercises_completed} completed exercises and an improvement percentage of ${latestProgress.improvement_percentage}%.`
-      : `No ${type} progress snapshot was available in the requested reporting period, so progress interpretation is limited.`,
+      ? (isAr
+        ? `سجّل أحدث ملخص تقدم ${typeLabel} إكمال ${latestProgress.exercises_completed} تمرينًا ونسبة تحسّن قدرها ${latestProgress.improvement_percentage}%.`
+        : `The latest ${type} progress snapshot recorded ${latestProgress.exercises_completed} completed exercises and an improvement percentage of ${latestProgress.improvement_percentage}%.`)
+      : (isAr
+        ? `لم يتوفر ملخص تقدم ${typeLabel} في فترة التقرير المطلوبة، لذا فإن تفسير التقدم محدود.`
+        : `No ${type} progress snapshot was available in the requested reporting period, so progress interpretation is limited.`),
     speech_analysis_summary: latestSpeech
-      ? "Speech analysis data is available for the reporting period for specialist review."
-      : "No speech analysis data was available in the requested reporting period.",
+      ? (isAr
+        ? "تتوفر بيانات تحليل النطق لفترة التقرير لمراجعة الأخصائي."
+        : "Speech analysis data is available for the reporting period for specialist review.")
+      : (isAr
+        ? "لم تتوفر بيانات تحليل نطق في فترة التقرير المطلوبة."
+        : "No speech analysis data was available in the requested reporting period."),
     exercise_adherence_summary:
       totalSubmissions > 0
-        ? `${totalSubmissions} exercise submission${totalSubmissions === 1 ? "" : "s"} were recorded during the reporting period.`
-        : "Exercise adherence data is limited because no exercise submissions were recorded in the reporting period.",
+        ? (isAr
+          ? `تم تسجيل ${totalSubmissions} تسليم تمرين خلال فترة التقرير.`
+          : `${totalSubmissions} exercise submission${totalSubmissions === 1 ? "" : "s"} were recorded during the reporting period.`)
+        : (isAr
+          ? "بيانات الالتزام بالتمارين محدودة لعدم تسجيل أي تسليمات تمارين خلال فترة التقرير."
+          : "Exercise adherence data is limited because no exercise submissions were recorded in the reporting period."),
     goal_progress_summary:
       context.goals.length > 0
-        ? `${achievedGoals} of ${context.goals.length} tracked goal${context.goals.length === 1 ? "" : "s"} are currently marked as achieved.`
-        : "No goal data was available for the requested reporting period.",
+        ? (isAr
+          ? `تم تحقيق ${achievedGoals} من أصل ${context.goals.length} هدفًا متابعًا حاليًا.`
+          : `${achievedGoals} of ${context.goals.length} tracked goal${context.goals.length === 1 ? "" : "s"} are currently marked as achieved.`)
+        : (isAr
+          ? "لم تتوفر بيانات أهداف لفترة التقرير المطلوبة."
+          : "No goal data was available for the requested reporting period."),
     clinical_insights: clinicalInsights,
     risks_or_regressions: risksOrRegressions,
     recommendations,
@@ -576,13 +670,24 @@ const buildRuleBasedReportFallback = ({ patient, context, type }) => {
   };
 };
 
-const generateReport = async ({ patient_id, period_start, period_end, type }) => {
+const generateReport = async ({
+  patient_id,
+  period_start,
+  period_end,
+  type,
+  generated_by,
+  language,
+}) => {
   if (!patient_id || !period_start || !period_end || !type) {
     throw createError(
       "patient_id, period_start, period_end, and type are required",
       400
     );
   }
+
+  const reportLanguage = normalizeAiReportLanguage(language, {
+    fallbackToDefault: true,
+  });
 
   const context = await collectReportContext(
     patient_id,
@@ -601,12 +706,14 @@ const generateReport = async ({ patient_id, period_start, period_end, type }) =>
     context,
     type,
     periodStart: period_start,
-    periodEnd: period_end
+    periodEnd: period_end,
+    language: reportLanguage,
   });
   const fallbackReport = buildRuleBasedReportFallback({
     patient,
     context,
-    type
+    type,
+    language: reportLanguage,
   });
   const aiReport = await aiProviderService.generateReportJson(
     prompt,
@@ -619,6 +726,7 @@ const generateReport = async ({ patient_id, period_start, period_end, type }) =>
       period_start,
       period_end,
       patient_id,
+      language: reportLanguage,
       context_metadata: {
         counts: {
           diagnoses: context.diagnoses.length,
@@ -643,15 +751,23 @@ const generateReport = async ({ patient_id, period_start, period_end, type }) =>
   const insertResult = await db.query(
     `
     INSERT INTO ai_reports
-      (patient_id, type, period_start, period_end, summary)
+      (patient_id, type, period_start, period_end, summary, generated_by, language)
     VALUES
-      ($1, $2, $3, $4, $5)
-    RETURNING *
+      ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING id
     `,
-    [patient_id, type, period_start, period_end, summary]
+    [
+      patient_id,
+      type,
+      period_start,
+      period_end,
+      summary,
+      generated_by ?? null,
+      reportLanguage,
+    ]
   );
 
-  return insertResult.rows[0];
+  return getReportById(insertResult.rows[0].id);
 };
 
 const assertActorCanReadPatientAiReports = async (actor, patientId) => {
@@ -674,15 +790,22 @@ const assertActorCanReadPatientAiReports = async (actor, patientId) => {
   }
 };
 
+const AI_REPORT_SELECT = `
+  SELECT ar.*,
+         p.full_name AS patient_name,
+         u.full_name AS generated_by_name
+  FROM ai_reports ar
+  JOIN patients p ON p.id = ar.patient_id
+  LEFT JOIN users u ON u.id = ar.generated_by
+`;
+
 const getAllReports = async (actor) => {
   const role = String(actor?.role || "").toLowerCase();
 
   if (role === "admin") {
     const result = await db.query(
       `
-      SELECT ar.*, p.full_name AS patient_name
-      FROM ai_reports ar
-      JOIN patients p ON p.id = ar.patient_id
+      ${AI_REPORT_SELECT}
       ORDER BY ar.generated_at DESC
       `
     );
@@ -693,9 +816,7 @@ const getAllReports = async (actor) => {
   if (role === "specialist") {
     const result = await db.query(
       `
-      SELECT ar.*, p.full_name AS patient_name
-      FROM ai_reports ar
-      JOIN patients p ON p.id = ar.patient_id
+      ${AI_REPORT_SELECT}
       JOIN patient_specialists ps
         ON ps.patient_id = ar.patient_id
        AND ps.specialist_id = $1
@@ -713,9 +834,7 @@ const getAllReports = async (actor) => {
 const getReportById = async (id) => {
   const result = await db.query(
     `
-    SELECT ar.*, p.full_name AS patient_name
-    FROM ai_reports ar
-    JOIN patients p ON p.id = ar.patient_id
+    ${AI_REPORT_SELECT}
     WHERE ar.id = $1
     `,
     [id]
@@ -727,10 +846,9 @@ const getReportById = async (id) => {
 const getReportsByPatient = async (patientId) => {
   const result = await db.query(
     `
-    SELECT *
-    FROM ai_reports
-    WHERE patient_id = $1
-    ORDER BY generated_at DESC
+    ${AI_REPORT_SELECT}
+    WHERE ar.patient_id = $1
+    ORDER BY ar.generated_at DESC
     `,
     [patientId]
   );

@@ -1,21 +1,21 @@
 export function AdminCaseChildInfo({ detail, labels }) {
   return (
-    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={labels.childInformation}>
-      <h2 className="pd-admin-case-request-section-title">{labels.childInformation}</h2>
-      <dl className="pd-admin-case-request-fields">
-        <div>
-          <dt>{labels.fields.dateOfBirth}</dt>
-          <dd>{detail.dateOfBirthLabel}</dd>
+    <article className="pd-admin-case-info-card pd-section-enter" aria-label={labels.childInformation}>
+      <h3 className="pd-admin-case-info-card-title">{labels.childInformation}</h3>
+      <div className="pd-admin-case-info-grid is-compact">
+        <div className="pd-admin-case-info-block">
+          <span className="pd-admin-case-info-label">{labels.fields.dateOfBirth}</span>
+          <span className="pd-admin-case-info-value">{detail.dateOfBirthLabel}</span>
         </div>
-        <div>
-          <dt>{labels.fields.age}</dt>
-          <dd>{detail.ageLabel}</dd>
+        <div className="pd-admin-case-info-block">
+          <span className="pd-admin-case-info-label">{labels.fields.age}</span>
+          <span className="pd-admin-case-info-value">{detail.ageLabel}</span>
         </div>
-        <div>
-          <dt>{labels.fields.gender}</dt>
-          <dd>{detail.genderLabel}</dd>
+        <div className="pd-admin-case-info-block">
+          <span className="pd-admin-case-info-label">{labels.fields.gender}</span>
+          <span className="pd-admin-case-info-value">{detail.genderLabel}</span>
         </div>
-      </dl>
-    </section>
+      </div>
+    </article>
   );
 }

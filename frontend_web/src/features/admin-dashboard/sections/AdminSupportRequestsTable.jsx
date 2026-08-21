@@ -1,5 +1,6 @@
 import { SupportRequestStatusBadge } from "../../shared-dashboard/components/supportRequests/SupportRequestStatusBadge";
 import { useLocale } from "../../../context/useLocale.js";
+import { AdminTablePrimaryAction } from "../components/AdminTablePrimaryAction";
 import {
   buildSupportRequestCategoryFilterOptions,
   buildSupportRequestStatusFilterOptions,
@@ -163,13 +164,12 @@ export function AdminSupportRequestsTable({
               <td data-label={labels.columns.lastActivity}>{request.lastMessageAtLabel}</td>
               <td data-label={labels.columns.created}>{request.createdAtLabel}</td>
               <td data-label={labels.columns.action}>
-                <button
-                  type="button"
-                  className="pd-btn pd-btn-soft pd-admin-complaints-view-btn"
+                <AdminTablePrimaryAction
+                  className="pd-admin-complaints-view-btn"
                   onClick={() => onViewRequest(request.id)}
                 >
                   {labels.view}
-                </button>
+                </AdminTablePrimaryAction>
               </td>
             </tr>
           ))}

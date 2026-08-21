@@ -2013,6 +2013,116 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter clinical note...';
 
   @override
+  String get specialistPatientDetailsDiagnosisSectionTitle =>
+      'Diagnosis / Condition';
+
+  @override
+  String get specialistPatientDetailsCurrentDiagnosis => 'Current Diagnosis';
+
+  @override
+  String get specialistPatientDetailsDiagnosisHistory => 'Diagnosis History';
+
+  @override
+  String get specialistPatientDetailsManageDiagnosis => 'Manage Diagnosis';
+
+  @override
+  String get specialistPatientDetailsManageDiagnosisTitle => 'Manage Diagnosis';
+
+  @override
+  String get specialistPatientDetailsDiagnosisSelectorLabel =>
+      'Diagnosis / Condition';
+
+  @override
+  String get specialistPatientDetailsSelectDiagnosis => 'Select diagnosis';
+
+  @override
+  String get specialistPatientDetailsDiagnosisOptionOther => 'Other';
+
+  @override
+  String get specialistPatientDetailsOtherDiagnosisLabel => 'Other Diagnosis';
+
+  @override
+  String get specialistPatientDetailsDiagnosisSelectRequired =>
+      'Please select a diagnosis.';
+
+  @override
+  String get specialistPatientDetailsOtherDiagnosisRequired =>
+      'Please enter the diagnosis.';
+
+  @override
+  String get specialistDiagnosisOptionSpeechDelay => 'Speech Delay';
+
+  @override
+  String get specialistDiagnosisOptionSpeechLanguageDelay =>
+      'Speech and Language Delay';
+
+  @override
+  String get specialistDiagnosisOptionLanguageDelay => 'Language Delay';
+
+  @override
+  String get specialistDiagnosisOptionArticulationDisorder =>
+      'Articulation Disorder';
+
+  @override
+  String get specialistDiagnosisOptionFluencyDisorder => 'Fluency Disorder';
+
+  @override
+  String get specialistDiagnosisOptionVoiceDisorder => 'Voice Disorder';
+
+  @override
+  String get specialistDiagnosisOptionAutismSpectrumDisorder =>
+      'Autism Spectrum Disorder';
+
+  @override
+  String get specialistDiagnosisOptionDevelopmentalDelay =>
+      'Developmental Delay';
+
+  @override
+  String get specialistDiagnosisOptionLearningDifficulty =>
+      'Learning Difficulty';
+
+  @override
+  String get specialistDiagnosisOptionMotorDelay => 'Motor Delay';
+
+  @override
+  String get specialistDiagnosisOptionAdhd => 'ADHD';
+
+  @override
+  String get specialistPatientDetailsDiagnosisTitleLabel => 'Diagnosis Title';
+
+  @override
+  String get specialistPatientDetailsDiagnosisDescriptionLabel => 'Description';
+
+  @override
+  String get specialistPatientDetailsDiagnosedDateLabel => 'Diagnosed Date';
+
+  @override
+  String get specialistPatientDetailsDiagnosisTitleRequired =>
+      'Diagnosis title is required';
+
+  @override
+  String get specialistPatientDetailsDiagnosisSaved => 'Diagnosis saved';
+
+  @override
+  String specialistPatientDetailsSaveDiagnosisFailed(String error) {
+    return 'Failed to save diagnosis: $error';
+  }
+
+  @override
+  String get specialistPatientDetailsSaveDiagnosisFailedGeneric =>
+      'Failed to save diagnosis';
+
+  @override
+  String specialistPatientDetailsDiagnosedOn(String date) {
+    return 'Diagnosed: $date';
+  }
+
+  @override
+  String specialistPatientDetailsDiagnosedBy(String name) {
+    return 'Diagnosed by: $name';
+  }
+
+  @override
   String get specialistReviewExercises => 'Review Exercises';
 
   @override

@@ -59,6 +59,7 @@ export function getAdminAiCenterLabels(t = null) {
       recommendations: translateKey(t, "admin.ai.summary.recommendations", "AI Recommendations"),
       reports: translateKey(t, "admin.ai.summary.reports", "AI Reports"),
       attention: translateKey(t, "admin.ai.summary.needsAttention", "Needs Attention"),
+      loading: translateKey(t, "admin.ai.summary.loading", "Loading..."),
       pendingReviews: (count) => translateKey(
         t,
         "admin.ai.summary.pendingReviews",

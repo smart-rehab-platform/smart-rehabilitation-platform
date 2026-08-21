@@ -24,10 +24,10 @@ export function AdminPatientAssignmentsLinkParent({
   const hasParents = parents.length > 0;
 
   return (
-    <section className="pd-card pd-card-pad pd-admin-assignments-form-card" aria-label={labels.linkParent}>
-      <h2 className="pd-admin-assignments-card-title">{labels.linkParent}</h2>
+    <div className="pd-admin-assignments-manage-column" aria-label={labels.linkParent}>
+      <h3 className="pd-admin-assignments-column-title">{labels.linkParent}</h3>
 
-      <div className="pd-admin-form">
+      <div className="pd-admin-form pd-admin-assignments-column-form">
         <label className="pd-admin-field">
           <span className="pd-admin-field-label">{labels.parentLabel}</span>
           <select
@@ -89,6 +89,6 @@ export function AdminPatientAssignmentsLinkParent({
           {isSubmitting ? labels.linking : labels.linkParentAction}
         </button>
       </div>
-    </section>
+    </div>
   );
 }

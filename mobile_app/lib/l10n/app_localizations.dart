@@ -3596,6 +3596,192 @@ abstract class AppLocalizations {
   /// **'Enter clinical note...'**
   String get specialistPatientDetailsEnterClinicalNote;
 
+  /// Section heading for diagnosis management on patient details.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis / Condition'**
+  String get specialistPatientDetailsDiagnosisSectionTitle;
+
+  /// Label for the latest patient diagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Diagnosis'**
+  String get specialistPatientDetailsCurrentDiagnosis;
+
+  /// Heading for previous diagnoses list.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis History'**
+  String get specialistPatientDetailsDiagnosisHistory;
+
+  /// Primary action to manage patient diagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Diagnosis'**
+  String get specialistPatientDetailsManageDiagnosis;
+
+  /// Dialog title for managing diagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Diagnosis'**
+  String get specialistPatientDetailsManageDiagnosisTitle;
+
+  /// Label for diagnosis selector field.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis / Condition'**
+  String get specialistPatientDetailsDiagnosisSelectorLabel;
+
+  /// Placeholder for diagnosis dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Select diagnosis'**
+  String get specialistPatientDetailsSelectDiagnosis;
+
+  /// Other option in diagnosis selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get specialistPatientDetailsDiagnosisOptionOther;
+
+  /// Label for custom diagnosis when Other is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Diagnosis'**
+  String get specialistPatientDetailsOtherDiagnosisLabel;
+
+  /// Validation when no diagnosis option is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a diagnosis.'**
+  String get specialistPatientDetailsDiagnosisSelectRequired;
+
+  /// Validation when Other is selected without custom text.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the diagnosis.'**
+  String get specialistPatientDetailsOtherDiagnosisRequired;
+
+  /// No description provided for @specialistDiagnosisOptionSpeechDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech Delay'**
+  String get specialistDiagnosisOptionSpeechDelay;
+
+  /// No description provided for @specialistDiagnosisOptionSpeechLanguageDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech and Language Delay'**
+  String get specialistDiagnosisOptionSpeechLanguageDelay;
+
+  /// No description provided for @specialistDiagnosisOptionLanguageDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Delay'**
+  String get specialistDiagnosisOptionLanguageDelay;
+
+  /// No description provided for @specialistDiagnosisOptionArticulationDisorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Articulation Disorder'**
+  String get specialistDiagnosisOptionArticulationDisorder;
+
+  /// No description provided for @specialistDiagnosisOptionFluencyDisorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Fluency Disorder'**
+  String get specialistDiagnosisOptionFluencyDisorder;
+
+  /// No description provided for @specialistDiagnosisOptionVoiceDisorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice Disorder'**
+  String get specialistDiagnosisOptionVoiceDisorder;
+
+  /// No description provided for @specialistDiagnosisOptionAutismSpectrumDisorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Autism Spectrum Disorder'**
+  String get specialistDiagnosisOptionAutismSpectrumDisorder;
+
+  /// No description provided for @specialistDiagnosisOptionDevelopmentalDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Developmental Delay'**
+  String get specialistDiagnosisOptionDevelopmentalDelay;
+
+  /// No description provided for @specialistDiagnosisOptionLearningDifficulty.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning Difficulty'**
+  String get specialistDiagnosisOptionLearningDifficulty;
+
+  /// No description provided for @specialistDiagnosisOptionMotorDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Motor Delay'**
+  String get specialistDiagnosisOptionMotorDelay;
+
+  /// No description provided for @specialistDiagnosisOptionAdhd.
+  ///
+  /// In en, this message translates to:
+  /// **'ADHD'**
+  String get specialistDiagnosisOptionAdhd;
+
+  /// Form label for diagnosis title.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis Title'**
+  String get specialistPatientDetailsDiagnosisTitleLabel;
+
+  /// Form label for optional diagnosis description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get specialistPatientDetailsDiagnosisDescriptionLabel;
+
+  /// Form label for diagnosis date.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosed Date'**
+  String get specialistPatientDetailsDiagnosedDateLabel;
+
+  /// Validation when diagnosis title is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis title is required'**
+  String get specialistPatientDetailsDiagnosisTitleRequired;
+
+  /// Snack bar after saving a diagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis saved'**
+  String get specialistPatientDetailsDiagnosisSaved;
+
+  /// Error when saving diagnosis fails with details.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save diagnosis: {error}'**
+  String specialistPatientDetailsSaveDiagnosisFailed(String error);
+
+  /// Generic error when saving diagnosis fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save diagnosis'**
+  String get specialistPatientDetailsSaveDiagnosisFailedGeneric;
+
+  /// Label showing when a diagnosis was recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosed: {date}'**
+  String specialistPatientDetailsDiagnosedOn(String date);
+
+  /// Label showing who recorded the diagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosed by: {name}'**
+  String specialistPatientDetailsDiagnosedBy(String name);
+
   /// Action to review patient exercise submissions.
   ///
   /// In en, this message translates to:

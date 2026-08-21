@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "../../../context/useLocale";
 import {
+  generateAiReport,
   loadPatientScopedReports,
   loadSpecialistScopedReports,
 } from "../../../services/specialistReportService";
+import { validateSpecialistAiReportGeneration } from "../utils/specialistAiReportGeneration";
 import { filterVisibleReports } from "../utils/specialistReportMappers";
 import { applyReportListItemLocalization } from "../utils/specialistReportsLocalization";
 
@@ -20,16 +22,82 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
   const [filterId, setFilterId] = useState("all");
   const [refreshToken, setRefreshToken] = useState(0);
   const [patientName, setPatientName] = useState(null);
+  const [isGeneratingAiReport, setIsGeneratingAiReport] = useState(false);
+  const [generationError, setGenerationError] = useState(null);
   const loadTokenRef = useRef(0);
 
   const scopedPatientId = patientId?.trim() || null;
   const isPatientScoped = Boolean(scopedPatientId);
   const loadFailedError = t("specialist.reports.errors.loadFailed");
   const signInRequiredError = t("specialist.reports.errors.signInRequired");
+  const generateFailedError = t("specialist.reports.generate.failed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
   }, []);
+
+  const clearGenerationError = useCallback(() => {
+    setGenerationError(null);
+  }, []);
+
+  const generateAiReportForPatient = useCallback(async ({
+    patientId: selectedPatientId,
+    reportType,
+    periodStart,
+    periodEnd,
+  }) => {
+    if (isGeneratingAiReport) {
+      return { ok: false };
+    }
+
+    const validationError = validateSpecialistAiReportGeneration({
+      patientId: selectedPatientId,
+      reportType,
+      periodStart,
+      periodEnd,
+      t,
+    });
+
+    if (validationError) {
+      setGenerationError(validationError);
+      return { ok: false, message: validationError };
+    }
+
+    if (!specialistUserId) {
+      const message = signInRequiredError;
+      setGenerationError(message);
+      return { ok: false, message };
+    }
+
+    setIsGeneratingAiReport(true);
+    setGenerationError(null);
+
+    try {
+      await generateAiReport({
+        reportType,
+        patientId: selectedPatientId,
+        periodStart,
+        periodEnd,
+        language: locale,
+      });
+      setIsGeneratingAiReport(false);
+      reload();
+      return { ok: true };
+    } catch (generateError) {
+      const message = resolveErrorMessage(generateError, generateFailedError);
+      setIsGeneratingAiReport(false);
+      setGenerationError(message);
+      return { ok: false, message };
+    }
+  }, [
+    generateFailedError,
+    isGeneratingAiReport,
+    locale,
+    reload,
+    signInRequiredError,
+    specialistUserId,
+    t,
+  ]);
 
   useEffect(() => {
     if (!specialistUserId) {
@@ -108,6 +176,10 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
       isPatientScoped,
       patientName,
       reload,
+      isGeneratingAiReport: false,
+      generationError: null,
+      clearGenerationError,
+      generateAiReport: generateAiReportForPatient,
     };
   }
 
@@ -124,5 +196,9 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
     isPatientScoped,
     patientName,
     reload,
+    isGeneratingAiReport,
+    generationError,
+    clearGenerationError,
+    generateAiReport: generateAiReportForPatient,
   };
 }

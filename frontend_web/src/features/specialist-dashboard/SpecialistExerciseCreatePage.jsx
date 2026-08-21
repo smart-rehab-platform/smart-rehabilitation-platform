@@ -57,6 +57,9 @@ export default function SpecialistExerciseCreatePage() {
     title,
     description,
     instructions,
+    expectedText,
+    targetWord,
+    targetPhoneme,
     language,
     instructionMediaUrl,
     pendingMediaFile,
@@ -65,6 +68,9 @@ export default function SpecialistExerciseCreatePage() {
     setTitle,
     setDescription,
     setInstructions,
+    setExpectedText,
+    setTargetWord,
+    setTargetPhoneme,
     setLanguage,
     selectMediaFile,
     removeMedia,
@@ -130,6 +136,9 @@ export default function SpecialistExerciseCreatePage() {
         language={language}
         description={description}
         instructions={instructions}
+        expectedText={expectedText}
+        targetWord={targetWord}
+        targetPhoneme={targetPhoneme}
         categories={categories}
         fieldErrors={fieldErrors}
         isBusy={isBusy}
@@ -144,6 +153,9 @@ export default function SpecialistExerciseCreatePage() {
         onLanguageChange={setLanguage}
         onDescriptionChange={setDescription}
         onInstructionsChange={setInstructions}
+        onExpectedTextChange={setExpectedText}
+        onTargetWordChange={setTargetWord}
+        onTargetPhonemeChange={setTargetPhoneme}
         onSelectMediaFile={selectMediaFile}
         onRemoveMedia={removeMedia}
         onUndoMediaRemoval={undoMediaRemoval}

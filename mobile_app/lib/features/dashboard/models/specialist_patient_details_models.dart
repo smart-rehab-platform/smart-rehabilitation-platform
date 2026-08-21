@@ -4,6 +4,7 @@ class SpecialistPatientDetailsBundle {
   const SpecialistPatientDetailsBundle({
     required this.patient,
     required this.diagnosis,
+    required this.diagnoses,
     required this.overallProgress,
     required this.stats,
     required this.treatmentPlan,
@@ -15,6 +16,7 @@ class SpecialistPatientDetailsBundle {
 
   final PatientProfile patient;
   final String? diagnosis;
+  final List<PatientDiagnosisItem> diagnoses;
   final double overallProgress;
   final PatientQuickStats stats;
   final PatientTreatmentPlan? treatmentPlan;
@@ -336,18 +338,37 @@ class PatientSpecialistNote {
 }
 
 class PatientDiagnosisItem {
-  const PatientDiagnosisItem({required this.title});
+  const PatientDiagnosisItem({
+    required this.id,
+    required this.title,
+    this.description,
+    this.diagnosedAt,
+    this.diagnosedByName,
+  });
 
+  final String id;
   final String title;
+  final String? description;
+  final DateTime? diagnosedAt;
+  final String? diagnosedByName;
 
   factory PatientDiagnosisItem.fromMap(Map<String, dynamic> map) {
     return PatientDiagnosisItem(
+      id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
       title: ApiResponseParser.readString(map, const [
             'diagnosis_title',
             'diagnosisTitle',
             'title',
           ]) ??
           '—',
+      description: ApiResponseParser.readString(map, const ['description']),
+      diagnosedAt: ApiResponseParser.readDate(
+        map['diagnosed_at'] ?? map['diagnosedAt'],
+      ),
+      diagnosedByName: ApiResponseParser.readString(map, const [
+        'diagnosed_by_name',
+        'diagnosedByName',
+      ]),
     );
   }
 }

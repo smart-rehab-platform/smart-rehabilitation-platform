@@ -1,29 +1,33 @@
 export function AdminCasePreviousTreatment({ detail, labels }) {
   return (
-    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={labels.previousDiagnosisTreatment}>
-      <h2 className="pd-admin-case-request-section-title">{labels.previousDiagnosisTreatment}</h2>
-      <dl className="pd-admin-case-request-fields is-stack">
-        <div>
-          <dt>{labels.fields.previousDiagnosis}</dt>
-          <dd>{detail.hasPreviousDiagnosisLabel}</dd>
+    <article className="pd-admin-case-info-card pd-section-enter" aria-label={labels.previousDiagnosisTreatment}>
+      <h3 className="pd-admin-case-info-card-title">{labels.previousDiagnosisTreatment}</h3>
+      <div className="pd-admin-case-info-stack">
+        <div className="pd-admin-case-info-block">
+          <span className="pd-admin-case-info-label">{labels.fields.previousDiagnosis}</span>
+          <span className="pd-admin-case-info-value">{detail.hasPreviousDiagnosisLabel}</span>
         </div>
         {detail.hasPreviousDiagnosis && detail.previousDiagnosisDetails ? (
-          <div>
-            <dt>{labels.fields.diagnosisDetails}</dt>
-            <dd dir="auto">{detail.previousDiagnosisDetails}</dd>
+          <div className="pd-admin-case-info-block">
+            <span className="pd-admin-case-info-label">{labels.fields.diagnosisDetails}</span>
+            <span className="pd-admin-case-info-value">
+              <bdi dir="auto">{detail.previousDiagnosisDetails}</bdi>
+            </span>
           </div>
         ) : null}
-        <div>
-          <dt>{labels.fields.currentlyReceivingTreatment}</dt>
-          <dd>{detail.isCurrentlyReceivingTreatmentLabel}</dd>
+        <div className="pd-admin-case-info-block">
+          <span className="pd-admin-case-info-label">{labels.fields.currentlyReceivingTreatment}</span>
+          <span className="pd-admin-case-info-value">{detail.isCurrentlyReceivingTreatmentLabel}</span>
         </div>
         {detail.isCurrentlyReceivingTreatment && detail.currentTreatmentDetails ? (
-          <div>
-            <dt>{labels.fields.treatmentDetails}</dt>
-            <dd dir="auto">{detail.currentTreatmentDetails}</dd>
+          <div className="pd-admin-case-info-block">
+            <span className="pd-admin-case-info-label">{labels.fields.treatmentDetails}</span>
+            <span className="pd-admin-case-info-value">
+              <bdi dir="auto">{detail.currentTreatmentDetails}</bdi>
+            </span>
           </div>
         ) : null}
-      </dl>
-    </section>
+      </div>
+    </article>
   );
 }

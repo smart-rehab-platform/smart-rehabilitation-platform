@@ -107,6 +107,7 @@ class SpecialistPatientDetailsRepository {
     return SpecialistPatientDetailsBundle(
       patient: PatientProfile.fromMap(patientMap),
       diagnosis: diagnoses.isNotEmpty ? diagnoses.first.title : null,
+      diagnoses: diagnoses,
       overallProgress: overallProgress,
       stats: PatientQuickStats(
         activeGoals: activeGoals,
@@ -124,6 +125,29 @@ class SpecialistPatientDetailsRepository {
 
   Future<void> addSpecialistNote(String patientId, String note) async {
     await _dio.post('/patients/$patientId/notes', data: {'note': note});
+  }
+
+  Future<void> addDiagnosis({
+    required String patientId,
+    required String diagnosisTitle,
+    String? description,
+    required DateTime diagnosedAt,
+  }) async {
+    final trimmedTitle = diagnosisTitle.trim();
+    if (trimmedTitle.isEmpty) {
+      throw Exception('Diagnosis title is required');
+    }
+
+    await _dio.post(
+      '/patients/$patientId/diagnoses',
+      data: {
+        'diagnosis_title': trimmedTitle,
+        if (description != null && description.trim().isNotEmpty)
+          'description': description.trim(),
+        'diagnosed_at':
+            '${diagnosedAt.year.toString().padLeft(4, '0')}-${diagnosedAt.month.toString().padLeft(2, '0')}-${diagnosedAt.day.toString().padLeft(2, '0')}',
+      },
+    );
   }
 
   /// Supplementary family-pattern insight for specialist decision support.

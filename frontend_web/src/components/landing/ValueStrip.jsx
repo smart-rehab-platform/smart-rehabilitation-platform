@@ -96,8 +96,8 @@ export function ValueStrip() {
           boxShadow: L.lightShadow,
         }}
       >
-        {itemsWithIcons.map((item, index) => (
-          <ValueItem key={item.key} {...item} index={index} itemCount={itemsWithIcons.length} />
+        {itemsWithIcons.map(({ key, ...item }, index) => (
+          <ValueItem key={key} {...item} index={index} itemCount={itemsWithIcons.length} />
         ))}
       </div>
 

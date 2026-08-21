@@ -23,7 +23,7 @@ export function SpecialistRecentSubmissions({
     <section className="pd-specialist-patient-section" id="specialist-patient-submissions">
       <div className="pd-specialist-section-head">
         <h2 className="pd-section-title">{t("specialist.patientDetails.recentSubmissions")}</h2>
-        <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onReviewExercises}>
+        <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onReviewExercises}>
           {t("specialist.patientDetails.reviewExercises")}
         </button>
       </div>

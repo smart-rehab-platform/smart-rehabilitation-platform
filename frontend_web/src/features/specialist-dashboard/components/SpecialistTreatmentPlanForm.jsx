@@ -33,6 +33,7 @@ export function SpecialistTreatmentPlanForm({
   mode,
   patientName,
   patientAge = null,
+  profileImageUrl = null,
   overallProgressPercent = null,
   planStatusLabel,
   planStatusTone = "success",
@@ -57,6 +58,7 @@ export function SpecialistTreatmentPlanForm({
   onSubmit,
   onCancel,
   beforeActions = null,
+  showPatientSummary = true,
 }) {
   const { t } = useLocale();
   const isDesktopLayout = mode === "edit" || mode === "create";
@@ -233,13 +235,18 @@ export function SpecialistTreatmentPlanForm({
     }
 
     if (mode === "edit") {
+      if (!showPatientSummary) {
+        return null;
+      }
+
       return (
         <SpecialistTreatmentPlanPatientSummary
           patientName={patientName || "Patient"}
           patientAge={patientAge}
-          overallProgressPercent={overallProgressPercent}
+          profileImageUrl={profileImageUrl}
           statusLabel={planStatusLabel}
           statusTone={planStatusTone}
+          showProgress={false}
         />
       );
     }

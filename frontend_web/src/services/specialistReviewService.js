@@ -1,12 +1,13 @@
 import api from "./api";
 import { resolveUploadedAssetUrl } from "./apiConfig";
-import { getPatientById } from "./specialistPatientService";
+import { getPatientById, loadSpecialistPatients } from "./specialistPatientService";
 import {
   mapExerciseReviewRecord,
   mapReviewSubmissionDetail,
   mapSubmissionMediaItem,
 } from "../features/specialist-dashboard/utils/specialistReviewMappers";
 import { mapPendingReviewRow } from "../features/specialist-dashboard/utils/specialistPreviewMappers";
+import { mapSpecialistPatientList } from "../features/specialist-dashboard/utils/specialistPatientMappers";
 
 function extractData(response) {
   const payload = response?.data;
@@ -50,10 +51,20 @@ function throwServiceError(error, fallbackMessage) {
 export async function loadSpecialistAllPendingReviews(specialistUserId) {
   const id = requireId(specialistUserId, "Specialist user id");
   try {
-    const response = await api.get(`/specialists/${encodeURIComponent(id)}/pending-reviews`);
+    const [response, patientRows] = await Promise.all([
+      api.get(`/specialists/${encodeURIComponent(id)}/pending-reviews`),
+      loadSpecialistPatients(id),
+    ]);
     const rows = extractList(response);
+    const patientAvatarById = new Map(
+      mapSpecialistPatientList(patientRows).map((patient) => [
+        patient.id,
+        patient.profileImageUrl ?? null,
+      ]),
+    );
+
     return rows
-      .map(mapPendingReviewRow)
+      .map((row) => mapPendingReviewRow(row, { patientAvatarById }))
       .filter(Boolean)
       .sort((a, b) => (b.submittedAt?.getTime() ?? 0) - (a.submittedAt?.getTime() ?? 0));
   } catch (error) {

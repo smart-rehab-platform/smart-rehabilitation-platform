@@ -5,6 +5,7 @@ import { useAuth } from "../../context/useAuth";
 import { useLocale } from "../../context/useLocale";
 import { SPECIALIST_WEB_ROUTES } from "../../routes/specialistDashboardRoutes";
 import { SpecialistTreatmentPlanForm } from "./components/SpecialistTreatmentPlanForm";
+import { SpecialistTreatmentPlanPatientContextCard } from "./components/SpecialistTreatmentPlanPatientContextCard";
 import { useSpecialistTreatmentPlanEdit } from "./hooks/useSpecialistTreatmentPlanEdit";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
@@ -15,14 +16,6 @@ import {
 } from "./utils/specialistTreatmentPlansLocalization";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
-
-function computeGoalsOverallProgress(goals) {
-  if (!Array.isArray(goals) || goals.length === 0) {
-    return null;
-  }
-  const total = goals.reduce((sum, goal) => sum + (goal.completionPercent || 0), 0);
-  return Math.round(total / goals.length);
-}
 
 export default function SpecialistTreatmentPlanEditPage() {
   const navigate = useNavigate();
@@ -145,9 +138,10 @@ export default function SpecialistTreatmentPlanEditPage() {
         <SpecialistTreatmentPlanForm
           mode="edit"
           patientName={bundle.patientName}
-          overallProgressPercent={computeGoalsOverallProgress(localizedGoals)}
+          profileImageUrl={bundle.patientProfileImageUrl ?? null}
           planStatusLabel={statusMeta.label}
           planStatusTone={statusMeta.tone}
+          showPatientSummary={false}
           title={title}
           status={status}
           startDate={startDate}
@@ -198,7 +192,7 @@ export default function SpecialistTreatmentPlanEditPage() {
         showToast={showToast}
       >
         <div className="pd-task-hub-page pd-specialist-treatment-plan-edit-shell">
-          <div className="pd-task-hub-panel pd-specialist-treatment-plan-edit-page">
+          <div className="pd-task-hub-panel pd-specialist-treatment-plan-edit-page pd-specialist-treatment-plan-edit-page--compact">
             <header className="pd-specialist-treatment-plan-page-header">
               <button
                 type="button"
@@ -209,6 +203,15 @@ export default function SpecialistTreatmentPlanEditPage() {
                 {t("specialist.treatmentPlans.back")}
               </button>
               <h1 className="pd-section-title">{t("specialist.treatmentPlans.editTitle")}</h1>
+              {bundle ? (
+                <SpecialistTreatmentPlanPatientContextCard
+                  patientName={bundle.patientName}
+                  profileImageUrl={bundle.patientProfileImageUrl ?? null}
+                  planTitle={title}
+                  statusLabel={statusMeta.label}
+                  statusTone={statusMeta.tone}
+                />
+              ) : null}
             </header>
             {renderContent()}
           </div>

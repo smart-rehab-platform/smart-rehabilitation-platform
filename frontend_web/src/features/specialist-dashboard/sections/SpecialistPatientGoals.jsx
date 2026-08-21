@@ -9,7 +9,7 @@ export function SpecialistPatientGoals({ goals, onManageGoals, hasActivePlan }) 
       <div className="pd-specialist-section-head">
         <h2 className="pd-section-title">{t("specialist.patientDetails.goals")}</h2>
         {hasActivePlan ? (
-          <button type="button" className="pd-btn pd-btn-soft pd-btn-sm" onClick={onManageGoals}>
+          <button type="button" className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-patient-action-btn" onClick={onManageGoals}>
             {t("specialist.patientDetails.manageGoals")}
           </button>
         ) : null}

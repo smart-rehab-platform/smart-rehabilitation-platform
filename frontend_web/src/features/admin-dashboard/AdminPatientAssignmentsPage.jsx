@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Info } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { AdminPatientAssignmentsUnlinkDialog } from "./components/AdminPatientAssignmentsUnlinkDialog";
 import { useAdminPatientAssignments } from "./hooks/useAdminPatientAssignments";
@@ -239,61 +240,79 @@ export default function AdminPatientAssignmentsPage() {
           labels={labels}
         />
 
-        <div className="pd-admin-assignments-forms-grid">
-          <AdminPatientAssignmentsAssignSpecialist
-            specialists={specialists}
-            selectedSpecialistId={selectedSpecialistId}
-            isPrimarySpecialist={isPrimarySpecialist}
-            isSubmitting={isSubmittingSpecialist}
-            canSubmit={canAssignSpecialist}
-            error={specialistFormError}
-            onSelectSpecialist={setSelectedSpecialistId}
-            onPrimaryChange={setIsPrimarySpecialist}
-            onSubmit={handleAssignSpecialist}
-            labels={labels}
-          />
-          <AdminPatientAssignmentsLinkParent
-            parents={parents}
-            selectedParentId={selectedParentId}
-            selectedRelationship={selectedRelationship}
-            isPrimaryContact={isPrimaryContact}
-            isSubmitting={isSubmittingParent}
-            canSubmit={canLinkParent}
-            error={parentFormError}
-            onSelectParent={setSelectedParentId}
-            onSelectRelationship={setSelectedRelationship}
-            onPrimaryChange={setIsPrimaryContact}
-            onSubmit={handleLinkParent}
-            labels={labels}
-          />
+        <section
+          className="pd-card pd-card-pad pd-admin-assignments-manage-card"
+          aria-label={labels.manageRelationshipsTitle}
+        >
+          <header className="pd-admin-assignments-manage-header">
+            <h2 className="pd-admin-assignments-manage-title">{labels.manageRelationshipsTitle}</h2>
+            <p className="pd-admin-assignments-manage-subtitle">{labels.manageRelationshipsSubtitle}</p>
+          </header>
+
+          <div className="pd-admin-assignments-manage-grid">
+            <AdminPatientAssignmentsAssignSpecialist
+              specialists={specialists}
+              selectedSpecialistId={selectedSpecialistId}
+              isPrimarySpecialist={isPrimarySpecialist}
+              isSubmitting={isSubmittingSpecialist}
+              canSubmit={canAssignSpecialist}
+              error={specialistFormError}
+              onSelectSpecialist={setSelectedSpecialistId}
+              onPrimaryChange={setIsPrimarySpecialist}
+              onSubmit={handleAssignSpecialist}
+              labels={labels}
+            />
+            <AdminPatientAssignmentsLinkParent
+              parents={parents}
+              selectedParentId={selectedParentId}
+              selectedRelationship={selectedRelationship}
+              isPrimaryContact={isPrimaryContact}
+              isSubmitting={isSubmittingParent}
+              canSubmit={canLinkParent}
+              error={parentFormError}
+              onSelectParent={setSelectedParentId}
+              onSelectRelationship={setSelectedRelationship}
+              onPrimaryChange={setIsPrimaryContact}
+              onSubmit={handleLinkParent}
+              labels={labels}
+            />
+          </div>
+        </section>
+
+        <div className="pd-admin-assignments-info-note" role="note">
+          <Info size={15} className="pd-admin-assignments-info-icon" aria-hidden="true" />
+          <span>{labels.changeHint}</span>
         </div>
 
-        <p className="pd-admin-assignments-info-note">
-          {labels.changeHint}
-        </p>
+        <section
+          className="pd-admin-assignments-current-section"
+          aria-label={labels.currentRelationshipsTitle}
+        >
+          <h2 className="pd-admin-assignments-current-title">{labels.currentRelationshipsTitle}</h2>
 
-        <div className="pd-admin-assignments-lists-grid">
-          <AdminPatientAssignmentsSpecialistsList
-            assignedSpecialists={assignedSpecialists}
-            isLoading={isLoadingRelationships}
-            hasSelectedPatient={hasSelectedPatient}
-            relationshipsError={relationshipsError}
-            isUnlinking={isUnlinking}
-            onRetry={retryRelationships}
-            onUnlink={openUnlinkSpecialistDialog}
-            labels={labels}
-          />
-          <AdminPatientAssignmentsParentsList
-            linkedParents={linkedParents}
-            isLoading={isLoadingRelationships}
-            hasSelectedPatient={hasSelectedPatient}
-            relationshipsError={relationshipsError}
-            isUnlinking={isUnlinking}
-            onRetry={retryRelationships}
-            onUnlink={openUnlinkParentDialog}
-            labels={labels}
-          />
-        </div>
+          <div className="pd-admin-assignments-lists-grid">
+            <AdminPatientAssignmentsSpecialistsList
+              assignedSpecialists={assignedSpecialists}
+              isLoading={isLoadingRelationships}
+              hasSelectedPatient={hasSelectedPatient}
+              relationshipsError={relationshipsError}
+              isUnlinking={isUnlinking}
+              onRetry={retryRelationships}
+              onUnlink={openUnlinkSpecialistDialog}
+              labels={labels}
+            />
+            <AdminPatientAssignmentsParentsList
+              linkedParents={linkedParents}
+              isLoading={isLoadingRelationships}
+              hasSelectedPatient={hasSelectedPatient}
+              relationshipsError={relationshipsError}
+              isUnlinking={isUnlinking}
+              onRetry={retryRelationships}
+              onUnlink={openUnlinkParentDialog}
+              labels={labels}
+            />
+          </div>
+        </section>
       </div>
     );
   }
