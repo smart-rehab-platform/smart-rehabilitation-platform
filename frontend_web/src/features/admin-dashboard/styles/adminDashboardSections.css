@@ -705,6 +705,41 @@
   }
 }
 
+.pd-preview .pd-admin-table-primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  color: #fff;
+  background: var(--pd-primary-gradient);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, filter 0.15s ease;
+  white-space: nowrap;
+}
+
+.pd-preview .pd-admin-table-primary-action:hover {
+  background: var(--pd-primary-gradient);
+  filter: brightness(1.05);
+}
+
+.pd-preview .pd-admin-table-primary-action:focus-visible {
+  outline: 2px solid var(--pd-primary);
+  outline-offset: 2px;
+}
+
+.pd-preview .pd-admin-table-primary-action:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  filter: none;
+}
+
 [dir="rtl"] .pd-preview .pd-profile-page-toolbar .pd-back-link svg {
   transform: scaleX(-1);
 }

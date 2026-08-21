@@ -21,6 +21,7 @@ export function SpecialistExerciseLibraryGrid({
   onCategoryChange,
   onRetry,
   onExerciseClick,
+  selectedExerciseId = "",
 }) {
   const { t } = useLocale();
 
@@ -77,6 +78,7 @@ export function SpecialistExerciseLibraryGrid({
               key={exercise.id}
               exercise={exercise}
               onClick={onExerciseClick}
+              isSelected={selectedExerciseId === exercise.id}
             />
           ))}
         </div>

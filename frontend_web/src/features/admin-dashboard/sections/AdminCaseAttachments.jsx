@@ -1,20 +1,23 @@
-import { ExternalLink, FileText, Image as ImageIcon } from "lucide-react";
+import { ExternalLink, FileText, Image as ImageIcon, Paperclip } from "lucide-react";
 
 function AttachmentIcon({ attachment }) {
   if (attachment.isImage) {
-    return <ImageIcon size={18} strokeWidth={2.1} aria-hidden="true" />;
+    return <ImageIcon size={16} strokeWidth={2.1} aria-hidden="true" />;
   }
 
-  return <FileText size={18} strokeWidth={2.1} aria-hidden="true" />;
+  return <FileText size={16} strokeWidth={2.1} aria-hidden="true" />;
 }
 
 export function AdminCaseAttachments({ attachments, labels }) {
   return (
-    <section className="pd-card pd-card-pad pd-admin-case-request-section pd-section-enter" aria-label={labels.attachments}>
-      <h2 className="pd-admin-case-request-section-title">{labels.attachments}</h2>
+    <section className="pd-admin-case-request-page-section pd-section-enter" aria-label={labels.attachments}>
+      <h2 className="pd-admin-case-request-page-section-title">{labels.attachments}</h2>
 
       {attachments.length === 0 ? (
-        <p className="pd-admin-case-request-empty-copy">{labels.noAttachments}</p>
+        <div className="pd-admin-case-attachments-empty">
+          <Paperclip size={15} className="pd-admin-case-attachments-empty-icon" aria-hidden="true" />
+          <p className="pd-admin-case-request-empty-copy">{labels.noAttachmentsForCase}</p>
+        </div>
       ) : (
         <ul className="pd-admin-case-attachments-list">
           {attachments.map((attachment) => (
@@ -23,7 +26,9 @@ export function AdminCaseAttachments({ attachments, labels }) {
                 <AttachmentIcon attachment={attachment} />
               </span>
               <div className="pd-admin-case-attachment-copy">
-                <strong dir="auto">{attachment.originalName}</strong>
+                <strong>
+                  <bdi dir="auto">{attachment.originalName}</bdi>
+                </strong>
                 <span>{attachment.fileType || labels.fileTypeDefault}</span>
               </div>
               {attachment.resolvedUrl ? (

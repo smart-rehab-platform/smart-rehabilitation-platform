@@ -1,5 +1,6 @@
 import { formatAppDate } from "../../../i18n/formatters.js";
-import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
+import { resolveUploadedAssetUrl } from "../../../services/apiConfig.js";
+import { buildAiReportDetailSections } from "./specialistAiReportStructuredSummary.js";
 
 export const SPECIALIST_REPORT_FILTERS = [
   { id: "all" },
@@ -270,7 +271,26 @@ export function mapAiReportRow(row, patientNameMap = null) {
     pdfUrl: pdfUrlRaw ? resolveUploadedAssetUrl(pdfUrlRaw) : null,
     isAi: true,
     isPdfReady: Boolean(pdfUrlRaw?.trim()),
-    specialistName: null,
+    specialistName: readString(row, ["generated_by_name", "generatedByName", "specialist_name"]),
+    language: (() => {
+      const direct = readString(row, ["language", "locale"]);
+      if (direct) {
+        const primary = direct.toLowerCase().replace(/_/g, "-").split("-")[0];
+        return primary === "ar" ? "ar" : "en";
+      }
+      try {
+        const raw = row.summary;
+        const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+        const fromSummary = parsed?.language;
+        if (typeof fromSummary === "string") {
+          const primary = fromSummary.toLowerCase().replace(/_/g, "-").split("-")[0];
+          return primary === "ar" ? "ar" : "en";
+        }
+      } catch {
+        // ignore
+      }
+      return "en";
+    })(),
     periodStart: parseDateValue(row.period_start ?? row.periodStart),
     periodEnd: parseDateValue(row.period_end ?? row.periodEnd),
   };
@@ -294,11 +314,16 @@ export function mapAiReportDetail(row) {
   if (!listItem) {
     return null;
   }
+
+  const { aiStructuredSummary, sections } = buildAiReportDetailSections(
+    row.summary,
+    listItem.summary,
+  );
+
   return {
     ...listItem,
-    sections: listItem.summary
-      ? [{ title: "AI Summary", content: listItem.summary }]
-      : [],
+    aiStructuredSummary,
+    sections,
   };
 }
 

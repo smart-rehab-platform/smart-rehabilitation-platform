@@ -7,6 +7,7 @@ import {
 export const EXERCISE_VALIDATION_KEYS = {
   CATEGORY_REQUIRED: "categoryRequired",
   TITLE_REQUIRED: "titleRequired",
+  EXPECTED_TEXT_REQUIRED: "expectedTextRequired",
 };
 
 const EXERCISE_CATEGORY_KEY_BY_NAME = {
@@ -62,11 +63,13 @@ const MEDIA_VALIDATION_KEY_MAP = {
 const VALIDATION_KEY_MAP = {
   [EXERCISE_VALIDATION_KEYS.CATEGORY_REQUIRED]: "specialist.exercises.validation.selectCategory",
   [EXERCISE_VALIDATION_KEYS.TITLE_REQUIRED]: "specialist.exercises.validation.titleRequired",
+  [EXERCISE_VALIDATION_KEYS.EXPECTED_TEXT_REQUIRED]: "specialist.exercises.validation.expectedTextRequired",
 };
 
 const EN_VALIDATION_MESSAGE = {
   [EXERCISE_VALIDATION_KEYS.CATEGORY_REQUIRED]: "Please select a category.",
   [EXERCISE_VALIDATION_KEYS.TITLE_REQUIRED]: "Title is required.",
+  [EXERCISE_VALIDATION_KEYS.EXPECTED_TEXT_REQUIRED]: "Expected Text is required for Speech Articulation exercises.",
 };
 
 const EN_MEDIA_VALIDATION_MESSAGE = {
@@ -157,6 +160,8 @@ export function resolveExerciseFieldErrors(validationKey, t = null) {
       return { categoryId: getExerciseValidationMessage(validationKey, t) };
     case EXERCISE_VALIDATION_KEYS.TITLE_REQUIRED:
       return { title: getExerciseValidationMessage(validationKey, t) };
+    case EXERCISE_VALIDATION_KEYS.EXPECTED_TEXT_REQUIRED:
+      return { expectedText: getExerciseValidationMessage(validationKey, t) };
     default:
       return { form: getExerciseValidationMessage(validationKey, t) || validationKey };
   }

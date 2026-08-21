@@ -48,7 +48,8 @@
 }
 
 .pd-preview .pd-admin-sessions-table-wrap {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
   container-type: inline-size;
   container-name: admin-sessions-table;
 
@@ -121,6 +122,7 @@
 
     .pd-admin-sessions-actions {
       width: 100%;
+      justify-content: flex-start;
     }
 
     .pd-admin-sessions-location {
@@ -137,7 +139,7 @@
 .pd-preview .pd-admin-sessions-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 980px;
+  min-width: 960px;
 }
 
 .pd-preview .pd-admin-sessions-table thead th {
@@ -145,17 +147,28 @@
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--pd-text-muted);
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
   background: rgba(248, 250, 252, 0.72);
+  white-space: nowrap;
+}
+
+.pd-preview .pd-admin-sessions-table thead th:last-child {
+  width: 1%;
 }
 
 .pd-preview .pd-admin-sessions-row td {
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
   vertical-align: middle;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--pd-text-secondary);
+  line-height: 1.4;
+}
+
+.pd-preview .pd-admin-sessions-row td:last-child {
+  width: 1%;
+  white-space: nowrap;
 }
 
 .pd-preview .pd-admin-sessions-row:last-child td {
@@ -171,7 +184,8 @@
 
 .pd-preview .pd-admin-sessions-patient-name {
   color: var(--pd-text);
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 0.8125rem;
 }
 
 .pd-preview .pd-admin-sessions-avatar-shell,
@@ -200,21 +214,42 @@
 }
 
 .pd-preview .pd-admin-sessions-location {
-  display: block;
-  max-width: 240px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 220px;
+  min-width: 0;
+  color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-admin-sessions-location.is-empty {
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-admin-sessions-location-icon {
+  flex-shrink: 0;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-admin-sessions-location.is-url .pd-admin-sessions-location-icon {
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-admin-sessions-location-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .pd-preview .pd-admin-sessions-status {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  padding: 3px 9px;
+  padding: 2px 8px;
   font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -248,61 +283,116 @@
   border: 1px solid rgba(148, 163, 184, 0.24);
 }
 
-.pd-preview .pd-admin-sessions-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.pd-preview .pd-admin-sessions-status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--pd-text);
+  white-space: nowrap;
 }
 
-.pd-preview .pd-admin-sessions-action {
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 5px 10px;
+.pd-preview .pd-admin-sessions-status-dot-marker {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-admin-sessions-status-dot.is-success .pd-admin-sessions-status-dot-marker {
+  background: var(--pd-success, #10b981);
+}
+
+.pd-preview .pd-admin-sessions-status-dot.is-warning .pd-admin-sessions-status-dot-marker {
+  background: var(--pd-warning, #f59e0b);
+}
+
+.pd-preview .pd-admin-sessions-status-dot.is-danger .pd-admin-sessions-status-dot-marker {
+  background: #ef4444;
+}
+
+.pd-preview .pd-admin-sessions-status-dot.is-info .pd-admin-sessions-status-dot-marker {
+  background: var(--pd-primary);
+}
+
+.pd-preview .pd-admin-sessions-status-dot.is-muted .pd-admin-sessions-status-dot-marker {
+  background: var(--pd-text-muted);
+}
+
+.pd-preview .pd-admin-sessions-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pd-preview .pd-admin-sessions-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--pd-border-soft, var(--pd-border));
+  border-radius: 8px;
+  padding: 0;
   font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 700;
   cursor: pointer;
+  color: var(--pd-text-muted);
+  background: var(--pd-surface);
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.pd-preview .pd-admin-sessions-action.is-edit {
-  color: var(--pd-primary);
-  background: rgba(14, 165, 233, 0.1);
-  border-color: rgba(14, 165, 233, 0.24);
+.pd-preview .pd-admin-sessions-menu-trigger:hover,
+.pd-preview .pd-admin-sessions-menu-trigger[aria-expanded="true"] {
+  color: var(--pd-text);
+  background: rgba(248, 250, 252, 0.95);
+  border-color: rgba(148, 163, 184, 0.45);
 }
 
-.pd-preview .pd-admin-sessions-action.is-edit:hover {
-  background: rgba(14, 165, 233, 0.16);
+.pd-preview .pd-admin-sessions-actions-dropdown {
+  position: fixed;
+  z-index: 80;
+  min-width: 220px;
+  padding: 6px;
 }
 
-.pd-preview .pd-admin-sessions-action.is-complete {
+.pd-preview .pd-admin-sessions-menu-item {
+  gap: 10px;
+}
+
+.pd-preview .pd-admin-sessions-menu-item svg {
+  flex-shrink: 0;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-admin-sessions-menu-item.is-complete {
   color: var(--pd-success, #10b981);
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.22);
 }
 
-.pd-preview .pd-admin-sessions-action.is-complete:hover {
-  background: rgba(16, 185, 129, 0.16);
+.pd-preview .pd-admin-sessions-menu-item.is-complete svg {
+  color: var(--pd-success, #10b981);
 }
 
-.pd-preview .pd-admin-sessions-action.is-cancel {
+.pd-preview .pd-admin-sessions-menu-item.is-cancel {
   color: #ef4444;
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.22);
 }
 
-.pd-preview .pd-admin-sessions-action.is-cancel:hover {
-  background: rgba(239, 68, 68, 0.14);
+.pd-preview .pd-admin-sessions-menu-item.is-cancel svg {
+  color: #ef4444;
 }
 
-.pd-preview .pd-admin-sessions-action.is-no-show {
+.pd-preview .pd-admin-sessions-menu-item.is-no-show {
   color: var(--pd-warning, #f59e0b);
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.22);
 }
 
-.pd-preview .pd-admin-sessions-action.is-no-show:hover {
-  background: rgba(245, 158, 11, 0.16);
+.pd-preview .pd-admin-sessions-menu-item.is-no-show svg {
+  color: var(--pd-warning, #f59e0b);
+}
+
+.pd-preview .pd-admin-sessions-menu-item.is-complete:hover,
+.pd-preview .pd-admin-sessions-menu-item.is-cancel:hover,
+.pd-preview .pd-admin-sessions-menu-item.is-no-show:hover {
+  background: rgba(248, 250, 252, 0.95);
 }
 
 .pd-preview .pd-admin-sessions-error,
@@ -470,20 +560,60 @@
 }
 
 .pd-preview .pd-admin-session-edit-summary {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.pd-preview .pd-admin-session-edit-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--pd-border-soft, var(--pd-border));
+  border-radius: 12px;
+  background: var(--pd-primary-softer);
+}
+
+.pd-preview .pd-admin-session-edit-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  text-align: start;
+  align-items: stretch;
+}
+
+.pd-preview .pd-admin-session-edit-summary-label,
+.pd-preview .pd-admin-session-edit-summary-value {
+  display: block;
+  width: 100%;
+  text-align: inherit;
+}
+
+.pd-preview .pd-admin-session-edit-summary-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--pd-text-muted);
+}
+
+.pd-preview .pd-admin-session-edit-summary-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pd-text);
+  line-height: 1.4;
 }
 
 .pd-preview .pd-admin-session-edit-status-readonly {
   display: flex;
   align-items: center;
-  min-height: 38px;
+  min-height: 0;
+  padding-top: 2px;
 }
 
 .pd-preview .pd-admin-session-edit-status-note {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: var(--pd-text-muted);
-  font-size: 0.8125rem;
-  line-height: 1.4;
+  font-size: 0.75rem;
+  line-height: 1.45;
 }
 
 .pd-preview .pd-admin-session-edit-form .pd-inline-error {
@@ -493,6 +623,10 @@
 @media (max-width: 600px) {
   .pd-preview .pd-admin-session-edit-modal {
     padding: 16px;
+  }
+
+  .pd-preview .pd-admin-session-edit-summary-grid {
+    grid-template-columns: 1fr;
   }
 
   .pd-preview .pd-admin-modal-actions {

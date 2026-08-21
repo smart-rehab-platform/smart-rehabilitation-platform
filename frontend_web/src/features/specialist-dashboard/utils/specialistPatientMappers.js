@@ -1,3 +1,4 @@
+import { resolveUploadedAssetUrl } from "../../../services/apiConfig.js";
 import { resolveSpecialistMapperContext } from "./specialistDashboardLocalization.js";
 import {
   formatPatientDisplayDate,
@@ -71,6 +72,37 @@ function readBoolean(record, keys) {
   return false;
 }
 
+function resolveProfileImageUrl(fileUrl) {
+  if (!fileUrl || typeof fileUrl !== "string") {
+    return null;
+  }
+
+  const trimmed = fileUrl.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return resolveUploadedAssetUrl(trimmed) ?? trimmed;
+  }
+
+  return resolveUploadedAssetUrl(trimmed);
+}
+
+function readProfileImageUrl(record) {
+  const raw = readString(record, [
+    "profile_image_url",
+    "profileImageUrl",
+    "profile_image",
+    "profileImage",
+    "image_url",
+    "avatarUrl",
+    "avatar",
+  ]);
+
+  return resolveProfileImageUrl(raw);
+}
+
 export function calculateAgeFromBirthDate(dateValue) {
   if (!dateValue) {
     return null;
@@ -134,7 +166,7 @@ export function mapSpecialistPatientListItem(row) {
     name: readString(row, ["full_name", "fullName", "name"]) || "Patient",
     dateOfBirth: readDateValue(row, ["date_of_birth", "dateOfBirth"]),
     diagnosis: readString(row, ["primary_diagnosis", "diagnosis"]) || null,
-    profileImageUrl: readString(row, ["profile_image_url", "profileImageUrl"]) || null,
+    profileImageUrl: readProfileImageUrl(row),
   };
 }
 
@@ -157,7 +189,7 @@ export function mapPatientProfile(row) {
     dateOfBirth,
     age: calculateAgeFromBirthDate(dateOfBirth),
     gender: readString(row, ["gender"]) || null,
-    profileImageUrl: readString(row, ["profile_image_url", "profileImageUrl"]) || null,
+    profileImageUrl: readProfileImageUrl(row),
   };
 }
 
@@ -167,6 +199,36 @@ export function mapPatientDiagnosisSummary(diagnosisRows) {
   }
   const first = diagnosisRows[0];
   return readString(first, ["diagnosis_title", "diagnosisTitle", "title"]) || null;
+}
+
+export function mapPatientDiagnosis(row, context = {}) {
+  const { locale } = resolveSpecialistMapperContext(context);
+  const title = readString(row, ["diagnosis_title", "diagnosisTitle", "title"]);
+  if (!title) {
+    return null;
+  }
+
+  const diagnosedAt = readDateValue(row, ["diagnosed_at", "diagnosedAt"]);
+  const description = readString(row, ["description"]) || null;
+
+  return {
+    id: readString(row, ["id", "_id"]) || null,
+    title,
+    description,
+    diagnosedAt,
+    diagnosedAtLabel: formatPatientDisplayDate(diagnosedAt, locale) || null,
+    diagnosedByName: readString(row, ["diagnosed_by_name", "diagnosedByName"]) || null,
+  };
+}
+
+export function mapPatientDiagnosisList(diagnosisRows, context = {}) {
+  if (!Array.isArray(diagnosisRows)) {
+    return [];
+  }
+
+  return diagnosisRows
+    .map((row) => mapPatientDiagnosis(row, context))
+    .filter(Boolean);
 }
 
 export function selectActiveTreatmentPlan(planRows, context = {}) {
@@ -202,22 +264,30 @@ export function mapTreatmentPlan(row, context = {}) {
 }
 
 export function mapPatientGoal(row, completionPercentage = 0, context = {}) {
-  const { t } = resolveSpecialistMapperContext(context);
+  const { t, locale } = resolveSpecialistMapperContext(context);
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
   }
+  const isAchieved = readBoolean(row, ["is_achieved", "isAchieved"]);
   const normalized = completionPercentage > 1 ? completionPercentage / 100 : completionPercentage;
-  const percent = Math.round(Math.max(0, Math.min(1, normalized)) * 100);
+  const percent = isAchieved
+    ? 100
+    : Math.round(Math.max(0, Math.min(1, normalized)) * 100);
   const term = readString(row, ["term"]) || "short_term";
+  const targetValue = readNumber(row, ["target_value", "targetValue"]);
+  const targetDate = readDateValue(row, ["target_date", "targetDate"]);
   return {
     id,
     title: readString(row, ["title"]) || "Goal",
     term,
     termLabel: formatGoalTerm(term, t),
-    isAchieved: readBoolean(row, ["is_achieved", "isAchieved"]),
+    isAchieved,
     completionPercent: percent,
     description: readString(row, ["description"]) || null,
+    targetValue,
+    targetDate,
+    targetDateLabel: formatPatientDisplayDate(targetDate, locale),
   };
 }
 
@@ -361,7 +431,8 @@ export async function buildPatientDetailsBundle(rawBundle, goals = [], context =
     throw new Error("Patient not found.");
   }
 
-  const diagnosis = mapPatientDiagnosisSummary(rawBundle.diagnosisRows);
+  const diagnoses = mapPatientDiagnosisList(rawBundle.diagnosisRows, context);
+  const diagnosis = diagnoses[0]?.title ?? mapPatientDiagnosisSummary(rawBundle.diagnosisRows);
   const overallProgress = normalizeImprovementPercentage(rawBundle.improvementMap);
   const treatmentPlan = selectActiveTreatmentPlan(rawBundle.treatmentPlanRows, context);
   const assignedExercises = (rawBundle.assignedExerciseRows || [])
@@ -385,6 +456,7 @@ export async function buildPatientDetailsBundle(rawBundle, goals = [], context =
   return {
     patient,
     diagnosis,
+    diagnoses,
     overallProgress,
     overallProgressPercent: overallProgress == null ? null : Math.round(overallProgress * 100),
     stats,

@@ -132,6 +132,12 @@ export function getAdminCaseRequestsLabels(t = null) {
     notFound: translateKey(t, "specialist.caseRequests.notFound", "Case request not found."),
     assignSpecialist: translateKey(t, "admin.caseRequests.assignSpecialist", "Assign Specialist"),
     statusTimeline: translateKey(t, "specialist.caseRequests.statusTimeline", "Status Timeline"),
+    caseOverviewSection: translateKey(
+      t,
+      "admin.caseRequests.caseOverviewSection",
+      "Case Information",
+    ),
+    careTeam: translateKey(t, "admin.caseRequests.careTeam", "Care Team"),
     childInformation: translateKey(t, "specialist.caseRequests.childInformation", "Child Information"),
     caseInformation: translateKey(t, "specialist.caseRequests.caseInformation", "Case Information"),
     previousDiagnosisTreatment: translateKey(
@@ -142,6 +148,11 @@ export function getAdminCaseRequestsLabels(t = null) {
     parentInformation: translateKey(t, "specialist.caseRequests.parentInformation", "Parent Information"),
     attachments: translateKey(t, "specialist.caseRequests.attachments", "Attachments"),
     noAttachments: translateKey(t, "specialist.caseRequests.noAttachments", "No attachments"),
+    noAttachmentsForCase: translateKey(
+      t,
+      "admin.caseRequests.noAttachmentsForCase",
+      "No attachments for this case.",
+    ),
     assignedSpecialist: translateKey(t, "admin.caseRequests.assignedSpecialist", "Assigned Specialist"),
     noSpecialistAssigned: translateKey(
       t,

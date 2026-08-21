@@ -145,7 +145,7 @@ export default function SpecialistTreatmentPlansPage() {
                 </div>
                 <button
                   type="button"
-                  className="pd-btn pd-btn-soft pd-specialist-treatment-plan-toolbar-add"
+                  className="pd-btn pd-btn-primary pd-specialist-treatment-plan-toolbar-add"
                   onClick={handleOpenPatientPicker}
                   aria-label={t("specialist.treatmentPlans.addPlanAriaLabel")}
                 >

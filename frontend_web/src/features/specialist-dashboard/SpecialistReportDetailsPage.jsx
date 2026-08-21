@@ -1,4 +1,4 @@
-import { ArrowLeft, FileText, Link2 } from "lucide-react";
+import { ArrowLeft, Link2 } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
@@ -9,6 +9,7 @@ import {
 } from "../../routes/specialistDashboardRoutes";
 import { UserProfileAvatar } from "../shared-dashboard/components/UserProfileAvatar";
 import { StatusBadge } from "../shared-dashboard/components/StatusBadge";
+import { SpecialistAiReportStructuredContent } from "./components/SpecialistAiReportStructuredContent";
 import { useSpecialistReportDetails } from "./hooks/useSpecialistReportDetails";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
@@ -161,7 +162,7 @@ export default function SpecialistReportDetailsPage() {
             </div>
             <div>
               <dt>{t("specialist.reports.labels.specialist")}</dt>
-              <dd>{detail.isAi ? t("auth.shared.emptyDisplay") : (detail.specialistName || t("auth.shared.emptyDisplay"))}</dd>
+              <dd>{detail.specialistName || t("auth.shared.emptyDisplay")}</dd>
             </div>
             <div>
               <dt>{t("specialist.reports.labels.reportType")}</dt>
@@ -180,21 +181,19 @@ export default function SpecialistReportDetailsPage() {
           </dl>
         </section>
 
-        {detail.sections.map((section) => (
-          <section key={section.title} className="pd-card pd-card-pad pd-specialist-report-section">
-            <h3 className="pd-specialist-review-section-title">{section.titleLabel || section.title}</h3>
-            <p className="pd-specialist-report-section-body" dir="auto">{section.content}</p>
-          </section>
-        ))}
+        {detail.isAi && detail.aiStructuredSummary?.isStructured ? (
+          <SpecialistAiReportStructuredContent detail={detail} />
+        ) : (
+          detail.sections.map((section) => (
+            <section key={section.title} className="pd-card pd-card-pad pd-specialist-report-section">
+              <h3 className="pd-specialist-review-section-title">{section.titleLabel || section.title}</h3>
+              <p className="pd-specialist-report-section-body" dir="auto">{section.content}</p>
+            </section>
+          ))
+        )}
 
         {detail.isPdfReady && detail.pdfUrl ? (
           <>
-            <section className="pd-card pd-card-pad pd-specialist-report-attachment">
-              <div className="pd-specialist-report-attachment-row">
-                <FileText size={18} aria-hidden="true" />
-                <span className="pd-section-sub" dir="auto">{detail.pdfUrl}</span>
-              </div>
-            </section>
             <button type="button" className="pd-btn pd-btn-primary pd-specialist-review-submit" onClick={handleViewPdf}>
               {t("specialist.reports.pdf.view")}
             </button>

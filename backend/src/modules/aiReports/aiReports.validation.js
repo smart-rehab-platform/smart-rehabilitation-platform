@@ -1,3 +1,8 @@
+const {
+  DEFAULT_AI_REPORT_LANGUAGE,
+  parseAiReportLanguage,
+} = require("./aiReportLanguage");
+
 const validateGenerateReport = (req, res, next) => {
   if (req.body && Object.prototype.hasOwnProperty.call(req.body, "specialist_id")) {
     delete req.body.specialist_id;
@@ -33,6 +38,18 @@ const validateGenerateReport = (req, res, next) => {
       message: "Cannot generate report for a period that has not ended yet"
     });
   }
+
+  const languageInput = req.body.language ?? req.body.locale;
+  const parsedLanguage = parseAiReportLanguage(languageInput);
+
+  if (parsedLanguage === null) {
+    return res.status(400).json({
+      success: false,
+      message: "language must be 'en' or 'ar'."
+    });
+  }
+
+  req.body.language = parsedLanguage || DEFAULT_AI_REPORT_LANGUAGE;
 
   next();
 };

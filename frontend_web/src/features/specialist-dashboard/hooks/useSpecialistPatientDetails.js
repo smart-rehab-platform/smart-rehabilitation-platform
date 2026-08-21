@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "../../../context/useLocale";
 import {
+  createPatientDiagnosis,
   createPatientNote,
   createSpecialistConversation,
   getPatientFamilyPatternDetails,
@@ -31,6 +32,8 @@ import {
 import { subscribeSpecialistReviewRefresh } from "../utils/specialistReviewRefresh";
 import { subscribeSpecialistTreatmentPlanRefresh } from "../utils/specialistTreatmentPlanRefresh";
 import { subscribeSpecialistAiRecommendationRefresh } from "../utils/specialistAiRecommendationRefresh";
+import { subscribeSpecialistAssignedExerciseRefresh } from "../utils/specialistAssignedExerciseRefresh";
+import { subscribeSpecialistGoalsRefresh } from "../utils/specialistGoalsRefresh";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -42,6 +45,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isSavingNote, setIsSavingNote] = useState(false);
+  const [isSavingDiagnosis, setIsSavingDiagnosis] = useState(false);
   const [familyPattern, setFamilyPattern] = useState(null);
   const [familyPatternDetails, setFamilyPatternDetails] = useState(null);
   const [isLoadingFamilyPattern, setIsLoadingFamilyPattern] = useState(false);
@@ -64,6 +68,8 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
   useEffect(() => subscribeSpecialistReviewRefresh(refetch), [refetch]);
   useEffect(() => subscribeSpecialistTreatmentPlanRefresh(refetch), [refetch]);
   useEffect(() => subscribeSpecialistAiRecommendationRefresh(refetch), [refetch]);
+  useEffect(() => subscribeSpecialistAssignedExerciseRefresh(refetch), [refetch]);
+  useEffect(() => subscribeSpecialistGoalsRefresh(refetch), [refetch]);
 
   const loadFamilyPattern = useCallback(async (id) => {
     setIsLoadingFamilyPattern(true);
@@ -172,6 +178,26 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
     }
   }, [patientId, refetch]);
 
+  const addDiagnosis = useCallback(async (payload) => {
+    if (!patientId) {
+      return { ok: false, message: getPatientLoadErrorMessage(new Error("missing patient"), t) };
+    }
+
+    setIsSavingDiagnosis(true);
+    try {
+      await createPatientDiagnosis(patientId, payload);
+      refetch();
+      return { ok: true };
+    } catch (saveError) {
+      return {
+        ok: false,
+        message: resolveErrorMessage(saveError, t("specialist.patientDetails.saveDiagnosisFailed")),
+      };
+    } finally {
+      setIsSavingDiagnosis(false);
+    }
+  }, [patientId, refetch, t]);
+
   const openMessageParent = useCallback(async () => {
     if (!patientId || !specialistUserId || isOpeningConversation) {
       return null;
@@ -214,6 +240,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
       isLoading: false,
       error: null,
       isSavingNote: false,
+      isSavingDiagnosis: false,
       familyPattern: null,
       familyPatternDetails: null,
       isLoadingFamilyPattern: false,
@@ -221,6 +248,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
       isOpeningConversation: false,
       refetch,
       addNote,
+      addDiagnosis,
       openMessageParent,
       loadFamilyPatternDetailsPanel,
       retryFamilyPattern: () => loadFamilyPattern(patientId),
@@ -232,6 +260,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
     isLoading,
     error,
     isSavingNote,
+    isSavingDiagnosis,
     familyPattern,
     familyPatternDetails,
     isLoadingFamilyPattern,
@@ -239,6 +268,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
     isOpeningConversation,
     refetch,
     addNote,
+    addDiagnosis,
     openMessageParent,
     loadFamilyPatternDetailsPanel,
     retryFamilyPattern: () => loadFamilyPattern(patientId),

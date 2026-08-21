@@ -1,24 +1,50 @@
 import { ArrowLeft } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useLocale } from "../../context/useLocale";
 import {
   buildSpecialistPatientDetailPath,
   SPECIALIST_WEB_ROUTES,
 } from "../../routes/specialistDashboardRoutes";
+import { SpecialistSpeechAcousticProgress } from "./components/SpecialistSpeechAcousticProgress";
 import { SpecialistSpeechAiFeedback } from "./components/SpecialistSpeechAiFeedback";
 import { SpecialistSpeechAnalysisHeader } from "./components/SpecialistSpeechAnalysisHeader";
+import { SpecialistSpeechAnalysisQuality } from "./components/SpecialistSpeechAnalysisQuality";
 import { SpecialistSpeechAnalyzeCard } from "./components/SpecialistSpeechAnalyzeCard";
 import { SpecialistSpeechComparison } from "./components/SpecialistSpeechComparison";
+import {
+  SpecialistSpeechAudioPlayer,
+  SpecialistSpeechExpectedVsSpoken,
+} from "./components/SpecialistSpeechExpectedVsSpoken";
 import { SpecialistSpeechHistory } from "./components/SpecialistSpeechHistory";
+import { SpecialistSpeechPhonemeAnalysis } from "./components/SpecialistSpeechPhonemeAnalysis";
+import {
+  SpecialistSpeechAcousticDurationChart,
+  SpecialistSpeechWordAccuracyChart,
+} from "./components/SpecialistSpeechProgressCharts";
+import { SpecialistSpeechProgressInsights } from "./components/SpecialistSpeechProgressInsights";
 import { SpecialistSpeechScoreCards } from "./components/SpecialistSpeechScoreCards";
+import { SpecialistSpeechTimingMetrics } from "./components/SpecialistSpeechTimingMetrics";
 import { SpecialistSpeechTranscript } from "./components/SpecialistSpeechTranscript";
 import { SpecialistSpeechTrend } from "./components/SpecialistSpeechTrend";
+import { SpecialistSpeechWordAnalysis } from "./components/SpecialistSpeechWordAnalysis";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { useSpecialistSpeechAnalysis } from "./hooks/useSpecialistSpeechAnalysis";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
+import { getSpecialistSpeechAnalysisLabels } from "./utils/specialistSpeechAnalysisLocalization";
 import "../shared-dashboard/styles/dashboardTokens.css";
 import "./styles/specialistDashboardSections.css";
+
+function resolveToastMessage(message, labels) {
+  if (message === "Existing speech analysis loaded.") {
+    return labels.existingLoaded;
+  }
+  if (message === "Speech analysis completed successfully.") {
+    return labels.completedSuccess;
+  }
+  return message;
+}
 
 export default function SpecialistSpeechAnalysisPage() {
   const navigate = useNavigate();
@@ -26,6 +52,8 @@ export default function SpecialistSpeechAnalysisPage() {
   const [searchParams] = useSearchParams();
   const submissionId = searchParams.get("submissionId");
   const { user, isInitializing } = useAuth();
+  const { t } = useLocale();
+  const labels = useMemo(() => getSpecialistSpeechAnalysisLabels(t), [t]);
   const specialistUserId = isInitializing ? null : user?.id ?? null;
 
   const {
@@ -58,12 +86,17 @@ export default function SpecialistSpeechAnalysisPage() {
     analyses,
     latestAnalysis,
     progressItems,
+    progressInsights,
+    acousticProgress,
     selectedAnalysis,
     comparison,
     isLoading,
+    isProgressLoading,
     isAnalyzing,
     error,
+    progressError,
     retry,
+    retryProgress,
     selectAnalysis,
     analyzeSubmission,
   } = useSpecialistSpeechAnalysis(patientId, submissionId);
@@ -83,26 +116,27 @@ export default function SpecialistSpeechAnalysisPage() {
   const handleAnalyze = useCallback(async () => {
     const result = await analyzeSubmission();
     if (result.ok && result.message) {
-      showToast(result.message);
+      showToast(resolveToastMessage(result.message, labels));
     }
-  }, [analyzeSubmission, showToast]);
+  }, [analyzeSubmission, labels, showToast]);
 
   const handleRetry = useCallback(async () => {
     const result = await retry();
     if (result?.ok && result.message) {
-      showToast(result.message);
+      showToast(resolveToastMessage(result.message, labels));
     }
-  }, [retry, showToast]);
+  }, [labels, retry, showToast]);
 
   const busy = isAnalyzing || isLoading;
   const headerAnalyzedAt =
     selectedAnalysis?.analyzedAt || latestAnalysis?.analyzedAt || null;
+  const chartHistoryPoints = progressInsights?.historyPoints || [];
 
   const renderContent = () => {
     if (isLoading && analyses.length === 0) {
       return (
         <section className="pd-card pd-card-pad pd-task-hub-state">
-          <p className="pd-inline-loading">Loading speech analysis...</p>
+          <p className="pd-inline-loading">{labels.loading}</p>
         </section>
       );
     }
@@ -117,7 +151,7 @@ export default function SpecialistSpeechAnalysisPage() {
             onClick={handleRetry}
             disabled={busy}
           >
-            Retry
+            {labels.retry}
           </button>
         </section>
       );
@@ -142,28 +176,44 @@ export default function SpecialistSpeechAnalysisPage() {
                   onClick={handleRetry}
                   disabled={busy}
                 >
-                  Retry
+                  {labels.retry}
                 </button>
               </div>
             ) : null}
 
             {!selectedAnalysis && analyses.length === 0 ? (
               <section className="pd-card pd-card-pad pd-task-hub-state">
-                <p className="pd-section-sub">
-                  No speech analysis results yet. Run analysis on an audio submission to get
-                  started.
-                </p>
+                <p className="pd-section-sub">{labels.emptyResults}</p>
               </section>
             ) : null}
 
             {selectedAnalysis ? (
               <section className="pd-specialist-speech-summary">
-                <h2 className="pd-specialist-speech-section-title">Latest Analysis Summary</h2>
+                <h2 className="pd-specialist-speech-section-title">{labels.latestSummary}</h2>
+
                 <SpecialistSpeechScoreCards
                   pronunciationScore={selectedAnalysis.pronunciationScore}
                   fluencyScore={selectedAnalysis.fluencyScore}
                   overallScore={selectedAnalysis.overallScore}
                 />
+
+                <SpecialistSpeechExpectedVsSpoken
+                  expectedSpeech={selectedAnalysis.expectedSpeech}
+                  transcript={selectedAnalysis.transcript}
+                />
+
+                <SpecialistSpeechAudioPlayer audioFileUrl={selectedAnalysis.audioFileUrl} />
+
+                <SpecialistSpeechAnalysisQuality
+                  analysisQuality={selectedAnalysis.analysisQuality}
+                />
+
+                <SpecialistSpeechWordAnalysis
+                  expectedSpeech={selectedAnalysis.expectedSpeech}
+                  wordAnalysis={selectedAnalysis.wordAnalysis}
+                  transcript={selectedAnalysis.transcript}
+                />
+
                 <div className="pd-specialist-speech-mid-grid">
                   <SpecialistSpeechTranscript
                     transcript={selectedAnalysis.transcript}
@@ -172,7 +222,34 @@ export default function SpecialistSpeechAnalysisPage() {
                   />
                   <SpecialistSpeechComparison comparison={comparison} />
                 </div>
+
+                <SpecialistSpeechTimingMetrics
+                  fluencyMetrics={selectedAnalysis.fluencyMetrics}
+                  asrConfidence={selectedAnalysis.asrConfidence}
+                />
+
+                <SpecialistSpeechPhonemeAnalysis
+                  phonemeAnalysis={selectedAnalysis.phonemeAnalysis}
+                />
+
+                <SpecialistSpeechProgressInsights
+                  insights={progressInsights}
+                  isLoading={isProgressLoading}
+                  error={progressError}
+                  onRetry={retryProgress}
+                />
+
+                <SpecialistSpeechAcousticProgress acousticProgress={acousticProgress} />
+
                 <SpecialistSpeechAiFeedback feedback={selectedAnalysis.aiFeedback} />
+
+                <div className="pd-specialist-speech-charts-grid">
+                  <SpecialistSpeechWordAccuracyChart historyPoints={chartHistoryPoints} />
+                  <SpecialistSpeechAcousticDurationChart
+                    historyPoints={acousticProgress?.historyPoints || []}
+                  />
+                </div>
+
                 <SpecialistSpeechTrend progressItems={progressItems} />
               </section>
             ) : null}
@@ -230,9 +307,9 @@ export default function SpecialistSpeechAnalysisPage() {
                 onClick={handleBack}
               >
                 <ArrowLeft size={18} aria-hidden="true" />
-                Back to Patient
+                {labels.backToPatient}
               </button>
-              <h1 className="pd-section-title">Speech Analysis</h1>
+              <h1 className="pd-section-title">{labels.pageTitle}</h1>
             </header>
             {renderContent()}
           </div>

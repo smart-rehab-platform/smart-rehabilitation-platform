@@ -1,17 +1,11 @@
 import { useMemo } from "react";
 import { useLocale } from "../../../context/useLocale.js";
 import { getPatientInitials } from "../utils/adminPatientsMappers";
+import { AdminSessionActionsMenu } from "../components/AdminSessionActionsMenu";
+import { AdminSessionLocationCell } from "../components/AdminSessionLocationCell";
 import { AdminSessionStatusBadge } from "../components/AdminSessionStatusBadge";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { getAdminSessionsLabels } from "../utils/adminSessionsLocalization.js";
-
-function formatLocation(locationOrLink, emptyDisplay) {
-  if (!locationOrLink || !String(locationOrLink).trim()) {
-    return emptyDisplay;
-  }
-
-  return String(locationOrLink).trim();
-}
 
 function PatientCell({ session }) {
   return (
@@ -26,59 +20,6 @@ function PatientCell({ session }) {
         className="pd-avatar-photo"
       />
       <span className="pd-admin-sessions-patient-name" dir="auto">{session.patientName}</span>
-    </div>
-  );
-}
-
-function SessionActions({
-  session,
-  labels,
-  onEditSession,
-  onCompleteSession,
-  onCancelSession,
-  onNoShowSession,
-}) {
-  const patientName = session.patientName || labels.emptyDisplay;
-
-  return (
-    <div className="pd-admin-sessions-actions">
-      <button
-        type="button"
-        className="pd-admin-sessions-action is-edit"
-        onClick={() => onEditSession(session)}
-        aria-label={labels.actionAria.edit(patientName)}
-      >
-        {labels.edit}
-      </button>
-
-      {session.isScheduled ? (
-        <>
-          <button
-            type="button"
-            className="pd-admin-sessions-action is-complete"
-            onClick={() => onCompleteSession(session)}
-            aria-label={labels.actionAria.complete(patientName)}
-          >
-            {labels.complete}
-          </button>
-          <button
-            type="button"
-            className="pd-admin-sessions-action is-cancel"
-            onClick={() => onCancelSession(session)}
-            aria-label={labels.actionAria.cancel(patientName)}
-          >
-            {labels.cancelSession}
-          </button>
-          <button
-            type="button"
-            className="pd-admin-sessions-action is-no-show"
-            onClick={() => onNoShowSession(session)}
-            aria-label={labels.actionAria.noShow(patientName)}
-          >
-            {labels.markNoShow}
-          </button>
-        </>
-      ) : null}
     </div>
   );
 }
@@ -185,15 +126,20 @@ export function AdminSessionsTable({
               <td data-label={labels.columns.dateTime}>{session.scheduledAtLabel}</td>
               <td data-label={labels.columns.duration}>{session.durationLabel}</td>
               <td data-label={labels.columns.locationLink}>
-                <span className="pd-admin-sessions-location" dir="auto">
-                  {formatLocation(session.locationOrLink, labels.emptyDisplay)}
-                </span>
+                <AdminSessionLocationCell
+                  value={session.locationOrLink}
+                  emptyDisplay={labels.emptyDisplay}
+                />
               </td>
               <td data-label={labels.columns.status}>
-                <AdminSessionStatusBadge label={session.statusLabel} tone={session.statusTone} />
+                <AdminSessionStatusBadge
+                  label={session.statusLabel}
+                  tone={session.statusTone}
+                  variant="dot"
+                />
               </td>
               <td data-label={labels.columns.actions}>
-                <SessionActions
+                <AdminSessionActionsMenu
                   session={session}
                   labels={labels}
                   onEditSession={onEditSession}

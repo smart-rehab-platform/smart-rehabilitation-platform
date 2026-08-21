@@ -7,6 +7,8 @@ import {
 } from "../../../services/specialistExerciseService";
 import {
   buildExerciseCreatePayload,
+  isSpeechArticulationCategory,
+  resolveExerciseCategoryName,
   validateExerciseCreateForm,
 } from "../utils/specialistExerciseMappers";
 import {
@@ -34,6 +36,9 @@ export function useSpecialistExerciseCreate(enabled = true) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [expectedText, setExpectedText] = useState("");
+  const [targetWord, setTargetWord] = useState("");
+  const [targetPhoneme, setTargetPhoneme] = useState("");
   const [language, setLanguage] = useState("en");
   const [pendingMediaFile, setPendingMediaFile] = useState(null);
   const [uploadedMediaUrl, setUploadedMediaUrl] = useState("");
@@ -116,7 +121,14 @@ export function useSpecialistExerciseCreate(enabled = true) {
   }, []);
 
   const save = useCallback(async () => {
-    const validation = validateExerciseCreateForm({ categoryId, title });
+    const categoryName = resolveExerciseCategoryName(categoryId, categories);
+    const isSpeechArticulation = isSpeechArticulationCategory(categoryName);
+    const validation = validateExerciseCreateForm({
+      categoryId,
+      title,
+      isSpeechArticulation,
+      expectedText,
+    });
     if (validation) {
       setValidationMessage(validation);
       return { ok: false, message: getExerciseValidationMessage(validation, t) };
@@ -160,6 +172,10 @@ export function useSpecialistExerciseCreate(enabled = true) {
         instructions,
         language,
         instructionMediaUrl: nextMediaUrl,
+        expectedText,
+        targetWord,
+        targetPhoneme,
+        isSpeechArticulation,
       });
 
       const created = await createSpecialistExercise(payload);
@@ -179,6 +195,10 @@ export function useSpecialistExerciseCreate(enabled = true) {
     title,
     description,
     instructions,
+    expectedText,
+    targetWord,
+    targetPhoneme,
+    categories,
     language,
     pendingMediaFile,
     uploadedMediaUrl,
@@ -210,6 +230,9 @@ export function useSpecialistExerciseCreate(enabled = true) {
     title,
     description,
     instructions,
+    expectedText,
+    targetWord,
+    targetPhoneme,
     language,
     pendingMediaFile,
     instructionMediaUrl: uploadedMediaUrl,
@@ -218,6 +241,9 @@ export function useSpecialistExerciseCreate(enabled = true) {
     setTitle,
     setDescription,
     setInstructions,
+    setExpectedText,
+    setTargetWord,
+    setTargetPhoneme,
     setLanguage,
     selectMediaFile,
     removeMedia,

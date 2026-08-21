@@ -7,6 +7,7 @@ import '../../../../core/routes/app_routes.dart';
 import '../../models/specialist_patient_details_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../specialist/patient_details_widgets.dart';
+import '../specialist/patient_diagnosis_section.dart';
 
 /// Shared patient details sections used by Specialist and Admin.
 ///
@@ -146,6 +147,10 @@ class _PatientDetailsBodyState extends State<PatientDetailsBody> {
                   l10n.specialistPatientDetailsSubmissionsSectionUnavailable,
             ),
             onReportsTap: _onReportsTap,
+          ),
+          SizedBox(height: context.dashSpacing * 1.1),
+          PatientDiagnosisSection(
+            diagnoses: data.diagnoses,
           ),
           if (widget.familyPatternSection != null) ...[
             SizedBox(height: context.dashSpacing * 1.1),

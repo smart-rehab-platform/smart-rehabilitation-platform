@@ -1,6 +1,11 @@
+import { useLocale } from "../../../context/useLocale";
 import { formatSpeechChartLabel } from "../utils/specialistSpeechAnalysisMappers";
+import { getSpecialistSpeechAnalysisLabels } from "../utils/specialistSpeechAnalysisLocalization";
 
 export function SpecialistSpeechTrend({ progressItems }) {
+  const { t } = useLocale();
+  const labels = getSpecialistSpeechAnalysisLabels(t);
+
   if (!Array.isArray(progressItems) || progressItems.length < 2) {
     return null;
   }
@@ -13,8 +18,12 @@ export function SpecialistSpeechTrend({ progressItems }) {
 
   return (
     <section className="pd-card pd-card-pad pd-specialist-speech-trend-card">
-      <h3 className="pd-specialist-speech-card-title">Overall Score Trend</h3>
-      <div className="pd-specialist-speech-trend-chart" role="img" aria-label="Overall score trend">
+      <h3 className="pd-specialist-speech-card-title">{labels.overallTrendTitle}</h3>
+      <div
+        className="pd-specialist-speech-trend-chart"
+        role="img"
+        aria-label={labels.overallTrendTitle}
+      >
         {progressItems.map((item) => {
           const score = item.overallScore ?? 0;
           const heightFactor = Math.min(1, Math.max(0.08, score / scale));
@@ -22,7 +31,7 @@ export function SpecialistSpeechTrend({ progressItems }) {
             <div key={item.id} className="pd-specialist-speech-trend-col">
               <div className="pd-specialist-speech-trend-bar-wrap">
                 <div
-                  className="pd-specialist-speech-trend-bar"
+                  className="pd-specialist-speech-trend-bar is-overall"
                   style={{ height: `${heightFactor * 100}%` }}
                   title={String(score)}
                 />

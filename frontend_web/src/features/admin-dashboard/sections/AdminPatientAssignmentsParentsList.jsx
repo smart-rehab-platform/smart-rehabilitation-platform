@@ -1,6 +1,14 @@
 import { Link2Off } from "lucide-react";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 
+function ListPlaceholder({ children }) {
+  return (
+    <div className="pd-admin-assignments-list-placeholder">
+      <p className="pd-admin-assignments-empty-copy">{children}</p>
+    </div>
+  );
+}
+
 export function AdminPatientAssignmentsParentsList({
   linkedParents,
   isLoading,
@@ -13,10 +21,10 @@ export function AdminPatientAssignmentsParentsList({
 }) {
   return (
     <section className="pd-admin-assignments-list-section" aria-label={labels.linkedParents}>
-      <h2 className="pd-admin-assignments-section-title">{labels.linkedParents}</h2>
+      <h3 className="pd-admin-assignments-column-title">{labels.linkedParents}</h3>
 
       {relationshipsError ? (
-        <div className="pd-card pd-card-pad pd-admin-assignments-inline-error">
+        <div className="pd-admin-assignments-inline-error">
           <p className="pd-inline-error">{relationshipsError}</p>
           <button type="button" className="pd-btn pd-btn-soft" onClick={onRetry}>
             {labels.retry}
@@ -25,29 +33,21 @@ export function AdminPatientAssignmentsParentsList({
       ) : null}
 
       {!relationshipsError && isLoading ? (
-        <div className="pd-card pd-card-pad">
-          <p className="pd-admin-assignments-empty-copy">{labels.loadingParents}</p>
-        </div>
+        <ListPlaceholder>{labels.loadingParents}</ListPlaceholder>
       ) : null}
 
       {!relationshipsError && !isLoading && !hasSelectedPatient ? (
-        <div className="pd-card pd-card-pad">
-          <p className="pd-admin-assignments-empty-copy">{labels.selectPatientForAssignments}</p>
-        </div>
+        <ListPlaceholder>{labels.selectPatientForAssignments}</ListPlaceholder>
       ) : null}
 
       {!relationshipsError && !isLoading && hasSelectedPatient && linkedParents.length === 0 ? (
-        <div className="pd-card pd-card-pad">
-          <p className="pd-admin-assignments-empty-copy">
-            {labels.noParentsLinked}
-          </p>
-        </div>
+        <ListPlaceholder>{labels.noParentsLinked}</ListPlaceholder>
       ) : null}
 
       {!relationshipsError && !isLoading && linkedParents.length > 0 ? (
         <ul className="pd-admin-assignments-item-list">
           {linkedParents.map((link) => (
-            <li key={link.parentId} className="pd-card pd-card-pad pd-admin-assignments-item-row">
+            <li key={link.parentId} className="pd-admin-assignments-item-row">
               <UserProfileAvatar
                 imageUrl={null}
                 initials={link.initials}
@@ -57,7 +57,7 @@ export function AdminPatientAssignmentsParentsList({
                 fallbackClassName="pd-admin-assignments-user-avatar-fallback pd-admin-assignments-user-avatar-fallback--parent"
               />
               <div className="pd-admin-assignments-item-copy">
-                <strong>{link.parentName}</strong>
+                <strong dir="auto">{link.parentName}</strong>
                 <span>
                   {link.relationshipLabel}
                   {link.isPrimaryContact ? ` · ${labels.primaryContactBadge}` : ""}
@@ -71,7 +71,7 @@ export function AdminPatientAssignmentsParentsList({
                 onClick={() => onUnlink(link)}
                 disabled={isUnlinking}
               >
-                <Link2Off size={18} strokeWidth={2.1} aria-hidden="true" />
+                <Link2Off size={16} strokeWidth={2.1} aria-hidden="true" />
               </button>
             </li>
           ))}

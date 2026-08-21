@@ -10,6 +10,7 @@ import {
 } from "../../routes/specialistDashboardRoutes";
 import { SpecialistExerciseCategoryBadge } from "./components/SpecialistExerciseCategoryBadge";
 import { SpecialistExerciseCategoryIcon } from "./components/SpecialistExerciseCategoryIcon";
+import { SpecialistExerciseSpeechTargetsDetails } from "./components/SpecialistExerciseSpeechTargetsDetails";
 import { useSpecialistExerciseDetail } from "./hooks/useSpecialistExerciseDetail";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
 import { SpecialistDashboardShell } from "./layout/SpecialistDashboardShell";
@@ -154,6 +155,12 @@ export default function SpecialistExerciseDetailsPage() {
             </p>
           </section>
         </div>
+
+        <SpecialistExerciseSpeechTargetsDetails
+          expectedText={exercise.expectedText}
+          targetWord={exercise.targetWord}
+          targetPhoneme={exercise.targetPhoneme}
+        />
 
         {exercise.instructionMediaUrl ? (
           <SpecialistExerciseInstructionMedia mediaUrl={exercise.instructionMediaUrl} />

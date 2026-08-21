@@ -3,7 +3,7 @@ import { useLocale } from "../../../context/useLocale";
 import { SpecialistExerciseCategoryBadge } from "./SpecialistExerciseCategoryBadge";
 import { SpecialistExerciseCategoryIcon } from "./SpecialistExerciseCategoryIcon";
 
-export function SpecialistExerciseCard({ exercise, onClick }) {
+export function SpecialistExerciseCard({ exercise, onClick, isSelected = false }) {
   const { t } = useLocale();
   const preview = exercise.previewText?.trim() ?? "";
   const categoryLabel = exercise.categoryLabel ?? exercise.category;
@@ -11,8 +11,9 @@ export function SpecialistExerciseCard({ exercise, onClick }) {
   return (
     <button
       type="button"
-      className="pd-card pd-card-pad pd-specialist-exercise-card"
+      className={`pd-card pd-card-pad pd-specialist-exercise-card${isSelected ? " is-selected" : ""}`}
       onClick={() => onClick?.(exercise)}
+      aria-pressed={isSelected}
     >
       <SpecialistExerciseCategoryIcon category={exercise.category} />
       <span className="pd-specialist-exercise-card-copy">

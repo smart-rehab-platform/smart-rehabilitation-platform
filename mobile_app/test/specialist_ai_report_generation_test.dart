@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_app/core/locale/locale_provider.dart';
+import 'package:mobile_app/features/auth/data/token_storage.dart';
 import 'package:mobile_app/features/auth/models/auth_user.dart';
 import 'package:mobile_app/features/auth/providers/auth_provider.dart';
 import 'package:mobile_app/features/dashboard/data/specialist_reports_repository.dart';
 import 'package:mobile_app/features/dashboard/models/specialist_ai_report_generation.dart';
+import 'package:mobile_app/features/dashboard/models/specialist_reports_models.dart';
 import 'package:mobile_app/features/dashboard/providers/specialist_reports_provider.dart';
 
 class _ImmediateAuthNotifier extends AuthNotifier {
@@ -116,9 +120,17 @@ Dio _createReportsDio({
   return dio;
 }
 
-List<Override> _reportsNotifierOverrides(SpecialistReportsRepository repository) {
+List<Override> _reportsNotifierOverrides(
+  SpecialistReportsRepository repository, {
+  Locale locale = const Locale('en'),
+}) {
   return [
     specialistReportsRepositoryProvider.overrideWithValue(repository),
+    localeProvider.overrideWith((ref) {
+      final notifier = LocaleNotifier(const TokenStorage());
+      notifier.state = locale;
+      return notifier;
+    }),
     authProvider.overrideWith((ref) {
       return _ImmediateAuthNotifier(
         ref.watch(authRepositoryProvider),
@@ -154,8 +166,23 @@ void main() {
         'patient_id': 'patient-1',
         'period_start': '2026-08-07',
         'period_end': '2026-08-13',
+        'language': 'en',
       });
       expect(request.toJson().containsKey('specialist_id'), isFalse);
+    });
+
+    test('serializes Arabic language from locale variants', () {
+      final request = SpecialistAiReportGenerateRequest(
+        patientId: 'patient-1',
+        type: SpecialistAiReportType.weekly,
+        periodStart: DateTime(2026, 8, 7),
+        periodEnd: DateTime(2026, 8, 13),
+        language: 'ar-SA',
+      );
+
+      expect(request.toJson()['language'], 'ar');
+      expect(normalizeAiReportLanguage('en-GB'), 'en');
+      expect(normalizeAiReportLanguage(null), 'en');
     });
 
     test('monthly chooses generate-monthly and does not send specialist_id', () {
@@ -278,6 +305,7 @@ void main() {
       expect(postedBodies.single['patient_id'], 'patient-1');
       expect(postedBodies.single['period_start'], '2026-08-07');
       expect(postedBodies.single['period_end'], '2026-08-13');
+      expect(postedBodies.single['language'], 'en');
       expect(postedBodies.single.containsKey('specialist_id'), isFalse);
       expect(detail.id, 'report-1');
       expect(detail.isAiReport, isTrue);
@@ -342,6 +370,33 @@ void main() {
   });
 
   group('SpecialistReportsNotifier AI generation', () {
+    test('Arabic locale sends language=ar', () async {
+      final postedBodies = <Map<String, dynamic>>[];
+      final container = ProviderContainer(
+        overrides: _reportsNotifierOverrides(
+          SpecialistReportsRepository(
+            _createReportsDio(
+              postedPaths: [],
+              postedBodies: postedBodies,
+            ),
+          ),
+          locale: const Locale('ar'),
+        ),
+      );
+      addTearDown(container.dispose);
+
+      final notifier = container.read(specialistReportsProvider(null).notifier);
+      final ok = await notifier.generateAiReport(
+        patientId: 'patient-1',
+        type: SpecialistAiReportType.weekly,
+        periodStart: DateTime(2026, 8, 7),
+        periodEnd: DateTime(2026, 8, 13),
+      );
+
+      expect(ok, isTrue);
+      expect(postedBodies.single['language'], 'ar');
+    });
+
     test('success refreshes reports list', () async {
       var listReloads = 0;
       final container = ProviderContainer(
@@ -434,6 +489,43 @@ void main() {
         'Cannot generate report for a period that has not ended yet',
       );
       expect(notifier.state.isGeneratingAiReport, isFalse);
+    });
+  });
+
+  group('AI report language model parsing and RTL', () {
+    test('parses language from AI report detail payload', () {
+      final detail = SpecialistReportDetail.fromAiMap({
+        'id': 'report-1',
+        'patient_id': 'patient-1',
+        'type': 'weekly',
+        'language': 'ar',
+        'summary': '{"executive_summary":"ملخص"}',
+      });
+
+      expect(detail.language, 'ar');
+      expect(detail.isAiReport, isTrue);
+    });
+
+    test('defaults missing language to en for legacy reports', () {
+      final detail = SpecialistReportDetail.fromAiMap({
+        'id': 'report-2',
+        'patient_id': 'patient-1',
+        'type': 'monthly',
+        'summary': '{"executive_summary":"English summary"}',
+      });
+
+      expect(detail.language, 'en');
+    });
+
+    test('uses summary language when column is absent', () {
+      final detail = SpecialistReportDetail.fromAiMap({
+        'id': 'report-3',
+        'patient_id': 'patient-1',
+        'type': 'weekly',
+        'summary': '{"language":"ar","executive_summary":"ملخص"}',
+      });
+
+      expect(detail.language, 'ar');
     });
   });
 }

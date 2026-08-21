@@ -1,7 +1,4 @@
-/**
- * Verify support requests migration schema objects.
- * Run: node scripts/verify-support-requests-database.js
- */
+
 require("dotenv").config();
 const pool = require("../src/database/db");
 

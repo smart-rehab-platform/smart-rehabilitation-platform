@@ -81,7 +81,7 @@ export default function SpecialistReviewsPage() {
               onClick={() => navigate(buildSpecialistReviewExercisePath(review.id))}
             >
               <UserProfileAvatar
-                imageUrl={null}
+                imageUrl={review.profileImageUrl}
                 initials={getInitials(review.patientName, "P")}
                 alt=""
                 shellClassName="pd-avatar pd-specialist-preview-avatar"

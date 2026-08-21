@@ -869,6 +869,11 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           box-shadow: 0 0 0 4px rgba(42, 164, 201, 0.12) !important;
         }
 
+        .auth-panel-form .auth-input[type="password"]::-ms-reveal,
+        .auth-panel-form .auth-input[type="password"]::-ms-clear {
+          display: none;
+        }
+
         .auth-panel-form .auth-input-label {
           color: #6b849f !important;
         }

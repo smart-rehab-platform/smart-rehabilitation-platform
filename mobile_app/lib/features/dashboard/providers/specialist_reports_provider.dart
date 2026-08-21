@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/locale/locale_provider.dart';
 import '../../../core/services/api_client.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/specialist_reports_repository.dart';
@@ -192,12 +193,14 @@ class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
     );
 
     try {
+      final language = languageCodeFromLocale(_ref.read(localeProvider));
       await _repository.generateAiReport(
         SpecialistAiReportGenerateRequest(
           patientId: patientId,
           type: type,
           periodStart: periodStart,
           periodEnd: periodEnd,
+          language: language,
         ),
       );
       state = state.copyWith(isGeneratingAiReport: false);

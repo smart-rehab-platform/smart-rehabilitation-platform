@@ -26,14 +26,14 @@ function AttentionRow({ patient, onSelectPatient }) {
   );
 }
 
-function LoadingRows() {
+function LoadingRows({ labels }) {
   return (
-    <ul className="pd-admin-ai-attention-list" aria-label="Patients needing attention loading">
+    <ul className="pd-admin-ai-attention-list" aria-label={labels.attention.loadingAriaLabel}>
       {[0, 1, 2].map((index) => (
         <li key={index} className="pd-admin-ai-attention-row pd-admin-ai-row-loading">
           <span className="pd-admin-ai-row-icon pd-inline-loading" aria-hidden="true" />
           <span className="pd-admin-ai-row-copy">
-            <span className="pd-inline-loading">Loading patient...</span>
+            <span className="pd-inline-loading">{labels.attention.loadingPatient}</span>
           </span>
         </li>
       ))}
@@ -43,6 +43,7 @@ function LoadingRows() {
 
 export function AdminPatientsNeedingAttention({
   patients = [],
+  labels,
   isLoading = false,
   onSelectPatient,
 }) {
@@ -50,16 +51,16 @@ export function AdminPatientsNeedingAttention({
     <section
       id="admin-ai-patients-attention"
       className="pd-card pd-card-pad pd-admin-ai-section pd-section-enter"
-      aria-label="Patients needing attention"
+      aria-label={labels.attention.ariaLabel}
     >
       <div className="pd-admin-section-header">
-        <h2 className="pd-section-title">Patients Needing Attention</h2>
+        <h2 className="pd-section-title">{labels.attention.title}</h2>
       </div>
 
       {isLoading ? (
-        <LoadingRows />
+        <LoadingRows labels={labels} />
       ) : patients.length === 0 ? (
-        <p className="pd-admin-empty-copy">No patients currently need attention.</p>
+        <p className="pd-admin-empty-copy">{labels.attention.empty}</p>
       ) : (
         <ul className="pd-admin-ai-attention-list">
           {patients.map((patient) => (

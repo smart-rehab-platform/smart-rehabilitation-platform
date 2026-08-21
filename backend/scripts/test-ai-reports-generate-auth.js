@@ -240,10 +240,51 @@ const specialistStack = (handler) => [
       period_start: body.period_start,
       period_end: body.period_end,
       type,
+      generated_by: IDS.specialistA,
+      language: "en",
     });
     assert.strictEqual(generationCalls[0].specialist_id, undefined);
     assert.strictEqual(body.specialist_id, undefined);
     pass(`E. Specialist A + assigned Patient A (${name}) → 201, generation reached`);
+  }
+
+  {
+    generationCalls.length = 0;
+    const body = {
+      ...validBody(IDS.patientA),
+      language: "ar-SA",
+    };
+    const { res } = await runStack(
+      specialistStack(aiReportsController.generateWeeklyReport),
+      {
+        user: { id: IDS.specialistA, role: "specialist" },
+        body,
+        headers: {},
+      }
+    );
+    assert.strictEqual(res.statusCode, 201);
+    assert.strictEqual(generationCalls.length, 1);
+    assert.strictEqual(generationCalls[0].language, "ar");
+    pass("E2. language=ar-SA → normalized to ar and passed to generation");
+  }
+
+  {
+    generationCalls.length = 0;
+    const { res, next } = await runStack(
+      specialistStack(aiReportsController.generateWeeklyReport),
+      {
+        user: { id: IDS.specialistA, role: "specialist" },
+        body: {
+          ...validBody(IDS.patientA),
+          language: "fr",
+        },
+        headers: {},
+      }
+    );
+    assert.strictEqual(next, false);
+    assert.strictEqual(res.statusCode, 400);
+    assert.strictEqual(generationCalls.length, 0);
+    pass("E3. unsupported language → 400, generation not executed");
   }
 
   {
@@ -285,8 +326,11 @@ const specialistStack = (handler) => [
 
   {
     generationCalls.length = 0;
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const futureEnd = new Date();
+    futureEnd.setDate(futureEnd.getDate() + 3);
+    const year = futureEnd.getFullYear();
+    const month = String(futureEnd.getMonth() + 1).padStart(2, "0");
+    const day = String(futureEnd.getDate()).padStart(2, "0");
     const { res, next } = await runStack(
       specialistStack(aiReportsController.generateWeeklyReport),
       {
@@ -294,7 +338,7 @@ const specialistStack = (handler) => [
         body: {
           patient_id: IDS.patientA,
           period_start: lastWeekStart(),
-          period_end: tomorrow.toISOString().slice(0, 10),
+          period_end: `${year}-${month}-${day}`,
         },
         headers: {},
       }

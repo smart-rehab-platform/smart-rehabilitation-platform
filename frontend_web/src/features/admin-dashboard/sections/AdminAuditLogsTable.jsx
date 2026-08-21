@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { AdminAuditActionBadge } from "../components/AdminAuditActionBadge";
+import { AdminTablePrimaryAction } from "../components/AdminTablePrimaryAction";
 import { getAvatarInitial } from "../utils/adminDashboardMappers";
 import { isAuditEntityReferenceId } from "../utils/adminAuditLogsConstants.js";
 
@@ -75,16 +76,14 @@ function DetailsCell({ log, labels, expanded, onToggle }) {
   const Chevron = expanded ? ChevronUp : ChevronDown;
 
   return (
-    <button
-      type="button"
-      className={`pd-admin-audit-details-btn${expanded ? " is-expanded" : ""}`}
+    <AdminTablePrimaryAction
       aria-expanded={expanded}
       aria-controls={getDetailsPanelId(log.id)}
       onClick={() => onToggle(log.id)}
     >
       {labels.details.button}
       <Chevron size={16} aria-hidden="true" />
-    </button>
+    </AdminTablePrimaryAction>
   );
 }
 

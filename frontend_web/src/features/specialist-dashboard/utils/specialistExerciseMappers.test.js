@@ -7,6 +7,8 @@ import {
   buildExerciseCategoryFilters,
   canEditExercise,
   filterExercises,
+  isSpeechArticulationCategory,
+  mapExerciseItem,
   validateExerciseEditForm,
 } from "./specialistExerciseMappers.js";
 import { EXERCISE_VALIDATION_KEYS } from "./specialistExercisesLocalization.js";
@@ -87,7 +89,28 @@ describe("specialistExerciseMappers", () => {
     description: "Desc",
     instructions: "Steps",
     instruction_media_url: "uploads/media.mp4",
+    expected_text: "",
+    target_word: "",
+    target_phoneme: "",
   });
+  });
+
+  it("buildExerciseUpdatePayload includes speech targets for Speech Articulation", () => {
+    const payload = buildExerciseUpdatePayload({
+      categoryId: "cat-1",
+      title: "Updated",
+      description: "Desc",
+      instructions: "Steps",
+      language: "en",
+      instructionMediaUrl: null,
+      expectedText: " hello world ",
+      targetWord: " world ",
+      targetPhoneme: " r ",
+      isSpeechArticulation: true,
+    });
+    assert.equal(payload.expected_text, "hello world");
+    assert.equal(payload.target_word, "world");
+    assert.equal(payload.target_phoneme, "r");
   });
 
   it("buildExerciseCreatePayload omits empty optional fields like Flutter", () => {
@@ -123,10 +146,57 @@ describe("specialistExerciseMappers", () => {
     });
   });
 
+  it("buildExerciseCreatePayload includes speech targets when Speech Articulation", () => {
+    const payload = buildExerciseCreatePayload({
+      categoryId: "cat-1",
+      title: "Speech Drill",
+      language: "en",
+      expectedText: "Say hello",
+      targetWord: "hello",
+      targetPhoneme: "h",
+      isSpeechArticulation: true,
+    });
+    assert.deepEqual(payload, {
+      category_id: "cat-1",
+      title: "Speech Drill",
+      language: "en",
+      expected_text: "Say hello",
+      target_word: "hello",
+      target_phoneme: "h",
+    });
+  });
+
+  it("mapExerciseItem maps speech target fields", () => {
+    const exercise = mapExerciseItem({
+      id: "ex-1",
+      title: "Drill",
+      expected_text: "Say hello",
+      target_word: "hello",
+      target_phoneme: "h",
+    });
+    assert.equal(exercise.expectedText, "Say hello");
+    assert.equal(exercise.targetWord, "hello");
+    assert.equal(exercise.targetPhoneme, "h");
+  });
+
+  it("isSpeechArticulationCategory matches Flutter category name", () => {
+    assert.equal(isSpeechArticulationCategory("Speech Articulation"), true);
+    assert.equal(isSpeechArticulationCategory("Fluency"), false);
+  });
+
   it("validateExerciseEditForm returns validation keys", () => {
   assert.equal(validateExerciseEditForm({ categoryId: "", title: "A" }), EXERCISE_VALIDATION_KEYS.CATEGORY_REQUIRED);
   assert.equal(validateExerciseEditForm({ categoryId: "cat", title: "  " }), EXERCISE_VALIDATION_KEYS.TITLE_REQUIRED);
   assert.equal(validateExerciseEditForm({ categoryId: "cat", title: "A" }), null);
+  assert.equal(
+    validateExerciseEditForm({
+      categoryId: "cat",
+      title: "A",
+      isSpeechArticulation: true,
+      expectedText: "  ",
+    }),
+    EXERCISE_VALIDATION_KEYS.EXPECTED_TEXT_REQUIRED,
+  );
   });
 });
 

@@ -146,21 +146,18 @@ class _SpecialistReportDetailsScreenState
               ...sections.map(
                 (section) => Padding(
                   padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: SpecialistReportSectionCard(section: section),
+                  child: SpecialistReportSectionCard(
+                    section: section,
+                    textDirection: detail.isAiReport && detail.language == 'ar'
+                        ? TextDirection.rtl
+                        : detail.isAiReport
+                            ? TextDirection.ltr
+                            : null,
+                  ),
                 ),
               ),
             ],
             if (hasPdf && pdfUrl != null && pdfUrl.trim().isNotEmpty) ...[
-              SizedBox(height: context.dashSpacing * 0.4),
-              Text(
-                l10n.specialistReportAttachments,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: DashboardColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              SpecialistReportAttachmentCard(pdfUrl: pdfUrl),
               SizedBox(height: context.dashSpacing),
               ElevatedButton.icon(
                 onPressed: () => _viewPdf(l10n, pdfUrl),
