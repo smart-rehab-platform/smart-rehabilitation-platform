@@ -447,7 +447,8 @@
       "submitting": "Submitting...",
       "copyLink": "Copy Link",
       "openMeeting": "Open Meeting",
-      "signInRequired": "Please sign in to continue."
+      "signInRequired": "Please sign in to continue.",
+      "backToFeedback": "Back to Feedback"
     },
     "home": {
       "title": "Home",
@@ -897,7 +898,7 @@
       "title": "Exercise Feedback",
       "empty": {
         "none": "No exercise feedback yet.",
-        "filtered": "No reviews match your filters."
+        "filtered": "No reviews match your search or selected child."
       },
       "loading": "Loading feedback...",
       "rating": "Rating",
@@ -913,7 +914,10 @@
       "reviewDate": "Review date",
       "performanceRating": "Performance rating",
       "forChild": "For {name}",
-      "requiresRetry": "Requires Retry"
+      "requiresRetry": "Requires Retry",
+      "specialistComments": "Specialist comments",
+      "noComments": "No written comments were included with this review.",
+      "openReview": "Open review for {title}"
     },
     "complaints": {
       "title": "My Complaints",
@@ -1231,7 +1235,11 @@
       "feedback": {
         "title": "Exercise Feedback",
         "subtitle": "Specialist reviews for submitted exercises across your children.",
-        "loading": "Loading exercise feedback..."
+        "loading": "Loading exercise feedback...",
+        "loadingDetail": "Loading review details...",
+        "notFound": "This review could not be found.",
+        "detailTitle": "Exercise review",
+        "unavailable": "This review is not available right now."
       },
       "complaints": {
         "title": "My Complaints",

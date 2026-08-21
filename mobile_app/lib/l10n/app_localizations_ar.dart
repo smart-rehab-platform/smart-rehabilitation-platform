@@ -3210,6 +3210,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get communicationSeen => 'تمت المشاهدة';
 
   @override
+  String get notificationsPermissionTitle => 'تفعيل الإشعارات';
+
+  @override
+  String get notificationsPermissionBody =>
+      'ابقَ على اطلاع بتحديثات الجلسات والتمارين والرسائل والملاحظات والتقارير ونشاط الحساب.';
+
+  @override
+  String get notificationsPermissionEnable => 'تفعيل الإشعارات';
+
+  @override
+  String get notificationsPermissionMaybeLater => 'ربما لاحقاً';
+
+  @override
   String get communicationAttachHint => 'أرفق ملفاً أو صورة أو صوتاً';
 
   @override

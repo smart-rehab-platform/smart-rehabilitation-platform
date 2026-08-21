@@ -1,4 +1,4 @@
-import '../../../core/routes/app_routes.dart';
+import '../../../core/notifications/push_notification_navigation.dart';
 import '../../dashboard/models/specialist_feature_models.dart';
 
 bool isSupportRequestNotification(SpecialistNotificationItem item) {
@@ -9,16 +9,12 @@ String? resolveSupportRequestNotificationDestination(
   SpecialistNotificationItem item, {
   required bool isAdmin,
 }) {
-  if (!isSupportRequestNotification(item)) {
-    return null;
-  }
-
-  final entityId = item.relatedEntityId?.trim();
-  if (entityId == null || entityId.isEmpty) {
-    return null;
-  }
-
-  return isAdmin
-      ? AppRoutes.adminSupportRequestDetail(entityId)
-      : AppRoutes.specialistSupportRequestDetail(entityId);
+  return PushNotificationNavigation.resolveSpecificLocation(
+    data: PushNotificationNavigation.dataFromFields(
+      type: item.type,
+      relatedEntityType: item.relatedEntityType,
+      relatedEntityId: item.relatedEntityId,
+    ),
+    role: isAdmin ? 'admin' : 'specialist',
+  );
 }

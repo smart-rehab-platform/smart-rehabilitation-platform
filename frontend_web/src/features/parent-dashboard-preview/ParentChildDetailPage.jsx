@@ -175,21 +175,21 @@ export default function ParentChildDetailPage() {
           <div className="pd-child-detail-actions">
             <button
               type="button"
-              className="pd-btn pd-btn-soft"
+              className="pd-btn pd-btn-primary"
               onClick={() => navigate(buildParentProgressPath(child.id))}
             >
               {t("parent.children.viewProgress")}
             </button>
             <button
               type="button"
-              className="pd-btn pd-btn-soft"
+              className="pd-btn pd-btn-primary"
               onClick={() => navigate(buildParentSessionsPath(child.id))}
             >
               {t("parent.children.viewSessions")}
             </button>
             <button
               type="button"
-              className="pd-btn pd-btn-soft"
+              className="pd-btn pd-btn-primary"
               onClick={() => navigate(buildParentReportsPath(child.id))}
             >
               {t("parent.children.viewReports")}

@@ -21,8 +21,8 @@ import { buildParentNavUnavailable } from "../utils/parentRouteMessages";
 import {
   findActionableExercise,
   isExerciseActionable,
-  resolveNotificationRoute,
 } from "../utils/parentDashboardMappers";
+import { resolveParentNotificationDestination } from "../utils/parentNotificationNavigation";
 
 function buildExerciseDetailsPath(task, patientId) {
   return buildParentExerciseDetailsPath({
@@ -192,7 +192,7 @@ export function useParentDashboardNavigation({
       await markNotificationRead(item.id);
     }
 
-    const route = resolveNotificationRoute(item);
+    const route = resolveParentNotificationDestination(item);
     if (route && isImplementedParentPath(route)) {
       navigate(route);
       return;

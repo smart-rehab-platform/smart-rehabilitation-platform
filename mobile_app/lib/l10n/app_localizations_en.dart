@@ -3258,6 +3258,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communicationSeen => 'Seen';
 
   @override
+  String get notificationsPermissionTitle => 'Enable notifications';
+
+  @override
+  String get notificationsPermissionBody =>
+      'Stay up to date on sessions, exercises, messages, feedback, reports, and other account activity.';
+
+  @override
+  String get notificationsPermissionEnable => 'Enable notifications';
+
+  @override
+  String get notificationsPermissionMaybeLater => 'Maybe later';
+
+  @override
   String get communicationAttachHint => 'Attach a file, image, or audio';
 
   @override

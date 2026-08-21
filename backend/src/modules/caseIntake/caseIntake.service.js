@@ -176,6 +176,7 @@ const formatRequest = (row, { includeAttachments = false, audience = "parent" } 
     date_of_birth: toDateString(row.date_of_birth),
     gender: row.gender,
     child_image_url: row.child_image_url,
+    patient_profile_image_url: row.patient_profile_image_url || null,
     category_id: row.category_id,
     case_description: row.case_description,
     observed_difficulties: row.observed_difficulties,
@@ -290,6 +291,7 @@ const ENRICHED_SELECT = `
     parent_u.email AS parent_email,
     parent_u.phone AS parent_phone,
     parent_u.profile_image_url AS parent_profile_image_url,
+    patient.profile_image_url AS patient_profile_image_url,
     (
       SELECT COUNT(*)::int
       FROM case_request_attachments cra
@@ -302,6 +304,7 @@ const ENRICHED_SELECT = `
   FROM case_intake_requests cir
   JOIN case_categories cc ON cc.id = cir.category_id
   JOIN users parent_u ON parent_u.id = cir.parent_id
+  LEFT JOIN patients patient ON patient.id = cir.patient_id
   LEFT JOIN users specialist_u ON specialist_u.id = cir.assigned_specialist_id
   LEFT JOIN specialist_profiles sp ON sp.user_id = specialist_u.id
   LEFT JOIN conversations conv ON conv.case_request_id = cir.id

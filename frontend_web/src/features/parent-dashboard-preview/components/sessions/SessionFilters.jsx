@@ -19,7 +19,7 @@ export function SessionFilters({
   );
 
   return (
-    <div className="pd-task-hub-filters">
+    <div className="pd-task-hub-filters pd-sessions-filters">
       {showSearch ? (
         <div className="pd-task-hub-filter pd-task-hub-filter-search">
           <label className="pd-form-label" htmlFor="pd-sessions-hub-search">

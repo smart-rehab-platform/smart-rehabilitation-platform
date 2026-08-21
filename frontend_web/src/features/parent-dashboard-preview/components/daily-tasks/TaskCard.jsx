@@ -9,7 +9,7 @@ export function TaskCard({ task, onOpen }) {
   const actionLabel = getTaskHubActionLabel(task.status, t);
 
   return (
-    <article className="pd-card pd-card-pad pd-task-hub-card pd-section-enter">
+    <article className="pd-card pd-card-pad pd-task-hub-card pd-daily-task-card pd-section-enter">
       <div className="pd-task-hub-card-head">
         <div className="pd-task-hub-card-copy">
           <h3 className="pd-task-hub-card-title" dir="auto">{task.title}</h3>
@@ -23,7 +23,7 @@ export function TaskCard({ task, onOpen }) {
       </div>
 
       {(task.frequency || task.dueDate) ? (
-        <ul className="pd-task-hub-card-meta">
+        <ul className="pd-task-hub-card-meta pd-daily-task-card-details">
           {task.frequency ? (
             <li>
               <strong>{t("parent.pages.exerciseDetail.frequency")}</strong>

@@ -1,42 +1,80 @@
-/* Parent Dashboard tokens — compatibility shim for shared dashboard styles.
- * Flutter DashboardColors + AppColors via brandTokens.css
- */
-@import "../../shared-dashboard/styles/dashboardTokens.css";
+/* Parent Dashboard overrides — shared tokens load via ParentDashboardShell.jsx */
 
 /*
- * Parent dashboard home: keep the greeting child selector below the header
- * profile dropdown footprint so the two controls never overlap visually.
- *
- * Root cause: profile menu uses absolute positioning under the sticky header
- * (z-index 60) while the child selector sits in the greeting toolbar at the
- * same top-right column with only content padding between them.
+ * Parent home dashboard layout polish — spacing/alignment only.
+ * Scoped to .pd-dashboard-hero-viewport (ParentDashboardPreviewPage).
  */
-.pd-preview {
-  --pd-parent-profile-dropdown-clearance: 5.75rem;
+.pd-preview .pd-dashboard-hero-viewport {
+  gap: 16px;
+  min-height: auto;
+}
+
+.pd-preview .pd-dashboard-hero-viewport > .pd-quick-summary {
+  margin-top: 0;
+}
+
+.pd-preview .pd-dashboard-hero-cards {
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.pd-preview .pd-dashboard-hero-card-slot {
+  align-self: start;
+}
+
+.pd-preview .pd-dashboard-hero-card-slot--schedule {
+  margin-top: 0;
+  gap: 18px;
+}
+
+.pd-preview .pd-dashboard-hero-viewport .pd-calendar-minimal {
+  padding: 18px 20px;
+}
+
+.pd-preview .pd-dashboard-hero-viewport .pd-progress-hero-card {
+  min-height: 240px;
+  padding: 24px 32px;
+}
+
+.pd-preview .pd-dashboard-hero-viewport .pd-progress-hero-body {
+  gap: 32px;
+  min-height: 192px;
+}
+
+.pd-preview .pd-dashboard-hero-viewport .pd-progress-hero-visual {
+  flex: 0 0 220px;
+  width: 220px;
 }
 
 @media (min-width: 1151px) {
+  .pd-preview .pd-dashboard-hero-viewport {
+    min-height: auto;
+  }
+
   .pd-preview .pd-dashboard-hero-viewport > .pd-greeting {
-  display: grid;
+    display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: minmax(var(--pd-parent-profile-dropdown-clearance), auto) auto;
-    column-gap: 20px;
-    row-gap: 10px;
-    align-items: end;
-    /* Below sticky header (z-index 30) so profile dropdown clicks reach Sign out */
+    grid-template-rows: auto;
+    column-gap: 24px;
+    row-gap: 0;
+    align-items: center;
+    padding-bottom: 0;
     z-index: auto;
   }
 
   .pd-preview .pd-dashboard-hero-viewport > .pd-greeting .pd-greeting-main {
     grid-column: 1;
-    grid-row: 1 / -1;
-  align-self: center;
-}
+    grid-row: 1;
+    align-self: center;
+  }
 
   .pd-preview .pd-dashboard-hero-viewport > .pd-greeting .pd-greeting-toolbar {
-  grid-column: 2;
-  grid-row: 2;
+    grid-column: 2;
+    grid-row: 1;
     margin-top: 0;
+    justify-self: end;
+    align-self: center;
   }
 }
 
@@ -46,6 +84,76 @@
   }
 
   .pd-preview .pd-dashboard-hero-viewport > .pd-greeting .pd-greeting-toolbar {
-    margin-top: 2.5rem;
+    margin-top: 12px;
+  }
+}
+
+/*
+ * Parent home lower dashboard — two-column layout.
+ * Left: Today's Tasks, Treatment Journey, Latest Updates
+ * Right: AI Assistant
+ */
+.pd-preview .pd-dashboard-grid--body {
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.pd-preview .pd-dashboard-grid--body .pd-cell-main {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 0;
+  min-width: 0;
+}
+
+.pd-preview .pd-dashboard-grid--body .pd-cell-schedule {
+  grid-column: 2;
+  grid-row: 1;
+  display: block;
+  margin-top: 0;
+  align-self: start;
+  min-width: 0;
+}
+
+.pd-preview .pd-dashboard-grid--body .pd-cell-schedule > * {
+  width: 100%;
+}
+
+@media (max-width: 1150px) {
+  .pd-preview .pd-dashboard-grid--body {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-preview .pd-dashboard-grid--body .pd-cell-main,
+  .pd-preview .pd-dashboard-grid--body .pd-cell-schedule {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-preview .pd-dashboard-grid--body .pd-cell-main {
+    display: contents;
+  }
+
+  .pd-preview .pd-dashboard-grid--body .pd-today-tasks {
+    order: 5;
+  }
+
+  .pd-preview .pd-dashboard-grid--body .pd-tj-card {
+    order: 6;
+  }
+
+  .pd-preview .pd-dashboard-grid--body .pd-latest-updates,
+  .pd-preview .pd-dashboard-grid--body .pd-cell-updates {
+    order: 7;
+  }
+
+  .pd-preview .pd-dashboard-grid--body .pd-cell-schedule {
+    order: 8;
+    display: contents;
   }
 }

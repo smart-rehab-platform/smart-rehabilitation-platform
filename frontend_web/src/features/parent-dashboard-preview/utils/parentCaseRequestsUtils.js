@@ -69,8 +69,13 @@ export function mapCaseRequest(row, options = {}) {
     gender: readString(row, ["gender"]),
     genderLabel: formatCaseRequestGenderLabel(readString(row, ["gender"]), t),
     childImageUrl: resolveCaseRequestChildImageUrl(
-      readString(row, ["child_image_url", "childImageUrl"]),
+      readString(row, ["child_image_url", "childImageUrl"])
+        || readString(row, [
+          "patient_profile_image_url",
+          "patientProfileImageUrl",
+        ]),
     ),
+    patientId: readString(row, ["patient_id", "patientId"]),
     categoryId: readString(row, ["category_id", "categoryId"]),
     categoryName: category
       ? category.name

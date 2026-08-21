@@ -63,7 +63,12 @@ export function SessionRequestCard({ request }) {
       ) : null}
 
       {request.rejectionReason ? (
-        <p className="pd-session-request-note pd-session-request-rejection" dir="auto">
+        <p
+          className={`pd-session-request-note${
+            request.status === "rejected" ? " pd-session-request-rejection" : ""
+          }`}
+          dir="auto"
+        >
           <strong>{t("parent.sessions.response")}:</strong> {request.rejectionReason}
         </p>
       ) : null}

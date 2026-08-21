@@ -603,12 +603,9 @@ export default function ParentDashboardPreviewPage() {
         </div>
 
         <div className="pd-dashboard-grid pd-dashboard-grid--body">
-          <div className="pd-dashboard-cell pd-cell-activities">
+          <div className="pd-dashboard-cell pd-cell-main">
             {renderTodaysTasks()}
             {renderTreatmentJourneyCard()}
-          </div>
-
-          <div className="pd-dashboard-cell pd-cell-updates">
             {renderLatestUpdates()}
           </div>
 

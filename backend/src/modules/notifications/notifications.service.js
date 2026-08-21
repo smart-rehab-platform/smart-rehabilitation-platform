@@ -1,4 +1,35 @@
 const pool = require("../../database/db");
+const { sendPushToUser } = require("./pushNotifications.service");
+
+const buildPushData = (notification) => {
+  if (!notification) {
+    return undefined;
+  }
+
+  const fields = {
+    notificationId: notification.id,
+    type: notification.type,
+    relatedEntityType: notification.related_entity_type,
+    relatedEntityId: notification.related_entity_id,
+  };
+
+  const data = {};
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === undefined || value === null) {
+      continue;
+    }
+
+    const asString = String(value).trim();
+    if (!asString) {
+      continue;
+    }
+
+    data[key] = asString;
+  }
+
+  return Object.keys(data).length > 0 ? data : undefined;
+};
 
 const createNotification = async (data) => {
   const {
@@ -18,7 +49,23 @@ const createNotification = async (data) => {
     [user_id, type, title, body, related_entity_type, related_entity_id]
   );
 
-  return result.rows[0];
+  const notification = result.rows[0];
+
+  try {
+    await sendPushToUser({
+      userId: notification.user_id,
+      title: notification.title,
+      body: notification.body,
+      data: buildPushData(notification),
+    });
+  } catch (error) {
+    console.error(
+      "[push] Failed to deliver notification push:",
+      error.message
+    );
+  }
+
+  return notification;
 };
 
 const getAllNotifications = async () => {

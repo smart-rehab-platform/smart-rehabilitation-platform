@@ -3,7 +3,10 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useLocale } from "../../context/useLocale.js";
-import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
+import {
+  buildParentFeedbackDetailPath,
+  PARENT_WEB_ROUTES,
+} from "../../routes/parentDashboardRoutes";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { ReviewCard } from "./components/feedback/ReviewCard";
 import { ReviewEmptyState } from "./components/feedback/ReviewEmptyState";
@@ -15,9 +18,10 @@ import { mapParentFromAuth } from "./utils/parentDashboardMappers";
 import {
   filterFeedbackReviews,
   getFeedbackEmptyMessages,
-  sortFeedbackReviews,
+  sortFeedbackReviewsNewestFirst,
 } from "./utils/parentFeedbackUtils";
 import "./styles/parentDashboardTokens.css";
+import "./styles/parentFeedbackSections.css";
 
 export default function ParentFeedbackPage() {
   const navigate = useNavigate();
@@ -31,8 +35,6 @@ export default function ParentFeedbackPage() {
 
   const [search, setSearch] = useState("");
   const [childFilter, setChildFilter] = useState(initialChildId);
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortKey, setSortKey] = useState("newest");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -101,14 +103,13 @@ export default function ParentFeedbackPage() {
     () => filterFeedbackReviews(reviews, {
       search,
       childId: childFilter,
-      status: statusFilter,
     }),
-    [reviews, search, childFilter, statusFilter],
+    [reviews, search, childFilter],
   );
 
   const visibleReviews = useMemo(
-    () => sortFeedbackReviews(filteredReviews, sortKey),
-    [filteredReviews, sortKey],
+    () => sortFeedbackReviewsNewestFirst(filteredReviews),
+    [filteredReviews],
   );
 
   const emptyMessages = useMemo(() => getFeedbackEmptyMessages(t), [t]);
@@ -144,6 +145,16 @@ export default function ParentFeedbackPage() {
     });
   }, [navigate, childFilter]);
 
+  const handleOpenReview = useCallback((review) => {
+    const path = buildParentFeedbackDetailPath(review?.id, review?.patientId);
+    if (!path) {
+      showToast(t("parent.pages.feedback.unavailable"));
+      return;
+    }
+
+    navigate(path);
+  }, [navigate, showToast, t]);
+
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -169,9 +180,13 @@ export default function ParentFeedbackPage() {
     }
 
     return (
-      <div className="pd-task-hub-list">
+      <div className="pd-task-hub-list pd-feedback-list">
         {visibleReviews.map((review) => (
-          <ReviewCard key={`${review.patientId}-${review.id}`} review={review} />
+          <ReviewCard
+            key={`${review.patientId}-${review.id}`}
+            review={review}
+            onOpen={handleOpenReview}
+          />
         ))}
       </div>
     );
@@ -199,7 +214,7 @@ export default function ParentFeedbackPage() {
         onViewProfile={navigation.handleViewProfile}
         onMessages={navigation.handleMessages}
       >
-        <div className="pd-task-hub-page">
+        <div className="pd-task-hub-page pd-feedback-page">
           <div className="pd-task-hub-toolbar">
             <button type="button" className="pd-btn pd-btn-soft" onClick={handleBack}>
               <ArrowLeft size={16} aria-hidden="true" />
@@ -219,10 +234,6 @@ export default function ParentFeedbackPage() {
             onSearchChange={setSearch}
             childId={childFilter}
             onChildChange={setChildFilter}
-            status={statusFilter}
-            onStatusChange={setStatusFilter}
-            sortKey={sortKey}
-            onSortChange={setSortKey}
             children={children}
           />
 

@@ -373,7 +373,9 @@ class _ParentNotificationsScreenState
     }
 
     final destination = await resolveParentNotificationDestination(ref, item);
-    if (!mounted || destination == null) {
+    if (!mounted ||
+        destination == null ||
+        destination == AppRoutes.parentNotifications) {
       return;
     }
 

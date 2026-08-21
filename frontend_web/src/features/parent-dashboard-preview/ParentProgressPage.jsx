@@ -277,6 +277,9 @@ export default function ParentProgressPage() {
         <TreatmentJourneyPanel
           child={selectedChild}
           hasMultipleChildren={children.length > 1}
+          childOptions={children}
+          selectedChildId={validChildId}
+          onChildChange={handleChildChange}
           journey={journey}
           period={period}
           isLoading={isJourneyLoading}
@@ -286,8 +289,8 @@ export default function ParentProgressPage() {
           onPeriodChange={setPeriod}
           onRetry={retryJourney}
           onRefresh={refreshJourney}
+          supportingSections={renderSupportingSections()}
         />
-        {renderSupportingSections()}
       </div>
     );
   };
@@ -328,22 +331,6 @@ export default function ParentProgressPage() {
               {t("parent.pages.progress.subtitle")}
             </p>
           </header>
-
-          {children.length > 1 ? (
-            <div className="pd-progress-filter">
-              <label htmlFor="pd-progress-child-filter">{t("parent.common.child")}</label>
-              <select
-                id="pd-progress-child-filter"
-                className="pd-select"
-                value={validChildId || ""}
-                onChange={handleChildChange}
-              >
-                {children.map((child) => (
-                  <option key={child.id} value={child.id}>{child.fullName}</option>
-                ))}
-              </select>
-            </div>
-          ) : null}
 
           <div className="pd-task-hub-panel">{renderContent()}</div>
         </div>

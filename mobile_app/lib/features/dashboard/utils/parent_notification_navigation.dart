@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/notifications/push_notification_navigation.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../case_intake/models/case_intake_request_model.dart';
 import '../../case_intake/providers/parent_case_intake_provider.dart';
@@ -28,23 +29,14 @@ Future<String?> resolveParentNotificationDestination(
   WidgetRef ref,
   ParentNotificationItem item,
 ) async {
-  if (!isCaseRequestNotification(item)) {
-    return null;
-  }
-
   final type = item.type?.trim().toLowerCase();
   final entityType = item.relatedEntityType?.trim().toLowerCase();
   final entityId = item.relatedEntityId?.trim();
 
-  if (entityId == null || entityId.isEmpty) {
-    return null;
-  }
-
-  if (entityType == 'case_intake_request') {
-    return AppRoutes.parentCaseRequestDetail(entityId);
-  }
-
-  if (type == 'case_request_converted' && entityType == 'patient') {
+  if (type == 'case_request_converted' &&
+      entityType == 'patient' &&
+      entityId != null &&
+      entityId.isNotEmpty) {
     await ref.read(parentCaseIntakeProvider.notifier).refreshRequests();
     for (final request in ref.read(parentCaseIntakeProvider).requests) {
       if (request.patientId?.trim() == entityId) {
@@ -56,7 +48,14 @@ Future<String?> resolveParentNotificationDestination(
     return AppRoutes.parentChildDetail.replaceFirst(':childId', entityId);
   }
 
-  return null;
+  return PushNotificationNavigation.resolveSpecificLocation(
+    data: PushNotificationNavigation.dataFromFields(
+      type: item.type,
+      relatedEntityType: item.relatedEntityType,
+      relatedEntityId: item.relatedEntityId,
+    ),
+    role: 'parent',
+  );
 }
 
 Future<void> refreshParentDataAfterCaseNotification(WidgetRef ref) async {

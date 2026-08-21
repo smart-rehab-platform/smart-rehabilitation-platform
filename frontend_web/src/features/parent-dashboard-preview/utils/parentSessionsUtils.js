@@ -15,6 +15,7 @@ import {
   formatSessionDisplayDate,
   formatSessionDisplayTime,
   formatSessionRequestCreatedDate,
+  formatSessionRequestPreferredDate,
   getMeetingLinkCopyError,
   getMeetingLinkUnavailableError,
   getPreferredTimePeriodLabel,
@@ -181,7 +182,11 @@ export function mapSessionRequestRowToHubItem(requestRow, approvedSessionRow = n
     reason,
     reasonLabel: getSessionRequestReasonLabel(reason, t),
     reasonOtherText: readString(requestRow, ["reason_other_text", "reasonOtherText"]),
-    preferredDate: readString(requestRow, ["preferred_date", "preferredDate"]),
+    preferredDate: formatSessionRequestPreferredDate(
+      readString(requestRow, ["preferred_date", "preferredDate"]),
+      locale,
+      t,
+    ),
     preferredTimePeriod: readString(requestRow, ["preferred_time_period", "preferredTimePeriod"]),
     preferredTimePeriodLabel: getPreferredTimePeriodLabel(
       readString(requestRow, ["preferred_time_period", "preferredTimePeriod"]),
