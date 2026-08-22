@@ -8,6 +8,7 @@ import {
   buildParentMessagesPath,
 } from "../../routes/parentDashboardRoutes";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
+import { UserProfileAvatar } from "../shared-dashboard/components/UserProfileAvatar";
 import {
   useParentConversation,
   useParentMessageComposer,
@@ -25,6 +26,9 @@ import {
 import { MessageAttachmentDisplay } from "./components/messages/MessageAttachmentDisplay";
 import { MessagesComposer } from "./components/messages/MessagesComposer";
 import { useMessageAttachmentDraft } from "./hooks/useMessageAttachmentDraft";
+import { useSpecialistPresence } from "../specialist-dashboard/hooks/useSpecialistPresence";
+import { SpecialistPresenceStatus } from "../specialist-dashboard/components/messages/SpecialistPresenceStatus";
+import { getInitials } from "./utils/parentDashboardMappers";
 import "./styles/parentDashboardTokens.css";
 
 const MOBILE_CHAT_BREAKPOINT = 900;
@@ -62,6 +66,7 @@ export default function ParentMessagesPage() {
     () => conversations.find((item) => item.id === activeConversationId) ?? null,
     [conversations, activeConversationId],
   );
+  const specialistPresence = useSpecialistPresence(activeConversation?.specialistId ?? null);
 
   const {
     notifications,
@@ -294,10 +299,18 @@ export default function ParentMessagesPage() {
             }`}
             onClick={() => navigateToConversation(conversation.id)}
           >
-            <strong>{conversation.title}</strong>
-            {conversation.subtitle ? (
-              <span>{conversation.subtitle}</span>
-            ) : null}
+            <UserProfileAvatar
+              imageUrl={conversation.specialistProfileImageUrl}
+              initials={getInitials(conversation.specialistName, "S")}
+              alt=""
+              shellClassName="pd-avatar pd-conversation-avatar"
+              fallbackClassName="pd-avatar pd-conversation-avatar"
+              className="pd-avatar-photo"
+            />
+            <span className="pd-conversation-copy">
+              <strong dir="auto">{conversation.title}</strong>
+              {conversation.subtitle ? <span dir="auto">{conversation.subtitle}</span> : null}
+            </span>
           </button>
         ))}
       </div>
@@ -340,25 +353,34 @@ export default function ParentMessagesPage() {
           key={message.id}
           className={`pd-message-block${isOwn ? " is-own" : " is-other"}`}
         >
-          <article
-            className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}
-          >
-            {!isOwn && message.senderName ? (
-              <span className="pd-message-sender">{message.senderName}</span>
+          <div className="pd-message-content-row">
+            {!isOwn ? (
+              <UserProfileAvatar
+                imageUrl={activeConversation?.specialistProfileImageUrl}
+                initials={getInitials(activeConversation?.specialistName, "S")}
+                alt=""
+                shellClassName="pd-avatar pd-message-avatar"
+                fallbackClassName="pd-avatar pd-message-avatar"
+                className="pd-avatar-photo"
+              />
             ) : null}
-            {message.content ? <p dir="auto">{message.content}</p> : null}
-            {message.hasAttachments ? (
-              <div className="pd-message-attachments">
-                {message.attachments.map((attachment) => (
-                  <MessageAttachmentDisplay key={attachment.id || attachment.fileUrl} attachment={attachment} />
-                ))}
-              </div>
-            ) : null}
-            {message.sentAt ? (
-              <time className="pd-message-time">{formatMessageTime(message.sentAt, locale, t)}</time>
-            ) : null}
-          </article>
-          {showSeen ? <span className="pd-message-seen">Seen</span> : null}
+            <div className="pd-message-content-column">
+              <article className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}>
+                {message.content ? <p dir="auto">{message.content}</p> : null}
+                {message.hasAttachments ? (
+                  <div className="pd-message-attachments">
+                    {message.attachments.map((attachment) => (
+                      <MessageAttachmentDisplay key={attachment.id || attachment.fileUrl} attachment={attachment} />
+                    ))}
+                  </div>
+                ) : null}
+                {message.sentAt ? (
+                  <time className="pd-message-time">{formatMessageTime(message.sentAt, locale, t)}</time>
+                ) : null}
+              </article>
+              {showSeen ? <span className="pd-message-seen">Seen</span> : null}
+            </div>
+          </div>
         </div>
       );
     });
@@ -423,12 +445,34 @@ export default function ParentMessagesPage() {
             {showChatPanel ? (
               <section className="pd-messages-chat pd-card pd-card-pad">
                 <div className="pd-messages-chat-header">
-                  <h2 className="pd-section-title">
-                    {activeConversation?.title || t("parent.messages.conversationDefault")}
-                  </h2>
-                  {activeConversation?.subtitle ? (
-                    <p className="pd-section-sub">{activeConversation.subtitle}</p>
-                  ) : null}
+                  {activeConversation ? (
+                    <div className="pd-chat-header-main">
+                      <UserProfileAvatar
+                        imageUrl={activeConversation.specialistProfileImageUrl}
+                        initials={getInitials(activeConversation.specialistName, "S")}
+                        alt=""
+                        shellClassName="pd-avatar pd-chat-header-avatar"
+                        fallbackClassName="pd-avatar pd-chat-header-avatar"
+                        className="pd-avatar-photo"
+                      />
+                      <div className="pd-chat-header-identity">
+                        <h2 className="pd-section-title" dir="auto">{activeConversation.title}</h2>
+                        <SpecialistPresenceStatus
+                          presence={specialistPresence.presence}
+                          isOnline={specialistPresence.isOnline}
+                          label={specialistPresence.label}
+                          isLoading={specialistPresence.isLoading}
+                        />
+                      </div>
+                      {activeConversation.subtitle ? (
+                        <span className="pd-chat-patient-chip" dir="auto">
+                          {activeConversation.subtitle}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <h2 className="pd-section-title">{t("parent.messages.conversationDefault")}</h2>
+                  )}
                 </div>
 
                 <div

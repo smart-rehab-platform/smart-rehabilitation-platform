@@ -198,6 +198,7 @@ class AdminAuditLogRecord {
     required this.action,
     this.userName,
     this.userEmail,
+    this.userProfileImageUrl,
     this.entityName,
     this.entityId,
     this.createdAt,
@@ -207,6 +208,7 @@ class AdminAuditLogRecord {
   final String action;
   final String? userName;
   final String? userEmail;
+  final String? userProfileImageUrl;
   final String? entityName;
   final String? entityId;
   final DateTime? createdAt;
@@ -224,6 +226,12 @@ class AdminAuditLogRecord {
         'user_email',
         'userEmail',
         'email',
+      ]),
+      userProfileImageUrl: ApiResponseParser.readString(map, const [
+        'user_profile_image_url',
+        'userProfileImageUrl',
+        'profile_image_url',
+        'profileImageUrl',
       ]),
       entityName: ApiResponseParser.readString(map, const [
         'entity_name',

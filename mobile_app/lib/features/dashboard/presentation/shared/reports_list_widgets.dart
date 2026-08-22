@@ -107,6 +107,7 @@ class ReportListCard extends StatelessWidget {
           children: [
             DashboardProfileAvatar(
               initials: dashboardInitials(report.patientName, fallback: 'P'),
+              imageUrl: report.patientProfileImageUrl,
               radius: context.dashSpacing * 0.65,
             ),
             SizedBox(width: context.dashSpacing * 0.65),

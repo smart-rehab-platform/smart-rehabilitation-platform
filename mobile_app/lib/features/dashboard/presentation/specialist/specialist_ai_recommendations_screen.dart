@@ -133,7 +133,10 @@ class _SpecialistAiRecommendationsScreenState
           physics: const AlwaysScrollableScrollPhysics(),
           padding: context.dashPadding,
           children: [
-            AiRecommendationsHeaderCard(patientName: bundle.patientName),
+            AiRecommendationsHeaderCard(
+              patientName: bundle.patientName,
+              profileImageUrl: bundle.patientProfileImageUrl,
+            ),
             SizedBox(height: context.dashSpacing * 0.75),
             AiRecommendationsGenerateCard(
               isGenerating: state.isGenerating,

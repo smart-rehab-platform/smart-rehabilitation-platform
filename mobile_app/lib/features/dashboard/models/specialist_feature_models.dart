@@ -8,12 +8,14 @@ class SpecialistPatientItem {
     required this.name,
     this.dateOfBirth,
     this.diagnosis,
+    this.profileImageUrl,
   });
 
   final String id;
   final String name;
   final DateTime? dateOfBirth;
   final String? diagnosis;
+  final String? profileImageUrl;
 
   factory SpecialistPatientItem.fromMap(Map<String, dynamic> map) {
     return SpecialistPatientItem(
@@ -31,6 +33,15 @@ class SpecialistPatientItem {
       diagnosis: ApiResponseParser.readString(map, const [
         'primary_diagnosis',
         'diagnosis',
+      ]),
+      profileImageUrl: ApiResponseParser.readString(map, const [
+        'profile_image_url',
+        'profileImageUrl',
+        'profile_image',
+        'profileImage',
+        'image_url',
+        'avatarUrl',
+        'avatar',
       ]),
     );
   }

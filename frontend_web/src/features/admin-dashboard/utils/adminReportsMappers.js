@@ -1,4 +1,5 @@
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
+import { resolveProfileImageUrl } from "./adminPatientsMappers.js";
 
 /** Flutter SpecialistReportFilter order. */
 export const ADMIN_REPORT_FILTERS = Object.freeze([
@@ -288,6 +289,14 @@ export function mapAdminRegularReport(row) {
     id,
     patientId: readString(row, ["patient_id", "patientId"]) || null,
     patientName: readOptionalString(row, ["patient_name", "patientName"]),
+    patientProfileImageUrl: resolveProfileImageUrl(
+      readOptionalString(row, [
+        "patient_profile_image_url",
+        "patientProfileImageUrl",
+        "profile_image_url",
+        "profileImageUrl",
+      ]),
+    ),
     specialistId: readOptionalString(row, ["generated_by", "generatedBy", "specialist_id", "specialistId"]),
     specialistName: readOptionalString(row, [
       "generated_by_name",
@@ -336,6 +345,14 @@ export function mapAdminAiReport(row) {
     id,
     patientId: readString(row, ["patient_id", "patientId"]) || null,
     patientName: readOptionalString(row, ["patient_name", "patientName"]),
+    patientProfileImageUrl: resolveProfileImageUrl(
+      readOptionalString(row, [
+        "patient_profile_image_url",
+        "patientProfileImageUrl",
+        "profile_image_url",
+        "profileImageUrl",
+      ]),
+    ),
     specialistId: null,
     specialistName: null,
     reportType,

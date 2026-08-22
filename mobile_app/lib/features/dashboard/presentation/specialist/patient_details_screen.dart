@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
@@ -507,7 +508,15 @@ class _SpecialistActionButtons extends StatelessWidget {
         SizedBox(height: context.dashSpacing * 0.5),
         OutlinedButton.icon(
           onPressed: onAiRecommendations,
-          icon: const Icon(Icons.auto_awesome_outlined),
+          icon: SvgPicture.asset(
+            'assets/icons/onboarding/neurology.svg',
+            width: 24,
+            height: 24,
+            colorFilter: const ColorFilter.mode(
+              DashboardColors.brandCyan,
+              BlendMode.srcIn,
+            ),
+          ),
           label: Text(l10n.adminAiRecommendations),
           style: OutlinedButton.styleFrom(
             foregroundColor: DashboardColors.brandCyan,

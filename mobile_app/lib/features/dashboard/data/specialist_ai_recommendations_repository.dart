@@ -49,6 +49,15 @@ class SpecialistAiRecommendationsRepository {
           'name',
         ]) ??
         'Patient';
+    final patientProfileImageUrl = ApiResponseParser.readString(patientMap, const [
+      'profile_image_url',
+      'profileImageUrl',
+      'profile_image',
+      'profileImage',
+      'image_url',
+      'avatarUrl',
+      'avatar',
+    ]);
 
     final planRows = await _getList('/treatment-plans/patient/$patientId');
     final activePlan = _selectActivePlan(planRows);
@@ -66,6 +75,7 @@ class SpecialistAiRecommendationsRepository {
     return SpecialistAiRecommendationsBundle(
       patientId: patientId,
       patientName: patientName,
+      patientProfileImageUrl: patientProfileImageUrl,
       planId: planId,
       recommendations: recommendations,
     );

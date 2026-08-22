@@ -54,6 +54,8 @@ class ParentChild {
         'profileImageUrl',
         'profile_image',
         'profileImage',
+        'image_url',
+        'avatar',
       ]),
     );
   }

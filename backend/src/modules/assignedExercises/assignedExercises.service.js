@@ -1,4 +1,5 @@
 const pool = require("../../database/db");
+const { createNotification } = require("../notifications/notifications.service");
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -256,8 +257,78 @@ const createAssignedExerciseWithDb = async (
   }
 };
 
+const notifyGuardiansOfNewAssignment = async (assignment, assignedBy) => {
+  if (!assignment?.id || !assignment?.patient_id || !assignment?.exercise_id) {
+    return;
+  }
+
+  try {
+    const contextResult = await pool.query(
+      `SELECT DISTINCT pg.parent_id,
+              p.full_name AS patient_name,
+              e.title AS exercise_title
+       FROM patient_guardians pg
+       JOIN patients p ON p.id = pg.patient_id
+       JOIN exercises e ON e.id = $2
+       WHERE pg.patient_id = $1`,
+      [assignment.patient_id, assignment.exercise_id]
+    );
+
+    if (!contextResult.rows.length) {
+      return;
+    }
+
+    const patientName =
+      String(contextResult.rows[0].patient_name || "").trim() || "Your child";
+    const exerciseTitle =
+      String(contextResult.rows[0].exercise_title || "").trim() || "a new exercise";
+    const title = "New Exercise Assigned";
+    const body = `${patientName} has a new exercise: ${exerciseTitle}.`;
+    const notified = new Set();
+
+    for (const row of contextResult.rows) {
+      const parentId = String(row.parent_id || "").trim();
+      if (!parentId || parentId === String(assignedBy)) {
+        continue;
+      }
+      if (notified.has(parentId)) {
+        continue;
+      }
+      notified.add(parentId);
+
+      try {
+        await createNotification({
+          user_id: parentId,
+          type: "exercise_reminder",
+          title,
+          body,
+          related_entity_type: "assigned_exercise",
+          related_entity_id: assignment.id,
+        });
+      } catch (error) {
+        console.error(
+          "[notifications] Failed to notify guardian of exercise assignment:",
+          error.message
+        );
+      }
+    }
+  } catch (error) {
+    console.error(
+      "[notifications] Failed to load guardians for exercise assignment:",
+      error.message
+    );
+  }
+};
+
 const createAssignedExercise = async (data, assignedBy, actor = {}) => {
-  return createAssignedExerciseWithDb(pool, data, assignedBy, actor);
+  const assignment = await createAssignedExerciseWithDb(
+    pool,
+    data,
+    assignedBy,
+    actor
+  );
+  await notifyGuardiansOfNewAssignment(assignment, assignedBy);
+  return assignment;
 };
 
 const getAllAssignedExercises = async () => {

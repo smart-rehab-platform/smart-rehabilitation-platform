@@ -40,7 +40,8 @@ const getAllAuditLogs = async (filters = {}) => {
     `SELECT
        al.*,
        u.full_name AS user_name,
-       u.email AS user_email
+       u.email AS user_email,
+       u.profile_image_url AS user_profile_image_url
      FROM audit_logs al
      LEFT JOIN users u ON al.user_id = u.id
      ${whereClause}

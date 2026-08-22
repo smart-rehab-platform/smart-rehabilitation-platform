@@ -793,6 +793,7 @@ const assertActorCanReadPatientAiReports = async (actor, patientId) => {
 const AI_REPORT_SELECT = `
   SELECT ar.*,
          p.full_name AS patient_name,
+         p.profile_image_url AS patient_profile_image_url,
          u.full_name AS generated_by_name
   FROM ai_reports ar
   JOIN patients p ON p.id = ar.patient_id

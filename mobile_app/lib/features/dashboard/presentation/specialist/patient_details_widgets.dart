@@ -7,6 +7,7 @@ import './specialist_patient_details_localization_utils.dart';
 import '../../models/specialist_patient_details_models.dart';
 import '../../widgets/dashboard_components.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 import '../../widgets/parent_dashboard_cards.dart';
@@ -37,16 +38,12 @@ class PatientDetailsHeader extends StatelessWidget {
     return DashboardSurfaceCard(
       child: Column(
         children: [
-          CircleAvatar(
+          DashboardProfileAvatar(
+            initials: dashboardAvatarLetter(patient.fullName),
+            imageUrl: patient.profileImageUrl,
             radius: context.dashSpacing * 0.9,
             backgroundColor: DashboardColors.blueSoft,
-            child: Text(
-              dashboardAvatarLetter(patient.fullName),
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: const Color(0xFF3B82F6),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            foregroundColor: const Color(0xFF3B82F6),
           ),
           SizedBox(height: context.dashSpacing * 0.65),
           Text(

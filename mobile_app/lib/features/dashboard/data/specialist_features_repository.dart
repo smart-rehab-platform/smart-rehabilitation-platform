@@ -47,8 +47,30 @@ class SpecialistFeaturesRepository {
     String specialistUserId,
   ) async {
     try {
-      final rows = await _getList('/specialists/$specialistUserId/pending-reviews');
-      return rows.map(SpecialistPendingReview.fromMap).toList();
+      // Pending-reviews API returns patient_id/name but not profile_image_url.
+      // Match Web: load assigned patients and attach profileImageUrl by patientId.
+      final results = await Future.wait([
+        _getList('/specialists/$specialistUserId/pending-reviews'),
+        fetchPatients(specialistUserId),
+      ]);
+      final rows = results[0] as List<Map<String, dynamic>>;
+      final patients = results[1] as List<SpecialistPatientItem>;
+      final avatarById = <String, String?>{
+        for (final patient in patients) patient.id: patient.profileImageUrl,
+      };
+
+      return rows.map((row) {
+        final review = SpecialistPendingReview.fromMap(row);
+        final existing = review.profileImageUrl?.trim();
+        if (existing != null && existing.isNotEmpty) {
+          return review;
+        }
+        final patientId = review.patientId;
+        if (patientId == null || patientId.isEmpty) {
+          return review;
+        }
+        return review.copyWith(profileImageUrl: avatarById[patientId]);
+      }).toList();
     } on DioException {
       return const [];
     }

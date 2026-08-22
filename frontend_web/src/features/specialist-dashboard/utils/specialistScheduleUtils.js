@@ -1,4 +1,5 @@
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig";
+import { getAppTimezone } from "../../../utils/appTimezone.js";
 import {
   formatSpecialistScheduleTime,
   formatSpecialistSelectedDaySummary,
@@ -152,6 +153,7 @@ function formatDisplayDate(date) {
   }
 
   return date.toLocaleDateString(undefined, {
+    timeZone: getAppTimezone(),
     weekday: "short",
     month: "short",
     day: "numeric",

@@ -61,7 +61,15 @@ export function mapConversation(row, options = {}) {
     specialistId: readString(row, ["specialist_id", "specialistId"]),
     patientName: normalizedRow.patientName,
     parentName: readString(row, ["parent_name", "parentName"]),
+    parentProfileImageUrl: resolveMediaUrl(readString(row, [
+      "parent_profile_image_url",
+      "parentProfileImageUrl",
+    ])),
     specialistName: normalizedRow.specialistName,
+    specialistProfileImageUrl: resolveMediaUrl(readString(row, [
+      "specialist_profile_image_url",
+      "specialistProfileImageUrl",
+    ])),
     caseRequestId: readString(row, ["case_request_id", "caseRequestId"]),
     caseRequestChildName,
     createdAt: readString(row, ["created_at", "createdAt"]),

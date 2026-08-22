@@ -122,7 +122,10 @@ class _SpecialistEditTreatmentPlanScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            EditTreatmentPlanPatientHeader(patientName: bundle.patientName),
+            EditTreatmentPlanPatientHeader(
+              patientName: bundle.patientName,
+              profileImageUrl: bundle.patientProfileImageUrl,
+            ),
             SizedBox(height: context.dashSpacing),
             Text(
               l10n.specialistTreatmentPlanTitleLabel,

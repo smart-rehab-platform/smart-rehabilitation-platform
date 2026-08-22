@@ -72,15 +72,11 @@ class _SpecialistPatientsScreenState
                     ),
                     child: Row(
                       children: [
-                        CircleAvatar(
+                        DashboardProfileAvatar(
+                          initials: dashboardAvatarLetter(patient.name),
+                          imageUrl: patient.profileImageUrl,
                           backgroundColor: DashboardColors.blueSoft,
-                          child: Text(
-                            dashboardAvatarLetter(patient.name),
-                            style: TextStyle(
-                              color: const Color(0xFF3B82F6),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                          foregroundColor: const Color(0xFF3B82F6),
                         ),
                         SizedBox(width: context.dashSpacing * 0.65),
                         Expanded(
@@ -852,15 +848,11 @@ Widget _buildReviewCard(
           : () => context.push(AppRoutes.specialistReviewExercise(review.id)),
       child: Row(
         children: [
-          CircleAvatar(
+          DashboardProfileAvatar(
+            initials: dashboardAvatarLetter(review.patientName),
+            imageUrl: review.profileImageUrl,
             backgroundColor: DashboardColors.brandCyan.withValues(alpha: 0.15),
-            child: Text(
-              dashboardAvatarLetter(review.patientName),
-              style: TextStyle(
-                color: DashboardColors.brandCyan,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            foregroundColor: DashboardColors.brandCyan,
           ),
           SizedBox(width: context.dashSpacing * 0.65),
           Expanded(

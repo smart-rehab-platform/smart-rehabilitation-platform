@@ -33,6 +33,7 @@ function UserCell({ log, labels }) {
   return (
     <div className="pd-admin-audit-user-cell">
       <UserProfileAvatar
+        imageUrl={log.profileImageUrl}
         initials={initials}
         alt=""
         sizeClassName="pd-admin-audit-avatar"

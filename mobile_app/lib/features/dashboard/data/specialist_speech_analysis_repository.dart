@@ -177,13 +177,26 @@ class SpecialistSpeechAnalysisRepository {
     }
   }
 
-  Future<String?> fetchPatientName(String patientId) async {
+  Future<({String? name, String? profileImageUrl})> fetchPatientIdentity(
+    String patientId,
+  ) async {
     final map = await _getMap('/patients/$patientId');
-    return ApiResponseParser.readString(map ?? {}, const [
-      'full_name',
-      'fullName',
-      'name',
-    ]);
+    return (
+      name: ApiResponseParser.readString(map ?? {}, const [
+        'full_name',
+        'fullName',
+        'name',
+      ]),
+      profileImageUrl: ApiResponseParser.readString(map ?? {}, const [
+        'profile_image_url',
+        'profileImageUrl',
+        'profile_image',
+        'profileImage',
+        'image_url',
+        'avatarUrl',
+        'avatar',
+      ]),
+    );
   }
 
   /// User-facing speech analysis errors (never raw DioException text).

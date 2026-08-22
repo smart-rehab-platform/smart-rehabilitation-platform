@@ -6899,6 +6899,47 @@ body.pd-preview-drawer-open {
   font-size: 1rem;
 }
 
+.pd-preview .pd-chat-header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pd-preview .pd-chat-header-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+}
+
+.pd-preview .pd-chat-header-identity {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pd-preview .pd-chat-header-identity .pd-section-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-preview .pd-chat-patient-chip {
+  display: block;
+  min-width: 0;
+  max-width: min(42%, 260px);
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 7px 10px;
+  border: 1px solid color-mix(in srgb, var(--pd-primary) 20%, transparent);
+  border-radius: 999px;
+  background: var(--pd-primary-soft);
+  color: var(--pd-text-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .pd-preview .pd-messages-list-scroll {
   flex: 1 1 0;
   min-height: 0;
@@ -6916,12 +6957,39 @@ body.pd-preview-drawer-open {
 
 .pd-preview .pd-messages-list-item {
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   text-align: left;
   border: 1px solid var(--pd-border);
   border-radius: 12px;
   padding: 12px;
   background: var(--pd-surface);
   cursor: pointer;
+}
+
+.pd-preview .pd-conversation-avatar {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: inline-flex;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.pd-preview .pd-conversation-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  text-align: start;
+}
+
+.pd-preview .pd-conversation-copy strong,
+.pd-preview .pd-conversation-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pd-preview .pd-messages-list-item.is-active {
@@ -6996,6 +7064,30 @@ body.pd-preview-drawer-open {
   display: flex;
   flex-direction: column;
   max-width: min(100%, 520px);
+}
+
+.pd-preview .pd-message-content-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.pd-preview .pd-message-block.is-own .pd-message-content-row {
+  justify-content: flex-end;
+}
+
+.pd-preview .pd-message-content-column {
+  display: flex;
+  min-width: 0;
+  max-width: min(100%, 520px);
+  flex-direction: column;
+}
+
+.pd-preview .pd-message-avatar {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
 }
 
 .pd-preview .pd-message-block.is-own {
@@ -7333,6 +7425,14 @@ body.pd-preview-drawer-open {
 }
 
 @media (max-width: 900px) {
+  .pd-preview .pd-chat-patient-chip {
+    max-width: 38%;
+  }
+
+  .pd-preview .pd-chat-header-main {
+    gap: 8px;
+  }
+
   .pd-preview .pd-messages-attach-popover {
     min-width: 156px;
   }

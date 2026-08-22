@@ -6,6 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/admin_features_repository.dart';
 import '../../widgets/admin_ui_components.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/dashboard_profile_avatar.dart';
 import 'admin_audit_localization_utils.dart';
 
 class AuditActionPresentation {
@@ -195,7 +196,10 @@ class _AdminAuditLogCardState extends State<AdminAuditLogCard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _AuditUserAvatar(name: userName),
+                _AuditUserAvatar(
+                  name: userName,
+                  imageUrl: log.userProfileImageUrl,
+                ),
                 SizedBox(width: context.dashSpacing * 0.6),
                 Expanded(
                   child: Column(
@@ -348,9 +352,10 @@ class _AuditActionBadge extends StatelessWidget {
 }
 
 class _AuditUserAvatar extends StatelessWidget {
-  const _AuditUserAvatar({required this.name});
+  const _AuditUserAvatar({required this.name, this.imageUrl});
 
   final String name;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -360,22 +365,12 @@ class _AuditUserAvatar extends StatelessWidget {
       fallback: l10n.adminAuditSystemUserInitials,
     );
 
-    return Container(
-      width: 40,
-      height: 40,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: DashboardColors.blueSoft,
-        shape: BoxShape.circle,
-        border: Border.all(color: DashboardColors.border),
-      ),
-      child: Text(
-        initials,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: DashboardColors.brandCyan,
-        ),
-      ),
+    return DashboardProfileAvatar(
+      initials: initials,
+      imageUrl: imageUrl,
+      radius: 20,
+      backgroundColor: DashboardColors.blueSoft,
+      foregroundColor: DashboardColors.brandCyan,
     );
   }
 }

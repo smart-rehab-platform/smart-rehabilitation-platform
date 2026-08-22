@@ -264,12 +264,14 @@ class SpecialistAiRecommendationsBundle {
   const SpecialistAiRecommendationsBundle({
     required this.patientId,
     required this.patientName,
+    this.patientProfileImageUrl,
     this.planId,
     this.recommendations = const [],
   });
 
   final String patientId;
   final String patientName;
+  final String? patientProfileImageUrl;
   final String? planId;
   final List<SpecialistAiRecommendationItem> recommendations;
 }

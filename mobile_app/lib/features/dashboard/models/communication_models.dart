@@ -133,7 +133,9 @@ class CommunicationConversation {
     this.createdAt,
     this.patientName,
     this.parentName,
+    this.parentProfileImageUrl,
     this.specialistName,
+    this.specialistProfileImageUrl,
     this.caseRequestId,
     this.caseRequestChildName,
   });
@@ -145,7 +147,9 @@ class CommunicationConversation {
   final DateTime? createdAt;
   final String? patientName;
   final String? parentName;
+  final String? parentProfileImageUrl;
   final String? specialistName;
+  final String? specialistProfileImageUrl;
   final String? caseRequestId;
   final String? caseRequestChildName;
 
@@ -176,9 +180,17 @@ class CommunicationConversation {
         'parent_name',
         'parentName',
       ]),
+      parentProfileImageUrl: ApiResponseParser.readString(map, const [
+        'parent_profile_image_url',
+        'parentProfileImageUrl',
+      ]),
       specialistName: ApiResponseParser.readString(map, const [
         'specialist_name',
         'specialistName',
+      ]),
+      specialistProfileImageUrl: ApiResponseParser.readString(map, const [
+        'specialist_profile_image_url',
+        'specialistProfileImageUrl',
       ]),
       caseRequestId: ApiResponseParser.readString(map, const [
         'case_request_id',
@@ -217,6 +229,17 @@ class CommunicationConversation {
       return parentId;
     }
     return '';
+  }
+
+  String? otherParticipantProfileImageUrl(String? authenticatedRole) {
+    final role = authenticatedRole?.toLowerCase();
+    if (role == 'parent') {
+      return specialistProfileImageUrl;
+    }
+    if (role == 'specialist') {
+      return parentProfileImageUrl;
+    }
+    return null;
   }
 
   String patientContextLabel() {

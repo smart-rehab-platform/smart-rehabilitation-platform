@@ -24,6 +24,7 @@ class SpecialistSpeechAnalysisState {
     this.patientId = '',
     this.submissionId,
     this.patientName,
+    this.patientProfileImageUrl,
     this.analyses = const [],
     this.latestAnalysis,
     this.progressItems = const [],
@@ -41,6 +42,7 @@ class SpecialistSpeechAnalysisState {
   final String patientId;
   final String? submissionId;
   final String? patientName;
+  final String? patientProfileImageUrl;
   final List<SpecialistSpeechAnalysisItem> analyses;
   final SpecialistSpeechAnalysisItem? latestAnalysis;
   final List<SpecialistSpeechProgressPoint> progressItems;
@@ -58,6 +60,7 @@ class SpecialistSpeechAnalysisState {
     String? patientId,
     Object? submissionId = _sentinel,
     Object? patientName = _sentinel,
+    Object? patientProfileImageUrl = _sentinel,
     List<SpecialistSpeechAnalysisItem>? analyses,
     Object? latestAnalysis = _sentinel,
     List<SpecialistSpeechProgressPoint>? progressItems,
@@ -79,6 +82,9 @@ class SpecialistSpeechAnalysisState {
       patientName: identical(patientName, _sentinel)
           ? this.patientName
           : patientName as String?,
+      patientProfileImageUrl: identical(patientProfileImageUrl, _sentinel)
+          ? this.patientProfileImageUrl
+          : patientProfileImageUrl as String?,
       analyses: analyses ?? this.analyses,
       latestAnalysis: identical(latestAnalysis, _sentinel)
           ? this.latestAnalysis
@@ -189,7 +195,7 @@ class SpecialistSpeechAnalysisNotifier
     final results = await Future.wait([
       _repository.fetchPatientSpeechAnalyses(patientId),
       _repository.fetchPatientSpeechProgress(patientId),
-      _repository.fetchPatientName(patientId),
+      _repository.fetchPatientIdentity(patientId),
       if (submissionId != null && submissionId.isNotEmpty)
         _repository.fetchSubmissionSpeechAnalysis(submissionId, patientId: patientId)
       else
@@ -198,7 +204,8 @@ class SpecialistSpeechAnalysisNotifier
 
     final analyses = results[0] as List<SpecialistSpeechAnalysisItem>;
     final progress = results[1] as List<SpecialistSpeechProgressPoint>;
-    final patientName = results[2] as String?;
+    final patientIdentity =
+        results[2] as ({String? name, String? profileImageUrl});
     final submissionAnalysis = results.length > 3
         ? results[3] as SpecialistSpeechAnalysisItem?
         : null;
@@ -219,7 +226,10 @@ class SpecialistSpeechAnalysisNotifier
     final comparison = _buildComparison(selected, mergedAnalyses);
 
     state = state.copyWith(
-      patientName: patientName ?? latest?.patientName ?? state.patientName,
+      patientName:
+          patientIdentity.name ?? latest?.patientName ?? state.patientName,
+      patientProfileImageUrl:
+          patientIdentity.profileImageUrl ?? state.patientProfileImageUrl,
       analyses: mergedAnalyses,
       latestAnalysis: latest,
       progressItems: progress,
