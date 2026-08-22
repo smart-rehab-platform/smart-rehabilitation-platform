@@ -13,6 +13,10 @@
   VAPID key:
   - Obtain the Web Push certificate (VAPID public key) from Firebase Console > Project Settings > Cloud Messaging > Web configuration
   - Set that VAPID key in the frontend app runtime (VITE_FIREBASE_VAPID_KEY) so the client can call getToken(...)
+
+  Web push architecture:
+  - Backend sends data-only FCM messages for web tokens (no top-level `notification`).
+  - This service worker is the ONLY OS desktop notification displayer.
 */
 
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js');
@@ -37,17 +41,20 @@ if (typeof firebase === 'undefined') {
     firebase.initializeApp(FIREBASE_CONFIG);
     const messaging = firebase.messaging();
 
-    // Handle background messages
+    // Handle background / data-only messages. Sole Web desktop display path.
     messaging.onBackgroundMessage(function(payload) {
       try {
         const data = payload?.data || {};
-        const notification = payload?.notification || {};
-        const title = notification.title || data.title || 'Smart Rehabilitation';
-        const body = notification.body || data.body || '';
-        const tag = data.notificationId || data.notification_id || data.notification || undefined;
+        const title = (data.title && String(data.title).trim())
+          || 'Smart Rehabilitation';
+        const body = (data.body && String(data.body).trim()) || '';
+        const notificationId = data.notificationId || data.notification_id || '';
+        const tag = notificationId
+          ? `smart-rehab-${notificationId}`
+          : undefined;
         const route = data.route || data.relatedEntityRoute || data.related_entity_route || null;
 
-        // If any client is focused, prefer to forward message to clients and avoid showing a system notification
+        // If any client is focused, forward data for in-app refresh and skip OS toast.
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
           const hasFocused = clientList.some((c) => c.focused);
           if (hasFocused) {
@@ -61,13 +68,26 @@ if (typeof firebase === 'undefined') {
             body: body,
             icon: '/branding/smart_rehab_icon.png',
             tag: tag,
-            data: { route, data },
+            renotify: false,
+            data: {
+              route,
+              notificationId: notificationId || null,
+              type: data.type || null,
+              relatedEntityType: data.relatedEntityType || data.related_entity_type || null,
+              relatedEntityId: data.relatedEntityId || data.related_entity_id || null,
+              data,
+            },
           };
 
           self.registration.showNotification(title, options);
         }).catch(() => {
-          // Fallback: always show notification
-          self.registration.showNotification(title, { body, icon: '/branding/smart_rehab_icon.png', tag, data: { route, data } });
+          self.registration.showNotification(title, {
+            body,
+            icon: '/branding/smart_rehab_icon.png',
+            tag,
+            renotify: false,
+            data: { route, data },
+          });
         });
       } catch (e) {
         // swallow - nothing to do in SW

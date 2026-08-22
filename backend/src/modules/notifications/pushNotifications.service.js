@@ -7,6 +7,8 @@ const PERMANENT_TOKEN_ERROR_CODES = new Set([
 ]);
 
 const MULTICAST_LIMIT = 500;
+const WEB_PLATFORM = "web";
+const MOBILE_PLATFORMS = new Set(["android", "ios"]);
 
 const emptyResult = (attempted = 0) => ({
   attempted,
@@ -115,33 +117,23 @@ const sendToTokenChunk = async (tokens, messageBase) => {
   return { successCount, failureCount, invalidTokens };
 };
 
-const sendPushToUser = async ({ userId, title, body, data } = {}) => {
-  if (!userId) {
-    return emptyResult(0);
+const sendToTokenGroups = async (tokens, messageBase) => {
+  let successCount = 0;
+  let failureCount = 0;
+  const invalidTokens = [];
+
+  for (let index = 0; index < tokens.length; index += MULTICAST_LIMIT) {
+    const chunk = tokens.slice(index, index + MULTICAST_LIMIT);
+    const chunkResult = await sendToTokenChunk(chunk, messageBase);
+    successCount += chunkResult.successCount;
+    failureCount += chunkResult.failureCount;
+    invalidTokens.push(...chunkResult.invalidTokens);
   }
 
-  let tokens = [];
+  return { successCount, failureCount, invalidTokens };
+};
 
-  try {
-    const result = await pool.query(
-      `SELECT device_token
-       FROM user_device_tokens
-       WHERE user_id = $1
-         AND is_active = TRUE`,
-      [userId]
-    );
-    tokens = result.rows
-      .map((row) => row.device_token)
-      .filter((token) => typeof token === "string" && token.trim().length > 0);
-  } catch (error) {
-    console.error("[push] Failed to load device tokens:", error.message);
-    return emptyResult(0);
-  }
-
-  if (tokens.length === 0) {
-    return emptyResult(0);
-  }
-
+const buildMobileMessage = ({ title, body, fcmData }) => {
   const messageBase = {
     notification: {
       title: title == null ? "" : String(title),
@@ -155,29 +147,119 @@ const sendPushToUser = async ({ userId, title, body, data } = {}) => {
     },
   };
 
-  const fcmData = toFcmData(data);
   if (fcmData) {
     messageBase.data = fcmData;
   }
 
+  return messageBase;
+};
+
+/**
+ * Web receives data-only FCM so the service worker is the sole desktop displayer.
+ * Title/body live in data (all values must be strings).
+ */
+const buildWebMessage = ({ title, body, fcmData }) => {
+  const data = {
+    ...(fcmData || {}),
+    title: title == null ? "" : String(title),
+    body: body == null ? "" : String(body),
+  };
+
+  return {
+    data: toFcmData(data) || {
+      title: title == null ? "" : String(title),
+      body: body == null ? "" : String(body),
+    },
+  };
+};
+
+const partitionActiveTokens = (rows) => {
+  const webTokens = [];
+  const mobileTokens = [];
+
+  for (const row of rows) {
+    const token =
+      typeof row.device_token === "string" ? row.device_token.trim() : "";
+    if (!token) {
+      continue;
+    }
+
+    const platform = String(row.platform || "")
+      .trim()
+      .toLowerCase();
+
+    if (platform === WEB_PLATFORM) {
+      webTokens.push(token);
+      continue;
+    }
+
+    if (MOBILE_PLATFORMS.has(platform)) {
+      mobileTokens.push(token);
+    }
+  }
+
+  return { webTokens, mobileTokens };
+};
+
+const sendPushToUser = async ({ userId, title, body, data } = {}) => {
+  if (!userId) {
+    return emptyResult(0);
+  }
+
+  let rows = [];
+
+  try {
+    const result = await pool.query(
+      `SELECT device_token, platform
+       FROM user_device_tokens
+       WHERE user_id = $1
+         AND is_active = TRUE`,
+      [userId]
+    );
+    rows = result.rows;
+  } catch (error) {
+    console.error("[push] Failed to load device tokens:", error.message);
+    return emptyResult(0);
+  }
+
+  const { webTokens, mobileTokens } = partitionActiveTokens(rows);
+  const attempted = webTokens.length + mobileTokens.length;
+
+  if (attempted === 0) {
+    return emptyResult(0);
+  }
+
+  const fcmData = toFcmData(data);
   let successCount = 0;
   let failureCount = 0;
   const invalidTokens = [];
 
   try {
-    for (let index = 0; index < tokens.length; index += MULTICAST_LIMIT) {
-      const chunk = tokens.slice(index, index + MULTICAST_LIMIT);
-      const chunkResult = await sendToTokenChunk(chunk, messageBase);
-      successCount += chunkResult.successCount;
-      failureCount += chunkResult.failureCount;
-      invalidTokens.push(...chunkResult.invalidTokens);
+    if (mobileTokens.length > 0) {
+      const mobileResult = await sendToTokenGroups(
+        mobileTokens,
+        buildMobileMessage({ title, body, fcmData })
+      );
+      successCount += mobileResult.successCount;
+      failureCount += mobileResult.failureCount;
+      invalidTokens.push(...mobileResult.invalidTokens);
+    }
+
+    if (webTokens.length > 0) {
+      const webResult = await sendToTokenGroups(
+        webTokens,
+        buildWebMessage({ title, body, fcmData })
+      );
+      successCount += webResult.successCount;
+      failureCount += webResult.failureCount;
+      invalidTokens.push(...webResult.invalidTokens);
     }
   } catch (error) {
     console.error("[push] Firebase send failed:", error.message);
     return {
-      attempted: tokens.length,
+      attempted,
       successCount,
-      failureCount: tokens.length - successCount,
+      failureCount: attempted - successCount,
       deactivatedTokens: [],
     };
   }
@@ -190,7 +272,7 @@ const sendPushToUser = async ({ userId, title, body, data } = {}) => {
   }
 
   return {
-    attempted: tokens.length,
+    attempted,
     successCount,
     failureCount,
     deactivatedTokens,
@@ -199,4 +281,8 @@ const sendPushToUser = async ({ userId, title, body, data } = {}) => {
 
 module.exports = {
   sendPushToUser,
+  // Exported for focused unit tests only
+  buildMobileMessage,
+  buildWebMessage,
+  partitionActiveTokens,
 };
