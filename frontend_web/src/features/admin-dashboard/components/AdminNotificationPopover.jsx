@@ -1,6 +1,12 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Bell, LoaderCircle } from "lucide-react";
+import { useLocale } from "../../../context/useLocale.js";
 import { PlatformNotificationIcon } from "../../shared-dashboard/components/PlatformNotificationIcon";
+import {
+  getWebDesktopNotificationPermission,
+  requestWebDesktopNotificationPermission,
+  supportsWebDesktopNotifications,
+} from "../../shared-dashboard/utils/webDesktopNotifications.js";
 
 const PREVIEW_LIMIT = 5;
 
@@ -25,11 +31,33 @@ export function AdminNotificationPopover({
   onMarkAllAsRead,
   onRetry,
 }) {
+  const { t } = useLocale();
   const rootRef = useRef(null);
   const menuId = useId();
+  const [desktopPermission, setDesktopPermission] = useState(getWebDesktopNotificationPermission);
   const visible = notifications.slice(0, PREVIEW_LIMIT);
   const showBadge = !isLoading && !error && badgeCount > 0;
   const badgeLabel = badgeCount > 9 ? "9+" : String(badgeCount);
+  const showDesktopPermissionButton = supportsWebDesktopNotifications()
+    && desktopPermission === "default";
+
+  const handleEnableDesktopNotifications = async () => {
+    const nextPermission = await requestWebDesktopNotificationPermission();
+    setDesktopPermission(nextPermission);
+
+    if (nextPermission === 'granted') {
+      try {
+        const fm = await import("../../shared-dashboard/utils/firebaseMessaging");
+        fm.registerServiceWorkerAndGetToken().catch(() => {});
+      } catch (e) {
+        // ignore
+      }
+    }
+  };
+
+  useEffect(() => {
+    setDesktopPermission(getWebDesktopNotificationPermission());
+  }, [open]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -181,6 +209,16 @@ export function AdminNotificationPopover({
                 );
               })}
             </ul>
+          ) : null}
+
+          {showDesktopPermissionButton ? (
+            <button
+              type="button"
+              className="pd-notif-view-all"
+              onClick={handleEnableDesktopNotifications}
+            >
+              {t("notifications.enableBrowserNotifications")}
+            </button>
           ) : null}
 
           <button

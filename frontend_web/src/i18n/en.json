@@ -22,6 +22,9 @@
     "notifications": "Notifications",
     "profile": "Profile"
   },
+  "notifications": {
+    "enableBrowserNotifications": "Enable browser notifications"
+  },
   "profile": {
     "viewProfile": "View profile",
     "signOut": "Sign out",

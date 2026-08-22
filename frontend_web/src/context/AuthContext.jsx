@@ -179,6 +179,42 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+  const registrationAttemptedRef = useRef(false);
+
+  // Auto-register web FCM token when an authenticated user loads the app and
+  // the browser has already granted Notification permission. This runs once per
+  // authenticated session (per page load) to avoid duplicate registration calls.
+  // It does NOT request notification permission.
+  useEffect(() => {
+    if (typeof Notification === 'undefined') return;
+
+    // Run after initial render and after initialization completes — guard inside
+    (async () => {
+      try {
+        const hasToken = !!authState.token;
+        const isInit = authState.isInitializing === false;
+        const perm = Notification.permission;
+
+        if (!hasToken || !isInit) return; // not authenticated or still initializing
+
+        if (perm !== 'granted') return; // do nothing if default or denied
+
+        if (registrationAttemptedRef.current) return; // already attempted this page load
+
+        registrationAttemptedRef.current = true;
+
+        // dynamic import to avoid loading firebase SDK unnecessarily
+        const fm = await import('../features/shared-dashboard/utils/firebaseMessaging.js');
+        const token = await fm.registerServiceWorkerAndGetToken();
+        if (!token) {
+          console.error('[web-fcm] auto-registration: token not obtained');
+        }
+      } catch (err) {
+        console.error('[web-fcm] auto-registration failed:', err?.message || err);
+      }
+    })();
+  }, [authState.token, authState.isInitializing]);
+
   const value = useMemo(() => {
     const isAuthenticated = Boolean(authState.token);
     const isVerified = Boolean(authState.user?.is_email_verified);

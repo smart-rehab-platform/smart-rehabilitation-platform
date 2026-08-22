@@ -1,6 +1,6 @@
 const pool = require("../../database/db");
 
-const ALLOWED_PLATFORMS = new Set(["android", "ios"]);
+const ALLOWED_PLATFORMS = new Set(["android", "ios", "web"]);
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -32,7 +32,7 @@ const registerDeviceToken = async ({
   const trimmedPlatform = trimToNull(platform);
 
   if (!trimmedPlatform || !ALLOWED_PLATFORMS.has(trimmedPlatform)) {
-    throw createError("Platform must be android or ios.", 400);
+    throw createError("Platform must be android, ios or web.", 400);
   }
 
   const trimmedDeviceName = trimToNull(deviceName);

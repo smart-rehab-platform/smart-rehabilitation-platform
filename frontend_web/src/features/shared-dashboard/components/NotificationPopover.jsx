@@ -1,6 +1,11 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Bell } from "lucide-react";
 import { useLocale } from "../../../context/useLocale.js";
+import {
+  getWebDesktopNotificationPermission,
+  requestWebDesktopNotificationPermission,
+  supportsWebDesktopNotifications,
+} from "../utils/webDesktopNotifications.js";
 import { PlatformNotificationIcon } from "./PlatformNotificationIcon";
 
 function NotifIcon({ type }) {
@@ -20,11 +25,33 @@ export function NotificationPopover({
   const { t } = useLocale();
   const rootRef = useRef(null);
   const menuId = useId();
+  const [desktopPermission, setDesktopPermission] = useState(getWebDesktopNotificationPermission);
   const visible = notifications.slice(0, 3);
   const showBadge = !isLoading && !error && badgeCount > 0;
   const triggerAriaLabel = showBadge
     ? t("header.notificationsUnreadAriaLabel", { count: badgeCount })
     : t("header.notificationsAriaLabel");
+  const showDesktopPermissionButton = supportsWebDesktopNotifications()
+    && desktopPermission === "default";
+
+  const handleEnableDesktopNotifications = async () => {
+    const nextPermission = await requestWebDesktopNotificationPermission();
+    setDesktopPermission(nextPermission);
+
+    if (nextPermission === 'granted') {
+      // Best-effort register service worker and send web FCM token to backend
+      try {
+        const fm = await import("../utils/firebaseMessaging");
+        fm.registerServiceWorkerAndGetToken().catch(() => {});
+      } catch (e) {
+        // ignore failures — token registration is best-effort
+      }
+    }
+  };
+
+  useEffect(() => {
+    setDesktopPermission(getWebDesktopNotificationPermission());
+  }, [open]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -109,15 +136,24 @@ export function NotificationPopover({
             ))}
           </ul>
           ) : null}
+          {showDesktopPermissionButton ? (
+           <button
+             type="button"
+             className="pd-notif-view-all"
+             onClick={handleEnableDesktopNotifications}
+           >
+             {t("notifications.enableBrowserNotifications")}
+           </button>
+          ) : null}
           <button
-            type="button"
-            className="pd-notif-view-all"
-            onClick={() => {
-              onViewAll?.();
-              onOpenChange(false);
-            }}
+           type="button"
+           className="pd-notif-view-all"
+           onClick={() => {
+             onViewAll?.();
+             onOpenChange(false);
+           }}
           >
-            {t("notifications.viewAll")}
+           {t("notifications.viewAll")}
           </button>
         </div>
       ) : null}

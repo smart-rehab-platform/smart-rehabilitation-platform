@@ -22,6 +22,9 @@
     "notifications": "الإشعارات",
     "profile": "الملف الشخصي"
   },
+  "notifications": {
+    "enableBrowserNotifications": "تمكين إشعارات المتصفح"
+  },
   "profile": {
     "viewProfile": "عرض الملف الشخصي",
     "signOut": "تسجيل الخروج",
