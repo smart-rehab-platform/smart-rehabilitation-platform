@@ -2,10 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../../context/useAuth";
 import { useLocale } from "../../../context/useLocale.js";
 import {
-  buildAdminComplaintDetailsPath,
-  buildAdminSupportRequestDetailsPath,
-} from "../../../routes/adminDashboardRoutes";
-import {
   loadAdminNotifications,
   loadAdminUnreadNotifications,
   markAdminNotificationRead,
@@ -16,12 +12,6 @@ import {
   getAdminNotificationsLabels,
 } from "../utils/adminNotificationsLocalization.js";
 import { mapAdminNotifications } from "../utils/adminNotificationsMappers";
-import {
-  createWebDesktopNotificationTracker,
-  openWebDesktopNotificationRoute,
-  resolveWebDesktopNotificationRoute,
-  showWebDesktopNotification,
-} from "../../shared-dashboard/utils/webDesktopNotifications.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -48,7 +38,6 @@ export function useAdminNotifications() {
   const loadTokenRef = useRef(0);
   const markAllInFlightRef = useRef(false);
   const markingIdsRef = useRef(new Set());
-  const desktopNotificationTrackerRef = useRef(createWebDesktopNotificationTracker());
 
   const unreadCount = useMemo(
     () => unreadNotifications.length,
@@ -101,25 +90,6 @@ export function useAdminNotifications() {
         }
 
         const mappedNotifications = mapAdminNotifications(listRows);
-        const newDesktopNotifications = desktopNotificationTrackerRef.current.track(mappedNotifications);
-
-        for (const notification of newDesktopNotifications) {
-          const route = resolveWebDesktopNotificationRoute(notification, "admin", {
-            admin: {
-              buildSupportRequestDetailPath: buildAdminSupportRequestDetailsPath,
-              buildComplaintDetailPath: buildAdminComplaintDetailsPath,
-            },
-          });
-
-          showWebDesktopNotification(notification, {
-            onClick: () => {
-              if (route) {
-                openWebDesktopNotificationRoute(route);
-              }
-            },
-          });
-        }
-
         setNotifications(mappedNotifications);
         setUnreadNotifications(mapAdminNotifications(unreadRows));
       } catch (loadError) {

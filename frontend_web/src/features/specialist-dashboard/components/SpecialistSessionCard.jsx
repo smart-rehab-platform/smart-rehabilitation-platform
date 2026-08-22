@@ -69,7 +69,7 @@ export function SpecialistSessionCard({ session }) {
             <div className="pd-specialist-session-card-actions">
               <button
                 type="button"
-                className="pd-btn pd-btn-soft pd-btn-sm pd-specialist-session-action"
+                className="pd-btn pd-btn-primary pd-btn-sm pd-specialist-session-action"
                 onClick={(event) => {
                   event.stopPropagation();
                   setEditOpen(true);
