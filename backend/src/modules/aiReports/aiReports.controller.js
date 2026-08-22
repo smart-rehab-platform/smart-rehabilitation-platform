@@ -134,6 +134,30 @@ const exportReportPdf = async (req, res) => {
   }
 };
 
+const deleteReport = async (req, res) => {
+  try {
+    const report = await aiReportsService.deleteAiReport(req.params.id, req.user);
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: "AI report not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "AI report discarded successfully",
+      data: { id: report.id },
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   generateWeeklyReport,
   generateMonthlyReport,
@@ -141,4 +165,5 @@ module.exports = {
   getReportById,
   getReportsByPatient,
   exportReportPdf,
+  deleteReport,
 };

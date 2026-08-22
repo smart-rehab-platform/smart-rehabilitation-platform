@@ -237,6 +237,14 @@ export function getReportPdfReadyLabel(t = null) {
   return translateKey(t, "specialist.reports.status.pdfReady", "PDF Ready");
 }
 
+export function getReportAwaitingReviewLabel(t = null) {
+  return translateKey(
+    t,
+    "specialist.reports.status.awaitingReview",
+    "Awaiting Review",
+  );
+}
+
 export function getReportSectionTitleLabel(title, t = null) {
   const key = SECTION_TITLE_KEY[title];
   if (key) {
@@ -325,6 +333,9 @@ export function applyReportListItemLocalization(report, context = {}) {
     categoryLabel: getReportTypeDisplayLabel(report.reportType, t),
     dateLabel: formatReportDateLabel(report.date, locale, t),
     pdfReadyLabel: report.isPdfReady ? getReportPdfReadyLabel(t) : null,
+    awaitingReviewLabel:
+      report.isAi && !report.isPdfReady ? getReportAwaitingReviewLabel(t) : null,
+    isAwaitingReview: Boolean(report.isAi && !report.isPdfReady),
     aiBadgeLabel: report.isAi ? translateKey(t, "specialist.reports.type.ai", "AI") : null,
   };
 }

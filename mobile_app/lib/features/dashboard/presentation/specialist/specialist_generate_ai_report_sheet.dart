@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_ai_report_generation.dart';
 import '../../models/specialist_feature_models.dart';
+import '../../models/specialist_reports_models.dart';
 import '../../providers/specialist_features_provider.dart';
 import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -24,7 +27,7 @@ Future<void> showSpecialistGenerateAiReportSheet({
   reportsNotifier.clearGenerationError();
   ref.read(specialistPatientsProvider.notifier).initialize();
 
-  final generated = await showModalBottomSheet<bool>(
+  final created = await showModalBottomSheet<SpecialistReportDetail>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -34,15 +37,20 @@ Future<void> showSpecialistGenerateAiReportSheet({
     ),
   );
 
-  if (generated == true && context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          AppLocalizations.of(context)!.specialistGenerateAiReportSuccess,
-        ),
-      ),
-    );
+  if (created == null || !context.mounted) {
+    return;
   }
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        AppLocalizations.of(context)!.specialistGenerateAiReportSuccessReview,
+      ),
+    ),
+  );
+  context.push(
+    AppRoutes.specialistReportDetails(created.id, isAi: true),
+  );
 }
 
 class SpecialistGenerateAiReportSheet extends ConsumerStatefulWidget {
@@ -221,7 +229,7 @@ class _SpecialistGenerateAiReportSheetState
     final reportsNotifier = ref.read(
       specialistReportsProvider(widget.reportsPatientId).notifier,
     );
-    final ok = await reportsNotifier.generateAiReport(
+    final detail = await reportsNotifier.generateAiReport(
       patientId: _selectedPatient?.id ?? '',
       type: _type,
       periodStart: _periodStart,
@@ -230,8 +238,8 @@ class _SpecialistGenerateAiReportSheetState
     if (!mounted) {
       return;
     }
-    if (ok) {
-      Navigator.of(context).pop(true);
+    if (detail != null) {
+      Navigator.of(context).pop(detail);
     }
   }
 

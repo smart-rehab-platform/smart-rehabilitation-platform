@@ -140,7 +140,13 @@ class ReportListCard extends StatelessWidget {
                       if (report.isAiReport)
                         DashboardPriorityBadge(label: l10n.reportTypeAi),
                       if (report.hasPdf)
-                        DashboardPriorityBadge(label: report.statusLabel),
+                        DashboardPriorityBadge(
+                          label: l10n.specialistReportStatusPdfReady,
+                        )
+                      else if (report.isAwaitingReview)
+                        DashboardPriorityBadge(
+                          label: l10n.specialistReportStatusAwaitingReview,
+                        ),
                       Text(
                         dateLabel,
                         style: theme.textTheme.labelSmall?.copyWith(

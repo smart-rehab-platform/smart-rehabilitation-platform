@@ -3594,6 +3594,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get specialistReportGeneratePdf => 'Generate PDF';
 
   @override
+  String get specialistReportStatusPdfReady => 'PDF Ready';
+
+  @override
+  String get specialistReportStatusAwaitingReview => 'Awaiting Review';
+
+  @override
+  String get specialistReportReviewBanner =>
+      'This AI report is awaiting specialist review. Approve it to generate a PDF, or discard the draft.';
+
+  @override
+  String get specialistReportApproveAndGeneratePdf => 'Approve & Generate PDF';
+
+  @override
+  String get specialistReportApprovingPdf => 'Approving & generating PDF...';
+
+  @override
+  String get specialistReportApprovedSuccess =>
+      'Report approved and PDF generated successfully.';
+
+  @override
+  String get specialistReportDiscard => 'Discard Report';
+
+  @override
+  String get specialistReportDiscardConfirmTitle => 'Discard AI report?';
+
+  @override
+  String get specialistReportDiscardConfirmBody =>
+      'This will permanently remove the AI-generated draft. This action cannot be undone.';
+
+  @override
+  String get specialistReportDiscardConfirmAction => 'Discard';
+
+  @override
+  String get specialistReportDiscarding => 'Discarding...';
+
+  @override
+  String get specialistReportDiscardSuccess => 'AI report discarded.';
+
+  @override
+  String get specialistReportDiscardFailed => 'Failed to discard AI report.';
+
+  @override
+  String get specialistGenerateAiReportSuccessReview =>
+      'AI report generated. Please review it before creating a PDF.';
+
+  @override
   String get specialistGenerateAiReport => 'Generate AI Report';
 
   @override

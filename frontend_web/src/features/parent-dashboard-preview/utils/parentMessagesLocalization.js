@@ -27,8 +27,8 @@ export function resolveConversationSubtitle(row, t = null) {
   const patientId = row?.patientId ?? row?.patient_id;
   const patientName = row?.patientName ?? row?.patient_name;
 
-  if (caseChild && !patientId) {
-    return translateKey(t, "parent.messages.regardingChild", "Regarding {name}", { name: caseChild });
+  if (caseChild) {
+    return translateKey(t, "parent.messages.patientLabel", "Patient: {name}", { name: caseChild });
   }
 
   if (patientName) {

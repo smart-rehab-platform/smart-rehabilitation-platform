@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../models/specialist_reports_models.dart';
 import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
@@ -84,15 +86,25 @@ class _SpecialistReportDetailsScreenState
     await _copyPdfLink(l10n, pdfUrl);
   }
 
-  Future<void> _generatePdf(AppLocalizations l10n) async {
+  Future<void> _generatePdf(
+    AppLocalizations l10n, {
+    required bool isAiApproval,
+  }) async {
     final notifier = ref.read(specialistReportDetailProvider(_args).notifier);
     final success = await notifier.generatePdf();
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.specialistReportPdfGeneratedSuccess)),
+        SnackBar(
+          content: Text(
+            isAiApproval
+                ? l10n.specialistReportApprovedSuccess
+                : l10n.specialistReportPdfGeneratedSuccess,
+          ),
+        ),
       );
+      await _refreshReportsList(ref.read(specialistReportDetailProvider(_args)).detail);
       return;
     }
 
@@ -104,13 +116,228 @@ class _SpecialistReportDetailsScreenState
     }
   }
 
+  Future<bool> _confirmDiscard(AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.specialistReportDiscardConfirmTitle),
+          content: Text(l10n.specialistReportDiscardConfirmBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.commonCancel),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: DashboardColors.highPriority,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.specialistReportDiscardConfirmAction),
+            ),
+          ],
+        );
+      },
+    );
+    return confirmed == true;
+  }
+
+  Future<void> _refreshReportsList(SpecialistReportDetail? detail) async {
+    final patientId = detail?.patientId.trim();
+    final global = ref.read(specialistReportsProvider(null).notifier);
+    await global.refresh();
+    if (patientId != null && patientId.isNotEmpty) {
+      await ref.read(specialistReportsProvider(patientId).notifier).refresh();
+    }
+  }
+
+  Future<void> _discardReport(AppLocalizations l10n) async {
+    final state = ref.read(specialistReportDetailProvider(_args));
+    if (state.isDiscarding || state.isExporting) {
+      return;
+    }
+
+    final confirmed = await _confirmDiscard(l10n);
+    if (!confirmed || !mounted) {
+      return;
+    }
+
+    final detail = state.detail;
+    final notifier = ref.read(specialistReportDetailProvider(_args).notifier);
+    final success = await notifier.discardAiReport();
+    if (!mounted) return;
+
+    if (!success) {
+      final error =
+          ref.read(specialistReportDetailProvider(_args)).errorMessage ??
+              l10n.specialistReportDiscardFailed;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
+      return;
+    }
+
+    await _refreshReportsList(detail);
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.specialistReportDiscardSuccess)),
+    );
+    if (context.canPop()) {
+      context.pop();
+    }
+  }
+
+  List<Widget> _buildBottomActions({
+    required AppLocalizations l10n,
+    required SpecialistReportDetail detail,
+    required SpecialistReportDetailState state,
+  }) {
+    final pdfUrl = detail.pdfUrl;
+    final busy = state.isExporting || state.isDiscarding;
+
+    if (detail.hasPdf && pdfUrl != null && pdfUrl.trim().isNotEmpty) {
+      return [
+        SizedBox(height: context.dashSpacing),
+        ElevatedButton.icon(
+          onPressed: busy ? null : () => _viewPdf(l10n, pdfUrl),
+          icon: const Icon(Icons.picture_as_pdf_outlined),
+          label: Text(l10n.specialistReportViewPdf),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: DashboardColors.brandCyan,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(
+              vertical: context.dashSpacing * 0.65,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+        ),
+        SizedBox(height: context.dashSpacing * 0.5),
+        OutlinedButton.icon(
+          onPressed: busy ? null : () => _copyPdfLink(l10n, pdfUrl),
+          icon: const Icon(Icons.link_rounded),
+          label: Text(l10n.specialistReportCopyPdfLink),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: DashboardColors.brandCyan,
+            padding: EdgeInsets.symmetric(
+              vertical: context.dashSpacing * 0.65,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            side: const BorderSide(color: DashboardColors.brandCyan),
+          ),
+        ),
+      ];
+    }
+
+    if (detail.isAwaitingReview) {
+      return [
+        SizedBox(height: context.dashSpacing),
+        ElevatedButton.icon(
+          onPressed: busy
+              ? null
+              : () => _generatePdf(l10n, isAiApproval: true),
+          icon: state.isExporting
+              ? SizedBox(
+                  width: context.dashSpacing * 0.55,
+                  height: context.dashSpacing * 0.55,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Icon(Icons.check_circle_outline),
+          label: Text(
+            state.isExporting
+                ? l10n.specialistReportApprovingPdf
+                : l10n.specialistReportApproveAndGeneratePdf,
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: DashboardColors.brandCyan,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(
+              vertical: context.dashSpacing * 0.65,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+        ),
+        SizedBox(height: context.dashSpacing * 0.5),
+        OutlinedButton.icon(
+          onPressed: busy ? null : () => _discardReport(l10n),
+          icon: state.isDiscarding
+              ? SizedBox(
+                  width: context.dashSpacing * 0.55,
+                  height: context.dashSpacing * 0.55,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: DashboardColors.highPriority,
+                  ),
+                )
+              : const Icon(Icons.delete_outline_rounded),
+          label: Text(
+            state.isDiscarding
+                ? l10n.specialistReportDiscarding
+                : l10n.specialistReportDiscard,
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: DashboardColors.highPriority,
+            padding: EdgeInsets.symmetric(
+              vertical: context.dashSpacing * 0.65,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            side: const BorderSide(color: DashboardColors.highPriority),
+          ),
+        ),
+      ];
+    }
+
+    // Regular report without PDF — keep existing Generate PDF action.
+    return [
+      SizedBox(height: context.dashSpacing),
+      ElevatedButton.icon(
+        onPressed: busy ? null : () => _generatePdf(l10n, isAiApproval: false),
+        icon: state.isExporting
+            ? SizedBox(
+                width: context.dashSpacing * 0.55,
+                height: context.dashSpacing * 0.55,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : const Icon(Icons.picture_as_pdf_outlined),
+        label: Text(
+          state.isExporting
+              ? l10n.specialistReportGeneratingPdf
+              : l10n.specialistReportGeneratePdf,
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: DashboardColors.brandCyan,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(
+            vertical: context.dashSpacing * 0.65,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(specialistReportDetailProvider(_args));
     final notifier = ref.read(specialistReportDetailProvider(_args).notifier);
     final detail = state.detail;
-    final theme = Theme.of(context);
 
     Widget body;
     if (state.isLoading) {
@@ -130,8 +357,6 @@ class _SpecialistReportDetailsScreenState
       );
     } else {
       final sections = detail.sections;
-      final pdfUrl = detail.pdfUrl;
-      final hasPdf = detail.hasPdf;
 
       body = SingleChildScrollView(
         padding: context.dashPadding,
@@ -157,70 +382,11 @@ class _SpecialistReportDetailsScreenState
                 ),
               ),
             ],
-            if (hasPdf && pdfUrl != null && pdfUrl.trim().isNotEmpty) ...[
-              SizedBox(height: context.dashSpacing),
-              ElevatedButton.icon(
-                onPressed: () => _viewPdf(l10n, pdfUrl),
-                icon: const Icon(Icons.picture_as_pdf_outlined),
-                label: Text(l10n.specialistReportViewPdf),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.brandCyan,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(
-                    vertical: context.dashSpacing * 0.65,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
-              SizedBox(height: context.dashSpacing * 0.5),
-              OutlinedButton.icon(
-                onPressed: () => _copyPdfLink(l10n, pdfUrl),
-                icon: const Icon(Icons.link_rounded),
-                label: Text(l10n.specialistReportCopyPdfLink),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: DashboardColors.brandCyan,
-                  padding: EdgeInsets.symmetric(
-                    vertical: context.dashSpacing * 0.65,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  side: const BorderSide(color: DashboardColors.brandCyan),
-                ),
-              ),
-            ] else ...[
-              SizedBox(height: context.dashSpacing),
-              ElevatedButton.icon(
-                onPressed: state.isExporting ? null : () => _generatePdf(l10n),
-                icon: state.isExporting
-                    ? SizedBox(
-                        width: context.dashSpacing * 0.55,
-                        height: context.dashSpacing * 0.55,
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.picture_as_pdf_outlined),
-                label: Text(
-                  state.isExporting
-                      ? l10n.specialistReportGeneratingPdf
-                      : l10n.specialistReportGeneratePdf,
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DashboardColors.brandCyan,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(
-                    vertical: context.dashSpacing * 0.65,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
-            ],
+            ..._buildBottomActions(
+              l10n: l10n,
+              detail: detail,
+              state: state,
+            ),
             SizedBox(height: context.dashSpacing),
           ],
         ),

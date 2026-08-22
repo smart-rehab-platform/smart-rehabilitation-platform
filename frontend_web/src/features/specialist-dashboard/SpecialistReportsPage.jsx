@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import neurologyIcon from "../../assets/icons/neurology.svg";
+import descriptionIcon from "../../assets/icons/description.svg";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
@@ -8,6 +9,7 @@ import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistReportDetailsPath,
 } from "../../routes/specialistDashboardRoutes";
+import { SpecialistCreateReportDialog } from "./components/SpecialistCreateReportDialog";
 import { SpecialistGenerateAiReportDialog } from "./components/SpecialistGenerateAiReportDialog";
 import { useSpecialistReports } from "./hooks/useSpecialistReports";
 import { useSpecialistShell } from "./hooks/useSpecialistShell";
@@ -23,6 +25,7 @@ export default function SpecialistReportsPage() {
   const { user, isInitializing } = useAuth();
   const { t } = useLocale();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
 
   const {
@@ -65,6 +68,10 @@ export default function SpecialistReportsPage() {
     generationError,
     clearGenerationError,
     generateAiReport,
+    isCreatingRegularReport,
+    regularCreationError,
+    clearRegularCreationError,
+    createRegularReport,
   } = useSpecialistReports(specialistUserId, patientId);
 
   const pageSubtitle = useMemo(() => {
@@ -93,18 +100,38 @@ export default function SpecialistReportsPage() {
     }));
   }, [navigate, isPatientScoped, patientId]);
 
+  const handleOpenCreateDialog = useCallback(() => {
+    clearRegularCreationError();
+    setCreateDialogOpen(true);
+  }, [clearRegularCreationError]);
+
   const handleOpenGenerateDialog = useCallback(() => {
     clearGenerationError();
     setGenerateDialogOpen(true);
   }, [clearGenerationError]);
 
+  const handleCreateRegularReport = useCallback(async (payload) => {
+    const result = await createRegularReport(payload);
+    if (result?.ok) {
+      showToast(t("specialist.reports.create.success"));
+    }
+    return result;
+  }, [createRegularReport, showToast, t]);
+
   const handleGenerateAiReport = useCallback(async (payload) => {
     const result = await generateAiReport(payload);
     if (result?.ok) {
-      showToast(t("specialist.reports.generate.success"));
+      showToast(t("specialist.reports.generate.successReview"));
+      const createdId = result.report?.id;
+      if (createdId) {
+        navigate(buildSpecialistReportDetailsPath(createdId, {
+          isAi: true,
+          patientId: payload.patientId || patientId || null,
+        }));
+      }
     }
     return result;
-  }, [generateAiReport, showToast, t]);
+  }, [generateAiReport, navigate, patientId, showToast, t]);
 
   return (
     <div className="pd-preview">
@@ -149,23 +176,41 @@ export default function SpecialistReportsPage() {
                   </h1>
                   <p className="pd-section-sub">{pageSubtitle}</p>
                 </div>
-                <button
-                  type="button"
-                  className="pd-btn pd-btn-primary pd-specialist-reports-generate-btn"
-                  onClick={handleOpenGenerateDialog}
-                  aria-label={t("specialist.reports.generate.action")}
-                >
-                  <img
-                    src={neurologyIcon}
-                    alt=""
-                    aria-hidden="true"
-                    className="pd-platform-icon"
-                    width={18}
-                    height={18}
-                    style={{ filter: "brightness(0) invert(1)" }}
-                  />
-                  {t("specialist.reports.generate.action")}
-                </button>
+                <div className="pd-specialist-reports-page-actions">
+                  <button
+                    type="button"
+                    className="pd-btn pd-btn-soft pd-specialist-reports-create-btn"
+                    onClick={handleOpenCreateDialog}
+                    aria-label={t("specialist.reports.create.action")}
+                  >
+                    <img
+                      src={descriptionIcon}
+                      alt=""
+                      aria-hidden="true"
+                      className="pd-platform-icon"
+                      width={18}
+                      height={18}
+                    />
+                    {t("specialist.reports.create.action")}
+                  </button>
+                  <button
+                    type="button"
+                    className="pd-btn pd-btn-primary pd-specialist-reports-generate-btn"
+                    onClick={handleOpenGenerateDialog}
+                    aria-label={t("specialist.reports.generate.action")}
+                  >
+                    <img
+                      src={neurologyIcon}
+                      alt=""
+                      aria-hidden="true"
+                      className="pd-platform-icon"
+                      width={18}
+                      height={18}
+                      style={{ filter: "brightness(0) invert(1)" }}
+                    />
+                    {t("specialist.reports.generate.action")}
+                  </button>
+                </div>
               </div>
             </header>
             <SpecialistReportsList
@@ -184,6 +229,17 @@ export default function SpecialistReportsPage() {
           </div>
         </div>
       </SpecialistDashboardShell>
+
+      <SpecialistCreateReportDialog
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        specialistUserId={specialistUserId}
+        initialPatientId={patientId}
+        isCreating={isCreatingRegularReport}
+        creationError={regularCreationError}
+        onClearCreationError={clearRegularCreationError}
+        onCreate={handleCreateRegularReport}
+      />
 
       <SpecialistGenerateAiReportDialog
         open={generateDialogOpen}

@@ -14,12 +14,14 @@ const createError = (message, statusCode) => {
 const CONVERSATION_SELECT = `
   SELECT c.*,
          p.full_name AS patient_name,
+         cir.child_name AS case_request_child_name,
          parent.full_name AS parent_name,
          parent.profile_image_url AS parent_profile_image_url,
          specialist.full_name AS specialist_name,
          specialist.profile_image_url AS specialist_profile_image_url
   FROM conversations c
   LEFT JOIN patients p ON c.patient_id = p.id
+  LEFT JOIN case_intake_requests cir ON c.case_request_id = cir.id
   JOIN users parent ON c.parent_id = parent.id
   JOIN users specialist ON c.specialist_id = specialist.id
 `;

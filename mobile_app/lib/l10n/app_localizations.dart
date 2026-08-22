@@ -6321,6 +6321,90 @@ abstract class AppLocalizations {
   /// **'Generate PDF'**
   String get specialistReportGeneratePdf;
 
+  /// Badge when an AI/regular report PDF is ready.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF Ready'**
+  String get specialistReportStatusPdfReady;
+
+  /// Badge when an AI report is waiting for specialist review before PDF export.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting Review'**
+  String get specialistReportStatusAwaitingReview;
+
+  /// Helper banner on AI report details while awaiting review.
+  ///
+  /// In en, this message translates to:
+  /// **'This AI report is awaiting specialist review. Approve it to generate a PDF, or discard the draft.'**
+  String get specialistReportReviewBanner;
+
+  /// Primary action to approve an AI draft and export its PDF.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve & Generate PDF'**
+  String get specialistReportApproveAndGeneratePdf;
+
+  /// Loading label while approving and exporting an AI report PDF.
+  ///
+  /// In en, this message translates to:
+  /// **'Approving & generating PDF...'**
+  String get specialistReportApprovingPdf;
+
+  /// Snack bar after approving an AI report and generating its PDF.
+  ///
+  /// In en, this message translates to:
+  /// **'Report approved and PDF generated successfully.'**
+  String get specialistReportApprovedSuccess;
+
+  /// Secondary action to discard an AI report draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard Report'**
+  String get specialistReportDiscard;
+
+  /// Title for discard confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard AI report?'**
+  String get specialistReportDiscardConfirmTitle;
+
+  /// Body for discard confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently remove the AI-generated draft. This action cannot be undone.'**
+  String get specialistReportDiscardConfirmBody;
+
+  /// Confirm button on discard dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get specialistReportDiscardConfirmAction;
+
+  /// Loading label while discarding an AI report.
+  ///
+  /// In en, this message translates to:
+  /// **'Discarding...'**
+  String get specialistReportDiscarding;
+
+  /// Snack bar after discarding an AI report.
+  ///
+  /// In en, this message translates to:
+  /// **'AI report discarded.'**
+  String get specialistReportDiscardSuccess;
+
+  /// Snack bar when discard fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to discard AI report.'**
+  String get specialistReportDiscardFailed;
+
+  /// Snack bar after AI generation when opening the review details screen.
+  ///
+  /// In en, this message translates to:
+  /// **'AI report generated. Please review it before creating a PDF.'**
+  String get specialistGenerateAiReportSuccessReview;
+
   /// Action that opens the AI report generation sheet.
   ///
   /// In en, this message translates to:

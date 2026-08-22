@@ -23,6 +23,7 @@ class SpecialistReportScopeException implements Exception {
 /// - GET /reports/:id
 /// - POST /reports/:id/export-pdf
 /// - POST /ai/reports/:id/export-pdf
+/// - DELETE /ai/reports/:id
 /// - GET /ai/reports
 /// - GET /ai/reports/:id
 /// - POST /ai/reports/generate-weekly
@@ -212,6 +213,29 @@ class SpecialistReportsRepository {
     return fetchReportDetail(reportId: reportId, isAiReport: isAiReport);
   }
 
+  /// Discards an AI report awaiting specialist review.
+  /// DELETE /ai/reports/:id
+  Future<void> discardAiReport(String reportId) async {
+    final id = reportId.trim();
+    if (id.isEmpty) {
+      throw const SpecialistAiReportDiscardException(
+        message: 'Report id is required.',
+      );
+    }
+
+    try {
+      await _dio.delete('/ai/reports/$id');
+    } on DioException catch (error) {
+      throw SpecialistAiReportDiscardException(
+        message: _readErrorMessage(
+          error,
+          fallback: 'Failed to discard AI report.',
+        ),
+        statusCode: error.response?.statusCode,
+      );
+    }
+  }
+
   Future<SpecialistReportDetail> generateAiReport(
     SpecialistAiReportGenerateRequest request,
   ) async {
@@ -315,6 +339,19 @@ class ReportNotFoundException implements Exception {
 
 class SpecialistAiReportGenerationException implements Exception {
   const SpecialistAiReportGenerationException({
+    required this.message,
+    this.statusCode,
+  });
+
+  final String message;
+  final int? statusCode;
+
+  @override
+  String toString() => message;
+}
+
+class SpecialistAiReportDiscardException implements Exception {
+  const SpecialistAiReportDiscardException({
     required this.message,
     this.statusCode,
   });

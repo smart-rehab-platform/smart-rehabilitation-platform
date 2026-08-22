@@ -39,6 +39,13 @@ router.post(
   aiReportsController.exportReportPdf
 );
 
+router.delete(
+  "/ai/reports/:id",
+  authenticate,
+  authorizeRoles("admin", "specialist"),
+  aiReportsController.deleteReport
+);
+
 router.get(
   "/ai/reports/:id",
   authenticate,

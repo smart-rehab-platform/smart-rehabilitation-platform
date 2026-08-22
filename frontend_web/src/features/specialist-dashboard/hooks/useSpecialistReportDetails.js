@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "../../../context/useLocale";
 import {
+  discardAiReport,
   exportReportPdf,
   loadReportDetail,
 } from "../../../services/specialistReportService";
@@ -15,12 +16,14 @@ export function useSpecialistReportDetails(reportId, isAiReport) {
   const [detail, setDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isDiscarding, setIsDiscarding] = useState(false);
   const [error, setError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
 
   const loadDetailFailedError = t("specialist.reports.errors.loadDetailFailed");
   const generatePdfFailedError = t("specialist.reports.errors.generatePdfFailed");
+  const discardFailedError = t("specialist.reports.discard.failed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -91,12 +94,33 @@ export function useSpecialistReportDetails(reportId, isAiReport) {
     }
   }, [reportId, isAiReport, isExporting, generatePdfFailedError]);
 
+  const discardReport = useCallback(async () => {
+    if (!reportId || !isAiReport || isDiscarding) {
+      return false;
+    }
+
+    setIsDiscarding(true);
+    setError(null);
+
+    try {
+      await discardAiReport(reportId);
+      return true;
+    } catch (discardError) {
+      setError(resolveErrorMessage(discardError, discardFailedError));
+      return false;
+    } finally {
+      setIsDiscarding(false);
+    }
+  }, [reportId, isAiReport, isDiscarding, discardFailedError]);
+
   return {
     detail: localizedDetail,
     isLoading,
     isExporting,
+    isDiscarding,
     error,
     reload,
     generatePdf,
+    discardReport,
   };
 }

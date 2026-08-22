@@ -197,15 +197,157 @@ function reorderRtlLine(text, baseDirection = "rtl") {
 }
 
 /**
+ * Strong RTL (Arabic script) vs strong LTR (Latin letters / digits).
+ * Neutrals (spaces, punctuation) attach to the current run.
+ */
+function isStrongLtrCodePoint(codePoint) {
+  return (
+    (codePoint >= 0x0030 && codePoint <= 0x0039) || // 0-9
+    (codePoint >= 0x0041 && codePoint <= 0x005a) || // A-Z
+    (codePoint >= 0x0061 && codePoint <= 0x007a) || // a-z
+    (codePoint >= 0x00c0 && codePoint <= 0x024f) || // Latin extended
+    (codePoint >= 0x1e00 && codePoint <= 0x1eff)
+  );
+}
+
+/**
+ * Split a logical mixed string into directional runs BEFORE any whole-line BiDi.
+ * Arabic runs are reshaped alone later; LTR runs (English, numbers, dates, %)
+ * are never passed through Arabic reshape/BiDi with surrounding Arabic.
+ * Whitespace is its own neutral run so spaces survive RTL run reversal.
+ */
+function buildMixedLogicalRuns(text) {
+  const value = stripBidiMarks(text == null ? "" : String(text));
+  if (!value) {
+    return [];
+  }
+
+  const runs = [];
+  let buffer = "";
+  let dir = null; // 'rtl' | 'ltr' | 'neutral'
+
+  const flush = () => {
+    if (!buffer) {
+      return;
+    }
+    runs.push({ dir: dir || "ltr", text: buffer });
+    buffer = "";
+    dir = null;
+  };
+
+  for (const char of value) {
+    const cp = char.codePointAt(0);
+    let charDir = "neutral";
+    if (/\s/.test(char)) {
+      charDir = "neutral";
+    } else if (usesArabicFont(cp)) {
+      charDir = "rtl";
+    } else if (isStrongLtrCodePoint(cp)) {
+      charDir = "ltr";
+    } else {
+      // Punctuation/%/: attach to the open strong run when possible.
+      charDir = dir === "rtl" || dir === "ltr" ? dir : "ltr";
+    }
+
+    if (dir === null) {
+      dir = charDir;
+      buffer = char;
+      continue;
+    }
+
+    if (charDir === dir) {
+      buffer += char;
+      continue;
+    }
+
+    flush();
+    dir = charDir;
+    buffer = char;
+  }
+
+  flush();
+  return coalesceDirectionalRuns(runs);
+}
+
+/** Merge same-direction islands; keep spaces between RTL↔LTR as separate runs. */
+function coalesceDirectionalRuns(runs) {
+  const out = [];
+  let i = 0;
+  while (i < runs.length) {
+    const current = runs[i];
+    if (current.dir === "neutral") {
+      out.push({ dir: "neutral", text: current.text });
+      i += 1;
+      continue;
+    }
+
+    const dir = current.dir;
+    let text = current.text;
+    let j = i + 1;
+    while (j < runs.length) {
+      if (runs[j].dir === dir) {
+        text += runs[j].text;
+        j += 1;
+        continue;
+      }
+      if (runs[j].dir === "neutral") {
+        let k = j + 1;
+        while (k < runs.length && runs[k].dir === "neutral") {
+          k += 1;
+        }
+        // Only pull neutrals into this island when the next strong run matches.
+        if (k < runs.length && runs[k].dir === dir) {
+          while (j < k) {
+            text += runs[j].text;
+            j += 1;
+          }
+          continue;
+        }
+      }
+      break;
+    }
+    out.push({ dir, text });
+    i = j;
+  }
+  return out;
+}
+
+/**
+ * Shape a single Arabic-only run for LTR glyph painting.
+ * Never call this on mixed Arabic+Latin strings.
+ * Leading/trailing spaces are preserved outside reshape/BiDi so gaps stay put.
+ */
+function prepareArabicRunVisual(arabicText) {
+  const value = stripBidiMarks(arabicText == null ? "" : String(arabicText));
+  if (!value) {
+    return "";
+  }
+  const leading = value.match(/^\s*/)[0];
+  const trailing = value.match(/\s*$/)[0];
+  const core = value.slice(leading.length, value.length - trailing.length);
+  if (!core) {
+    return value;
+  }
+  if (!containsArabic(core)) {
+    return value;
+  }
+  return (
+    leading +
+    stripBidiMarks(reorderRtlLine(reshapeArabic(core), "rtl")) +
+    trailing
+  );
+}
+
+/**
  * Shape + BiDi for a single LOGICAL line destined for LTR PDF drawing.
  *
- * Pipeline (exactly once, per wrapped line):
- *   logical Unicode → strip bidi marks → reshape Arabic → bidi-js reorder (base rtl)
+ * Mixed lines are segmented into directional runs first:
+ *   - RTL runs → reshape/BiDi alone
+ *   - LTR runs → left intact (Hello World, ASR, F0, 50%, dates)
+ *   - neutral spaces kept between runs
+ *   - runs reversed for RTL base so painting left→right matches RTL reading
  *
- * The returned string is in VISUAL left-to-right order for a naive LTR painter.
- * Callers MUST draw it without letting fontkit RTL-layout reverse Arabic runs
- * again (draw glyph-by-glyph). Applying getReorderedString and then doc.text()
- * on a multi-character Arabic run causes a double-reversal.
+ * Pure Arabic lines keep the classic reshape + line BiDi path.
  */
 function prepareArabicVisualLine(logicalLine) {
   const value = stripBidiMarks(logicalLine == null ? "" : String(logicalLine));
@@ -215,7 +357,25 @@ function prepareArabicVisualLine(logicalLine) {
   if (!containsArabic(value)) {
     return value;
   }
-  return stripBidiMarks(reorderRtlLine(reshapeArabic(value), "rtl"));
+
+  const runs = buildMixedLogicalRuns(value);
+  const hasLtr = runs.some((run) => run.dir === "ltr" && /[A-Za-z0-9]/.test(run.text));
+  if (!hasLtr) {
+    return stripBidiMarks(reorderRtlLine(reshapeArabic(value), "rtl"));
+  }
+
+  // Visual left→right order for an RTL paragraph: reverse logical runs.
+  const visualParts = [];
+  for (let i = runs.length - 1; i >= 0; i -= 1) {
+    const run = runs[i];
+    if (run.dir === "rtl") {
+      visualParts.push(prepareArabicRunVisual(run.text));
+    } else {
+      // ltr + neutral spaces/punctuation
+      visualParts.push(run.text);
+    }
+  }
+  return visualParts.join("");
 }
 
 /**
@@ -300,6 +460,8 @@ module.exports = {
   containsArabic,
   reshapeArabic,
   reorderRtlLine,
+  buildMixedLogicalRuns,
+  prepareArabicRunVisual,
   prepareArabicVisualLine,
   analyzeArabicVisualLine,
   preparePdfDisplayText,

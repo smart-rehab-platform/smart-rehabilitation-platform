@@ -1,9 +1,36 @@
-const fs = require("fs");
+﻿const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
+const {
+  containsArabic,
+} = require("../aiReports/aiReportPdf.i18n");
 
 const backendRoot = path.resolve(__dirname, "../../..");
 const reportsUploadDir = path.join(backendRoot, "uploads", "reports");
+
+const REGULAR_PDF_SUBTITLE = {
+  en: "Clinical Progress Report",
+  ar: "تقرير التقدم السريري",
+};
+
+const REGULAR_PDF_FOOTER = {
+  en: "Clinical Progress Report",
+  ar: "تقرير التقدم السريري",
+};
+
+const REGULAR_PDF_SPECIALIST_LABEL = {
+  en: "Specialist",
+  ar: "الأخصائي",
+};
+
+const REGULAR_PDF_EXTRA_LABELS = {
+  en: {
+    createdDate: "Created Date",
+  },
+  ar: {
+    createdDate: "تاريخ الإنشاء",
+  },
+};
 
 const ensureReportsDir = () => {
   fs.mkdirSync(reportsUploadDir, { recursive: true });
@@ -33,6 +60,14 @@ const formatText = (value, fallback = "Not available") => {
 
   const text = String(value).trim();
   return text.length > 0 ? text : fallback;
+};
+
+/** Exact specialist summary for regular reports — never parse/rewrite as JSON. */
+const formatRegularReportSummary = (value) => {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  return String(value);
 };
 
 const parseJsonObject = (value) => {
@@ -111,48 +146,45 @@ const formatSpeechAnalysisSummaryLine = (analysis = {}) => {
   return parts.join(" | ");
 };
 
-const formatJsonDetails = (value) => {
-  if (value === null || value === undefined) {
-    return null;
+const formatRegularReportType = (value, language = "en") => {
+  const text = formatText(value, "Report");
+  const normalized = text.toLowerCase();
+  if (language === "ar") {
+    if (normalized === "weekly") return "أسبوعي";
+    if (normalized === "monthly") return "شهري";
+    if (normalized === "assessment") return "تقييم";
+    if (normalized === "progress") return "تقدم";
   }
-
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return null;
-    }
-
-    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-      try {
-        return formatJsonDetails(JSON.parse(trimmed));
-      } catch {
-        return trimmed;
-      }
-    }
-
-    return trimmed;
-  }
-
-  if (Array.isArray(value)) {
-    return value
-      .map((item) => formatJsonDetails(item))
-      .filter(Boolean)
-      .join("\n");
-  }
-
-  if (typeof value === "object") {
-    return Object.entries(value)
-      .map(([key, item]) => {
-        const formatted = formatJsonDetails(item);
-        return formatted ? `${key}: ${formatted}` : null;
-      })
-      .filter(Boolean)
-      .join("\n");
-  }
-
-  return String(value);
+  return text.charAt(0).toUpperCase() + text.slice(1);
 };
 
+const loadAiPdfHelpers = () => require("../aiReports/aiReportPdf.generator");
+
+/** Resolve PDF language from specialist-authored / patient context text. */
+const resolveRegularPdfLanguage = (context) => {
+  const report = context?.report || {};
+  const samples = [
+    report.summary,
+    report.title,
+    report.patient_name,
+    report.generated_by_name,
+  ];
+
+  for (const diagnosis of context?.diagnoses || []) {
+    samples.push(diagnosis?.diagnosis_title, diagnosis?.description);
+  }
+
+  if (context?.treatmentPlan) {
+    samples.push(context.treatmentPlan.title);
+  }
+
+  if (samples.some((value) => containsArabic(value))) {
+    return "ar";
+  }
+  return "en";
+};
+
+/** Legacy helpers retained for unit tests; regular PDF uses AI layout helpers. */
 const addSectionTitle = (doc, title) => {
   doc.moveDown(0.6);
   doc
@@ -177,6 +209,7 @@ const addParagraph = (doc, text) => {
     .text(formatText(text), {
       align: "left",
       lineGap: 3,
+      width: doc.page.width - doc.page.margins.left - doc.page.margins.right,
     });
 };
 
@@ -188,12 +221,16 @@ const addBulletList = (doc, items) => {
     return;
   }
 
+  const contentWidth =
+    doc.page.width - doc.page.margins.left - doc.page.margins.right;
+
   doc.font("Helvetica").fontSize(10.5).fillColor("#374151");
 
   for (const item of lines) {
     doc.text(`• ${item}`, {
       indent: 12,
       lineGap: 3,
+      width: contentWidth,
     });
   }
 };
@@ -205,200 +242,125 @@ const ensureSpace = (doc, height = 80) => {
   }
 };
 
+/**
+ * Regular/manual Clinical Progress Report PDF.
+ *
+ * Uses the same document setup + layout primitives + call flow as
+ * generateAiReportPdfFile (header → section title → info grid / section
+ * content → footer). Only the section set and field values differ.
+ */
 const generateReportPdfFile = async (context) => {
   ensureReportsDir();
 
+  const {
+    createAiPdfTheme,
+    addAiReportHeader,
+    addAiReportInformation,
+    addAiSectionTitle,
+    addAiBulletList,
+    addSectionContent,
+    addAiReportFooter,
+    AI_PDF_LAYOUT,
+  } = loadAiPdfHelpers();
+
   const fileName = `report_${context.report.id}.pdf`;
   const filePath = path.join(reportsUploadDir, fileName);
+  const language = resolveRegularPdfLanguage(context);
 
   await new Promise((resolve, reject) => {
+    // Same PDFDocument setup as generateAiReportPdfFile.
     const doc = new PDFDocument({
       size: "A4",
-      margin: 50,
+      margin: AI_PDF_LAYOUT.pageMargin,
       info: {
-        Title: formatText(context.report.title, "Smart Rehab Report"),
+        Title: formatText(
+          context.report.title,
+          REGULAR_PDF_SUBTITLE[language] || REGULAR_PDF_SUBTITLE.en
+        ),
         Author: "Smart Rehabilitation Platform",
       },
     });
+
+    doc.__aiPdfTheme = createAiPdfTheme(doc, language);
+    const theme = doc.__aiPdfTheme;
+    const extraLabels =
+      REGULAR_PDF_EXTRA_LABELS[language] || REGULAR_PDF_EXTRA_LABELS.en;
+    // Branding/label overrides only — no layout changes.
+    theme.labels = {
+      ...theme.labels,
+      ...extraLabels,
+      brandSubtitle: REGULAR_PDF_SUBTITLE[language] || REGULAR_PDF_SUBTITLE.en,
+      footerAssisted: REGULAR_PDF_FOOTER[language] || REGULAR_PDF_FOOTER.en,
+    };
 
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
     const generatedAt = new Date();
+    const specialistTitle =
+      typeof context.report.title === "string" ? context.report.title.trim() : "";
+    const specialistSummary = formatRegularReportSummary(context.report.summary);
 
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(22)
-      .fillColor("#4F46E5")
-      .text("Smart Rehabilitation", { align: "center" });
-    doc
-      .font("Helvetica")
-      .fontSize(11)
-      .fillColor("#6B7280")
-      .text("Clinical Progress Report", { align: "center" });
-    doc.moveDown(1.2);
+    // --- Same flow as generateAiReportPdfFile ---
+    addAiReportHeader(doc);
 
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(16)
-      .fillColor("#111827")
-      .text(formatText(context.report.title, "Patient Report"), {
-        align: "left",
-      });
-    doc.moveDown(0.8);
+    addAiSectionTitle(doc, theme.labels.reportInformation);
+    addAiReportInformation(doc, [
+      [theme.labels.patient, formatText(context.report.patient_name)],
+      [
+        REGULAR_PDF_SPECIALIST_LABEL[language] || REGULAR_PDF_SPECIALIST_LABEL.en,
+        formatText(context.report.generated_by_name),
+      ],
+      [
+        theme.labels.reportType,
+        formatRegularReportType(context.report.report_type, language),
+      ],
+      [
+        theme.labels.createdDate || theme.labels.generatedDate,
+        formatDate(context.report.created_at),
+      ],
+    ]);
 
-    const metaRows = [
-      ["Patient", formatText(context.report.patient_name)],
-      ["Specialist", formatText(context.report.generated_by_name)],
-      ["Report Type", formatText(context.report.report_type)],
-      ["Created Date", formatDate(context.report.created_at)],
-    ];
-
-    doc.font("Helvetica").fontSize(10.5).fillColor("#374151");
-    for (const [label, value] of metaRows) {
-      doc.font("Helvetica-Bold").text(`${label}: `, { continued: true });
-      doc.font("Helvetica").text(value);
+    if (specialistTitle) {
+      addAiSectionTitle(doc, theme.labels.title);
+      addSectionContent(doc, { paragraphs: [specialistTitle] });
     }
 
-    ensureSpace(doc, 120);
-    addSectionTitle(doc, "Diagnosis");
-    if (context.diagnoses.length === 0) {
-      addParagraph(doc, "Not available");
-    } else {
-      addBulletList(
-        doc,
-        context.diagnoses.map((item) => {
-          const parts = [item.diagnosis_title];
-          if (item.description) {
-            parts.push(item.description);
-          }
-          parts.push(`Diagnosed: ${formatDate(item.diagnosed_at)}`);
-          return parts.join(" — ");
-        })
-      );
+    const latestDiagnosis = Array.isArray(context.diagnoses)
+      ? context.diagnoses[0]
+      : null;
+    if (latestDiagnosis) {
+      const diagnosisTitle = latestDiagnosis.diagnosis_title
+        ? String(latestDiagnosis.diagnosis_title).trim()
+        : "";
+      const description = latestDiagnosis.description
+        ? String(latestDiagnosis.description).trim()
+        : "";
+      const diagnosisLine = [diagnosisTitle, description].filter(Boolean).join(" — ");
+      if (diagnosisLine) {
+        // Same primitive as AI diagnosis: section title + bullet list.
+        addAiSectionTitle(doc, theme.labels.diagnosis);
+        addAiBulletList(doc, [diagnosisLine]);
+      }
     }
 
-    ensureSpace(doc, 120);
-    addSectionTitle(doc, "Treatment Plan");
-    if (!context.treatmentPlan) {
-      addParagraph(doc, "Not available");
-    } else {
-      const plan = context.treatmentPlan;
-      addBulletList(doc, [
-        `Title: ${formatText(plan.title)}`,
-        `Status: ${formatText(plan.status)}`,
-        `Start Date: ${formatDate(plan.start_date)}`,
-        plan.end_date ? `End Date: ${formatDate(plan.end_date)}` : null,
-      ]);
+    const activePlanTitle =
+      typeof context.treatmentPlan?.title === "string"
+        ? context.treatmentPlan.title.trim()
+        : "";
+    if (activePlanTitle) {
+      // Same primitive as AI treatment plan: section title + bullet list.
+      addAiSectionTitle(doc, theme.labels.treatmentPlan);
+      addAiBulletList(doc, [activePlanTitle]);
     }
 
-    ensureSpace(doc, 120);
-    addSectionTitle(doc, "Executive Summary");
-    addParagraph(doc, context.report.summary);
-
-    ensureSpace(doc, 120);
-    addSectionTitle(doc, "Goals Progress");
-    if (context.goals.length === 0) {
-      addParagraph(doc, "Not available");
-    } else {
-      addBulletList(
-        doc,
-        context.goals.map((goal) => {
-          const progress =
-            goal.completion_percentage !== null &&
-            goal.completion_percentage !== undefined
-              ? `${goal.completion_percentage}%`
-              : "No progress recorded";
-          const achieved = goal.is_achieved ? "Achieved" : "In progress";
-          return `${goal.title} (${goal.term}) — ${progress} — ${achieved}`;
-        })
-      );
+    if (specialistSummary.trim().length > 0) {
+      // Same primitive as AI narrative sections: section title + addSectionContent.
+      addAiSectionTitle(doc, theme.labels.clinicalNotes);
+      addSectionContent(doc, { paragraphs: [specialistSummary] });
     }
 
-    ensureSpace(doc, 120);
-    addSectionTitle(doc, "Exercises & Submissions");
-    if (context.submissions.length === 0) {
-      addParagraph(doc, "Not available");
-    } else {
-      addBulletList(
-        doc,
-        context.submissions.map((item) => {
-          const parts = [
-            formatText(item.exercise_title, "Exercise"),
-            `Status: ${formatText(item.status)}`,
-            `Submitted: ${formatDate(item.submitted_at)}`,
-          ];
-          if (item.performance_rating !== null && item.performance_rating !== undefined) {
-            parts.push(`Rating: ${item.performance_rating}/10`);
-          }
-          if (item.feedback) {
-            parts.push(`Feedback: ${item.feedback}`);
-          }
-          return parts.join(" | ");
-        })
-      );
-    }
-
-    ensureSpace(doc, 120);
-    addSectionTitle(doc, "Progress Summary");
-    if (context.progressSnapshots.length === 0) {
-      addParagraph(doc, "Not available");
-    } else {
-      addBulletList(
-        doc,
-        context.progressSnapshots.map((snapshot) => {
-          const parts = [
-            `${formatText(snapshot.period)} period`,
-            `${formatDate(snapshot.period_start)} – ${formatDate(snapshot.period_end)}`,
-            `Completed: ${snapshot.exercises_completed ?? 0}`,
-          ];
-          if (snapshot.average_performance !== null && snapshot.average_performance !== undefined) {
-            parts.push(`Avg performance: ${snapshot.average_performance}`);
-          }
-          if (
-            snapshot.improvement_percentage !== null &&
-            snapshot.improvement_percentage !== undefined
-          ) {
-            parts.push(`Improvement: ${snapshot.improvement_percentage}%`);
-          }
-          return parts.join(" | ");
-        })
-      );
-    }
-
-    if (context.speechAnalyses.length > 0) {
-      ensureSpace(doc, 120);
-      addSectionTitle(doc, "Speech Analysis Summary");
-      addBulletList(
-        doc,
-        context.speechAnalyses.map((analysis) =>
-          formatSpeechAnalysisSummaryLine(analysis)
-        )
-      );
-    }
-
-    if (context.recommendations.length > 0) {
-      ensureSpace(doc, 120);
-      addSectionTitle(doc, "Recommendations");
-      addBulletList(
-        doc,
-        context.recommendations.map((item) => {
-          const details = formatJsonDetails(item.details);
-          return `${formatText(item.type)} (${formatText(item.status)})${details ? ` — ${details}` : ""}`;
-        })
-      );
-    }
-
-    ensureSpace(doc, 60);
-    doc.moveDown(1);
-    doc
-      .font("Helvetica")
-      .fontSize(9)
-      .fillColor("#9CA3AF")
-      .text(
-        `Generated on ${generatedAt.toLocaleString("en-US")} by Smart Rehabilitation Platform`,
-        { align: "center" }
-      );
+    addAiReportFooter(doc, generatedAt);
 
     doc.end();
 
@@ -420,6 +382,8 @@ module.exports = {
   ensureReportsDir,
   formatDate,
   formatText,
+  formatRegularReportSummary,
+  resolveRegularPdfLanguage,
   formatSpeechAnalysisSummaryLine,
   formatAnalysisReliabilityLabel,
   addSectionTitle,

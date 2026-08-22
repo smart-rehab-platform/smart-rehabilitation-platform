@@ -921,12 +921,48 @@ const exportReportPdf = async (id, actor) => {
   };
 };
 
+/**
+ * Discard an AI report the actor is authorized to manage.
+ * Used for specialist review rejection of pending drafts (and any authorized cleanup).
+ */
+const deleteAiReport = async (id, actor) => {
+  const report = await getReportById(id);
+
+  if (!report) {
+    return null;
+  }
+
+  await assertActorCanReadPatientAiReports(actor, report.patient_id);
+
+  // Best-effort cleanup of a previously exported PDF file (if any).
+  if (typeof report.pdf_url === "string" && report.pdf_url.trim()) {
+    try {
+      const fs = require("fs");
+      const path = require("path");
+      const backendRoot = path.resolve(__dirname, "../../..");
+      const relative = report.pdf_url.replace(/^\/+/, "");
+      if (relative.startsWith("uploads/reports/")) {
+        const filePath = path.join(backendRoot, relative);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    } catch {
+      // Ignore filesystem cleanup failures; DB row removal is authoritative.
+    }
+  }
+
+  await db.query(`DELETE FROM ai_reports WHERE id = $1`, [id]);
+  return report;
+};
+
 module.exports = {
   generateReport,
   getAllReports,
   getReportById,
   getReportsByPatient,
   exportReportPdf,
+  deleteAiReport,
   assertActorCanReadPatientAiReports,
   buildReportPrompt,
   buildRuleBasedReportFallback,
