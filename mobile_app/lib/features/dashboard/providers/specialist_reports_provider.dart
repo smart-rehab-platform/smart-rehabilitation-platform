@@ -165,14 +165,14 @@ class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
     }
   }
 
-  Future<bool> generateAiReport({
+  Future<SpecialistReportDetail?> generateAiReport({
     required String patientId,
     required SpecialistAiReportType type,
     required DateTime periodStart,
     required DateTime periodEnd,
   }) async {
     if (state.isGeneratingAiReport) {
-      return false;
+      return null;
     }
 
     final validationError = validateSpecialistAiReportGeneration(
@@ -183,7 +183,7 @@ class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
     );
     if (validationError != null) {
       state = state.copyWith(generationError: validationError);
-      return false;
+      return null;
     }
 
     _ensureAuthToken();
@@ -194,7 +194,7 @@ class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
 
     try {
       final language = languageCodeFromLocale(_ref.read(localeProvider));
-      await _repository.generateAiReport(
+      final detail = await _repository.generateAiReport(
         SpecialistAiReportGenerateRequest(
           patientId: patientId,
           type: type,
@@ -205,19 +205,19 @@ class SpecialistReportsNotifier extends StateNotifier<SpecialistReportsState> {
       );
       state = state.copyWith(isGeneratingAiReport: false);
       await refresh();
-      return true;
+      return detail;
     } on SpecialistAiReportGenerationException catch (error) {
       state = state.copyWith(
         isGeneratingAiReport: false,
         generationError: error.message,
       );
-      return false;
+      return null;
     } catch (error) {
       state = state.copyWith(
         isGeneratingAiReport: false,
         generationError: error.toString(),
       );
-      return false;
+      return null;
     }
   }
 
@@ -288,24 +288,28 @@ class SpecialistReportDetailState {
   const SpecialistReportDetailState({
     this.isLoading = false,
     this.isExporting = false,
+    this.isDiscarding = false,
     this.errorMessage,
     this.detail,
   });
 
   final bool isLoading;
   final bool isExporting;
+  final bool isDiscarding;
   final String? errorMessage;
   final SpecialistReportDetail? detail;
 
   SpecialistReportDetailState copyWith({
     bool? isLoading,
     bool? isExporting,
+    bool? isDiscarding,
     Object? errorMessage = _sentinel,
     SpecialistReportDetail? detail,
   }) {
     return SpecialistReportDetailState(
       isLoading: isLoading ?? this.isLoading,
       isExporting: isExporting ?? this.isExporting,
+      isDiscarding: isDiscarding ?? this.isDiscarding,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
@@ -374,6 +378,10 @@ class SpecialistReportDetailNotifier
   }
 
   Future<bool> generatePdf() async {
+    if (state.isExporting || state.isDiscarding) {
+      return false;
+    }
+
     _ensureAuthToken();
     state = state.copyWith(isExporting: true, errorMessage: null);
 
@@ -388,6 +396,34 @@ class SpecialistReportDetailNotifier
       state = state.copyWith(
         isExporting: false,
         errorMessage: 'Failed to generate PDF: $error',
+      );
+      return false;
+    }
+  }
+
+  /// Discards an AI report that is awaiting review (DELETE /ai/reports/:id).
+  Future<bool> discardAiReport() async {
+    if (!_args.isAiReport || state.isDiscarding || state.isExporting) {
+      return false;
+    }
+
+    _ensureAuthToken();
+    state = state.copyWith(isDiscarding: true, errorMessage: null);
+
+    try {
+      await _repository.discardAiReport(_args.reportId);
+      state = state.copyWith(isDiscarding: false);
+      return true;
+    } on SpecialistAiReportDiscardException catch (error) {
+      state = state.copyWith(
+        isDiscarding: false,
+        errorMessage: error.message,
+      );
+      return false;
+    } catch (error) {
+      state = state.copyWith(
+        isDiscarding: false,
+        errorMessage: 'Failed to discard AI report: $error',
       );
       return false;
     }

@@ -20,6 +20,8 @@ function translateKey(t, key, fallback, params) {
 const NOTIFICATION_TYPE_KEY = {
   exercise_reminder: "specialist.notifications.type.exerciseReminder",
   session_reminder: "specialist.notifications.type.sessionReminder",
+  session_updated: "specialist.notifications.type.sessionUpdated",
+  session_cancelled: "specialist.notifications.type.sessionCancelled",
   feedback_received: "specialist.notifications.type.feedbackReceived",
   report_ready: "specialist.notifications.type.reportReady",
   new_message: "specialist.notifications.type.newMessage",
@@ -38,6 +40,8 @@ const NOTIFICATION_TYPE_KEY = {
 const NOTIFICATION_TYPE_FALLBACK = {
   exercise_reminder: "Exercise reminder",
   session_reminder: "Session reminder",
+  session_updated: "Session updated",
+  session_cancelled: "Session cancelled",
   feedback_received: "Feedback received",
   report_ready: "Report ready",
   new_message: "New message",

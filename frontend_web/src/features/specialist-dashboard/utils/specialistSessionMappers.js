@@ -95,6 +95,51 @@ export function getSessionDisplayStatus(status) {
   return { id: "scheduled", label: "Scheduled", tone: "success" };
 }
 
+/**
+ * Specialist may edit/cancel only owned upcoming scheduled sessions.
+ * Canonical IDs: sessions.specialist_id === users.id (auth user id).
+ * Upcoming = status scheduled AND scheduled_at strictly in the future.
+ */
+export function canManageSpecialistSession(session, authUser, now = new Date()) {
+  if (!session || !authUser || authUser.role !== "specialist") {
+    return false;
+  }
+
+  const statusId = String(
+    session?.displayStatus?.id ?? session?.status ?? "",
+  ).toLowerCase().trim();
+  if (statusId !== "scheduled") {
+    return false;
+  }
+
+  const scheduledAt = session.scheduledAt instanceof Date
+    ? session.scheduledAt
+    : session.scheduledAt
+      ? new Date(session.scheduledAt)
+      : null;
+  if (
+    !scheduledAt
+    || Number.isNaN(scheduledAt.getTime())
+    || scheduledAt.getTime() <= now.getTime()
+  ) {
+    return false;
+  }
+
+  const sessionSpecialistId = String(session.specialistId || "").trim();
+  const authUserId = String(authUser.id || "").trim();
+  if (!authUserId) {
+    return false;
+  }
+
+  // List endpoint is already scoped to the specialist; when specialistId is
+  // present on the mapped row it must match the authenticated users.id.
+  if (sessionSpecialistId) {
+    return sessionSpecialistId === authUserId;
+  }
+
+  return true;
+}
+
 export function mapSpecialistSessionDetail(row) {
   const base = mapSpecialistSessionRow(row);
   if (!base.id) {
@@ -109,6 +154,7 @@ export function mapSpecialistSessionDetail(row) {
   return {
     ...base,
     sessionType,
+    specialistId: readString(row, ["specialist_id", "specialistId"]),
     dateLabel: scheduledAt
       ? new Intl.DateTimeFormat(undefined, {
         month: "short",

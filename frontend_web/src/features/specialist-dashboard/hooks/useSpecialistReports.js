@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "../../../context/useLocale";
 import {
+  createRegularReport,
   generateAiReport,
   loadPatientScopedReports,
   loadSpecialistScopedReports,
 } from "../../../services/specialistReportService";
 import { validateSpecialistAiReportGeneration } from "../utils/specialistAiReportGeneration";
+import { validateSpecialistRegularReportCreation } from "../utils/specialistRegularReportCreation";
 import { filterVisibleReports } from "../utils/specialistReportMappers";
 import { applyReportListItemLocalization } from "../utils/specialistReportsLocalization";
 
@@ -24,6 +26,8 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
   const [patientName, setPatientName] = useState(null);
   const [isGeneratingAiReport, setIsGeneratingAiReport] = useState(false);
   const [generationError, setGenerationError] = useState(null);
+  const [isCreatingRegularReport, setIsCreatingRegularReport] = useState(false);
+  const [regularCreationError, setRegularCreationError] = useState(null);
   const loadTokenRef = useRef(0);
 
   const scopedPatientId = patientId?.trim() || null;
@@ -31,6 +35,7 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
   const loadFailedError = t("specialist.reports.errors.loadFailed");
   const signInRequiredError = t("specialist.reports.errors.signInRequired");
   const generateFailedError = t("specialist.reports.generate.failed");
+  const createFailedError = t("specialist.reports.create.failed");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -38,6 +43,10 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
 
   const clearGenerationError = useCallback(() => {
     setGenerationError(null);
+  }, []);
+
+  const clearRegularCreationError = useCallback(() => {
+    setRegularCreationError(null);
   }, []);
 
   const generateAiReportForPatient = useCallback(async ({
@@ -73,7 +82,7 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
     setGenerationError(null);
 
     try {
-      await generateAiReport({
+      const report = await generateAiReport({
         reportType,
         patientId: selectedPatientId,
         periodStart,
@@ -82,7 +91,7 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
       });
       setIsGeneratingAiReport(false);
       reload();
-      return { ok: true };
+      return { ok: true, report };
     } catch (generateError) {
       const message = resolveErrorMessage(generateError, generateFailedError);
       setIsGeneratingAiReport(false);
@@ -93,6 +102,63 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
     generateFailedError,
     isGeneratingAiReport,
     locale,
+    reload,
+    signInRequiredError,
+    specialistUserId,
+    t,
+  ]);
+
+  const createRegularReportForPatient = useCallback(async ({
+    patientId: selectedPatientId,
+    reportType,
+    title,
+    summary,
+  }) => {
+    if (isCreatingRegularReport) {
+      return { ok: false };
+    }
+
+    const validationError = validateSpecialistRegularReportCreation({
+      patientId: selectedPatientId,
+      reportType,
+      title,
+      summary,
+      t,
+    });
+
+    if (validationError) {
+      setRegularCreationError(validationError);
+      return { ok: false, message: validationError };
+    }
+
+    if (!specialistUserId) {
+      const message = signInRequiredError;
+      setRegularCreationError(message);
+      return { ok: false, message };
+    }
+
+    setIsCreatingRegularReport(true);
+    setRegularCreationError(null);
+
+    try {
+      await createRegularReport({
+        patientId: selectedPatientId,
+        reportType,
+        title,
+        summary,
+      });
+      setIsCreatingRegularReport(false);
+      reload();
+      return { ok: true };
+    } catch (createError) {
+      const message = resolveErrorMessage(createError, createFailedError);
+      setIsCreatingRegularReport(false);
+      setRegularCreationError(message);
+      return { ok: false, message };
+    }
+  }, [
+    createFailedError,
+    isCreatingRegularReport,
     reload,
     signInRequiredError,
     specialistUserId,
@@ -180,6 +246,10 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
       generationError: null,
       clearGenerationError,
       generateAiReport: generateAiReportForPatient,
+      isCreatingRegularReport: false,
+      regularCreationError: null,
+      clearRegularCreationError,
+      createRegularReport: createRegularReportForPatient,
     };
   }
 
@@ -200,5 +270,9 @@ export function useSpecialistReports(specialistUserId, patientId = null) {
     generationError,
     clearGenerationError,
     generateAiReport: generateAiReportForPatient,
+    isCreatingRegularReport,
+    regularCreationError,
+    clearRegularCreationError,
+    createRegularReport: createRegularReportForPatient,
   };
 }

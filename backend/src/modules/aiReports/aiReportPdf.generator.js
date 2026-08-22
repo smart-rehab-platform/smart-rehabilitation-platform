@@ -18,6 +18,7 @@ const {
   getEnglishPdfFonts,
   preparePdfDisplayText,
   prepareArabicVisualLine,
+  prepareArabicRunVisual,
   splitMixedFontRuns,
   containsArabic,
 } = require("./aiReportPdf.i18n");
@@ -142,12 +143,68 @@ const preparePdfText = (value, language = DEFAULT_AI_REPORT_LANGUAGE) => {
   return preparePdfDisplayText(withBreaks, language);
 };
 
+/**
+ * Draw a BiDi-visual line left-to-right without letting fontkit RTL-layout
+ * reverse Arabic runs again (that double-reversal was the remaining order bug).
+ *
+ * Latin/number runs are drawn as whole strings (stable LTR + shared baseline).
+ * Arabic runs stay glyph-by-glyph so fontkit cannot re-reverse them.
+ */
+const drawMixedVisualLine = (doc, visualText, x, y, { fontSize, bold, color, fonts }) => {
+  let cursorX = x;
+  const arabicFontName = bold
+    ? fonts?.bold || fonts?.regular
+    : fonts?.regular;
+  doc.font(arabicFontName || "Helvetica").fontSize(fontSize);
+  const arabicFont = doc._font;
+  const arabicUnits = arabicFont.unitsPerEm || 1000;
+  const arabicAscender = ((arabicFont.ascender || 0) / arabicUnits) * fontSize;
+
+  for (const run of splitMixedFontRuns(visualText, { bold, fonts })) {
+    doc.font(run.font).fontSize(fontSize).fillColor(color);
+    const isArabicRun = run.font === fonts?.regular || run.font === fonts?.bold;
+
+    if (!isArabicRun) {
+      const latinFont = doc._font;
+      const latinUnits = latinFont.unitsPerEm || 1000;
+      const latinAscender = ((latinFont.ascender || 0) / latinUnits) * fontSize;
+      const yAdjust = arabicAscender - latinAscender;
+      const runWidth = doc.widthOfString(run.text);
+      doc.text(run.text, cursorX, y + yAdjust, {
+        lineBreak: false,
+        continued: false,
+        features: {},
+      });
+      cursorX += runWidth;
+      continue;
+    }
+
+    for (const char of run.text) {
+      const charWidth = doc.widthOfString(char);
+      doc.text(char, cursorX, y, {
+        lineBreak: false,
+        continued: false,
+        features: {},
+      });
+      cursorX += charWidth;
+    }
+  }
+  return cursorX;
+};
+
+/**
+ * Measure run width using the same strategy as drawMixedVisualLine
+ * (whole-string Latin, per-glyph Arabic).
+ */
 const measureMixedVisualWidth = (doc, visualText, fontSize, bold, fonts) => {
   let width = 0;
   for (const run of splitMixedFontRuns(visualText, { bold, fonts })) {
     doc.font(run.font).fontSize(fontSize);
-    // Measure glyph-by-glyph. Multi-char Arabic widthOfString() goes through
-    // fontkit layout which RTL-reverses and can disagree with our draw path.
+    const isArabicRun = run.font === fonts?.regular || run.font === fonts?.bold;
+    if (!isArabicRun) {
+      width += doc.widthOfString(run.text);
+      continue;
+    }
     for (const char of run.text) {
       width += doc.widthOfString(char);
     }
@@ -213,27 +270,6 @@ const wrapLogicalArabicLines = (doc, text, maxWidth, fontSize, bold, fonts) => {
   return lines;
 };
 
-/**
- * Draw a BiDi-visual line left-to-right without letting fontkit RTL-layout
- * reverse Arabic runs again (that double-reversal was the remaining order bug).
- */
-const drawMixedVisualLine = (doc, visualText, x, y, { fontSize, bold, color, fonts }) => {
-  let cursorX = x;
-  for (const run of splitMixedFontRuns(visualText, { bold, fonts })) {
-    doc.font(run.font).fontSize(fontSize).fillColor(color);
-    for (const char of run.text) {
-      const charWidth = doc.widthOfString(char);
-      doc.text(char, cursorX, y, {
-        lineBreak: false,
-        continued: false,
-        features: {},
-      });
-      cursorX += charWidth;
-    }
-  }
-  return cursorX;
-};
-
 const drawArabicParagraph = (doc, text, options = {}) => {
   const theme = getTheme(doc);
   const { leftMargin, contentWidth } = getAiPageMetrics(doc);
@@ -251,8 +287,13 @@ const drawArabicParagraph = (doc, text, options = {}) => {
   }
 
   const lineHeight = fontSize + lineGap;
+  // Only need the first line to start; remaining lines paginate below.
   if (!options.skipPageCheck) {
-    ensureAiSpace(doc, Math.min(logicalLines.length * lineHeight, fontSize + lineGap + 2));
+    const advanced = ensureAiSpace(doc, lineHeight);
+    if (advanced && options.y != null) {
+      // Absolute y from the previous page is stale after a forced break.
+      options = { ...options, y: undefined };
+    }
   }
 
   let y = options.y ?? doc.y;
@@ -327,24 +368,25 @@ const drawAiWrappedText = (doc, text, options = {}) => {
   const color = options.color ?? AI_PDF_COLORS.body;
   const lineGap = options.lineGap ?? AI_PDF_LAYOUT.bodyLineGap;
   const align = options.align ?? theme.align;
-  const height = measureAiTextHeight(doc, text, width, {
-    fontSize,
-    font,
-    lineGap,
-    align,
-  });
+  const lineHeight = fontSize + lineGap;
 
+  // Require only the first line up front — never reserve the whole paragraph.
   if (!options.skipPageCheck) {
-    ensureAiSpace(doc, Math.min(height, fontSize + lineGap + 2));
+    ensureAiSpace(doc, lineHeight);
   }
 
-  const startY = options.y ?? doc.y;
+  // Flow from the current cursor (no absolute y). PDFKit can then continue
+  // long English paragraphs onto the next page without orphan blank pages.
+  if (options.y != null) {
+    doc.y = options.y;
+  }
+  doc.x = startX;
 
   doc
     .font(font)
     .fontSize(fontSize)
     .fillColor(color)
-    .text(prepared, startX, startY, {
+    .text(prepared, {
       width,
       align,
       lineGap,
@@ -422,15 +464,11 @@ const drawAiBulletList = (doc, items, options = {}) => {
   const blockWidth = getSafeTextWidth(doc, leftMargin, options.width ?? contentWidth);
   const markerWidth = AI_PDF_LAYOUT.bulletMarkerWidth;
   const textWidth = Math.max(0, blockWidth - markerWidth - AI_PDF_LAYOUT.bulletGap);
+  const lineHeight = AI_PDF_LAYOUT.bodyFontSize + AI_PDF_LAYOUT.bodyLineGap;
 
   for (const item of lines) {
-    const textHeight = measureAiTextHeight(doc, item, textWidth, {
-      fontSize: AI_PDF_LAYOUT.bodyFontSize,
-      lineGap: AI_PDF_LAYOUT.bodyLineGap,
-    });
-    const itemHeight = Math.max(textHeight, AI_PDF_LAYOUT.bodyFontSize);
-
-    ensureAiSpace(doc, Math.min(itemHeight, AI_PDF_LAYOUT.bulletMinHeight));
+    // Start an item when the first line fits — never reserve the whole item/list.
+    ensureAiSpace(doc, Math.max(lineHeight, AI_PDF_LAYOUT.bulletMinHeight));
 
     const itemY = doc.y;
 
@@ -444,15 +482,15 @@ const drawAiBulletList = (doc, items, options = {}) => {
         AI_PDF_LAYOUT.bodyFontSize,
         AI_PDF_COLORS.body,
       );
+      // Paginate wrapped Arabic lines; do not pin doc.y to a pre-measured block height.
       drawArabicParagraph(doc, item, {
         x: textX,
         y: itemY,
         width: textWidth,
         fontSize: AI_PDF_LAYOUT.bodyFontSize,
         lineGap: AI_PDF_LAYOUT.bodyLineGap,
-        skipPageCheck: true,
+        skipPageCheck: false,
       });
-      doc.y = Math.max(doc.y, itemY + itemHeight);
     } else {
       const bulletX = leftMargin;
       const textX = leftMargin + markerWidth + AI_PDF_LAYOUT.bulletGap;
@@ -468,17 +506,19 @@ const drawAiBulletList = (doc, items, options = {}) => {
           lineBreak: false,
         });
 
+      // Flow from the bullet row without absolute multi-line y pinning, so PDFKit
+      // can continue long items onto the next page and leave a correct cursor.
+      doc.x = textX;
+      doc.y = itemY;
       doc
         .font(theme.fonts.regular)
         .fontSize(AI_PDF_LAYOUT.bodyFontSize)
         .fillColor(AI_PDF_COLORS.body)
-        .text(prepared, textX, itemY, {
+        .text(prepared, {
           width: textWidth,
           align: "left",
           lineGap: AI_PDF_LAYOUT.bodyLineGap,
         });
-
-      doc.y = Math.max(doc.y, itemY + itemHeight);
     }
 
     doc.x = leftMargin;
@@ -505,6 +545,7 @@ const addAiSectionTitle = (doc, title) => {
   });
   const spacingAfter = AI_PDF_LAYOUT.sectionSpacingAfter * AI_PDF_LAYOUT.bodyFontSize;
 
+  // Keep heading with at least the first body line — do NOT require the whole section.
   ensureAiSpace(
     doc,
     spacingBefore + titleHeight + spacingAfter + AI_PDF_LAYOUT.bulletMinHeight,
@@ -599,8 +640,11 @@ const addAiReportInformation = (doc, metaRows) => {
   const safeRightWidth = getSafeTextWidth(doc, rightColumnX, columnWidth);
   const startY = doc.y;
 
-  const leftRows = metaRows.slice(0, 3);
-  const rightRows = metaRows.slice(3);
+  // Split across the two columns as evenly as possible.
+  // AI (5 rows) stays 3+2; regular (4 rows) becomes 2+2 — same grid geometry.
+  const leftCount = Math.ceil((metaRows || []).length / 2);
+  const leftRows = metaRows.slice(0, leftCount);
+  const rightRows = metaRows.slice(leftCount);
 
   let leftY = startY;
   for (const [label, value] of leftRows) {
@@ -626,38 +670,105 @@ const addAiReportInformation = (doc, metaRows) => {
 
 const drawAiFooterGeneratedLine = (doc, generatedAt) => {
   const theme = getTheme(doc);
-  const dateText = generatedAt.toLocaleString(theme.language === "ar" ? "ar" : "en-US");
-  const prefix = `${theme.labels.footerGeneratedPrefix} ${dateText} ${theme.labels.footerGeneratedBy} `;
   const platform = theme.labels.footerPlatform;
   const fontSize = 9;
   const lineY = doc.y;
   const fonts = theme.fonts;
 
   if (theme.isRtl) {
-    const visualPrefix = prepareArabicVisualLine(prefix);
-    const visualPlatform = platform; // English brand — no Arabic reshape
-    const prefixWidth = measureMixedVisualWidth(doc, visualPrefix, fontSize, false, fonts);
-    doc.font(fonts.latinRegular || "Helvetica").fontSize(fontSize);
-    const platformWidth = doc.widthOfString(visualPlatform);
-    const totalWidth = prefixWidth + platformWidth;
-    const startX = (doc.page.width - totalWidth) / 2;
+    // Absolute-positioned separate runs — never concatenate or BiDi the mixed line.
+    // Exact visual LTR order:
+    //   تم الإنشاء في | 8/21/2026, 7:50:53 PM | بواسطة | Smart Rehabilitation Platform
+    const dateText = generatedAt.toLocaleString("en-US", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: true,
+    });
+    const latinFont = fonts.latinRegular || "Helvetica";
+    const prefixVisual = prepareArabicRunVisual(
+      theme.labels.footerGeneratedPrefix
+    );
+    const byVisual = prepareArabicRunVisual(theme.labels.footerGeneratedBy);
 
-    drawMixedVisualLine(doc, visualPrefix, startX, lineY, {
+    const prefixWidth = measureMixedVisualWidth(
+      doc,
+      prefixVisual,
+      fontSize,
+      false,
+      fonts
+    );
+    const byWidth = measureMixedVisualWidth(
+      doc,
+      byVisual,
+      fontSize,
+      false,
+      fonts
+    );
+    doc.font(latinFont).fontSize(fontSize);
+    const spaceWidth = doc.widthOfString(" ");
+    const dateWidth = doc.widthOfString(dateText);
+    const platformWidth = doc.widthOfString(platform);
+    const totalWidth =
+      prefixWidth +
+      spaceWidth +
+      dateWidth +
+      spaceWidth +
+      byWidth +
+      spaceWidth +
+      platformWidth;
+
+    const startX = (doc.page.width - totalWidth) / 2;
+    const dateX = startX + prefixWidth + spaceWidth;
+    const byX = dateX + dateWidth + spaceWidth;
+    const platformX = byX + byWidth + spaceWidth;
+
+    drawMixedVisualLine(doc, prefixVisual, startX, lineY, {
       fontSize,
       bold: false,
       color: AI_PDF_COLORS.muted,
       fonts,
     });
+
     doc
-      .font(fonts.latinRegular || "Helvetica")
+      .font(latinFont)
+      .fontSize(fontSize)
+      .fillColor(AI_PDF_COLORS.muted)
+      .text(dateText, dateX, lineY, {
+        lineBreak: false,
+        continued: false,
+        features: {},
+        width: dateWidth + 1,
+      });
+
+    drawMixedVisualLine(doc, byVisual, byX, lineY, {
+      fontSize,
+      bold: false,
+      color: AI_PDF_COLORS.muted,
+      fonts,
+    });
+
+    doc
+      .font(latinFont)
       .fontSize(fontSize)
       .fillColor(AI_PDF_COLORS.teal)
-      .text(visualPlatform, startX + prefixWidth, lineY, {
+      .text(platform, platformX, lineY, {
         lineBreak: false,
+        continued: false,
+        features: {},
+        width: platformWidth + 1,
       });
+
     doc.x = doc.page.margins.left;
+    doc.y = lineY + fontSize;
     return;
   }
+
+  const dateText = generatedAt.toLocaleString("en-US");
+  const prefix = `${theme.labels.footerGeneratedPrefix} ${dateText} ${theme.labels.footerGeneratedBy} `;
 
   doc.font(theme.fonts.regular).fontSize(fontSize);
 
@@ -819,6 +930,49 @@ const addSectionContent = (doc, { paragraphs = [], bullets = [] }) => {
   }
 };
 
+/** Shared AI/regular report footer: centered label + generated metadata line. */
+const addAiReportFooter = (doc, generatedAt) => {
+  const theme = getTheme(doc);
+  ensureAiSpace(doc, AI_PDF_LAYOUT.footerReserved);
+  doc.moveDown(1);
+  if (theme.isRtl) {
+    const assisted = theme.labels.footerAssisted;
+    const visual = prepareArabicVisualLine(assisted);
+    const fontSize = 9;
+    const visualWidth = measureMixedVisualWidth(
+      doc,
+      visual,
+      fontSize,
+      false,
+      theme.fonts
+    );
+    const line1Y = doc.y;
+    drawMixedVisualLine(
+      doc,
+      visual,
+      (doc.page.width - visualWidth) / 2,
+      line1Y,
+      {
+        fontSize,
+        bold: false,
+        color: AI_PDF_COLORS.footer,
+        fonts: theme.fonts,
+      }
+    );
+    doc.y = line1Y + fontSize + 8;
+  } else {
+    doc
+      .font(theme.fonts.regular)
+      .fontSize(9)
+      .fillColor(AI_PDF_COLORS.footer)
+      .text(preparePdfText(theme.labels.footerAssisted, theme.language), {
+        align: "center",
+      });
+    doc.moveDown(0.2);
+  }
+  drawAiFooterGeneratedLine(doc, generatedAt);
+};
+
 const generateAiReportPdfFile = async (context) => {
   ensureReportsDir();
 
@@ -966,32 +1120,7 @@ const generateAiReportPdfFile = async (context) => {
     }
     addSectionContent(doc, { bullets: goalLines });
 
-    ensureAiSpace(doc, AI_PDF_LAYOUT.footerReserved);
-    doc.moveDown(1);
-    if (theme.isRtl) {
-      const assisted = theme.labels.footerAssisted;
-      const visual = prepareArabicVisualLine(assisted);
-      const fontSize = 9;
-      const visualWidth = measureMixedVisualWidth(doc, visual, fontSize, false, theme.fonts);
-      const startX = (doc.page.width - visualWidth) / 2;
-      drawMixedVisualLine(doc, visual, startX, doc.y, {
-        fontSize,
-        bold: false,
-        color: AI_PDF_COLORS.footer,
-        fonts: theme.fonts,
-      });
-      doc.moveDown(0.55);
-    } else {
-      doc
-        .font(theme.fonts.regular)
-        .fontSize(9)
-        .fillColor(AI_PDF_COLORS.footer)
-        .text(preparePdfText(theme.labels.footerAssisted, theme.language), {
-          align: "center",
-        });
-      doc.moveDown(0.2);
-    }
-    drawAiFooterGeneratedLine(doc, generatedAt);
+    addAiReportFooter(doc, generatedAt);
 
     doc.end();
 
@@ -1010,14 +1139,20 @@ const generateAiReportPdfFile = async (context) => {
 module.exports = {
   generateAiReportPdfFile,
   parseAiSummary,
+  createAiPdfTheme,
   addAiReportHeader,
   addAiSectionTitle,
   addAiReportInformation,
   addAiParagraph,
   addAiBulletList,
+  addSectionContent,
+  addAiReportFooter,
   drawAiWrappedText,
   drawAiBulletList,
   drawAiLabelValueRow,
+  drawAiFooterGeneratedLine,
+  drawMixedVisualLine,
+  measureMixedVisualWidth,
   preparePdfText,
   getAiPageMetrics,
   getSafeTextWidth,

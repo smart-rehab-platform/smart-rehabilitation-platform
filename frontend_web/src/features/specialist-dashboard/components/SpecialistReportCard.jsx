@@ -1,4 +1,6 @@
 import { ChevronRight } from "lucide-react";
+import descriptionIcon from "../../../assets/icons/description.svg";
+import neurologyIcon from "../../../assets/icons/neurology.svg";
 import { useLocale } from "../../../context/useLocale";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
 import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
@@ -6,6 +8,7 @@ import { getInitials } from "../utils/specialistScheduleUtils";
 
 export function SpecialistReportCard({ report, onClick }) {
   const { t } = useLocale();
+  const reportIcon = report.isAi ? neurologyIcon : descriptionIcon;
 
   return (
     <button
@@ -13,14 +16,24 @@ export function SpecialistReportCard({ report, onClick }) {
       className="pd-card pd-card-pad pd-specialist-report-card"
       onClick={() => onClick?.(report)}
     >
-      <UserProfileAvatar
-        imageUrl={null}
-        initials={getInitials(report.patientName, "P")}
-        alt=""
-        shellClassName="pd-avatar pd-specialist-preview-avatar"
-        fallbackClassName="pd-avatar pd-specialist-preview-avatar"
-        className="pd-avatar-photo"
-      />
+      <span className="pd-specialist-report-card-leading">
+        <img
+          src={reportIcon}
+          alt=""
+          aria-hidden="true"
+          className={`pd-platform-icon pd-specialist-report-type-icon${report.isAi ? " is-ai" : ""}`}
+          width={20}
+          height={20}
+        />
+        <UserProfileAvatar
+          imageUrl={null}
+          initials={getInitials(report.patientName, "P")}
+          alt=""
+          shellClassName="pd-avatar pd-specialist-preview-avatar"
+          fallbackClassName="pd-avatar pd-specialist-preview-avatar"
+          className="pd-avatar-photo"
+        />
+      </span>
       <span className="pd-specialist-report-card-copy">
         <strong>{report.titleLabel || report.title}</strong>
         <span className="pd-specialist-report-card-patient">{report.patientName}</span>
@@ -36,6 +49,11 @@ export function SpecialistReportCard({ report, onClick }) {
             <StatusBadge
               label={report.pdfReadyLabel || t("specialist.reports.status.pdfReady")}
               tone="success"
+            />
+          ) : report.isAwaitingReview ? (
+            <StatusBadge
+              label={report.awaitingReviewLabel || t("specialist.reports.status.awaitingReview")}
+              tone="warning"
             />
           ) : null}
           <span className="pd-section-sub">{report.dateLabel}</span>

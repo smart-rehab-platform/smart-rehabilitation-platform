@@ -136,7 +136,10 @@ class SpecialistReportListItem {
     return url != null && url.trim().isNotEmpty;
   }
 
-  String get statusLabel => 'PDF Ready';
+  /// AI report with no PDF yet ? awaiting specialist review.
+  bool get isAwaitingReview => isAiReport && !hasPdf;
+
+  String get statusLabel => hasPdf ? 'PDF Ready' : 'Awaiting Review';
 
   /// Standardized display title without embedding the patient name.
   String get displayTitle => standardizedReportTitle(
@@ -324,8 +327,13 @@ String? _cleanEmbeddedPatientTitle(String? rawTitle) {
     return null;
   }
 
+<<<<<<< Updated upstream
   // Strip patterns like "Weekly - Omar" / "Monthly - Patient".
   final parts = trimmed.split(RegExp(r'\s+-\s+'));
+=======
+  // Strip patterns like "Weekly ? Omar" / "Monthly - Patient".
+  final parts = trimmed.split(RegExp(r'\s+[??-]\s+'));
+>>>>>>> Stashed changes
   if (parts.length >= 2) {
     final left = parts.first.trim();
     if (left.isNotEmpty) {
@@ -385,7 +393,10 @@ class SpecialistReportDetail {
     return url != null && url.trim().isNotEmpty;
   }
 
-  String get statusLabel => 'PDF Ready';
+  /// AI report with no PDF yet ? awaiting specialist review.
+  bool get isAwaitingReview => isAiReport && !hasPdf;
+
+  String get statusLabel => hasPdf ? 'PDF Ready' : 'Awaiting Review';
 
   String get typeLabel {
     if (isAiReport) {

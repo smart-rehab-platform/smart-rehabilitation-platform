@@ -1,6 +1,7 @@
 import { formatAppDate } from "../../../i18n/formatters.js";
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig.js";
 import { buildAiReportDetailSections } from "./specialistAiReportStructuredSummary.js";
+import { normalizeRegularReportSummary } from "./specialistRegularReportCreation.js";
 
 export const SPECIALIST_REPORT_FILTERS = [
   { id: "all" },
@@ -228,7 +229,7 @@ export function mapRegularReportRow(row, patientNameMap = null) {
     reportType,
     categoryLabel: formatReportType(reportType),
     typeBadgeLabel: formatReportType(reportType),
-    summary: normalizeReportSummary(row.summary),
+    summary: normalizeRegularReportSummary(row.summary),
     date: createdAt,
     dateLabel: formatReportDateLabel(createdAt),
     pdfUrl: pdfUrlRaw ? resolveUploadedAssetUrl(pdfUrlRaw) : null,

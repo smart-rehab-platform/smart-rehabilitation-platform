@@ -8,7 +8,6 @@ import {
 } from "../utils/specialistSessionMappers";
 import { isSameDay } from "../utils/specialistScheduleUtils";
 import {
-  formatCalendarDaySessionMeta,
   formatSessionCalendarDayHeading,
   formatSessionCalendarMonthYear,
   getCalendarDayEmptyMessage,
@@ -16,6 +15,7 @@ import {
   getCalendarPreviousMonthLabel,
   getSessionCalendarWeekdayLabels,
 } from "../utils/specialistSessionsLocalization";
+import { SpecialistSessionCard } from "./SpecialistSessionCard";
 
 export function SpecialistSessionCalendar({
   visibleMonth,
@@ -104,14 +104,11 @@ export function SpecialistSessionCalendarDayList({
       {sessions.length === 0 ? (
         <p className="pd-section-sub">{getCalendarDayEmptyMessage(t)}</p>
       ) : (
-        <ul className="pd-specialist-session-calendar-day-items">
+        <div className="pd-specialist-sessions-list">
           {sessions.map((session) => (
-            <li key={session.id} className="pd-specialist-session-calendar-day-item">
-              <strong dir="auto">{session.patientName}</strong>
-              <span>{formatCalendarDaySessionMeta(session, t, locale)}</span>
-            </li>
+            <SpecialistSessionCard key={session.id} session={session} />
           ))}
-        </ul>
+        </div>
       )}
     </section>
   );

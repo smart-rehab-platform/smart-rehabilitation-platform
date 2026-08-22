@@ -22,6 +22,9 @@
     "notifications": "الإشعارات",
     "profile": "الملف الشخصي"
   },
+  "notifications": {
+    "enableBrowserNotifications": "تمكين إشعارات المتصفح"
+  },
   "profile": {
     "viewProfile": "عرض الملف الشخصي",
     "signOut": "تسجيل الخروج",
@@ -1101,6 +1104,8 @@
       "types": {
         "exercise_reminder": "تذكير بتمرين",
         "session_reminder": "تذكير بجلسة",
+        "session_updated": "تم تحديث الجلسة",
+        "session_cancelled": "تم إلغاء الجلسة",
         "feedback_received": "تم استلام ملاحظات",
         "report_ready": "التقرير جاهز",
         "new_message": "رسالة جديدة",
@@ -1399,6 +1404,8 @@
       "type": {
         "exerciseReminder": "تذكير تمرين",
         "sessionReminder": "تذكير جلسة",
+        "sessionUpdated": "تم تحديث الجلسة",
+        "sessionCancelled": "تم إلغاء الجلسة",
         "feedbackReceived": "تم استلام ملاحظات",
         "reportReady": "التقرير جاهز",
         "newMessage": "رسالة جديدة",
@@ -2469,6 +2476,33 @@
         "createFailed": "تعذّر إنشاء الجلسة. يرجى المحاولة مرة أخرى.",
         "loadRequestsFailed": "فشل تحميل طلبات الجلسات.",
         "signInRequiredCreate": "يرجى تسجيل الدخول للمتابعة."
+      },
+      "editSession": "تعديل الجلسة",
+      "cancelSession": "إلغاء الجلسة",
+      "dialogs": {
+        "editTitle": "تعديل الجلسة",
+        "save": "حفظ التغييرات",
+        "saving": "جاري الحفظ...",
+        "date": "التاريخ",
+        "time": "وقت البدء",
+        "duration": "المدة (دقائق)",
+        "location": "الموقع أو الرابط",
+        "patient": "المريض",
+        "scheduled": "الموعد",
+        "cancelTitle": "إلغاء الجلسة",
+        "cancelConfirm": "هل أنت متأكد أنك تريد إلغاء هذه الجلسة؟ سيتم إخطار المريض/الولي.",
+        "cancellationReasonOptional": "سبب الإلغاء (اختياري)",
+        "cancellationReasonPlaceholder": "اكتب سببًا موجزًا (اختياري)",
+        "cancelSession": "إلغاء الجلسة",
+        "keepSession": "الإبقاء على الجلسة",
+        "processing": "جاري المعالجة...",
+        "validation": {
+          "invalidDateTime": "يرجى إدخال تاريخ ووقت صالحين."
+        },
+        "updateFailed": "فشل في تحديث الجلسة.",
+        "cancelFailed": "فشل في إلغاء الجلسة.",
+        "updateSuccess": "تم تحديث الجلسة بنجاح.",
+        "cancelSuccess": "تم إلغاء الجلسة بنجاح."
       }
     },
     "reports": {
@@ -2508,7 +2542,8 @@
         "reportInformation": "معلومات التقرير"
       },
       "status": {
-        "pdfReady": "PDF جاهز"
+        "pdfReady": "PDF جاهز",
+        "awaitingReview": "بانتظار المراجعة"
       },
       "type": {
         "ai": "ذكاء اصطناعي",
@@ -2547,6 +2582,21 @@
         "copyFailed": "تعذّر نسخ رابط PDF.",
         "generatedSuccess": "تم إنشاء PDF بنجاح"
       },
+      "review": {
+        "banner": "تقرير الذكاء الاصطناعي هذا بانتظار مراجعة الأخصائي. وافق عليه لإنشاء PDF، أو تجاهل المسودة.",
+        "approveAndGeneratePdf": "موافقة وإنشاء PDF",
+        "approving": "جارٍ الموافقة وإنشاء PDF...",
+        "approvedSuccess": "تمت الموافقة على التقرير وإنشاء PDF بنجاح."
+      },
+      "discard": {
+        "action": "تجاهل التقرير",
+        "confirmTitle": "تجاهل تقرير الذكاء الاصطناعي؟",
+        "confirmBody": "سيؤدي هذا إلى حذف مسودة الذكاء الاصطناعي نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+        "confirmAction": "تجاهل التقرير",
+        "discarding": "جارٍ التجاهل...",
+        "success": "تم تجاهل تقرير الذكاء الاصطناعي.",
+        "failed": "فشل تجاهل تقرير الذكاء الاصطناعي."
+      },
       "generate": {
         "action": "إنشاء تقرير بالذكاء الاصطناعي",
         "title": "إنشاء تقرير بالذكاء الاصطناعي",
@@ -2564,6 +2614,7 @@
         "periodFrom": "تاريخ البداية",
         "periodTo": "تاريخ النهاية",
         "success": "تم إنشاء تقرير الذكاء الاصطناعي بنجاح.",
+        "successReview": "تم إنشاء تقرير الذكاء الاصطناعي. يرجى مراجعته قبل إنشاء PDF.",
         "failed": "فشل إنشاء تقرير الذكاء الاصطناعي.",
         "loadPatientsFailed": "فشل تحميل المرضى.",
         "errors": {
@@ -2573,6 +2624,33 @@
           "periodEndRequired": "تاريخ النهاية مطلوب.",
           "periodStartAfterEnd": "لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية",
           "periodNotEnded": "لا يمكن إنشاء تقرير لفترة لم تنتهِ بعد"
+        }
+      },
+      "create": {
+        "action": "إنشاء تقرير",
+        "title": "إنشاء تقرير",
+        "subtitle": "أنشئ تقريراً سريرياً لأحد مرضاك المعيّنين.",
+        "submit": "إنشاء تقرير",
+        "creating": "جارٍ الإنشاء...",
+        "patient": "المريض",
+        "selectPatient": "اختر المريض",
+        "loadingPatients": "جارٍ تحميل المرضى...",
+        "noPatients": "لا يوجد مرضى مُسندون.",
+        "reportType": "نوع التقرير",
+        "weekly": "أسبوعي",
+        "monthly": "شهري",
+        "assessment": "التقييم",
+        "progress": "التقدم",
+        "titleLabel": "العنوان",
+        "summaryLabel": "الملخص",
+        "optionalPlaceholder": "اختياري",
+        "success": "تم إنشاء التقرير بنجاح.",
+        "failed": "فشل إنشاء التقرير.",
+        "loadPatientsFailed": "فشل تحميل المرضى.",
+        "errors": {
+          "patientRequired": "المريض مطلوب.",
+          "reportTypeRequired": "يجب أن يكون نوع التقرير أسبوعيًا أو شهريًا أو تقييمًا أو تقدمًا",
+          "titleMaxLength": "يجب ألا يتجاوز العنوان 200 حرف"
         }
       },
       "errors": {
@@ -2768,6 +2846,8 @@
       "type": {
         "exerciseReminder": "تذكير بتمرين",
         "sessionReminder": "تذكير بجلسة",
+        "sessionUpdated": "تم تحديث الجلسة",
+        "sessionCancelled": "تم إلغاء الجلسة",
         "feedbackReceived": "تم استلام ملاحظات",
         "reportReady": "التقرير جاهز",
         "newMessage": "رسالة جديدة",

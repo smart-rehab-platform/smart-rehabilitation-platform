@@ -7,6 +7,8 @@ import {
 export const NOTIFICATION_TYPE_VALUES = [
   "exercise_reminder",
   "session_reminder",
+  "session_updated",
+  "session_cancelled",
   "feedback_received",
   "report_ready",
   "new_message",
@@ -25,6 +27,8 @@ export const NOTIFICATION_SORT_VALUES = ["newest", "oldest", "unreadFirst"];
 const NOTIFICATION_TYPE_KEY_BY_VALUE = {
   exercise_reminder: "parent.notifications.type.exerciseReminder",
   session_reminder: "parent.notifications.type.sessionReminder",
+  session_updated: "parent.notifications.type.sessionUpdated",
+  session_cancelled: "parent.notifications.type.sessionCancelled",
   feedback_received: "parent.notifications.type.feedbackReceived",
   report_ready: "parent.notifications.type.reportReady",
   new_message: "parent.notifications.type.newMessage",
@@ -40,6 +44,8 @@ const NOTIFICATION_TYPE_KEY_BY_VALUE = {
 const EN_NOTIFICATION_TYPE = {
   exercise_reminder: "Exercise reminder",
   session_reminder: "Session reminder",
+  session_updated: "Session updated",
+  session_cancelled: "Session cancelled",
   feedback_received: "Feedback received",
   report_ready: "Report ready",
   new_message: "New message",

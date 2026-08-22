@@ -1431,11 +1431,16 @@
   cursor: default;
 }
 
-/* Specialist reports */
-.pd-preview .pd-specialist-reports-page,
-.pd-preview .pd-specialist-report-detail-page {
+/* Specialist reports list stays compact; detail page uses task-hub width. */
+.pd-preview .pd-specialist-reports-page {
   max-width: 860px;
   margin: 0 auto;
+}
+
+/* Match Patient Details / other specialist detail pages (parent .pd-task-hub-page = 1080px). */
+.pd-preview .pd-specialist-report-detail-page {
+  width: 100%;
+  max-width: none;
 }
 
 .pd-preview .pd-specialist-reports-panel {
@@ -1458,6 +1463,16 @@
   min-width: 0;
 }
 
+.pd-preview .pd-specialist-reports-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-reports-create-btn,
 .pd-preview .pd-specialist-reports-generate-btn {
   display: inline-flex;
   align-items: center;
@@ -1465,17 +1480,35 @@
   flex-shrink: 0;
 }
 
+.pd-preview .pd-specialist-create-report-dialog form,
 .pd-preview .pd-specialist-generate-ai-report-dialog form {
   display: grid;
   gap: 12px;
 }
 
+.pd-preview .pd-specialist-create-report-subtitle,
 .pd-preview .pd-specialist-generate-ai-report-subtitle {
   margin: -4px 0 4px;
 }
 
+.pd-preview .pd-specialist-create-report-hint,
 .pd-preview .pd-specialist-generate-ai-report-hint {
   margin: -4px 0 0;
+}
+
+.pd-preview .pd-specialist-create-report-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--pd-border-soft);
+  border-radius: 12px;
+  background: var(--pd-surface-muted, #f8fafc);
+}
+
+.pd-preview .pd-specialist-create-report-summary {
+  min-height: 120px;
+  resize: vertical;
 }
 
 .pd-preview .pd-specialist-generate-ai-report-segments {
@@ -1506,8 +1539,13 @@
     align-items: stretch;
   }
 
-  .pd-preview .pd-specialist-reports-generate-btn {
+  .pd-preview .pd-specialist-reports-page-actions {
     width: 100%;
+  }
+
+  .pd-preview .pd-specialist-reports-create-btn,
+  .pd-preview .pd-specialist-reports-generate-btn {
+    flex: 1 1 auto;
     justify-content: center;
   }
 
@@ -1617,11 +1655,30 @@
   gap: 8px;
 }
 
+.pd-preview .pd-specialist-report-card-leading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-report-type-icon {
+  flex-shrink: 0;
+}
+
+.pd-preview .pd-specialist-report-type-icon.is-ai {
+  filter: none;
+}
+
 .pd-preview .pd-specialist-report-card-summary {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
   font-size: 0.8125rem;
   line-height: 1.4;
   color: var(--pd-text-secondary);
@@ -1638,24 +1695,29 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0;
 }
 
 .pd-preview .pd-specialist-report-detail-header {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .pd-preview .pd-specialist-report-detail-head-row {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .pd-preview .pd-specialist-report-detail-title {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .pd-preview .pd-specialist-report-info-grid {
@@ -1668,12 +1730,14 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
 }
 
 .pd-preview .pd-specialist-report-info-grid dt {
   margin: 0;
   font-size: 0.8125rem;
   color: var(--pd-text-muted);
+  flex-shrink: 0;
 }
 
 .pd-preview .pd-specialist-report-info-grid dd {
@@ -1681,11 +1745,22 @@
   font-size: 0.8125rem;
   font-weight: 600;
   text-align: end;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-report-section {
+  min-width: 0;
+  overflow: hidden;
 }
 
 .pd-preview .pd-specialist-report-section-body {
   margin: 0;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
   line-height: 1.45;
   color: var(--pd-text-secondary);
   text-align: start;
@@ -1795,6 +1870,19 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+.pd-preview .pd-specialist-report-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-preview .pd-specialist-report-discard-btn {
+  min-height: 44px;
+  border-radius: 12px;
+  font-weight: 700;
 }
 
 .pd-preview .pd-specialist-treatment-plans-page {
@@ -3523,6 +3611,17 @@
 .pd-preview .pd-specialist-session-card-location a {
   color: var(--pd-primary);
   text-decoration: none;
+}
+
+.pd-preview .pd-specialist-session-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pd-preview .pd-specialist-session-action {
+  min-width: 7.5rem;
 }
 
 .pd-preview .pd-specialist-sessions-calendar-layout {

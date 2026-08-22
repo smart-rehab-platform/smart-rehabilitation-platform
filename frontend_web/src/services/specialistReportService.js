@@ -4,6 +4,7 @@ import {
   buildAiReportGeneratePayload,
   resolveAiReportGeneratePath,
 } from "../features/specialist-dashboard/utils/specialistAiReportGeneration";
+import { buildRegularReportCreatePayload } from "../features/specialist-dashboard/utils/specialistRegularReportCreation";
 import {
   buildPatientNameMap,
   mapAiReportDetail,
@@ -223,6 +224,27 @@ export async function generateAiReport({ reportType, patientId, periodStart, per
   return generateAiWeeklyReport({ patientId, periodStart, periodEnd, language });
 }
 
+/** Creates a regular report via POST /reports. Does not generate PDF or run AI. */
+export async function createRegularReport({ patientId, reportType, title, summary }) {
+  const body = buildRegularReportCreatePayload({
+    patientId,
+    reportType,
+    title,
+    summary,
+  });
+
+  try {
+    const response = await api.post("/reports", body);
+    const row = extractMap(response);
+    if (!row) {
+      throw new Error("Invalid report creation response.");
+    }
+    return mapRegularReportDetail(row) ?? mapRegularReportRow(row);
+  } catch (error) {
+    throwServiceError(error, "Failed to create report.");
+  }
+}
+
 export async function exportReportPdf(reportId, isAiReport) {
   const id = requireId(reportId, "Report id");
   try {
@@ -240,5 +262,17 @@ export async function exportReportPdf(reportId, isAiReport) {
     return loadReportDetail(id, isAiReport);
   } catch (error) {
     throwServiceError(error, "Failed to generate PDF.");
+  }
+}
+
+/** Discard an AI report awaiting specialist review (DELETE /ai/reports/:id). */
+export async function discardAiReport(reportId) {
+  const id = requireId(reportId, "Report id");
+  try {
+    const response = await api.delete(`/ai/reports/${encodeURIComponent(id)}`);
+    const data = extractMap(response);
+    return data?.id || id;
+  } catch (error) {
+    throwServiceError(error, "Failed to discard AI report.");
   }
 }

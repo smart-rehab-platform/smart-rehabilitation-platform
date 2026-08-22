@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "../../../context/useLocale.js";
 import {
+  buildSpecialistMessagesPath,
+  buildSpecialistSupportRequestDetailPath,
+} from "../../../routes/specialistDashboardRoutes";
+import {
   getNotifications,
   markAllNotificationsAsRead,
   markNotificationAsRead,
@@ -15,6 +19,12 @@ import {
   getConversationMessageNotifications,
   mapSpecialistNotificationsToViewModels,
 } from "../utils/specialistNotificationUtils";
+import {
+  createWebDesktopNotificationTracker,
+  openWebDesktopNotificationRoute,
+  resolveWebDesktopNotificationRoute,
+  showWebDesktopNotification,
+} from "../../shared-dashboard/utils/webDesktopNotifications.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
@@ -29,6 +39,8 @@ const EMPTY_NOTIFICATION_STATE = {
   isMarkingAllRead: false,
 };
 
+const DESKTOP_NOTIFICATION_POLL_MS = 30_000;
+
 export function useSpecialistNotifications(userId) {
   const { t, locale } = useLocale();
   const errorMessages = useMemo(() => getSpecialistNotificationsErrorMessages(t), [t]);
@@ -39,10 +51,23 @@ export function useSpecialistNotifications(userId) {
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
+  const desktopNotificationTrackerRef = useRef(createWebDesktopNotificationTracker());
 
   const refetch = useCallback(() => {
     setRefreshToken((value) => value + 1);
   }, []);
+
+  useEffect(() => {
+    if (!userId) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      refetch();
+    }, DESKTOP_NOTIFICATION_POLL_MS);
+
+    return () => window.clearInterval(intervalId);
+  }, [refetch, userId]);
 
   useEffect(() => {
     if (!userId) {
@@ -64,12 +89,30 @@ export function useSpecialistNotifications(userId) {
           return;
         }
 
-        setNotifications(
-          applySpecialistNotificationsLocalization(
-            mapSpecialistNotificationsToViewModels(rows),
-            mapperContext,
-          ),
+        const mappedNotifications = applySpecialistNotificationsLocalization(
+          mapSpecialistNotificationsToViewModels(rows),
+          mapperContext,
         );
+        const newDesktopNotifications = desktopNotificationTrackerRef.current.track(mappedNotifications);
+
+        for (const notification of newDesktopNotifications) {
+          const route = resolveWebDesktopNotificationRoute(notification, "specialist", {
+            specialist: {
+              buildSupportRequestDetailPath: buildSpecialistSupportRequestDetailPath,
+              buildMessagesPath: buildSpecialistMessagesPath,
+            },
+          });
+
+          showWebDesktopNotification(notification, {
+            onClick: () => {
+              if (route) {
+                openWebDesktopNotificationRoute(route);
+              }
+            },
+          });
+        }
+
+        setNotifications(mappedNotifications);
       } catch (error) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;

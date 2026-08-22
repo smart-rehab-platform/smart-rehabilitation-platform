@@ -3539,6 +3539,55 @@ class AppLocalizationsAr extends AppLocalizations {
   String get specialistReportGeneratePdf => 'إنشاء PDF';
 
   @override
+  String get specialistReportStatusPdfReady => 'PDF جاهز';
+
+  @override
+  String get specialistReportStatusAwaitingReview => 'بانتظار المراجعة';
+
+  @override
+  String get specialistReportReviewBanner =>
+      'تقرير الذكاء الاصطناعي هذا بانتظار مراجعة الأخصائي. وافق عليه لإنشاء PDF، أو تجاهل المسودة.';
+
+  @override
+  String get specialistReportApproveAndGeneratePdf => 'موافقة وإنشاء PDF';
+
+  @override
+  String get specialistReportApprovingPdf => 'جارٍ الموافقة وإنشاء PDF...';
+
+  @override
+  String get specialistReportApprovedSuccess =>
+      'تمت الموافقة على التقرير وإنشاء PDF بنجاح.';
+
+  @override
+  String get specialistReportDiscard => 'تجاهل التقرير';
+
+  @override
+  String get specialistReportDiscardConfirmTitle =>
+      'تجاهل تقرير الذكاء الاصطناعي؟';
+
+  @override
+  String get specialistReportDiscardConfirmBody =>
+      'سيؤدي هذا إلى حذف مسودة الذكاء الاصطناعي نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get specialistReportDiscardConfirmAction => 'تجاهل';
+
+  @override
+  String get specialistReportDiscarding => 'جارٍ التجاهل...';
+
+  @override
+  String get specialistReportDiscardSuccess =>
+      'تم تجاهل تقرير الذكاء الاصطناعي.';
+
+  @override
+  String get specialistReportDiscardFailed =>
+      'فشل تجاهل تقرير الذكاء الاصطناعي.';
+
+  @override
+  String get specialistGenerateAiReportSuccessReview =>
+      'تم إنشاء تقرير الذكاء الاصطناعي. يرجى مراجعته قبل إنشاء PDF.';
+
+  @override
   String get specialistGenerateAiReport => 'إنشاء تقرير الذكاء الاصطناعي';
 
   @override

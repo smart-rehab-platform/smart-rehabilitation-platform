@@ -1,5 +1,7 @@
 import { ArrowLeft, Link2 } from "lucide-react";
-import { useCallback } from "react";
+import descriptionIcon from "../../assets/icons/description.svg";
+import neurologyIcon from "../../assets/icons/neurology.svg";
+import { useCallback, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useLocale } from "../../context/useLocale";
@@ -26,6 +28,7 @@ export default function SpecialistReportDetailsPage() {
   const { user, isInitializing } = useAuth();
   const { t } = useLocale();
   const specialistUserId = isInitializing ? null : user?.id ?? null;
+  const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false);
 
   const {
     specialist,
@@ -55,9 +58,11 @@ export default function SpecialistReportDetailsPage() {
     detail,
     isLoading,
     isExporting,
+    isDiscarding,
     error,
     reload,
     generatePdf,
+    discardReport,
   } = useSpecialistReportDetails(reportId, isAiReport);
 
   const handleBack = useCallback(() => {
@@ -87,12 +92,35 @@ export default function SpecialistReportDetailsPage() {
     }
   }, [detail, showToast, t]);
 
-  const handleGeneratePdf = useCallback(async () => {
+  const handleApproveAndGeneratePdf = useCallback(async () => {
     const ok = await generatePdf();
     if (ok) {
-      showToast(t("specialist.reports.pdf.generatedSuccess"));
+      showToast(
+        detail?.isAi
+          ? t("specialist.reports.review.approvedSuccess")
+          : t("specialist.reports.pdf.generatedSuccess"),
+      );
     }
-  }, [generatePdf, showToast, t]);
+  }, [detail?.isAi, generatePdf, showToast, t]);
+
+  const handleOpenDiscardConfirm = useCallback(() => {
+    setDiscardConfirmOpen(true);
+  }, []);
+
+  const handleCancelDiscard = useCallback(() => {
+    setDiscardConfirmOpen(false);
+  }, []);
+
+  const handleConfirmDiscard = useCallback(async () => {
+    const ok = await discardReport();
+    if (!ok) {
+      setDiscardConfirmOpen(false);
+      return;
+    }
+    setDiscardConfirmOpen(false);
+    showToast(t("specialist.reports.discard.success"));
+    handleBack();
+  }, [discardReport, handleBack, showToast, t]);
 
   const renderContent = () => {
     if (isLoading) {
@@ -122,10 +150,20 @@ export default function SpecialistReportDetailsPage() {
       );
     }
 
+    const isAwaitingAiReview = Boolean(detail.isAi && detail.isAwaitingReview);
+
     return (
       <div className="pd-specialist-report-detail-content">
         <section className="pd-card pd-card-pad pd-specialist-report-detail-header">
           <div className="pd-specialist-report-detail-head-row">
+            <img
+              src={detail.isAi ? neurologyIcon : descriptionIcon}
+              alt=""
+              aria-hidden="true"
+              className={`pd-platform-icon pd-specialist-report-type-icon${detail.isAi ? " is-ai" : ""}`}
+              width={22}
+              height={22}
+            />
             <UserProfileAvatar
               imageUrl={null}
               initials={getInitials(detail.patientName, "P")}
@@ -140,8 +178,22 @@ export default function SpecialistReportDetailsPage() {
           <div className="pd-specialist-report-card-meta">
             <StatusBadge label={detail.typeBadgeLabel} tone="blue" />
             {detail.isAi ? <StatusBadge label={detail.aiBadgeLabel || t("specialist.reports.type.ai")} tone="purple" /> : null}
+            {detail.isPdfReady ? (
+              <StatusBadge
+                label={detail.pdfReadyLabel || t("specialist.reports.status.pdfReady")}
+                tone="success"
+              />
+            ) : isAwaitingAiReview ? (
+              <StatusBadge
+                label={detail.awaitingReviewLabel || t("specialist.reports.status.awaitingReview")}
+                tone="warning"
+              />
+            ) : null}
             <span className="pd-section-sub">{detail.dateLabel}</span>
           </div>
+          {isAwaitingAiReview ? (
+            <p className="pd-section-sub">{t("specialist.reports.review.banner")}</p>
+          ) : null}
           {detail.periodStart && detail.periodEnd ? (
             <p className="pd-section-sub">
               {t("specialist.reports.labels.period")}
@@ -172,10 +224,22 @@ export default function SpecialistReportDetailsPage() {
               <dt>{t("specialist.reports.labels.createdDate")}</dt>
               <dd>{detail.dateLabel}</dd>
             </div>
-            {detail.isPdfReady ? (
+            {detail.isPdfReady || isAwaitingAiReview ? (
               <div>
                 <dt>{t("specialist.reports.labels.status")}</dt>
-                <dd><StatusBadge label={detail.pdfReadyLabel || t("specialist.reports.status.pdfReady")} tone="success" /></dd>
+                <dd>
+                  {detail.isPdfReady ? (
+                    <StatusBadge
+                      label={detail.pdfReadyLabel || t("specialist.reports.status.pdfReady")}
+                      tone="success"
+                    />
+                  ) : (
+                    <StatusBadge
+                      label={detail.awaitingReviewLabel || t("specialist.reports.status.awaitingReview")}
+                      tone="warning"
+                    />
+                  )}
+                </dd>
               </div>
             ) : null}
           </dl>
@@ -202,11 +266,32 @@ export default function SpecialistReportDetailsPage() {
               {t("specialist.reports.pdf.copyLink")}
             </button>
           </>
+        ) : isAwaitingAiReview ? (
+          <div className="pd-specialist-report-review-actions">
+            <button
+              type="button"
+              className="pd-btn pd-btn-primary pd-specialist-review-submit"
+              onClick={handleApproveAndGeneratePdf}
+              disabled={isExporting || isDiscarding}
+            >
+              {isExporting
+                ? t("specialist.reports.review.approving")
+                : t("specialist.reports.review.approveAndGeneratePdf")}
+            </button>
+            <button
+              type="button"
+              className="pd-btn pd-btn-danger-outline pd-specialist-report-discard-btn"
+              onClick={handleOpenDiscardConfirm}
+              disabled={isExporting || isDiscarding}
+            >
+              {t("specialist.reports.discard.action")}
+            </button>
+          </div>
         ) : (
           <button
             type="button"
             className="pd-btn pd-btn-primary pd-specialist-review-submit"
-            onClick={handleGeneratePdf}
+            onClick={handleApproveAndGeneratePdf}
             disabled={isExporting}
           >
             {isExporting ? t("specialist.reports.pdf.generating") : t("specialist.reports.pdf.generate")}
@@ -255,6 +340,40 @@ export default function SpecialistReportDetailsPage() {
           </div>
         </div>
       </SpecialistDashboardShell>
+
+      {discardConfirmOpen ? (
+        <div className="pd-specialist-case-dialog-backdrop" role="presentation">
+          <div
+            className="pd-card pd-card-pad pd-specialist-case-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="sp-ai-report-discard-title"
+          >
+            <h2 id="sp-ai-report-discard-title">{t("specialist.reports.discard.confirmTitle")}</h2>
+            <p>{t("specialist.reports.discard.confirmBody")}</p>
+            <div className="pd-specialist-case-dialog-actions">
+              <button
+                type="button"
+                className="pd-btn pd-btn-ghost"
+                onClick={handleCancelDiscard}
+                disabled={isDiscarding}
+              >
+                {t("common.cancel")}
+              </button>
+              <button
+                type="button"
+                className="pd-btn pd-btn-danger-outline"
+                onClick={handleConfirmDiscard}
+                disabled={isDiscarding}
+              >
+                {isDiscarding
+                  ? t("specialist.reports.discard.discarding")
+                  : t("specialist.reports.discard.confirmAction")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {toast ? (
         <div className="pd-toast" role="status" aria-live="polite">

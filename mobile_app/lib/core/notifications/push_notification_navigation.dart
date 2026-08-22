@@ -102,7 +102,10 @@ class PushNotificationNavigation {
       return _reportLocation(normalizedRole);
     }
 
-    if (entityType == 'session' || type == 'session_reminder') {
+    if (entityType == 'session'
+        || type == 'session_reminder'
+        || type == 'session_updated'
+        || type == 'session_cancelled') {
       return _sessionLocation(role: normalizedRole, entityId: entityId);
     }
 

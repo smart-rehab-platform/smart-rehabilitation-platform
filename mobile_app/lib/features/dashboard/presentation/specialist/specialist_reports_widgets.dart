@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_reports_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
@@ -47,6 +48,7 @@ class SpecialistReportHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final dateLabel = reportDateLabel(detail.createdAt);
     final periodStart = detail.periodStart;
     final periodEnd = detail.periodEnd;
@@ -89,6 +91,10 @@ class SpecialistReportHeaderCard extends StatelessWidget {
             children: [
               _MetaChip(label: detail.typeLabel),
               if (detail.isAiReport) const _MetaChip(label: 'AI'),
+              if (detail.hasPdf)
+                _MetaChip(label: l10n.specialistReportStatusPdfReady)
+              else if (detail.isAwaitingReview)
+                _MetaChip(label: l10n.specialistReportStatusAwaitingReview),
               Text(
                 dateLabel,
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -97,6 +103,16 @@ class SpecialistReportHeaderCard extends StatelessWidget {
               ),
             ],
           ),
+          if (detail.isAwaitingReview) ...[
+            SizedBox(height: context.dashSpacing * 0.45),
+            Text(
+              l10n.specialistReportReviewBanner,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: DashboardColors.textSecondary,
+                height: 1.35,
+              ),
+            ),
+          ],
           if (periodStart != null && periodEnd != null) ...[
             SizedBox(height: context.dashSpacing * 0.25),
             Text(
@@ -120,8 +136,14 @@ class SpecialistReportInformationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final dateLabel = reportDateLabel(detail.createdAt);
     final specialistLabel = _nonEmptyLabel(detail.specialistName);
+    final statusLabel = detail.hasPdf
+        ? l10n.specialistReportStatusPdfReady
+        : detail.isAwaitingReview
+            ? l10n.specialistReportStatusAwaitingReview
+            : null;
 
     return DashboardSurfaceCard(
       child: Column(
@@ -139,7 +161,7 @@ class SpecialistReportInformationCard extends StatelessWidget {
           _ReportInfoRow(label: 'Specialist', value: specialistLabel),
           _ReportInfoRow(label: 'Report Type', value: detail.typeLabel),
           _ReportInfoRow(label: 'Created Date', value: dateLabel),
-          if (detail.hasPdf)
+          if (statusLabel != null)
             Padding(
               padding: EdgeInsets.only(top: context.dashSpacing * 0.15),
               child: Row(
@@ -152,7 +174,7 @@ class SpecialistReportInformationCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  _MetaChip(label: detail.statusLabel),
+                  _MetaChip(label: statusLabel),
                 ],
               ),
             ),

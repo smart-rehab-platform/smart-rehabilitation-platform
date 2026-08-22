@@ -22,6 +22,9 @@
     "notifications": "Notifications",
     "profile": "Profile"
   },
+  "notifications": {
+    "enableBrowserNotifications": "Enable browser notifications"
+  },
   "profile": {
     "viewProfile": "View profile",
     "signOut": "Sign out",
@@ -1123,6 +1126,8 @@
       "types": {
         "exercise_reminder": "Exercise reminder",
         "session_reminder": "Session reminder",
+        "session_updated": "Session updated",
+        "session_cancelled": "Session cancelled",
         "feedback_received": "Feedback received",
         "report_ready": "Report ready",
         "new_message": "New message",
@@ -1424,6 +1429,8 @@
       "type": {
         "exerciseReminder": "Exercise reminder",
         "sessionReminder": "Session reminder",
+        "sessionUpdated": "Session updated",
+        "sessionCancelled": "Session cancelled",
         "feedbackReceived": "Feedback received",
         "reportReady": "Report ready",
         "newMessage": "New message",
@@ -2494,6 +2501,33 @@
         "createFailed": "Failed to create session. Please try again.",
         "loadRequestsFailed": "Failed to load session requests.",
         "signInRequiredCreate": "Please sign in to continue."
+      },
+      "editSession": "Edit Session",
+      "cancelSession": "Cancel Session",
+      "dialogs": {
+        "editTitle": "Edit Session",
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "date": "Date",
+        "time": "Start time",
+        "duration": "Duration (minutes)",
+        "location": "Location or link",
+        "patient": "Patient",
+        "scheduled": "Scheduled",
+        "cancelTitle": "Cancel Session",
+        "cancelConfirm": "Are you sure you want to cancel this session? This will notify the patient/parent.",
+        "cancellationReasonOptional": "Reason for cancellation (optional)",
+        "cancellationReasonPlaceholder": "Provide a brief reason (optional)",
+        "cancelSession": "Cancel Session",
+        "keepSession": "Keep Session",
+        "processing": "Processing...",
+        "validation": {
+          "invalidDateTime": "Please provide a valid date and time."
+        },
+        "updateFailed": "Failed to update session.",
+        "cancelFailed": "Failed to cancel session.",
+        "updateSuccess": "Session updated successfully.",
+        "cancelSuccess": "Session cancelled successfully."
       }
     },
     "reports": {
@@ -2533,7 +2567,8 @@
         "reportInformation": "Report Information"
       },
       "status": {
-        "pdfReady": "PDF Ready"
+        "pdfReady": "PDF Ready",
+        "awaitingReview": "Awaiting Review"
       },
       "type": {
         "ai": "AI",
@@ -2572,6 +2607,21 @@
         "copyFailed": "Unable to copy PDF link.",
         "generatedSuccess": "PDF generated successfully"
       },
+      "review": {
+        "banner": "This AI report is awaiting specialist review. Approve it to generate a PDF, or discard the draft.",
+        "approveAndGeneratePdf": "Approve & Generate PDF",
+        "approving": "Approving & generating PDF...",
+        "approvedSuccess": "Report approved and PDF generated successfully."
+      },
+      "discard": {
+        "action": "Discard Report",
+        "confirmTitle": "Discard AI report?",
+        "confirmBody": "This will permanently remove the AI-generated draft. This action cannot be undone.",
+        "confirmAction": "Discard Report",
+        "discarding": "Discarding...",
+        "success": "AI report discarded.",
+        "failed": "Failed to discard AI report."
+      },
       "generate": {
         "action": "Generate AI Report",
         "title": "Generate AI Report",
@@ -2589,6 +2639,7 @@
         "periodFrom": "From date",
         "periodTo": "To date",
         "success": "AI report generated successfully.",
+        "successReview": "AI report generated. Please review it before creating a PDF.",
         "failed": "Failed to generate AI report.",
         "loadPatientsFailed": "Failed to load patients.",
         "errors": {
@@ -2598,6 +2649,33 @@
           "periodEndRequired": "End date is required.",
           "periodStartAfterEnd": "period_start cannot be after period_end",
           "periodNotEnded": "Cannot generate report for a period that has not ended yet"
+        }
+      },
+      "create": {
+        "action": "Create Report",
+        "title": "Create Report",
+        "subtitle": "Create a clinical report for one of your assigned patients.",
+        "submit": "Create Report",
+        "creating": "Creating...",
+        "patient": "Patient",
+        "selectPatient": "Select patient",
+        "loadingPatients": "Loading patients...",
+        "noPatients": "No assigned patients are available.",
+        "reportType": "Report Type",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "assessment": "Assessment",
+        "progress": "Progress",
+        "titleLabel": "Title",
+        "summaryLabel": "Summary",
+        "optionalPlaceholder": "Optional",
+        "success": "Report created successfully.",
+        "failed": "Failed to create report.",
+        "loadPatientsFailed": "Failed to load patients.",
+        "errors": {
+          "patientRequired": "Patient is required.",
+          "reportTypeRequired": "report_type must be weekly, monthly, assessment, or progress",
+          "titleMaxLength": "title must be 200 characters or fewer"
         }
       },
       "errors": {
@@ -2793,6 +2871,8 @@
       "type": {
         "exerciseReminder": "Exercise reminder",
         "sessionReminder": "Session reminder",
+        "sessionUpdated": "Session updated",
+        "sessionCancelled": "Session cancelled",
         "feedbackReceived": "Feedback received",
         "reportReady": "Report ready",
         "newMessage": "New message",

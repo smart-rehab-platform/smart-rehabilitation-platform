@@ -2,6 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../../context/useAuth";
 import { useLocale } from "../../../context/useLocale.js";
 import {
+  buildAdminComplaintDetailsPath,
+  buildAdminSupportRequestDetailsPath,
+} from "../../../routes/adminDashboardRoutes";
+import {
   loadAdminNotifications,
   loadAdminUnreadNotifications,
   markAdminNotificationRead,
@@ -12,10 +16,18 @@ import {
   getAdminNotificationsLabels,
 } from "../utils/adminNotificationsLocalization.js";
 import { mapAdminNotifications } from "../utils/adminNotificationsMappers";
+import {
+  createWebDesktopNotificationTracker,
+  openWebDesktopNotificationRoute,
+  resolveWebDesktopNotificationRoute,
+  showWebDesktopNotification,
+} from "../../shared-dashboard/utils/webDesktopNotifications.js";
 
 function resolveErrorMessage(error, fallback) {
   return error instanceof Error ? error.message : fallback;
 }
+
+const DESKTOP_NOTIFICATION_POLL_MS = 30_000;
 
 export function useAdminNotifications() {
   const { user, isInitializing } = useAuth();
@@ -36,6 +48,7 @@ export function useAdminNotifications() {
   const loadTokenRef = useRef(0);
   const markAllInFlightRef = useRef(false);
   const markingIdsRef = useRef(new Set());
+  const desktopNotificationTrackerRef = useRef(createWebDesktopNotificationTracker());
 
   const unreadCount = useMemo(
     () => unreadNotifications.length,
@@ -50,6 +63,18 @@ export function useAdminNotifications() {
   const refresh = useCallback(() => {
     setRefreshToken((value) => value + 1);
   }, []);
+
+  useEffect(() => {
+    if (!adminUserId) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      refresh();
+    }, DESKTOP_NOTIFICATION_POLL_MS);
+
+    return () => window.clearInterval(intervalId);
+  }, [adminUserId, refresh]);
 
   useEffect(() => {
     if (!adminUserId) {
@@ -75,7 +100,27 @@ export function useAdminNotifications() {
           return;
         }
 
-        setNotifications(mapAdminNotifications(listRows));
+        const mappedNotifications = mapAdminNotifications(listRows);
+        const newDesktopNotifications = desktopNotificationTrackerRef.current.track(mappedNotifications);
+
+        for (const notification of newDesktopNotifications) {
+          const route = resolveWebDesktopNotificationRoute(notification, "admin", {
+            admin: {
+              buildSupportRequestDetailPath: buildAdminSupportRequestDetailsPath,
+              buildComplaintDetailPath: buildAdminComplaintDetailsPath,
+            },
+          });
+
+          showWebDesktopNotification(notification, {
+            onClick: () => {
+              if (route) {
+                openWebDesktopNotificationRoute(route);
+              }
+            },
+          });
+        }
+
+        setNotifications(mappedNotifications);
         setUnreadNotifications(mapAdminNotifications(unreadRows));
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
