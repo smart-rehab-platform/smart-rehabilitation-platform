@@ -8,6 +8,7 @@ import {
   formatAuditActionLabel,
   formatAuditEntityLabel,
 } from "./adminAuditLogsLocalization.js";
+import { resolveProfileImageUrl } from "./adminPatientsMappers.js";
 
 const HTML_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 
@@ -126,6 +127,9 @@ export function mapAdminAuditLog(row) {
   return {
     id,
     userId: readString(row.user_id ?? row.userId),
+    profileImageUrl: resolveProfileImageUrl(
+      row.user_profile_image_url ?? row.userProfileImageUrl,
+    ),
     action,
     userName,
     userEmail: readString(row.user_email ?? row.userEmail ?? row.email),

@@ -1,4 +1,5 @@
 import { formatAppDate } from "../../../i18n/formatters.js";
+import { getAppTimezone } from "../../../utils/appTimezone.js";
 import { SPECIALIST_NAV_ITEM_DEFS } from "../constants/specialistNavigation.js";
 
 function translateKey(t, key, fallback, params) {
@@ -130,6 +131,7 @@ export function formatSpecialistScheduleTime(value, locale = "en") {
   }
 
   return new Intl.DateTimeFormat(normalizeSpecialistLocale(locale), {
+    timeZone: getAppTimezone(),
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
@@ -147,6 +149,7 @@ export function formatSpecialistScheduleWeekdayDate(value, locale = "en", t = nu
   }
 
   return new Intl.DateTimeFormat(normalizeSpecialistLocale(locale), {
+    timeZone: getAppTimezone(),
     weekday: "short",
     month: "short",
     day: "numeric",

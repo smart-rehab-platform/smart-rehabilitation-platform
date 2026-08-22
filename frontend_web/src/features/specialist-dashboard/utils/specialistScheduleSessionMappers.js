@@ -1,3 +1,9 @@
+import {
+  formatInstantForApi,
+  getAppTimezone,
+  zonedDateTimeToUtcDate,
+} from "../../../utils/appTimezone.js";
+
 export const DEFAULT_SESSION_TITLE = "Therapy Session";
 export const DEFAULT_DURATION_MINUTES = "45";
 export const DEFAULT_TIME_VALUE = "09:00";
@@ -34,34 +40,11 @@ export function getMaxScheduleDateValue() {
 }
 
 export function buildScheduledDateTime(dateValue, timeValue) {
-  if (!dateValue || !timeValue) {
-    return null;
-  }
-
-  const [year, month, day] = dateValue.split("-").map(Number);
-  const [hour, minute] = timeValue.split(":").map(Number);
-
-  if (
-    !Number.isFinite(year)
-    || !Number.isFinite(month)
-    || !Number.isFinite(day)
-    || !Number.isFinite(hour)
-    || !Number.isFinite(minute)
-  ) {
-    return null;
-  }
-
-  return new Date(year, month - 1, day, hour, minute, 0, 0);
+  return zonedDateTimeToUtcDate(dateValue, timeValue, getAppTimezone());
 }
 
 export function formatScheduledAtForApi(date) {
-  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  const pad = (value) => String(value).padStart(2, "0");
-  const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${milliseconds}`;
+  return formatInstantForApi(date);
 }
 
 export function validateScheduleSessionForm({

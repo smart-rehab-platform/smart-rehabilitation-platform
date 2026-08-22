@@ -1,4 +1,5 @@
 import { formatAppDate } from "../../../i18n/formatters.js";
+import { getAppTimezone } from "../../../utils/appTimezone.js";
 import {
   formatSpecialistDurationMinutes,
   formatSpecialistScheduleTime,
@@ -231,8 +232,12 @@ export function formatSessionDisplayDate(date, locale = "en", t = null) {
     return translateKey(t, "parent.common.emptyDisplay", "—");
   }
 
-  return formatAppDate(value, locale)
-    ?? translateKey(t, "common.dateUnavailable", "Date unavailable");
+  return new Intl.DateTimeFormat(normalizeSpecialistLocale(locale), {
+    timeZone: getAppTimezone(),
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(value);
 }
 
 export function formatSessionCalendarMonthYear(date, locale = "en") {
@@ -241,6 +246,7 @@ export function formatSessionCalendarMonthYear(date, locale = "en") {
   }
 
   return new Intl.DateTimeFormat(normalizeSpecialistLocale(locale), {
+    timeZone: getAppTimezone(),
     month: "long",
     year: "numeric",
   }).format(date);
@@ -257,6 +263,7 @@ export function formatSessionCalendarDayHeading(date, locale = "en", t = null) {
   }
 
   return new Intl.DateTimeFormat(normalizeSpecialistLocale(locale), {
+    timeZone: getAppTimezone(),
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -274,6 +281,7 @@ export function formatSessionPreferredDateLabel(date, locale = "en", t = null) {
   }
 
   return new Intl.DateTimeFormat(normalizeSpecialistLocale(locale), {
+    timeZone: getAppTimezone(),
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -314,8 +322,7 @@ export function formatApprovedSessionScheduledLabel(scheduledAt, locale = "en", 
     return translateKey(t, "parent.common.emptyDisplay", "—");
   }
 
-  const datePart = formatAppDate(date, locale)
-    ?? translateKey(t, "common.dateUnavailable", "Date unavailable");
+  const datePart = formatSessionDisplayDate(date, locale, t);
   const timePart = formatSpecialistScheduleTime(date, locale)
     ?? translateKey(t, "parent.common.emptyDisplay", "—");
 

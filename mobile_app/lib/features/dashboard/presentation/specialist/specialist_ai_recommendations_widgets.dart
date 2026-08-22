@@ -10,9 +10,14 @@ import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
 
 class AiRecommendationsHeaderCard extends StatelessWidget {
-  const AiRecommendationsHeaderCard({super.key, required this.patientName});
+  const AiRecommendationsHeaderCard({
+    super.key,
+    required this.patientName,
+    this.profileImageUrl,
+  });
 
   final String patientName;
+  final String? profileImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +28,7 @@ class AiRecommendationsHeaderCard extends StatelessWidget {
         children: [
           DashboardProfileAvatar(
             initials: dashboardInitials(patientName, fallback: 'P'),
+            imageUrl: profileImageUrl,
             radius: context.dashSpacing * 0.85,
           ),
           SizedBox(height: context.dashSpacing * 0.65),

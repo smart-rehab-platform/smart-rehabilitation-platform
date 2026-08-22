@@ -52,6 +52,7 @@ class SpecialistPendingReview {
     this.submittedAt,
     this.priority = 'Medium',
     this.status = 'pending',
+    this.profileImageUrl,
   });
 
   final String id;
@@ -61,6 +62,7 @@ class SpecialistPendingReview {
   final DateTime? submittedAt;
   final String priority;
   final String status;
+  final String? profileImageUrl;
 
   factory SpecialistPendingReview.fromMap(Map<String, dynamic> map) {
     return SpecialistPendingReview(
@@ -86,6 +88,30 @@ class SpecialistPendingReview {
       ),
       priority: _derivePriority(map),
       status: ApiResponseParser.readString(map, const ['status']) ?? 'pending',
+      profileImageUrl: ApiResponseParser.readString(map, const [
+        'profile_image_url',
+        'profileImageUrl',
+        'patient_profile_image_url',
+        'patientProfileImageUrl',
+        'profile_image',
+        'profileImage',
+        'image_url',
+        'avatarUrl',
+        'avatar',
+      ]),
+    );
+  }
+
+  SpecialistPendingReview copyWith({String? profileImageUrl}) {
+    return SpecialistPendingReview(
+      id: id,
+      patientId: patientId,
+      patientName: patientName,
+      exerciseTitle: exerciseTitle,
+      submittedAt: submittedAt,
+      priority: priority,
+      status: status,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
     );
   }
 

@@ -110,6 +110,10 @@ class PushNotificationNavigation {
       return _feedbackLocation(normalizedRole);
     }
 
+    if (entityType == 'assigned_exercise' || type == 'exercise_reminder') {
+      return _exerciseReminderLocation(normalizedRole);
+    }
+
     return null;
   }
 
@@ -309,5 +313,14 @@ class PushNotificationNavigation {
       return AppRoutes.parentFeedback;
     }
     return null;
+  }
+
+  static String? _exerciseReminderLocation(String role) {
+    switch (role) {
+      case 'parent':
+        return AppRoutes.parentDailyTasks;
+      default:
+        return null;
+    }
   }
 }

@@ -13,11 +13,13 @@ class SpeechAnalysisHeaderCard extends StatelessWidget {
   const SpeechAnalysisHeaderCard({
     super.key,
     required this.patientName,
+    this.profileImageUrl,
     this.submissionId,
     this.analyzedAt,
   });
 
   final String patientName;
+  final String? profileImageUrl;
   final String? submissionId;
   final DateTime? analyzedAt;
 
@@ -31,6 +33,7 @@ class SpeechAnalysisHeaderCard extends StatelessWidget {
         children: [
           DashboardProfileAvatar(
             initials: dashboardInitials(patientName, fallback: 'P'),
+            imageUrl: profileImageUrl,
             radius: context.dashSpacing * 0.85,
           ),
           SizedBox(height: context.dashSpacing * 0.65),

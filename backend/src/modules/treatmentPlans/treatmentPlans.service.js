@@ -178,6 +178,7 @@ const getTreatmentPlanById = async (id) => {
     `SELECT
         tp.*,
         p.full_name AS patient_name,
+        p.profile_image_url AS patient_profile_image_url,
         u.full_name AS specialist_name
      FROM treatment_plans tp
      JOIN patients p ON tp.patient_id = p.id

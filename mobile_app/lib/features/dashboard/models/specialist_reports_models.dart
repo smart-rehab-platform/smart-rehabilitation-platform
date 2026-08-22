@@ -109,6 +109,7 @@ class SpecialistReportListItem {
     required this.title,
     required this.isAiReport,
     this.patientName,
+    this.patientProfileImageUrl,
     this.reportType,
     this.createdAt,
     this.summary,
@@ -122,6 +123,7 @@ class SpecialistReportListItem {
   final String title;
   final bool isAiReport;
   final String? patientName;
+  final String? patientProfileImageUrl;
   final String? reportType;
   final DateTime? createdAt;
   final String? summary;
@@ -209,6 +211,12 @@ class SpecialistReportListItem {
         'patient_name',
         'patientName',
       ]),
+      patientProfileImageUrl: ApiResponseParser.readString(map, const [
+        'patient_profile_image_url',
+        'patientProfileImageUrl',
+        'profile_image_url',
+        'profileImageUrl',
+      ]),
       reportType: reportType,
       createdAt: ApiResponseParser.readDate(
         map['created_at'] ?? map['createdAt'],
@@ -246,6 +254,12 @@ class SpecialistReportListItem {
       patientName: ApiResponseParser.readString(map, const [
         'patient_name',
         'patientName',
+      ]),
+      patientProfileImageUrl: ApiResponseParser.readString(map, const [
+        'patient_profile_image_url',
+        'patientProfileImageUrl',
+        'profile_image_url',
+        'profileImageUrl',
       ]),
       reportType: reportType,
       createdAt: ApiResponseParser.readDate(
@@ -310,8 +324,8 @@ String? _cleanEmbeddedPatientTitle(String? rawTitle) {
     return null;
   }
 
-  // Strip patterns like "Weekly  Omar" / "Monthly - Patient".
-  final parts = trimmed.split(RegExp(r'\s+[-]\s+'));
+  // Strip patterns like "Weekly - Omar" / "Monthly - Patient".
+  final parts = trimmed.split(RegExp(r'\s+-\s+'));
   if (parts.length >= 2) {
     final left = parts.first.trim();
     if (left.isNotEmpty) {

@@ -5,6 +5,7 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import 'manage_goals_widgets.dart';
 import 'specialist_scoped_localization_utils.dart';
@@ -131,15 +132,11 @@ class SpecialistSessionCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
+                DashboardProfileAvatar(
+                  initials: dashboardAvatarLetter(session.patientName),
+                  imageUrl: session.patientProfileImageUrl,
                   backgroundColor: DashboardColors.blueSoft,
-                  child: Text(
-                    dashboardAvatarLetter(session.patientName),
-                    style: TextStyle(
-                      color: const Color(0xFF3B82F6),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  foregroundColor: const Color(0xFF3B82F6),
                 ),
                 SizedBox(width: context.dashSpacing * 0.65),
                 Expanded(

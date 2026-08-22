@@ -14,6 +14,7 @@ import '../../providers/parent_profile_provider.dart';
 import '../../utils/parent_notification_navigation.dart';
 import '../../widgets/dashboard_bottom_nav.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_profile_field.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/shared_profile_card.dart';
@@ -101,15 +102,9 @@ class _ParentChildrenScreenState extends ConsumerState<ParentChildrenScreen> {
                 ),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: DashboardColors.brandSoft,
-                      child: Text(
-                        dashboardAvatarLetter(child.name),
-                        style: const TextStyle(
-                          color: DashboardColors.brandCyan,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                    DashboardProfileAvatar(
+                      initials: dashboardAvatarLetter(child.name),
+                      imageUrl: child.profileImageUrl,
                     ),
                     SizedBox(width: context.dashSpacing * 0.65),
                     Expanded(

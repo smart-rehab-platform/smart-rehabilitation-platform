@@ -12,6 +12,7 @@ import '../../widgets/admin_navigation.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../../presence/widgets/online_status_dot.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/admin_ui_components.dart';
 import 'admin_scoped_localization_utils.dart';
 
@@ -338,20 +339,16 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                         Stack(
                                           clipBehavior: Clip.none,
                                           children: [
-                                            CircleAvatar(
+                                            DashboardProfileAvatar(
+                                              initials: dashboardAvatarLetter(
+                                                user.name,
+                                              ),
+                                              imageUrl: user.profileImageUrl,
                                               backgroundColor: adminRoleColor(
                                                 user.role,
                                               ).withValues(alpha: 0.15),
-                                              child: Text(
-                                                dashboardAvatarLetter(
-                                                  user.name,
-                                                ),
-                                                style: TextStyle(
-                                                  color: adminRoleColor(
-                                                    user.role,
-                                                  ),
-                                                  fontWeight: FontWeight.w700,
-                                                ),
+                                              foregroundColor: adminRoleColor(
+                                                user.role,
                                               ),
                                             ),
                                             PositionedDirectional(

@@ -18,6 +18,8 @@ class DashboardProfileAvatar extends StatefulWidget {
     this.isLoading = false,
     this.imageCacheBustMs,
     this.onTap,
+    this.backgroundColor,
+    this.foregroundColor,
   });
 
   final String initials;
@@ -27,6 +29,8 @@ class DashboardProfileAvatar extends StatefulWidget {
   final bool isLoading;
   final int? imageCacheBustMs;
   final VoidCallback? onTap;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   State<DashboardProfileAvatar> createState() => _DashboardProfileAvatarState();
@@ -63,11 +67,17 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
         resolvedUrl.isNotEmpty;
   }
 
+  Color get _backgroundColor =>
+      widget.backgroundColor ?? DashboardColors.brandSoft;
+
+  Color get _foregroundColor =>
+      widget.foregroundColor ?? DashboardColors.brandCyan;
+
   Widget _initialsContent(ThemeData theme) {
     if (widget.initials.trim().isEmpty) {
       return Icon(
         Icons.person_outline_rounded,
-        color: DashboardColors.brandCyan,
+        color: _foregroundColor,
         size: widget.radius * 0.9,
       );
     }
@@ -75,7 +85,7 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
     return Text(
       widget.initials,
       style: theme.textTheme.labelLarge?.copyWith(
-        color: DashboardColors.brandCyan,
+        color: _foregroundColor,
         fontWeight: FontWeight.w700,
         fontSize: widget.radius * 0.72,
       ),
@@ -85,14 +95,14 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
   Widget _initialsAvatar(ThemeData theme, {bool showLoading = false}) {
     return CircleAvatar(
       radius: widget.radius,
-      backgroundColor: DashboardColors.brandSoft,
+      backgroundColor: _backgroundColor,
       child: showLoading || widget.isLoading
           ? SizedBox(
               width: widget.radius,
               height: widget.radius,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: DashboardColors.brandCyan,
+                color: _foregroundColor,
               ),
             )
           : _initialsContent(theme),
@@ -102,7 +112,7 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
   Widget _previewAvatar() {
     return CircleAvatar(
       radius: widget.radius,
-      backgroundColor: DashboardColors.brandSoft,
+      backgroundColor: _backgroundColor,
       backgroundImage: MemoryImage(widget.previewBytes!),
     );
   }
@@ -124,14 +134,14 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
             width: widget.radius * 2,
             height: widget.radius * 2,
             child: ColoredBox(
-              color: DashboardColors.brandSoft,
+              color: _backgroundColor,
               child: Center(
                 child: SizedBox(
                   width: widget.radius,
                   height: widget.radius,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: DashboardColors.brandCyan,
+                    color: _foregroundColor,
                     value: loadingProgress.expectedTotalBytes != null
                         ? loadingProgress.cumulativeBytesLoaded /
                               loadingProgress.expectedTotalBytes!
@@ -153,7 +163,7 @@ class _DashboardProfileAvatarState extends State<DashboardProfileAvatar> {
             width: widget.radius * 2,
             height: widget.radius * 2,
             child: ColoredBox(
-              color: DashboardColors.brandSoft,
+              color: _backgroundColor,
               child: Center(child: _initialsContent(theme)),
             ),
           );

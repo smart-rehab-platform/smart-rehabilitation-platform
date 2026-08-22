@@ -55,6 +55,7 @@ const getAllReports = async (actor) => {
     const result = await pool.query(
       `SELECT r.*,
               p.full_name AS patient_name,
+              p.profile_image_url AS patient_profile_image_url,
               u.full_name AS generated_by_name
        FROM reports r
        JOIN patients p ON r.patient_id = p.id
@@ -69,6 +70,7 @@ const getAllReports = async (actor) => {
     const result = await pool.query(
       `SELECT r.*,
               p.full_name AS patient_name,
+              p.profile_image_url AS patient_profile_image_url,
               u.full_name AS generated_by_name
        FROM reports r
        JOIN patients p ON r.patient_id = p.id
@@ -90,6 +92,7 @@ const getReportById = async (id) => {
   const result = await pool.query(
     `SELECT r.*,
             p.full_name AS patient_name,
+            p.profile_image_url AS patient_profile_image_url,
             u.full_name AS generated_by_name
      FROM reports r
      JOIN patients p ON r.patient_id = p.id

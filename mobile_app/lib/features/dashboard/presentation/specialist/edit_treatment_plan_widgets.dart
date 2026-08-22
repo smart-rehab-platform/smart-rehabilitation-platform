@@ -5,13 +5,19 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/specialist_edit_treatment_plan_models.dart';
 import '../../widgets/dashboard_layout.dart';
+import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import 'specialist_treatment_plans_goals_localization_utils.dart';
 
 class EditTreatmentPlanPatientHeader extends StatelessWidget {
-  const EditTreatmentPlanPatientHeader({super.key, required this.patientName});
+  const EditTreatmentPlanPatientHeader({
+    super.key,
+    required this.patientName,
+    this.profileImageUrl,
+  });
 
   final String patientName;
+  final String? profileImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +26,12 @@ class EditTreatmentPlanPatientHeader extends StatelessWidget {
     return DashboardSurfaceCard(
       child: Column(
         children: [
-          CircleAvatar(
+          DashboardProfileAvatar(
+            initials: dashboardAvatarLetter(patientName),
+            imageUrl: profileImageUrl,
             radius: context.dashSpacing * 0.9,
             backgroundColor: DashboardColors.blueSoft,
-            child: Text(
-              dashboardAvatarLetter(patientName),
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: const Color(0xFF3B82F6),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            foregroundColor: const Color(0xFF3B82F6),
           ),
           SizedBox(height: context.dashSpacing * 0.65),
           Text(

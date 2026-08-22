@@ -7,7 +7,6 @@ import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistMessagesPath,
 } from "../../routes/specialistDashboardRoutes";
-import familyRestroomIcon from "../../assets/icons/family_restroom.svg";
 import { getConversation } from "../../services/specialistCommunicationService";
 import { UserProfileAvatar } from "../shared-dashboard/components/UserProfileAvatar";
 import { SpecialistMessageAttachmentDisplay } from "./components/messages/SpecialistMessageAttachmentDisplay";
@@ -352,16 +351,14 @@ export default function SpecialistMessagesPage() {
             }`}
             onClick={() => navigateToConversation(conversation.id)}
           >
-            <span
-              className="pd-avatar pd-specialist-conversation-avatar pd-specialist-conversation-avatar-icon"
-              aria-hidden="true"
-            >
-              <img
-                src={familyRestroomIcon}
-                alt=""
-                className="pd-specialist-conversation-avatar-image"
-              />
-            </span>
+            <UserProfileAvatar
+              imageUrl={conversation.parentProfileImageUrl}
+              initials={getInitials(conversation.parentName, "P")}
+              alt=""
+              shellClassName="pd-avatar pd-specialist-conversation-avatar"
+              fallbackClassName="pd-avatar pd-specialist-conversation-avatar"
+              className="pd-avatar-photo"
+            />
             <span className="pd-specialist-conversation-copy">
               <strong dir="auto">{conversation.title}</strong>
               {conversation.subtitle ? <span dir="auto">{conversation.subtitle}</span> : null}
@@ -417,34 +414,43 @@ export default function SpecialistMessagesPage() {
           key={item.key}
           className={`pd-message-block${isOwn ? " is-own" : " is-other"}`}
         >
-          <article
-            className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}
-          >
-            {!isOwn && message.senderName ? (
-              <span className="pd-message-sender" dir="auto">
-                {message.senderName}
-              </span>
+          <div className="pd-message-content-row">
+            {!isOwn ? (
+              <UserProfileAvatar
+                imageUrl={activeConversation?.parentProfileImageUrl}
+                initials={getInitials(activeConversation?.parentName, "P")}
+                alt=""
+                shellClassName="pd-avatar pd-message-avatar"
+                fallbackClassName="pd-avatar pd-message-avatar"
+                className="pd-avatar-photo"
+              />
             ) : null}
-            {message.content ? (
-              <p dir="auto">
-                {localizeSpecialistMessageContent(message.content, t)}
-              </p>
-            ) : null}
-            {message.hasAttachments ? (
-              <div className="pd-message-attachments">
-                {message.attachments.map((attachment) => (
-                  <SpecialistMessageAttachmentDisplay
-                    key={attachment.id || attachment.fileUrl}
-                    attachment={attachment}
-                  />
-                ))}
-              </div>
-            ) : null}
-            {message.sentAt ? (
-              <time className="pd-message-time">{message.timeLabel}</time>
-            ) : null}
-          </article>
-          {showSeen ? <span className="pd-message-seen">Seen</span> : null}
+            <div className="pd-message-content-column">
+              <article
+                className={`pd-message-bubble${isOwn ? " is-own" : " is-other"}`}
+              >
+                {message.content ? (
+                  <p dir="auto">
+                    {localizeSpecialistMessageContent(message.content, t)}
+                  </p>
+                ) : null}
+                {message.hasAttachments ? (
+                  <div className="pd-message-attachments">
+                    {message.attachments.map((attachment) => (
+                      <SpecialistMessageAttachmentDisplay
+                        key={attachment.id || attachment.fileUrl}
+                        attachment={attachment}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+                {message.sentAt ? (
+                  <time className="pd-message-time">{message.timeLabel}</time>
+                ) : null}
+              </article>
+              {showSeen ? <span className="pd-message-seen">Seen</span> : null}
+            </div>
+          </div>
         </div>
       );
     });
@@ -529,20 +535,17 @@ export default function SpecialistMessagesPage() {
               <section className="pd-messages-chat pd-card pd-card-pad">
                 <div className="pd-messages-chat-header pd-specialist-chat-header">
                   {activeConversation ? (
-                    <div className="pd-specialist-chat-header-main">
+                    <div className="pd-chat-header-main">
                       <UserProfileAvatar
-                        imageUrl={null}
+                        imageUrl={activeConversation.parentProfileImageUrl}
                         initials={getInitials(activeConversation.parentName, "P")}
                         alt=""
-                        shellClassName="pd-avatar pd-specialist-chat-header-avatar"
-                        fallbackClassName="pd-avatar pd-specialist-chat-header-avatar"
+                        shellClassName="pd-avatar pd-chat-header-avatar"
+                        fallbackClassName="pd-avatar pd-chat-header-avatar"
                         className="pd-avatar-photo"
                       />
-                      <div>
+                      <div className="pd-chat-header-identity">
                         <h2 className="pd-section-title" dir="auto">{activeConversation.title}</h2>
-                        {activeConversation.subtitle ? (
-                          <p className="pd-section-sub" dir="auto">{activeConversation.subtitle}</p>
-                        ) : null}
                         <SpecialistPresenceStatus
                           presence={parentPresence.presence}
                           isOnline={parentPresence.isOnline}
@@ -550,6 +553,11 @@ export default function SpecialistMessagesPage() {
                           isLoading={parentPresence.isLoading}
                         />
                       </div>
+                      {activeConversation.subtitle ? (
+                        <span className="pd-chat-patient-chip" dir="auto">
+                          {activeConversation.subtitle}
+                        </span>
+                      ) : null}
                     </div>
                   ) : (
                     <h2 className="pd-section-title">{pageLabels.conversationDefault}</h2>

@@ -119,6 +119,7 @@ class _SpecialistSpeechAnalysisScreenState
           children: [
             SpeechAnalysisHeaderCard(
               patientName: patientName,
+              profileImageUrl: state.patientProfileImageUrl,
               submissionId: state.submissionId ?? widget.submissionId,
               analyzedAt:
                   selected?.analyzedAt ?? state.latestAnalysis?.analyzedAt,

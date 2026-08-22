@@ -11,6 +11,7 @@ class AdminUserRecord {
     required this.isActive,
     this.phone,
     this.createdAt,
+    this.profileImageUrl,
   });
 
   final String id;
@@ -20,6 +21,7 @@ class AdminUserRecord {
   final bool isActive;
   final String? phone;
   final DateTime? createdAt;
+  final String? profileImageUrl;
 
   factory AdminUserRecord.fromMap(Map<String, dynamic> map) {
     return AdminUserRecord(
@@ -35,6 +37,14 @@ class AdminUserRecord {
       isActive: map['is_active'] == true || map['isActive'] == true,
       phone: ApiResponseParser.readString(map, const ['phone']),
       createdAt: ApiResponseParser.readDate(map['created_at'] ?? map['createdAt']),
+      profileImageUrl: ApiResponseParser.readString(map, const [
+        'profile_image_url',
+        'profileImageUrl',
+        'profile_image',
+        'profileImage',
+        'avatarUrl',
+        'avatar',
+      ]),
     );
   }
 }

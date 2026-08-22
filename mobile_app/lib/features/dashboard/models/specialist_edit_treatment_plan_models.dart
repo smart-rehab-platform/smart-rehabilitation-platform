@@ -7,10 +7,12 @@ class EditTreatmentPlanBundle {
     required this.patientName,
     required this.plan,
     required this.goals,
+    this.patientProfileImageUrl,
   });
 
   final String patientId;
   final String patientName;
+  final String? patientProfileImageUrl;
   final EditableTreatmentPlan plan;
   final List<PatientGoalItem> goals;
 }

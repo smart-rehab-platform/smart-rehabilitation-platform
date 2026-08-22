@@ -12,6 +12,7 @@ import '../../providers/communication_thread_provider.dart';
 import '../../providers/conversation_notification_read.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_components.dart';
+import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import 'communication_attachment_picker.dart';
 import 'communication_attachment_widgets.dart';
@@ -257,8 +258,10 @@ class _CommunicationChatScreenState
 
     final headerParticipant =
         conversation?.otherParticipantName(role) ?? l10n.navMessages;
-    final headerSubtitle = conversation?.conversationSubtitle();
     final otherParticipantId = conversation?.otherParticipantId(role) ?? '';
+    final otherParticipantImageUrl = conversation
+        ?.otherParticipantProfileImageUrl(role);
+    final patientContext = conversation?.patientContextLabel();
 
     return Theme(
       data: DashboardTheme.light,
@@ -271,28 +274,61 @@ class _CommunicationChatScreenState
             icon: const Icon(Icons.arrow_back_rounded),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          titleSpacing: 0,
+          title: Row(
             children: [
-              Text(
-                headerParticipant,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              DashboardProfileAvatar(
+                initials: dashboardInitials(headerParticipant),
+                imageUrl: otherParticipantImageUrl,
+                radius: 18,
               ),
-              if (otherParticipantId.isNotEmpty)
-                ChatPresenceSubtitle(userId: otherParticipantId),
-              if (headerSubtitle != null)
-                Text(
-                  headerSubtitle,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: DashboardColors.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+              SizedBox(width: context.dashSpacing * 0.45),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      headerParticipant,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: DashboardColors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (otherParticipantId.isNotEmpty)
+                      ChatPresenceSubtitle(userId: otherParticipantId),
+                  ],
                 ),
+              ),
+              if (patientContext != null) ...[
+                SizedBox(width: context.dashSpacing * 0.4),
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: DashboardColors.brandSoft,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: DashboardColors.brandCyan.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.adminSessionsPatientLabel(patientContext),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: DashboardColors.brandNavy,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -300,7 +336,17 @@ class _CommunicationChatScreenState
           child: CommunicationAudioPlaybackScope(
             child: Column(
               children: [
-                Expanded(child: _buildBody(context, state, userId, theme, l10n)),
+                Expanded(
+                  child: _buildBody(
+                    context,
+                    state,
+                    userId,
+                    theme,
+                    l10n,
+                    otherParticipantImageUrl,
+                    headerParticipant,
+                  ),
+                ),
                 _buildComposer(context, state, l10n),
               ],
             ),
@@ -324,6 +370,8 @@ class _CommunicationChatScreenState
     String? userId,
     ThemeData theme,
     AppLocalizations l10n,
+    String? otherParticipantImageUrl,
+    String otherParticipantName,
   ) {
     if (state.isLoading && !state.hasLoaded) {
       return Center(
@@ -372,6 +420,8 @@ class _CommunicationChatScreenState
           index,
           userId,
           latestReadOutgoingId,
+          otherParticipantImageUrl,
+          otherParticipantName,
         );
       },
     );
@@ -431,6 +481,8 @@ class _CommunicationChatScreenState
     int listIndex,
     String? userId,
     String? latestReadOutgoingId,
+    String? otherParticipantImageUrl,
+    String otherParticipantName,
   ) {
     final messageIndex = _messageIndexForListIndex(messages, listIndex);
     if (messageIndex == -1) {
@@ -443,7 +495,8 @@ class _CommunicationChatScreenState
     return CommunicationMessageBubble(
       message: message,
       isMine: isMine,
-      showSenderName: !isMine,
+      incomingImageUrl: isMine ? null : otherParticipantImageUrl,
+      incomingInitials: dashboardInitials(otherParticipantName),
       showSeen: isMine && message.id == latestReadOutgoingId,
     );
   }
@@ -607,13 +660,15 @@ class CommunicationMessageBubble extends StatelessWidget {
     super.key,
     required this.message,
     required this.isMine,
-    this.showSenderName = false,
+    this.incomingImageUrl,
+    this.incomingInitials = 'P',
     this.showSeen = false,
   });
 
   final CommunicationMessage message;
   final bool isMine;
-  final bool showSenderName;
+  final String? incomingImageUrl;
+  final String incomingInitials;
   final bool showSeen;
 
   @override
@@ -628,6 +683,77 @@ class CommunicationMessageBubble extends StatelessWidget {
         ? null
         : Border.all(color: DashboardColors.border.withValues(alpha: 0.8));
 
+    final bubble = ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.sizeOf(context).width * (isMine ? 0.78 : 0.72),
+      ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: isMine ? DashboardColors.brandPrimaryGradient : null,
+          color: isMine ? null : DashboardColors.surface,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16),
+            topRight: const Radius.circular(16),
+            bottomLeft: Radius.circular(isMine ? 16 : 4),
+            bottomRight: Radius.circular(isMine ? 4 : 16),
+          ),
+          border: border,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.dashSpacing * 0.65,
+            vertical: context.dashSpacing * 0.45,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (message.content.trim().isNotEmpty)
+                Text(
+                  message.content,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: textColor,
+                    height: 1.35,
+                  ),
+                ),
+              if (message.attachments.isNotEmpty) ...[
+                if (message.content.trim().isNotEmpty)
+                  SizedBox(height: context.dashSpacing * 0.35),
+                ...message.attachments.map(
+                  (attachment) => Padding(
+                    padding: EdgeInsets.only(
+                      bottom: context.dashSpacing * 0.25,
+                    ),
+                    child: CommunicationAttachmentContent(
+                      attachment: attachment,
+                      isMine: isMine,
+                    ),
+                  ),
+                ),
+              ],
+              if (timeLabel != null) ...[
+                SizedBox(height: context.dashSpacing * 0.2),
+                Text(
+                  timeLabel,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: isMine
+                        ? Colors.white.withValues(alpha: 0.85)
+                        : DashboardColors.textMuted,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+
     return Padding(
       padding: EdgeInsetsDirectional.only(
         top: context.dashSpacing * 0.25,
@@ -639,111 +765,54 @@ class CommunicationMessageBubble extends StatelessWidget {
         alignment: isMine
             ? AlignmentDirectional.centerEnd
             : AlignmentDirectional.centerStart,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.sizeOf(context).width * 0.78,
-          ),
-          child: Column(
-            crossAxisAlignment: isMine
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: isMine ? DashboardColors.brandPrimaryGradient : null,
-                  color: isMine ? null : DashboardColors.surface,
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(16),
-                    topRight: const Radius.circular(16),
-                    bottomLeft: Radius.circular(isMine ? 16 : 4),
-                    bottomRight: Radius.circular(isMine ? 4 : 16),
+        child: isMine
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  bubble,
+                  if (showSeen) _SeenLabel(theme: theme),
+                ],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  DashboardProfileAvatar(
+                    initials: incomingInitials,
+                    imageUrl: incomingImageUrl,
+                    radius: 16,
                   ),
-                  border: border,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        bubble,
+                        if (showSeen) _SeenLabel(theme: theme),
+                      ],
                     ),
-                  ],
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.dashSpacing * 0.65,
-                    vertical: context.dashSpacing * 0.45,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (showSenderName &&
-                          message.senderName != null &&
-                          message.senderName!.trim().isNotEmpty)
-                        Padding(
-                          padding: EdgeInsets.only(
-                            bottom: context.dashSpacing * 0.15,
-                          ),
-                          child: Text(
-                            message.senderName!.trim(),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: isMine
-                                  ? Colors.white.withValues(alpha: 0.9)
-                                  : DashboardColors.textSecondary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      if (message.content.trim().isNotEmpty)
-                        Text(
-                          message.content,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: textColor,
-                            height: 1.35,
-                          ),
-                        ),
-                      if (message.attachments.isNotEmpty) ...[
-                        if (message.content.trim().isNotEmpty)
-                          SizedBox(height: context.dashSpacing * 0.35),
-                        ...message.attachments.map(
-                          (attachment) => Padding(
-                            padding: EdgeInsets.only(
-                              bottom: context.dashSpacing * 0.25,
-                            ),
-                            child: CommunicationAttachmentContent(
-                              attachment: attachment,
-                              isMine: isMine,
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (timeLabel != null) ...[
-                        SizedBox(height: context.dashSpacing * 0.2),
-                        Text(
-                          timeLabel,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: isMine
-                                ? Colors.white.withValues(alpha: 0.85)
-                                : DashboardColors.textMuted,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
+                ],
               ),
-              if (showSeen)
-                Padding(
-                  padding: EdgeInsets.only(top: context.dashSpacing * 0.15),
-                  child: Text(
-                    AppLocalizations.of(context)!.communicationSeen,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: DashboardColors.textMuted,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+      ),
+    );
+  }
+}
+
+class _SeenLabel extends StatelessWidget {
+  const _SeenLabel({required this.theme});
+
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: context.dashSpacing * 0.15),
+      child: Text(
+        AppLocalizations.of(context)!.communicationSeen,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: DashboardColors.textMuted,
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );

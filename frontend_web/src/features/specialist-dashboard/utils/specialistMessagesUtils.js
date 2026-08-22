@@ -65,7 +65,15 @@ export function mapSpecialistConversation(row) {
     specialistId: readString(row, ["specialist_id", "specialistId"]),
     patientName: readString(row, ["patient_name", "patientName"]),
     parentName,
+    parentProfileImageUrl: resolveMediaUrl(readString(row, [
+      "parent_profile_image_url",
+      "parentProfileImageUrl",
+    ])),
     specialistName: readString(row, ["specialist_name", "specialistName"]),
+    specialistProfileImageUrl: resolveMediaUrl(readString(row, [
+      "specialist_profile_image_url",
+      "specialistProfileImageUrl",
+    ])),
     caseRequestId: readString(row, ["case_request_id", "caseRequestId"]),
     caseRequestChildName: readString(row, [
       "case_request_child_name",

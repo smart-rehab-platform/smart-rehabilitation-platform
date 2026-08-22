@@ -8,6 +8,7 @@ const { getSocketIoCorsOptions } = require("./config/cors");
 const pool = require("./database/db");
 const { initPresenceSocket } = require("./modules/presence/presence.socket");
 const presenceService = require("./modules/presence/presence.service");
+const { startSessionReminderJob } = require("./jobs/sessionReminder.job");
 const { getLanAddresses } = require("./middleware/devRequestLogger");
 
 const PORT = process.env.PORT || 5000;
@@ -37,6 +38,7 @@ pool
 
     await ensurePresenceColumns();
     await presenceService.resetAllUsersOffline();
+    startSessionReminderJob();
 
     server.listen(PORT, HOST, () => {
       console.log(`Server running on http://${HOST}:${PORT}`);

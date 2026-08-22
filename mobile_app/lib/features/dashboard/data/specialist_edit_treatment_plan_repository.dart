@@ -56,12 +56,19 @@ class SpecialistEditTreatmentPlanRepository {
           'patientName',
         ]) ??
         'Patient';
+    final patientProfileImageUrl = ApiResponseParser.readString(planMap, const [
+      'patient_profile_image_url',
+      'patientProfileImageUrl',
+      'profile_image_url',
+      'profileImageUrl',
+    ]);
 
     final goals = await _fetchGoalsWithProgress(planId);
 
     return EditTreatmentPlanBundle(
       patientId: patientId,
       patientName: patientName,
+      patientProfileImageUrl: patientProfileImageUrl,
       plan: plan,
       goals: goals,
     );

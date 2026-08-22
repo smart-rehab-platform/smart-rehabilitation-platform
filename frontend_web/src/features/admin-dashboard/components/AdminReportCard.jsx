@@ -1,4 +1,5 @@
 import { ChevronRight, FileCheck2 } from "lucide-react";
+import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { AdminReportTypeBadge } from "./AdminReportTypeBadge";
 import { AdminTablePrimaryAction } from "./AdminTablePrimaryAction";
 
@@ -34,9 +35,15 @@ export function AdminReportCard({ report, labels, onOpen }) {
   return (
     <article className="pd-card pd-card-pad pd-admin-report-card pd-section-enter">
       <div className="pd-admin-report-card-top">
-        <span className="pd-admin-report-avatar" aria-hidden="true">
-          {getPatientInitials(report.patientName)}
-        </span>
+        <UserProfileAvatar
+          imageUrl={report.patientProfileImageUrl}
+          initials={getPatientInitials(report.patientName)}
+          alt=""
+          sizeClassName="pd-admin-report-avatar"
+          shellClassName="pd-admin-report-avatar"
+          fallbackClassName="pd-admin-report-avatar"
+          className="pd-avatar-photo"
+        />
 
         <div className="pd-admin-report-card-heading">
           <h2 className="pd-admin-report-card-title">{report.title || "Report"}</h2>

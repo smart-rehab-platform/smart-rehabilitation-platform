@@ -15,7 +15,9 @@ const CONVERSATION_SELECT = `
   SELECT c.*,
          p.full_name AS patient_name,
          parent.full_name AS parent_name,
-         specialist.full_name AS specialist_name
+         parent.profile_image_url AS parent_profile_image_url,
+         specialist.full_name AS specialist_name,
+         specialist.profile_image_url AS specialist_profile_image_url
   FROM conversations c
   LEFT JOIN patients p ON c.patient_id = p.id
   JOIN users parent ON c.parent_id = parent.id

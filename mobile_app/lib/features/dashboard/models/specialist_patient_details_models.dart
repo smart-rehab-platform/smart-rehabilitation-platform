@@ -70,6 +70,11 @@ class PatientProfile {
       profileImageUrl: ApiResponseParser.readString(map, const [
         'profile_image_url',
         'profileImageUrl',
+        'profile_image',
+        'profileImage',
+        'image_url',
+        'avatarUrl',
+        'avatar',
       ]),
     );
   }
