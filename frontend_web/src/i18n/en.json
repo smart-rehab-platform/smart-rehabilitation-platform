@@ -1126,6 +1126,8 @@
       "types": {
         "exercise_reminder": "Exercise reminder",
         "session_reminder": "Session reminder",
+        "session_updated": "Session updated",
+        "session_cancelled": "Session cancelled",
         "feedback_received": "Feedback received",
         "report_ready": "Report ready",
         "new_message": "New message",
@@ -1427,6 +1429,8 @@
       "type": {
         "exerciseReminder": "Exercise reminder",
         "sessionReminder": "Session reminder",
+        "sessionUpdated": "Session updated",
+        "sessionCancelled": "Session cancelled",
         "feedbackReceived": "Feedback received",
         "reportReady": "Report ready",
         "newMessage": "New message",
@@ -2497,6 +2501,33 @@
         "createFailed": "Failed to create session. Please try again.",
         "loadRequestsFailed": "Failed to load session requests.",
         "signInRequiredCreate": "Please sign in to continue."
+      },
+      "editSession": "Edit Session",
+      "cancelSession": "Cancel Session",
+      "dialogs": {
+        "editTitle": "Edit Session",
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "date": "Date",
+        "time": "Start time",
+        "duration": "Duration (minutes)",
+        "location": "Location or link",
+        "patient": "Patient",
+        "scheduled": "Scheduled",
+        "cancelTitle": "Cancel Session",
+        "cancelConfirm": "Are you sure you want to cancel this session? This will notify the patient/parent.",
+        "cancellationReasonOptional": "Reason for cancellation (optional)",
+        "cancellationReasonPlaceholder": "Provide a brief reason (optional)",
+        "cancelSession": "Cancel Session",
+        "keepSession": "Keep Session",
+        "processing": "Processing...",
+        "validation": {
+          "invalidDateTime": "Please provide a valid date and time."
+        },
+        "updateFailed": "Failed to update session.",
+        "cancelFailed": "Failed to cancel session.",
+        "updateSuccess": "Session updated successfully.",
+        "cancelSuccess": "Session cancelled successfully."
       }
     },
     "reports": {
@@ -2840,6 +2871,8 @@
       "type": {
         "exerciseReminder": "Exercise reminder",
         "sessionReminder": "Session reminder",
+        "sessionUpdated": "Session updated",
+        "sessionCancelled": "Session cancelled",
         "feedbackReceived": "Feedback received",
         "reportReady": "Report ready",
         "newMessage": "New message",

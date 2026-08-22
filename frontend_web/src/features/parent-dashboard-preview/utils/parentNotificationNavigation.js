@@ -102,7 +102,10 @@ export function resolveParentNotificationDestination(notification) {
     return `${PARENT_WEB_ROUTES.sessions}?area=requests`;
   }
 
-  if (entityType === "session" || type === "session_reminder") {
+  if (entityType === "session"
+    || type === "session_reminder"
+    || type === "session_updated"
+    || type === "session_cancelled") {
     return buildParentSessionsPath(null);
   }
 

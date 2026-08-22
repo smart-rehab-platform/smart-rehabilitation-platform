@@ -42,7 +42,8 @@ CREATE TYPE notification_type    AS ENUM (
     'exercise_reminder', 'session_reminder', 'feedback_received',
     'report_ready', 'new_message', 'general', 'session_request',
     'case_request_submitted', 'case_request_assigned', 'case_request_accepted',
-    'case_request_rejected', 'case_request_converted'
+    'case_request_rejected', 'case_request_converted',
+    'session_updated', 'session_cancelled'
 );
 
 -- =====================================================================

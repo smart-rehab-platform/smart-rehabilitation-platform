@@ -1104,6 +1104,8 @@
       "types": {
         "exercise_reminder": "تذكير بتمرين",
         "session_reminder": "تذكير بجلسة",
+        "session_updated": "تم تحديث الجلسة",
+        "session_cancelled": "تم إلغاء الجلسة",
         "feedback_received": "تم استلام ملاحظات",
         "report_ready": "التقرير جاهز",
         "new_message": "رسالة جديدة",
@@ -1402,6 +1404,8 @@
       "type": {
         "exerciseReminder": "تذكير تمرين",
         "sessionReminder": "تذكير جلسة",
+        "sessionUpdated": "تم تحديث الجلسة",
+        "sessionCancelled": "تم إلغاء الجلسة",
         "feedbackReceived": "تم استلام ملاحظات",
         "reportReady": "التقرير جاهز",
         "newMessage": "رسالة جديدة",
@@ -2472,6 +2476,33 @@
         "createFailed": "تعذّر إنشاء الجلسة. يرجى المحاولة مرة أخرى.",
         "loadRequestsFailed": "فشل تحميل طلبات الجلسات.",
         "signInRequiredCreate": "يرجى تسجيل الدخول للمتابعة."
+      },
+      "editSession": "تعديل الجلسة",
+      "cancelSession": "إلغاء الجلسة",
+      "dialogs": {
+        "editTitle": "تعديل الجلسة",
+        "save": "حفظ التغييرات",
+        "saving": "جاري الحفظ...",
+        "date": "التاريخ",
+        "time": "وقت البدء",
+        "duration": "المدة (دقائق)",
+        "location": "الموقع أو الرابط",
+        "patient": "المريض",
+        "scheduled": "الموعد",
+        "cancelTitle": "إلغاء الجلسة",
+        "cancelConfirm": "هل أنت متأكد أنك تريد إلغاء هذه الجلسة؟ سيتم إخطار المريض/الولي.",
+        "cancellationReasonOptional": "سبب الإلغاء (اختياري)",
+        "cancellationReasonPlaceholder": "اكتب سببًا موجزًا (اختياري)",
+        "cancelSession": "إلغاء الجلسة",
+        "keepSession": "الإبقاء على الجلسة",
+        "processing": "جاري المعالجة...",
+        "validation": {
+          "invalidDateTime": "يرجى إدخال تاريخ ووقت صالحين."
+        },
+        "updateFailed": "فشل في تحديث الجلسة.",
+        "cancelFailed": "فشل في إلغاء الجلسة.",
+        "updateSuccess": "تم تحديث الجلسة بنجاح.",
+        "cancelSuccess": "تم إلغاء الجلسة بنجاح."
       }
     },
     "reports": {
@@ -2815,6 +2846,8 @@
       "type": {
         "exerciseReminder": "تذكير بتمرين",
         "sessionReminder": "تذكير بجلسة",
+        "sessionUpdated": "تم تحديث الجلسة",
+        "sessionCancelled": "تم إلغاء الجلسة",
         "feedbackReceived": "تم استلام ملاحظات",
         "reportReady": "التقرير جاهز",
         "newMessage": "رسالة جديدة",
