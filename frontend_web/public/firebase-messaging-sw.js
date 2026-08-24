@@ -22,17 +22,17 @@
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js');
 
-// === EDIT THESE VALUES WITH YOUR PUBLIC FIREBASE WEB CONFIG ===
+// === Injected by scripts/generate-sw.cjs from VITE_FIREBASE_* env vars ===
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDg5iNy1BLTYEnr8czBx6aPQE7vWG0aMSE",
-  authDomain: "smart-rehabilitation-platform.firebaseapp.com",
-  projectId: "smart-rehabilitation-platform",
-  storageBucket: "smart-rehabilitation-platform.firebasestorage.app",
-  messagingSenderId: "918900045498",
-  appId: "1:918900045498:web:0d7f97202f70d8b31fb483",
-  measurementId: "G-DFZE2RY4N1",
+  apiKey: "__FIREBASE_API_KEY__",
+  authDomain: "__FIREBASE_AUTH_DOMAIN__",
+  projectId: "__FIREBASE_PROJECT_ID__",
+  storageBucket: "__FIREBASE_STORAGE_BUCKET__",
+  messagingSenderId: "__FIREBASE_MESSAGING_SENDER_ID__",
+  appId: "__FIREBASE_APP_ID__",
+  measurementId: "__FIREBASE_MEASUREMENT_ID__",
 };
-// =============================================================
+// ========================================================================
 
 if (typeof firebase === 'undefined') {
   // firebase scripts failed to load

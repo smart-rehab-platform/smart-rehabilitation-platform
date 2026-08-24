@@ -328,8 +328,10 @@ String? _cleanEmbeddedPatientTitle(String? rawTitle) {
     return null;
   }
 
-  // Strip patterns like "Weekly - Omar" / "Monthly - Patient".
-  final parts = trimmed.split(RegExp(r'\s+-\s+'));
+ 
+  // Strip patterns like "Weekly - Omar" / "Monthly – Patient".
+  final parts = trimmed.split(RegExp(r'\s+[-–—]\s+'));
+
   if (parts.length >= 2) {
     final left = parts.first.trim();
     if (left.isNotEmpty) {
