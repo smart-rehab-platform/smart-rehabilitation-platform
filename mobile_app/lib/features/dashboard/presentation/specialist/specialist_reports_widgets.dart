@@ -41,9 +41,14 @@ String _nonEmptyLabel(String? value, {String fallback = '—'}) {
 }
 
 class SpecialistReportHeaderCard extends StatelessWidget {
-  const SpecialistReportHeaderCard({super.key, required this.detail});
+  const SpecialistReportHeaderCard({
+    super.key,
+    required this.detail,
+    this.isEditing = false,
+  });
 
   final SpecialistReportDetail detail;
+  final bool isEditing;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +111,9 @@ class SpecialistReportHeaderCard extends StatelessWidget {
           if (detail.isAwaitingReview) ...[
             SizedBox(height: context.dashSpacing * 0.45),
             Text(
-              l10n.specialistReportReviewBanner,
+              isEditing
+                  ? l10n.specialistReportEditingBanner
+                  : l10n.specialistReportReviewBanner,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: DashboardColors.textSecondary,
                 height: 1.35,

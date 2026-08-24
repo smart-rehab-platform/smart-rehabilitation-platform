@@ -9,6 +9,7 @@ const {
   DEFAULT_AI_REPORT_LANGUAGE,
   normalizeAiReportLanguage,
 } = require("./aiReportLanguage");
+const { mergeAiReportDraftSummary } = require("./aiReportDraft.edit");
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -956,6 +957,42 @@ const deleteAiReport = async (id, actor) => {
   return report;
 };
 
+/**
+ * Update clinical draft text on an unapproved AI report (no pdf_url yet).
+ * Merges editable fields into existing summary JSON; PDF export re-reads DB.
+ */
+const updateAiReportDraft = async (id, actor, updates) => {
+  const report = await getReportById(id);
+
+  if (!report) {
+    return null;
+  }
+
+  await assertActorCanReadPatientAiReports(actor, report.patient_id);
+
+  if (typeof report.pdf_url === "string" && report.pdf_url.trim()) {
+    throw createError("Approved AI reports cannot be edited.", 409);
+  }
+
+  let nextSummary;
+  try {
+    nextSummary = mergeAiReportDraftSummary(report.summary, updates);
+  } catch (error) {
+    throw createError(error.message, error.statusCode || 400);
+  }
+
+  await db.query(
+    `
+    UPDATE ai_reports
+    SET summary = $1
+    WHERE id = $2
+    `,
+    [JSON.stringify(nextSummary), id]
+  );
+
+  return getReportById(id);
+};
+
 module.exports = {
   generateReport,
   getAllReports,
@@ -963,6 +1000,7 @@ module.exports = {
   getReportsByPatient,
   exportReportPdf,
   deleteAiReport,
+  updateAiReportDraft,
   assertActorCanReadPatientAiReports,
   buildReportPrompt,
   buildRuleBasedReportFallback,

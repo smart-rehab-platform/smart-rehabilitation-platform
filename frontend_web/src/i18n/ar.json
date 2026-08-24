@@ -2588,6 +2588,17 @@
         "approving": "جارٍ الموافقة وإنشاء PDF...",
         "approvedSuccess": "تمت الموافقة على التقرير وإنشاء PDF بنجاح."
       },
+      "edit": {
+        "editReport": "تعديل التقرير",
+        "editingBanner": "تعديل التقرير",
+        "saveChanges": "حفظ التعديلات",
+        "saving": "جارٍ حفظ التعديلات...",
+        "cancelEditing": "إلغاء التعديل",
+        "saveSuccess": "تم حفظ التعديلات بنجاح",
+        "saveFailed": "فشل حفظ التعديلات",
+        "emptyContent": "لا يمكن أن يكون محتوى التقرير فارغًا.",
+        "listItemsHint": "أدخل عنصرًا واحدًا في كل سطر."
+      },
       "discard": {
         "action": "تجاهل التقرير",
         "confirmTitle": "تجاهل تقرير الذكاء الاصطناعي؟",
@@ -2722,9 +2733,9 @@
       },
       "suggestedExerciseFallback": "تمرين مقترح",
       "actions": {
-        "accept": "قبول",
+        "assign": "تعيين",
         "reject": "رفض",
-        "saving": "جارٍ الحفظ..."
+        "assigning": "جارٍ التعيين..."
       },
       "toast": {
         "generated": "تم إنشاء توصية الذكاء الاصطناعي",

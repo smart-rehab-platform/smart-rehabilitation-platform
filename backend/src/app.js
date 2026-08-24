@@ -32,6 +32,7 @@ const speechAnalysesRoutes = require("./modules/speechAnalyses/speechAnalyses.ro
 const dashboardRoutes = require("./modules/dashboard/dashboard.routes");
 const uploadsRoutes = require("./modules/uploads/uploads.routes");
 const aiReportsRoutes = require("./modules/aiReports/aiReports.routes");
+const translationsRoutes = require("./modules/translations/translations.routes");
 const presenceRoutes = require("./modules/presence/presence.routes");
 const specialistFeedbackRoutes = require("./modules/specialistFeedback/specialistFeedback.routes");
 const sessionRequestsRoutes = require("./modules/sessionRequests/sessionRequests.routes");
@@ -106,6 +107,7 @@ app.use(
   }),
 );
 app.use("/api/v1", aiReportsRoutes);
+app.use("/api/v1", translationsRoutes);
 app.use("/api/v1/presence", presenceRoutes);
 app.use("/api/v1/specialist-feedback", specialistFeedbackRoutes);
 app.use("/api/v1/session-requests", sessionRequestsRoutes);

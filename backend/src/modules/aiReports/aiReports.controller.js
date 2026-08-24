@@ -158,6 +158,34 @@ const deleteReport = async (req, res) => {
   }
 };
 
+const updateReportDraft = async (req, res) => {
+  try {
+    const report = await aiReportsService.updateAiReportDraft(
+      req.params.id,
+      req.user,
+      req.body
+    );
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: "AI report not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "AI report draft updated successfully",
+      data: report,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   generateWeeklyReport,
   generateMonthlyReport,
@@ -166,4 +194,5 @@ module.exports = {
   getReportsByPatient,
   exportReportPdf,
   deleteReport,
+  updateReportDraft,
 };

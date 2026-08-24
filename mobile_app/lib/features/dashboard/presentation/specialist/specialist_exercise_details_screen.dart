@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/locale/locale_provider.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/dashboard_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
+import '../../data/translation_repository.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../providers/specialist_exercise_assignment_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
@@ -35,6 +37,11 @@ class SpecialistExerciseDetailsScreen extends ConsumerStatefulWidget {
 
 class _SpecialistExerciseDetailsScreenState
     extends ConsumerState<SpecialistExerciseDetailsScreen> {
+  String? _displayTitle;
+  String? _displayDescription;
+  String? _displayInstructions;
+  String? _translationKey;
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +49,44 @@ class _SpecialistExerciseDetailsScreenState
       ref
           .read(specialistExerciseDetailProvider(widget.exerciseId).notifier)
           .initialize();
+    });
+  }
+
+  Future<void> _syncTranslatedContent(SpecialistExerciseItem exercise) async {
+    final locale = ref.read(localeProvider);
+    final language = languageCodeFromLocale(locale);
+    final key =
+        '${exercise.id}|$language|${exercise.title}|${exercise.description}|${exercise.instructions}';
+    if (_translationKey == key) {
+      return;
+    }
+    _translationKey = key;
+
+    if (language != 'ar') {
+      if (!mounted) return;
+      setState(() {
+        _displayTitle = exercise.title;
+        _displayDescription = exercise.description;
+        _displayInstructions = exercise.instructions;
+      });
+      return;
+    }
+
+    final translated = await ref
+        .read(translationRepositoryProvider)
+        .translateExerciseFields(
+          title: exercise.title,
+          description: exercise.description,
+          instructions: exercise.instructions,
+          targetLanguage: 'ar',
+        );
+    if (!mounted || _translationKey != key) {
+      return;
+    }
+    setState(() {
+      _displayTitle = translated.title;
+      _displayDescription = translated.description;
+      _displayInstructions = translated.instructions;
     });
   }
 
@@ -69,6 +114,7 @@ class _SpecialistExerciseDetailsScreenState
       specialistExerciseDetailProvider(widget.exerciseId).notifier,
     );
     final auth = ref.watch(authProvider);
+    ref.watch(localeProvider);
     final theme = Theme.of(context);
 
     Widget body;
@@ -90,8 +136,14 @@ class _SpecialistExerciseDetailsScreenState
     } else {
       final exercise = state.exercise!;
       final category = exercise.category?.trim();
-      final description = exercise.description?.trim();
-      final instructions = exercise.instructions?.trim();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _syncTranslatedContent(exercise);
+      });
+      final description =
+          (_displayDescription ?? exercise.description)?.trim();
+      final instructions =
+          (_displayInstructions ?? exercise.instructions)?.trim();
+      final title = (_displayTitle ?? exercise.title).trim();
       final canEdit = exercise.canEditBy(
         userId: auth.user?.id,
         role: auth.user?.role,
@@ -126,7 +178,7 @@ class _SpecialistExerciseDetailsScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            exercise.title,
+                            title,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: DashboardColors.textPrimary,

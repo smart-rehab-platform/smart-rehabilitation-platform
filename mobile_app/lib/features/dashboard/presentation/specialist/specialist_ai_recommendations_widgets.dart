@@ -302,7 +302,9 @@ class AiRecommendationCard extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        isUpdating ? l10n.commonProcessing : l10n.commonApprove,
+                        isUpdating
+                            ? l10n.specialistAiRecommendationAssigning
+                            : l10n.specialistAiRecommendationAssign,
                       ),
                     ),
                   ),

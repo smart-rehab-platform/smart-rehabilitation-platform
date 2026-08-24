@@ -3636,6 +3636,64 @@ class AppLocalizationsEn extends AppLocalizations {
   String get specialistReportDiscardFailed => 'Failed to discard AI report.';
 
   @override
+  String get specialistReportEditReport => 'Edit Report';
+
+  @override
+  String get specialistReportEditingBanner => 'Editing Report';
+
+  @override
+  String get specialistReportSaveChanges => 'Save Changes';
+
+  @override
+  String get specialistReportSavingChanges => 'Saving changes...';
+
+  @override
+  String get specialistReportCancelEditing => 'Cancel Editing';
+
+  @override
+  String get specialistReportSaveChangesSuccess => 'Changes saved successfully';
+
+  @override
+  String get specialistReportSaveChangesFailed => 'Failed to save changes';
+
+  @override
+  String get specialistReportEditEmptyContent =>
+      'Report content cannot be empty.';
+
+  @override
+  String get specialistReportEditListHint => 'Enter one item per line.';
+
+  @override
+  String get specialistAiReportSectionExecutiveSummary => 'Executive Summary';
+
+  @override
+  String get specialistAiReportSectionPatientProgress =>
+      'Patient Progress Summary';
+
+  @override
+  String get specialistAiReportSectionSpeechAnalysis =>
+      'Speech Analysis Summary';
+
+  @override
+  String get specialistAiReportSectionExerciseAdherence =>
+      'Exercise Adherence Summary';
+
+  @override
+  String get specialistAiReportSectionGoalProgress => 'Goal Progress Summary';
+
+  @override
+  String get specialistAiReportSectionClinicalInsights => 'Clinical Insights';
+
+  @override
+  String get specialistAiReportSectionRisks => 'Risks or Regressions';
+
+  @override
+  String get specialistAiReportSectionRecommendations => 'Recommendations';
+
+  @override
+  String get specialistAiReportSectionNextSteps => 'Next Steps';
+
+  @override
   String get specialistGenerateAiReportSuccessReview =>
       'AI report generated. Please review it before creating a PDF.';
 
@@ -3725,6 +3783,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get specialistAiRecommendationAccepted => 'Recommendation accepted';
+
+  @override
+  String get specialistAiRecommendationAssign => 'Assign';
+
+  @override
+  String get specialistAiRecommendationAssigning => 'Assigning...';
 
   @override
   String get specialistAiRecommendationRejected => 'Recommendation rejected';

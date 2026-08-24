@@ -15,7 +15,7 @@ export function SpecialistAiRecommendationActions({
         onClick={onAccept}
         disabled={isUpdating}
       >
-        {isUpdating ? t("specialist.aiRecommendations.actions.saving") : t("specialist.aiRecommendations.actions.accept")}
+        {isUpdating ? t("specialist.aiRecommendations.actions.assigning") : t("specialist.aiRecommendations.actions.assign")}
       </button>
       <button
         type="button"
