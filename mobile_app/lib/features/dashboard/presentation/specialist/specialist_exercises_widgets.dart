@@ -507,7 +507,7 @@ class _ExerciseLibraryBodyState extends ConsumerState<ExerciseLibraryBody> {
     }
     _translationKey = key;
 
-    if (language != 'ar' || visible.isEmpty) {
+    if (visible.isEmpty) {
       if (!mounted) return;
       setState(() => _translatedById = {});
       return;
@@ -522,7 +522,7 @@ class _ExerciseLibraryBodyState extends ConsumerState<ExerciseLibraryBody> {
 
     final translated = await ref
         .read(translationRepositoryProvider)
-        .translateTexts(texts: flat, targetLanguage: 'ar');
+        .translateTexts(texts: flat, targetLanguage: language);
 
     if (!mounted || _translationKey != key) {
       return;

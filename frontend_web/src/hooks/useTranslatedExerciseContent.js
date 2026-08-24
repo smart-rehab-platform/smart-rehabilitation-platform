@@ -3,13 +3,12 @@ import { useLocale } from "../context/useLocale";
 import { translateTexts } from "../services/translationService";
 
 /**
- * Translates exercise display fields (title, description, instructions) when locale is Arabic.
- * Never touches expected_text / target_word / target_phoneme.
+ * Translates exercise display fields (title, description, instructions)
+ * to the current UI locale (en ↔ ar). Never touches speech targets.
  */
 export function useTranslatedExerciseContent(fields) {
   const { locale } = useLocale();
-  const language = String(locale || "en").toLowerCase().split("-")[0];
-  const isArabic = language === "ar";
+  const targetLanguage = String(locale || "en").toLowerCase().split("-")[0] || "en";
 
   const title = fields?.title ?? "";
   const description = fields?.description ?? "";
@@ -25,19 +24,16 @@ export function useTranslatedExerciseContent(fields) {
   const requestIdRef = useRef(0);
 
   useEffect(() => {
-    if (!isArabic) {
-      setTranslated({ title, description, instructions });
-      return undefined;
-    }
-
     const requestId = requestIdRef.current + 1;
     requestIdRef.current = requestId;
     let cancelled = false;
 
+    setTranslated({ title, description, instructions });
+
     (async () => {
       const [nextTitle, nextDescription, nextInstructions] = await translateTexts(
         [title, description, instructions],
-        "ar",
+        targetLanguage,
       );
       if (cancelled || requestIdRef.current !== requestId) {
         return;
@@ -52,22 +48,18 @@ export function useTranslatedExerciseContent(fields) {
     return () => {
       cancelled = true;
     };
-  }, [isArabic, sourceKey, title, description, instructions]);
-
-  if (!isArabic) {
-    return { title, description, instructions };
-  }
+  }, [targetLanguage, sourceKey, title, description, instructions]);
 
   return translated;
 }
 
 /**
- * Batch-translates title/description/instructions for an exercise list when locale is Arabic.
+ * Batch-translates title/description/instructions for an exercise list
+ * to the current UI locale (en ↔ ar).
  */
 export function useTranslatedExerciseList(items) {
   const { locale } = useLocale();
-  const language = String(locale || "en").toLowerCase().split("-")[0];
-  const isArabic = language === "ar";
+  const targetLanguage = String(locale || "en").toLowerCase().split("-")[0] || "en";
   const list = Array.isArray(items) ? items : [];
 
   const sourceKey = useMemo(
@@ -85,14 +77,11 @@ export function useTranslatedExerciseList(items) {
   const requestIdRef = useRef(0);
 
   useEffect(() => {
-    if (!isArabic) {
-      setTranslatedList(list);
-      return undefined;
-    }
-
     const requestId = requestIdRef.current + 1;
     requestIdRef.current = requestId;
     let cancelled = false;
+
+    setTranslatedList(list);
 
     (async () => {
       const flat = [];
@@ -102,7 +91,7 @@ export function useTranslatedExerciseList(items) {
         flat.push(item?.instructions || item?.previewText || "");
       });
 
-      const translatedFlat = await translateTexts(flat, "ar");
+      const translatedFlat = await translateTexts(flat, targetLanguage);
       if (cancelled || requestIdRef.current !== requestId) {
         return;
       }
@@ -130,7 +119,7 @@ export function useTranslatedExerciseList(items) {
     return () => {
       cancelled = true;
     };
-  }, [isArabic, sourceKey]);
+  }, [targetLanguage, sourceKey]);
 
-  return isArabic ? translatedList : list;
+  return translatedList;
 }

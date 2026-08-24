@@ -1,9 +1,18 @@
 import api from "./api";
 
 const clientCache = new Map();
+const ARABIC_SCRIPT_RE = /[\u0600-\u06FF]/;
 
-function cacheKey(text, targetLanguage) {
-  return `${targetLanguage}::${text}`;
+function normalizeTarget(value) {
+  return String(value || "").trim().toLowerCase().split("-")[0];
+}
+
+function detectSourceLanguage(text) {
+  return ARABIC_SCRIPT_RE.test(String(text || "")) ? "ar" : "en";
+}
+
+function cacheKey(text, sourceLanguage, targetLanguage) {
+  return `${sourceLanguage}::${targetLanguage}::${text}`;
 }
 
 function extractTexts(response) {
@@ -18,14 +27,14 @@ function extractTexts(response) {
 }
 
 /**
- * Batch-translate texts via backend. English/empty → identity.
- * Session cache avoids repeat API calls for identical strings.
+ * Batch-translate texts via backend for the UI locale target.
+ * Skips when detected source == target (no unnecessary Azure round-trip).
  */
 export async function translateTexts(texts, targetLanguage = "ar") {
-  const target = String(targetLanguage || "").trim().toLowerCase().split("-")[0];
+  const target = normalizeTarget(targetLanguage);
   const input = Array.isArray(texts) ? texts.map((t) => String(t ?? "")) : [];
 
-  if (!target || target === "en" || input.length === 0) {
+  if (!target || input.length === 0) {
     return input;
   }
 
@@ -38,7 +47,11 @@ export async function translateTexts(texts, targetLanguage = "ar") {
     if (!trimmed) {
       return;
     }
-    const key = cacheKey(trimmed, target);
+    const source = detectSourceLanguage(trimmed);
+    if (source === target) {
+      return;
+    }
+    const key = cacheKey(trimmed, source, target);
     if (clientCache.has(key)) {
       result[index] = clientCache.get(key);
       return;
@@ -63,8 +76,9 @@ export async function translateTexts(texts, targetLanguage = "ar") {
 
     translated.forEach((value, i) => {
       const original = pendingTexts[i];
+      const source = detectSourceLanguage(original);
       const next = String(value ?? original);
-      clientCache.set(cacheKey(original, target), next);
+      clientCache.set(cacheKey(original, source, target), next);
       result[pendingIndexes[i]] = next;
     });
 

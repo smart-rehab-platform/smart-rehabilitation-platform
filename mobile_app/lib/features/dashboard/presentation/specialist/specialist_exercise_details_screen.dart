@@ -62,23 +62,13 @@ class _SpecialistExerciseDetailsScreenState
     }
     _translationKey = key;
 
-    if (language != 'ar') {
-      if (!mounted) return;
-      setState(() {
-        _displayTitle = exercise.title;
-        _displayDescription = exercise.description;
-        _displayInstructions = exercise.instructions;
-      });
-      return;
-    }
-
     final translated = await ref
         .read(translationRepositoryProvider)
         .translateExerciseFields(
           title: exercise.title,
           description: exercise.description,
           instructions: exercise.instructions,
-          targetLanguage: 'ar',
+          targetLanguage: language,
         );
     if (!mounted || _translationKey != key) {
       return;
