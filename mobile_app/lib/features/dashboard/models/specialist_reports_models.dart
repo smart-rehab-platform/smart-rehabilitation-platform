@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../../../core/utils/api_response_parser.dart';
 import 'specialist_ai_report_generation.dart';
+import 'specialist_ai_report_structured_summary.dart';
 
 enum SpecialistReportFilter {
   all,
@@ -327,13 +328,8 @@ String? _cleanEmbeddedPatientTitle(String? rawTitle) {
     return null;
   }
 
-<<<<<<< Updated upstream
   // Strip patterns like "Weekly - Omar" / "Monthly - Patient".
   final parts = trimmed.split(RegExp(r'\s+-\s+'));
-=======
-  // Strip patterns like "Weekly ? Omar" / "Monthly - Patient".
-  final parts = trimmed.split(RegExp(r'\s+[??-]\s+'));
->>>>>>> Stashed changes
   if (parts.length >= 2) {
     final left = parts.first.trim();
     if (left.isNotEmpty) {
@@ -368,6 +364,7 @@ class SpecialistReportDetail {
     this.reportType,
     this.createdAt,
     this.summary,
+    this.rawSummary,
     this.pdfUrl,
     this.periodStart,
     this.periodEnd,
@@ -383,6 +380,8 @@ class SpecialistReportDetail {
   final String? reportType;
   final DateTime? createdAt;
   final String? summary;
+  /// Original API summary (string/JSON) used for structured edit/PDF draft updates.
+  final dynamic rawSummary;
   final String? pdfUrl;
   final DateTime? periodStart;
   final DateTime? periodEnd;
@@ -393,10 +392,13 @@ class SpecialistReportDetail {
     return url != null && url.trim().isNotEmpty;
   }
 
-  /// AI report with no PDF yet ? awaiting specialist review.
+  /// AI report with no PDF yet — awaiting specialist review.
   bool get isAwaitingReview => isAiReport && !hasPdf;
 
   String get statusLabel => hasPdf ? 'PDF Ready' : 'Awaiting Review';
+
+  SpecialistAiReportStructuredSummary get aiStructuredSummary =>
+      SpecialistAiReportStructuredSummary.parse(rawSummary ?? summary);
 
   String get typeLabel {
     if (isAiReport) {
@@ -418,6 +420,31 @@ class SpecialistReportDetail {
   String get displaySummary => SpecialistReportSummary.normalize(summary) ?? '';
 
   List<SpecialistReportSection> get sections {
+    final structured = aiStructuredSummary;
+    if (isAiReport && structured.isStructured) {
+      final sections = <SpecialistReportSection>[];
+      for (final narrative in structured.narrativeSections) {
+        sections.add(
+          SpecialistReportSection(
+            title: narrative.id,
+            content: narrative.content,
+            fieldId: narrative.id,
+          ),
+        );
+      }
+      for (final list in structured.listSections) {
+        sections.add(
+          SpecialistReportSection(
+            title: list.id,
+            content: list.items.map((item) => '• $item').join('\n'),
+            fieldId: list.id,
+            items: list.items,
+          ),
+        );
+      }
+      return sections;
+    }
+
     final text = displaySummary;
     if (text.isEmpty) {
       return const [];
@@ -459,6 +486,7 @@ class SpecialistReportDetail {
         map['created_at'] ?? map['createdAt'],
       ),
       summary: SpecialistReportSummary.normalize(map['summary']),
+      rawSummary: map['summary'],
       pdfUrl: ApiResponseParser.readString(map, const ['pdf_url', 'pdfUrl']),
       language: 'en',
     );
@@ -497,6 +525,7 @@ class SpecialistReportDetail {
         map['generated_at'] ?? map['created_at'],
       ),
       summary: summary,
+      rawSummary: map['summary'],
       pdfUrl: ApiResponseParser.readString(map, const ['pdf_url', 'pdfUrl']),
       periodStart: ApiResponseParser.readDate(
         map['period_start'] ?? map['periodStart'],
@@ -513,8 +542,12 @@ class SpecialistReportSection {
   const SpecialistReportSection({
     required this.title,
     required this.content,
+    this.fieldId,
+    this.items,
   });
 
   final String title;
   final String content;
+  final String? fieldId;
+  final List<String>? items;
 }

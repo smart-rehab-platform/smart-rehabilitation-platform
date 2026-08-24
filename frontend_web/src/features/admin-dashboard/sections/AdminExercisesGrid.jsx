@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { useTranslatedExerciseList } from "../../../hooks/useTranslatedExerciseContent";
 import { AdminExerciseCard } from "../components/AdminExerciseCard";
 
 const SKELETON_CARD_COUNT = 6;
@@ -33,7 +34,7 @@ export function AdminExercisesGrid({
   onAddExercise,
   onClearFilters,
 }) {
-  if (isLoading) {
+  const translatedExercises = useTranslatedExerciseList(exercises);  if (isLoading) {
     return (
       <div className="pd-admin-exercises-grid" aria-busy="true" aria-label={labels.loading}>
         {Array.from({ length: SKELETON_CARD_COUNT }, (_, index) => (
@@ -68,7 +69,7 @@ export function AdminExercisesGrid({
 
   return (
     <div className="pd-admin-exercises-grid" aria-label={labels.title}>
-      {exercises.map((exercise) => (
+      {translatedExercises.map((exercise) => (
         <AdminExerciseCard
           key={exercise.id}
           labels={labels}

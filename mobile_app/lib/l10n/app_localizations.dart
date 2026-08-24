@@ -6399,6 +6399,114 @@ abstract class AppLocalizations {
   /// **'Failed to discard AI report.'**
   String get specialistReportDiscardFailed;
 
+  /// Action to edit an AI report draft before approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Report'**
+  String get specialistReportEditReport;
+
+  /// Banner shown while editing an AI report draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing Report'**
+  String get specialistReportEditingBanner;
+
+  /// Save edited AI report draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get specialistReportSaveChanges;
+
+  /// Loading label while saving AI report draft edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving changes...'**
+  String get specialistReportSavingChanges;
+
+  /// Cancel unsaved AI report draft edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Editing'**
+  String get specialistReportCancelEditing;
+
+  /// Snack bar after saving AI report draft edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved successfully'**
+  String get specialistReportSaveChangesSuccess;
+
+  /// Snack bar when saving AI report draft edits fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save changes'**
+  String get specialistReportSaveChangesFailed;
+
+  /// Validation when all draft fields are empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Report content cannot be empty.'**
+  String get specialistReportEditEmptyContent;
+
+  /// Hint for list fields in AI report edit mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter one item per line.'**
+  String get specialistReportEditListHint;
+
+  /// No description provided for @specialistAiReportSectionExecutiveSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Executive Summary'**
+  String get specialistAiReportSectionExecutiveSummary;
+
+  /// No description provided for @specialistAiReportSectionPatientProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Progress Summary'**
+  String get specialistAiReportSectionPatientProgress;
+
+  /// No description provided for @specialistAiReportSectionSpeechAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech Analysis Summary'**
+  String get specialistAiReportSectionSpeechAnalysis;
+
+  /// No description provided for @specialistAiReportSectionExerciseAdherence.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Adherence Summary'**
+  String get specialistAiReportSectionExerciseAdherence;
+
+  /// No description provided for @specialistAiReportSectionGoalProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal Progress Summary'**
+  String get specialistAiReportSectionGoalProgress;
+
+  /// No description provided for @specialistAiReportSectionClinicalInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Insights'**
+  String get specialistAiReportSectionClinicalInsights;
+
+  /// No description provided for @specialistAiReportSectionRisks.
+  ///
+  /// In en, this message translates to:
+  /// **'Risks or Regressions'**
+  String get specialistAiReportSectionRisks;
+
+  /// No description provided for @specialistAiReportSectionRecommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendations'**
+  String get specialistAiReportSectionRecommendations;
+
+  /// No description provided for @specialistAiReportSectionNextSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Steps'**
+  String get specialistAiReportSectionNextSteps;
+
   /// Snack bar after AI generation when opening the review details screen.
   ///
   /// In en, this message translates to:
@@ -6560,6 +6668,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recommendation accepted'**
   String get specialistAiRecommendationAccepted;
+
+  /// Primary action to assign/accept a pending AI recommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign'**
+  String get specialistAiRecommendationAssign;
+
+  /// Loading label while assigning an AI recommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigning...'**
+  String get specialistAiRecommendationAssigning;
 
   /// Snack bar after rejecting recommendation.
   ///

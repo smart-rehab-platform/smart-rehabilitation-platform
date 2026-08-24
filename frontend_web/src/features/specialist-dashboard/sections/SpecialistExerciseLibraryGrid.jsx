@@ -1,4 +1,5 @@
 import { useLocale } from "../../../context/useLocale";
+import { useTranslatedExerciseList } from "../../../hooks/useTranslatedExerciseContent";
 import {
   SpecialistExerciseCard,
   SpecialistExerciseCardSkeleton,
@@ -24,7 +25,7 @@ export function SpecialistExerciseLibraryGrid({
   selectedExerciseId = "",
 }) {
   const { t } = useLocale();
-
+  const translatedVisible = useTranslatedExerciseList(visibleExercises);
   if (isLoading) {
     return (
       <div className="pd-specialist-exercise-library">
@@ -73,7 +74,7 @@ export function SpecialistExerciseLibraryGrid({
         </section>
       ) : (
         <div className="pd-specialist-exercise-grid">
-          {visibleExercises.map((exercise) => (
+          {translatedVisible.map((exercise) => (
             <SpecialistExerciseCard
               key={exercise.id}
               exercise={exercise}

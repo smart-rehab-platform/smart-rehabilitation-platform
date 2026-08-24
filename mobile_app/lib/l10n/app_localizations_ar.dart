@@ -3584,6 +3584,62 @@ class AppLocalizationsAr extends AppLocalizations {
       'فشل تجاهل تقرير الذكاء الاصطناعي.';
 
   @override
+  String get specialistReportEditReport => 'تعديل التقرير';
+
+  @override
+  String get specialistReportEditingBanner => 'تعديل التقرير';
+
+  @override
+  String get specialistReportSaveChanges => 'حفظ التعديلات';
+
+  @override
+  String get specialistReportSavingChanges => 'جارٍ حفظ التعديلات...';
+
+  @override
+  String get specialistReportCancelEditing => 'إلغاء التعديل';
+
+  @override
+  String get specialistReportSaveChangesSuccess => 'تم حفظ التعديلات بنجاح';
+
+  @override
+  String get specialistReportSaveChangesFailed => 'فشل حفظ التعديلات';
+
+  @override
+  String get specialistReportEditEmptyContent =>
+      'لا يمكن أن يكون محتوى التقرير فارغًا.';
+
+  @override
+  String get specialistReportEditListHint => 'أدخل عنصرًا واحدًا في كل سطر.';
+
+  @override
+  String get specialistAiReportSectionExecutiveSummary => 'الملخص التنفيذي';
+
+  @override
+  String get specialistAiReportSectionPatientProgress => 'ملخص تقدم المريض';
+
+  @override
+  String get specialistAiReportSectionSpeechAnalysis => 'ملخص تحليل الكلام';
+
+  @override
+  String get specialistAiReportSectionExerciseAdherence =>
+      'ملخص الالتزام بالتمارين';
+
+  @override
+  String get specialistAiReportSectionGoalProgress => 'ملخص تقدم الأهداف';
+
+  @override
+  String get specialistAiReportSectionClinicalInsights => 'رؤى سريرية';
+
+  @override
+  String get specialistAiReportSectionRisks => 'مخاطر أو انتكاسات';
+
+  @override
+  String get specialistAiReportSectionRecommendations => 'التوصيات';
+
+  @override
+  String get specialistAiReportSectionNextSteps => 'الخطوات التالية';
+
+  @override
   String get specialistGenerateAiReportSuccessReview =>
       'تم إنشاء تقرير الذكاء الاصطناعي. يرجى مراجعته قبل إنشاء PDF.';
 
@@ -3673,6 +3729,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get specialistAiRecommendationAccepted => 'تم قبول التوصية';
+
+  @override
+  String get specialistAiRecommendationAssign => 'تعيين';
+
+  @override
+  String get specialistAiRecommendationAssigning => 'جارٍ التعيين...';
 
   @override
   String get specialistAiRecommendationRejected => 'تم رفض التوصية';

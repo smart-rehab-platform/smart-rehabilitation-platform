@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/locale/locale_provider.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../data/translation_repository.dart';
 import '../../models/parent_dashboard_models.dart';
 import '../../providers/parent_dashboard_provider.dart';
 import '../../providers/parent_features_provider.dart';
@@ -275,6 +277,9 @@ class ParentExerciseDetailScreen extends ConsumerStatefulWidget {
 
 class _ParentExerciseDetailScreenState
     extends ConsumerState<ParentExerciseDetailScreen> {
+  String? _displayTitle;
+  String? _displayInstructions;
+  String? _translationKey;
   final _notesController = TextEditingController();
   ParentExerciseMediaSelection? _mediaSelection;
   ParentSpecialistFeedback? _retryFeedback;
@@ -301,6 +306,42 @@ class _ParentExerciseDetailScreenState
       }
     }
     return null;
+  }
+
+  Future<void> _syncTranslatedContent({
+    required String title,
+    String? instructions,
+  }) async {
+    final language = languageCodeFromLocale(ref.read(localeProvider));
+    final key = '$language|$title|${instructions ?? ''}';
+    if (_translationKey == key) {
+      return;
+    }
+    _translationKey = key;
+
+    if (language != 'ar') {
+      if (!mounted) return;
+      setState(() {
+        _displayTitle = title;
+        _displayInstructions = instructions;
+      });
+      return;
+    }
+
+    final translated = await ref
+        .read(translationRepositoryProvider)
+        .translateExerciseFields(
+          title: title,
+          instructions: instructions,
+          targetLanguage: 'ar',
+        );
+    if (!mounted || _translationKey != key) {
+      return;
+    }
+    setState(() {
+      _displayTitle = translated.title;
+      _displayInstructions = translated.instructions;
+    });
   }
 
   ParentAssignedExercise? _findAssigned(ParentExercisesState state) {
@@ -420,6 +461,12 @@ class _ParentExerciseDetailScreenState
     final canSubmit = parentExerciseCanSubmit(actionState);
     final title = task?.title ?? assigned?.title ?? l10n.entityExercise;
     final instructions = task?.instructions ?? assigned?.instructions;
+    ref.watch(localeProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncTranslatedContent(title: title, instructions: instructions);
+    });
+    final displayTitle = _displayTitle ?? title;
+    final displayInstructions = _displayInstructions ?? instructions;
     final instructionMediaUrl =
         (task?.instructionMediaUrl ?? assigned?.instructionMediaUrl)?.trim();
     final hasInstructionMedia =
@@ -427,7 +474,7 @@ class _ParentExerciseDetailScreenState
     final theme = Theme.of(context);
 
     return ParentPageScaffold(
-      title: title,
+      title: displayTitle,
       showBackButton: true,
       body: SingleChildScrollView(
         padding: context.dashPadding,
@@ -462,9 +509,10 @@ class _ParentExerciseDetailScreenState
                     ),
                   ),
                   SizedBox(height: context.dashSpacing * 0.4),
-                  if (instructions != null && instructions.isNotEmpty)
+                  if (displayInstructions != null &&
+                      displayInstructions.isNotEmpty)
                     Text(
-                      instructions,
+                      displayInstructions,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: DashboardColors.textSecondary,
                         height: 1.45,

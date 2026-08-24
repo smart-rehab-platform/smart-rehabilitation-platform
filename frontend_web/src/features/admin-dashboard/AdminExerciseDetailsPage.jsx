@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useTranslatedExerciseContent } from "../../hooks/useTranslatedExerciseContent";
 import { deleteAdminExercise } from "../../services/adminExercisesService";
 import {
   ADMIN_WEB_ROUTES,
@@ -104,6 +105,24 @@ export default function AdminExerciseDetailsPage() {
     && !exercise
     && error === labels.notFound;
 
+  const translated = useTranslatedExerciseContent({
+    title: exercise?.title || "",
+    description: exercise?.description || "",
+    instructions: exercise?.instructions || "",
+  });
+
+  const displayExercise = useMemo(() => {
+    if (!exercise) {
+      return null;
+    }
+    return {
+      ...exercise,
+      title: translated.title || exercise.title,
+      description: translated.description || exercise.description,
+      instructions: translated.instructions || exercise.instructions,
+    };
+  }, [exercise, translated]);
+
   const handleBack = useCallback(() => {
     navigate(ADMIN_WEB_ROUTES.exercises);
   }, [navigate]);
@@ -198,15 +217,15 @@ export default function AdminExerciseDetailsPage() {
 
         <AdminExerciseDetailsHero
           labels={labels}
-          exercise={exercise}
+          exercise={displayExercise}
           canEdit={canEdit}
           onEdit={handleEdit}
           onDelete={handleOpenDelete}
         />
         <div className={`pd-admin-exercise-details-content${exercise.hasMedia ? "" : " is-single-column"}`}>
           <div className="pd-admin-exercise-details-primary">
-            <AdminExerciseDescription labels={labels} description={exercise.description} />
-            <AdminExerciseInstructions labels={labels} instructions={exercise.instructions} />
+            <AdminExerciseDescription labels={labels} description={displayExercise.description} />
+            <AdminExerciseInstructions labels={labels} instructions={displayExercise.instructions} />
           </div>
 
           {exercise.hasMedia ? (

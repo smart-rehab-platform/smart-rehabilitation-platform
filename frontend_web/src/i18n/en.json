@@ -2613,6 +2613,17 @@
         "approving": "Approving & generating PDF...",
         "approvedSuccess": "Report approved and PDF generated successfully."
       },
+      "edit": {
+        "editReport": "Edit Report",
+        "editingBanner": "Editing Report",
+        "saveChanges": "Save Changes",
+        "saving": "Saving changes...",
+        "cancelEditing": "Cancel Editing",
+        "saveSuccess": "Changes saved successfully",
+        "saveFailed": "Failed to save changes",
+        "emptyContent": "Report content cannot be empty.",
+        "listItemsHint": "Enter one item per line."
+      },
       "discard": {
         "action": "Discard Report",
         "confirmTitle": "Discard AI report?",
@@ -2747,9 +2758,9 @@
       },
       "suggestedExerciseFallback": "Suggested exercise",
       "actions": {
-        "accept": "Accept",
+        "assign": "Assign",
         "reject": "Reject",
-        "saving": "Saving..."
+        "assigning": "Assigning..."
       },
       "toast": {
         "generated": "AI recommendation generated",

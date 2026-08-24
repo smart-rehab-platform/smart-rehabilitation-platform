@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/dashboard_colors.dart';
+import '../../../../core/locale/locale_provider.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../data/translation_repository.dart';
 import '../../models/specialist_feature_models.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
@@ -308,6 +311,8 @@ class SpecialistExerciseCard extends StatelessWidget {
     this.showMediaIndicator = false,
     this.showChevron = false,
     this.trailing,
+    this.displayTitle,
+    this.displaySummary,
   });
 
   final SpecialistExerciseItem exercise;
@@ -316,13 +321,16 @@ class SpecialistExerciseCard extends StatelessWidget {
   final bool showMediaIndicator;
   final bool showChevron;
   final Widget? trailing;
+  final String? displayTitle;
+  final String? displaySummary;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final category = exercise.category?.trim();
-    final summary = exercise.previewText;
+    final summary = displaySummary ?? exercise.previewText;
+    final title = displayTitle ?? exercise.title;
     final iconColor = exerciseCategoryIconColor(category);
     final iconBackground = exerciseCategoryIconBackground(category);
     final showMedia = showMediaIndicator || exercise.hasMedia;
@@ -358,7 +366,7 @@ class SpecialistExerciseCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          exercise.title,
+                          title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -447,7 +455,7 @@ class SpecialistExerciseCard extends StatelessWidget {
 typedef ExerciseLibraryItemBuilder =
     Widget Function(BuildContext context, SpecialistExerciseItem exercise);
 
-class ExerciseLibraryBody extends StatelessWidget {
+class ExerciseLibraryBody extends ConsumerStatefulWidget {
   const ExerciseLibraryBody({
     super.key,
     required this.isLoading,
@@ -483,23 +491,97 @@ class ExerciseLibraryBody extends StatelessWidget {
   final Widget? headerAction;
 
   @override
+  ConsumerState<ExerciseLibraryBody> createState() =>
+      _ExerciseLibraryBodyState();
+}
+
+class _ExerciseLibraryBodyState extends ConsumerState<ExerciseLibraryBody> {
+  Map<String, SpecialistExerciseItem> _translatedById = {};
+  String? _translationKey;
+
+  Future<void> _syncTranslations(List<SpecialistExerciseItem> visible) async {
+    final language = languageCodeFromLocale(ref.read(localeProvider));
+    final key = '$language|${visible.map((e) => '${e.id}:${e.title}').join(',')}';
+    if (_translationKey == key) {
+      return;
+    }
+    _translationKey = key;
+
+    if (language != 'ar' || visible.isEmpty) {
+      if (!mounted) return;
+      setState(() => _translatedById = {});
+      return;
+    }
+
+    final flat = <String>[];
+    for (final item in visible) {
+      flat.add(item.title);
+      flat.add(item.description ?? '');
+      flat.add(item.instructions ?? item.previewText);
+    }
+
+    final translated = await ref
+        .read(translationRepositoryProvider)
+        .translateTexts(texts: flat, targetLanguage: 'ar');
+
+    if (!mounted || _translationKey != key) {
+      return;
+    }
+
+    final next = <String, SpecialistExerciseItem>{};
+    for (var i = 0; i < visible.length; i++) {
+      final item = visible[i];
+      final base = i * 3;
+      next[item.id] = SpecialistExerciseItem(
+        id: item.id,
+        title: translated[base],
+        category: item.category,
+        categoryId: item.categoryId,
+        language: item.language,
+        description: translated[base + 1].isEmpty
+            ? item.description
+            : translated[base + 1],
+        instructions: translated[base + 2].isEmpty
+            ? item.instructions
+            : translated[base + 2],
+        instructionMediaUrl: item.instructionMediaUrl,
+        createdBy: item.createdBy,
+        createdByName: item.createdByName,
+        expectedText: item.expectedText,
+        targetWord: item.targetWord,
+        targetPhoneme: item.targetPhoneme,
+      );
+    }
+
+    setState(() => _translatedById = next);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final categories = buildExerciseCategoryFilters(items);
+    ref.watch(localeProvider);
+    final categories = buildExerciseCategoryFilters(widget.items);
     final visible = filterExercises(
-      items,
-      searchQuery: searchController.text,
-      selectedCategory: selectedCategory,
+      widget.items,
+      searchQuery: widget.searchController.text,
+      selectedCategory: widget.selectedCategory,
     );
 
-    if (isLoading) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncTranslations(visible);
+    });
+
+    if (widget.isLoading) {
       return const Center(child: DashboardLoadingCard());
     }
 
-    if (errorMessage != null && items.isEmpty) {
+    if (widget.errorMessage != null && widget.items.isEmpty) {
       return Padding(
         padding: context.dashPadding,
-        child: DashboardErrorCard(message: errorMessage!, onRetry: onRetry),
+        child: DashboardErrorCard(
+          message: widget.errorMessage!,
+          onRetry: widget.onRetry,
+        ),
       );
     }
 
@@ -507,62 +589,50 @@ class ExerciseLibraryBody extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: context.dashPadding,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    headerTitle,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: DashboardColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: context.dashSpacing * 0.25),
-                  Text(
-                    headerSubtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: DashboardColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (headerAction != null) ...[
-              SizedBox(width: context.dashSpacing * 0.5),
-              headerAction!,
-            ],
-          ],
+        Text(
+          widget.headerTitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
         ),
-        SizedBox(height: context.dashSpacing * 0.75),
+        SizedBox(height: context.dashSpacing * 0.35),
+        Text(
+          widget.headerSubtitle,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: DashboardColors.textSecondary,
+          ),
+        ),
+        if (widget.headerAction != null) ...[
+          SizedBox(height: context.dashSpacing * 0.75),
+          widget.headerAction!,
+        ],
+        SizedBox(height: context.dashSpacing),
         buildExerciseSearchField(
           context: context,
-          controller: searchController,
-          onChanged: onSearchChanged,
+          controller: widget.searchController,
+          onChanged: widget.onSearchChanged,
         ),
-        if (items.isNotEmpty) ...[
-          SizedBox(height: context.dashSpacing * 0.75),
-          SpecialistExerciseCategoryChips(
-            categories: categories,
-            selected: selectedCategory,
-            onChanged: onCategoryChanged,
-          ),
-        ],
-        if (errorMessage != null) ...[
-          SizedBox(height: context.dashSpacing * 0.75),
-          DashboardErrorCard(message: errorMessage!, onRetry: onRetry),
-        ],
         SizedBox(height: context.dashSpacing * 0.75),
-        if (items.isEmpty)
-          DashboardEmptyCard(message: emptyItemsMessage)
-        else if (visible.isEmpty)
-          DashboardEmptyCard(message: emptyFilteredMessage)
-        else
-          ...visible.map((exercise) => itemBuilder(context, exercise)),
+        SpecialistExerciseCategoryChips(
+          categories: categories,
+          selected: widget.selectedCategory,
+          onChanged: widget.onCategoryChanged,
+        ),
         SizedBox(height: context.dashSpacing),
+        if (visible.isEmpty)
+          DashboardEmptyCard(
+            message: widget.items.isEmpty
+                ? widget.emptyItemsMessage
+                : widget.emptyFilteredMessage,
+          )
+        else
+          ...visible.map((exercise) {
+            final translated = _translatedById[exercise.id];
+            return widget.itemBuilder(
+              context,
+              translated ?? exercise,
+            );
+          }),
       ],
     );
   }

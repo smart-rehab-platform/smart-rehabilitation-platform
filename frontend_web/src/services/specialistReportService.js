@@ -276,3 +276,18 @@ export async function discardAiReport(reportId) {
     throwServiceError(error, "Failed to discard AI report.");
   }
 }
+
+/** Update unapproved AI report draft clinical fields (PATCH /ai/reports/:id). */
+export async function updateAiReportDraft(reportId, payload) {
+  const id = requireId(reportId, "Report id");
+  try {
+    const response = await api.patch(`/ai/reports/${encodeURIComponent(id)}`, payload);
+    const row = extractMap(response);
+    if (!row) {
+      throw new Error("Invalid AI report draft update response.");
+    }
+    return mapAiReportDetail(row);
+  } catch (error) {
+    throwServiceError(error, "Failed to save AI report changes.");
+  }
+}

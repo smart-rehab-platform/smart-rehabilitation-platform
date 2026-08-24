@@ -59,10 +59,17 @@ export default function SpecialistReportDetailsPage() {
     isLoading,
     isExporting,
     isDiscarding,
+    isSavingDraft,
+    isEditing,
+    draftForm,
     error,
     reload,
     generatePdf,
     discardReport,
+    startEditing,
+    cancelEditing,
+    updateDraftField,
+    saveDraft,
   } = useSpecialistReportDetails(reportId, isAiReport);
 
   const handleBack = useCallback(() => {
@@ -102,6 +109,21 @@ export default function SpecialistReportDetailsPage() {
       );
     }
   }, [detail?.isAi, generatePdf, showToast, t]);
+
+  const handleStartEditing = useCallback(() => {
+    startEditing();
+  }, [startEditing]);
+
+  const handleCancelEditing = useCallback(() => {
+    cancelEditing();
+  }, [cancelEditing]);
+
+  const handleSaveDraft = useCallback(async () => {
+    const ok = await saveDraft();
+    if (ok) {
+      showToast(t("specialist.reports.edit.saveSuccess"));
+    }
+  }, [saveDraft, showToast, t]);
 
   const handleOpenDiscardConfirm = useCallback(() => {
     setDiscardConfirmOpen(true);
@@ -192,7 +214,11 @@ export default function SpecialistReportDetailsPage() {
             <span className="pd-section-sub">{detail.dateLabel}</span>
           </div>
           {isAwaitingAiReview ? (
-            <p className="pd-section-sub">{t("specialist.reports.review.banner")}</p>
+            <p className="pd-section-sub">
+              {isEditing
+                ? t("specialist.reports.edit.editingBanner")
+                : t("specialist.reports.review.banner")}
+            </p>
           ) : null}
           {detail.periodStart && detail.periodEnd ? (
             <p className="pd-section-sub">
@@ -245,8 +271,14 @@ export default function SpecialistReportDetailsPage() {
           </dl>
         </section>
 
-        {detail.isAi && detail.aiStructuredSummary?.isStructured ? (
-          <SpecialistAiReportStructuredContent detail={detail} />
+        {detail.isAi && (detail.aiStructuredSummary?.isStructured || isEditing) ? (
+          <SpecialistAiReportStructuredContent
+            detail={detail}
+            isEditing={isEditing}
+            draftForm={draftForm}
+            onDraftFieldChange={updateDraftField}
+            draftDisabled={isSavingDraft}
+          />
         ) : (
           detail.sections.map((section) => (
             <section key={section.title} className="pd-card pd-card-pad pd-specialist-report-section">
@@ -266,13 +298,42 @@ export default function SpecialistReportDetailsPage() {
               {t("specialist.reports.pdf.copyLink")}
             </button>
           </>
-        ) : isAwaitingAiReview ? (
+        ) : isAwaitingAiReview && isEditing ? (
           <div className="pd-specialist-report-review-actions">
             <button
               type="button"
               className="pd-btn pd-btn-primary pd-specialist-review-submit"
+              onClick={handleSaveDraft}
+              disabled={isSavingDraft}
+            >
+              {isSavingDraft
+                ? t("specialist.reports.edit.saving")
+                : t("specialist.reports.edit.saveChanges")}
+            </button>
+            <button
+              type="button"
+              className="pd-btn pd-btn-soft"
+              onClick={handleCancelEditing}
+              disabled={isSavingDraft}
+            >
+              {t("specialist.reports.edit.cancelEditing")}
+            </button>
+          </div>
+        ) : isAwaitingAiReview ? (
+          <div className="pd-specialist-report-review-actions">
+            <button
+              type="button"
+              className="pd-btn pd-btn-soft"
+              onClick={handleStartEditing}
+              disabled={isExporting || isDiscarding || isSavingDraft}
+            >
+              {t("specialist.reports.edit.editReport")}
+            </button>
+            <button
+              type="button"
+              className="pd-btn pd-btn-primary pd-specialist-review-submit"
               onClick={handleApproveAndGeneratePdf}
-              disabled={isExporting || isDiscarding}
+              disabled={isExporting || isDiscarding || isSavingDraft || isEditing}
             >
               {isExporting
                 ? t("specialist.reports.review.approving")
@@ -282,7 +343,7 @@ export default function SpecialistReportDetailsPage() {
               type="button"
               className="pd-btn pd-btn-danger-outline pd-specialist-report-discard-btn"
               onClick={handleOpenDiscardConfirm}
-              disabled={isExporting || isDiscarding}
+              disabled={isExporting || isDiscarding || isSavingDraft || isEditing}
             >
               {t("specialist.reports.discard.action")}
             </button>

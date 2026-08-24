@@ -289,6 +289,7 @@ class SpecialistReportDetailState {
     this.isLoading = false,
     this.isExporting = false,
     this.isDiscarding = false,
+    this.isSavingDraft = false,
     this.errorMessage,
     this.detail,
   });
@@ -296,6 +297,7 @@ class SpecialistReportDetailState {
   final bool isLoading;
   final bool isExporting;
   final bool isDiscarding;
+  final bool isSavingDraft;
   final String? errorMessage;
   final SpecialistReportDetail? detail;
 
@@ -303,6 +305,7 @@ class SpecialistReportDetailState {
     bool? isLoading,
     bool? isExporting,
     bool? isDiscarding,
+    bool? isSavingDraft,
     Object? errorMessage = _sentinel,
     SpecialistReportDetail? detail,
   }) {
@@ -310,6 +313,7 @@ class SpecialistReportDetailState {
       isLoading: isLoading ?? this.isLoading,
       isExporting: isExporting ?? this.isExporting,
       isDiscarding: isDiscarding ?? this.isDiscarding,
+      isSavingDraft: isSavingDraft ?? this.isSavingDraft,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
@@ -378,7 +382,7 @@ class SpecialistReportDetailNotifier
   }
 
   Future<bool> generatePdf() async {
-    if (state.isExporting || state.isDiscarding) {
+    if (state.isExporting || state.isDiscarding || state.isSavingDraft) {
       return false;
     }
 
@@ -401,9 +405,46 @@ class SpecialistReportDetailNotifier
     }
   }
 
+  /// Saves edited clinical draft fields (PATCH /ai/reports/:id).
+  Future<bool> saveAiReportDraft(Map<String, dynamic> payload) async {
+    if (!_args.isAiReport ||
+        state.isSavingDraft ||
+        state.isExporting ||
+        state.isDiscarding) {
+      return false;
+    }
+
+    _ensureAuthToken();
+    state = state.copyWith(isSavingDraft: true, errorMessage: null);
+
+    try {
+      final detail = await _repository.updateAiReportDraft(
+        reportId: _args.reportId,
+        payload: payload,
+      );
+      state = state.copyWith(isSavingDraft: false, detail: detail);
+      return true;
+    } on SpecialistAiReportDraftUpdateException catch (error) {
+      state = state.copyWith(
+        isSavingDraft: false,
+        errorMessage: error.message,
+      );
+      return false;
+    } catch (error) {
+      state = state.copyWith(
+        isSavingDraft: false,
+        errorMessage: 'Failed to save AI report changes: $error',
+      );
+      return false;
+    }
+  }
+
   /// Discards an AI report that is awaiting review (DELETE /ai/reports/:id).
   Future<bool> discardAiReport() async {
-    if (!_args.isAiReport || state.isDiscarding || state.isExporting) {
+    if (!_args.isAiReport ||
+        state.isDiscarding ||
+        state.isExporting ||
+        state.isSavingDraft) {
       return false;
     }
 

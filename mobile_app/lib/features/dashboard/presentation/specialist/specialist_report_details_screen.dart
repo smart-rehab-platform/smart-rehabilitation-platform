@@ -7,12 +7,15 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../models/specialist_ai_report_structured_summary.dart';
 import '../../models/specialist_reports_models.dart';
 import '../../providers/specialist_reports_provider.dart';
 import '../../widgets/admin_page_scaffold.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/specialist_page_scaffold.dart';
+import 'specialist_ai_report_edit_widgets.dart';
+import 'specialist_ai_report_section_labels.dart';
 import 'specialist_reports_widgets.dart';
 
 class SpecialistReportDetailsScreen extends ConsumerStatefulWidget {
@@ -35,6 +38,8 @@ class SpecialistReportDetailsScreen extends ConsumerStatefulWidget {
 class _SpecialistReportDetailsScreenState
     extends ConsumerState<SpecialistReportDetailsScreen> {
   late final SpecialistReportDetailArgs _args;
+  bool _isEditing = false;
+  final Map<String, TextEditingController> _draftControllers = {};
 
   @override
   void initState() {
@@ -43,6 +48,74 @@ class _SpecialistReportDetailsScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistReportDetailProvider(_args).notifier).initialize();
     });
+  }
+
+  @override
+  void dispose() {
+    _disposeDraftControllers();
+    super.dispose();
+  }
+
+  void _disposeDraftControllers() {
+    for (final controller in _draftControllers.values) {
+      controller.dispose();
+    }
+    _draftControllers.clear();
+  }
+
+  TextDirection _contentDirection(SpecialistReportDetail detail) {
+    return detail.isAiReport && detail.language == 'ar'
+        ? TextDirection.rtl
+        : TextDirection.ltr;
+  }
+
+  void _startEditing(SpecialistReportDetail detail) {
+    _disposeDraftControllers();
+    final form = detail.aiStructuredSummary.toDraftFormMap();
+    for (final fieldId in specialistAiReportEditableFieldIds()) {
+      _draftControllers[fieldId] = TextEditingController(text: form[fieldId] ?? '');
+    }
+    setState(() => _isEditing = true);
+  }
+
+  void _cancelEditing() {
+    _disposeDraftControllers();
+    setState(() => _isEditing = false);
+  }
+
+  Future<void> _saveDraft(AppLocalizations l10n) async {
+    final form = <String, String>{};
+    for (final entry in _draftControllers.entries) {
+      form[entry.key] = entry.value.text;
+    }
+
+    if (!SpecialistAiReportStructuredSummary.hasClinicalContent(form)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.specialistReportEditEmptyContent)),
+      );
+      return;
+    }
+
+    final notifier = ref.read(specialistReportDetailProvider(_args).notifier);
+    final success = await notifier.saveAiReportDraft(
+      SpecialistAiReportStructuredSummary.buildUpdatePayload(form),
+    );
+    if (!mounted) return;
+
+    if (success) {
+      _cancelEditing();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.specialistReportSaveChangesSuccess)),
+      );
+      return;
+    }
+
+    final error = ref.read(specialistReportDetailProvider(_args)).errorMessage ??
+        l10n.specialistReportSaveChangesFailed;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(error)),
+    );
   }
 
   String? _resolvedPdfUrl(String? pdfUrl) {
@@ -90,6 +163,10 @@ class _SpecialistReportDetailsScreenState
     AppLocalizations l10n, {
     required bool isAiApproval,
   }) async {
+    if (_isEditing) {
+      return;
+    }
+
     final notifier = ref.read(specialistReportDetailProvider(_args).notifier);
     final success = await notifier.generatePdf();
     if (!mounted) return;
@@ -153,7 +230,7 @@ class _SpecialistReportDetailsScreenState
 
   Future<void> _discardReport(AppLocalizations l10n) async {
     final state = ref.read(specialistReportDetailProvider(_args));
-    if (state.isDiscarding || state.isExporting) {
+    if (state.isDiscarding || state.isExporting || state.isSavingDraft || _isEditing) {
       return;
     }
 
@@ -194,7 +271,10 @@ class _SpecialistReportDetailsScreenState
     required SpecialistReportDetailState state,
   }) {
     final pdfUrl = detail.pdfUrl;
-    final busy = state.isExporting || state.isDiscarding;
+    final busy = state.isExporting ||
+        state.isDiscarding ||
+        state.isSavingDraft ||
+        _isEditing;
 
     if (detail.hasPdf && pdfUrl != null && pdfUrl.trim().isNotEmpty) {
       return [
@@ -234,8 +314,74 @@ class _SpecialistReportDetailsScreenState
     }
 
     if (detail.isAwaitingReview) {
+      if (_isEditing) {
+        return [
+          SizedBox(height: context.dashSpacing),
+          ElevatedButton.icon(
+            onPressed: state.isSavingDraft ? null : () => _saveDraft(l10n),
+            icon: state.isSavingDraft
+                ? SizedBox(
+                    width: context.dashSpacing * 0.55,
+                    height: context.dashSpacing * 0.55,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.save_outlined),
+            label: Text(
+              state.isSavingDraft
+                  ? l10n.specialistReportSavingChanges
+                  : l10n.specialistReportSaveChanges,
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: DashboardColors.brandCyan,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(
+                vertical: context.dashSpacing * 0.65,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+          SizedBox(height: context.dashSpacing * 0.5),
+          OutlinedButton.icon(
+            onPressed: state.isSavingDraft ? null : _cancelEditing,
+            icon: const Icon(Icons.close_rounded),
+            label: Text(l10n.specialistReportCancelEditing),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: DashboardColors.brandCyan,
+              padding: EdgeInsets.symmetric(
+                vertical: context.dashSpacing * 0.65,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              side: const BorderSide(color: DashboardColors.brandCyan),
+            ),
+          ),
+        ];
+      }
+
       return [
         SizedBox(height: context.dashSpacing),
+        OutlinedButton.icon(
+          onPressed: busy ? null : () => _startEditing(detail),
+          icon: const Icon(Icons.edit_outlined),
+          label: Text(l10n.specialistReportEditReport),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: DashboardColors.brandCyan,
+            padding: EdgeInsets.symmetric(
+              vertical: context.dashSpacing * 0.65,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            side: const BorderSide(color: DashboardColors.brandCyan),
+          ),
+        ),
+        SizedBox(height: context.dashSpacing * 0.5),
         ElevatedButton.icon(
           onPressed: busy
               ? null
@@ -357,29 +503,47 @@ class _SpecialistReportDetailsScreenState
       );
     } else {
       final sections = detail.sections;
+      final contentDirection = _contentDirection(detail);
 
       body = SingleChildScrollView(
         padding: context.dashPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SpecialistReportHeaderCard(detail: detail),
+            SpecialistReportHeaderCard(
+              detail: detail,
+              isEditing: _isEditing,
+            ),
             SizedBox(height: context.dashSpacing * 0.75),
             SpecialistReportInformationCard(detail: detail),
-            if (sections.isNotEmpty) ...[
+            if (_isEditing && detail.isAiReport) ...[
+              SizedBox(height: context.dashSpacing),
+              SpecialistAiReportDraftEditPanel(
+                fieldIds: specialistAiReportEditableFieldIds(),
+                controllers: _draftControllers,
+                textDirection: contentDirection,
+                listHint: l10n.specialistReportEditListHint,
+              ),
+            ] else if (sections.isNotEmpty) ...[
               SizedBox(height: context.dashSpacing),
               ...sections.map(
-                (section) => Padding(
-                  padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
-                  child: SpecialistReportSectionCard(
-                    section: section,
-                    textDirection: detail.isAiReport && detail.language == 'ar'
-                        ? TextDirection.rtl
-                        : detail.isAiReport
-                            ? TextDirection.ltr
-                            : null,
-                  ),
-                ),
+                (section) {
+                  final displayTitle = section.fieldId != null
+                      ? specialistAiReportSectionTitle(l10n, section.fieldId!)
+                      : section.title;
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: context.dashSpacing * 0.6),
+                    child: SpecialistReportSectionCard(
+                      section: SpecialistReportSection(
+                        title: displayTitle,
+                        content: section.content,
+                        fieldId: section.fieldId,
+                        items: section.items,
+                      ),
+                      textDirection: detail.isAiReport ? contentDirection : null,
+                    ),
+                  );
+                },
               ),
             ],
             ..._buildBottomActions(

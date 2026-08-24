@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { SpecialistExerciseInstructionMedia } from "./components/SpecialistExerciseMediaSection";
 import { useAuth } from "../../context/useAuth";
 import { useLocale } from "../../context/useLocale";
+import { useTranslatedExerciseContent } from "../../hooks/useTranslatedExerciseContent";
 import {
   SPECIALIST_WEB_ROUTES,
   buildSpecialistExerciseEditPath,
@@ -57,6 +58,12 @@ export default function SpecialistExerciseDetailsPage() {
     reload,
   } = useSpecialistExerciseDetail(exerciseId, Boolean(specialistUserId));
 
+  const translated = useTranslatedExerciseContent({
+    title: exercise?.title || "",
+    description: exercise?.description || "",
+    instructions: exercise?.instructions || "",
+  });
+
   const handleBack = useCallback(() => {
     navigate(SPECIALIST_WEB_ROUTES.exercises);
   }, [navigate]);
@@ -104,8 +111,8 @@ export default function SpecialistExerciseDetailsPage() {
       return null;
     }
 
-    const description = exercise.description?.trim();
-    const instructions = exercise.instructions?.trim();
+    const description = translated.description?.trim();
+    const instructions = translated.instructions?.trim();
     const categoryLabel = exercise.categoryLabel ?? exercise.category;
 
     return (
@@ -114,7 +121,7 @@ export default function SpecialistExerciseDetailsPage() {
           <div className="pd-specialist-exercise-details-head">
             <SpecialistExerciseCategoryIcon category={exercise.category} />
             <div className="pd-specialist-exercise-details-copy">
-              <h2 className="pd-specialist-exercise-details-title" dir="auto">{exercise.title}</h2>
+              <h2 className="pd-specialist-exercise-details-title" dir="auto">{translated.title}</h2>
               {categoryLabel ? (
                 <SpecialistExerciseCategoryBadge category={exercise.category} label={categoryLabel} />
               ) : null}

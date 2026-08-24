@@ -23,6 +23,7 @@ class SpecialistReportScopeException implements Exception {
 /// - GET /reports/:id
 /// - POST /reports/:id/export-pdf
 /// - POST /ai/reports/:id/export-pdf
+/// - PATCH /ai/reports/:id
 /// - DELETE /ai/reports/:id
 /// - GET /ai/reports
 /// - GET /ai/reports/:id
@@ -236,6 +237,45 @@ class SpecialistReportsRepository {
     }
   }
 
+  /// Updates clinical draft fields on an unapproved AI report.
+  /// PATCH /ai/reports/:id
+  Future<SpecialistReportDetail> updateAiReportDraft({
+    required String reportId,
+    required Map<String, dynamic> payload,
+  }) async {
+    final id = reportId.trim();
+    if (id.isEmpty) {
+      throw const SpecialistAiReportDraftUpdateException(
+        message: 'Report id is required.',
+      );
+    }
+
+    try {
+      final response = await _dio.patch('/ai/reports/$id', data: payload);
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw const SpecialistAiReportDraftUpdateException(
+          message: 'Invalid AI report draft update response.',
+        );
+      }
+      final detail = SpecialistReportDetail.fromAiMap(map);
+      if (detail.id.isEmpty) {
+        throw const SpecialistAiReportDraftUpdateException(
+          message: 'Invalid AI report draft update response.',
+        );
+      }
+      return detail;
+    } on DioException catch (error) {
+      throw SpecialistAiReportDraftUpdateException(
+        message: _readErrorMessage(
+          error,
+          fallback: 'Failed to save AI report changes.',
+        ),
+        statusCode: error.response?.statusCode,
+      );
+    }
+  }
+
   Future<SpecialistReportDetail> generateAiReport(
     SpecialistAiReportGenerateRequest request,
   ) async {
@@ -352,6 +392,19 @@ class SpecialistAiReportGenerationException implements Exception {
 
 class SpecialistAiReportDiscardException implements Exception {
   const SpecialistAiReportDiscardException({
+    required this.message,
+    this.statusCode,
+  });
+
+  final String message;
+  final int? statusCode;
+
+  @override
+  String toString() => message;
+}
+
+class SpecialistAiReportDraftUpdateException implements Exception {
+  const SpecialistAiReportDraftUpdateException({
     required this.message,
     this.statusCode,
   });

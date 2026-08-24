@@ -39,6 +39,14 @@ router.post(
   aiReportsController.exportReportPdf
 );
 
+router.patch(
+  "/ai/reports/:id",
+  authenticate,
+  authorizeRoles("admin", "specialist"),
+  aiReportsValidation.validateUpdateAiReportDraft,
+  aiReportsController.updateReportDraft
+);
+
 router.delete(
   "/ai/reports/:id",
   authenticate,

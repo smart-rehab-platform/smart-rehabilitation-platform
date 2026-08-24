@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useLocale } from "../../context/useLocale.js";
+import { useTranslatedExerciseContent } from "../../hooks/useTranslatedExerciseContent";
 import { PARENT_WEB_ROUTES } from "../../routes/parentDashboardRoutes";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { InstructionMediaCard } from "./components/InstructionMediaCard";
@@ -61,6 +62,12 @@ export default function ParentExerciseDetailPage() {
     assignedExerciseId,
     patientId,
   );
+
+  const translated = useTranslatedExerciseContent({
+    title: viewModel?.title || "",
+    description: viewModel?.description || "",
+    instructions: viewModel?.instructions || "",
+  });
 
   const isActionable = viewModel ? isExerciseActionable(viewModel.status) : false;
 
@@ -198,7 +205,7 @@ export default function ParentExerciseDetailPage() {
         <section className="pd-card pd-card-pad pd-exercise-detail-hero" aria-label={t("parent.exercises.detailTitle")}>
           <div className="pd-exercise-detail-head">
             <div className="pd-exercise-detail-title-row">
-              <h1 className="pd-exercise-detail-title" dir="auto">{viewModel.title}</h1>
+              <h1 className="pd-exercise-detail-title" dir="auto">{translated.title || viewModel.title}</h1>
               {statusMeta ? (
                 <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
               ) : null}
@@ -234,8 +241,10 @@ export default function ParentExerciseDetailPage() {
 
         <section className="pd-card pd-card-pad pd-exercise-detail-instructions" aria-label={t("parent.pages.exerciseDetail.instructions")}>
           <h2 className="pd-section-title">{t("parent.pages.exerciseDetail.instructions")}</h2>
-          {viewModel.instructions ? (
-            <p className="pd-exercise-detail-instructions-body" dir="auto">{viewModel.instructions}</p>
+          {translated.instructions || viewModel.instructions ? (
+            <p className="pd-exercise-detail-instructions-body" dir="auto">
+              {translated.instructions || viewModel.instructions}
+            </p>
           ) : (
             <p className="pd-exercise-detail-instructions-empty">
               {t("parent.pages.exerciseDetail.instructionsEmpty")}
