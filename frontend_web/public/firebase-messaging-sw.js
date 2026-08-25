@@ -53,6 +53,8 @@ if (typeof firebase === 'undefined') {
           ? `smart-rehab-${notificationId}`
           : undefined;
         const route = data.route || data.relatedEntityRoute || data.related_entity_route || null;
+        const iconUrl = (data.icon && String(data.icon).trim())
+          || '/branding/smart_rehab_notification_icon.png';
 
         // If any client is focused, forward data for in-app refresh and skip OS toast.
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
@@ -66,7 +68,8 @@ if (typeof firebase === 'undefined') {
 
           const options = {
             body: body,
-            icon: '/branding/smart_rehab_notification_icon.png',
+            icon: iconUrl,
+            image: iconUrl,
             tag: tag,
             renotify: false,
             data: {
@@ -83,7 +86,8 @@ if (typeof firebase === 'undefined') {
         }).catch(() => {
           self.registration.showNotification(title, {
             body,
-            icon: '/branding/smart_rehab_notification_icon.png',
+            icon: iconUrl,
+            image: iconUrl,
             tag,
             renotify: false,
             data: { route, data },
