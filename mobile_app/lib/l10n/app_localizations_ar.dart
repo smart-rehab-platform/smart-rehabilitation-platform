@@ -3301,6 +3301,24 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get communicationListAttachment => 'مرفق';
+
+  @override
+  String get communicationPreviewSentImage => 'أرسل صورة';
+
+  @override
+  String get communicationPreviewSentAudio => 'أرسل تسجيلاً صوتياً';
+
+  @override
+  String get communicationPreviewSentPdf => 'أرسل ملف PDF';
+
+  @override
+  String get communicationPreviewSentVideo => 'أرسل فيديو';
+
+  @override
+  String get communicationPreviewSentFile => 'أرسل ملفاً';
+
+  @override
   String get communicationOpeningConversation => 'جارٍ فتح المحادثة...';
 
   @override

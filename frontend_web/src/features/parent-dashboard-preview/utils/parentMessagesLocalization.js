@@ -46,6 +46,28 @@ export function getMessagesChatEmpty(t) {
   return translateKey(t, "parent.messages.empty.chat", "No messages yet. Start the conversation below.");
 }
 
+const SYSTEM_MESSAGE_BODY_KEYS = {
+  "Sent an image": "parent.notifications.systemText.sentImage",
+  "Sent an audio recording": "parent.notifications.systemText.sentAudio",
+  "Sent a PDF file": "parent.notifications.systemText.sentPdf",
+  "Sent a video": "parent.notifications.systemText.sentVideo",
+  "Sent a file": "parent.notifications.systemText.sentFile",
+};
+
+export function localizeParentMessageContent(content, t = null) {
+  const rawContent = typeof content === "string" ? content.trim() : "";
+  if (!rawContent) {
+    return rawContent;
+  }
+
+  const translationKey = SYSTEM_MESSAGE_BODY_KEYS[rawContent];
+  if (translationKey) {
+    return translateKey(t, translationKey, rawContent);
+  }
+
+  return content;
+}
+
 /** @deprecated Use getMessagesEmptyMessage(t) */
 export const MESSAGES_EMPTY_MESSAGE = getMessagesEmptyMessage(null);
 

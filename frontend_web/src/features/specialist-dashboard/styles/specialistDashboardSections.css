@@ -490,16 +490,17 @@
 
 .pd-preview .pd-specialist-conversation-search {
   display: block;
-  margin: 12px 0;
+  margin: 4px 0 6px;
 }
 
 .pd-preview .pd-specialist-conversation-search-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 12px;
+  padding: 7px 10px;
   border: 1px solid var(--pd-border-soft);
-  border-radius: 10px;
+  border-radius: 8px;
   font: inherit;
+  font-size: 0.8125rem;
   color: var(--pd-text);
   background: #fff;
 }

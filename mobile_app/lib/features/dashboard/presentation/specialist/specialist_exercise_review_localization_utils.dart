@@ -34,7 +34,7 @@ String localizedSubmissionStatus(AppLocalizations l10n, String status) {
 
 String localizedReviewDecision(AppLocalizations l10n, ReviewDecision decision) {
   return switch (decision) {
-    ReviewDecision.approved => l10n.statusApproved,
+    ReviewDecision.approved => l10n.statusCompleted,
     ReviewDecision.needsRetry => l10n.statusNeedsRetry,
   };
 }

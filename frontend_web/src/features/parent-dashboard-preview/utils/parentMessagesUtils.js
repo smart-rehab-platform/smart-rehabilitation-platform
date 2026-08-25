@@ -2,10 +2,17 @@ import { API_BASE_URL } from "../../../services/apiConfig";
 import { readString } from "./parentDashboardMappers";
 import { resolveMapperContext } from "./parentLocalizationCore";
 import {
+  formatConversationActivityTime,
+  readUnreadCount,
+  resolveConversationLastMessagePreview,
+  resolveConversationPatientDisplayName,
+} from "../../shared-dashboard/utils/messagesConversationListUtils.js";
+import {
   formatMessageTime,
   getDefaultSpecialistLabel,
   getMessagesChatEmpty,
   getMessagesEmptyMessage,
+  localizeParentMessageContent,
   resolveConversationSubtitle,
   resolveConversationTitle,
 } from "./parentMessagesLocalization";
@@ -35,7 +42,7 @@ function resolveMediaUrl(fileUrl) {
 }
 
 export function mapConversation(row, options = {}) {
-  const { t } = resolveMapperContext(options);
+  const { t, locale } = resolveMapperContext(options);
   const id = readString(row, ["id", "_id"]);
   const patientId = readString(row, ["patient_id", "patientId"]);
   const caseRequestChildName = readString(row, [
@@ -73,8 +80,37 @@ export function mapConversation(row, options = {}) {
     caseRequestId: readString(row, ["case_request_id", "caseRequestId"]),
     caseRequestChildName,
     createdAt: readString(row, ["created_at", "createdAt"]),
+    lastMessageContent: readString(row, ["last_message_content", "lastMessageContent"]),
+    lastMessageAt: readString(row, ["last_message_at", "lastMessageAt"]),
+    lastMessageHasAttachments: Boolean(
+      row?.last_message_has_attachments ?? row?.lastMessageHasAttachments,
+    ),
+    unreadCount: readUnreadCount(row?.unread_count ?? row?.unreadCount),
     title: resolveConversationTitle(normalizedRow, t) || getDefaultSpecialistLabel(t),
     subtitle: resolveConversationSubtitle(normalizedRow, t),
+    patientDisplayName: resolveConversationPatientDisplayName({
+      ...normalizedRow,
+      subtitleContext: caseRequestChildName && !patientId
+        ? { kind: "regardingChild", name: caseRequestChildName }
+        : normalizedRow.patientName
+          ? { kind: "patient", name: normalizedRow.patientName }
+          : null,
+    }),
+    activityTimeLabel: formatConversationActivityTime(
+      readString(row, ["last_message_at", "lastMessageAt"])
+        || readString(row, ["created_at", "createdAt"]),
+      locale,
+      t,
+    ),
+    previewLabel: resolveConversationLastMessagePreview(
+      {
+        lastMessageContent: readString(row, ["last_message_content", "lastMessageContent"]),
+        lastMessageHasAttachments: Boolean(
+          row?.last_message_has_attachments ?? row?.lastMessageHasAttachments,
+        ),
+      },
+      { t, localizeContent: localizeParentMessageContent },
+    ),
   };
 }
 

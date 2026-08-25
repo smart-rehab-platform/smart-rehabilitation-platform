@@ -15,7 +15,10 @@
     "unread": "unread",
     "navigation": "Navigation",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "messages": {
+      "attachment": "Attachment"
+    }
   },
   "nav": {
     "messages": "Messages",

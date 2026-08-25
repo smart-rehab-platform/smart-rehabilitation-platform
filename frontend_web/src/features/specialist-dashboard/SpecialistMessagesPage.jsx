@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useLocale } from "../../context/useLocale.js";
@@ -9,6 +9,7 @@ import {
 } from "../../routes/specialistDashboardRoutes";
 import { getConversation } from "../../services/specialistCommunicationService";
 import { UserProfileAvatar } from "../shared-dashboard/components/UserProfileAvatar";
+import { MessagesConversationListItem } from "../shared-dashboard/components/messages/MessagesConversationListItem";
 import { SpecialistMessageAttachmentDisplay } from "./components/messages/SpecialistMessageAttachmentDisplay";
 import { SpecialistMessagesComposer } from "./components/messages/SpecialistMessagesComposer";
 import { SpecialistPresenceStatus } from "./components/messages/SpecialistPresenceStatus";
@@ -343,31 +344,22 @@ export default function SpecialistMessagesPage() {
     return (
       <div className="pd-messages-list">
         {filteredConversations.map((conversation) => (
-          <button
+          <MessagesConversationListItem
             key={conversation.id}
-            type="button"
-            className={`pd-messages-list-item pd-specialist-conversation-item${
-              conversation.id === activeConversationId ? " is-active" : ""
-            }`}
-            onClick={() => navigateToConversation(conversation.id)}
-          >
-            <UserProfileAvatar
-              imageUrl={conversation.parentProfileImageUrl}
-              initials={getInitials(conversation.parentName, "P")}
-              alt=""
-              shellClassName="pd-avatar pd-specialist-conversation-avatar"
-              fallbackClassName="pd-avatar pd-specialist-conversation-avatar"
-              className="pd-avatar-photo"
-            />
-            <span className="pd-specialist-conversation-copy">
-              <strong dir="auto">{conversation.title}</strong>
-              {conversation.subtitle ? <span dir="auto">{conversation.subtitle}</span> : null}
-              {conversation.startedLabel ? (
-                <span className="pd-specialist-conversation-meta">{conversation.startedLabel}</span>
-              ) : null}
-            </span>
-            <ChevronRight size={16} aria-hidden="true" className="pd-specialist-conversation-chevron" />
-          </button>
+            conversationId={conversation.id}
+            isActive={conversation.id === activeConversationId}
+            onSelect={navigateToConversation}
+            avatarUrl={conversation.parentProfileImageUrl}
+            avatarInitials={getInitials(conversation.parentName, "P")}
+            avatarShellClassName="pd-avatar pd-conversation-avatar"
+            primaryName={conversation.title}
+            patientName={conversation.patientDisplayName}
+            preview={conversation.previewLabel}
+            activityTime={conversation.activityTimeLabel}
+            activityDateTime={conversation.lastMessageAt || conversation.createdAt}
+            unreadCount={conversation.unreadCount}
+            unreadAriaLabel={`${conversation.unreadCount} ${t("common.unread")}`}
+          />
         ))}
       </div>
     );

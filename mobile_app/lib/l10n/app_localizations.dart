@@ -5871,6 +5871,42 @@ abstract class AppLocalizations {
   /// **'Started {date}'**
   String communicationStartedOn(String date);
 
+  /// Fallback preview when the latest message has attachments only.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment'**
+  String get communicationListAttachment;
+
+  /// System preview for image attachment messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent an image'**
+  String get communicationPreviewSentImage;
+
+  /// System preview for audio attachment messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent an audio recording'**
+  String get communicationPreviewSentAudio;
+
+  /// System preview for PDF attachment messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent a PDF file'**
+  String get communicationPreviewSentPdf;
+
+  /// System preview for video attachment messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent a video'**
+  String get communicationPreviewSentVideo;
+
+  /// System preview for generic attachment messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent a file'**
+  String get communicationPreviewSentFile;
+
   /// Snack bar while opening a conversation.
   ///
   /// In en, this message translates to:

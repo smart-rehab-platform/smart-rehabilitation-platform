@@ -1,4 +1,9 @@
 import { formatAppDate, formatAppDateTime } from "../../../i18n/formatters.js";
+import {
+  formatConversationActivityTime,
+  resolveConversationLastMessagePreview,
+  resolveConversationPatientDisplayName,
+} from "../../shared-dashboard/utils/messagesConversationListUtils.js";
 import { resolveSpecialistMapperContext } from "./specialistDashboardLocalization.js";
 
 function translateKey(t, key, fallback, params) {
@@ -128,6 +133,16 @@ export function applySpecialistConversationLocalization(conversation, context = 
     ...conversation,
     title: conversation.parentName || getDefaultParentLabel(t),
     subtitle: resolveSpecialistConversationSubtitle(conversation, t),
+    patientDisplayName: resolveConversationPatientDisplayName(conversation),
+    activityTimeLabel: formatConversationActivityTime(
+      conversation.lastMessageAt || conversation.createdAt,
+      locale,
+      t,
+    ),
+    previewLabel: resolveConversationLastMessagePreview(conversation, {
+      t,
+      localizeContent: localizeSpecialistMessageContent,
+    }),
     startedLabel: formatConversationStartedLabel(conversation.createdAt, locale, t),
   };
 }

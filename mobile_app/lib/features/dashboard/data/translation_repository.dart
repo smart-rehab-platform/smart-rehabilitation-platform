@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/api_client.dart';
@@ -90,7 +91,9 @@ class TranslationRepository {
       }
 
       return result;
-    } catch (_) {
+    } catch (error, stackTrace) {
+      debugPrint('[translation] POST /translations failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
       return input;
     }
   }
