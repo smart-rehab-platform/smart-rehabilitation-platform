@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Lock, Eye, EyeOff, ChevronRight, Check } from "lucide-react";
 import { AuthInput } from "../../components/auth/AuthInput";
 import { PasswordRequirementsChecklist } from "../../components/auth/PasswordRequirementsChecklist";
@@ -24,6 +25,7 @@ import { useLocale } from "../../context/useLocale.js";
 import { useSignupWizard } from "../../context/SignupWizardContext";
 
 export function SignupStep4AccountSecurity({ onBack }) {
+  const navigate = useNavigate();
   const { t } = useLocale();
   const { wizardData, updateWizardData, setWizardStep } = useSignupWizard();
   const [showPassword, setShowPassword] = useState(false);
@@ -178,7 +180,7 @@ export function SignupStep4AccountSecurity({ onBack }) {
                 <button
                   type="button"
                   className="auth-footer-link font-semibold transition-colors"
-                  onClick={(event) => event.preventDefault()}
+                  onClick={() => navigate("/privacy-policy")}
                 >
                   {t("auth.signup.privacyPolicy")}
                 </button>

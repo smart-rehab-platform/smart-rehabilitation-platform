@@ -1,5 +1,6 @@
 const fs = require("fs");
 const nodemailer = require("nodemailer");
+const MailComposer = require("nodemailer/lib/mail-composer");
 const { buildFrontendPath, getFrontendBaseUrl, normalizeBaseUrl } = require("../../config/frontend");
 const {
   buildPasswordResetEmailContent,
@@ -11,14 +12,24 @@ const {
 const APP_NAME = "Smart Rehab Platform";
 const DEFAULT_SENDER_EMAIL = "smartrehab.ps@gmail.com";
 const RESEND_API_URL = "https://api.resend.com/emails";
+const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
+const GMAIL_SEND_URL =
+  "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 
 let transporter;
+let gmailAccessTokenCache = { accessToken: "", expiresAtMs: 0 };
 
 const getEmailProvider = () => {
   const raw = String(process.env.EMAIL_PROVIDER || "")
     .trim()
     .toLowerCase();
-  return raw === "resend" ? "resend" : "smtp";
+  if (raw === "resend") {
+    return "resend";
+  }
+  if (raw === "gmail-api") {
+    return "gmail-api";
+  }
+  return "smtp";
 };
 
 const isSmtpConfigured = () =>
@@ -28,6 +39,14 @@ const isResendConfigured = () =>
   Boolean(
     String(process.env.RESEND_API_KEY || "").trim() &&
       String(process.env.EMAIL_FROM || "").trim(),
+  );
+
+const isGmailApiConfigured = () =>
+  Boolean(
+    String(process.env.GMAIL_CLIENT_ID || "").trim() &&
+      String(process.env.GMAIL_CLIENT_SECRET || "").trim() &&
+      String(process.env.GMAIL_REFRESH_TOKEN || "").trim() &&
+      String(process.env.GMAIL_USER || "").trim(),
   );
 
 const getResetPasswordLinkBase = () => {
@@ -94,6 +113,11 @@ const getTransporter = () => {
 };
 
 const getSender = () => {
+  if (getEmailProvider() === "gmail-api") {
+    const gmailUser = String(process.env.GMAIL_USER || "").trim();
+    return `"${APP_NAME}" <${gmailUser || DEFAULT_SENDER_EMAIL}>`;
+  }
+
   const emailFrom = String(process.env.EMAIL_FROM || "").trim();
   if (emailFrom) {
     if (emailFrom.includes("<")) {
@@ -128,6 +152,119 @@ const toResendAttachments = (attachments) => {
       return payload;
     })
     .filter(Boolean);
+};
+
+const toBase64Url = (buffer) =>
+  Buffer.from(buffer)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+
+const getGmailAccessToken = async () => {
+  const now = Date.now();
+  if (
+    gmailAccessTokenCache.accessToken &&
+    gmailAccessTokenCache.expiresAtMs > now + 60_000
+  ) {
+    return gmailAccessTokenCache.accessToken;
+  }
+
+  const body = new URLSearchParams({
+    client_id: String(process.env.GMAIL_CLIENT_ID).trim(),
+    client_secret: String(process.env.GMAIL_CLIENT_SECRET).trim(),
+    refresh_token: String(process.env.GMAIL_REFRESH_TOKEN).trim(),
+    grant_type: "refresh_token",
+  });
+
+  const response = await fetch(GOOGLE_TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+
+  if (!response.ok) {
+    let detail = `HTTP ${response.status}`;
+    try {
+      const payload = await response.json();
+      if (payload?.error_description || payload?.error) {
+        detail = payload.error_description || payload.error;
+      }
+    } catch {
+      // keep status-only detail
+    }
+    throw new Error(`Failed to refresh Gmail access token: ${detail}`);
+  }
+
+  const payload = await response.json();
+  const accessToken = String(payload?.access_token || "").trim();
+  if (!accessToken) {
+    throw new Error("Failed to refresh Gmail access token: missing access_token");
+  }
+
+  const expiresInSec = Number(payload?.expires_in || 3600);
+  gmailAccessTokenCache = {
+    accessToken,
+    expiresAtMs: now + expiresInSec * 1000,
+  };
+
+  return accessToken;
+};
+
+const buildRawMimeMessage = async ({ to, subject, html, text, attachments }) => {
+  const mail = new MailComposer({
+    from: getSender(),
+    to,
+    subject,
+    html,
+    text,
+    attachments: attachments?.length ? attachments : undefined,
+  });
+
+  const message = await mail.compile().build();
+  return toBase64Url(message);
+};
+
+const sendViaGmailApi = async ({ to, subject, html, text, attachments }) => {
+  if (!isGmailApiConfigured()) {
+    console.warn(
+      "[auth.email] EMAIL_PROVIDER=gmail-api but GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, or GMAIL_USER is missing.",
+    );
+    return null;
+  }
+
+  const accessToken = await getGmailAccessToken();
+  const raw = await buildRawMimeMessage({
+    to,
+    subject,
+    html,
+    text,
+    attachments,
+  });
+
+  const response = await fetch(GMAIL_SEND_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ raw }),
+  });
+
+  if (!response.ok) {
+    let detail = `HTTP ${response.status}`;
+    try {
+      const payload = await response.json();
+      if (payload?.error?.message) {
+        detail = payload.error.message;
+      }
+    } catch {
+      // keep status-only detail
+    }
+    throw new Error(detail);
+  }
+
+  return response.json();
 };
 
 const sendViaResend = async ({ to, subject, html, text, attachments }) => {
@@ -198,6 +335,16 @@ const sendViaSmtp = async ({ to, subject, html, text, attachments }) => {
   return activeTransporter.sendMail(mailOptions);
 };
 
+const providerLabel = (provider) => {
+  if (provider === "resend") {
+    return "via Resend";
+  }
+  if (provider === "gmail-api") {
+    return "via Gmail API";
+  }
+  return "via SMTP";
+};
+
 const sendEmail = async ({
   to,
   subject,
@@ -212,6 +359,17 @@ const sendEmail = async ({
   try {
     if (provider === "resend") {
       const result = await sendViaResend({
+        to,
+        subject,
+        html,
+        text,
+        attachments,
+      });
+      if (result) {
+        return result;
+      }
+    } else if (provider === "gmail-api") {
+      const result = await sendViaGmailApi({
         to,
         subject,
         html,
@@ -237,9 +395,8 @@ const sendEmail = async ({
       );
     }
   } catch (error) {
-    const via = provider === "resend" ? "via Resend" : "via SMTP";
     console.error(
-      `[auth.email] Failed to send email ${via}:`,
+      `[auth.email] Failed to send email ${providerLabel(provider)}:`,
       error.message || error,
     );
     throw error;
@@ -325,4 +482,5 @@ module.exports = {
   getEmailProvider,
   isSmtpConfigured,
   isResendConfigured,
+  isGmailApiConfigured,
 };
