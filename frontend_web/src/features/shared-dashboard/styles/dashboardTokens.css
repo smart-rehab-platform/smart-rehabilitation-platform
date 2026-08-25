@@ -769,6 +769,11 @@
 .pd-preview .pd-child-trigger {
   display: inline-flex;
   align-items: center;
+  cursor: pointer;
+  color: var(--pd-text);
+}
+
+.pd-preview .pd-child-trigger {
   gap: 8px;
   min-height: 38px;
   height: 38px;
@@ -776,23 +781,42 @@
   padding-inline-end: 8px;
   padding-inline-start: 3px;
   border-radius: 11px;
-  border: 1px solid var(--pd-border-soft);
-  background: transparent;
-  cursor: pointer;
-  color: var(--pd-text);
+  border: 1px solid var(--pd-border);
+  background: #fff;
 }
 
+/* Flat profile trigger — avatar + copy + chevron on white header (no container) */
 .pd-preview .pd-profile-trigger {
-  gap: 6px;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  gap: 8px;
+  min-height: 40px;
+  height: 40px;
+  max-width: min(240px, 48vw);
+  padding-block: 4px;
+  padding-inline-end: 4px;
+  padding-inline-start: 0;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pd-preview .pd-profile-trigger:hover,
+.pd-preview .pd-profile-trigger[aria-expanded="true"] {
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .pd-preview .pd-profile-trigger .pd-avatar,
 .pd-preview .pd-profile-trigger .pd-avatar-shell,
 .pd-preview .pd-profile-trigger .pd-avatar-photo {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  min-height: 38px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   border-radius: 50%;
   flex-shrink: 0;
   object-fit: cover;
@@ -809,12 +833,7 @@
 }
 
 .pd-preview .pd-profile-trigger .pd-avatar {
-  font-size: 0.75rem;
-}
-
-.pd-preview .pd-child-trigger {
-  background: #fff;
-  border-color: var(--pd-border);
+  font-size: 0.7rem;
 }
 
 .pd-preview .pd-profile-copy,
@@ -824,6 +843,12 @@
   align-items: flex-start;
   text-align: start;
   line-height: 1.15;
+  min-width: 0;
+}
+
+.pd-preview .pd-profile-trigger .pd-profile-copy {
+  gap: 1px;
+  padding-inline-end: 2px;
 }
 
 .pd-preview .pd-profile-copy strong,
@@ -832,11 +857,38 @@
   font-weight: 600;
 }
 
+.pd-preview .pd-profile-trigger .pd-profile-copy strong {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--pd-text);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .pd-preview .pd-profile-copy small,
 .pd-preview .pd-child-copy small {
   font-size: 0.68rem;
   font-weight: 400;
   color: var(--pd-text-secondary);
+}
+
+.pd-preview .pd-profile-trigger .pd-profile-copy small {
+  font-size: 0.66rem;
+  letter-spacing: 0.01em;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-preview .pd-profile-trigger > svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--pd-text-secondary);
+  opacity: 0.95;
 }
 
 .pd-preview .pd-dropdown {
