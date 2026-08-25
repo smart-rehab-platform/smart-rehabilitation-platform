@@ -3352,6 +3352,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get communicationListAttachment => 'Attachment';
+
+  @override
+  String get communicationPreviewSentImage => 'Sent an image';
+
+  @override
+  String get communicationPreviewSentAudio => 'Sent an audio recording';
+
+  @override
+  String get communicationPreviewSentPdf => 'Sent a PDF file';
+
+  @override
+  String get communicationPreviewSentVideo => 'Sent a video';
+
+  @override
+  String get communicationPreviewSentFile => 'Sent a file';
+
+  @override
   String get communicationOpeningConversation => 'Opening conversation...';
 
   @override

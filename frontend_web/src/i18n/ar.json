@@ -15,7 +15,10 @@
     "unread": "غير مقروء",
     "navigation": "التنقل",
     "today": "اليوم",
-    "yesterday": "أمس"
+    "yesterday": "أمس",
+    "messages": {
+      "attachment": "مرفق"
+    }
   },
   "nav": {
     "messages": "الرسائل",

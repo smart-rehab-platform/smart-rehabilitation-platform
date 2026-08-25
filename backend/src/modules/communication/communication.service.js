@@ -250,9 +250,36 @@ const getConversationByIdForUser = async (id, user) => {
 
 const getUserConversations = async (userId) => {
   const result = await pool.query(
-    `${CONVERSATION_SELECT}
+    `${CONVERSATION_SELECT.replace(
+      "FROM conversations c",
+      `, lm.last_message_content,
+              lm.last_message_at,
+              COALESCE(lm.last_message_has_attachments, FALSE) AS last_message_has_attachments,
+              COALESCE(uc.unread_count, 0)::int AS unread_count
+       FROM conversations c`,
+    )}
+     LEFT JOIN LATERAL (
+       SELECT m.content AS last_message_content,
+              m.sent_at AS last_message_at,
+              EXISTS (
+                SELECT 1
+                FROM message_attachments ma
+                WHERE ma.message_id = m.id
+              ) AS last_message_has_attachments
+       FROM messages m
+       WHERE m.conversation_id = c.id
+       ORDER BY m.sent_at DESC
+       LIMIT 1
+     ) lm ON true
+     LEFT JOIN LATERAL (
+       SELECT COUNT(*)::int AS unread_count
+       FROM messages
+       WHERE conversation_id = c.id
+         AND is_read = FALSE
+         AND sender_id IS DISTINCT FROM $1
+     ) uc ON true
      WHERE c.parent_id = $1 OR c.specialist_id = $1
-     ORDER BY c.created_at DESC`,
+     ORDER BY COALESCE(lm.last_message_at, c.created_at) DESC`,
     [userId]
   );
 

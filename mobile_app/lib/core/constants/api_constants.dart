@@ -2,12 +2,14 @@ class ApiConstants {
   ApiConstants._();
 
   /// Origin used for static files (/uploads/...).
-
-  /// On a physical Android device with `adb reverse tcp:5000 tcp:5000`, keep 127.0.0.1.
-
-  /// Without adb reverse, set this to your PC LAN IP, e.g. http://192.168.1.10:5000
-
-  static const String serverOrigin = 'http://127.0.0.1:5000';
+  ///
+  /// Local default: `http://127.0.0.1:5000` (use `adb reverse` on physical devices).
+  /// Production / Railway builds:
+  /// `flutter run --dart-define=API_SERVER_ORIGIN=https://YOUR-SERVICE.up.railway.app`
+  static const String serverOrigin = String.fromEnvironment(
+    'API_SERVER_ORIGIN',
+    defaultValue: 'http://127.0.0.1:5000',
+  );
 
   static const String baseUrl = '$serverOrigin/api/v1';
 

@@ -17,6 +17,23 @@ const specialistExerciseAllCategoryLabel = 'All';
 /// Canonical Speech Articulation category name used for V2/V3 metadata UI.
 const specialistSpeechArticulationCategoryName = 'Speech Articulation';
 
+/// Always emits 3 slots per exercise: title, description, instructions/preview.
+/// Empty instruction slots stay as '' so batch indexes stay aligned (title/desc/instr).
+@visibleForTesting
+List<String> buildExerciseTranslationFlatList(
+  List<SpecialistExerciseItem> items,
+) {
+  final flat = <String>[];
+  for (final item in items) {
+    flat.add(item.title);
+    flat.add(item.description ?? '');
+    final instructionText = item.instructions ?? item.previewText;
+    final trimmed = instructionText?.trim();
+    flat.add((trimmed != null && trimmed.isNotEmpty) ? trimmed : '');
+  }
+  return flat;
+}
+
 bool isSpeechArticulationCategoryName(String? categoryName) {
   final normalized = categoryName?.trim().toLowerCase() ?? '';
   return normalized == specialistSpeechArticulationCategoryName.toLowerCase();
@@ -501,7 +518,8 @@ class _ExerciseLibraryBodyState extends ConsumerState<ExerciseLibraryBody> {
 
   Future<void> _syncTranslations(List<SpecialistExerciseItem> visible) async {
     final language = languageCodeFromLocale(ref.read(localeProvider));
-    final key = '$language|${visible.map((e) => '${e.id}:${e.title}').join(',')}';
+    final key =
+        '$language|${visible.map((e) => '${e.id}:${e.title}').join(',')}';
     if (_translationKey == key) {
       return;
     }
@@ -513,47 +531,62 @@ class _ExerciseLibraryBodyState extends ConsumerState<ExerciseLibraryBody> {
       return;
     }
 
-    final flat = <String>[];
-    for (final item in visible) {
-      flat.add(item.title);
-      flat.add(item.description ?? '');
-      flat.add(item.instructions ?? item.previewText);
+    try {
+      final flat = buildExerciseTranslationFlatList(visible);
+      if (flat.length != visible.length * 3) {
+        if (_translationKey == key) {
+          _translationKey = null;
+        }
+        return;
+      }
+
+      final translated = await ref
+          .read(translationRepositoryProvider)
+          .translateTexts(texts: flat, targetLanguage: language);
+
+      if (!mounted || _translationKey != key) {
+        return;
+      }
+
+      if (translated.length < visible.length * 3) {
+        _translationKey = null;
+        return;
+      }
+
+      final next = <String, SpecialistExerciseItem>{};
+      for (var i = 0; i < visible.length; i++) {
+        final item = visible[i];
+        final base = i * 3;
+        final nextTitle = translated[base];
+        final nextDescription = translated[base + 1];
+        final nextInstructions = translated[base + 2];
+        next[item.id] = SpecialistExerciseItem(
+          id: item.id,
+          title: nextTitle.isEmpty ? item.title : nextTitle,
+          category: item.category,
+          categoryId: item.categoryId,
+          language: item.language,
+          description: nextDescription.isEmpty
+              ? item.description
+              : nextDescription,
+          instructions: nextInstructions.isEmpty
+              ? item.instructions
+              : nextInstructions,
+          instructionMediaUrl: item.instructionMediaUrl,
+          createdBy: item.createdBy,
+          createdByName: item.createdByName,
+          expectedText: item.expectedText,
+          targetWord: item.targetWord,
+          targetPhoneme: item.targetPhoneme,
+        );
+      }
+
+      setState(() => _translatedById = next);
+    } catch (_) {
+      if (_translationKey == key) {
+        _translationKey = null;
+      }
     }
-
-    final translated = await ref
-        .read(translationRepositoryProvider)
-        .translateTexts(texts: flat, targetLanguage: language);
-
-    if (!mounted || _translationKey != key) {
-      return;
-    }
-
-    final next = <String, SpecialistExerciseItem>{};
-    for (var i = 0; i < visible.length; i++) {
-      final item = visible[i];
-      final base = i * 3;
-      next[item.id] = SpecialistExerciseItem(
-        id: item.id,
-        title: translated[base],
-        category: item.category,
-        categoryId: item.categoryId,
-        language: item.language,
-        description: translated[base + 1].isEmpty
-            ? item.description
-            : translated[base + 1],
-        instructions: translated[base + 2].isEmpty
-            ? item.instructions
-            : translated[base + 2],
-        instructionMediaUrl: item.instructionMediaUrl,
-        createdBy: item.createdBy,
-        createdByName: item.createdByName,
-        expectedText: item.expectedText,
-        targetWord: item.targetWord,
-        targetPhoneme: item.targetPhoneme,
-      );
-    }
-
-    setState(() => _translatedById = next);
   }
 
   @override

@@ -9,6 +9,7 @@ import {
 } from "../../routes/parentDashboardRoutes";
 import { ParentDashboardShell } from "./layout/ParentDashboardShell";
 import { UserProfileAvatar } from "../shared-dashboard/components/UserProfileAvatar";
+import { MessagesConversationListItem } from "../shared-dashboard/components/messages/MessagesConversationListItem";
 import {
   useParentConversation,
   useParentMessageComposer,
@@ -291,27 +292,22 @@ export default function ParentMessagesPage() {
     return (
       <div className="pd-messages-list">
         {conversations.map((conversation) => (
-          <button
+          <MessagesConversationListItem
             key={conversation.id}
-            type="button"
-            className={`pd-messages-list-item${
-              conversation.id === activeConversationId ? " is-active" : ""
-            }`}
-            onClick={() => navigateToConversation(conversation.id)}
-          >
-            <UserProfileAvatar
-              imageUrl={conversation.specialistProfileImageUrl}
-              initials={getInitials(conversation.specialistName, "S")}
-              alt=""
-              shellClassName="pd-avatar pd-conversation-avatar"
-              fallbackClassName="pd-avatar pd-conversation-avatar"
-              className="pd-avatar-photo"
-            />
-            <span className="pd-conversation-copy">
-              <strong dir="auto">{conversation.title}</strong>
-              {conversation.subtitle ? <span dir="auto">{conversation.subtitle}</span> : null}
-            </span>
-          </button>
+            conversationId={conversation.id}
+            isActive={conversation.id === activeConversationId}
+            onSelect={navigateToConversation}
+            avatarUrl={conversation.specialistProfileImageUrl}
+            avatarInitials={getInitials(conversation.specialistName, "S")}
+            avatarShellClassName="pd-avatar pd-conversation-avatar"
+            primaryName={conversation.title}
+            patientName={conversation.patientDisplayName}
+            preview={conversation.previewLabel}
+            activityTime={conversation.activityTimeLabel}
+            activityDateTime={conversation.lastMessageAt || conversation.createdAt}
+            unreadCount={conversation.unreadCount}
+            unreadAriaLabel={`${conversation.unreadCount} ${t("common.unread")}`}
+          />
         ))}
       </div>
     );

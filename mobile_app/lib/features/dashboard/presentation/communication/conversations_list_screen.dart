@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
-import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/communication_repository.dart';
 import '../../models/communication_models.dart';
 import '../../providers/communication_list_provider.dart';
 import '../../widgets/dashboard_layout.dart';
-import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import '../../widgets/parent_page_scaffold.dart';
 import '../../widgets/specialist_page_scaffold.dart';
 import '../../../auth/providers/auth_provider.dart';
+import 'communication_conversation_tile.dart';
 
 class ConversationsListScreen extends ConsumerStatefulWidget {
   const ConversationsListScreen({super.key, required this.isParent});
@@ -104,14 +102,14 @@ class _ConversationsListScreenState
       );
     }
 
+    final verticalPadding = context.dashPadding.vertical;
+
     return RefreshIndicator(
       onRefresh: () => ref.read(communicationListProvider.notifier).refresh(),
-      child: ListView.separated(
+      child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: context.dashPadding,
+        padding: EdgeInsets.symmetric(vertical: verticalPadding),
         itemCount: state.conversations.length,
-        separatorBuilder: (_, __) =>
-            SizedBox(height: context.dashSpacing * 0.6),
         itemBuilder: (context, index) {
           final conversation = state.conversations[index];
           return CommunicationConversationTile(
@@ -120,82 +118,6 @@ class _ConversationsListScreenState
             onTap: () => _openChat(conversation),
           );
         },
-      ),
-    );
-  }
-}
-
-class CommunicationConversationTile extends StatelessWidget {
-  const CommunicationConversationTile({
-    super.key,
-    required this.conversation,
-    required this.role,
-    required this.onTap,
-  });
-
-  final CommunicationConversation conversation;
-  final String? role;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final participantName = conversation.otherParticipantName(role);
-    final subtitle = conversation.conversationSubtitle();
-
-    return DashboardSurfaceCard(
-      onTap: onTap,
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: role?.toLowerCase() == 'parent'
-                ? DashboardColors.brandSoft
-                : DashboardColors.tealSoft,
-            child: Icon(
-              role?.toLowerCase() == 'parent'
-                  ? Icons.medical_services_outlined
-                  : Icons.family_restroom_outlined,
-              color: DashboardColors.brandCyan,
-              size: context.dashSpacing * 0.55,
-            ),
-          ),
-          SizedBox(width: context.dashSpacing * 0.65),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  participantName,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: DashboardColors.textPrimary,
-                  ),
-                ),
-                if (subtitle != null) ...[
-                  SizedBox(height: context.dashSpacing * 0.2),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: DashboardColors.textSecondary,
-                    ),
-                  ),
-                ],
-                if (conversation.createdAt != null) ...[
-                  SizedBox(height: context.dashSpacing * 0.15),
-                  Text(
-                    AppLocalizations.of(context)!.communicationStartedOn(
-                      DateFormat('MMM d, yyyy').format(conversation.createdAt!),
-                    ),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: DashboardColors.textMuted,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          Icon(Icons.chevron_right_rounded, color: DashboardColors.textMuted),
-        ],
       ),
     );
   }

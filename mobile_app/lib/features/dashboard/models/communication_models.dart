@@ -138,6 +138,10 @@ class CommunicationConversation {
     this.specialistProfileImageUrl,
     this.caseRequestId,
     this.caseRequestChildName,
+    this.lastMessageContent,
+    this.lastMessageAt,
+    this.lastMessageHasAttachments = false,
+    this.unreadCount = 0,
   });
 
   final String id;
@@ -152,6 +156,14 @@ class CommunicationConversation {
   final String? specialistProfileImageUrl;
   final String? caseRequestId;
   final String? caseRequestChildName;
+  final String? lastMessageContent;
+  final DateTime? lastMessageAt;
+  final bool lastMessageHasAttachments;
+  final int unreadCount;
+
+  bool get hasUnread => unreadCount > 0;
+
+  DateTime? get activityAt => lastMessageAt ?? createdAt;
 
   factory CommunicationConversation.fromMap(Map<String, dynamic> map) {
     return CommunicationConversation(
@@ -202,6 +214,19 @@ class CommunicationConversation {
         'child_name',
         'childName',
       ]),
+      lastMessageContent: ApiResponseParser.readString(map, const [
+        'last_message_content',
+        'lastMessageContent',
+      ]),
+      lastMessageAt: ApiResponseParser.readDate(
+        map['last_message_at'] ?? map['lastMessageAt'],
+      ),
+      lastMessageHasAttachments: _readBool(
+        map['last_message_has_attachments'] ?? map['lastMessageHasAttachments'],
+      ),
+      unreadCount: _normalizeUnreadCount(
+        ApiResponseParser.readInt(map, const ['unread_count', 'unreadCount']),
+      ),
     );
   }
 
@@ -255,6 +280,22 @@ class CommunicationConversation {
         : 'Patient';
   }
 
+  String? patientDisplayName() {
+    final caseChild = caseRequestChildName?.trim();
+    if (caseChild != null &&
+        caseChild.isNotEmpty &&
+        (patientId == null || patientId!.isEmpty)) {
+      return caseChild;
+    }
+
+    final patient = patientName?.trim();
+    if (patient != null && patient.isNotEmpty) {
+      return patient;
+    }
+
+    return null;
+  }
+
   String? conversationSubtitle() {
     final caseChild = caseRequestChildName?.trim();
     if (caseChild != null &&
@@ -270,6 +311,24 @@ class CommunicationConversation {
 
     return null;
   }
+}
+
+bool _readBool(dynamic value) {
+  if (value == true || value == 1) {
+    return true;
+  }
+  if (value is String) {
+    final normalized = value.trim().toLowerCase();
+    return normalized == 'true' || normalized == '1' || normalized == 't';
+  }
+  return false;
+}
+
+int _normalizeUnreadCount(int? value) {
+  if (value == null || value <= 0) {
+    return 0;
+  }
+  return value;
 }
 
 class CommunicationMessage {

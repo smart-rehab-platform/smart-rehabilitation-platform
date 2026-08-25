@@ -1,4 +1,7 @@
 import { API_BASE_URL } from "../../../services/apiConfig";
+import {
+  readUnreadCount,
+} from "../../shared-dashboard/utils/messagesConversationListUtils.js";
 
 function readString(record, keys) {
   if (!record || typeof record !== "object") {
@@ -82,6 +85,12 @@ export function mapSpecialistConversation(row) {
       "childName",
     ]),
     createdAt: readString(row, ["created_at", "createdAt"]),
+    lastMessageContent: readString(row, ["last_message_content", "lastMessageContent"]),
+    lastMessageAt: readString(row, ["last_message_at", "lastMessageAt"]),
+    lastMessageHasAttachments: Boolean(
+      row?.last_message_has_attachments ?? row?.lastMessageHasAttachments,
+    ),
+    unreadCount: readUnreadCount(row?.unread_count ?? row?.unreadCount),
     subtitleContext: resolveSpecialistConversationSubtitle(row),
   };
 }
