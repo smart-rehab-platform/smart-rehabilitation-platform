@@ -6,6 +6,7 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import Signup from "./pages/auth/Signup";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 import LandingPage from "./pages/LandingPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import AdminDashboardPage from "./features/admin-dashboard/AdminDashboardPage";
 import AdminPatientDetailsPage from "./features/admin-dashboard/AdminPatientDetailsPage";
 import AdminCaseRequestDetailsPage from "./features/admin-dashboard/AdminCaseRequestDetailsPage";
@@ -839,6 +840,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route element={<AuthLayoutRoute />}>
           <Route
             path="/login"
