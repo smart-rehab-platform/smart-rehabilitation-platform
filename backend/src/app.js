@@ -50,7 +50,9 @@ ensureUploadDirs();
 
 const app = express();
 
-app.set("trust proxy", true);
+// Railway terminates TLS at one reverse-proxy hop. Prefer hop count over
+// `true` so express-rate-limit accepts the config (ERR_ERL_PERMISSIVE_TRUST_PROXY).
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(cors(getExpressCorsOptions()));

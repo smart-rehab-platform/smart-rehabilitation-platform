@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/utils/api_response_parser.dart';
 
+final _arabicScript = RegExp(r'[\u0600-\u06FF]');
+
 /// Session cache + backend batch translation for exercise display content.
 class TranslationRepository {
   TranslationRepository(this._dio);
@@ -11,17 +13,23 @@ class TranslationRepository {
   final Dio _dio;
   final Map<String, String> _cache = {};
 
-  String _cacheKey(String text, String targetLanguage) =>
-      '$targetLanguage::$text';
+  String _normalizeTarget(String targetLanguage) =>
+      targetLanguage.trim().toLowerCase().split('-').first;
+
+  String _detectSourceLanguage(String text) =>
+      _arabicScript.hasMatch(text) ? 'ar' : 'en';
+
+  String _cacheKey(String text, String sourceLanguage, String targetLanguage) =>
+      '$sourceLanguage::$targetLanguage::$text';
 
   Future<List<String>> translateTexts({
     required List<String> texts,
     required String targetLanguage,
   }) async {
-    final target = targetLanguage.trim().toLowerCase().split('-').first;
+    final target = _normalizeTarget(targetLanguage);
     final input = texts.map((t) => t).toList();
 
-    if (target.isEmpty || target == 'en' || input.isEmpty) {
+    if (target.isEmpty || input.isEmpty) {
       return input;
     }
 
@@ -34,7 +42,11 @@ class TranslationRepository {
       if (trimmed.isEmpty) {
         continue;
       }
-      final key = _cacheKey(trimmed, target);
+      final source = _detectSourceLanguage(trimmed);
+      if (source == target) {
+        continue;
+      }
+      final key = _cacheKey(trimmed, source, target);
       final cached = _cache[key];
       if (cached != null) {
         result[i] = cached;
@@ -71,8 +83,9 @@ class TranslationRepository {
 
       for (var i = 0; i < translated.length; i++) {
         final original = pendingTexts[i];
+        final source = _detectSourceLanguage(original);
         final value = translated[i].isEmpty ? original : translated[i];
-        _cache[_cacheKey(original, target)] = value;
+        _cache[_cacheKey(original, source, target)] = value;
         result[pendingIndexes[i]] = value;
       }
 

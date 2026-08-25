@@ -319,21 +319,12 @@ class _ParentExerciseDetailScreenState
     }
     _translationKey = key;
 
-    if (language != 'ar') {
-      if (!mounted) return;
-      setState(() {
-        _displayTitle = title;
-        _displayInstructions = instructions;
-      });
-      return;
-    }
-
     final translated = await ref
         .read(translationRepositoryProvider)
         .translateExerciseFields(
           title: title,
           instructions: instructions,
-          targetLanguage: 'ar',
+          targetLanguage: language,
         );
     if (!mounted || _translationKey != key) {
       return;

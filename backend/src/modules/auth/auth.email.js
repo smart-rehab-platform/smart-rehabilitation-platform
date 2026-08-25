@@ -1,3 +1,4 @@
+const fs = require("fs");
 const nodemailer = require("nodemailer");
 const { buildFrontendPath, getFrontendBaseUrl, normalizeBaseUrl } = require("../../config/frontend");
 const {
@@ -9,11 +10,25 @@ const {
 
 const APP_NAME = "Smart Rehab Platform";
 const DEFAULT_SENDER_EMAIL = "smartrehab.ps@gmail.com";
+const RESEND_API_URL = "https://api.resend.com/emails";
 
 let transporter;
 
+const getEmailProvider = () => {
+  const raw = String(process.env.EMAIL_PROVIDER || "")
+    .trim()
+    .toLowerCase();
+  return raw === "resend" ? "resend" : "smtp";
+};
+
 const isSmtpConfigured = () =>
   Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
+
+const isResendConfigured = () =>
+  Boolean(
+    String(process.env.RESEND_API_KEY || "").trim() &&
+      String(process.env.EMAIL_FROM || "").trim(),
+  );
 
 const getResetPasswordLinkBase = () => {
   if (process.env.RESET_PASSWORD_URL) {
@@ -58,7 +73,7 @@ const getTransporter = () => {
 
   const auth = {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
+    pass: process.env.EMAIL_PASSWORD,
   };
 
   if (process.env.SMTP_HOST) {
@@ -66,20 +81,122 @@ const getTransporter = () => {
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT || 587),
       secure: String(process.env.SMTP_SECURE).toLowerCase() === "true",
-      auth
+      auth,
     });
   } else {
     transporter = nodemailer.createTransport({
       service: "gmail",
-      auth
+      auth,
     });
   }
 
   return transporter;
 };
 
-const getSender = () =>
-  `"${APP_NAME}" <${process.env.EMAIL_USER || DEFAULT_SENDER_EMAIL}>`;
+const getSender = () => {
+  const emailFrom = String(process.env.EMAIL_FROM || "").trim();
+  if (emailFrom) {
+    if (emailFrom.includes("<")) {
+      return emailFrom;
+    }
+    return `"${APP_NAME}" <${emailFrom}>`;
+  }
+
+  return `"${APP_NAME}" <${process.env.EMAIL_USER || DEFAULT_SENDER_EMAIL}>`;
+};
+
+const toResendAttachments = (attachments) => {
+  if (!attachments?.length) {
+    return undefined;
+  }
+
+  return attachments
+    .map((attachment) => {
+      if (!attachment?.path || !fs.existsSync(attachment.path)) {
+        return null;
+      }
+
+      const payload = {
+        filename: attachment.filename || "attachment",
+        content: fs.readFileSync(attachment.path).toString("base64"),
+      };
+
+      if (attachment.cid) {
+        payload.content_id = attachment.cid;
+      }
+
+      return payload;
+    })
+    .filter(Boolean);
+};
+
+const sendViaResend = async ({ to, subject, html, text, attachments }) => {
+  if (!isResendConfigured()) {
+    console.warn(
+      "[auth.email] EMAIL_PROVIDER=resend but RESEND_API_KEY or EMAIL_FROM is missing.",
+    );
+    return null;
+  }
+
+  const body = {
+    from: getSender(),
+    to: [to],
+    subject,
+    html,
+    text,
+  };
+
+  const resendAttachments = toResendAttachments(attachments);
+  if (resendAttachments?.length) {
+    body.attachments = resendAttachments;
+  }
+
+  const response = await fetch(RESEND_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${String(process.env.RESEND_API_KEY).trim()}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    let detail = `HTTP ${response.status}`;
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        detail = payload.message;
+      }
+    } catch {
+      // keep status-only detail
+    }
+    throw new Error(detail);
+  }
+
+  return response.json();
+};
+
+const sendViaSmtp = async ({ to, subject, html, text, attachments }) => {
+  const activeTransporter = getTransporter();
+
+  if (!activeTransporter) {
+    return null;
+  }
+
+  const mailOptions = {
+    from: getSender(),
+    to,
+    subject,
+    html,
+    text,
+  };
+
+  if (attachments?.length) {
+    mailOptions.attachments = attachments;
+  }
+
+  return activeTransporter.sendMail(mailOptions);
+};
 
 const sendEmail = async ({
   to,
@@ -88,31 +205,54 @@ const sendEmail = async ({
   text,
   fallbackLabel,
   fallbackLink,
-  attachments
+  attachments,
 }) => {
-  const activeTransporter = getTransporter();
+  const provider = getEmailProvider();
 
-  if (!activeTransporter) {
-    console.warn(
-      "[auth.email] Email sending is disabled because SMTP is not configured."
+  try {
+    if (provider === "resend") {
+      const result = await sendViaResend({
+        to,
+        subject,
+        html,
+        text,
+        attachments,
+      });
+      if (result) {
+        return result;
+      }
+    } else {
+      const result = await sendViaSmtp({
+        to,
+        subject,
+        html,
+        text,
+        attachments,
+      });
+      if (result) {
+        return result;
+      }
+      console.warn(
+        "[auth.email] Email sending is disabled because SMTP is not configured.",
+      );
+    }
+  } catch (error) {
+    const via = provider === "resend" ? "via Resend" : "via SMTP";
+    console.error(
+      `[auth.email] Failed to send email ${via}:`,
+      error.message || error,
     );
+    throw error;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    console.warn(
+      "[auth.email] Email delivery unavailable; fallback link logging is disabled in production.",
+    );
+  } else {
     console.info(`[auth.email] ${fallbackLabel}: ${fallbackLink}`);
-    return { delivered: false, fallback: true };
   }
-
-  const mailOptions = {
-    from: getSender(),
-    to,
-    subject,
-    html,
-    text
-  };
-
-  if (attachments?.length) {
-    mailOptions.attachments = attachments;
-  }
-
-  return activeTransporter.sendMail(mailOptions);
+  return { delivered: false, fallback: true };
 };
 
 const sendPasswordResetEmail = async ({ email, fullName, resetLink }) => {
@@ -126,7 +266,7 @@ const sendPasswordResetEmail = async ({ email, fullName, resetLink }) => {
     actionText: "Reset Password",
     actionUrl: resetLink,
     outro:
-      "If you did not request a password reset, no further action is required."
+      "If you did not request a password reset, no further action is required.",
   });
 
   const text = `Hello ${
@@ -140,14 +280,14 @@ const sendPasswordResetEmail = async ({ email, fullName, resetLink }) => {
     text,
     attachments,
     fallbackLabel: `Password reset link for ${email}`,
-    fallbackLink: resetLink
+    fallbackLink: resetLink,
   });
 };
 
 const sendEmailVerificationEmail = async ({
   email,
   fullName,
-  verificationLink
+  verificationLink,
 }) => {
   const subject = "Verify your Smart Rehab Platform email";
   const { html, attachments } = buildVerifyEmailContent({
@@ -159,7 +299,7 @@ const sendEmailVerificationEmail = async ({
     actionText: "Verify Email",
     actionUrl: verificationLink,
     outro:
-      "If you did not create this account, you can safely ignore this email."
+      "If you did not create this account, you can safely ignore this email.",
   });
 
   const text = `Hello ${
@@ -173,7 +313,7 @@ const sendEmailVerificationEmail = async ({
     text,
     attachments,
     fallbackLabel: `Email verification link for ${email}`,
-    fallbackLink: verificationLink
+    fallbackLink: verificationLink,
   });
 };
 
@@ -181,5 +321,8 @@ module.exports = {
   buildPasswordResetLink,
   buildVerificationLink,
   sendPasswordResetEmail,
-  sendEmailVerificationEmail
+  sendEmailVerificationEmail,
+  getEmailProvider,
+  isSmtpConfigured,
+  isResendConfigured,
 };

@@ -4,7 +4,6 @@ const translationService = require("../../services/translation.service");
 
 const router = express.Router();
 
-const MAX_TEXTS = 50;
 const MAX_TEXT_LENGTH = 5000;
 
 router.post("/translations", authenticate, async (req, res) => {
@@ -25,13 +24,6 @@ router.post("/translations", authenticate, async (req, res) => {
       return res.status(200).json({
         success: true,
         data: { texts: [], targetLanguage: targetLanguage || "ar" },
-      });
-    }
-
-    if (texts.length > MAX_TEXTS) {
-      return res.status(400).json({
-        success: false,
-        message: `texts must contain at most ${MAX_TEXTS} items.`,
       });
     }
 
