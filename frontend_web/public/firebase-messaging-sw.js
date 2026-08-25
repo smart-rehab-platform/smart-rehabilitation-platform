@@ -66,7 +66,7 @@ if (typeof firebase === 'undefined') {
 
           const options = {
             body: body,
-            icon: '/branding/smart_rehab_icon.png',
+            icon: '/branding/smart_rehab_notification_icon.png',
             tag: tag,
             renotify: false,
             data: {
@@ -83,7 +83,7 @@ if (typeof firebase === 'undefined') {
         }).catch(() => {
           self.registration.showNotification(title, {
             body,
-            icon: '/branding/smart_rehab_icon.png',
+            icon: '/branding/smart_rehab_notification_icon.png',
             tag,
             renotify: false,
             data: { route, data },
