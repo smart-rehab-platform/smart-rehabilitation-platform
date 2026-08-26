@@ -183,7 +183,7 @@ export default function VerifyEmail() {
           {email && (
             <p
               className="text-center text-sm font-semibold -mt-1"
-              style={{ color: C.white, fontFamily: "'Inter', sans-serif" }}
+              style={{ color: C.navy, fontFamily: "'Inter', sans-serif" }}
             >
               {email}
             </p>
