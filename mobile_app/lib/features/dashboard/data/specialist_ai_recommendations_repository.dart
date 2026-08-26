@@ -10,6 +10,7 @@ import '../models/specialist_ai_recommendations_models.dart';
 /// - GET /treatment-plans/patient/:id
 /// - GET /ai/recommendations/patient/:id
 /// - POST /ai/recommendations/generate
+/// - PATCH /ai/recommendations/:id
 /// - PATCH /ai/recommendations/:id/accept
 /// - PATCH /ai/recommendations/:id/reject
 class SpecialistAiRecommendationsRepository {
@@ -105,6 +106,34 @@ class SpecialistAiRecommendationsRepository {
     await _dio.patch('/ai/recommendations/$recommendationId/reject');
   }
 
+  Future<SpecialistAiRecommendationItem> updateRecommendationDraft({
+    required String recommendationId,
+    required Map<String, dynamic> payload,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        '/ai/recommendations/$recommendationId',
+        data: payload,
+      );
+      final map = ApiResponseParser.extractMap(response.data);
+      if (map == null) {
+        throw SpecialistAiRecommendationDraftUpdateException(
+          'Failed to save recommendation changes.',
+        );
+      }
+      return SpecialistAiRecommendationItem.fromMap(map);
+    } on DioException catch (error) {
+      final apiMessage = error.response?.data is Map
+          ? (error.response!.data['message']?.toString() ?? '')
+          : '';
+      throw SpecialistAiRecommendationDraftUpdateException(
+        apiMessage.trim().isNotEmpty
+            ? apiMessage.trim()
+            : 'Failed to save recommendation changes.',
+      );
+    }
+  }
+
   Map<String, dynamic>? _selectActivePlan(List<Map<String, dynamic>> plans) {
     if (plans.isEmpty) {
       return null;
@@ -118,4 +147,13 @@ class SpecialistAiRecommendationsRepository {
     }
     return plans.first;
   }
+}
+
+class SpecialistAiRecommendationDraftUpdateException implements Exception {
+  SpecialistAiRecommendationDraftUpdateException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }

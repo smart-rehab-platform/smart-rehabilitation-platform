@@ -4,6 +4,13 @@ import { SpecialistAiRecommendationCard } from "../components/SpecialistAiRecomm
 export function SpecialistAiRecommendationsList({
   recommendations,
   updatingRecommendationId,
+  editingRecommendationId,
+  draftForm,
+  isSavingDraft,
+  onDraftFieldChange,
+  onEdit,
+  onSave,
+  onCancel,
   onAccept,
   onReject,
 }) {
@@ -19,15 +26,26 @@ export function SpecialistAiRecommendationsList({
 
   return (
     <div className="pd-specialist-ai-recommendations-list">
-      {recommendations.map((recommendation) => (
-        <SpecialistAiRecommendationCard
-          key={recommendation.id}
-          recommendation={recommendation}
-          isUpdating={updatingRecommendationId === recommendation.id}
-          onAccept={() => onAccept(recommendation.id)}
-          onReject={() => onReject(recommendation.id)}
-        />
-      ))}
+      {recommendations.map((recommendation) => {
+        const isEditing = editingRecommendationId === recommendation.id;
+        const anotherEditing = Boolean(editingRecommendationId) && !isEditing;
+        return (
+          <SpecialistAiRecommendationCard
+            key={recommendation.id}
+            recommendation={recommendation}
+            isUpdating={updatingRecommendationId === recommendation.id || anotherEditing}
+            isEditing={isEditing}
+            draftForm={isEditing ? draftForm : null}
+            isSavingDraft={isEditing && isSavingDraft}
+            onDraftFieldChange={onDraftFieldChange}
+            onEdit={() => onEdit(recommendation)}
+            onSave={() => onSave(recommendation.id)}
+            onCancel={onCancel}
+            onAccept={() => onAccept(recommendation.id)}
+            onReject={() => onReject(recommendation.id)}
+          />
+        );
+      })}
     </div>
   );
 }

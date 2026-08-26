@@ -22,6 +22,9 @@ class SpecialistAiRecommendationsScreen extends ConsumerStatefulWidget {
 
 class _SpecialistAiRecommendationsScreenState
     extends ConsumerState<SpecialistAiRecommendationsScreen> {
+  String? _editingRecommendationId;
+  final Map<String, TextEditingController> _draftControllers = {};
+
   @override
   void initState() {
     super.initState();
@@ -32,7 +35,86 @@ class _SpecialistAiRecommendationsScreenState
     });
   }
 
+  @override
+  void dispose() {
+    _disposeDraftControllers();
+    super.dispose();
+  }
+
+  void _disposeDraftControllers() {
+    for (final controller in _draftControllers.values) {
+      controller.dispose();
+    }
+    _draftControllers.clear();
+  }
+
+  void _startEditing(SpecialistAiRecommendationItem recommendation) {
+    if (!recommendation.status.isPending || _editingRecommendationId != null) {
+      return;
+    }
+
+    _disposeDraftControllers();
+    final form = recommendation.details.toDraftFormMap();
+    for (final fieldId in AiRecommendationDetailsDraftEdit.editableFieldIds) {
+      _draftControllers[fieldId] =
+          TextEditingController(text: form[fieldId] ?? '');
+    }
+    setState(() => _editingRecommendationId = recommendation.id);
+  }
+
+  void _cancelEditing() {
+    _disposeDraftControllers();
+    setState(() => _editingRecommendationId = null);
+  }
+
+  Future<void> _saveDraft(
+    String recommendationId,
+    SpecialistAiRecommendationItem recommendation,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final form = <String, String>{};
+    for (final entry in _draftControllers.entries) {
+      form[entry.key] = entry.value.text;
+    }
+
+    if (!AiRecommendationDetailsDraftEdit.hasClinicalContent(form)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.specialistAiRecommendationEditEmptyContent)),
+      );
+      return;
+    }
+
+    final notifier = ref.read(
+      specialistAiRecommendationsProvider(widget.patientId).notifier,
+    );
+    final success = await notifier.saveDraft(
+      recommendationId: recommendationId,
+      payload: AiRecommendationDetailsDraftEdit.buildUpdatePayload(
+        form,
+        originalExercises: recommendation.details.suggestedExercises,
+      ),
+    );
+    if (!mounted) return;
+
+    if (success) {
+      _cancelEditing();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.specialistAiRecommendationSaveChangesSuccess)),
+      );
+      return;
+    }
+
+    _showErrorSnackBar(
+      fallback: l10n.specialistAiRecommendationSaveChangesFailed,
+    );
+  }
+
   Future<void> _generate(AiRecommendationType type) async {
+    if (_editingRecommendationId != null) {
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     final success = await ref
         .read(specialistAiRecommendationsProvider(widget.patientId).notifier)
@@ -49,6 +131,10 @@ class _SpecialistAiRecommendationsScreenState
   }
 
   Future<void> _accept(String recommendationId) async {
+    if (_editingRecommendationId != null) {
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     final success = await ref
         .read(specialistAiRecommendationsProvider(widget.patientId).notifier)
@@ -56,9 +142,7 @@ class _SpecialistAiRecommendationsScreenState
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.specialistAiRecommendationAccepted)),
       );
     } else {
@@ -67,6 +151,10 @@ class _SpecialistAiRecommendationsScreenState
   }
 
   Future<void> _reject(String recommendationId) async {
+    if (_editingRecommendationId != null) {
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     final success = await ref
         .read(specialistAiRecommendationsProvider(widget.patientId).notifier)
@@ -74,9 +162,7 @@ class _SpecialistAiRecommendationsScreenState
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.specialistAiRecommendationRejected)),
       );
     } else {
@@ -84,14 +170,13 @@ class _SpecialistAiRecommendationsScreenState
     }
   }
 
-  void _showErrorSnackBar() {
+  void _showErrorSnackBar({String? fallback}) {
     final message = ref
-        .read(specialistAiRecommendationsProvider(widget.patientId))
-        .errorMessage;
+            .read(specialistAiRecommendationsProvider(widget.patientId))
+            .errorMessage ??
+        fallback;
     if (message != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -127,7 +212,12 @@ class _SpecialistAiRecommendationsScreenState
       );
     } else {
       body = RefreshIndicator(
-        onRefresh: notifier.refresh,
+        onRefresh: () async {
+          if (_editingRecommendationId != null) {
+            return;
+          }
+          await notifier.refresh();
+        },
         color: DashboardColors.brandCyan,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -139,7 +229,8 @@ class _SpecialistAiRecommendationsScreenState
             ),
             SizedBox(height: context.dashSpacing * 0.75),
             AiRecommendationsGenerateCard(
-              isGenerating: state.isGenerating,
+              isGenerating:
+                  state.isGenerating || _editingRecommendationId != null,
               generatingType: state.generatingType,
               onGenerateExercise: () =>
                   _generate(AiRecommendationType.exerciseSuggestion),
@@ -167,15 +258,26 @@ class _SpecialistAiRecommendationsScreenState
                 message: l10n.specialistAiGenerateFirstRecommendation,
               )
             else
-              ...bundle.recommendations.map(
-                (recommendation) => AiRecommendationCard(
+              ...bundle.recommendations.map((recommendation) {
+                final isEditing =
+                    _editingRecommendationId == recommendation.id;
+                final anotherEditing =
+                    _editingRecommendationId != null && !isEditing;
+                return AiRecommendationCard(
                   recommendation: recommendation,
                   isUpdating:
-                      state.updatingRecommendationId == recommendation.id,
+                      state.updatingRecommendationId == recommendation.id ||
+                          anotherEditing,
+                  isEditing: isEditing,
+                  isSavingDraft: isEditing && state.isSavingDraft,
+                  draftControllers: isEditing ? _draftControllers : null,
+                  onEdit: () => _startEditing(recommendation),
+                  onSave: () => _saveDraft(recommendation.id, recommendation),
+                  onCancel: _cancelEditing,
                   onAccept: () => _accept(recommendation.id),
                   onReject: () => _reject(recommendation.id),
-                ),
-              ),
+                );
+              }),
             SizedBox(height: context.dashSpacing),
           ],
         ),

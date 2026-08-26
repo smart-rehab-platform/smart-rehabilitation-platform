@@ -2740,6 +2740,18 @@
         "reject": "رفض",
         "assigning": "جارٍ التعيين..."
       },
+      "edit": {
+        "editRecommendation": "تعديل",
+        "editingBanner": "تعديل التوصية",
+        "saveChanges": "حفظ التغييرات",
+        "saving": "جارٍ حفظ التغييرات...",
+        "cancelEditing": "إلغاء التعديل",
+        "saveSuccess": "تم حفظ التغييرات بنجاح",
+        "saveFailed": "فشل حفظ التغييرات",
+        "emptyContent": "لا يمكن أن يكون محتوى التوصية فارغًا.",
+        "listItemsHint": "أدخل عنصرًا واحدًا في كل سطر.",
+        "exerciseItemsHint": "أدخل تمرينًا واحدًا في كل سطر بصيغة العنوان — السبب."
+      },
       "toast": {
         "generated": "تم إنشاء توصية الذكاء الاصطناعي",
         "accepted": "تم قبول التوصية",

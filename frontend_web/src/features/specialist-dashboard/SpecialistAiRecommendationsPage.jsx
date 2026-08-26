@@ -54,10 +54,17 @@ export default function SpecialistAiRecommendationsPage() {
     isGenerating,
     generatingTypeId,
     updatingRecommendationId,
+    editingRecommendationId,
+    draftForm,
+    isSavingDraft,
     error,
     reload,
     generateExerciseSuggestion,
     generatePlanAdjustment,
+    startEditing,
+    cancelEditing,
+    updateDraftField,
+    saveDraft,
     accept,
     reject,
   } = useSpecialistAiRecommendations(specialistUserId, patientId);
@@ -118,6 +125,25 @@ export default function SpecialistAiRecommendationsPage() {
     }
   }, [reject, showToast]);
 
+  const handleEdit = useCallback((recommendation) => {
+    startEditing(recommendation);
+  }, [startEditing]);
+
+  const handleSaveDraft = useCallback(async (recommendationId) => {
+    const result = await saveDraft(recommendationId);
+    if (result.ok) {
+      showToast(result.message);
+      return;
+    }
+    if (result.message) {
+      showToast(result.message);
+    }
+  }, [saveDraft, showToast]);
+
+  const handleCancelEditing = useCallback(() => {
+    cancelEditing();
+  }, [cancelEditing]);
+
   const renderContent = () => {
     if (isLoading && !bundle) {
       return (
@@ -171,6 +197,13 @@ export default function SpecialistAiRecommendationsPage() {
           <SpecialistAiRecommendationsList
             recommendations={recommendations}
             updatingRecommendationId={updatingRecommendationId}
+            editingRecommendationId={editingRecommendationId}
+            draftForm={draftForm}
+            isSavingDraft={isSavingDraft}
+            onDraftFieldChange={updateDraftField}
+            onEdit={handleEdit}
+            onSave={handleSaveDraft}
+            onCancel={handleCancelEditing}
             onAccept={handleAccept}
             onReject={handleReject}
           />

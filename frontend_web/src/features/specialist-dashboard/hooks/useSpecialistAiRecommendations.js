@@ -5,8 +5,15 @@ import {
   generateSpecialistAiRecommendation,
   loadSpecialistAiRecommendationsBundle,
   rejectSpecialistAiRecommendation,
+  updateSpecialistAiRecommendationDraft,
 } from "../../../services/specialistAiRecommendationService";
 import { AI_RECOMMENDATION_TYPE } from "../utils/specialistAiRecommendationMappers";
+import {
+  buildAiRecommendationDraftFormState,
+  buildAiRecommendationDraftUpdatePayload,
+  canStartAiRecommendationDraftEdit,
+  hasAiRecommendationDraftClinicalContent,
+} from "../utils/specialistAiRecommendationDraftEdit";
 import { notifySpecialistAiRecommendationRefresh } from "../utils/specialistAiRecommendationRefresh";
 import { applyAiRecommendationsBundleLocalization } from "../utils/specialistAiRecommendationsLocalization";
 
@@ -21,6 +28,9 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatingTypeId, setGeneratingTypeId] = useState(null);
   const [updatingRecommendationId, setUpdatingRecommendationId] = useState(null);
+  const [editingRecommendationId, setEditingRecommendationId] = useState(null);
+  const [draftForm, setDraftForm] = useState(null);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [error, setError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const loadTokenRef = useRef(0);
@@ -29,9 +39,12 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
   const generateFailedError = t("specialist.aiRecommendations.errors.generateFailed");
   const acceptFailedError = t("specialist.aiRecommendations.errors.acceptFailed");
   const rejectFailedError = t("specialist.aiRecommendations.errors.rejectFailed");
+  const saveFailedError = t("specialist.aiRecommendations.edit.saveFailed");
+  const emptyContentError = t("specialist.aiRecommendations.edit.emptyContent");
   const generatedToast = t("specialist.aiRecommendations.toast.generated");
   const acceptedToast = t("specialist.aiRecommendations.toast.accepted");
   const rejectedToast = t("specialist.aiRecommendations.toast.rejected");
+  const saveSuccessToast = t("specialist.aiRecommendations.edit.saveSuccess");
 
   const reload = useCallback(() => {
     setRefreshToken((value) => value + 1);
@@ -49,6 +62,8 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
     async function loadBundle() {
       setIsLoading(true);
       setError(null);
+      setEditingRecommendationId(null);
+      setDraftForm(null);
 
       try {
         const nextBundle = await loadSpecialistAiRecommendationsBundle(specialistUserId, patientId);
@@ -94,7 +109,7 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
   const relatedPlanId = bundle?.planId ?? null;
 
   const generate = useCallback(async (typeId) => {
-    if (!specialistUserId || !patientId || isGenerating) {
+    if (!specialistUserId || !patientId || isGenerating || editingRecommendationId) {
       return { ok: false, message: null };
     }
 
@@ -123,6 +138,7 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
     specialistUserId,
     patientId,
     isGenerating,
+    editingRecommendationId,
     relatedPlanId,
     reloadBundleQuietly,
     generatedToast,
@@ -140,8 +156,109 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
     [generate],
   );
 
+  const startEditing = useCallback((recommendation) => {
+    if (
+      !canStartAiRecommendationDraftEdit(recommendation)
+      || updatingRecommendationId
+      || isSavingDraft
+      || editingRecommendationId
+    ) {
+      return false;
+    }
+
+    setDraftForm(buildAiRecommendationDraftFormState(recommendation));
+    setEditingRecommendationId(recommendation.id);
+    setError(null);
+    return true;
+  }, [updatingRecommendationId, isSavingDraft, editingRecommendationId]);
+
+  const cancelEditing = useCallback(() => {
+    setEditingRecommendationId(null);
+    setDraftForm(null);
+    setError(null);
+  }, []);
+
+  const updateDraftField = useCallback((fieldId, value) => {
+    setDraftForm((prev) => (prev ? { ...prev, [fieldId]: value } : prev));
+  }, []);
+
+  const saveDraft = useCallback(async (recommendationId) => {
+    if (
+      !specialistUserId
+      || !patientId
+      || !recommendationId
+      || editingRecommendationId !== recommendationId
+      || !draftForm
+      || isSavingDraft
+    ) {
+      return { ok: false, message: null };
+    }
+
+    if (!hasAiRecommendationDraftClinicalContent(draftForm)) {
+      setError(emptyContentError);
+      return { ok: false, message: emptyContentError };
+    }
+
+    setIsSavingDraft(true);
+    setError(null);
+
+    try {
+      const currentRecommendation = bundle?.recommendations?.find(
+        (item) => item.id === recommendationId,
+      );
+      const payload = buildAiRecommendationDraftUpdatePayload(
+        draftForm,
+        currentRecommendation?.details?.suggestedExercises || [],
+      );
+      const updated = await updateSpecialistAiRecommendationDraft(
+        specialistUserId,
+        patientId,
+        recommendationId,
+        payload,
+      );
+
+      setBundle((prev) => {
+        if (!prev || !updated) {
+          return prev;
+        }
+        return {
+          ...prev,
+          recommendations: prev.recommendations.map((item) => (
+            item.id === updated.id ? updated : item
+          )),
+        };
+      });
+      setEditingRecommendationId(null);
+      setDraftForm(null);
+      return { ok: true, message: saveSuccessToast };
+    } catch (saveError) {
+      const message = resolveErrorMessage(saveError, saveFailedError);
+      setError(message);
+      return { ok: false, message };
+    } finally {
+      setIsSavingDraft(false);
+    }
+  }, [
+    specialistUserId,
+    patientId,
+    editingRecommendationId,
+    draftForm,
+    isSavingDraft,
+    emptyContentError,
+    saveFailedError,
+    saveSuccessToast,
+    bundle,
+  ]);
+
   const accept = useCallback(async (recommendationId) => {
-    if (!specialistUserId || !patientId || !recommendationId || updatingRecommendationId) {
+    if (
+      !specialistUserId
+      || !patientId
+      || !recommendationId
+      || updatingRecommendationId
+      || editingRecommendationId
+      || isSavingDraft
+    ) {
       return { ok: false, message: null };
     }
 
@@ -164,6 +281,8 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
     specialistUserId,
     patientId,
     updatingRecommendationId,
+    editingRecommendationId,
+    isSavingDraft,
     reloadBundleQuietly,
     acceptedToast,
     acceptFailedError,
@@ -171,7 +290,14 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
   ]);
 
   const reject = useCallback(async (recommendationId) => {
-    if (!specialistUserId || !patientId || !recommendationId || updatingRecommendationId) {
+    if (
+      !specialistUserId
+      || !patientId
+      || !recommendationId
+      || updatingRecommendationId
+      || editingRecommendationId
+      || isSavingDraft
+    ) {
       return { ok: false, message: null };
     }
 
@@ -193,6 +319,8 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
     specialistUserId,
     patientId,
     updatingRecommendationId,
+    editingRecommendationId,
+    isSavingDraft,
     reloadBundleQuietly,
     rejectedToast,
     rejectFailedError,
@@ -206,10 +334,17 @@ export function useSpecialistAiRecommendations(specialistUserId, patientId) {
     isGenerating,
     generatingTypeId,
     updatingRecommendationId,
+    editingRecommendationId,
+    draftForm,
+    isSavingDraft,
     error,
     reload,
     generateExerciseSuggestion,
     generatePlanAdjustment,
+    startEditing,
+    cancelEditing,
+    updateDraftField,
+    saveDraft,
     accept,
     reject,
   };
