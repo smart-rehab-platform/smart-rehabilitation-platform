@@ -124,11 +124,41 @@ const rejectRecommendation = async (req, res) => {
   }
 };
 
+const updateRecommendationDraft = async (req, res) => {
+  try {
+    const recommendation =
+      await aiRecommendationsService.updateAiRecommendationDraft(
+        req.params.id,
+        req.user,
+        req.body
+      );
+
+    if (!recommendation) {
+      return res.status(404).json({
+        success: false,
+        message: "Recommendation not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "AI recommendation draft updated successfully",
+      data: recommendation,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
-   generateRecommendation,
+  generateRecommendation,
   getAllRecommendations,
   getRecommendationById,
   getRecommendationsByPatient,
   acceptRecommendation,
   rejectRecommendation,
+  updateRecommendationDraft,
 };

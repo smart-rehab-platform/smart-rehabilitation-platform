@@ -140,3 +140,21 @@ export async function rejectSpecialistAiRecommendation(specialistUserId, patient
     throwServiceError(error, "Failed to reject recommendation.");
   }
 }
+
+export async function updateSpecialistAiRecommendationDraft(
+  specialistUserId,
+  patientId,
+  recommendationId,
+  payload,
+) {
+  const id = requireId(recommendationId, "Recommendation id");
+  await assertAssignedPatient(specialistUserId, patientId);
+
+  try {
+    const response = await api.patch(`/ai/recommendations/${encodeURIComponent(id)}`, payload);
+    const row = extractMap(response);
+    return row ? mapAiRecommendationList([row])[0] ?? null : null;
+  } catch (error) {
+    throwServiceError(error, "Failed to save recommendation changes.");
+  }
+}

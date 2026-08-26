@@ -3,6 +3,10 @@ const aiProviderService = require("../../services/aiProvider.service");
 const {
   cloneWithoutLegacySpeechScores,
 } = require("../../utils/legacySpeechScores");
+const { isSpecialistAssignedToPatient } = require("../../utils/patientAccess");
+const {
+  mergeAiRecommendationDraftDetails,
+} = require("./aiRecommendationDraft.edit");
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -580,12 +584,70 @@ const updateRecommendationStatus = async (id, status, reviewedBy) => {
   return result.rows[0];
 };
 
+const assertActorCanEditRecommendation = async (actor, patientId) => {
+  if (!actor) {
+    throw createError("Unauthorized", 401);
+  }
+
+  const role = String(actor.role || "").toLowerCase();
+  if (role === "admin") {
+    return;
+  }
+
+  if (role !== "specialist") {
+    throw createError("Access forbidden. You do not have permission", 403);
+  }
+
+  const assigned = await isSpecialistAssignedToPatient(actor.id, patientId);
+  if (!assigned) {
+    throw createError("You do not have access to this patient.", 403);
+  }
+};
+
+const updateAiRecommendationDraft = async (id, actor, updates) => {
+  const recommendation = await getRecommendationById(id);
+  if (!recommendation) {
+    return null;
+  }
+
+  await assertActorCanEditRecommendation(actor, recommendation.patient_id);
+
+  const status = String(recommendation.status || "").toLowerCase();
+  if (status === "accepted") {
+    throw createError("Accepted AI recommendations cannot be edited.", 409);
+  }
+  if (status === "rejected") {
+    throw createError("Rejected AI recommendations cannot be edited.", 409);
+  }
+  if (status !== "pending") {
+    throw createError("Only pending AI recommendations can be edited.", 409);
+  }
+
+  const nextDetails = mergeAiRecommendationDraftDetails(
+    recommendation.details,
+    updates
+  );
+
+  await pool.query(
+    `
+    UPDATE ai_recommendations
+    SET details = $1
+    WHERE id = $2
+    `,
+    [JSON.stringify(nextDetails), id]
+  );
+
+  return getRecommendationById(id);
+};
+
 module.exports = {
   generateRecommendation,
   getAllRecommendations,
   getRecommendationById,
   getRecommendationsByPatient,
   updateRecommendationStatus,
+  updateAiRecommendationDraft,
+  assertActorCanEditRecommendation,
   buildRecommendationPrompt,
   buildRuleBasedRecommendationFallback,
 };

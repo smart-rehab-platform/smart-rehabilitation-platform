@@ -3758,6 +3758,40 @@ class AppLocalizationsAr extends AppLocalizations {
   String get specialistAiRecommendationRejected => 'تم رفض التوصية';
 
   @override
+  String get specialistAiRecommendationEdit => 'تعديل';
+
+  @override
+  String get specialistAiRecommendationEditingBanner => 'تعديل التوصية';
+
+  @override
+  String get specialistAiRecommendationSaveChanges => 'حفظ التغييرات';
+
+  @override
+  String get specialistAiRecommendationSavingChanges => 'جارٍ حفظ التغييرات...';
+
+  @override
+  String get specialistAiRecommendationCancelEditing => 'إلغاء التعديل';
+
+  @override
+  String get specialistAiRecommendationSaveChangesSuccess =>
+      'تم حفظ التغييرات بنجاح';
+
+  @override
+  String get specialistAiRecommendationSaveChangesFailed => 'فشل حفظ التغييرات';
+
+  @override
+  String get specialistAiRecommendationEditEmptyContent =>
+      'لا يمكن أن يكون محتوى التوصية فارغًا.';
+
+  @override
+  String get specialistAiRecommendationEditListHint =>
+      'أدخل عنصرًا واحدًا في كل سطر.';
+
+  @override
+  String get specialistAiRecommendationEditExerciseHint =>
+      'أدخل تمرينًا واحدًا في كل سطر بصيغة العنوان — السبب.';
+
+  @override
   String get specialistAiGenerateFirstRecommendation =>
       'أنشئ أول توصية بالذكاء الاصطناعي';
 

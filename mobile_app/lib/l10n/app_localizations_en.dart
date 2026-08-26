@@ -3812,6 +3812,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get specialistAiRecommendationRejected => 'Recommendation rejected';
 
   @override
+  String get specialistAiRecommendationEdit => 'Edit';
+
+  @override
+  String get specialistAiRecommendationEditingBanner =>
+      'Editing Recommendation';
+
+  @override
+  String get specialistAiRecommendationSaveChanges => 'Save Changes';
+
+  @override
+  String get specialistAiRecommendationSavingChanges => 'Saving changes...';
+
+  @override
+  String get specialistAiRecommendationCancelEditing => 'Cancel Editing';
+
+  @override
+  String get specialistAiRecommendationSaveChangesSuccess =>
+      'Changes saved successfully';
+
+  @override
+  String get specialistAiRecommendationSaveChangesFailed =>
+      'Failed to save changes';
+
+  @override
+  String get specialistAiRecommendationEditEmptyContent =>
+      'Recommendation content cannot be empty.';
+
+  @override
+  String get specialistAiRecommendationEditListHint =>
+      'Enter one item per line.';
+
+  @override
+  String get specialistAiRecommendationEditExerciseHint =>
+      'Enter one exercise per line as Title — Reason.';
+
+  @override
   String get specialistAiGenerateFirstRecommendation =>
       'Generate your first AI recommendation';
 

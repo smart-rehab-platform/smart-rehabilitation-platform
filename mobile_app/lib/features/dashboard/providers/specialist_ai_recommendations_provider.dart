@@ -17,6 +17,7 @@ class SpecialistAiRecommendationsState {
     this.isGenerating = false,
     this.generatingType,
     this.updatingRecommendationId,
+    this.isSavingDraft = false,
     this.errorMessage,
     this.bundle,
   });
@@ -25,6 +26,7 @@ class SpecialistAiRecommendationsState {
   final bool isGenerating;
   final AiRecommendationType? generatingType;
   final String? updatingRecommendationId;
+  final bool isSavingDraft;
   final String? errorMessage;
   final SpecialistAiRecommendationsBundle? bundle;
 
@@ -33,6 +35,7 @@ class SpecialistAiRecommendationsState {
     bool? isGenerating,
     Object? generatingType = _sentinel,
     Object? updatingRecommendationId = _sentinel,
+    bool? isSavingDraft,
     Object? errorMessage = _sentinel,
     SpecialistAiRecommendationsBundle? bundle,
   }) {
@@ -45,6 +48,7 @@ class SpecialistAiRecommendationsState {
       updatingRecommendationId: identical(updatingRecommendationId, _sentinel)
           ? this.updatingRecommendationId
           : updatingRecommendationId as String?,
+      isSavingDraft: isSavingDraft ?? this.isSavingDraft,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
@@ -153,12 +157,62 @@ class SpecialistAiRecommendationsNotifier
     );
   }
 
+  Future<bool> saveDraft({
+    required String recommendationId,
+    required Map<String, dynamic> payload,
+  }) async {
+    if (state.isSavingDraft || state.updatingRecommendationId != null) {
+      return false;
+    }
+
+    _ensureAuthToken();
+    state = state.copyWith(isSavingDraft: true, errorMessage: null);
+
+    try {
+      final updated = await _repository.updateRecommendationDraft(
+        recommendationId: recommendationId,
+        payload: payload,
+      );
+      final current = state.bundle;
+      if (current != null) {
+        state = state.copyWith(
+          isSavingDraft: false,
+          bundle: SpecialistAiRecommendationsBundle(
+            patientId: current.patientId,
+            patientName: current.patientName,
+            patientProfileImageUrl: current.patientProfileImageUrl,
+            planId: current.planId,
+            recommendations: current.recommendations
+                .map((item) => item.id == updated.id ? updated : item)
+                .toList(),
+          ),
+        );
+      } else {
+        await _reloadBundle();
+        state = state.copyWith(isSavingDraft: false);
+      }
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        isSavingDraft: false,
+        errorMessage: error is SpecialistAiRecommendationDraftUpdateException
+            ? error.message
+            : 'Failed to save recommendation changes: $error',
+      );
+      return false;
+    }
+  }
+
   Future<bool> _updateStatus({
     required String recommendationId,
     required Future<void> Function(String id) action,
     required String failureMessage,
     required bool successRefreshPatientDetails,
   }) async {
+    if (state.isSavingDraft) {
+      return false;
+    }
+
     _ensureAuthToken();
     state = state.copyWith(
       updatingRecommendationId: recommendationId,

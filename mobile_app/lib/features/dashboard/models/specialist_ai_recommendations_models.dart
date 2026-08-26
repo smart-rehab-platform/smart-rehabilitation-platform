@@ -86,6 +86,123 @@ class AiSuggestedExercise {
   }
 }
 
+extension AiRecommendationDetailsDraftEdit on AiRecommendationDetails {
+  static const clinicalAnalysisField = 'clinical_analysis';
+  static const clinicalReasoningField = 'clinical_reasoning';
+  static const planAdjustmentsField = 'treatment_plan_adjustments';
+  static const suggestedExercisesField = 'suggested_exercises';
+
+  static List<String> get editableFieldIds => const [
+        clinicalReasoningField,
+        clinicalAnalysisField,
+        suggestedExercisesField,
+        planAdjustmentsField,
+      ];
+
+  Map<String, String> toDraftFormMap() {
+    final exerciseLines = suggestedExercises
+        .map((exercise) => exercise.displayLine.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+    final uniqueAdjustments = <String>[];
+    final seen = <String>{};
+    for (final item in planAdjustments) {
+      final text = item.trim();
+      if (text.isEmpty || seen.contains(text)) {
+        continue;
+      }
+      seen.add(text);
+      uniqueAdjustments.add(text);
+    }
+
+    return {
+      clinicalReasoningField: (clinicalReasoning ?? summary ?? '').trim(),
+      clinicalAnalysisField: (clinicalAnalysis ?? '').trim(),
+      suggestedExercisesField: exerciseLines.join('\n'),
+      planAdjustmentsField: uniqueAdjustments.join('\n'),
+    };
+  }
+
+  static List<String> _linesToList(String? value) {
+    return (value ?? '')
+        .split(RegExp(r'\r?\n'))
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+  }
+
+  static Map<String, dynamic>? _parseExerciseLine(String line) {
+    final text = line.trim();
+    if (text.isEmpty) {
+      return null;
+    }
+
+    final match = RegExp(r'\s+[—–-]\s+').firstMatch(text);
+    if (match != null) {
+      final title = text.substring(0, match.start).trim();
+      final reason = text.substring(match.end).trim();
+      return {
+        'exercise_id': null,
+        'title': title.isEmpty ? text : title,
+        'reason': reason.isEmpty ? null : reason,
+      };
+    }
+
+    return {
+      'exercise_id': null,
+      'title': text,
+      'reason': null,
+    };
+  }
+
+  static Map<String, dynamic> buildUpdatePayload(
+    Map<String, String> form, {
+    List<AiSuggestedExercise> originalExercises = const [],
+  }) {
+    final exerciseLines = _linesToList(form[suggestedExercisesField]);
+    final exercises = <Map<String, dynamic>>[];
+    for (var index = 0; index < exerciseLines.length; index++) {
+      final parsed = _parseExerciseLine(exerciseLines[index]);
+      if (parsed == null) {
+        continue;
+      }
+      if (index < originalExercises.length) {
+        final original = originalExercises[index];
+        final originalId = original.exerciseId?.trim();
+        final originalTitle = original.title?.trim() ?? '';
+        final parsedTitle = (parsed['title'] as String?)?.trim() ?? '';
+        if (originalId != null &&
+            originalId.isNotEmpty &&
+            (originalTitle.isEmpty || originalTitle == parsedTitle)) {
+          parsed['exercise_id'] = originalId;
+        }
+      }
+      exercises.add(parsed);
+    }
+
+    return {
+      clinicalAnalysisField: (form[clinicalAnalysisField] ?? '').trim(),
+      clinicalReasoningField: (form[clinicalReasoningField] ?? '').trim(),
+      planAdjustmentsField: _linesToList(form[planAdjustmentsField]),
+      suggestedExercisesField: exercises,
+    };
+  }
+
+  static bool hasClinicalContent(Map<String, String> form) {
+    final payload = buildUpdatePayload(form);
+    final analysis = (payload[clinicalAnalysisField] as String?) ?? '';
+    final reasoning = (payload[clinicalReasoningField] as String?) ?? '';
+    final adjustments =
+        (payload[planAdjustmentsField] as List?)?.cast<String>() ?? const [];
+    final exercises =
+        (payload[suggestedExercisesField] as List?) ?? const [];
+    return analysis.isNotEmpty ||
+        reasoning.isNotEmpty ||
+        adjustments.isNotEmpty ||
+        exercises.isNotEmpty;
+  }
+}
+
 class AiRecommendationDetails {
   const AiRecommendationDetails({
     this.summary,
@@ -146,7 +263,9 @@ class AiRecommendationDetails {
     final suggestion = ApiResponseParser.readString(map, const [
       'suggestion',
     ]);
-    if (suggestion != null && suggestion.isNotEmpty) {
+    if (suggestion != null &&
+        suggestion.isNotEmpty &&
+        !adjustments.contains(suggestion)) {
       adjustments.add(suggestion);
     }
 
