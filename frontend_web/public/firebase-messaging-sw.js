@@ -42,12 +42,24 @@ if (typeof firebase === 'undefined') {
     const messaging = firebase.messaging();
 
     // Handle background / data-only messages. Sole Web desktop display path.
+    // TEMP DIAGNOSTIC (remove after proving FCM path): logs + [SR-SW] title marker.
     messaging.onBackgroundMessage(function(payload) {
       try {
+        console.log('[SmartRehab SW] background FCM received', {
+          hasNotification: !!(payload && payload.notification),
+          notification: payload && payload.notification ? payload.notification : null,
+          data: payload && payload.data ? payload.data : null,
+        });
+
         const data = payload?.data || {};
-        const title = (data.title && String(data.title).trim())
+        const titleBase = (data.title && String(data.title).trim())
+          || (payload?.notification?.title && String(payload.notification.title).trim())
           || 'Smart Rehabilitation';
-        const body = (data.body && String(data.body).trim()) || '';
+        // Temporary marker proves the visible toast came from THIS showNotification.
+        const title = `${titleBase} [SR-SW]`;
+        const body = (data.body && String(data.body).trim())
+          || (payload?.notification?.body && String(payload.notification.body).trim())
+          || '';
         const notificationId = data.notificationId || data.notification_id || '';
         const tag = notificationId
           ? `smart-rehab-${notificationId}`
@@ -77,10 +89,16 @@ if (typeof firebase === 'undefined') {
         // If any client is focused, forward data for in-app refresh and skip OS toast.
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
           const hasFocused = clientList.some((c) => c.focused);
+          console.log('[SmartRehab SW] clients', {
+            count: clientList.length,
+            hasFocused,
+            visibility: clientList.map((c) => c.visibilityState),
+          });
           if (hasFocused) {
             clientList.forEach((client) => {
               client.postMessage({ type: 'fcm-message', payload: data });
             });
+            console.log('[SmartRehab SW] skipped showNotification (focused client)');
             return;
           }
 
@@ -100,8 +118,10 @@ if (typeof firebase === 'undefined') {
             },
           };
 
+          console.log('[SmartRehab SW] showNotification', { title, icon: options.icon, tag: options.tag });
           self.registration.showNotification(title, options);
-        }).catch(() => {
+        }).catch((err) => {
+          console.log('[SmartRehab SW] matchAll failed, fallback showNotification', err && err.message);
           self.registration.showNotification(title, {
             body,
             icon: iconUrl,
@@ -112,7 +132,7 @@ if (typeof firebase === 'undefined') {
           });
         });
       } catch (e) {
-        // swallow - nothing to do in SW
+        console.log('[SmartRehab SW] onBackgroundMessage error', e && e.message);
       }
     });
 
