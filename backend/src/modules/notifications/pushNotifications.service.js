@@ -1,5 +1,4 @@
 const admin = require("../../config/firebaseAdmin");
-const { getFrontendBaseUrl } = require("../../config/frontend");
 const pool = require("../../database/db");
 
 const PERMANENT_TOKEN_ERROR_CODES = new Set([
@@ -10,16 +9,11 @@ const PERMANENT_TOKEN_ERROR_CODES = new Set([
 const MULTICAST_LIMIT = 500;
 const WEB_PLATFORM = "web";
 const MOBILE_PLATFORMS = new Set(["android", "ios"]);
-const WEB_PUSH_NOTIFICATION_ICON_PATH = "/branding/smart_rehab_notification_icon.png";
+// Relative same-origin path only. Absolute FRONTEND_URL hosts break on HTTPS
+// Vercel when Railway FRONTEND_URL is still http://localhost:5173 (mixed content).
+const WEB_PUSH_NOTIFICATION_ICON_PATH = "/branding/smart_rehab_horizontal_logo.png";
 
-const resolveWebPushNotificationIconUrl = () => {
-  const base = getFrontendBaseUrl();
-  if (!base) {
-    return WEB_PUSH_NOTIFICATION_ICON_PATH;
-  }
-
-  return `${base}${WEB_PUSH_NOTIFICATION_ICON_PATH}`;
-};
+const resolveWebPushNotificationIconUrl = () => WEB_PUSH_NOTIFICATION_ICON_PATH;
 
 const emptyResult = (attempted = 0) => ({
   attempted,

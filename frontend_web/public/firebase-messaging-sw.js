@@ -53,8 +53,26 @@ if (typeof firebase === 'undefined') {
           ? `smart-rehab-${notificationId}`
           : undefined;
         const route = data.route || data.relatedEntityRoute || data.related_entity_route || null;
-        const iconUrl = (data.icon && String(data.icon).trim())
-          || '/branding/smart_rehab_notification_icon.png';
+        // Same-origin icon only. Reject absolute cross-origin data.icon (e.g. http://localhost
+        // baked in by a misconfigured Railway FRONTEND_URL) — that fails as mixed content on HTTPS.
+        const WEB_PUSH_ICON = '/branding/smart_rehab_horizontal_logo.png';
+        const resolveSameOriginIcon = (raw) => {
+          const value = raw && String(raw).trim();
+          if (!value) return WEB_PUSH_ICON;
+          if (value.startsWith('/')) return value;
+          try {
+            const parsed = new URL(value);
+            if (parsed.origin === self.location.origin) {
+              return parsed.pathname + parsed.search;
+            }
+          } catch (_e) {
+            // ignore
+          }
+          return WEB_PUSH_ICON;
+        };
+        const iconUrl = resolveSameOriginIcon(data.icon);
+        // Chromium desktop hero slot (unchanged).
+        const imageUrl = WEB_PUSH_ICON;
 
         // If any client is focused, forward data for in-app refresh and skip OS toast.
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
@@ -69,7 +87,7 @@ if (typeof firebase === 'undefined') {
           const options = {
             body: body,
             icon: iconUrl,
-            image: iconUrl,
+            image: imageUrl,
             tag: tag,
             renotify: false,
             data: {
@@ -87,7 +105,7 @@ if (typeof firebase === 'undefined') {
           self.registration.showNotification(title, {
             body,
             icon: iconUrl,
-            image: iconUrl,
+            image: imageUrl,
             tag,
             renotify: false,
             data: { route, data },
