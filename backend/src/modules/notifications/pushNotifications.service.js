@@ -258,11 +258,21 @@ const sendPushToUser = async ({ userId, title, body, data } = {}) => {
   let failureCount = 0;
   const invalidTokens = [];
 
+  // TEMP DIAGNOSTIC: prove which payload shape is sent per platform bucket.
+  const webMessagePreview = buildWebMessage({ title, body, fcmData });
+  const mobileMessagePreview = buildMobileMessage({ title, body, fcmData });
+  console.info(
+    `[push] user=${userId} webTokens=${webTokens.length} mobileTokens=${mobileTokens.length} ` +
+      `webHasNotification=${Boolean(webMessagePreview.notification)} ` +
+      `mobileHasNotification=${Boolean(mobileMessagePreview.notification)} ` +
+      `webIcon=${webMessagePreview.data && webMessagePreview.data.icon}`
+  );
+
   try {
     if (mobileTokens.length > 0) {
       const mobileResult = await sendToTokenGroups(
         mobileTokens,
-        buildMobileMessage({ title, body, fcmData })
+        mobileMessagePreview
       );
       successCount += mobileResult.successCount;
       failureCount += mobileResult.failureCount;
@@ -272,7 +282,7 @@ const sendPushToUser = async ({ userId, title, body, data } = {}) => {
     if (webTokens.length > 0) {
       const webResult = await sendToTokenGroups(
         webTokens,
-        buildWebMessage({ title, body, fcmData })
+        webMessagePreview
       );
       successCount += webResult.successCount;
       failureCount += webResult.failureCount;
