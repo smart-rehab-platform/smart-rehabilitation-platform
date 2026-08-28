@@ -26,7 +26,7 @@ export function SpecialistReportCard({ report, onClick }) {
           height={20}
         />
         <UserProfileAvatar
-          imageUrl={null}
+          imageUrl={report.profileImageUrl}
           initials={getInitials(report.patientName, "P")}
           alt=""
           shellClassName="pd-avatar pd-specialist-preview-avatar"

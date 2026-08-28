@@ -182,6 +182,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navSessions => 'الجلسات';
 
   @override
+  String get navFeedback => 'الملاحظات';
+
+  @override
   String get navCaseRequests => 'طلبات الحالات';
 
   @override
@@ -661,6 +664,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get parentDashboardSelectChildForProgress => 'اختر طفلاً لعرض التقدم.';
+
+  @override
+  String get parentDashboardSelectChildForFeedback =>
+      'اختر طفلاً لعرض الملاحظات.';
 
   @override
   String get parentDashboardSelectChildForDetails =>
@@ -4995,6 +5002,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get parentFeedbackNoneYet => 'لا تتوفر ملاحظات من الأخصائي بعد.';
+
+  @override
+  String parentFeedbackForChild(String name) {
+    return 'لـ $name';
+  }
+
+  @override
+  String parentFeedbackReviewDate(String date) {
+    return 'تاريخ المراجعة: $date';
+  }
+
+  @override
+  String get parentFeedbackSpecialistComments => 'تعليقات الأخصائي';
+
+  @override
+  String get parentFeedbackSignInRequired =>
+      'يرجى تسجيل الدخول لعرض الملاحظات.';
+
+  @override
+  String get parentFeedbackLoadFailed =>
+      'تعذّر تحميل الملاحظات. يرجى المحاولة مرة أخرى.';
 
   @override
   String parentFeedbackRating(int rating) {

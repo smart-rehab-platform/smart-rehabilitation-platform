@@ -177,7 +177,10 @@ export default function SpecialistAiRecommendationsPage() {
 
     return (
       <div className="pd-specialist-ai-stack">
-        <SpecialistAiPatientHeader patientName={bundle.patientName} />
+        <SpecialistAiPatientHeader
+          patientName={bundle.patientName}
+          profileImageUrl={bundle.profileImageUrl}
+        />
         <SpecialistAiGenerateCard
           isGenerating={isGenerating}
           generatingTypeId={generatingTypeId}

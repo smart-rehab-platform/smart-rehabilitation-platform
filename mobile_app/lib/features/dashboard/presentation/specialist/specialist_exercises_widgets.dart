@@ -6,11 +6,14 @@ import '../../../../core/locale/locale_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/translation_repository.dart';
 import '../../models/specialist_feature_models.dart';
+import '../../utils/exercise_category_visuals.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/parent_dashboard_cards.dart';
 import 'manage_goals_widgets.dart';
 import 'specialist_scoped_localization_utils.dart';
+
+export '../../utils/exercise_category_visuals.dart';
 
 const specialistExerciseAllCategoryLabel = 'All';
 
@@ -110,89 +113,6 @@ List<SpecialistExerciseItem> filterExercises(
 
     return searchable.contains(query);
   }).toList();
-}
-
-IconData exerciseCategoryIcon(String? category) {
-  final normalized = category?.trim().toLowerCase() ?? '';
-  if (normalized.contains('articulation') ||
-      normalized.contains('speech') ||
-      normalized.contains('voice') ||
-      normalized.contains('fluency')) {
-    return Icons.record_voice_over_rounded;
-  }
-  if (normalized.contains('language') || normalized.contains('learning')) {
-    return Icons.menu_book_rounded;
-  }
-  if (normalized.contains('fine motor') ||
-      normalized.contains('daily living') ||
-      normalized.contains('sensory')) {
-    return Icons.back_hand_rounded;
-  }
-  if (normalized.contains('gross motor') ||
-      normalized.contains('motor rehabilitation')) {
-    return Icons.directions_walk_rounded;
-  }
-  if (normalized.contains('behavioral') ||
-      normalized.contains('social') ||
-      normalized.contains('autism') ||
-      normalized.contains('developmental')) {
-    return Icons.groups_rounded;
-  }
-  return Icons.fitness_center_rounded;
-}
-
-Color exerciseCategoryIconColor(String? category) {
-  final normalized = category?.trim().toLowerCase() ?? '';
-  if (normalized.contains('articulation') ||
-      normalized.contains('speech') ||
-      normalized.contains('voice')) {
-    return DashboardColors.brandCyan;
-  }
-  if (normalized.contains('fluency')) {
-    return DashboardColors.accent;
-  }
-  if (normalized.contains('language') || normalized.contains('learning')) {
-    return const Color(0xFF3B82F6);
-  }
-  if (normalized.contains('motor') ||
-      normalized.contains('sensory') ||
-      normalized.contains('daily')) {
-    return const Color(0xFF0D9488);
-  }
-  if (normalized.contains('behavioral') ||
-      normalized.contains('social') ||
-      normalized.contains('autism') ||
-      normalized.contains('developmental')) {
-    return DashboardColors.brandSecondaryBlue;
-  }
-  return DashboardColors.warning;
-}
-
-Color exerciseCategoryIconBackground(String? category) {
-  final normalized = category?.trim().toLowerCase() ?? '';
-  if (normalized.contains('articulation') ||
-      normalized.contains('speech') ||
-      normalized.contains('voice')) {
-    return DashboardColors.brandSoft;
-  }
-  if (normalized.contains('fluency')) {
-    return DashboardColors.tealSoft;
-  }
-  if (normalized.contains('language') || normalized.contains('learning')) {
-    return DashboardColors.blueSoft;
-  }
-  if (normalized.contains('motor') ||
-      normalized.contains('sensory') ||
-      normalized.contains('daily')) {
-    return DashboardColors.tealSoft;
-  }
-  if (normalized.contains('behavioral') ||
-      normalized.contains('social') ||
-      normalized.contains('autism') ||
-      normalized.contains('developmental')) {
-    return DashboardColors.brandSoft;
-  }
-  return DashboardColors.amberSoft;
 }
 
 Widget buildExerciseSearchField({

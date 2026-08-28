@@ -123,6 +123,8 @@
   "@navUsers": { "description": "Admin user management destination." },
   "navSessions": "Sessions",
   "@navSessions": { "description": "Therapy sessions destination." },
+  "navFeedback": "Feedback",
+  "@navFeedback": { "description": "Specialist exercise feedback destination." },
   "navCaseRequests": "Case Requests",
   "@navCaseRequests": { "description": "Case intake request inbox or list." },
   "navComplaints": "Complaints",
@@ -471,6 +473,8 @@
   },
   "parentDashboardSelectChildForProgress": "Select a child to view progress.",
   "@parentDashboardSelectChildForProgress": { "description": "Snack bar when progress is opened without a selected child." },
+  "parentDashboardSelectChildForFeedback": "Select a child to view feedback.",
+  "@parentDashboardSelectChildForFeedback": { "description": "Snack bar when feedback is opened without a selected child." },
   "parentDashboardSelectChildForDetails": "Select a child to view details.",
   "@parentDashboardSelectChildForDetails": { "description": "Snack bar when child details are opened without a selection." },
   "parentDashboardNoExercisesToday": "No exercises assigned today.",
@@ -3557,6 +3561,22 @@
   "@parentFeedbackTitle": { "description": "Parent feedback screen title." },
   "parentFeedbackNoneYet": "No specialist feedback available yet.",
   "@parentFeedbackNoneYet": { "description": "Empty state on parent feedback screen." },
+  "parentFeedbackForChild": "For {name}",
+  "@parentFeedbackForChild": {
+    "description": "Shows which child feedback belongs to.",
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "parentFeedbackReviewDate": "Review date: {date}",
+  "@parentFeedbackReviewDate": {
+    "description": "Review date label on feedback detail.",
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "parentFeedbackSpecialistComments": "Specialist comments",
+  "@parentFeedbackSpecialistComments": { "description": "Heading for specialist review comments." },
+  "parentFeedbackSignInRequired": "Please sign in to view feedback.",
+  "@parentFeedbackSignInRequired": { "description": "Error when feedback requires authentication." },
+  "parentFeedbackLoadFailed": "Failed to load feedback. Please try again.",
+  "@parentFeedbackLoadFailed": { "description": "Generic feedback load failure message." },
   "parentFeedbackRating": "Rating: {rating}/5",
   "@parentFeedbackRating": {
     "description": "Specialist feedback rating label.",

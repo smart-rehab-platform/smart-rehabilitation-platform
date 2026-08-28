@@ -5,6 +5,7 @@ import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import './specialist_patient_details_localization_utils.dart';
 import '../../models/specialist_patient_details_models.dart';
+import '../../utils/exercise_category_visuals.dart';
 import '../../widgets/dashboard_components.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
@@ -324,7 +325,7 @@ class PatientAssignedExerciseTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              Icons.fitness_center_outlined,
+              exerciseCategoryIcon(exercise.category),
               color: DashboardColors.accent,
               size: context.dashSpacing * 0.55,
             ),

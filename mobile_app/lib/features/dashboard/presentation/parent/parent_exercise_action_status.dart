@@ -82,6 +82,7 @@ ParentDailyTask applyLatestSubmissionToTask(
   return ParentDailyTask(
     id: task.id,
     title: task.title,
+    category: task.category,
     dueTime: task.dueTime,
     status: parentExerciseUiStatusKey(actionState),
     isCompleted: actionState == ParentExerciseActionState.reviewed ||

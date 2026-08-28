@@ -6,6 +6,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../l10n/app_localizations.dart';
 
+int? formatParentFeedbackStarRating(int? performanceRating) {
+  if (performanceRating == null) {
+    return null;
+  }
+  final stars = (performanceRating / 2).round();
+  return stars.clamp(1, 5);
+}
+
 String parentFormatDate(DateTime? date) {
   if (date == null) {
     return '—';

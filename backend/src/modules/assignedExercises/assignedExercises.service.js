@@ -497,9 +497,11 @@ const getDailyTasks = async (patientId) => {
     `SELECT ae.*,
             e.title AS exercise_title,
             e.instructions,
-            e.instruction_media_url
+            e.instruction_media_url,
+            c.name AS category_name
      FROM assigned_exercises ae
      JOIN exercises e ON ae.exercise_id = e.id
+     LEFT JOIN exercise_categories c ON e.category_id = c.id
      WHERE ae.patient_id = $1
        AND ae.is_active = true
        AND ae.frequency = 'daily'
@@ -521,9 +523,11 @@ const getWeeklyTasks = async (patientId) => {
     `SELECT ae.*,
             e.title AS exercise_title,
             e.instructions,
-            e.instruction_media_url
+            e.instruction_media_url,
+            c.name AS category_name
      FROM assigned_exercises ae
      JOIN exercises e ON ae.exercise_id = e.id
+     LEFT JOIN exercise_categories c ON e.category_id = c.id
      WHERE ae.patient_id = $1
        AND ae.is_active = true
        AND ae.frequency = 'weekly'

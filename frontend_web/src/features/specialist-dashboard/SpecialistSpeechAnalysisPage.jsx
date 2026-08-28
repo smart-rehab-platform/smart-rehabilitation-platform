@@ -83,6 +83,7 @@ export default function SpecialistSpeechAnalysisPage() {
   const {
     hasSubmissionContext,
     patientName,
+    profileImageUrl,
     analyses,
     latestAnalysis,
     progressItems,
@@ -161,6 +162,7 @@ export default function SpecialistSpeechAnalysisPage() {
       <div className="pd-specialist-speech-stack">
         <SpecialistSpeechAnalysisHeader
           patientName={patientName}
+          profileImageUrl={profileImageUrl}
           submissionId={hasSubmissionContext ? submissionId : null}
           analyzedAt={headerAnalyzedAt}
         />

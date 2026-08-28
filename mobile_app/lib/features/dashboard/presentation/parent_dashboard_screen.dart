@@ -16,6 +16,7 @@ import '../models/communication_models.dart';
 import '../models/parent_dashboard_models.dart';
 import '../providers/parent_dashboard_provider.dart';
 import '../providers/parent_features_provider.dart';
+import '../utils/exercise_category_visuals.dart';
 import '../utils/parent_session_display_helpers.dart';
 import '../widgets/dashboard_bottom_nav.dart';
 import '../widgets/dashboard_components.dart';
@@ -261,20 +262,6 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
       return '—';
     }
     return label;
-  }
-
-  IconData _taskIcon(String title) {
-    final lower = title.toLowerCase();
-    if (lower.contains('speech') || lower.contains('pronunciation')) {
-      return Icons.mic_none_rounded;
-    }
-    if (lower.contains('motor') || lower.contains('hand')) {
-      return Icons.back_hand_outlined;
-    }
-    if (lower.contains('balance')) {
-      return Icons.accessibility_new_rounded;
-    }
-    return Icons.fitness_center_outlined;
   }
 
   Color _taskColor(int index) {
@@ -665,7 +652,7 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
                               child: Icon(
                                 task.isCompleted
                                     ? Icons.check_circle_outline_rounded
-                                    : _taskIcon(task.title),
+                                    : exerciseCategoryIcon(task.category),
                                 color: _taskColor(index),
                                 size: context.dashSpacing * 0.55,
                               ),

@@ -66,6 +66,16 @@ String localizedTreatmentPlanStatus(AppLocalizations l10n, String? status) {
   };
 }
 
+String mapParentFeedbackError(AppLocalizations l10n, String message) {
+  if (message == 'select_child') {
+    return l10n.parentDashboardSelectChildForFeedback;
+  }
+  if (message.toLowerCase().contains('sign in')) {
+    return l10n.parentFeedbackSignInRequired;
+  }
+  return l10n.parentFeedbackLoadFailed;
+}
+
 String formatParentExerciseMediaAttachedLabel(
   AppLocalizations l10n,
   String mediaType,

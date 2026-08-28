@@ -1,4 +1,4 @@
-import { selectActiveTreatmentPlan } from "./specialistPatientMappers";
+import { mapPatientProfile, selectActiveTreatmentPlan } from "./specialistPatientMappers";
 
 function readString(record, keys) {
   if (!record || typeof record !== "object") {
@@ -252,12 +252,17 @@ export function mapAiRecommendationsBundle({
   planRows,
   recommendationRows,
 }) {
-  const patientName = readString(patientRow, ["full_name", "fullName", "name"]) || "Patient";
+  const patientProfile = mapPatientProfile(patientRow);
+  const patientName =
+    patientProfile?.fullName
+    || readString(patientRow, ["full_name", "fullName", "name"])
+    || "Patient";
   const activePlan = selectActiveTreatmentPlan(planRows);
 
   return {
     patientId,
     patientName,
+    profileImageUrl: patientProfile?.profileImageUrl ?? null,
     planId: activePlan?.id ?? null,
     recommendations: mapAiRecommendationList(recommendationRows),
   };

@@ -42,6 +42,7 @@ import '../../features/dashboard/presentation/communication/chat_screen.dart';
 import '../../features/dashboard/presentation/communication/conversations_list_screen.dart';
 import '../../features/dashboard/models/communication_models.dart';
 import '../../features/dashboard/presentation/parent/parent_ai_chat_screen.dart';
+import '../../features/dashboard/models/parent_dashboard_models.dart';
 import '../../features/dashboard/presentation/parent/parent_extended_screens.dart';
 import '../../features/dashboard/presentation/parent/parent_screens.dart';
 import '../../features/dashboard/presentation/parent_dashboard_screen.dart';
@@ -309,6 +310,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               state.extra as String? ??
               '';
           return ParentProgressScreen(childId: childId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.parentFeedbackDetailPath,
+        name: 'parentFeedbackDetail',
+        builder: (context, state) {
+          final reviewId = state.pathParameters['reviewId'] ?? '';
+          final patientId = state.uri.queryParameters['patientId'];
+          final extra = state.extra;
+          return ParentFeedbackDetailScreen(
+            reviewId: reviewId,
+            patientId: patientId,
+            initialFeedback: extra is ParentSpecialistFeedback ? extra : null,
+          );
         },
       ),
       GoRoute(

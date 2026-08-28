@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/dashboard_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/parent_dashboard_models.dart';
+import '../../utils/exercise_category_visuals.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_profile_avatar.dart';
 import '../../widgets/dashboard_surface_card.dart';
@@ -182,7 +183,7 @@ class ParentChildDetailExerciseCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              Icons.fitness_center_outlined,
+              exerciseCategoryIcon(exercise.category),
               color: DashboardColors.brandCyan,
               size: context.dashSpacing * 0.55,
             ),

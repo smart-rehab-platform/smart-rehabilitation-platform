@@ -9,6 +9,7 @@ import { getSpecialistSpeechAnalysisLabels } from "../utils/specialistSpeechAnal
 
 export function SpecialistSpeechAnalysisHeader({
   patientName,
+  profileImageUrl = null,
   submissionId = null,
   analyzedAt = null,
 }) {
@@ -21,7 +22,7 @@ export function SpecialistSpeechAnalysisHeader({
     <section className="pd-card pd-card-pad pd-specialist-speech-header">
       <div className="pd-specialist-speech-header-body">
         <UserProfileAvatar
-          imageUrl={null}
+          imageUrl={profileImageUrl}
           initials={getInitials(patientName, "P")}
           alt=""
           shellClassName="pd-avatar pd-specialist-speech-avatar"
