@@ -6771,6 +6771,66 @@ abstract class AppLocalizations {
   /// **'Recommendation rejected'**
   String get specialistAiRecommendationRejected;
 
+  /// Action to edit a pending AI recommendation before assign/reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get specialistAiRecommendationEdit;
+
+  /// Banner shown while editing an AI recommendation draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing Recommendation'**
+  String get specialistAiRecommendationEditingBanner;
+
+  /// Save edited AI recommendation draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get specialistAiRecommendationSaveChanges;
+
+  /// Loading label while saving AI recommendation edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving changes...'**
+  String get specialistAiRecommendationSavingChanges;
+
+  /// Cancel AI recommendation draft editing.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Editing'**
+  String get specialistAiRecommendationCancelEditing;
+
+  /// Snack bar after saving AI recommendation edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved successfully'**
+  String get specialistAiRecommendationSaveChangesSuccess;
+
+  /// Snack bar when AI recommendation draft save fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save changes'**
+  String get specialistAiRecommendationSaveChangesFailed;
+
+  /// Validation when all recommendation draft fields are empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation content cannot be empty.'**
+  String get specialistAiRecommendationEditEmptyContent;
+
+  /// Hint for plan adjustment list field in edit mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter one item per line.'**
+  String get specialistAiRecommendationEditListHint;
+
+  /// Hint for suggested exercises field in edit mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter one exercise per line as Title — Reason.'**
+  String get specialistAiRecommendationEditExerciseHint;
+
   /// Empty state CTA on AI recommendations screen.
   ///
   /// In en, this message translates to:

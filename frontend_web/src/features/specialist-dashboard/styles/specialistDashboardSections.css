@@ -3374,14 +3374,21 @@
 
 .pd-preview .pd-specialist-ai-recommendation-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 20px;
-  max-width: 420px;
+  max-width: 560px;
 }
 
 .pd-preview .pd-specialist-ai-recommendation-actions .pd-btn {
   flex: 1;
   min-height: 42px;
+  min-width: 7rem;
+}
+
+.pd-preview .pd-specialist-ai-recommendation-edit-field {
+  width: 100%;
+  margin-top: 0.35rem;
 }
 
 .pd-preview .pd-specialist-ai-reject-btn {

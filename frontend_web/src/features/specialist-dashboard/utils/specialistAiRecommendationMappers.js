@@ -198,7 +198,7 @@ export function parseRecommendationDetails(raw) {
   }
 
   const suggestion = readString(map, ["suggestion"]);
-  if (suggestion) {
+  if (suggestion && !planAdjustments.includes(suggestion)) {
     planAdjustments.push(suggestion);
   }
 

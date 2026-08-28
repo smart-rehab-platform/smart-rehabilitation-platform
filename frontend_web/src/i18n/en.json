@@ -2793,6 +2793,18 @@
         "reject": "Reject",
         "assigning": "Assigning..."
       },
+      "edit": {
+        "editRecommendation": "Edit",
+        "editingBanner": "Editing Recommendation",
+        "saveChanges": "Save Changes",
+        "saving": "Saving changes...",
+        "cancelEditing": "Cancel Editing",
+        "saveSuccess": "Changes saved successfully",
+        "saveFailed": "Failed to save changes",
+        "emptyContent": "Recommendation content cannot be empty.",
+        "listItemsHint": "Enter one item per line.",
+        "exerciseItemsHint": "Enter one exercise per line as Title — Reason."
+      },
       "toast": {
         "generated": "AI recommendation generated",
         "accepted": "Recommendation accepted",
