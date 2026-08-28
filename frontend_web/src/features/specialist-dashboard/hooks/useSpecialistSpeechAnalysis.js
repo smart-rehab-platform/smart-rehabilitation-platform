@@ -32,6 +32,7 @@ function buildProgressRequestKey(patientId, analysis) {
 
 export function useSpecialistSpeechAnalysis(patientId, submissionId = null) {
   const [patientName, setPatientName] = useState("Patient");
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [analyses, setAnalyses] = useState([]);
   const [latestAnalysis, setLatestAnalysis] = useState(null);
   const [progressItems, setProgressItems] = useState([]);
@@ -130,6 +131,7 @@ export function useSpecialistSpeechAnalysis(patientId, submissionId = null) {
         }
 
         setPatientName(bundle.patientName);
+        setProfileImageUrl(bundle.profileImageUrl ?? null);
         setAnalyses(bundle.analyses);
         setLatestAnalysis(bundle.latestAnalysis);
         setProgressItems(bundle.progressItems);
@@ -269,6 +271,7 @@ export function useSpecialistSpeechAnalysis(patientId, submissionId = null) {
     submissionId: scopedSubmissionId,
     hasSubmissionContext,
     patientName,
+    profileImageUrl,
     analyses,
     latestAnalysis,
     progressItems,

@@ -182,6 +182,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navSessions => 'Sessions';
 
   @override
+  String get navFeedback => 'Feedback';
+
+  @override
   String get navCaseRequests => 'Case Requests';
 
   @override
@@ -662,6 +665,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get parentDashboardSelectChildForProgress =>
       'Select a child to view progress.';
+
+  @override
+  String get parentDashboardSelectChildForFeedback =>
+      'Select a child to view feedback.';
 
   @override
   String get parentDashboardSelectChildForDetails =>
@@ -5075,6 +5082,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get parentFeedbackNoneYet => 'No specialist feedback available yet.';
+
+  @override
+  String parentFeedbackForChild(String name) {
+    return 'For $name';
+  }
+
+  @override
+  String parentFeedbackReviewDate(String date) {
+    return 'Review date: $date';
+  }
+
+  @override
+  String get parentFeedbackSpecialistComments => 'Specialist comments';
+
+  @override
+  String get parentFeedbackSignInRequired => 'Please sign in to view feedback.';
+
+  @override
+  String get parentFeedbackLoadFailed =>
+      'Failed to load feedback. Please try again.';
 
   @override
   String parentFeedbackRating(int rating) {

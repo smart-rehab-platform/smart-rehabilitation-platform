@@ -440,6 +440,12 @@ abstract class AppLocalizations {
   /// **'Sessions'**
   String get navSessions;
 
+  /// Specialist exercise feedback destination.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get navFeedback;
+
   /// Case intake request inbox or list.
   ///
   /// In en, this message translates to:
@@ -1369,6 +1375,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select a child to view progress.'**
   String get parentDashboardSelectChildForProgress;
+
+  /// Snack bar when feedback is opened without a selected child.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a child to view feedback.'**
+  String get parentDashboardSelectChildForFeedback;
 
   /// Snack bar when child details are opened without a selection.
   ///
@@ -8764,6 +8776,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No specialist feedback available yet.'**
   String get parentFeedbackNoneYet;
+
+  /// Shows which child feedback belongs to.
+  ///
+  /// In en, this message translates to:
+  /// **'For {name}'**
+  String parentFeedbackForChild(String name);
+
+  /// Review date label on feedback detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Review date: {date}'**
+  String parentFeedbackReviewDate(String date);
+
+  /// Heading for specialist review comments.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialist comments'**
+  String get parentFeedbackSpecialistComments;
+
+  /// Error when feedback requires authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view feedback.'**
+  String get parentFeedbackSignInRequired;
+
+  /// Generic feedback load failure message.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load feedback. Please try again.'**
+  String get parentFeedbackLoadFailed;
 
   /// Specialist feedback rating label.
   ///

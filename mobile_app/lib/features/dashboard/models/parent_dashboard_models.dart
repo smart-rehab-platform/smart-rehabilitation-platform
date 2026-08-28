@@ -1,4 +1,5 @@
 import '../../../core/utils/api_response_parser.dart';
+import '../utils/exercise_category_visuals.dart';
 
 class ParentChild {
   const ParentChild({
@@ -131,6 +132,7 @@ class ParentDailyTask {
   const ParentDailyTask({
     required this.id,
     required this.title,
+    this.category,
     this.dueTime,
     this.status,
     this.isCompleted = false,
@@ -143,6 +145,7 @@ class ParentDailyTask {
 
   final String id;
   final String title;
+  final String? category;
   final String? dueTime;
   final String? status;
   final bool isCompleted;
@@ -165,6 +168,7 @@ class ParentDailyTask {
             'name',
           ]) ??
           'Exercise',
+      category: readExerciseCategory(map),
       dueTime: ApiResponseParser.readString(map, const [
         'due_time',
         'dueTime',
@@ -273,25 +277,38 @@ class ParentAiInsight {
 
 class ParentSpecialistFeedback {
   const ParentSpecialistFeedback({
+    this.id,
     required this.specialistName,
     required this.message,
     this.exerciseTitle,
+    this.category,
     this.reviewedAt,
     this.rating,
     this.requiresRetry = false,
     this.submissionId,
+    this.patientId,
+    this.childName,
   });
 
+  final String? id;
   final String specialistName;
   final String message;
   final String? exerciseTitle;
+  final String? category;
   final DateTime? reviewedAt;
   final int? rating;
   final bool requiresRetry;
   final String? submissionId;
+  final String? patientId;
+  final String? childName;
 
-  factory ParentSpecialistFeedback.fromMap(Map<String, dynamic> map) {
+  factory ParentSpecialistFeedback.fromMap(
+    Map<String, dynamic> map, {
+    String? patientId,
+    String? childName,
+  }) {
     return ParentSpecialistFeedback(
+      id: ApiResponseParser.readString(map, const ['id', '_id']),
       specialistName:
           ApiResponseParser.readString(map, const [
             'specialist_name',
@@ -310,6 +327,7 @@ class ParentSpecialistFeedback {
         'exercise_title',
         'exerciseTitle',
       ]),
+      category: readExerciseCategory(map),
       reviewedAt: ApiResponseParser.readDate(
         map['reviewed_at'] ?? map['reviewedAt'],
       ),
@@ -324,6 +342,13 @@ class ParentSpecialistFeedback {
         'submission_id',
         'submissionId',
       ]),
+      patientId:
+          patientId ??
+          ApiResponseParser.readString(map, const [
+            'patient_id',
+            'patientId',
+          ]),
+      childName: childName,
     );
   }
 }
@@ -497,6 +522,7 @@ class ParentAssignedExercise {
   const ParentAssignedExercise({
     required this.id,
     required this.title,
+    this.category,
     this.instructions,
     this.frequency,
     this.dueDate,
@@ -508,6 +534,7 @@ class ParentAssignedExercise {
 
   final String id;
   final String title;
+  final String? category;
   final String? instructions;
   final String? frequency;
   final DateTime? dueDate;
@@ -526,6 +553,7 @@ class ParentAssignedExercise {
             'name',
           ]) ??
           'Exercise',
+      category: readExerciseCategory(map),
       instructions: ApiResponseParser.readString(map, const [
         'instructions',
         'description',

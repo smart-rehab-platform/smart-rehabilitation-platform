@@ -262,6 +262,8 @@ class AppRoutes {
   static const String parentChildDetail = '/dashboard/parent/children/:childId';
   static const String parentProgress = '/dashboard/parent/progress';
   static const String parentFeedback = '/dashboard/parent/feedback';
+  static const String parentFeedbackDetailPath =
+      '/dashboard/parent/feedback/:reviewId';
   static const String parentExerciseDetails =
       '/dashboard/parent/exercise-details';
   static const String parentSubmitExercise =
@@ -276,6 +278,18 @@ class AppRoutes {
 
   static String parentChat(String conversationId) =>
       '/dashboard/parent/messages/$conversationId';
+
+  static String parentFeedbackDetail(
+    String reviewId, {
+    String? patientId,
+  }) {
+    final encodedReviewId = Uri.encodeComponent(reviewId);
+    final base = '/dashboard/parent/feedback/$encodedReviewId';
+    if (patientId == null || patientId.trim().isEmpty) {
+      return base;
+    }
+    return '$base?patientId=${Uri.encodeComponent(patientId.trim())}';
+  }
 
   static String specialistChat(String conversationId) =>
       '/dashboard/specialist/messages/$conversationId';

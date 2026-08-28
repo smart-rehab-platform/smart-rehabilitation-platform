@@ -805,3 +805,114 @@ class ParentSessionsNotifier extends StateNotifier<ParentSessionsState> {
 
   Future<void> refresh() => initialize();
 }
+
+class ParentFeedbackState {
+  const ParentFeedbackState({
+    this.isLoading = false,
+    this.errorMessage,
+    this.reviews = const [],
+  });
+
+  final bool isLoading;
+  final String? errorMessage;
+  final List<ParentSpecialistFeedback> reviews;
+
+  ParentFeedbackState copyWith({
+    bool? isLoading,
+    Object? errorMessage = _sentinel,
+    List<ParentSpecialistFeedback>? reviews,
+  }) {
+    return ParentFeedbackState(
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: identical(errorMessage, _sentinel)
+          ? this.errorMessage
+          : errorMessage as String?,
+      reviews: reviews ?? this.reviews,
+    );
+  }
+}
+
+final parentFeedbackProvider =
+    StateNotifierProvider<ParentFeedbackNotifier, ParentFeedbackState>(
+      (ref) => ParentFeedbackNotifier(
+        ref,
+        ref.watch(parentDashboardRepositoryProvider),
+      ),
+    );
+
+class ParentFeedbackNotifier extends StateNotifier<ParentFeedbackState> {
+  ParentFeedbackNotifier(this._ref, this._repository)
+    : super(const ParentFeedbackState());
+
+  final Ref _ref;
+  final ParentDashboardRepository _repository;
+
+  Future<void> initialize() async {
+    final dashboard = _ref.read(parentDashboardProvider);
+    final patientId = dashboard.selectedPatientId;
+    if (patientId == null || patientId.isEmpty) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'select_child',
+        reviews: const [],
+      );
+      return;
+    }
+
+    final child =
+        dashboard.selectedChild ??
+        dashboard.children.firstWhere(
+          (item) => item.id == patientId,
+          orElse: () => ParentChild(id: patientId, name: 'Child'),
+        );
+
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final rows = await _repository.fetchReviews(patientId);
+      final reviews = rows
+          .where((review) => review.id != null && review.id!.isNotEmpty)
+          .map(
+            (review) => ParentSpecialistFeedback(
+              id: review.id,
+              specialistName: review.specialistName,
+              message: review.message,
+              exerciseTitle: review.exerciseTitle,
+              category: review.category,
+              reviewedAt: review.reviewedAt,
+              rating: review.rating,
+              requiresRetry: review.requiresRetry,
+              submissionId: review.submissionId,
+              patientId: patientId,
+              childName: child.name,
+            ),
+          )
+          .toList()
+        ..sort((left, right) {
+          final leftDate =
+              left.reviewedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final rightDate =
+              right.reviewedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return rightDate.compareTo(leftDate);
+        });
+
+      state = state.copyWith(isLoading: false, reviews: reviews);
+    } catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Failed to load feedback: $error',
+        reviews: const [],
+      );
+    }
+  }
+
+  ParentSpecialistFeedback? findReview(String reviewId) {
+    for (final review in state.reviews) {
+      if (review.id == reviewId) {
+        return review;
+      }
+    }
+    return null;
+  }
+
+  Future<void> refresh() => initialize();
+}

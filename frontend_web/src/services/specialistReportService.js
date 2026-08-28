@@ -7,6 +7,7 @@ import {
 import { buildRegularReportCreatePayload } from "../features/specialist-dashboard/utils/specialistRegularReportCreation";
 import {
   buildPatientNameMap,
+  buildPatientProfileImageMap,
   mapAiReportDetail,
   mapAiReportRow,
   mapRegularReportDetail,
@@ -97,12 +98,13 @@ export async function loadAssignedPatientContext(specialistUserId) {
       .filter(Boolean),
   );
   const patientNameMap = buildPatientNameMap(rows);
-  return { assignedIds, patientNameMap, patientRows: rows };
+  const patientProfileImageMap = buildPatientProfileImageMap(rows);
+  return { assignedIds, patientNameMap, patientProfileImageMap, patientRows: rows };
 }
 
 export async function loadSpecialistScopedReports(specialistUserId) {
   const id = requireId(specialistUserId, "Specialist user id");
-  const { assignedIds, patientNameMap } = await loadAssignedPatientContext(id);
+  const { assignedIds, patientNameMap, patientProfileImageMap } = await loadAssignedPatientContext(id);
 
   const [regularRows, aiRows] = await Promise.all([
     fetchRegularReports(),
@@ -110,12 +112,12 @@ export async function loadSpecialistScopedReports(specialistUserId) {
   ]);
 
   const regular = regularRows
-    .map((row) => mapRegularReportRow(row, patientNameMap))
+    .map((row) => mapRegularReportRow(row, patientNameMap, patientProfileImageMap))
     .filter(Boolean)
     .filter((report) => assignedIds.has(report.patientId));
 
   const ai = aiRows
-    .map((row) => mapAiReportRow(row, patientNameMap))
+    .map((row) => mapAiReportRow(row, patientNameMap, patientProfileImageMap))
     .filter(Boolean)
     .filter((report) => assignedIds.has(report.patientId));
 
@@ -125,7 +127,7 @@ export async function loadSpecialistScopedReports(specialistUserId) {
 export async function loadPatientScopedReports(specialistUserId, patientId) {
   const specialist = requireId(specialistUserId, "Specialist user id");
   const scopedPatientId = requireId(patientId, "Patient id");
-  const { assignedIds, patientNameMap } = await loadAssignedPatientContext(specialist);
+  const { assignedIds, patientNameMap, patientProfileImageMap } = await loadAssignedPatientContext(specialist);
 
   if (!assignedIds.has(scopedPatientId)) {
     throw new Error("Patient not found or not assigned to you.");
@@ -139,11 +141,19 @@ export async function loadPatientScopedReports(specialistUserId, patientId) {
   ]);
 
   const regular = regularRows
-    .map((row) => mapRegularReportRow({ ...row, patient_name: row.patient_name || patientName }, patientNameMap))
+    .map((row) => mapRegularReportRow(
+      { ...row, patient_name: row.patient_name || patientName },
+      patientNameMap,
+      patientProfileImageMap,
+    ))
     .filter(Boolean);
 
   const ai = aiRows
-    .map((row) => mapAiReportRow({ ...row, patient_name: row.patient_name || patientName }, patientNameMap))
+    .map((row) => mapAiReportRow(
+      { ...row, patient_name: row.patient_name || patientName },
+      patientNameMap,
+      patientProfileImageMap,
+    ))
     .filter(Boolean);
 
   return sortReportsNewestFirst([...regular, ...ai]);

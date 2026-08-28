@@ -105,11 +105,13 @@ const getReviewsByPatient = async (patientId) => {
       es.parent_notes,
       es.submitted_at,
       e.title AS exercise_title,
+      c.name AS category_name,
       u.full_name AS specialist_name
     FROM exercise_reviews er
     JOIN exercise_submissions es ON er.submission_id = es.id
     JOIN assigned_exercises ae ON es.assigned_exercise_id = ae.id
     JOIN exercises e ON ae.exercise_id = e.id
+    LEFT JOIN exercise_categories c ON e.category_id = c.id
     JOIN users u ON er.specialist_id = u.id
     WHERE ae.patient_id = $1
     ORDER BY er.reviewed_at DESC

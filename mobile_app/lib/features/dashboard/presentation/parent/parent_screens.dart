@@ -593,6 +593,36 @@ class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
     });
   }
 
+  void _openProgress() {
+    final childId = ref.read(parentDashboardProvider).selectedPatientId;
+    final l10n = AppLocalizations.of(context)!;
+    if (childId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.parentDashboardSelectChildForProgress)),
+      );
+      return;
+    }
+    context.push(
+      '${AppRoutes.parentProgress}?childId=${Uri.encodeComponent(childId)}',
+    );
+  }
+
+  void _openSessions() {
+    context.push(AppRoutes.parentSessions);
+  }
+
+  void _openFeedback() {
+    final childId = ref.read(parentDashboardProvider).selectedPatientId;
+    final l10n = AppLocalizations.of(context)!;
+    if (childId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.parentDashboardSelectChildForFeedback)),
+      );
+      return;
+    }
+    context.push(AppRoutes.parentFeedback);
+  }
+
   @override
   Widget build(BuildContext context) {
     final caseIntakeState = ref.watch(parentCaseIntakeProvider);
@@ -609,6 +639,21 @@ class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
         children: [
           const LanguageSelector(
             presentation: LanguageSelectorPresentation.settingsTile,
+          ),
+          _MoreTile(
+            icon: Icons.trending_up_rounded,
+            label: l10n.navProgress,
+            onTap: _openProgress,
+          ),
+          _MoreTile(
+            icon: Icons.calendar_today_outlined,
+            label: l10n.navSessions,
+            onTap: _openSessions,
+          ),
+          _MoreTile(
+            icon: Icons.rate_review_outlined,
+            label: l10n.navFeedback,
+            onTap: _openFeedback,
           ),
           _MoreTile(
             icon: Icons.assignment_outlined,

@@ -1,5 +1,6 @@
 import api from "./api";
 import { getPatientById } from "./specialistPatientService";
+import { mapPatientProfile } from "../features/specialist-dashboard/utils/specialistPatientMappers";
 import {
   buildSpeechProgressScope,
   mapSpeechAnalysisItem,
@@ -231,7 +232,8 @@ export async function loadSpecialistSpeechAnalysisBundle(patientId, submissionId
       throw new Error("Patient not found.");
     }
 
-    const patientName = resolvePatientName(patientRow);
+    const patientProfile = mapPatientProfile(patientRow);
+    const patientName = patientProfile?.fullName || resolvePatientName(patientRow);
     const mergedAnalyses = mergeSpeechAnalyses(analyses, submissionAnalysis);
     const latestAnalysis = mergedAnalyses[0] || null;
 
@@ -247,6 +249,7 @@ export async function loadSpecialistSpeechAnalysisBundle(patientId, submissionId
       patientId: scopedPatientId,
       submissionId: scopedSubmissionId,
       patientName,
+      profileImageUrl: patientProfile?.profileImageUrl ?? null,
       analyses: mergedAnalyses,
       latestAnalysis,
       progressItems,

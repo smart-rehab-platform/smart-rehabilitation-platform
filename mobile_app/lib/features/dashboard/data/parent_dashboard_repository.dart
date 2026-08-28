@@ -244,7 +244,9 @@ class ParentDashboardRepository {
 
   Future<List<ParentSpecialistFeedback>> fetchReviews(String patientId) async {
     final rows = await _safeGetList('/patients/$patientId/reviews');
-    return rows.map(ParentSpecialistFeedback.fromMap).toList();
+    return rows
+        .map((row) => ParentSpecialistFeedback.fromMap(row, patientId: patientId))
+        .toList();
   }
 
   Future<ParentSpecialistFeedback?> fetchSubmissionReview(String submissionId) async {

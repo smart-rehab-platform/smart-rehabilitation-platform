@@ -2,6 +2,7 @@ import { formatAppDate } from "../../../i18n/formatters.js";
 import { resolveUploadedAssetUrl } from "../../../services/apiConfig.js";
 import { buildAiReportDetailSections } from "./specialistAiReportStructuredSummary.js";
 import { normalizeRegularReportSummary } from "./specialistRegularReportCreation.js";
+import { mapSpecialistPatientListItem } from "./specialistPatientMappers.js";
 
 export const SPECIALIST_REPORT_FILTERS = [
   { id: "all" },
@@ -202,7 +203,7 @@ export function formatReportDateLabel(dateValue, locale = "en") {
   return formatAppDate(date, locale) ?? "—";
 }
 
-export function mapRegularReportRow(row, patientNameMap = null) {
+export function mapRegularReportRow(row, patientNameMap = null, patientProfileImageMap = null) {
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
@@ -221,6 +222,7 @@ export function mapRegularReportRow(row, patientNameMap = null) {
     sourceType: "standard",
     patientId,
     patientName: patientName || "Patient",
+    profileImageUrl: patientProfileImageMap?.get(patientId) ?? null,
     title: standardizedReportTitle({
       isAiReport: false,
       reportType,
@@ -239,7 +241,7 @@ export function mapRegularReportRow(row, patientNameMap = null) {
   };
 }
 
-export function mapAiReportRow(row, patientNameMap = null) {
+export function mapAiReportRow(row, patientNameMap = null, patientProfileImageMap = null) {
   const id = readString(row, ["id", "_id"]);
   if (!id) {
     return null;
@@ -258,6 +260,7 @@ export function mapAiReportRow(row, patientNameMap = null) {
     sourceType: "ai",
     patientId,
     patientName: patientName || "Patient",
+    profileImageUrl: patientProfileImageMap?.get(patientId) ?? null,
     title: standardizedReportTitle({
       isAiReport: true,
       reportType,
@@ -335,6 +338,17 @@ export function buildPatientNameMap(patientRows) {
     const name = readString(row, ["full_name", "fullName", "name", "patient_name", "patientName"]);
     if (id && name) {
       map.set(id, name);
+    }
+  });
+  return map;
+}
+
+export function buildPatientProfileImageMap(patientRows) {
+  const map = new Map();
+  (patientRows || []).forEach((row) => {
+    const patient = mapSpecialistPatientListItem(row);
+    if (patient?.id) {
+      map.set(patient.id, patient.profileImageUrl ?? null);
     }
   });
   return map;

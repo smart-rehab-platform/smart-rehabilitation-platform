@@ -17,6 +17,7 @@ import '../../widgets/parent_page_scaffold.dart';
 import 'parent_child_detail_widgets.dart';
 import 'parent_exercise_action_status.dart';
 import 'parent_exercise_media_picker.dart';
+export 'parent_feedback_screen.dart';
 export 'parent_progress_screen.dart';
 import 'parent_extended_localization_utils.dart';
 import 'parent_sessions_screen.dart';
@@ -190,74 +191,6 @@ class _ParentChildDetailScreenState
           ],
         ),
       ),
-    );
-  }
-}
-
-class ParentFeedbackScreen extends ConsumerWidget {
-  const ParentFeedbackScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final feedback = ref.watch(parentDashboardProvider).latestFeedback;
-    final theme = Theme.of(context);
-
-    return ParentPageScaffold(
-      title: l10n.parentFeedbackTitle,
-      showBackButton: true,
-      body: feedback == null
-          ? Center(
-              child: DashboardEmptyCard(message: l10n.parentFeedbackNoneYet),
-            )
-          : SingleChildScrollView(
-              padding: context.dashPadding,
-              child: DashboardSurfaceCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      feedback.specialistName,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    if (feedback.exerciseTitle != null) ...[
-                      SizedBox(height: context.dashSpacing * 0.35),
-                      Text(feedback.exerciseTitle!),
-                    ],
-                    SizedBox(height: context.dashSpacing * 0.5),
-                    Text(feedback.message),
-                    if (feedback.rating != null) ...[
-                      SizedBox(height: context.dashSpacing * 0.5),
-                      Text(l10n.parentFeedbackRating(feedback.rating!)),
-                    ],
-                    if (feedback.requiresRetry) ...[
-                      SizedBox(height: context.dashSpacing * 0.5),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: DashboardColors.warning.withValues(
-                            alpha: 0.15,
-                          ),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          l10n.parentDashboardRetryRequired,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: DashboardColors.warning,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
     );
   }
 }
