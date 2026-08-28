@@ -203,6 +203,19 @@ export function formatReportDateLabel(dateValue, locale = "en") {
   return formatAppDate(date, locale) ?? "—";
 }
 
+function resolvePatientProfileImageUrl(row, patientProfileImageMap, patientId) {
+  const fromRow = readString(row, [
+    "patient_profile_image_url",
+    "patientProfileImageUrl",
+    "profile_image_url",
+    "profileImageUrl",
+  ]);
+  if (fromRow) {
+    return resolveUploadedAssetUrl(fromRow);
+  }
+  return patientProfileImageMap?.get(patientId) ?? null;
+}
+
 export function mapRegularReportRow(row, patientNameMap = null, patientProfileImageMap = null) {
   const id = readString(row, ["id", "_id"]);
   if (!id) {
@@ -222,7 +235,7 @@ export function mapRegularReportRow(row, patientNameMap = null, patientProfileIm
     sourceType: "standard",
     patientId,
     patientName: patientName || "Patient",
-    profileImageUrl: patientProfileImageMap?.get(patientId) ?? null,
+    profileImageUrl: resolvePatientProfileImageUrl(row, patientProfileImageMap, patientId),
     title: standardizedReportTitle({
       isAiReport: false,
       reportType,
@@ -260,7 +273,7 @@ export function mapAiReportRow(row, patientNameMap = null, patientProfileImageMa
     sourceType: "ai",
     patientId,
     patientName: patientName || "Patient",
-    profileImageUrl: patientProfileImageMap?.get(patientId) ?? null,
+    profileImageUrl: resolvePatientProfileImageUrl(row, patientProfileImageMap, patientId),
     title: standardizedReportTitle({
       isAiReport: true,
       reportType,

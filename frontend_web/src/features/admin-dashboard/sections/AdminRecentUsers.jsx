@@ -11,9 +11,13 @@ function RecentUserRow({ user }) {
   return (
     <li className="pd-admin-recent-user-row">
       <UserProfileAvatar
+        imageUrl={user.profileImageUrl}
         initials={initials}
+        alt=""
+        shellClassName={`pd-avatar pd-admin-role-avatar pd-admin-role-${tone}`}
         fallbackClassName={`pd-avatar pd-admin-role-avatar pd-admin-role-${tone}`}
         sizeClassName="pd-admin-recent-avatar"
+        className="pd-avatar-photo"
       />
       <span className="pd-admin-recent-user-copy">
         <span className="pd-admin-recent-user-top">

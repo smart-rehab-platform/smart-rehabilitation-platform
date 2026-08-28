@@ -362,6 +362,7 @@ class SpecialistReportDetail {
     required this.title,
     required this.isAiReport,
     this.patientName,
+    this.patientProfileImageUrl,
     this.specialistName,
     this.reportType,
     this.createdAt,
@@ -378,6 +379,7 @@ class SpecialistReportDetail {
   final String title;
   final bool isAiReport;
   final String? patientName;
+  final String? patientProfileImageUrl;
   final String? specialistName;
   final String? reportType;
   final DateTime? createdAt;
@@ -476,6 +478,12 @@ class SpecialistReportDetail {
         'patient_name',
         'patientName',
       ]),
+      patientProfileImageUrl: ApiResponseParser.readString(map, const [
+        'patient_profile_image_url',
+        'patientProfileImageUrl',
+        'profile_image_url',
+        'profileImageUrl',
+      ]),
       specialistName: ApiResponseParser.readString(map, const [
         'generated_by_name',
         'generatedByName',
@@ -516,6 +524,12 @@ class SpecialistReportDetail {
       patientName: ApiResponseParser.readString(map, const [
         'patient_name',
         'patientName',
+      ]),
+      patientProfileImageUrl: ApiResponseParser.readString(map, const [
+        'patient_profile_image_url',
+        'patientProfileImageUrl',
+        'profile_image_url',
+        'profileImageUrl',
       ]),
       specialistName: ApiResponseParser.readString(map, const [
         'generated_by_name',

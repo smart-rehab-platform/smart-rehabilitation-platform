@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// Application title shown in the system task switcher.
   ///
   /// In en, this message translates to:
-  /// **'Smart Rehabilitation Platform'**
+  /// **'Smart Rehabilitation'**
   String get appTitle;
 
   /// Primary action to persist changes.
