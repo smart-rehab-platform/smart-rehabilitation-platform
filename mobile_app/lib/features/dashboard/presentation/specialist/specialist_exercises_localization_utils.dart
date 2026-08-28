@@ -55,6 +55,9 @@ String mapSpecialistAssignedExerciseError(
   if (message == 'Failed to load assigned exercise.') {
     return l10n.specialistAssignedExerciseLoadFailed;
   }
+  if (message == 'Failed to deactivate assigned exercise.') {
+    return l10n.specialistAssignedExerciseDeactivateFailed;
+  }
   return message;
 }
 

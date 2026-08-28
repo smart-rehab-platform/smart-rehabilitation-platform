@@ -3,7 +3,11 @@ import { useLocale } from "../../../context/useLocale";
 import { StatusBadge } from "../../shared-dashboard/components/StatusBadge";
 import { formatPatientDueDateLabel } from "../utils/specialistPatientsLocalization";
 
-export function SpecialistAssignedExercises({ exercises, onAssignExercise }) {
+export function SpecialistAssignedExercises({
+  exercises,
+  onAssignExercise,
+  onAssignedExerciseClick,
+}) {
   const { t, locale } = useLocale();
 
   return (
@@ -25,22 +29,30 @@ export function SpecialistAssignedExercises({ exercises, onAssignExercise }) {
             const dueLabel = exercise.dueDate
               ? formatPatientDueDateLabel(exercise.dueDate, locale, t)
               : exercise.dueDateLabel;
+            const canOpen = Boolean(exercise.id && onAssignedExerciseClick);
 
             return (
-              <li key={exercise.id} className="pd-card pd-card-pad pd-specialist-patient-list-row">
-                <div>
-                  <strong dir="auto">{exercise.exerciseTitle}</strong>
-                  <p className="pd-section-sub">
-                    {[exercise.category, dueLabel].filter(Boolean).join(" · ")}
-                  </p>
-                </div>
-                <div className="pd-specialist-patient-list-row-aside">
-                  <StatusBadge
-                    label={exercise.statusLabel}
-                    tone={exercise.isActive ? "success" : "gray"}
-                  />
-                  <ChevronRight size={16} aria-hidden="true" />
-                </div>
+              <li key={exercise.id}>
+                <button
+                  type="button"
+                  className="pd-card pd-card-pad pd-specialist-patient-list-row pd-specialist-patient-list-row-btn"
+                  onClick={() => onAssignedExerciseClick?.(exercise)}
+                  disabled={!canOpen}
+                >
+                  <div>
+                    <strong dir="auto">{exercise.exerciseTitle}</strong>
+                    <p className="pd-section-sub">
+                      {[exercise.category, dueLabel].filter(Boolean).join(" · ")}
+                    </p>
+                  </div>
+                  <div className="pd-specialist-patient-list-row-aside">
+                    <StatusBadge
+                      label={exercise.statusLabel}
+                      tone={exercise.isActive ? "success" : "gray"}
+                    />
+                    {canOpen ? <ChevronRight size={16} aria-hidden="true" /> : null}
+                  </div>
+                </button>
               </li>
             );
           })}

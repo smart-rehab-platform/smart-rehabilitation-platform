@@ -181,6 +181,7 @@ class PatientAssignedExerciseItem {
     required this.id,
     required this.exerciseTitle,
     this.exerciseId,
+    this.patientId,
     this.category,
     this.description,
     this.instructions,
@@ -189,12 +190,14 @@ class PatientAssignedExerciseItem {
     this.startDate,
     this.createdAt,
     required this.statusLabel,
+    required this.isActive,
     this.dueDate,
   });
 
   final String id;
   final String exerciseTitle;
   final String? exerciseId;
+  final String? patientId;
   final String? category;
   final String? description;
   final String? instructions;
@@ -203,6 +206,7 @@ class PatientAssignedExerciseItem {
   final DateTime? startDate;
   final DateTime? createdAt;
   final String statusLabel;
+  final bool isActive;
   final DateTime? dueDate;
 
   bool get hasInstructionMedia {
@@ -224,6 +228,10 @@ class PatientAssignedExerciseItem {
       exerciseId: ApiResponseParser.readString(map, const [
         'exercise_id',
         'exerciseId',
+      ]),
+      patientId: ApiResponseParser.readString(map, const [
+        'patient_id',
+        'patientId',
       ]),
       category: ApiResponseParser.readString(map, const [
         'category_name',
@@ -248,6 +256,7 @@ class PatientAssignedExerciseItem {
         map['created_at'] ?? map['createdAt'],
       ),
       statusLabel: isActive ? 'Active' : 'Inactive',
+      isActive: isActive,
       dueDate: ApiResponseParser.readDate(
         map['due_date'] ?? map['dueDate'],
       ),

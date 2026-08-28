@@ -10,7 +10,7 @@ import { useParentFeedbackDetail } from "./hooks/useParentFeedbackDetail";
 import { useParentNotifications } from "./hooks/useParentNotifications";
 import { useParentDashboardNavigation } from "./hooks/useParentDashboardNavigation";
 import { mapParentFromAuth } from "./utils/parentDashboardMappers";
-import { getFeedbackStatusMeta } from "./utils/parentFeedbackUtils";
+import { getFeedbackStatusMeta, formatParentPerformanceRating } from "./utils/parentFeedbackUtils";
 import "./styles/parentDashboardTokens.css";
 import "./styles/parentFeedbackSections.css";
 
@@ -105,6 +105,9 @@ export default function ParentFeedbackDetailPage() {
   const statusMeta = review
     ? getFeedbackStatusMeta(review.status, t)
     : null;
+  const ratingDisplay = review
+    ? formatParentPerformanceRating(review.performanceRating)
+    : null;
 
   const handleBack = useCallback(() => {
     navigate(buildParentFeedbackPath(patientId || review?.patientId));
@@ -162,7 +165,7 @@ export default function ParentFeedbackDetailPage() {
               ) : null}
             </div>
 
-            {review.performanceRating != null ? (
+            {ratingDisplay != null ? (
               <div
                 className="pd-feedback-performance-tile"
                 aria-label={t("parent.feedback.performanceRating")}
@@ -171,8 +174,8 @@ export default function ParentFeedbackDetailPage() {
                   {t("parent.feedback.performanceRating")}
                 </span>
                 <p className="pd-feedback-performance-value">
-                  <strong>{review.performanceRating}</strong>
-                  <span>/10</span>
+                  <strong>{ratingDisplay}</strong>
+                  <span>/5</span>
                 </p>
               </div>
             ) : null}

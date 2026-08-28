@@ -10,6 +10,8 @@ import '../../../../core/utils/api_response_parser.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../models/specialist_patient_details_models.dart';
+import '../../providers/specialist_features_provider.dart';
+import '../../providers/specialist_patient_details_provider.dart';
 import '../../widgets/dashboard_layout.dart';
 import '../../widgets/dashboard_surface_card.dart';
 import '../../widgets/dashboard_visuals.dart';
@@ -47,6 +49,72 @@ class _SpecialistAssignedExerciseDetailsScreenState
           )
           .initialize();
     });
+  }
+
+  Future<void> _confirmAndDeactivate(
+    SpecialistAssignedExerciseDetailNotifier notifier,
+    PatientAssignedExerciseItem assignment,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (!assignment.isActive) {
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.specialistAssignedExerciseDeactivateTitle),
+          content: Text(l10n.specialistAssignedExerciseDeactivateBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.commonCancel),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: DashboardColors.highPriority,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.specialistAssignedExerciseDeactivateConfirm),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await notifier.deactivate();
+    if (!mounted) {
+      return;
+    }
+
+    if (ok) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.specialistAssignedExerciseDeactivateSuccess)),
+      );
+      return;
+    }
+
+    final error = ref
+        .read(
+          specialistAssignedExerciseDetailProvider(widget.assignedExerciseId),
+        )
+        .actionErrorMessage;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          mapSpecialistAssignedExerciseError(
+            l10n,
+            error ?? l10n.specialistAssignedExerciseDeactivateFailed,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -275,9 +343,13 @@ class _SpecialistAssignedExerciseDetailsScreenState
             if ((assignment.exerciseId ?? '').isNotEmpty) ...[
               SizedBox(height: context.dashSpacing * 0.75),
               OutlinedButton.icon(
-                onPressed: () => context.push(
-                  AppRoutes.specialistExerciseDetails(assignment.exerciseId!),
-                ),
+                onPressed: state.isDeactivating
+                    ? null
+                    : () => context.push(
+                        AppRoutes.specialistExerciseDetails(
+                          assignment.exerciseId!,
+                        ),
+                      ),
                 icon: const Icon(Icons.menu_book_outlined),
                 label: Text(l10n.specialistAssignedExerciseOpenLibraryExercise),
                 style: OutlinedButton.styleFrom(
@@ -286,6 +358,39 @@ class _SpecialistAssignedExerciseDetailsScreenState
                 ),
               ),
             ],
+            SizedBox(height: context.dashSpacing * 0.65),
+            if (assignment.isActive)
+              OutlinedButton.icon(
+                onPressed: state.isDeactivating
+                    ? null
+                    : () => _confirmAndDeactivate(notifier, assignment),
+                icon: state.isDeactivating
+                    ? SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: DashboardColors.highPriority,
+                        ),
+                      )
+                    : const Icon(Icons.pause_circle_outline),
+                label: Text(
+                  state.isDeactivating
+                      ? l10n.specialistAssignedExerciseDeactivating
+                      : l10n.specialistAssignedExerciseDeactivateAssignment,
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: DashboardColors.highPriority,
+                  side: const BorderSide(color: DashboardColors.highPriority),
+                ),
+              )
+            else
+              Text(
+                l10n.specialistAssignedExerciseAlreadyInactive,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: DashboardColors.textSecondary,
+                ),
+              ),
             SizedBox(height: context.dashSpacing),
           ],
         ),
@@ -374,27 +479,37 @@ class _MetaRow extends StatelessWidget {
 class SpecialistAssignedExerciseDetailState {
   const SpecialistAssignedExerciseDetailState({
     this.isLoading = false,
+    this.isDeactivating = false,
     this.errorMessage,
+    this.actionErrorMessage,
     this.assignment,
     this.latestSubmission,
   });
 
   final bool isLoading;
+  final bool isDeactivating;
   final String? errorMessage;
+  final String? actionErrorMessage;
   final PatientAssignedExerciseItem? assignment;
   final PatientSubmissionItem? latestSubmission;
 
   SpecialistAssignedExerciseDetailState copyWith({
     bool? isLoading,
+    bool? isDeactivating,
     Object? errorMessage = _sentinel,
+    Object? actionErrorMessage = _sentinel,
     Object? assignment = _sentinel,
     Object? latestSubmission = _sentinel,
   }) {
     return SpecialistAssignedExerciseDetailState(
       isLoading: isLoading ?? this.isLoading,
+      isDeactivating: isDeactivating ?? this.isDeactivating,
       errorMessage: identical(errorMessage, _sentinel)
           ? this.errorMessage
           : errorMessage as String?,
+      actionErrorMessage: identical(actionErrorMessage, _sentinel)
+          ? this.actionErrorMessage
+          : actionErrorMessage as String?,
       assignment: identical(assignment, _sentinel)
           ? this.assignment
           : assignment as PatientAssignedExerciseItem?,
@@ -422,13 +537,17 @@ class SpecialistAssignedExerciseDetailNotifier
   final Ref _ref;
   final String _assignedExerciseId;
 
-  Future<void> initialize() async {
+  Future<void> initialize({bool showLoading = true}) async {
     final token = _ref.read(authProvider).token;
     if (token != null && token.isNotEmpty) {
       _ref.read(authRepositoryProvider).setAuthToken(token);
     }
 
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    state = state.copyWith(
+      isLoading: showLoading,
+      errorMessage: null,
+      actionErrorMessage: null,
+    );
     final dio = _ref.read(dioProvider);
 
     try {
@@ -485,6 +604,57 @@ class SpecialistAssignedExerciseDetailNotifier
   }
 
   Future<void> refresh() => initialize();
+
+  Future<bool> deactivate() async {
+    final current = state.assignment;
+    if (current == null || state.isDeactivating) {
+      return false;
+    }
+    if (!current.isActive) {
+      return true;
+    }
+
+    state = state.copyWith(isDeactivating: true, actionErrorMessage: null);
+
+    try {
+      await _ref
+          .read(specialistFeaturesRepositoryProvider)
+          .deactivateAssignedExercise(_assignedExerciseId);
+
+      if (!mounted) {
+        return true;
+      }
+
+      await initialize(showLoading: false);
+
+      final patientId = (state.assignment?.patientId ?? current.patientId)
+          ?.trim();
+      if (patientId != null && patientId.isNotEmpty) {
+        await _ref
+            .read(specialistPatientDetailsProvider(patientId).notifier)
+            .refresh();
+      }
+
+      if (!mounted) {
+        return true;
+      }
+
+      state = state.copyWith(isDeactivating: false);
+      return true;
+    } catch (error) {
+      if (!mounted) {
+        return false;
+      }
+      final message = error.toString().replaceFirst('Exception: ', '');
+      state = state.copyWith(
+        isDeactivating: false,
+        actionErrorMessage: message.isNotEmpty
+            ? message
+            : 'Failed to deactivate assigned exercise.',
+      );
+      return false;
+    }
+  }
 }
 
 const _sentinel = Object();

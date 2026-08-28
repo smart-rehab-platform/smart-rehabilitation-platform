@@ -1,7 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import { useLocale } from "../../../../context/useLocale.js";
 import { StatusBadge } from "../StatusBadge";
-import { getFeedbackStatusMeta } from "../../utils/parentFeedbackUtils";
+import { getFeedbackStatusMeta, formatParentPerformanceRating } from "../../utils/parentFeedbackUtils";
 
 export function ReviewCard({ review, onOpen }) {
   const { t } = useLocale();
@@ -10,6 +10,7 @@ export function ReviewCard({ review, onOpen }) {
   const openLabel = t("parent.feedback.openReview", {
     title: review.exerciseTitle || t("parent.feedback.title"),
   });
+  const ratingDisplay = formatParentPerformanceRating(review.performanceRating);
 
   const handleActivate = () => {
     onOpen?.(review);
@@ -58,9 +59,9 @@ export function ReviewCard({ review, onOpen }) {
         <p className="pd-feedback-card-date">{review.reviewedAt}</p>
       ) : null}
 
-      {review.performanceRating != null ? (
+      {ratingDisplay != null ? (
         <p className="pd-feedback-card-rating">
-          {t("parent.feedback.rating")}: {review.performanceRating}/5
+          {t("parent.feedback.rating")}: {ratingDisplay}/5
         </p>
       ) : null}
 

@@ -403,7 +403,47 @@ const deleteAssignedExercise = async (id) => {
   return result.rows[0];
 };
 
-const deactivateAssignedExercise = async (id) => {
+/**
+ * Soft-deactivates an assignment (is_active = false).
+ * Preserves the assignment row and all related submissions/reviews/speech data.
+ * Specialists may only deactivate assignments for patients they are linked to.
+ *
+ * @param {string} id
+ * @param {{ id?: string, role?: string }} [actor]
+ */
+const deactivateAssignedExercise = async (id, actor = {}) => {
+  const role = String(actor.role || "").trim().toLowerCase();
+  const actorId = String(actor.id || "").trim();
+
+  const existingResult = await pool.query(
+    `SELECT id, patient_id, is_active
+     FROM assigned_exercises
+     WHERE id = $1`,
+    [id]
+  );
+  const existing = existingResult.rows[0];
+  if (!existing) {
+    return null;
+  }
+
+  if (role === "specialist") {
+    if (!actorId) {
+      throw createError("You do not have access to this patient.", 403);
+    }
+    const linked = await isSpecialistAssignedToPatient(
+      pool,
+      actorId,
+      existing.patient_id
+    );
+    if (!linked) {
+      throw createError("You do not have access to this patient.", 403);
+    }
+  }
+
+  if (existing.is_active === false) {
+    return existing;
+  }
+
   const result = await pool.query(
     `UPDATE assigned_exercises
      SET is_active = false

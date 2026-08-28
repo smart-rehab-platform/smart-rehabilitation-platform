@@ -13,6 +13,7 @@ import {
   buildSpecialistPatientSpeechAnalysisPath,
   buildSpecialistCreateTreatmentPlanPath,
   buildSpecialistEditTreatmentPlanPath,
+  buildSpecialistAssignedExerciseDetailPath,
   buildSpecialistReviewExercisePath,
 } from "../../routes/specialistDashboardRoutes";
 import { useSpecialistPatientDetails } from "./hooks/useSpecialistPatientDetails";
@@ -180,6 +181,13 @@ export default function SpecialistPatientDetailsPage() {
     navigate(buildSpecialistPatientAssignExercisePath(patientId, plan.id));
   }, [details, navigate, patientId, showToast, t]);
 
+  const handleAssignedExerciseClick = useCallback((exercise) => {
+    if (!exercise?.id) {
+      return;
+    }
+    navigate(buildSpecialistAssignedExerciseDetailPath(exercise.id));
+  }, [navigate]);
+
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -279,6 +287,7 @@ export default function SpecialistPatientDetailsPage() {
           <SpecialistAssignedExercises
             exercises={details.assignedExercises}
             onAssignExercise={handleAssignExercise}
+            onAssignedExerciseClick={handleAssignedExerciseClick}
           />
         </div>
 

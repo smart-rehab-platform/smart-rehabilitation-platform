@@ -4530,6 +4530,52 @@
   gap: 16px;
 }
 
+.pd-preview .pd-specialist-assigned-exercise-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-assigned-exercise-meta {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pd-preview .pd-specialist-assigned-exercise-submissions {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-assigned-exercise-submission-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pd-preview .pd-specialist-assigned-exercise-submission-main strong {
+  display: block;
+}
+
+.pd-preview .pd-specialist-assigned-exercise-open-library {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-preview .pd-specialist-assigned-exercise-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-preview .pd-specialist-assigned-exercise-inactive-note {
+  margin: 0;
+}
+
 .pd-preview .pd-specialist-exercise-details-hero {
   display: grid;
   gap: 12px;

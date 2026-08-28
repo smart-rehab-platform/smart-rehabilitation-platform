@@ -2714,6 +2714,36 @@ class AppLocalizationsAr extends AppLocalizations {
   String get specialistAssignedExerciseInstructionalMedia => 'وسائط تعليمية';
 
   @override
+  String get specialistAssignedExerciseDeactivateAssignment =>
+      'إلغاء تفعيل التعيين';
+
+  @override
+  String get specialistAssignedExerciseDeactivateTitle => 'إلغاء تفعيل التعيين';
+
+  @override
+  String get specialistAssignedExerciseDeactivateBody =>
+      'لن يبقى هذا التمرين نشطاً للمريض. سيتم الحفاظ على التسليمات والمراجعات والسجل السابق. سيبقى التمرين في المكتبة.';
+
+  @override
+  String get specialistAssignedExerciseDeactivateConfirm =>
+      'إلغاء تفعيل التعيين';
+
+  @override
+  String get specialistAssignedExerciseDeactivateSuccess =>
+      'تم إلغاء تفعيل التعيين.';
+
+  @override
+  String get specialistAssignedExerciseDeactivateFailed =>
+      'تعذّر إلغاء تفعيل التمرين المعيّن.';
+
+  @override
+  String get specialistAssignedExerciseAlreadyInactive =>
+      'هذا التعيين غير نشط بالفعل.';
+
+  @override
+  String get specialistAssignedExerciseDeactivating => 'جارٍ إلغاء التفعيل...';
+
+  @override
   String get priorityHigh => 'مرتفع';
 
   @override
