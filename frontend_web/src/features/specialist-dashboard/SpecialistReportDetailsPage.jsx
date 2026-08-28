@@ -187,7 +187,7 @@ export default function SpecialistReportDetailsPage() {
               height={22}
             />
             <UserProfileAvatar
-              imageUrl={null}
+              imageUrl={detail.profileImageUrl}
               initials={getInitials(detail.patientName, "P")}
               alt=""
               shellClassName="pd-avatar pd-specialist-preview-avatar"

@@ -1,21 +1,10 @@
 import { FileCheck2 } from "lucide-react";
+import { UserProfileAvatar } from "../../shared-dashboard/components/UserProfileAvatar";
 import { AdminReportTypeBadge } from "../components/AdminReportTypeBadge";
+import { getInitials } from "../../specialist-dashboard/utils/specialistScheduleUtils";
 
 function getPatientInitials(name) {
-  const parts = String(name ?? "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if (parts.length === 0) {
-    return "P";
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
+  return getInitials(name, "P");
 }
 
 export function AdminReportDetailsHero({ report, labels }) {
@@ -38,9 +27,14 @@ export function AdminReportDetailsHero({ report, labels }) {
       aria-label={labels.detailsTitle}
     >
       <div className="pd-admin-report-details-hero-top">
-        <span className="pd-admin-report-avatar pd-admin-report-avatar-lg" aria-hidden="true">
-          {getPatientInitials(report.patientName)}
-        </span>
+        <UserProfileAvatar
+          imageUrl={report.patientProfileImageUrl ?? report.profileImageUrl}
+          initials={getPatientInitials(report.patientName)}
+          alt=""
+          shellClassName="pd-admin-report-avatar pd-admin-report-avatar-lg"
+          fallbackClassName="pd-admin-report-avatar pd-admin-report-avatar-lg"
+          className="pd-avatar-photo"
+        />
         <div className="pd-admin-report-details-hero-copy">
           <p className="pd-admin-report-details-patient">{patientName}</p>
           <h1 className="pd-admin-report-details-title" dir="auto">{report.title || "Report"}</h1>

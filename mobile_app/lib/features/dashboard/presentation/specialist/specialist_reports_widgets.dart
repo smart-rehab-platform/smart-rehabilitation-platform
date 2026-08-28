@@ -67,6 +67,7 @@ class SpecialistReportHeaderCard extends StatelessWidget {
             children: [
               DashboardProfileAvatar(
                 initials: dashboardInitials(detail.patientName, fallback: 'P'),
+                imageUrl: detail.patientProfileImageUrl,
                 radius: context.dashSpacing * 0.75,
               ),
               SizedBox(width: context.dashSpacing * 0.65),

@@ -1,4 +1,5 @@
 import { getRoleLabel } from "../../../routes/roleRouting.js";
+import { resolveProfileImageUrl } from "./adminPatientsMappers.js";
 
 export const SYSTEM_ACTIVITY_PRESET_OFFSETS = {
   thisWeek: 0,
@@ -221,6 +222,9 @@ export function mapRecentUser(row) {
     name,
     rawRole,
     createdAt,
+    profileImageUrl: resolveProfileImageUrl(
+      readString(row, ["profile_image_url", "profileImageUrl"]),
+    ),
   };
 }
 
