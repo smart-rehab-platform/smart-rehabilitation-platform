@@ -54,6 +54,7 @@ import SpecialistExercisesPage from "./features/specialist-dashboard/SpecialistE
 import SpecialistExerciseDetailsPage from "./features/specialist-dashboard/SpecialistExerciseDetailsPage";
 import SpecialistExerciseEditPage from "./features/specialist-dashboard/SpecialistExerciseEditPage";
 import SpecialistExerciseCreatePage from "./features/specialist-dashboard/SpecialistExerciseCreatePage";
+import SpecialistAssignedExerciseDetailsPage from "./features/specialist-dashboard/SpecialistAssignedExerciseDetailsPage";
 import SpecialistCaseRequestsPage from "./features/specialist-dashboard/SpecialistCaseRequestsPage";
 import SpecialistCaseRequestDetailsPage from "./features/specialist-dashboard/SpecialistCaseRequestDetailsPage";
 import SpecialistSupportRequestsPage from "./features/specialist-dashboard/SpecialistSupportRequestsPage";
@@ -557,6 +558,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SpecialistExercisesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/specialist/assigned-exercises/:assignedExerciseId"
+          element={
+            <ProtectedRoute>
+              <SpecialistAssignedExerciseDetailsPage />
             </ProtectedRoute>
           }
         />

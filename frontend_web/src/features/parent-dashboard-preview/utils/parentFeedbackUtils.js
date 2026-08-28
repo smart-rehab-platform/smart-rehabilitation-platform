@@ -45,3 +45,22 @@ export function sortFeedbackReviewsNewestFirst(reviews) {
     return String(left.exerciseTitle || "").localeCompare(String(right.exerciseTitle || ""));
   });
 }
+
+/**
+ * Converts stored performance_rating (0–10, star * 2) to parent-facing stars (1–5).
+ * Matches specialist review entry and Flutter parent feedback display intent.
+ * @param {number|null|undefined} performanceRating
+ * @returns {number|null}
+ */
+export function formatParentPerformanceRating(performanceRating) {
+  if (performanceRating == null || !Number.isFinite(Number(performanceRating))) {
+    return null;
+  }
+
+  const stars = Number(performanceRating) / 2;
+  if (!Number.isFinite(stars) || stars <= 0) {
+    return null;
+  }
+
+  return Math.max(1, Math.min(5, Math.round(stars)));
+}

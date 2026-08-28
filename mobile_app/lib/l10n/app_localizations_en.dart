@@ -2748,6 +2748,37 @@ class AppLocalizationsEn extends AppLocalizations {
       'Instructional Media';
 
   @override
+  String get specialistAssignedExerciseDeactivateAssignment =>
+      'Deactivate Assignment';
+
+  @override
+  String get specialistAssignedExerciseDeactivateTitle =>
+      'Deactivate Assignment';
+
+  @override
+  String get specialistAssignedExerciseDeactivateBody =>
+      'This exercise will no longer be active for the patient. Previous submissions, reviews, and related history will be preserved. The exercise will remain in the library.';
+
+  @override
+  String get specialistAssignedExerciseDeactivateConfirm =>
+      'Deactivate Assignment';
+
+  @override
+  String get specialistAssignedExerciseDeactivateSuccess =>
+      'Assignment deactivated.';
+
+  @override
+  String get specialistAssignedExerciseDeactivateFailed =>
+      'Failed to deactivate assigned exercise.';
+
+  @override
+  String get specialistAssignedExerciseAlreadyInactive =>
+      'This assignment is already inactive.';
+
+  @override
+  String get specialistAssignedExerciseDeactivating => 'Deactivating...';
+
+  @override
   String get priorityHigh => 'High';
 
   @override

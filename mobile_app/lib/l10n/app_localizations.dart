@@ -4850,6 +4850,54 @@ abstract class AppLocalizations {
   /// **'Instructional Media'**
   String get specialistAssignedExerciseInstructionalMedia;
 
+  /// Button to deactivate an assigned exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate Assignment'**
+  String get specialistAssignedExerciseDeactivateAssignment;
+
+  /// Confirm dialog title for deactivating assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate Assignment'**
+  String get specialistAssignedExerciseDeactivateTitle;
+
+  /// Confirm dialog body for deactivating assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'This exercise will no longer be active for the patient. Previous submissions, reviews, and related history will be preserved. The exercise will remain in the library.'**
+  String get specialistAssignedExerciseDeactivateBody;
+
+  /// Confirm button label for deactivating assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate Assignment'**
+  String get specialistAssignedExerciseDeactivateConfirm;
+
+  /// SnackBar after successful assignment deactivation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment deactivated.'**
+  String get specialistAssignedExerciseDeactivateSuccess;
+
+  /// Error when deactivation fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to deactivate assigned exercise.'**
+  String get specialistAssignedExerciseDeactivateFailed;
+
+  /// Shown when assignment is already inactive.
+  ///
+  /// In en, this message translates to:
+  /// **'This assignment is already inactive.'**
+  String get specialistAssignedExerciseAlreadyInactive;
+
+  /// Busy label while deactivating assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivating...'**
+  String get specialistAssignedExerciseDeactivating;
+
   /// High priority badge label.
   ///
   /// In en, this message translates to:

@@ -170,6 +170,14 @@ export function buildSpecialistEditTreatmentPlanPath(planId) {
   return `${SPECIALIST_WEB_ROUTES.treatmentPlans}/${encodeURIComponent(planId)}/edit`;
 }
 
+export function buildSpecialistAssignedExerciseDetailPath(assignedExerciseId) {
+  const id = typeof assignedExerciseId === "string" ? assignedExerciseId.trim() : "";
+  if (!id) {
+    return SPECIALIST_WEB_ROUTES.patients;
+  }
+  return `/dashboard/specialist/assigned-exercises/${encodeURIComponent(id)}`;
+}
+
 export function buildSpecialistExerciseDetailPath(exerciseId) {
   return `${SPECIALIST_WEB_ROUTES.exercises}/${encodeURIComponent(exerciseId)}`;
 }

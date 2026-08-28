@@ -107,7 +107,10 @@ const deleteAssignedExercise = async (req, res) => {
 const deactivateAssignedExercise = async (req, res) => {
   try {
     const assignedExercise =
-      await assignedExercisesService.deactivateAssignedExercise(req.params.id);
+      await assignedExercisesService.deactivateAssignedExercise(req.params.id, {
+        id: req.user.id,
+        role: req.user.role
+      });
 
     if (!assignedExercise) {
       return res.status(404).json({
@@ -122,7 +125,14 @@ const deactivateAssignedExercise = async (req, res) => {
       data: assignedExercise
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).json({
+      success: false,
+      message:
+        statusCode === 500
+          ? "Failed to deactivate assigned exercise."
+          : err.message
+    });
   }
 };
 

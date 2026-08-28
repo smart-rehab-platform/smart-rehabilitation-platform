@@ -5,6 +5,7 @@ import { useAuth } from "../../context/useAuth";
 import { useLocale } from "../../context/useLocale.js";
 import {
   PARENT_WEB_ROUTES,
+  buildParentFeedbackDetailPath,
   buildParentProgressPath,
   buildParentReportsPath,
   buildParentSessionsPath,
@@ -111,6 +112,15 @@ export default function ParentChildDetailPage() {
   const handleBack = useCallback(() => {
     navigate(PARENT_WEB_ROUTES.children);
   }, [navigate]);
+
+  const handleOpenReview = useCallback((review) => {
+    const path = buildParentFeedbackDetailPath(review?.id, review?.patientId ?? childId);
+    if (!path) {
+      showToast(t("parent.pages.feedback.unavailable"));
+      return;
+    }
+    navigate(path);
+  }, [childId, navigate, showToast, t]);
 
   const renderContent = () => {
     if (isLoading) {
@@ -248,7 +258,11 @@ export default function ParentChildDetailPage() {
             <h3 className="pd-section-title">{t("parent.children.specialistFeedback")}</h3>
             <div className="pd-task-hub-list">
               {reviews.slice(0, 3).map((review) => (
-                <ReviewCard key={`${review.patientId}-${review.id}`} review={review} />
+                <ReviewCard
+                  key={`${review.patientId}-${review.id}`}
+                  review={review}
+                  onOpen={handleOpenReview}
+                />
               ))}
             </div>
           </section>

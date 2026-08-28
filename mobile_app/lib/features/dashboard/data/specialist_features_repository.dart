@@ -477,6 +477,44 @@ class SpecialistFeaturesRepository {
     }
   }
 
+  Future<void> deactivateAssignedExercise(String assignedExerciseId) async {
+    final id = assignedExerciseId.trim();
+    if (id.isEmpty) {
+      throw Exception('Assigned exercise not found.');
+    }
+
+    try {
+      await _dio.patch('/assigned-exercises/$id/deactivate');
+    } on DioException catch (error) {
+      throw Exception(_readDeactivateAssignedExerciseError(error));
+    }
+  }
+
+  String _readDeactivateAssignedExerciseError(DioException error) {
+    final status = error.response?.statusCode;
+    final data = error.response?.data;
+    String? message;
+    if (data is Map) {
+      final map = data.map((key, value) => MapEntry(key.toString(), value));
+      message = ApiResponseParser.readString(map, const ['message', 'error']);
+    }
+
+    if (status == 403) {
+      return message?.trim().isNotEmpty == true
+          ? message!.trim()
+          : 'You do not have access to this patient.';
+    }
+    if (status == 404) {
+      return message?.trim().isNotEmpty == true
+          ? message!.trim()
+          : 'Assigned exercise not found.';
+    }
+    if (message != null && message.trim().isNotEmpty) {
+      return message.trim();
+    }
+    return 'Failed to deactivate assigned exercise.';
+  }
+
   String _readAssignedExerciseError(DioException error) {
     final status = error.response?.statusCode;
     final data = error.response?.data;

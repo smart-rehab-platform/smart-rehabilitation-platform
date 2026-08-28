@@ -299,14 +299,57 @@ export function mapAssignedExercise(row, context = {}) {
   }
   const isActive = readBoolean(row, ["is_active", "isActive"]);
   const dueDate = readDateValue(row, ["due_date", "dueDate"]);
+  const exerciseId = readString(row, ["exercise_id", "exerciseId"]) || null;
   return {
     id,
+    exerciseId,
     exerciseTitle: readString(row, ["exercise_title", "exerciseTitle", "title"]) || "Exercise",
     category: readString(row, ["category_name", "categoryName", "category"]) || null,
     dueDate,
     dueDateLabel: formatPatientDate(dueDate, locale),
     statusLabel: getPatientExerciseStatusLabel(isActive, t),
     isActive,
+  };
+}
+
+/**
+ * Full assigned-exercise detail mapping (Flutter PatientAssignedExerciseItem.fromMap).
+ * @param {Record<string, unknown>} row
+ * @param {{ t?: Function, locale?: string }} [context]
+ */
+export function mapAssignedExerciseDetail(row, context = {}) {
+  const mapped = mapAssignedExercise(row, context);
+  if (!mapped) {
+    return null;
+  }
+
+  const { t, locale } = resolveSpecialistMapperContext(context);
+  const createdAt = readDateValue(row, ["created_at", "createdAt"]);
+  const startDate = readDateValue(row, ["start_date", "startDate"]);
+  const frequency = readString(row, ["frequency"]) || null;
+  const instructionMediaUrlRaw = readString(row, [
+    "instruction_media_url",
+    "instructionMediaUrl",
+  ]);
+  const instructionMediaUrl = instructionMediaUrlRaw
+    ? (resolveUploadedAssetUrl(instructionMediaUrlRaw) ?? instructionMediaUrlRaw)
+    : null;
+
+  return {
+    ...mapped,
+    patientId: readString(row, ["patient_id", "patientId"]) || null,
+    description:
+      readString(row, ["description", "exercise_description", "exerciseDescription"]) || null,
+    instructions: readString(row, ["instructions"]) || null,
+    instructionMediaUrl,
+    hasInstructionMedia: Boolean(instructionMediaUrl),
+    frequency,
+    createdAt,
+    createdAtLabel: formatPatientDate(createdAt, locale),
+    startDate,
+    startDateLabel: formatPatientDate(startDate, locale),
+    assignedAtLabel:
+      formatPatientDate(createdAt, locale) || formatPatientDate(startDate, locale) || null,
   };
 }
 
