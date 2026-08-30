@@ -780,6 +780,176 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get parentTreatmentJourneyScreenSubtitle =>
+      'اطلع على كيفية تغير تقدم طفلك بمرور الوقت';
+
+  @override
+  String get parentTreatmentJourneyPeriodWeekly => 'أسبوعي';
+
+  @override
+  String get parentTreatmentJourneyPeriodMonthly => 'شهري';
+
+  @override
+  String get parentTreatmentJourneyPeriodFull => 'العلاج الكامل';
+
+  @override
+  String get parentTreatmentJourneyStartedAt => 'تاريخ البدء';
+
+  @override
+  String get parentTreatmentJourneyCurrentProgress => 'التقدم الحالي';
+
+  @override
+  String get parentTreatmentJourneyScoreChangeLabel => 'تغير النتيجة';
+
+  @override
+  String get parentTreatmentJourneyTrendLabel => 'الاتجاه';
+
+  @override
+  String get parentTreatmentJourneyLoadFailedDefault =>
+      'تعذر تحميل رحلة العلاج.';
+
+  @override
+  String get parentTreatmentJourneyTreatmentPeriod => 'فترة العلاج';
+
+  @override
+  String get parentTreatmentJourneyChartEmptyTitle => 'لا يوجد تقدم علاجي بعد';
+
+  @override
+  String get parentTreatmentJourneyChartEmptyBody =>
+      'سيظهر التقدم بعد مراجعة التمارين المكتملة.';
+
+  @override
+  String get parentTreatmentJourneyChartScore => 'النتيجة';
+
+  @override
+  String get parentTreatmentJourneyChartDate => 'التاريخ';
+
+  @override
+  String get parentTreatmentJourneyChartExercises => 'التمارين';
+
+  @override
+  String get parentTreatmentJourneyChartImprovement => 'التحسن';
+
+  @override
+  String get parentTreatmentJourneyChartAriaEmpty =>
+      'رسم تقدم العلاج، لا توجد بيانات بعد';
+
+  @override
+  String parentTreatmentJourneyChartAriaWithPoints(int count) {
+    return 'رسم تقدم العلاج بـ $count نقطة';
+  }
+
+  @override
+  String parentTreatmentJourneyChartSelectedPointAria(
+    String score,
+    String date,
+  ) {
+    return 'النقطة المحددة نتيجة $score، تاريخ $date';
+  }
+
+  @override
+  String parentTreatmentJourneySummaryMetricSemantics(
+    String label,
+    String value,
+  ) {
+    return '$label $value';
+  }
+
+  @override
+  String parentTreatmentJourneySummaryMetricTrendSemantics(
+    String label,
+    String value,
+    String trend,
+  ) {
+    return '$label $value، الاتجاه $trend';
+  }
+
+  @override
+  String get parentTreatmentJourneyInterpretationBuildingTitle => 'بناء رحلتك';
+
+  @override
+  String get parentTreatmentJourneyInterpretationEarlyTitle =>
+      'تم تسجيل تقدم مبكر';
+
+  @override
+  String get parentTreatmentJourneyInterpretationNeedMoreData =>
+      'يلزم المزيد من سجلات التقدم لتحديد الاتجاه.';
+
+  @override
+  String get parentTreatmentJourneyInterpretationImprovingTitle =>
+      'التقدم في اتجاه صاعد';
+
+  @override
+  String get parentTreatmentJourneyInterpretationImprovingBody =>
+      'النتيجة الحالية أعلى من نقطة البداية.';
+
+  @override
+  String get parentTreatmentJourneyInterpretationDecliningTitle =>
+      'التقدم يحتاج اهتماماً';
+
+  @override
+  String get parentTreatmentJourneyInterpretationDecliningBody =>
+      'النتيجة الأخيرة أقل من الفترة السابقة. راجع الملاحظات الأخيرة أو تواصل مع الأخصائي.';
+
+  @override
+  String get parentTreatmentJourneyInterpretationStableTitle =>
+      'التقدم مستقر حالياً';
+
+  @override
+  String get parentTreatmentJourneyInterpretationStableBody =>
+      'النتائج الأخيرة تبقى ضمن نطاق متقارب.';
+
+  @override
+  String get parentProgressDetailedTitle => 'التقدم التفصيلي';
+
+  @override
+  String get parentProgressDetailedLoading => 'جارٍ تحميل التقدم التفصيلي...';
+
+  @override
+  String get parentProgressDetailedLoadError =>
+      'تعذر تحميل قوائم التقدم التفصيلي.';
+
+  @override
+  String get parentProgressDetailedEmpty =>
+      'ستظهر المزيد من تفاصيل التقدم مع استمرار جلسات العلاج.';
+
+  @override
+  String get parentProgressPeriodDaily => 'يومي';
+
+  @override
+  String get parentProgressPeriodWeekly => 'أسبوعي';
+
+  @override
+  String get parentProgressPeriodMonthly => 'شهري';
+
+  @override
+  String get parentProgressPerformanceMetricsTitle => 'مقاييس الأداء';
+
+  @override
+  String get parentProgressCompletedExercisesLabel => 'التمارين المكتملة';
+
+  @override
+  String get parentProgressAveragePerformance => 'متوسط الأداء';
+
+  @override
+  String get parentProgressAverageImprovement => 'متوسط التحسن';
+
+  @override
+  String parentProgressSnapshotCompleted(int count) {
+    return '$count مكتمل';
+  }
+
+  @override
+  String parentProgressSnapshotImprovement(int percent) {
+    return 'تحسن $percent%';
+  }
+
+  @override
+  String parentProgressSnapshotPerformance(int percent) {
+    return 'أداء $percent%';
+  }
+
+  @override
   String get parentDashboardCaseIntakeLoading => 'جارٍ تحميل طلبات الحالة...';
 
   @override
@@ -5495,6 +5665,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signupFullNameHint => 'د. سارة جونسون';
+
+  @override
+  String get signupFullNameHintParent => 'سارة محمد';
+
+  @override
+  String get signupFullNameHintSpecialist => 'د. سارة محمد';
 
   @override
   String get signupEmailAddress => 'عنوان البريد الإلكتروني';

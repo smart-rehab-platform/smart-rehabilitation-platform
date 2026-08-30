@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../../shared/widgets/auth_ui.dart';
+import '../../models/signup_wizard_models.dart';
+import '../../utils/auth_localization_utils.dart';
 import 'signup_navigation_buttons.dart';
 import 'signup_profile_photo_picker.dart';
 
 class SignupPersonalInfoStep extends StatelessWidget {
   const SignupPersonalInfoStep({
     super.key,
+    required this.selectedRole,
     required this.fullNameController,
     required this.emailController,
     required this.phoneController,
@@ -21,6 +24,7 @@ class SignupPersonalInfoStep extends StatelessWidget {
     required this.onContinue,
   });
 
+  final SignupRole? selectedRole;
   final TextEditingController fullNameController;
   final TextEditingController emailController;
   final TextEditingController phoneController;
@@ -43,7 +47,7 @@ class SignupPersonalInfoStep extends StatelessWidget {
         AuthInputField(
           controller: fullNameController,
           label: l10n.fieldFullName,
-          hintText: l10n.signupFullNameHint,
+          hintText: localizedSignupFullNameHint(l10n, selectedRole),
           icon: Icons.person_outline_rounded,
           textInputAction: TextInputAction.next,
           autofillHints: const [AutofillHints.name],

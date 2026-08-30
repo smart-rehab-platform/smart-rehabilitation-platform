@@ -785,6 +785,178 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get parentTreatmentJourneyScreenSubtitle =>
+      'See how your child\'s progress has changed over time';
+
+  @override
+  String get parentTreatmentJourneyPeriodWeekly => 'Weekly';
+
+  @override
+  String get parentTreatmentJourneyPeriodMonthly => 'Monthly';
+
+  @override
+  String get parentTreatmentJourneyPeriodFull => 'Full Treatment';
+
+  @override
+  String get parentTreatmentJourneyStartedAt => 'Started At';
+
+  @override
+  String get parentTreatmentJourneyCurrentProgress => 'Current Progress';
+
+  @override
+  String get parentTreatmentJourneyScoreChangeLabel => 'Score Change';
+
+  @override
+  String get parentTreatmentJourneyTrendLabel => 'Trend';
+
+  @override
+  String get parentTreatmentJourneyLoadFailedDefault =>
+      'Couldn\'t load the treatment journey.';
+
+  @override
+  String get parentTreatmentJourneyTreatmentPeriod => 'Treatment period';
+
+  @override
+  String get parentTreatmentJourneyChartEmptyTitle =>
+      'No treatment progress yet';
+
+  @override
+  String get parentTreatmentJourneyChartEmptyBody =>
+      'Progress will appear after completed exercises are reviewed.';
+
+  @override
+  String get parentTreatmentJourneyChartScore => 'Score';
+
+  @override
+  String get parentTreatmentJourneyChartDate => 'Date';
+
+  @override
+  String get parentTreatmentJourneyChartExercises => 'Exercises';
+
+  @override
+  String get parentTreatmentJourneyChartImprovement => 'Improvement';
+
+  @override
+  String get parentTreatmentJourneyChartAriaEmpty =>
+      'Treatment progress chart, no data yet';
+
+  @override
+  String parentTreatmentJourneyChartAriaWithPoints(int count) {
+    return 'Treatment progress chart with $count points';
+  }
+
+  @override
+  String parentTreatmentJourneyChartSelectedPointAria(
+    String score,
+    String date,
+  ) {
+    return 'Selected point score $score, date $date';
+  }
+
+  @override
+  String parentTreatmentJourneySummaryMetricSemantics(
+    String label,
+    String value,
+  ) {
+    return '$label $value';
+  }
+
+  @override
+  String parentTreatmentJourneySummaryMetricTrendSemantics(
+    String label,
+    String value,
+    String trend,
+  ) {
+    return '$label $value, Trend $trend';
+  }
+
+  @override
+  String get parentTreatmentJourneyInterpretationBuildingTitle =>
+      'Building your journey';
+
+  @override
+  String get parentTreatmentJourneyInterpretationEarlyTitle =>
+      'Early progress recorded';
+
+  @override
+  String get parentTreatmentJourneyInterpretationNeedMoreData =>
+      'More progress entries are needed to identify a trend.';
+
+  @override
+  String get parentTreatmentJourneyInterpretationImprovingTitle =>
+      'Progress is moving upward';
+
+  @override
+  String get parentTreatmentJourneyInterpretationImprovingBody =>
+      'The current score is higher than the starting score.';
+
+  @override
+  String get parentTreatmentJourneyInterpretationDecliningTitle =>
+      'Progress needs attention';
+
+  @override
+  String get parentTreatmentJourneyInterpretationDecliningBody =>
+      'The latest score is lower than the previous period. Review recent feedback or contact the specialist.';
+
+  @override
+  String get parentTreatmentJourneyInterpretationStableTitle =>
+      'Progress is currently stable';
+
+  @override
+  String get parentTreatmentJourneyInterpretationStableBody =>
+      'Recent scores are staying within a similar range.';
+
+  @override
+  String get parentProgressDetailedTitle => 'Detailed Progress';
+
+  @override
+  String get parentProgressDetailedLoading => 'Loading detailed progress...';
+
+  @override
+  String get parentProgressDetailedLoadError =>
+      'Couldn\'t load detailed progress lists.';
+
+  @override
+  String get parentProgressDetailedEmpty =>
+      'More progress details will appear as therapy sessions continue.';
+
+  @override
+  String get parentProgressPeriodDaily => 'Daily';
+
+  @override
+  String get parentProgressPeriodWeekly => 'Weekly';
+
+  @override
+  String get parentProgressPeriodMonthly => 'Monthly';
+
+  @override
+  String get parentProgressPerformanceMetricsTitle => 'Performance Metrics';
+
+  @override
+  String get parentProgressCompletedExercisesLabel => 'Completed exercises';
+
+  @override
+  String get parentProgressAveragePerformance => 'Average performance';
+
+  @override
+  String get parentProgressAverageImprovement => 'Average improvement';
+
+  @override
+  String parentProgressSnapshotCompleted(int count) {
+    return '$count completed';
+  }
+
+  @override
+  String parentProgressSnapshotImprovement(int percent) {
+    return '$percent% improvement';
+  }
+
+  @override
+  String parentProgressSnapshotPerformance(int percent) {
+    return '$percent% performance';
+  }
+
+  @override
   String get parentDashboardCaseIntakeLoading => 'Loading case requests...';
 
   @override
@@ -5585,6 +5757,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupFullNameHint => 'Dr. Sarah Johnson';
+
+  @override
+  String get signupFullNameHintParent => 'Sarah Mohammad';
+
+  @override
+  String get signupFullNameHintSpecialist => 'Dr. Sarah Mohammad';
 
   @override
   String get signupEmailAddress => 'Email Address';

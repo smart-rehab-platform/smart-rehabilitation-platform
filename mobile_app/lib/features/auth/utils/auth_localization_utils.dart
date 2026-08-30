@@ -60,6 +60,14 @@ String localizedSignupRoleLabel(AppLocalizations l10n, SignupRole? role) {
   };
 }
 
+String localizedSignupFullNameHint(AppLocalizations l10n, SignupRole? role) {
+  return switch (role) {
+    SignupRole.parent => l10n.signupFullNameHintParent,
+    SignupRole.specialist => l10n.signupFullNameHintSpecialist,
+    null => l10n.signupFullNameHintParent,
+  };
+}
+
 String localizedSignupExperience(AppLocalizations l10n, String value) {
   final trimmed = value.trim();
   if (trimmed.isEmpty) {

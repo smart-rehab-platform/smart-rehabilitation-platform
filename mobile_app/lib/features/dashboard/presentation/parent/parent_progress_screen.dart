@@ -36,6 +36,8 @@ class _ParentProgressScreenState extends ConsumerState<ParentProgressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final localeName = Localizations.localeOf(context).toString();
     final state = ref.watch(parentProgressProvider(widget.childId));
     final dashboard = ref.watch(parentDashboardProvider);
     ParentChild? child;
@@ -50,7 +52,7 @@ class _ParentProgressScreenState extends ConsumerState<ParentProgressScreen> {
     final hasJourneyChart = journey?.hasData ?? false;
 
     return ParentPageScaffold(
-      title: 'Treatment Journey',
+      title: l10n.parentTreatmentJourneyTitle,
       showBackButton: true,
       body: RefreshIndicator(
         onRefresh: () =>
@@ -84,7 +86,7 @@ class _ParentProgressScreenState extends ConsumerState<ParentProgressScreen> {
                 SizedBox(height: context.dashSpacing * 0.35),
               ],
               Text(
-                'See how your child\'s progress has changed over time',
+                l10n.parentTreatmentJourneyScreenSubtitle,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: DashboardColors.textSecondary,
                   height: 1.35,
@@ -116,12 +118,15 @@ class _ParentProgressScreenState extends ConsumerState<ParentProgressScreen> {
               SizedBox(height: context.dashSpacing * 0.4),
               Semantics(
                 label: hasJourneyChart
-                    ? 'Treatment progress chart with ${journey!.chartPoints.length} points'
-                    : 'Treatment progress chart, no data yet',
+                    ? l10n.parentTreatmentJourneyChartAriaWithPoints(
+                        journey!.chartPoints.length,
+                      )
+                    : l10n.parentTreatmentJourneyChartAriaEmpty,
                 child: ParentTreatmentJourneyChart(
                   points: journey?.chartPoints ?? const [],
                   period: state.selectedJourneyPeriod,
                   isLoading: state.isJourneyLoading && journey != null,
+                  localeName: localeName,
                 ),
               ),
               SizedBox(height: context.dashSpacing * 0.55),
@@ -132,6 +137,7 @@ class _ParentProgressScreenState extends ConsumerState<ParentProgressScreen> {
                 _TreatmentPeriodInfo(
                   start: journey?.treatmentStart,
                   end: journey?.treatmentEnd,
+                  localeName: localeName,
                 ),
               ],
               SizedBox(height: context.dashSpacing * 1.1),
@@ -155,13 +161,15 @@ class _JourneyPeriodSelector extends StatelessWidget {
   final ValueChanged<String> onSelected;
 
   static const _options = [
-    ('weekly', 'Weekly'),
-    ('monthly', 'Monthly'),
-    ('full', 'Full Treatment'),
+    ('weekly', 'weekly'),
+    ('monthly', 'monthly'),
+    ('full', 'full'),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSurfaceCard(
       padding: EdgeInsets.all(context.dashSpacing * 0.35),
       child: Row(
@@ -169,7 +177,7 @@ class _JourneyPeriodSelector extends StatelessWidget {
           for (final option in _options) ...[
             Expanded(
               child: _PeriodOption(
-                label: option.$2,
+                label: localizedTreatmentJourneyPeriodLabel(l10n, option.$2),
                 isSelected: selectedPeriod == option.$1,
                 onTap: () => onSelected(option.$1),
               ),
@@ -251,7 +259,9 @@ class _JourneySummarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final trend = journey?.trend ?? 'stable';
+    final trendLabel = localizedTreatmentJourneyTrendLabel(l10n, trend);
 
     return DashboardSurfaceCard(
       padding: EdgeInsets.symmetric(
@@ -275,7 +285,7 @@ class _JourneySummarySection extends StatelessWidget {
                         Expanded(
                           child: _SummaryMetricBlock(
                             iconAsset: TreatmentJourneyIcons.currentLocation,
-                            label: 'Started At',
+                            label: l10n.parentTreatmentJourneyStartedAt,
                             value: formatTreatmentJourneyPercent(
                               journey?.startingScore,
                             ),
@@ -286,12 +296,12 @@ class _JourneySummarySection extends StatelessWidget {
                         Expanded(
                           child: _SummaryMetricBlock(
                             iconAsset: TreatmentJourneyIcons.target,
-                            label: 'Current Progress',
+                            label: l10n.parentTreatmentJourneyCurrentProgress,
                             value: formatTreatmentJourneyPercent(
                               journey?.currentScore,
                             ),
                             emphasis: _SummaryMetricEmphasis.primary,
-                            trendLabel: treatmentJourneyTrendLabel(trend),
+                            trendLabel: trendLabel,
                             trend: trend,
                           ),
                         ),
@@ -300,8 +310,9 @@ class _JourneySummarySection extends StatelessWidget {
                     SizedBox(height: context.dashSpacing * 0.65),
                     _SummaryMetricBlock(
                       iconAsset: TreatmentJourneyIcons.trendingUp,
-                      label: 'Score Change',
-                      value: formatTreatmentJourneyScoreChange(
+                      label: l10n.parentTreatmentJourneyScoreChangeLabel,
+                      value: localizedFormatTreatmentJourneyScoreChange(
+                        l10n,
                         journey?.scoreChange,
                       ),
                       emphasis: _SummaryMetricEmphasis.tertiary,
@@ -319,7 +330,7 @@ class _JourneySummarySection extends StatelessWidget {
                       Expanded(
                         child: _SummaryMetricBlock(
                           iconAsset: TreatmentJourneyIcons.currentLocation,
-                          label: 'Started At',
+                          label: l10n.parentTreatmentJourneyStartedAt,
                           value: formatTreatmentJourneyPercent(
                             journey?.startingScore,
                           ),
@@ -330,12 +341,12 @@ class _JourneySummarySection extends StatelessWidget {
                       Expanded(
                         child: _SummaryMetricBlock(
                           iconAsset: TreatmentJourneyIcons.target,
-                          label: 'Current Progress',
+                          label: l10n.parentTreatmentJourneyCurrentProgress,
                           value: formatTreatmentJourneyPercent(
                             journey?.currentScore,
                           ),
                           emphasis: _SummaryMetricEmphasis.primary,
-                          trendLabel: treatmentJourneyTrendLabel(trend),
+                          trendLabel: trendLabel,
                           trend: trend,
                         ),
                       ),
@@ -352,8 +363,9 @@ class _JourneySummarySection extends StatelessWidget {
                   ),
                   _SummaryMetricBlock(
                     iconAsset: TreatmentJourneyIcons.trendingUp,
-                    label: 'Score Change',
-                    value: formatTreatmentJourneyScoreChange(
+                    label: l10n.parentTreatmentJourneyScoreChangeLabel,
+                    value: localizedFormatTreatmentJourneyScoreChange(
+                      l10n,
                       journey?.scoreChange,
                     ),
                     emphasis: _SummaryMetricEmphasis.tertiary,
@@ -417,11 +429,16 @@ class _SummaryMetricBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Semantics(
       label: trendLabel == null
-          ? '$label $value'
-          : '$label $value, Trend $trendLabel',
+          ? l10n.parentTreatmentJourneySummaryMetricSemantics(label, value)
+          : l10n.parentTreatmentJourneySummaryMetricTrendSemantics(
+              label,
+              value,
+              trendLabel!,
+            ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -453,7 +470,7 @@ class _SummaryMetricBlock extends StatelessWidget {
           if (trendLabel != null && trend != null) ...[
             SizedBox(height: context.dashSpacing * 0.28),
             Text(
-              'Trend',
+              l10n.parentTreatmentJourneyTrendLabel,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: DashboardColors.textMuted,
                 fontWeight: FontWeight.w600,
@@ -506,7 +523,8 @@ class _JourneyInterpretationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final interpretation = buildTreatmentJourneyInterpretation(journey);
+    final l10n = AppLocalizations.of(context)!;
+    final interpretation = buildTreatmentJourneyInterpretation(l10n, journey);
     final theme = Theme.of(context);
 
     return DashboardSurfaceCard(
@@ -548,14 +566,20 @@ class _JourneyInterpretationCard extends StatelessWidget {
 }
 
 class _TreatmentPeriodInfo extends StatelessWidget {
-  const _TreatmentPeriodInfo({required this.start, required this.end});
+  const _TreatmentPeriodInfo({
+    required this.start,
+    required this.end,
+    required this.localeName,
+  });
 
   final DateTime? start;
   final DateTime? end;
+  final String localeName;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DashboardSurfaceCard(
       padding: EdgeInsets.symmetric(
@@ -575,7 +599,7 @@ class _TreatmentPeriodInfo extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Treatment period',
+                  l10n.parentTreatmentJourneyTreatmentPeriod,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: DashboardColors.textMuted,
                     fontWeight: FontWeight.w600,
@@ -583,7 +607,11 @@ class _TreatmentPeriodInfo extends StatelessWidget {
                 ),
                 SizedBox(height: context.dashSpacing * 0.15),
                 Text(
-                  formatTreatmentJourneyDateRange(start, end),
+                  localizedFormatTreatmentJourneyDateRange(
+                    localeName,
+                    start,
+                    end,
+                  ),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: DashboardColors.textPrimary,
                     fontWeight: FontWeight.w700,
@@ -613,7 +641,7 @@ class _JourneyErrorBanner extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Couldn\'t load the treatment journey.',
+              l10n.parentTreatmentJourneyLoadFailedDefault,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textPrimary,
                 fontWeight: FontWeight.w600,
@@ -652,6 +680,8 @@ class _DetailedProgressLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSurfaceCard(
       child: Row(
         children: [
@@ -663,7 +693,7 @@ class _DetailedProgressLoading extends StatelessWidget {
           SizedBox(width: context.dashSpacing * 0.65),
           Expanded(
             child: Text(
-              'Loading detailed progress...',
+              l10n.parentProgressDetailedLoading,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: DashboardColors.textSecondary,
               ),
@@ -755,14 +785,14 @@ class _SupportingProgressSections extends ConsumerWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          DashboardSectionHeader(title: 'Detailed Progress'),
+          DashboardSectionHeader(title: l10n.parentProgressDetailedTitle),
           SizedBox(height: context.dashSpacing * 0.45),
           DashboardSurfaceCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Couldn\'t load detailed progress lists.',
+                  l10n.parentProgressDetailedLoadError,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 TextButton(
@@ -780,7 +810,7 @@ class _SupportingProgressSections extends ConsumerWidget {
 
     if (!_hasDetailedProgress && !_hasPerformanceMetrics) {
       return Text(
-        'More progress details will appear as therapy sessions continue.',
+        l10n.parentProgressDetailedEmpty,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: DashboardColors.textSecondary,
           height: 1.4,
@@ -792,16 +822,16 @@ class _SupportingProgressSections extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (_hasDetailedProgress) ...[
-          DashboardSectionHeader(title: 'Detailed Progress'),
+          DashboardSectionHeader(title: l10n.parentProgressDetailedTitle),
           SizedBox(height: context.dashSpacing * 0.45),
-          _ProgressSection(title: 'Weekly', items: state.weekly),
-          _ProgressSection(title: 'Daily', items: state.daily),
-          _ProgressSection(title: 'Monthly', items: state.monthly),
+          _ProgressSection(title: l10n.parentProgressPeriodWeekly, items: state.weekly),
+          _ProgressSection(title: l10n.parentProgressPeriodDaily, items: state.daily),
+          _ProgressSection(title: l10n.parentProgressPeriodMonthly, items: state.monthly),
         ],
         if (_hasPerformanceMetrics) ...[
           if (_hasDetailedProgress)
             SizedBox(height: context.dashSpacing * 0.65),
-          DashboardSectionHeader(title: 'Performance Metrics'),
+          DashboardSectionHeader(title: l10n.parentProgressPerformanceMetricsTitle),
           SizedBox(height: context.dashSpacing * 0.45),
           DashboardSurfaceCard(
             child: Column(
@@ -809,19 +839,19 @@ class _SupportingProgressSections extends ConsumerWidget {
               children: [
                 if (state.metrics.totalExercisesCompleted != null)
                   _MetricLine(
-                    label: 'Completed exercises',
+                    label: l10n.parentProgressCompletedExercisesLabel,
                     value: '${state.metrics.totalExercisesCompleted}',
                   ),
                 if (state.metrics.averagePerformance != null)
                   _MetricLine(
-                    label: 'Average performance',
+                    label: l10n.parentProgressAveragePerformance,
                     value: formatTreatmentJourneyPercent(
                       state.metrics.averagePerformance,
                     ),
                   ),
                 if (state.metrics.averageImprovement != null)
                   _MetricLine(
-                    label: 'Average improvement',
+                    label: l10n.parentProgressAverageImprovement,
                     value: formatTreatmentJourneyPercent(
                       state.metrics.averageImprovement,
                     ),
@@ -847,6 +877,8 @@ class _ProgressSection extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -862,14 +894,7 @@ class _ProgressSection extends StatelessWidget {
             padding: EdgeInsets.only(bottom: context.dashSpacing * 0.5),
             child: DashboardSurfaceCard(
               child: Text(
-                [
-                  if (item.exercisesCompleted != null)
-                    '${item.exercisesCompleted} completed',
-                  if (item.improvementPercentage != null)
-                    '${item.improvementPercentage!.round()}% improvement',
-                  if (item.averagePerformance != null)
-                    '${item.averagePerformance!.round()}% performance',
-                ].join(' • '),
+                formatLocalizedProgressSnapshotDetails(l10n, item),
               ),
             ),
           ),

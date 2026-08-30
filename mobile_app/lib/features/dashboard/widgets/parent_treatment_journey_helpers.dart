@@ -117,6 +117,102 @@ String formatTreatmentJourneyImprovement(double? improvementPercentage) {
   return '0%';
 }
 
+String localizedTreatmentJourneyPeriodLabel(
+  AppLocalizations l10n,
+  String period,
+) {
+  switch (period.trim().toLowerCase()) {
+    case 'monthly':
+      return l10n.parentTreatmentJourneyPeriodMonthly;
+    case 'full':
+      return l10n.parentTreatmentJourneyPeriodFull;
+    case 'weekly':
+    default:
+      return l10n.parentTreatmentJourneyPeriodWeekly;
+  }
+}
+
+String localizedParentProgressPeriodLabel(
+  AppLocalizations l10n,
+  String period,
+) {
+  switch (period.trim().toLowerCase()) {
+    case 'daily':
+      return l10n.parentProgressPeriodDaily;
+    case 'monthly':
+      return l10n.parentProgressPeriodMonthly;
+    case 'weekly':
+    default:
+      return l10n.parentProgressPeriodWeekly;
+  }
+}
+
+String localizedFormatTreatmentJourneyDisplayDate(
+  String localeName,
+  DateTime? date,
+) {
+  if (date == null) {
+    return '—';
+  }
+
+  return DateFormat.yMMMd(localeName).format(date);
+}
+
+String localizedFormatTreatmentJourneyDateRange(
+  String localeName,
+  DateTime? start,
+  DateTime? end,
+) {
+  if (start == null && end == null) {
+    return '—';
+  }
+
+  if (start != null && end != null) {
+    final startLabel = DateFormat.yMMMd(localeName).format(start);
+    final endLabel = DateFormat.yMMMd(localeName).format(end);
+    return '$startLabel – $endLabel';
+  }
+
+  final single = start ?? end;
+  return single == null ? '—' : DateFormat.yMMMd(localeName).format(single);
+}
+
+String localizedFormatChartXAxisLabel(
+  String localeName,
+  DateTime date,
+  String period,
+) {
+  switch (period) {
+    case 'monthly':
+      return DateFormat.MMM(localeName).format(date);
+    case 'full':
+      return DateFormat('MMM yy', localeName).format(date);
+    case 'weekly':
+    default:
+      return DateFormat('MMM d', localeName).format(date);
+  }
+}
+
+String formatLocalizedProgressSnapshotDetails(
+  AppLocalizations l10n,
+  ParentProgressSnapshot item,
+) {
+  final parts = <String>[
+    if (item.exercisesCompleted != null)
+      l10n.parentProgressSnapshotCompleted(item.exercisesCompleted!),
+    if (item.improvementPercentage != null)
+      l10n.parentProgressSnapshotImprovement(
+        item.improvementPercentage!.round(),
+      ),
+    if (item.averagePerformance != null)
+      l10n.parentProgressSnapshotPerformance(
+        item.averagePerformance!.round(),
+      ),
+  ];
+
+  return parts.join(' • ');
+}
+
 String formatTreatmentJourneyDisplayDate(DateTime? date) {
   if (date == null) {
     return '—';
@@ -270,39 +366,39 @@ class TreatmentJourneyInterpretation {
 }
 
 TreatmentJourneyInterpretation buildTreatmentJourneyInterpretation(
+  AppLocalizations l10n,
   ParentTreatmentJourney? journey,
 ) {
   if (journey == null || !journey.hasData) {
-    return const TreatmentJourneyInterpretation(
-      title: 'Building your journey',
-      body: 'More progress entries are needed to identify a trend.',
+    return TreatmentJourneyInterpretation(
+      title: l10n.parentTreatmentJourneyInterpretationBuildingTitle,
+      body: l10n.parentTreatmentJourneyInterpretationNeedMoreData,
     );
   }
 
   if (journey.chartPoints.length == 1) {
-    return const TreatmentJourneyInterpretation(
-      title: 'Early progress recorded',
-      body: 'More progress entries are needed to identify a trend.',
+    return TreatmentJourneyInterpretation(
+      title: l10n.parentTreatmentJourneyInterpretationEarlyTitle,
+      body: l10n.parentTreatmentJourneyInterpretationNeedMoreData,
     );
   }
 
   switch (journey.trend.trim().toLowerCase()) {
     case 'improving':
-      return const TreatmentJourneyInterpretation(
-        title: 'Progress is moving upward',
-        body: 'The current score is higher than the starting score.',
+      return TreatmentJourneyInterpretation(
+        title: l10n.parentTreatmentJourneyInterpretationImprovingTitle,
+        body: l10n.parentTreatmentJourneyInterpretationImprovingBody,
       );
     case 'declining':
-      return const TreatmentJourneyInterpretation(
-        title: 'Progress needs attention',
-        body:
-            'The latest score is lower than the previous period. Review recent feedback or contact the specialist.',
+      return TreatmentJourneyInterpretation(
+        title: l10n.parentTreatmentJourneyInterpretationDecliningTitle,
+        body: l10n.parentTreatmentJourneyInterpretationDecliningBody,
       );
     case 'stable':
     default:
-      return const TreatmentJourneyInterpretation(
-        title: 'Progress is currently stable',
-        body: 'Recent scores are staying within a similar range.',
+      return TreatmentJourneyInterpretation(
+        title: l10n.parentTreatmentJourneyInterpretationStableTitle,
+        body: l10n.parentTreatmentJourneyInterpretationStableBody,
       );
   }
 }

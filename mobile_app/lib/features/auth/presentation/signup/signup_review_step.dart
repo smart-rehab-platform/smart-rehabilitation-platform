@@ -46,12 +46,15 @@ class SignupReviewStep extends StatelessWidget {
         _ReviewSection(
           title: l10n.signupAccountType,
           onEdit: () => onEditStep(1),
-          child: Text(
-            localizedSignupRoleLabel(l10n, selectedRole),
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.white,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              localizedSignupRoleLabel(l10n, selectedRole),
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.white,
+              ),
             ),
           ),
         ),
