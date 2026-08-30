@@ -574,6 +574,133 @@
       "trend": { "type": "String", "example": "Improving" }
     }
   },
+  "parentTreatmentJourneyScreenSubtitle": "See how your child's progress has changed over time",
+  "@parentTreatmentJourneyScreenSubtitle": { "description": "Subtitle on the full treatment journey progress screen." },
+  "parentTreatmentJourneyPeriodWeekly": "Weekly",
+  "@parentTreatmentJourneyPeriodWeekly": { "description": "Weekly period tab on the treatment journey screen." },
+  "parentTreatmentJourneyPeriodMonthly": "Monthly",
+  "@parentTreatmentJourneyPeriodMonthly": { "description": "Monthly period tab on the treatment journey screen." },
+  "parentTreatmentJourneyPeriodFull": "Full Treatment",
+  "@parentTreatmentJourneyPeriodFull": { "description": "Full treatment period tab on the treatment journey screen." },
+  "parentTreatmentJourneyStartedAt": "Started At",
+  "@parentTreatmentJourneyStartedAt": { "description": "Summary metric label for the starting score." },
+  "parentTreatmentJourneyCurrentProgress": "Current Progress",
+  "@parentTreatmentJourneyCurrentProgress": { "description": "Summary metric label for the current score." },
+  "parentTreatmentJourneyScoreChangeLabel": "Score Change",
+  "@parentTreatmentJourneyScoreChangeLabel": { "description": "Summary metric label for score change." },
+  "parentTreatmentJourneyTrendLabel": "Trend",
+  "@parentTreatmentJourneyTrendLabel": { "description": "Label above the trend badge in the journey summary." },
+  "parentTreatmentJourneyLoadFailedDefault": "Couldn't load the treatment journey.",
+  "@parentTreatmentJourneyLoadFailedDefault": { "description": "Error banner when the full treatment journey fails to load." },
+  "parentTreatmentJourneyTreatmentPeriod": "Treatment period",
+  "@parentTreatmentJourneyTreatmentPeriod": { "description": "Label for the treatment start/end date range card." },
+  "parentTreatmentJourneyChartEmptyTitle": "No treatment progress yet",
+  "@parentTreatmentJourneyChartEmptyTitle": { "description": "Empty chart title on the treatment journey screen." },
+  "parentTreatmentJourneyChartEmptyBody": "Progress will appear after completed exercises are reviewed.",
+  "@parentTreatmentJourneyChartEmptyBody": { "description": "Empty chart body on the treatment journey screen." },
+  "parentTreatmentJourneyChartScore": "Score",
+  "@parentTreatmentJourneyChartScore": { "description": "Selected chart point score label." },
+  "parentTreatmentJourneyChartDate": "Date",
+  "@parentTreatmentJourneyChartDate": { "description": "Selected chart point date label." },
+  "parentTreatmentJourneyChartExercises": "Exercises",
+  "@parentTreatmentJourneyChartExercises": { "description": "Selected chart point exercises label." },
+  "parentTreatmentJourneyChartImprovement": "Improvement",
+  "@parentTreatmentJourneyChartImprovement": { "description": "Selected chart point improvement label." },
+  "parentTreatmentJourneyChartAriaEmpty": "Treatment progress chart, no data yet",
+  "@parentTreatmentJourneyChartAriaEmpty": { "description": "Screen reader label when the journey chart has no data." },
+  "parentTreatmentJourneyChartAriaWithPoints": "Treatment progress chart with {count} points",
+  "@parentTreatmentJourneyChartAriaWithPoints": {
+    "description": "Screen reader label when the journey chart has data.",
+    "placeholders": {
+      "count": { "type": "int", "example": "5" }
+    }
+  },
+  "parentTreatmentJourneyChartSelectedPointAria": "Selected point score {score}, date {date}",
+  "@parentTreatmentJourneyChartSelectedPointAria": {
+    "description": "Screen reader label for the selected chart point details.",
+    "placeholders": {
+      "score": { "type": "String", "example": "72%" },
+      "date": { "type": "String", "example": "Jul 20, 2026" }
+    }
+  },
+  "parentTreatmentJourneySummaryMetricSemantics": "{label} {value}",
+  "@parentTreatmentJourneySummaryMetricSemantics": {
+    "description": "Screen reader label for a journey summary metric.",
+    "placeholders": {
+      "label": { "type": "String", "example": "Current Progress" },
+      "value": { "type": "String", "example": "72%" }
+    }
+  },
+  "parentTreatmentJourneySummaryMetricTrendSemantics": "{label} {value}, Trend {trend}",
+  "@parentTreatmentJourneySummaryMetricTrendSemantics": {
+    "description": "Screen reader label for a journey summary metric with trend.",
+    "placeholders": {
+      "label": { "type": "String", "example": "Current Progress" },
+      "value": { "type": "String", "example": "72%" },
+      "trend": { "type": "String", "example": "Improving" }
+    }
+  },
+  "parentTreatmentJourneyInterpretationBuildingTitle": "Building your journey",
+  "@parentTreatmentJourneyInterpretationBuildingTitle": { "description": "Interpretation card title when journey data is insufficient." },
+  "parentTreatmentJourneyInterpretationEarlyTitle": "Early progress recorded",
+  "@parentTreatmentJourneyInterpretationEarlyTitle": { "description": "Interpretation card title when only one data point exists." },
+  "parentTreatmentJourneyInterpretationNeedMoreData": "More progress entries are needed to identify a trend.",
+  "@parentTreatmentJourneyInterpretationNeedMoreData": { "description": "Interpretation card body when more data is needed." },
+  "parentTreatmentJourneyInterpretationImprovingTitle": "Progress is moving upward",
+  "@parentTreatmentJourneyInterpretationImprovingTitle": { "description": "Interpretation card title for an improving trend." },
+  "parentTreatmentJourneyInterpretationImprovingBody": "The current score is higher than the starting score.",
+  "@parentTreatmentJourneyInterpretationImprovingBody": { "description": "Interpretation card body for an improving trend." },
+  "parentTreatmentJourneyInterpretationDecliningTitle": "Progress needs attention",
+  "@parentTreatmentJourneyInterpretationDecliningTitle": { "description": "Interpretation card title for a declining trend." },
+  "parentTreatmentJourneyInterpretationDecliningBody": "The latest score is lower than the previous period. Review recent feedback or contact the specialist.",
+  "@parentTreatmentJourneyInterpretationDecliningBody": { "description": "Interpretation card body for a declining trend." },
+  "parentTreatmentJourneyInterpretationStableTitle": "Progress is currently stable",
+  "@parentTreatmentJourneyInterpretationStableTitle": { "description": "Interpretation card title for a stable trend." },
+  "parentTreatmentJourneyInterpretationStableBody": "Recent scores are staying within a similar range.",
+  "@parentTreatmentJourneyInterpretationStableBody": { "description": "Interpretation card body for a stable trend." },
+  "parentProgressDetailedTitle": "Detailed Progress",
+  "@parentProgressDetailedTitle": { "description": "Section header for detailed progress lists." },
+  "parentProgressDetailedLoading": "Loading detailed progress...",
+  "@parentProgressDetailedLoading": { "description": "Loading state for detailed progress lists." },
+  "parentProgressDetailedLoadError": "Couldn't load detailed progress lists.",
+  "@parentProgressDetailedLoadError": { "description": "Error message when detailed progress lists fail to load." },
+  "parentProgressDetailedEmpty": "More progress details will appear as therapy sessions continue.",
+  "@parentProgressDetailedEmpty": { "description": "Empty state when no detailed progress data exists yet." },
+  "parentProgressPeriodDaily": "Daily",
+  "@parentProgressPeriodDaily": { "description": "Daily progress list section title." },
+  "parentProgressPeriodWeekly": "Weekly",
+  "@parentProgressPeriodWeekly": { "description": "Weekly progress list section title." },
+  "parentProgressPeriodMonthly": "Monthly",
+  "@parentProgressPeriodMonthly": { "description": "Monthly progress list section title." },
+  "parentProgressPerformanceMetricsTitle": "Performance Metrics",
+  "@parentProgressPerformanceMetricsTitle": { "description": "Section header for aggregate performance metrics." },
+  "parentProgressCompletedExercisesLabel": "Completed exercises",
+  "@parentProgressCompletedExercisesLabel": { "description": "Performance metric label for total completed exercises." },
+  "parentProgressAveragePerformance": "Average performance",
+  "@parentProgressAveragePerformance": { "description": "Performance metric label for average performance." },
+  "parentProgressAverageImprovement": "Average improvement",
+  "@parentProgressAverageImprovement": { "description": "Performance metric label for average improvement." },
+  "parentProgressSnapshotCompleted": "{count} completed",
+  "@parentProgressSnapshotCompleted": {
+    "description": "Progress snapshot detail for completed exercise count.",
+    "placeholders": {
+      "count": { "type": "int", "example": "3" }
+    }
+  },
+  "parentProgressSnapshotImprovement": "{percent}% improvement",
+  "@parentProgressSnapshotImprovement": {
+    "description": "Progress snapshot detail for improvement percentage.",
+    "placeholders": {
+      "percent": { "type": "int", "example": "12" }
+    }
+  },
+  "parentProgressSnapshotPerformance": "{percent}% performance",
+  "@parentProgressSnapshotPerformance": {
+    "description": "Progress snapshot detail for performance percentage.",
+    "placeholders": {
+      "percent": { "type": "int", "example": "85" }
+    }
+  },
   "parentDashboardCaseIntakeLoading": "Loading case requests...",
   "@parentDashboardCaseIntakeLoading": { "description": "Loading state for the case intake section." },
   "parentDashboardCaseIntakeTitle": "Start Your Child's Follow-Up Journey",
@@ -3889,6 +4016,10 @@
   "@signupCancelPhotoSelection": { "description": "Cancel photo sheet accessibility." },
   "signupFullNameHint": "Dr. Sarah Johnson",
   "@signupFullNameHint": { "description": "Full name field hint." },
+  "signupFullNameHintParent": "Sarah Mohammad",
+  "@signupFullNameHintParent": { "description": "Full name field hint when Parent role is selected." },
+  "signupFullNameHintSpecialist": "Dr. Sarah Mohammad",
+  "@signupFullNameHintSpecialist": { "description": "Full name field hint when Specialist role is selected." },
   "signupEmailAddress": "Email Address",
   "@signupEmailAddress": { "description": "Email address field label." },
   "signupPhoneNumber": "Phone Number",

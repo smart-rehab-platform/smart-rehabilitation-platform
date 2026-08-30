@@ -511,6 +511,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       ),
       2 => SignupPersonalInfoStep(
         key: const ValueKey('signup-step-2'),
+        selectedRole: _selectedRole,
         fullNameController: _fullNameController,
         emailController: _emailController,
         phoneController: _phoneController,

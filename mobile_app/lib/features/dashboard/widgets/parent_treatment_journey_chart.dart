@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/dashboard_colors.dart';
 import '../models/parent_dashboard_models.dart';
@@ -14,6 +15,7 @@ class ParentTreatmentJourneyChart extends StatefulWidget {
     this.selectedIndex,
     this.onSelectedIndexChanged,
     this.isLoading = false,
+    this.localeName = 'en',
   });
 
   final List<ParentTreatmentJourneyPoint> points;
@@ -21,6 +23,7 @@ class ParentTreatmentJourneyChart extends StatefulWidget {
   final int? selectedIndex;
   final ValueChanged<int>? onSelectedIndexChanged;
   final bool isLoading;
+  final String localeName;
 
   @override
   State<ParentTreatmentJourneyChart> createState() =>
@@ -85,14 +88,21 @@ class _ParentTreatmentJourneyChartState extends State<ParentTreatmentJourneyChar
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (widget.points.isEmpty) {
-      return const _ChartEmptyState();
+      return _ChartEmptyState(l10n: l10n);
     }
 
     final selectedPoint = widget.points[_selectedIndex.clamp(
       0,
       widget.points.length - 1,
     )];
+    final selectedScore = formatTreatmentJourneyPercent(selectedPoint.score);
+    final selectedDate = localizedFormatTreatmentJourneyDisplayDate(
+      widget.localeName,
+      selectedPoint.date,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -112,6 +122,7 @@ class _ParentTreatmentJourneyChartState extends State<ParentTreatmentJourneyChar
                         points: widget.points,
                         period: widget.period,
                         selectedIndex: _selectedIndex,
+                        localeName: widget.localeName,
                       ),
                     ),
                   ),
@@ -135,9 +146,14 @@ class _ParentTreatmentJourneyChartState extends State<ParentTreatmentJourneyChar
         ),
         SizedBox(height: context.dashSpacing * 0.3),
         Semantics(
-          label:
-              'Selected point score ${formatTreatmentJourneyPercent(selectedPoint.score)}, date ${formatTreatmentJourneyDisplayDate(selectedPoint.date)}',
-          child: _SelectedPointDetails(point: selectedPoint),
+          label: l10n.parentTreatmentJourneyChartSelectedPointAria(
+            selectedScore,
+            selectedDate,
+          ),
+          child: _SelectedPointDetails(
+            point: selectedPoint,
+            localeName: widget.localeName,
+          ),
         ),
       ],
     );
@@ -145,12 +161,18 @@ class _ParentTreatmentJourneyChartState extends State<ParentTreatmentJourneyChar
 }
 
 class _SelectedPointDetails extends StatelessWidget {
-  const _SelectedPointDetails({required this.point});
+  const _SelectedPointDetails({
+    required this.point,
+    required this.localeName,
+  });
 
   final ParentTreatmentJourneyPoint point;
+  final String localeName;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DashboardSurfaceCard(
       tint: DashboardColors.brandCyan,
       padding: EdgeInsets.symmetric(
@@ -161,20 +183,23 @@ class _SelectedPointDetails extends StatelessWidget {
         builder: (context, constraints) {
           final useCompact = constraints.maxWidth < 360;
           final scoreChip = _DetailChip(
-            label: 'Score',
+            label: l10n.parentTreatmentJourneyChartScore,
             value: formatTreatmentJourneyPercent(point.score),
             emphasized: true,
           );
           final dateChip = _DetailChip(
-            label: 'Date',
-            value: formatTreatmentJourneyDisplayDate(point.date),
+            label: l10n.parentTreatmentJourneyChartDate,
+            value: localizedFormatTreatmentJourneyDisplayDate(
+              localeName,
+              point.date,
+            ),
           );
           final exercisesChip = _DetailChip(
-            label: 'Exercises',
+            label: l10n.parentTreatmentJourneyChartExercises,
             value: '${point.exercisesCompleted}',
           );
           final improvementChip = _DetailChip(
-            label: 'Improvement',
+            label: l10n.parentTreatmentJourneyChartImprovement,
             value: formatTreatmentJourneyImprovement(
               point.improvementPercentage,
             ),
@@ -266,7 +291,9 @@ class _DetailChip extends StatelessWidget {
 }
 
 class _ChartEmptyState extends StatelessWidget {
-  const _ChartEmptyState();
+  const _ChartEmptyState({required this.l10n});
+
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -282,7 +309,7 @@ class _ChartEmptyState extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.5),
           Text(
-            'No treatment progress yet',
+            l10n.parentTreatmentJourneyChartEmptyTitle,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: DashboardColors.textPrimary,
@@ -290,7 +317,7 @@ class _ChartEmptyState extends StatelessWidget {
           ),
           SizedBox(height: context.dashSpacing * 0.25),
           Text(
-            'Progress will appear after completed exercises are reviewed.',
+            l10n.parentTreatmentJourneyChartEmptyBody,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: DashboardColors.textSecondary,
@@ -308,11 +335,13 @@ class TreatmentJourneyLineChartPainter extends CustomPainter {
     required this.points,
     required this.period,
     required this.selectedIndex,
+    required this.localeName,
   });
 
   final List<ParentTreatmentJourneyPoint> points;
   final String period;
   final int selectedIndex;
+  final String localeName;
 
   static const _yLabels = [100, 75, 50, 25, 0];
 
@@ -357,7 +386,11 @@ class TreatmentJourneyLineChartPainter extends CustomPainter {
     final labelIndices = calculateXAxisLabelIndices(points.length);
     for (final index in labelIndices) {
       final point = points[index];
-      final label = formatChartXAxisLabel(point.date, period);
+      final label = localizedFormatChartXAxisLabel(
+        localeName,
+        point.date,
+        period,
+      );
       final painter = TextPainter(
         text: TextSpan(text: label, style: textStyle),
         textDirection: TextDirection.ltr,
@@ -462,6 +495,7 @@ class TreatmentJourneyLineChartPainter extends CustomPainter {
   bool shouldRepaint(covariant TreatmentJourneyLineChartPainter oldDelegate) {
     return oldDelegate.points != points ||
         oldDelegate.period != period ||
-        oldDelegate.selectedIndex != selectedIndex;
+        oldDelegate.selectedIndex != selectedIndex ||
+        oldDelegate.localeName != localeName;
   }
 }

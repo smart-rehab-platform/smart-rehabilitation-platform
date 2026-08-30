@@ -1556,6 +1556,280 @@ abstract class AppLocalizations {
   /// **'Treatment Journey, current progress {score} percent, {trend}'**
   String parentTreatmentJourneySemanticsLoaded(int score, String trend);
 
+  /// Subtitle on the full treatment journey progress screen.
+  ///
+  /// In en, this message translates to:
+  /// **'See how your child\'s progress has changed over time'**
+  String get parentTreatmentJourneyScreenSubtitle;
+
+  /// Weekly period tab on the treatment journey screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get parentTreatmentJourneyPeriodWeekly;
+
+  /// Monthly period tab on the treatment journey screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get parentTreatmentJourneyPeriodMonthly;
+
+  /// Full treatment period tab on the treatment journey screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Treatment'**
+  String get parentTreatmentJourneyPeriodFull;
+
+  /// Summary metric label for the starting score.
+  ///
+  /// In en, this message translates to:
+  /// **'Started At'**
+  String get parentTreatmentJourneyStartedAt;
+
+  /// Summary metric label for the current score.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Progress'**
+  String get parentTreatmentJourneyCurrentProgress;
+
+  /// Summary metric label for score change.
+  ///
+  /// In en, this message translates to:
+  /// **'Score Change'**
+  String get parentTreatmentJourneyScoreChangeLabel;
+
+  /// Label above the trend badge in the journey summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend'**
+  String get parentTreatmentJourneyTrendLabel;
+
+  /// Error banner when the full treatment journey fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the treatment journey.'**
+  String get parentTreatmentJourneyLoadFailedDefault;
+
+  /// Label for the treatment start/end date range card.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment period'**
+  String get parentTreatmentJourneyTreatmentPeriod;
+
+  /// Empty chart title on the treatment journey screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No treatment progress yet'**
+  String get parentTreatmentJourneyChartEmptyTitle;
+
+  /// Empty chart body on the treatment journey screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress will appear after completed exercises are reviewed.'**
+  String get parentTreatmentJourneyChartEmptyBody;
+
+  /// Selected chart point score label.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get parentTreatmentJourneyChartScore;
+
+  /// Selected chart point date label.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get parentTreatmentJourneyChartDate;
+
+  /// Selected chart point exercises label.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get parentTreatmentJourneyChartExercises;
+
+  /// Selected chart point improvement label.
+  ///
+  /// In en, this message translates to:
+  /// **'Improvement'**
+  String get parentTreatmentJourneyChartImprovement;
+
+  /// Screen reader label when the journey chart has no data.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment progress chart, no data yet'**
+  String get parentTreatmentJourneyChartAriaEmpty;
+
+  /// Screen reader label when the journey chart has data.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment progress chart with {count} points'**
+  String parentTreatmentJourneyChartAriaWithPoints(int count);
+
+  /// Screen reader label for the selected chart point details.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected point score {score}, date {date}'**
+  String parentTreatmentJourneyChartSelectedPointAria(
+    String score,
+    String date,
+  );
+
+  /// Screen reader label for a journey summary metric.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} {value}'**
+  String parentTreatmentJourneySummaryMetricSemantics(
+    String label,
+    String value,
+  );
+
+  /// Screen reader label for a journey summary metric with trend.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} {value}, Trend {trend}'**
+  String parentTreatmentJourneySummaryMetricTrendSemantics(
+    String label,
+    String value,
+    String trend,
+  );
+
+  /// Interpretation card title when journey data is insufficient.
+  ///
+  /// In en, this message translates to:
+  /// **'Building your journey'**
+  String get parentTreatmentJourneyInterpretationBuildingTitle;
+
+  /// Interpretation card title when only one data point exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Early progress recorded'**
+  String get parentTreatmentJourneyInterpretationEarlyTitle;
+
+  /// Interpretation card body when more data is needed.
+  ///
+  /// In en, this message translates to:
+  /// **'More progress entries are needed to identify a trend.'**
+  String get parentTreatmentJourneyInterpretationNeedMoreData;
+
+  /// Interpretation card title for an improving trend.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress is moving upward'**
+  String get parentTreatmentJourneyInterpretationImprovingTitle;
+
+  /// Interpretation card body for an improving trend.
+  ///
+  /// In en, this message translates to:
+  /// **'The current score is higher than the starting score.'**
+  String get parentTreatmentJourneyInterpretationImprovingBody;
+
+  /// Interpretation card title for a declining trend.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress needs attention'**
+  String get parentTreatmentJourneyInterpretationDecliningTitle;
+
+  /// Interpretation card body for a declining trend.
+  ///
+  /// In en, this message translates to:
+  /// **'The latest score is lower than the previous period. Review recent feedback or contact the specialist.'**
+  String get parentTreatmentJourneyInterpretationDecliningBody;
+
+  /// Interpretation card title for a stable trend.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress is currently stable'**
+  String get parentTreatmentJourneyInterpretationStableTitle;
+
+  /// Interpretation card body for a stable trend.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent scores are staying within a similar range.'**
+  String get parentTreatmentJourneyInterpretationStableBody;
+
+  /// Section header for detailed progress lists.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed Progress'**
+  String get parentProgressDetailedTitle;
+
+  /// Loading state for detailed progress lists.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading detailed progress...'**
+  String get parentProgressDetailedLoading;
+
+  /// Error message when detailed progress lists fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load detailed progress lists.'**
+  String get parentProgressDetailedLoadError;
+
+  /// Empty state when no detailed progress data exists yet.
+  ///
+  /// In en, this message translates to:
+  /// **'More progress details will appear as therapy sessions continue.'**
+  String get parentProgressDetailedEmpty;
+
+  /// Daily progress list section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get parentProgressPeriodDaily;
+
+  /// Weekly progress list section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get parentProgressPeriodWeekly;
+
+  /// Monthly progress list section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get parentProgressPeriodMonthly;
+
+  /// Section header for aggregate performance metrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Metrics'**
+  String get parentProgressPerformanceMetricsTitle;
+
+  /// Performance metric label for total completed exercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed exercises'**
+  String get parentProgressCompletedExercisesLabel;
+
+  /// Performance metric label for average performance.
+  ///
+  /// In en, this message translates to:
+  /// **'Average performance'**
+  String get parentProgressAveragePerformance;
+
+  /// Performance metric label for average improvement.
+  ///
+  /// In en, this message translates to:
+  /// **'Average improvement'**
+  String get parentProgressAverageImprovement;
+
+  /// Progress snapshot detail for completed exercise count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} completed'**
+  String parentProgressSnapshotCompleted(int count);
+
+  /// Progress snapshot detail for improvement percentage.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% improvement'**
+  String parentProgressSnapshotImprovement(int percent);
+
+  /// Progress snapshot detail for performance percentage.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% performance'**
+  String parentProgressSnapshotPerformance(int percent);
+
   /// Loading state for the case intake section.
   ///
   /// In en, this message translates to:
@@ -9670,6 +9944,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dr. Sarah Johnson'**
   String get signupFullNameHint;
+
+  /// Full name field hint when Parent role is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Sarah Mohammad'**
+  String get signupFullNameHintParent;
+
+  /// Full name field hint when Specialist role is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. Sarah Mohammad'**
+  String get signupFullNameHintSpecialist;
 
   /// Email address field label.
   ///
