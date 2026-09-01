@@ -101,7 +101,61 @@
 }
 
 .pd-preview .pd-admin-complaints-table-wrap {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
+  container-type: inline-size;
+  container-name: admin-complaints-table;
+
+  @container admin-complaints-table (max-width: 839px) {
+    .pd-admin-complaints-table thead {
+      display: none;
+    }
+
+    .pd-admin-complaints-table,
+    .pd-admin-complaints-table tbody,
+    .pd-admin-complaints-row,
+    .pd-admin-complaints-row-loading {
+      display: block;
+      width: 100%;
+    }
+
+    .pd-admin-complaints-row,
+    .pd-admin-complaints-row-loading {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
+    }
+
+    .pd-admin-complaints-row td,
+    .pd-admin-complaints-row-loading td {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 0;
+      border: none;
+    }
+
+    .pd-admin-complaints-row td::before,
+    .pd-admin-complaints-row-loading td::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--pd-text-muted);
+    }
+
+    .pd-admin-complaints-row td[data-label="Category"] {
+      flex-direction: column;
+      align-items: start;
+    }
+
+    .pd-admin-complaints-row td[data-label="View"] {
+      justify-content: end;
+    }
+
+    .pd-admin-complaints-row td[data-label="View"]::before {
+      content: none;
+    }
+  }
 }
 
 .pd-preview .pd-admin-complaints-table-wrap.is-updating {
@@ -222,55 +276,6 @@
 @media (max-width: 900px) {
   .pd-preview .pd-admin-complaints-controls {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .pd-preview .pd-admin-complaints-table thead {
-    display: none;
-  }
-
-  .pd-preview .pd-admin-complaints-table,
-  .pd-preview .pd-admin-complaints-table tbody,
-  .pd-preview .pd-admin-complaints-row,
-  .pd-preview .pd-admin-complaints-row-loading {
-    display: block;
-    width: 100%;
-  }
-
-  .pd-preview .pd-admin-complaints-row,
-  .pd-preview .pd-admin-complaints-row-loading {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
-  }
-
-  .pd-preview .pd-admin-complaints-row td,
-  .pd-preview .pd-admin-complaints-row-loading td {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 6px 0;
-    border: none;
-  }
-
-  .pd-preview .pd-admin-complaints-row td::before,
-  .pd-preview .pd-admin-complaints-row-loading td::before {
-    content: attr(data-label);
-    flex-shrink: 0;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--pd-text-muted);
-  }
-
-  .pd-preview .pd-admin-complaints-row td[data-label="Category"] {
-    flex-direction: column;
-    align-items: start;
-  }
-
-  .pd-preview .pd-admin-complaints-row td[data-label="View"] {
-    justify-content: end;
-  }
-
-  .pd-preview .pd-admin-complaints-row td[data-label="View"]::before {
-    content: none;
   }
 }
 
@@ -488,7 +493,7 @@
 
 .pd-preview .pd-admin-modal {
   width: min(560px, 100%);
-  max-height: min(88vh, 760px);
+  max-height: min(88dvh, 760px);
   overflow: auto;
   border-radius: 16px;
   background: var(--pd-surface);

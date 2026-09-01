@@ -71,11 +71,76 @@
 
 .pd-preview .pd-admin-patients-table-wrap {
   padding: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
+  container-type: inline-size;
+  container-name: admin-patients-table;
+
+  @container admin-patients-table (max-width: 819px) {
+    .pd-admin-patients-table {
+      min-width: 0;
+    }
+
+    .pd-admin-patients-table thead {
+      display: none;
+    }
+
+    .pd-admin-patients-table,
+    .pd-admin-patients-table tbody,
+    .pd-admin-patients-row,
+    .pd-admin-patients-empty-row,
+    .pd-admin-patients-row-loading {
+      display: block;
+      width: 100%;
+    }
+
+    .pd-admin-patients-row,
+    .pd-admin-patients-empty-row,
+    .pd-admin-patients-row-loading {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
+    }
+
+    .pd-admin-patients-row td {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: none;
+    }
+
+    .pd-admin-patients-row td::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      width: 112px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--pd-text-muted);
+      padding-top: 2px;
+    }
+
+    .pd-admin-patients-row td[data-label="Patient"] {
+      padding-top: 0;
+    }
+
+    .pd-admin-patients-row td[data-label="Patient"]::before {
+      display: none;
+    }
+
+    .pd-admin-patients-row td[data-label="View"] {
+      justify-content: flex-end;
+      padding-top: 4px;
+    }
+
+    .pd-admin-patients-row td[data-label="View"]::before {
+      display: none;
+    }
+  }
 }
 
 .pd-preview .pd-admin-patients-table-scroll {
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .pd-preview .pd-admin-patients-table {
@@ -276,66 +341,6 @@
 }
 
 @media (max-width: 900px) {
-  .pd-preview .pd-admin-patients-table {
-    min-width: 0;
-  }
-
-  .pd-preview .pd-admin-patients-table thead {
-    display: none;
-  }
-
-  .pd-preview .pd-admin-patients-table,
-  .pd-preview .pd-admin-patients-table tbody,
-  .pd-preview .pd-admin-patients-row,
-  .pd-preview .pd-admin-patients-empty-row,
-  .pd-preview .pd-admin-patients-row-loading {
-    display: block;
-    width: 100%;
-  }
-
-  .pd-preview .pd-admin-patients-row,
-  .pd-preview .pd-admin-patients-empty-row,
-  .pd-preview .pd-admin-patients-row-loading {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
-  }
-
-  .pd-preview .pd-admin-patients-row td {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 0;
-    border-bottom: none;
-  }
-
-  .pd-preview .pd-admin-patients-row td::before {
-    content: attr(data-label);
-    flex-shrink: 0;
-    width: 112px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--pd-text-muted);
-    padding-top: 2px;
-  }
-
-  .pd-preview .pd-admin-patients-row td[data-label="Patient"] {
-    padding-top: 0;
-  }
-
-  .pd-preview .pd-admin-patients-row td[data-label="Patient"]::before {
-    display: none;
-  }
-
-  .pd-preview .pd-admin-patients-row td[data-label="View"] {
-    justify-content: flex-end;
-    padding-top: 4px;
-  }
-
-  .pd-preview .pd-admin-patients-row td[data-label="View"]::before {
-    display: none;
-  }
-
   .pd-preview .pd-admin-patients-controls {
     flex-direction: column;
     align-items: stretch;

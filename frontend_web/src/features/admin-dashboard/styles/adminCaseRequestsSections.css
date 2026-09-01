@@ -32,7 +32,45 @@
 }
 
 .pd-preview .pd-admin-case-requests-table-wrap {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
+  container-type: inline-size;
+  container-name: admin-case-requests-table;
+
+  @container admin-case-requests-table (max-width: 839px) {
+    .pd-admin-case-requests-table thead {
+      display: none;
+    }
+
+    .pd-admin-case-requests-table,
+    .pd-admin-case-requests-table tbody,
+    .pd-admin-case-requests-row {
+      display: block;
+      width: 100%;
+    }
+
+    .pd-admin-case-requests-row {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
+    }
+
+    .pd-admin-case-requests-row td {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border: 0;
+    }
+
+    .pd-admin-case-requests-row td::before {
+      content: attr(data-label);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--pd-text-muted);
+      flex-shrink: 0;
+    }
+  }
 }
 
 .pd-preview .pd-admin-case-requests-table {
@@ -136,6 +174,89 @@
   gap: 28px;
   width: 100%;
   max-width: 1100px;
+}
+
+.pd-preview .pd-admin-case-request-details {
+  container-type: inline-size;
+  container-name: admin-case-request-details;
+
+  @container admin-case-request-details (max-width: 879px) {
+    .pd-admin-case-request-info-columns {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pd-admin-case-request-info-column {
+      display: contents;
+    }
+
+    .pd-admin-case-request-info-column:first-child > :first-child {
+      order: 1;
+    }
+
+    .pd-admin-case-request-info-column:last-child > :first-child {
+      order: 2;
+    }
+
+    .pd-admin-case-request-info-column:first-child > :last-child {
+      order: 3;
+    }
+
+    .pd-admin-case-request-info-column:last-child > :last-child {
+      order: 4;
+    }
+
+    .pd-admin-case-info-grid.is-compact {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @container admin-case-request-details (max-width: 759px) {
+    .pd-admin-case-request-header-body {
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .pd-admin-case-request-header-aside {
+      align-items: flex-start;
+      text-align: start;
+    }
+
+    .pd-admin-case-request-header-status {
+      align-items: flex-start;
+    }
+
+    .pd-admin-case-request-timeline-list {
+      flex-direction: column;
+      gap: 12px;
+      padding-inline-start: 4px;
+    }
+
+    .pd-admin-case-request-timeline-list::before {
+      top: 0;
+      bottom: 0;
+      inset-inline: 8px auto;
+      width: 2px;
+      height: auto;
+    }
+
+    .pd-admin-case-request-timeline-step {
+      flex-direction: row;
+      align-items: flex-start;
+      text-align: start;
+      padding: 0;
+      gap: 10px;
+    }
+
+    .pd-admin-case-request-timeline-copy {
+      padding-top: 1px;
+    }
+
+    .pd-admin-case-info-grid.is-compact {
+      grid-template-columns: 1fr;
+    }
+  }
 }
 
 .pd-preview .pd-admin-case-request-specialists-shell {
@@ -759,36 +880,6 @@
   .pd-preview .pd-admin-matching-specialists-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  .pd-preview .pd-admin-case-request-info-columns {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .pd-preview .pd-admin-case-request-info-column {
-    display: contents;
-  }
-
-  .pd-preview .pd-admin-case-request-info-column:first-child > :first-child {
-    order: 1;
-  }
-
-  .pd-preview .pd-admin-case-request-info-column:last-child > :first-child {
-    order: 2;
-  }
-
-  .pd-preview .pd-admin-case-request-info-column:first-child > :last-child {
-    order: 3;
-  }
-
-  .pd-preview .pd-admin-case-request-info-column:last-child > :last-child {
-    order: 4;
-  }
-
-  .pd-preview .pd-admin-case-info-grid.is-compact {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 900px) {
@@ -796,84 +887,7 @@
     grid-template-columns: 1fr;
   }
 
-  .pd-preview .pd-admin-case-requests-table thead {
-    display: none;
-  }
-
-  .pd-preview .pd-admin-case-requests-table,
-  .pd-preview .pd-admin-case-requests-table tbody,
-  .pd-preview .pd-admin-case-requests-row {
-    display: block;
-    width: 100%;
-  }
-
-  .pd-preview .pd-admin-case-requests-row {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--pd-border-soft, var(--pd-border));
-  }
-
-  .pd-preview .pd-admin-case-requests-row td {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 0;
-    border: 0;
-  }
-
-  .pd-preview .pd-admin-case-requests-row td::before {
-    content: attr(data-label);
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--pd-text-muted);
-    flex-shrink: 0;
-  }
-
   .pd-preview .pd-admin-matching-specialists-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .pd-preview .pd-admin-case-request-header-body {
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .pd-preview .pd-admin-case-request-header-aside {
-    align-items: flex-start;
-    text-align: start;
-  }
-
-  .pd-preview .pd-admin-case-request-header-status {
-    align-items: flex-start;
-  }
-
-  .pd-preview .pd-admin-case-request-timeline-list {
-    flex-direction: column;
-    gap: 12px;
-    padding-inline-start: 4px;
-  }
-
-  .pd-preview .pd-admin-case-request-timeline-list::before {
-    top: 0;
-    bottom: 0;
-    inset-inline: 8px auto;
-    width: 2px;
-    height: auto;
-  }
-
-  .pd-preview .pd-admin-case-request-timeline-step {
-    flex-direction: row;
-    align-items: flex-start;
-    text-align: start;
-    padding: 0;
-    gap: 10px;
-  }
-
-  .pd-preview .pd-admin-case-request-timeline-copy {
-    padding-top: 1px;
-  }
-
-  .pd-preview .pd-admin-case-info-grid.is-compact {
     grid-template-columns: 1fr;
   }
 

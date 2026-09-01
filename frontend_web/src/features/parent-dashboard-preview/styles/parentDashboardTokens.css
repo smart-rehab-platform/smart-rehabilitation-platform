@@ -47,6 +47,13 @@
   width: 220px;
 }
 
+@media (max-width: 900px) {
+  .pd-preview .pd-dashboard-hero-viewport .pd-progress-hero-visual {
+    flex: none;
+    width: 100%;
+  }
+}
+
 @media (min-width: 1151px) {
   .pd-preview .pd-dashboard-hero-viewport {
     min-height: auto;

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -5,6 +6,7 @@ import {
   PanelRightOpen,
 } from "lucide-react";
 import { useLocale } from "../../../context/useLocale.js";
+import { useDashboardDrawerChrome } from "../hooks/useDashboardDrawerChrome.js";
 
 export function DashboardSidebar({
   collapsed,
@@ -31,6 +33,13 @@ export function DashboardSidebar({
   const CollapseIcon = collapsed
     ? (isRtl ? PanelRightOpen : PanelLeftOpen)
     : (isRtl ? PanelRightClose : PanelLeftClose);
+
+  const closeMobileNav = useCallback(() => {
+    onCloseMobile?.();
+  }, [onCloseMobile]);
+
+  // Keep drawer chrome consistent for Admin / Specialist / Parent shells.
+  useDashboardDrawerChrome(Boolean(mobileOpen), closeMobileNav);
 
   return (
     <>

@@ -483,7 +483,7 @@
 
 .pd-preview .pd-admin-modal {
   width: min(100%, 520px);
-  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
   overflow: auto;
   background: var(--pd-surface);
   border: 1px solid var(--pd-border-soft, var(--pd-border));
