@@ -969,6 +969,8 @@
 
 .pd-preview .pd-modal {
   width: min(100%, 520px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
   background: var(--pd-surface);
   border: 1px solid var(--pd-border-soft);
   border-radius: 14px;
@@ -986,6 +988,17 @@
   justify-content: end;
   gap: 10px;
   margin-top: 14px;
+}
+
+@media (max-width: 480px) {
+  .pd-preview .pd-modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .pd-preview .pd-modal-actions .pd-btn {
+    width: 100%;
+  }
 }
 
 .pd-preview .pd-field-label {
@@ -3413,6 +3426,8 @@
 .pd-preview .pd-specialist-sessions-page {
   width: 100%;
   max-width: 1180px;
+  container-type: inline-size;
+  container-name: specialist-sessions-page;
 }
 
 .pd-preview .pd-specialist-sessions-header {
@@ -3634,8 +3649,14 @@
 
 .pd-preview .pd-specialist-sessions-calendar-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, min(420px, 100%)) minmax(0, 1fr);
   gap: 16px;
+}
+
+@container specialist-sessions-page (max-width: 760px) {
+  .pd-preview .pd-specialist-sessions-calendar-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pd-preview .pd-specialist-session-calendar-header {
@@ -3896,10 +3917,6 @@
   .pd-preview .pd-specialist-sessions-header {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .pd-preview .pd-specialist-sessions-calendar-layout {
-    grid-template-columns: 1fr;
   }
 
   .pd-preview .pd-specialist-session-request-meta {
@@ -4974,6 +4991,8 @@
 .pd-preview .pd-specialist-assign-exercise-page {
   display: grid;
   gap: 16px;
+  container-type: inline-size;
+  container-name: specialist-assign-exercise-page;
 }
 
 .pd-preview .pd-specialist-assign-exercise-patient {
@@ -5023,9 +5042,15 @@
 
 .pd-preview .pd-specialist-assign-exercise-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
   gap: 16px;
   align-items: start;
+}
+
+@container specialist-assign-exercise-page (max-width: 760px) {
+  .pd-preview .pd-specialist-assign-exercise-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pd-preview .pd-specialist-assign-exercise-library,
@@ -5122,12 +5147,6 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-@media (max-width: 1100px) {
-  .pd-preview .pd-specialist-assign-exercise-layout {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 820px) {
