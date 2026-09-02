@@ -1,5 +1,7 @@
 const pool = require("../../database/db");
+const logDatabaseError = pool.logDatabaseError;
 const aiProviderService = require("../../services/aiProvider.service");
+const { canAccessPatient } = require("../../utils/patientAccess");
 const {
   cloneWithoutLegacySpeechScores,
 } = require("../../utils/legacySpeechScores");
@@ -8,6 +10,21 @@ const createError = (message, statusCode) => {
   const error = new Error(message);
   error.statusCode = statusCode;
   return error;
+};
+
+const ARABIC_SCRIPT_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
+
+const detectMessageLanguage = (content) => {
+  const text = String(content || "");
+  const arabicChars = (text.match(new RegExp(ARABIC_SCRIPT_REGEX.source, "g")) || [])
+    .length;
+  const latinChars = (text.match(/[A-Za-z]/g) || []).length;
+
+  if (arabicChars === 0 && latinChars === 0) {
+    return "en";
+  }
+
+  return arabicChars >= latinChars ? "ar" : "en";
 };
 
 const toNumber = (value) => {
@@ -19,8 +36,8 @@ const toNumber = (value) => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
-const getPatientProfile = async (patientId) => {
-  const result = await pool.query(
+const getPatientProfile = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        p.id,
        p.full_name,
@@ -40,8 +57,8 @@ const getPatientProfile = async (patientId) => {
   return result.rows[0] || null;
 };
 
-const getPatientDiagnoses = async (patientId) => {
-  const result = await pool.query(
+const getPatientDiagnoses = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        d.id,
        d.diagnosis_title,
@@ -60,8 +77,8 @@ const getPatientDiagnoses = async (patientId) => {
   return result.rows;
 };
 
-const getPatientTreatmentPlans = async (patientId) => {
-  const result = await pool.query(
+const getPatientTreatmentPlans = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        id,
        title,
@@ -72,6 +89,7 @@ const getPatientTreatmentPlans = async (patientId) => {
        updated_at
      FROM treatment_plans
      WHERE patient_id = $1
+       AND status = 'active'
      ORDER BY updated_at DESC, created_at DESC
      LIMIT 5`,
     [patientId]
@@ -80,8 +98,8 @@ const getPatientTreatmentPlans = async (patientId) => {
   return result.rows;
 };
 
-const getPatientGoals = async (patientId) => {
-  const result = await pool.query(
+const getPatientGoals = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        g.id,
        g.term,
@@ -103,6 +121,7 @@ const getPatientGoals = async (patientId) => {
        LIMIT 1
      ) AS latest_progress ON TRUE
      WHERE tp.patient_id = $1
+       AND tp.status = 'active'
      ORDER BY g.created_at DESC
      LIMIT 10`,
     [patientId]
@@ -111,8 +130,8 @@ const getPatientGoals = async (patientId) => {
   return result.rows;
 };
 
-const getPatientAssignedExercises = async (patientId) => {
-  const result = await pool.query(
+const getPatientAssignedExercises = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        ae.id,
        ae.plan_id,
@@ -128,16 +147,17 @@ const getPatientAssignedExercises = async (patientId) => {
      FROM assigned_exercises ae
      INNER JOIN exercises e ON e.id = ae.exercise_id
      WHERE ae.patient_id = $1
+       AND ae.is_active = TRUE
      ORDER BY ae.created_at DESC
-     LIMIT 10`,
+     LIMIT 15`,
     [patientId]
   );
 
   return result.rows;
 };
 
-const getPatientExerciseSubmissions = async (patientId) => {
-  const result = await pool.query(
+const getPatientExerciseSubmissions = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        es.id,
        es.assigned_exercise_id,
@@ -157,8 +177,8 @@ const getPatientExerciseSubmissions = async (patientId) => {
   return result.rows;
 };
 
-const getPatientExerciseReviews = async (patientId) => {
-  const result = await pool.query(
+const getPatientExerciseReviews = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        er.id,
        er.submission_id,
@@ -178,8 +198,8 @@ const getPatientExerciseReviews = async (patientId) => {
   return result.rows;
 };
 
-const getPatientProgressSnapshots = async (patientId) => {
-  const result = await pool.query(
+const getPatientProgressSnapshots = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        id,
        period,
@@ -199,8 +219,8 @@ const getPatientProgressSnapshots = async (patientId) => {
   return result.rows;
 };
 
-const getPatientSpeechAnalyses = async (patientId) => {
-  const result = await pool.query(
+const getPatientSpeechAnalyses = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        sa.id,
        sa.submission_id,
@@ -221,8 +241,8 @@ const getPatientSpeechAnalyses = async (patientId) => {
   return result.rows;
 };
 
-const getPatientAiRecommendations = async (patientId) => {
-  const result = await pool.query(
+const getPatientAiRecommendations = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        id,
        related_plan_id,
@@ -241,8 +261,8 @@ const getPatientAiRecommendations = async (patientId) => {
   return result.rows;
 };
 
-const getPatientAiReports = async (patientId) => {
-  const result = await pool.query(
+const getPatientAiReports = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        id,
        type,
@@ -261,8 +281,8 @@ const getPatientAiReports = async (patientId) => {
   return result.rows;
 };
 
-const getPatientAiProgressNotes = async (patientId) => {
-  const result = await pool.query(
+const getPatientAiProgressNotes = async (patientId, db = pool) => {
+  const result = await db.query(
     `SELECT
        id,
        speech_analysis_id,
@@ -286,54 +306,60 @@ const getPatientAiProgressNotes = async (patientId) => {
   return result.rows;
 };
 
-const collectPatientContext = async (patientId) => {
-  const [
-    patientProfile,
-    diagnoses,
-    treatmentPlans,
-    goals,
-    assignedExercises,
-    exerciseSubmissions,
-    exerciseReviews,
-    progressSnapshots,
-    speechAnalyses,
-    aiRecommendations,
-    aiReports,
-    aiProgressNotes
-  ] = await Promise.all([
-    getPatientProfile(patientId),
-    getPatientDiagnoses(patientId),
-    getPatientTreatmentPlans(patientId),
-    getPatientGoals(patientId),
-    getPatientAssignedExercises(patientId),
-    getPatientExerciseSubmissions(patientId),
-    getPatientExerciseReviews(patientId),
-    getPatientProgressSnapshots(patientId),
-    getPatientSpeechAnalyses(patientId),
-    getPatientAiRecommendations(patientId),
-    getPatientAiReports(patientId),
-    getPatientAiProgressNotes(patientId)
-  ]);
+const getPatientAiProgressNotesSafe = async (patientId, db = pool) => {
+  try {
+    return await getPatientAiProgressNotes(patientId, db);
+  } catch (error) {
+    console.warn("[aiChat] ai_progress_notes unavailable:", error.message);
+    return [];
+  }
+};
 
-  return {
-    patientProfile,
-    diagnoses,
-    treatmentPlans,
-    goals,
-    assignedExercises,
-    exerciseSubmissions,
-    exerciseReviews,
-    progressSnapshots,
-    speechAnalyses,
-    aiRecommendations,
-    aiReports,
-    aiProgressNotes
-  };
+const collectPatientContext = async (patientId) => {
+  let client;
+  try {
+    client = await pool.connect();
+    const patientProfile = await getPatientProfile(patientId, client);
+    const diagnoses = await getPatientDiagnoses(patientId, client);
+    const treatmentPlans = await getPatientTreatmentPlans(patientId, client);
+    const goals = await getPatientGoals(patientId, client);
+    const assignedExercises = await getPatientAssignedExercises(patientId, client);
+    const exerciseSubmissions = await getPatientExerciseSubmissions(patientId, client);
+    const exerciseReviews = await getPatientExerciseReviews(patientId, client);
+    const progressSnapshots = await getPatientProgressSnapshots(patientId, client);
+    const speechAnalyses = await getPatientSpeechAnalyses(patientId, client);
+    const aiRecommendations = await getPatientAiRecommendations(patientId, client);
+    const aiReports = await getPatientAiReports(patientId, client);
+    const aiProgressNotes = await getPatientAiProgressNotesSafe(patientId, client);
+
+    return {
+      patientProfile,
+      diagnoses,
+      treatmentPlans,
+      goals,
+      assignedExercises,
+      exerciseSubmissions,
+      exerciseReviews,
+      progressSnapshots,
+      speechAnalyses,
+      aiRecommendations,
+      aiReports,
+      aiProgressNotes
+    };
+  } catch (error) {
+    logDatabaseError("aiChat.collectPatientContext", error, { patientId });
+    throw error;
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
 };
 
 const formatConversation = (row) => ({
   id: row.id,
   user_id: row.user_id,
+  patient_id: row.patient_id || null,
   started_at: row.started_at,
   message_count:
     row.message_count === undefined ? undefined : Number(row.message_count),
@@ -349,11 +375,62 @@ const formatMessage = (row) => ({
   created_at: row.created_at
 });
 
-const getConversationByIdForUser = async (conversationId, userId) => {
+const assertPatientAccess = async (user, patientId) => {
+  const allowed = await canAccessPatient(patientId, user);
+  if (!allowed) {
+    throw createError("You do not have access to this patient", 403);
+  }
+};
+
+const resolvePatientIdForMessage = async ({
+  user,
+  patientId,
+  conversationPatientId
+}) => {
+  if (user.role === "parent") {
+    if (!patientId) {
+      throw createError("patient_id is required for parent AI chat", 400);
+    }
+
+    if (conversationPatientId && conversationPatientId !== patientId) {
+      throw createError(
+        "This conversation belongs to a different patient. Start a new conversation for the selected child.",
+        403
+      );
+    }
+
+    await assertPatientAccess(user, patientId);
+
+    return patientId;
+  }
+
+  if (patientId) {
+    if (conversationPatientId && conversationPatientId !== patientId) {
+      throw createError(
+        "Conversation patient context does not match the requested patient",
+        403
+      );
+    }
+
+    await assertPatientAccess(user, patientId);
+
+    return patientId;
+  }
+
+  if (conversationPatientId) {
+    await assertPatientAccess(user, conversationPatientId);
+    return conversationPatientId;
+  }
+
+  return null;
+};
+
+const getConversationRowForUser = async (conversationId, userId) => {
   const result = await pool.query(
     `SELECT
        c.id,
        c.user_id,
+       c.patient_id,
        c.started_at,
        COUNT(m.id)::int AS message_count,
        MAX(m.created_at) AS last_message_at
@@ -364,7 +441,12 @@ const getConversationByIdForUser = async (conversationId, userId) => {
     [conversationId, userId]
   );
 
-  return result.rows[0] ? formatConversation(result.rows[0]) : null;
+  return result.rows[0] || null;
+};
+
+const getConversationByIdForUser = async (conversationId, userId) => {
+  const row = await getConversationRowForUser(conversationId, userId);
+  return row ? formatConversation(row) : null;
 };
 
 const getConversationMessagesRaw = async (conversationId) => {
@@ -392,51 +474,81 @@ const getConversationHistoryForPrompt = async (conversationId) => {
   return result.rows;
 };
 
-const createFallbackReply = ({ question, patientContext, userRole }) => {
+const createFallbackReply = ({
+  question,
+  patientContext,
+  userRole,
+  responseLanguage = "en"
+}) => {
   const normalizedQuestion = String(question || "").toLowerCase();
+  const isArabic = responseLanguage === "ar";
 
-  if (normalizedQuestion.includes("diagnos") || normalizedQuestion.includes("medicine")) {
-    return "I can provide general rehabilitation support, but I cannot diagnose or advise on medication. Please contact your specialist or doctor for medical decisions.";
+  if (
+    normalizedQuestion.includes("diagnos") ||
+    normalizedQuestion.includes("medicine") ||
+    normalizedQuestion.includes("تشخيص") ||
+    normalizedQuestion.includes("دواء")
+  ) {
+    return isArabic
+      ? "يمكنني تقديم دعم عام للتأهيل، لكن لا يمكنني تشخيص الحالة أو تقديم نصائح دوائية. يرجى التواصل مع الأخصائي أو الطبيب لاتخاذ القرارات الطبية."
+      : "I can provide general rehabilitation support, but I cannot diagnose or advise on medication. Please contact your specialist or doctor for medical decisions.";
   }
 
   if (
     normalizedQuestion.includes("exercise") ||
     normalizedQuestion.includes("home practice") ||
-    normalizedQuestion.includes("home-practice")
+    normalizedQuestion.includes("home-practice") ||
+    normalizedQuestion.includes("تمرين") ||
+    normalizedQuestion.includes("تمارين")
   ) {
     if (patientContext?.assignedExercises?.length > 0) {
       const exercise = patientContext.assignedExercises[0];
-      return `A helpful next step is to focus on one assigned exercise at a time and keep the practice short, calm, and consistent. For example, "${exercise.exercise_title}" should be explained in simple steps, demonstrated slowly, and followed with encouragement. If the child struggles or becomes frustrated, please contact the specialist for plan adjustments.`;
+      return isArabic
+        ? `خطوة مفيدة هي التركيز على تمرين واحد في كل مرة مع جلسات قصيرة وهادئة ومنتظمة. على سبيل المثال، "${exercise.exercise_title}" يمكن شرحه بخطوات بسيطة، مع عرض بطيء وتشجيع مستمر. إذا واجه الطفل صعوبة أو إحباطًا، يرجى التواصل مع الأخصائي لتعديل الخطة.`
+        : `A helpful next step is to focus on one assigned exercise at a time and keep the practice short, calm, and consistent. For example, "${exercise.exercise_title}" should be explained in simple steps, demonstrated slowly, and followed with encouragement. If the child struggles or becomes frustrated, please contact the specialist for plan adjustments.`;
     }
 
-    return "For home practice, keep sessions short, simple, and encouraging. Focus on one task at a time, use clear demonstrations, praise effort, and contact the specialist if the activity seems too difficult or no longer fits the child’s needs.";
+    return isArabic
+      ? "للتدريب المنزلي، اجعل الجلسات قصيرة وبسيطة ومشجعة. ركز على مهمة واحدة في كل مرة، واستخدم عرضًا واضحًا، وامدح الجهد، وتواصل مع الأخصائي إذا بدا النشاط صعبًا أو لم يعد مناسبًا."
+      : "For home practice, keep sessions short, simple, and encouraging. Focus on one task at a time, use clear demonstrations, praise effort, and contact the specialist if the activity seems too difficult or no longer fits the child's needs.";
   }
 
   if (
     normalizedQuestion.includes("report") ||
     normalizedQuestion.includes("summary") ||
-    normalizedQuestion.includes("progress")
+    normalizedQuestion.includes("progress") ||
+    normalizedQuestion.includes("تقرير") ||
+    normalizedQuestion.includes("تقدم")
   ) {
     const latestSnapshot = patientContext?.progressSnapshots?.[0] || null;
     if (latestSnapshot) {
-      return `In simple terms, the latest progress data shows ${latestSnapshot.exercises_completed} completed exercises with an improvement percentage of ${latestSnapshot.improvement_percentage}. This can help guide discussion with the specialist, but treatment decisions should still come from the care team.`;
+      return isArabic
+        ? `بعبارات بسيطة، تُظهر أحدث بيانات التقدم ${latestSnapshot.exercises_completed} تمرينًا مكتملًا مع نسبة تحسن ${latestSnapshot.improvement_percentage}. يساعد هذا في النقاش مع الأخصائي، لكن القرارات العلاجية يجب أن تأتي من فريق الرعاية.`
+        : `In simple terms, the latest progress data shows ${latestSnapshot.exercises_completed} completed exercises with an improvement percentage of ${latestSnapshot.improvement_percentage}. This can help guide discussion with the specialist, but treatment decisions should still come from the care team.`;
     }
 
-    return "I can help explain reports and summaries in simple language, but I only have limited structured data right now. Please review the latest report with the specialist for clinical decisions.";
+    return isArabic
+      ? "يمكنني مساعدتك في شرح التقارير والملخصات بلغة بسيطة، لكن البيانات المتاحة محدودة حاليًا. يرجى مراجعة أحدث تقرير مع الأخصائي للقرارات السريرية."
+      : "I can help explain reports and summaries in simple language, but I only have limited structured data right now. Please review the latest report with the specialist for clinical decisions.";
   }
 
   if (userRole === "specialist") {
-    return "I can help summarize rehabilitation context, explain exercise adherence, and restate AI-generated summaries in simpler language. For final treatment decisions, please rely on your direct clinical judgment and the patient’s specialist workflow.";
+    return isArabic
+      ? "يمكنني مساعدتك في تلخيص سياق التأهيل وشرح الالتزام بالتمارين وإعادة صياغة ملخصات الذكاء الاصطناعي بلغة أبسط. للقرارات العلاجية النهائية، يرجى الاعتماد على حكمك السريري المباشر."
+      : "I can help summarize rehabilitation context, explain exercise adherence, and restate AI-generated summaries in simpler language. For final treatment decisions, please rely on your direct clinical judgment and the patient's specialist workflow.";
   }
 
-  return "I can help explain exercises, progress, reports, and general rehabilitation support in simple language. I cannot diagnose, prescribe medication, or replace a specialist, so please contact the care team for medical or urgent decisions.";
+  return isArabic
+    ? "يمكنني مساعدتك في شرح التمارين والتقدم والتقارير والدعم العام للتأهيل بلغة بسيطة. لا يمكنني تشخيص الحالة أو وصف الأدوية أو استبدال الأخصائي، لذا يرجى التواصل مع فريق الرعاية للقرارات الطبية أو العاجلة."
+    : "I can help explain exercises, progress, reports, and general rehabilitation support in simple language. I cannot diagnose, prescribe medication, or replace a specialist, so please contact the care team for medical or urgent decisions.";
 };
 
 const buildChatbotPrompt = ({
   user,
   question,
   patientContext,
-  chatHistory
+  chatHistory,
+  responseLanguage = "en"
 }) => {
   const promptContext = {
     user: {
@@ -448,6 +560,11 @@ const buildChatbotPrompt = ({
     chat_history: chatHistory,
     latest_user_question: question
   };
+
+  const languageInstruction =
+    responseLanguage === "ar"
+      ? "Reply entirely in Arabic. Match the language of the user's latest message. Do not reply in English unless the user wrote in English."
+      : "Reply entirely in English. Match the language of the user's latest message. Do not reply in Arabic unless the user wrote in Arabic.";
 
   return [
     "You are a warm, supportive, simple rehabilitation assistant for parents and specialists.",
@@ -464,6 +581,7 @@ const buildChatbotPrompt = ({
     "Reply in plain text only. Do not use JSON or markdown code fences.",
     "Do not invent pronunciation, fluency, or overall speech scores.",
     "Do not describe overall speech score improvement, decline, pronunciation score, or fluency score.",
+    languageInstruction,
     "",
     "Context:",
     JSON.stringify(promptContext, null, 2)
@@ -482,7 +600,7 @@ const insertMessage = async (conversationId, sender, content) => {
 };
 
 const ensureConversationOwnership = async (conversationId, userId) => {
-  const conversation = await getConversationByIdForUser(conversationId, userId);
+  const conversation = await getConversationRowForUser(conversationId, userId);
 
   if (!conversation) {
     throw createError("Chatbot conversation not found", 404);
@@ -491,22 +609,45 @@ const ensureConversationOwnership = async (conversationId, userId) => {
   return conversation;
 };
 
-const createConversation = async (userId) => {
+const createConversation = async (userId, patientId = null, user = null) => {
+  if (user?.role === "parent") {
+    if (!patientId) {
+      throw createError("patient_id is required for parent AI conversations", 400);
+    }
+
+    await assertPatientAccess(user, patientId);
+  } else if (patientId && user) {
+    await assertPatientAccess(user, patientId);
+  }
+
   const result = await pool.query(
-    `INSERT INTO chatbot_conversations (user_id)
-     VALUES ($1)
+    `INSERT INTO chatbot_conversations (user_id, patient_id)
+     VALUES ($1, $2)
      RETURNING *`,
-    [userId]
+    [userId, patientId]
   );
 
   return formatConversation(result.rows[0]);
 };
 
-const getUserConversations = async (userId) => {
+const getUserConversations = async (userId, { patientId = null, user = null } = {}) => {
+  if (patientId && user) {
+    await assertPatientAccess(user, patientId);
+  }
+
+  const params = [userId];
+  let patientFilter = "";
+
+  if (patientId) {
+    params.push(patientId);
+    patientFilter = " AND c.patient_id = $2";
+  }
+
   const result = await pool.query(
     `SELECT
        c.id,
        c.user_id,
+       c.patient_id,
        c.started_at,
        COUNT(m.id)::int AS message_count,
        MAX(m.created_at) AS last_message_at,
@@ -519,17 +660,17 @@ const getUserConversations = async (userId) => {
        ) AS last_message_preview
      FROM chatbot_conversations c
      LEFT JOIN chatbot_messages m ON m.conversation_id = c.id
-     WHERE c.user_id = $1
+     WHERE c.user_id = $1${patientFilter}
      GROUP BY c.id
-     ORDER BY c.started_at DESC`,
-    [userId]
+     ORDER BY COALESCE(MAX(m.created_at), c.started_at) DESC`,
+    params
   );
 
   return result.rows.map(formatConversation);
 };
 
 const getConversationById = async (conversationId, userId) => {
-  return ensureConversationOwnership(conversationId, userId);
+  return getConversationByIdForUser(conversationId, userId);
 };
 
 const getConversationMessages = async (conversationId, userId) => {
@@ -544,10 +685,17 @@ const sendMessage = async ({
   patientId = null
 }) => {
   const conversation = await ensureConversationOwnership(conversationId, user.id);
+  const effectivePatientId = await resolvePatientIdForMessage({
+    user,
+    patientId,
+    conversationPatientId: conversation.patient_id
+  });
+
+  const responseLanguage = detectMessageLanguage(content);
 
   let patientContext = null;
-  if (patientId) {
-    patientContext = await collectPatientContext(patientId);
+  if (effectivePatientId) {
+    patientContext = await collectPatientContext(effectivePatientId);
 
     if (!patientContext.patientProfile) {
       throw createError("Patient not found", 404);
@@ -560,13 +708,15 @@ const sendMessage = async ({
   const fallbackReply = createFallbackReply({
     question: content,
     patientContext,
-    userRole: user.role
+    userRole: user.role,
+    responseLanguage
   });
   const prompt = buildChatbotPrompt({
     user,
     question: content,
     patientContext,
-    chatHistory
+    chatHistory,
+    responseLanguage
   });
   const botReply = await aiProviderService.generateChatbotReply(
     prompt,
@@ -574,8 +724,16 @@ const sendMessage = async ({
   );
   const botMessage = await insertMessage(conversation.id, "bot", botReply.reply);
 
+  const previousCount = Number(conversation.message_count) || 0;
+  const updatedConversation = formatConversation({
+    ...conversation,
+    message_count: previousCount + 2,
+    last_message_at: botMessage.created_at,
+    last_message_preview: botReply.reply.slice(0, 180)
+  });
+
   return {
-    conversation: await getConversationByIdForUser(conversation.id, user.id),
+    conversation: updatedConversation,
     user_message: userMessage,
     bot_message: botMessage,
     bot_meta: {
@@ -591,9 +749,16 @@ const ask = async ({
   content,
   patientId = null
 }) => {
-  const conversation = conversationId
-    ? await ensureConversationOwnership(conversationId, user.id)
-    : await createConversation(user.id);
+  if (conversationId) {
+    return sendMessage({
+      conversationId,
+      user,
+      content,
+      patientId
+    });
+  }
+
+  const conversation = await createConversation(user.id, patientId, user);
 
   return sendMessage({
     conversationId: conversation.id,
@@ -611,4 +776,8 @@ module.exports = {
   sendMessage,
   ask,
   buildChatbotPrompt,
+  createFallbackReply,
+  detectMessageLanguage,
+  resolvePatientIdForMessage,
+  collectPatientContext,
 };

@@ -152,8 +152,25 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
   final Ref _ref;
   final ParentDashboardRepository _repository;
   final AuthRepository _authRepository;
+  Future<void>? _initializeFuture;
 
-  Future<void> initialize() async {
+  Future<void> initialize({bool force = false}) async {
+    if (!force && _initializeFuture != null) {
+      return _initializeFuture!;
+    }
+
+    final future = _doInitialize();
+    _initializeFuture = future;
+    try {
+      await future;
+    } finally {
+      if (identical(_initializeFuture, future)) {
+        _initializeFuture = null;
+      }
+    }
+  }
+
+  Future<void> _doInitialize() async {
     final auth = _ref.read(authProvider);
     final token = auth.token;
     final user = auth.user;
@@ -242,7 +259,7 @@ class ParentDashboardNotifier extends StateNotifier<ParentDashboardState> {
     }
   }
 
-  Future<void> refresh() => initialize();
+  Future<void> refresh() => initialize(force: true);
 
   /// Reloads dashboard data and, when [preferredPatientId] is present in the
   /// refreshed children list, selects that child and loads its dashboard data.

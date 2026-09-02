@@ -60,20 +60,23 @@ class ParentAiChatState {
 
 const _sentinel = Object();
 
-final parentAiChatProvider =
-    StateNotifierProvider<ParentAiChatNotifier, ParentAiChatState>(
-  (ref) => ParentAiChatNotifier(
+/// Scoped per selected child [patientId] so sibling conversations never mix.
+final parentAiChatProvider = StateNotifierProvider.family<
+    ParentAiChatNotifier, ParentAiChatState, String>(
+  (ref, patientId) => ParentAiChatNotifier(
     ref,
     ref.watch(parentAiChatRepositoryProvider),
+    patientId,
   ),
 );
 
 class ParentAiChatNotifier extends StateNotifier<ParentAiChatState> {
-  ParentAiChatNotifier(this._ref, this._repository)
-      : super(const ParentAiChatState());
+  ParentAiChatNotifier(this._ref, this._repository, this._patientId)
+      : super(ParentAiChatState(patientId: _patientId));
 
   final Ref _ref;
   final ParentAiChatRepository _repository;
+  final String _patientId;
 
   void _ensureAuthToken() {
     final token = _ref.read(authProvider).token;
@@ -95,25 +98,47 @@ class ParentAiChatNotifier extends StateNotifier<ParentAiChatState> {
     return error.toString();
   }
 
-  Future<void> initialize({
-    String? patientId,
-    String? patientName,
-  }) async {
+  Future<void> initialize({String? patientName}) async {
+    if (_patientId.trim().isEmpty) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'A child must be selected before using the AI assistant.',
+      );
+      return;
+    }
+
     _ensureAuthToken();
     state = state.copyWith(
       isLoading: true,
       errorMessage: null,
-      patientId: patientId,
+      patientId: _patientId,
       patientName: patientName,
+      conversationId: null,
+      messages: const [],
     );
 
     try {
-      final conversations = await _repository.fetchConversations();
+      final conversations = await _repository.fetchConversations(
+        patientId: _patientId,
+      );
+
       ParentAiChatConversation conversation;
-      if (conversations.isNotEmpty) {
-        conversation = conversations.first;
+      final matching = conversations
+          .where((item) => item.patientId == _patientId)
+          .toList();
+
+      if (matching.isNotEmpty) {
+        conversation = matching.first;
       } else {
-        conversation = await _repository.createConversation();
+        conversation = await _repository.createConversation(patientId: _patientId);
+      }
+
+      if (conversation.patientId != null &&
+          conversation.patientId!.isNotEmpty &&
+          conversation.patientId != _patientId) {
+        throw ParentAiChatApiException(
+          message: 'Conversation belongs to a different child.',
+        );
       }
 
       final messages = await _repository.fetchMessages(conversation.id);
@@ -132,37 +157,43 @@ class ParentAiChatNotifier extends StateNotifier<ParentAiChatState> {
     }
   }
 
-  Future<void> refresh() => initialize(
-        patientId: state.patientId,
-        patientName: state.patientName,
-      );
+  Future<void> refresh({String? patientName}) =>
+      initialize(patientName: patientName ?? state.patientName);
 
   Future<ParentAiChatSendResult> _sendWithFallback({
     required String content,
     required String? conversationId,
   }) async {
-    // Match successful Postman requests: send only { "content": "..." }.
-    // Omitting patient_id avoids backend collectPatientContext(), which queries
-    // ai_progress_notes — that table may be missing until migration 002 runs.
+    if (_patientId.trim().isEmpty) {
+      throw ParentAiChatApiException(
+        message: 'A child must be selected before using the AI assistant.',
+      );
+    }
+
     if (conversationId == null || conversationId.isEmpty) {
       debugPrint('[ParentAiChat] No conversation id, using POST /ai/chat/ask');
-      return _repository.ask(content: content);
+      return _repository.ask(
+        content: content,
+        patientId: _patientId,
+      );
     }
 
     try {
       return await _repository.sendMessage(
         conversationId: conversationId,
         content: content,
+        patientId: _patientId,
       );
     } on ParentAiChatApiException catch (error) {
       debugPrint(
         '[ParentAiChat] sendMessage failed (${error.statusCode}): ${error.message}',
       );
 
-      if (error.statusCode == 404) {
+      if (error.statusCode == 404 || error.statusCode == 403) {
         debugPrint('[ParentAiChat] Falling back to POST /ai/chat/ask');
         return _repository.ask(
           content: content,
+          patientId: _patientId,
           conversationId: conversationId,
         );
       }
@@ -175,6 +206,10 @@ class ParentAiChatNotifier extends StateNotifier<ParentAiChatState> {
     final trimmed = content.trim();
     if (trimmed.isEmpty || state.isSending) {
       return null;
+    }
+
+    if (_patientId.trim().isEmpty) {
+      return 'A child must be selected before using the AI assistant.';
     }
 
     _ensureAuthToken();

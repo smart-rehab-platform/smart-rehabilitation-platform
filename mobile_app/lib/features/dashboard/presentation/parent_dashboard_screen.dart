@@ -70,7 +70,6 @@ class _ParentDashboardScreenState extends ConsumerState<ParentDashboardScreen>
     await Future.wait([
       ref.read(parentDashboardProvider.notifier).initialize(),
       ref.read(parentCaseIntakeProvider.notifier).loadRequests(),
-      ref.read(parentNotificationsProvider.notifier).initialize(),
     ]);
     await _applyConvertedChildPreference();
   }

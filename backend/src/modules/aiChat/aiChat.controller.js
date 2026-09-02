@@ -1,8 +1,28 @@
+const pool = require("../../database/db");
 const aiChatService = require("./aiChat.service");
+
+const respondWithServiceError = (res, error, fallbackMessage) => {
+  if (pool.isConnectionExhaustedError?.(error)) {
+    pool.logDatabaseError?.("aiChat.controller", error);
+    return res.status(503).json({
+      success: false,
+      message: "The service is temporarily busy. Please try again in a moment.",
+    });
+  }
+
+  return res.status(error.statusCode || 500).json({
+    success: false,
+    message: error.message || fallbackMessage,
+  });
+};
 
 const createConversation = async (req, res) => {
   try {
-    const conversation = await aiChatService.createConversation(req.user.id);
+    const conversation = await aiChatService.createConversation(
+      req.user.id,
+      req.body.patient_id || null,
+      req.user
+    );
 
     return res.status(201).json({
       success: true,
@@ -10,16 +30,21 @@ const createConversation = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      success: false,
-      message: error.message
-    });
+    return respondWithServiceError(res, error, "Failed to create conversation");
   }
 };
 
 const getConversations = async (req, res) => {
   try {
-    const conversations = await aiChatService.getUserConversations(req.user.id);
+    const patientId =
+      typeof req.query.patient_id === "string" && req.query.patient_id.trim()
+        ? req.query.patient_id.trim()
+        : null;
+
+    const conversations = await aiChatService.getUserConversations(req.user.id, {
+      patientId,
+      user: req.user
+    });
 
     return res.status(200).json({
       success: true,
@@ -27,10 +52,7 @@ const getConversations = async (req, res) => {
       data: conversations
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      success: false,
-      message: error.message
-    });
+    return respondWithServiceError(res, error, "Failed to load conversations");
   }
 };
 
@@ -46,10 +68,7 @@ const getConversationById = async (req, res) => {
       data: conversation
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      success: false,
-      message: error.message
-    });
+    return respondWithServiceError(res, error, "Failed to load conversation");
   }
 };
 
@@ -68,10 +87,7 @@ const sendMessage = async (req, res) => {
       data: result
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      success: false,
-      message: error.message
-    });
+    return respondWithServiceError(res, error, "Failed to send message");
   }
 };
 
@@ -88,10 +104,7 @@ const getConversationMessages = async (req, res) => {
       data: messages
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      success: false,
-      message: error.message
-    });
+    return respondWithServiceError(res, error, "Failed to load messages");
   }
 };
 
@@ -110,10 +123,7 @@ const ask = async (req, res) => {
       data: result
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      success: false,
-      message: error.message
-    });
+    return respondWithServiceError(res, error, "Failed to generate response");
   }
 };
 

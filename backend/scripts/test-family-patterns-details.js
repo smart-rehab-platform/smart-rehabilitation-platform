@@ -60,6 +60,73 @@ const pass = (label) => {
   console.log(`  ✓ ${label}`);
 };
 
+const buildBatchDbRows = (normalizedSql, params, loadContextByPatientId) => {
+  if (!normalizedSql.includes("ANY($1::uuid[])")) {
+    return null;
+  }
+
+  const patientIds = params[0];
+
+  if (normalizedSql.includes("FROM patients")) {
+    return {
+      rows: patientIds.map((id) => ({
+        id,
+        full_name:
+          id === IDS.indexPatient
+            ? "Index Child"
+            : PATIENT_NAMES[id] || "Sibling Child"
+      }))
+    };
+  }
+
+  if (normalizedSql.includes("FROM diagnoses")) {
+    const rows = [];
+    for (const id of patientIds) {
+      for (const item of loadContextByPatientId[id]?.diagnoses || []) {
+        rows.push({
+          patient_id: id,
+          diagnosis_title: item.diagnosis_title,
+          created_at: "2026-01-01T00:00:00.000Z"
+        });
+      }
+    }
+    return { rows };
+  }
+
+  if (normalizedSql.includes("FROM patient_medical_info")) {
+    return {
+      rows: patientIds
+        .map((id) => {
+          const medicalInfo = loadContextByPatientId[id]?.medicalInfo;
+          if (!medicalInfo) {
+            return null;
+          }
+          return {
+            patient_id: id,
+            family_history: medicalInfo.family_history ?? null
+          };
+        })
+        .filter(Boolean)
+    };
+  }
+
+  if (normalizedSql.includes("FROM case_intake_requests")) {
+    return {
+      rows: patientIds
+        .map((id) => {
+          const intake = loadContextByPatientId[id]?.caseIntakeRow;
+          if (!intake) {
+            return null;
+          }
+          return { patient_id: id, ...intake };
+        })
+        .filter(Boolean)
+    };
+  }
+
+  return null;
+};
+
 const loadServiceWithMocks = ({
   siblingRows = [],
   patientExists = true,
@@ -150,10 +217,13 @@ const loadServiceWithMocks = ({
             return { rows: siblingRows };
           }
 
-          if (normalizedSql.includes("FROM case_intake_requests")) {
-            const [patientId] = params;
-            const intake = loadContextByPatientId[patientId]?.caseIntakeRow;
-            return { rows: intake ? [intake] : [] };
+          const batchRows = buildBatchDbRows(
+            normalizedSql,
+            params,
+            loadContextByPatientId
+          );
+          if (batchRows) {
+            return batchRows;
           }
 
           return { rows: [] };

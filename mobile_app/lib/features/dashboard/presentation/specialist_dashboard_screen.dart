@@ -36,7 +36,6 @@ class _SpecialistDashboardScreenState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(specialistDashboardProvider.notifier).initialize();
-      ref.read(specialistNotificationsProvider.notifier).initialize();
       ref.read(pushNotificationControllerProvider).schedulePrompt(context);
     });
   }

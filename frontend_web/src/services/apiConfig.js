@@ -6,7 +6,7 @@ const normalizeApiBaseUrl = (value) => {
   return value.trim().replace(/\/+$/, "");
 };
 
-const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env?.VITE_API_URL);
 
 function getApiOrigin() {
   return API_BASE_URL.replace(/\/api\/v1\/?$/i, "");

@@ -87,6 +87,9 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
     }
   }, [t]);
 
+  const loadFamilyPatternRef = useRef(loadFamilyPattern);
+  loadFamilyPatternRef.current = loadFamilyPattern;
+
   useEffect(() => {
     if (!patientId || !specialistUserId) {
       return undefined;
@@ -100,6 +103,8 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
       setIsLoading(true);
       setError(null);
       setBaseDetails(null);
+      setFamilyPattern(null);
+      setFamilyPatternError(null);
 
       try {
         const assignedRows = await loadSpecialistPatients(specialistUserId);
@@ -140,7 +145,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
         }
 
         setBaseDetails(bundle);
-        loadFamilyPattern(patientId);
+        await loadFamilyPatternRef.current(patientId);
       } catch (loadError) {
         if (cancelled || loadTokenRef.current !== loadToken) {
           return;
@@ -159,7 +164,7 @@ export function useSpecialistPatientDetails(patientId, specialistUserId) {
     return () => {
       cancelled = true;
     };
-  }, [patientId, specialistUserId, refreshToken, loadFamilyPattern, t]);
+  }, [patientId, specialistUserId, refreshToken]);
 
   const addNote = useCallback(async (noteText) => {
     if (!patientId) {

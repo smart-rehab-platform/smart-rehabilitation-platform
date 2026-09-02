@@ -160,8 +160,10 @@ class ParentAiChatRepository {
     }
   }
 
-  Future<List<ParentAiChatConversation>> fetchConversations() async {
-    const path = '$_basePath/conversations';
+  Future<List<ParentAiChatConversation>> fetchConversations({
+    required String patientId,
+  }) async {
+    final path = '$_basePath/conversations?patient_id=${Uri.encodeComponent(patientId)}';
     return _guard(() async {
       _logRequest(method: 'GET', path: path);
       final response = await _dio.get(path, options: _aiOptions);
@@ -175,11 +177,18 @@ class ParentAiChatRepository {
     }, method: 'GET', path: path);
   }
 
-  Future<ParentAiChatConversation> createConversation() async {
+  Future<ParentAiChatConversation> createConversation({
+    required String patientId,
+  }) async {
     const path = '$_basePath/conversations';
+    final body = <String, dynamic>{'patient_id': patientId};
     return _guard(() async {
-      _logRequest(method: 'POST', path: path, body: const {});
-      final response = await _dio.post(path, options: _aiOptions);
+      _logRequest(method: 'POST', path: path, body: body);
+      final response = await _dio.post(
+        path,
+        data: body,
+        options: _aiOptions,
+      );
       _logResponse(response);
       final map = ApiResponseParser.extractMap(response.data);
       if (map == null) {
@@ -223,11 +232,13 @@ class ParentAiChatRepository {
   Future<ParentAiChatSendResult> sendMessage({
     required String conversationId,
     required String content,
+    required String patientId,
   }) async {
     final path = '$_basePath/conversations/$conversationId/messages';
-    // Match Postman: send only { "content": "..." }.
-    // patient_id triggers collectPatientContext() which needs ai_progress_notes.
-    final body = <String, dynamic>{'content': content.trim()};
+    final body = <String, dynamic>{
+      'content': content.trim(),
+      'patient_id': patientId,
+    };
 
     return _guard(() async {
       _logRequest(method: 'POST', path: path, body: body);
@@ -247,11 +258,13 @@ class ParentAiChatRepository {
 
   Future<ParentAiChatSendResult> ask({
     required String content,
+    required String patientId,
     String? conversationId,
   }) async {
     const path = '$_basePath/ask';
     final body = <String, dynamic>{
       'content': content.trim(),
+      'patient_id': patientId,
     };
     if (conversationId != null && conversationId.trim().isNotEmpty) {
       body['conversation_id'] = conversationId.trim();
