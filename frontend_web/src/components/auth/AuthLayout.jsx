@@ -167,7 +167,7 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
 
       {/* ── Unified authentication panel ── */}
       <div className="relative z-10 flex w-full flex-1 flex-col">
-        <div className="auth-panel-stage mx-auto flex w-full flex-1 items-center justify-center px-3.5 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <div className="auth-panel-stage mx-auto flex w-full min-w-0 flex-1 items-center justify-center px-3 py-6 sm:px-6 lg:px-8 lg:py-10">
           <div className="auth-panel auth-panel-enter w-full">
             <header className="auth-panel-header">
               <div className="auth-panel-header-brand">
@@ -403,12 +403,24 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           animation: authPanelEnter 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
+        .auth-page {
+          width: 100%;
+          max-width: 100%;
+          overflow-x: clip;
+        }
+
         .auth-panel-stage {
           width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
         }
 
         .auth-panel {
-          width: min(1180px, calc(100vw - 28px));
+          width: 100%;
+          max-width: 1180px;
+          min-width: 0;
+          box-sizing: border-box;
           min-height: 590px;
           border-radius: 24px;
           overflow: hidden;
@@ -419,6 +431,12 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
             0 0 0 1px rgba(255, 255, 255, 0.06) inset;
           display: flex;
           flex-direction: column;
+        }
+
+        @media (min-width: 640px) {
+          .auth-panel {
+            border-radius: 32px;
+          }
         }
 
         .auth-panel-header {
@@ -489,18 +507,12 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           }
         }
 
-        @media (min-width: 640px) {
-          .auth-panel {
-            width: min(1180px, calc(100vw - 96px));
-            border-radius: 32px;
-          }
-        }
-
         .auth-panel-body {
           display: grid;
           grid-template-columns: 1fr;
           flex: 1;
           min-height: 0;
+          min-width: 0;
         }
 
         @media (min-width: 980px) {
@@ -530,8 +542,20 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           flex-direction: column;
           justify-content: center;
           width: 100%;
+          min-width: 0;
           max-width: 420px;
           margin: 0 auto;
+        }
+
+        .auth-panel-form-content > * {
+          min-width: 0;
+          max-width: 100%;
+        }
+
+        .signup-wizard,
+        .signup-wizard-step {
+          width: 100%;
+          min-width: 0;
         }
 
         .auth-panel-hero {
@@ -919,6 +943,23 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           color: ${C.primary} !important;
         }
 
+        .auth-panel-form .auth-remember-row {
+          flex-wrap: wrap;
+          align-items: flex-start;
+        }
+
+        .auth-panel-form .auth-remember-row label {
+          min-width: 0;
+          flex: 1 1 auto;
+        }
+
+        .auth-panel-form .auth-remember-row button {
+          flex: 0 1 auto;
+          max-width: 100%;
+          text-align: end;
+          overflow-wrap: anywhere;
+        }
+
         .auth-panel-form .auth-remember-row span {
           color: #3d5675 !important;
         }
@@ -1072,6 +1113,10 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           transition: transform 0.25s ease;
         }
 
+        .auth-input-shell {
+          min-width: 0;
+        }
+
         .auth-input-label {
           top: 50%;
           transform: translateY(-50%);
@@ -1090,6 +1135,150 @@ export function AuthLayout({ activeTab, onTabChange, children }) {
           font-weight: 500;
           line-height: 1;
           letter-spacing: 0.01em;
+        }
+
+        @media (max-width: 768px) {
+          .auth-panel {
+            min-height: 0;
+          }
+
+          .auth-panel-header {
+            padding: 12px 16px;
+            gap: 12px;
+          }
+
+          .auth-panel-form {
+            padding: 20px 16px 24px;
+            min-width: 0;
+          }
+
+          .auth-panel-hero {
+            padding: 20px 16px 48px;
+            overflow: hidden;
+            min-width: 0;
+          }
+
+          .auth-panel-hero-content {
+            transform: none;
+            min-width: 0;
+          }
+
+          .auth-panel-hero-inner {
+            max-width: 100%;
+            overflow: hidden;
+            min-width: 0;
+          }
+
+          .auth-panel-headline {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            max-width: 100%;
+          }
+
+          .auth-hero-lead-wrap,
+          .auth-hero-gradient-wrap,
+          .auth-hero-lead {
+            max-width: 100%;
+            overflow: hidden;
+          }
+
+          .auth-panel-hero-desc {
+            max-width: 100%;
+            overflow-wrap: anywhere;
+          }
+
+          .auth-panel-form-content {
+            max-width: 100%;
+          }
+
+          .auth-segment {
+            width: 100%;
+            min-width: 0;
+          }
+
+          .auth-segment-btn {
+            min-width: 0;
+            padding-inline: 10px;
+            font-size: 0.8125rem;
+          }
+
+          .auth-panel-hero-waves::before,
+          .auth-panel-hero-waves::after {
+            opacity: 0.28;
+          }
+
+          .onboarding-role-card {
+            max-width: 100%;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .auth-panel-header {
+            padding: 10px 12px;
+          }
+
+          .auth-panel-form {
+            padding: 16px 12px 20px;
+          }
+
+          .auth-panel-hero {
+            padding: 16px 12px 44px;
+          }
+
+          .auth-panel-hero-back-home {
+            inset-inline-end: 12px;
+            bottom: 12px;
+          }
+
+          .auth-segment {
+            height: 48px;
+          }
+
+          .auth-segment-btn {
+            padding-inline: 6px;
+            font-size: 0.75rem;
+            line-height: 1.2;
+          }
+
+          .auth-form-header h2,
+          .auth-panel-form-content h2 {
+            font-size: clamp(1.5rem, 6.5vw, 1.875rem) !important;
+            overflow-wrap: anywhere;
+          }
+
+          .auth-panel-form-content p {
+            overflow-wrap: anywhere;
+          }
+
+          .auth-hero-lead {
+            font-size: clamp(22px, 6.5vw, 28px) !important;
+          }
+
+          .auth-hero-gradient-wrap > span {
+            font-size: clamp(28px, 8vw, 36px) !important;
+          }
+
+          .auth-panel-headline > span.block {
+            font-size: clamp(32px, 9vw, 44px) !important;
+          }
+
+          .auth-panel-form .auth-remember-row {
+            gap: 8px 10px;
+          }
+
+          .auth-panel-form .auth-remember-row button {
+            margin-inline-start: auto;
+          }
+
+          .auth-onboarding-progress-line {
+            width: 24px;
+          }
+
+          .auth-onboarding-progress-track {
+            max-width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+          }
         }
       `}</style>
     </div>

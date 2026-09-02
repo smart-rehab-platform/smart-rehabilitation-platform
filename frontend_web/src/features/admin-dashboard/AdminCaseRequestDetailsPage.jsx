@@ -151,7 +151,6 @@ export default function AdminCaseRequestDetailsPage() {
             <CheckCircle2 size={16} className="pd-admin-case-request-notice-icon" aria-hidden="true" />
             <div className="pd-admin-case-request-notice-copy">
               <strong>{pageLabels.profileCreated}</strong>
-              <span>{pageLabels.patientProfileId(detail.patientId)}</span>
             </div>
           </div>
         ) : null}
