@@ -3,6 +3,7 @@ import '../../../core/utils/api_response_parser.dart';
 class ParentAiChatConversation {
   const ParentAiChatConversation({
     required this.id,
+    this.patientId,
     this.startedAt,
     this.messageCount,
     this.lastMessageAt,
@@ -10,6 +11,7 @@ class ParentAiChatConversation {
   });
 
   final String id;
+  final String? patientId;
   final DateTime? startedAt;
   final int? messageCount;
   final DateTime? lastMessageAt;
@@ -18,6 +20,10 @@ class ParentAiChatConversation {
   factory ParentAiChatConversation.fromMap(Map<String, dynamic> map) {
     return ParentAiChatConversation(
       id: ApiResponseParser.readString(map, const ['id', '_id']) ?? '',
+      patientId: ApiResponseParser.readString(map, const [
+        'patient_id',
+        'patientId',
+      ]),
       startedAt: ApiResponseParser.readDate(
         map['started_at'] ?? map['startedAt'],
       ),

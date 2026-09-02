@@ -388,6 +388,43 @@ export function mapPatientNote(row, context = {}) {
   };
 }
 
+function readStringArray(record, keys) {
+  if (!record || typeof record !== "object") {
+    return [];
+  }
+  for (const key of keys) {
+    const value = record[key];
+    if (!Array.isArray(value)) {
+      continue;
+    }
+    return value
+      .map((item) => (typeof item === "string" ? item.trim() : String(item ?? "").trim()))
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function mapFamilyPatternMatchedPatients(pattern) {
+  const matchedPatients = pattern?.matchedPatients ?? pattern?.matched_patients;
+  if (!Array.isArray(matchedPatients)) {
+    return [];
+  }
+  return matchedPatients
+    .map((entry) => ({
+      patientId: readString(entry, ["patientId", "patient_id"]) || null,
+    }))
+    .filter((entry) => entry.patientId);
+}
+
+function mapFamilyPatternMatchedChild(child) {
+  return {
+    patientId: readString(child, ["patientId", "patient_id"]) || null,
+    patientName: readString(child, ["patientName", "patient_name"]) || "Patient",
+    matchedValue: readString(child, ["matchedValue", "matched_value"]) || null,
+    matchedKeywords: readStringArray(child, ["matchedKeywords", "matched_keywords"]),
+  };
+}
+
 export function mapFamilyPatternInsight(row) {
   if (!row || typeof row !== "object") {
     return null;
@@ -395,15 +432,19 @@ export function mapFamilyPatternInsight(row) {
   const patterns = Array.isArray(row.patterns) ? row.patterns : [];
   return {
     hasSiblings: row.hasSiblings === true,
-    matchedChildren: readNumber(row, ["matchedChildren"]) ?? 0,
-    patternScore: readNumber(row, ["patternScore"]),
-    evidenceLevel: readString(row, ["evidenceLevel"]) || null,
-    summaryReason: readString(row, ["summaryReason"]) || null,
+    matchedChildren: readNumber(row, ["matchedChildren", "matched_children"]) ?? 0,
+    patternScore: readNumber(row, ["patternScore", "pattern_score"]) ?? 0,
+    evidenceLevel: readString(row, ["evidenceLevel", "evidence_level"]) || null,
+    summaryReason: readString(row, ["summaryReason", "summary_reason"]) || null,
     disclaimer: readString(row, ["disclaimer"]) || null,
     patterns: patterns.map((pattern) => ({
       type: readString(pattern, ["type"]) || null,
       reason: readString(pattern, ["reason"]) || null,
       condition: readString(pattern, ["condition"]) || null,
+      category: readString(pattern, ["category"]) || null,
+      overlappingKeywords: readStringArray(pattern, ["overlappingKeywords", "overlapping_keywords"]),
+      weight: readNumber(pattern, ["weight"]),
+      matchedPatients: mapFamilyPatternMatchedPatients(pattern),
     })),
     hasDetectedPatterns: patterns.length > 0,
   };
@@ -415,18 +456,43 @@ export function mapFamilyPatternDetails(row) {
   }
   const groups = Array.isArray(row.groups) ? row.groups : [];
   return {
+    patientId: readString(row, ["patientId", "patient_id"]) || null,
+    patternScore: readNumber(row, ["patternScore", "pattern_score"]) ?? 0,
+    evidenceLevel: readString(row, ["evidenceLevel", "evidence_level"]) || null,
+    matchedChildren: readNumber(row, ["matchedChildren", "matched_children"]) ?? 0,
+    visibleMatchedChildren: readNumber(row, ["visibleMatchedChildren", "visible_matched_children"]) ?? 0,
+    hiddenMatchedChildrenCount: readNumber(row, [
+      "hiddenMatchedChildrenCount",
+      "hidden_matched_children_count",
+    ]) ?? 0,
+    summaryReason: readString(row, ["summaryReason", "summary_reason"]) || null,
+    disclaimer: readString(row, ["disclaimer"]) || null,
     groups: groups.map((group) => ({
       type: readString(group, ["type"]) || null,
+      label: readString(group, ["label"]) || null,
+      reason: readString(group, ["reason"]) || null,
+      condition: readString(group, ["condition"]) || null,
+      category: readString(group, ["category"]) || null,
+      overlappingKeywords: readStringArray(group, ["overlappingKeywords", "overlapping_keywords"]),
       children: Array.isArray(group.children)
-        ? group.children.map((child) => ({
-          patientId: readString(child, ["patientId", "patient_id"]) || null,
-          patientName: readString(child, ["patientName", "patient_name"]) || "Patient",
-          matchedValue: readString(child, ["matchedValue", "matched_value"]) || null,
-          matchedKeywords: Array.isArray(child.matchedKeywords) ? child.matchedKeywords : [],
-        }))
+        ? group.children.map((child) => mapFamilyPatternMatchedChild(child))
         : [],
     })),
   };
+}
+
+export function getVisibleFamilyPatternDetailGroups(details) {
+  if (!details?.groups?.length) {
+    return [];
+  }
+
+  return details.groups.filter(
+    (group) => Array.isArray(group.children) && group.children.length > 0,
+  );
+}
+
+export function getVisibleFamilyPatternChildren(details) {
+  return getVisibleFamilyPatternDetailGroups(details).flatMap((group) => group.children);
 }
 
 export function mapPatientGuardian(row) {

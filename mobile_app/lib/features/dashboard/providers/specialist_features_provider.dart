@@ -262,6 +262,8 @@ class SpecialistNotificationsNotifier
 
   final Ref _ref;
   final SpecialistFeaturesRepository _repository;
+  Future<void>? _initializeFuture;
+  bool _hasLoaded = false;
 
   void _ensureAuthToken() {
     final token = _ref.read(authProvider).token;
@@ -272,7 +274,27 @@ class SpecialistNotificationsNotifier
 
   String? get _userId => _ref.read(authProvider).user?.id;
 
-  Future<void> initialize() async {
+  Future<void> initialize({bool force = false}) async {
+    if (!force && (_hasLoaded || _initializeFuture != null)) {
+      if (_initializeFuture != null) {
+        return _initializeFuture!;
+      }
+      return;
+    }
+
+    final future = _doInitialize();
+    _initializeFuture = future;
+    try {
+      await future;
+      _hasLoaded = true;
+    } finally {
+      if (identical(_initializeFuture, future)) {
+        _initializeFuture = null;
+      }
+    }
+  }
+
+  Future<void> _doInitialize() async {
     _ensureAuthToken();
     final userId = _userId;
     if (userId == null || userId.isEmpty) {
@@ -302,7 +324,7 @@ class SpecialistNotificationsNotifier
     }
   }
 
-  Future<void> refresh() => initialize();
+  Future<void> refresh() => initialize(force: true);
 
   Future<void> markAsRead(String notificationId) async {
     state = state.copyWith(isUpdating: true);

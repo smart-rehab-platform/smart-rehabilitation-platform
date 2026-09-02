@@ -163,7 +163,10 @@ class _SpecialistManageGoalsScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              EditTreatmentPlanPatientHeader(patientName: bundle.patientName),
+              EditTreatmentPlanPatientHeader(
+                patientName: bundle.patientName,
+                profileImageUrl: bundle.patientProfileImageUrl,
+              ),
               SizedBox(height: context.dashSpacing * 0.35),
               Text(
                 bundle.planTitle,

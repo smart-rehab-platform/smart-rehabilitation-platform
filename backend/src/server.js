@@ -32,7 +32,7 @@ const io = new Server(server, {
 initPresenceSocket(io);
 
 pool
-  .connect()
+  .query("SELECT 1")
   .then(async () => {
     console.log("Database Connected");
 

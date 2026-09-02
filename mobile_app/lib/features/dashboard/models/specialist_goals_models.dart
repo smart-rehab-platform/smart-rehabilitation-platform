@@ -92,6 +92,7 @@ class SpecialistGoalsBundle {
   const SpecialistGoalsBundle({
     required this.patientId,
     required this.patientName,
+    this.patientProfileImageUrl,
     required this.planId,
     required this.planTitle,
     required this.goals,
@@ -99,6 +100,7 @@ class SpecialistGoalsBundle {
 
   final String patientId;
   final String patientName;
+  final String? patientProfileImageUrl;
   final String planId;
   final String planTitle;
   final List<PatientGoalItem> goals;

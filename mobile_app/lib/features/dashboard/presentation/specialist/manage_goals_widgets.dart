@@ -174,6 +174,8 @@ InputDecoration goalFieldDecoration(
     helperMaxLines: 3,
     filled: true,
     fillColor: DashboardColors.surface,
+    hintStyle: const TextStyle(color: DashboardColors.textMuted),
+    labelStyle: const TextStyle(color: DashboardColors.textSecondary),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
       borderSide: const BorderSide(color: DashboardColors.border),
@@ -188,6 +190,11 @@ InputDecoration goalFieldDecoration(
     ),
   );
 }
+
+const goalFieldTextStyle = TextStyle(
+  color: DashboardColors.textPrimary,
+  fontWeight: FontWeight.w500,
+);
 
 Future<CreateGoalInput?> showAddGoalDialog(BuildContext context) {
   return showDialog<CreateGoalInput>(
@@ -327,11 +334,13 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
               controller: _titleController,
+              style: goalFieldTextStyle,
               decoration: goalFieldDecoration(l10n.specialistGoalsTitleHint),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
               controller: _targetValueController,
+              style: goalFieldTextStyle,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -349,6 +358,7 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
               controller: _descriptionController,
+              style: goalFieldTextStyle,
               maxLines: 3,
               decoration: goalFieldDecoration(
                 l10n.specialistGoalsDescriptionOptional,
@@ -466,11 +476,13 @@ class _EditGoalDialogState extends State<_EditGoalDialog> {
           children: [
             TextField(
               controller: _titleController,
+              style: goalFieldTextStyle,
               decoration: goalFieldDecoration(l10n.specialistGoalsTitleHint),
             ),
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
               controller: _targetValueController,
+              style: goalFieldTextStyle,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -590,6 +602,7 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
             SizedBox(height: context.dashSpacing * 0.65),
             TextField(
               controller: _progressController,
+              style: goalFieldTextStyle,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -600,6 +613,7 @@ class _UpdateProgressDialogState extends State<_UpdateProgressDialog> {
             SizedBox(height: context.dashSpacing * 0.5),
             TextField(
               controller: _notesController,
+              style: goalFieldTextStyle,
               maxLines: 3,
               decoration: goalFieldDecoration(
                 l10n.specialistGoalsProgressNoteOptional,

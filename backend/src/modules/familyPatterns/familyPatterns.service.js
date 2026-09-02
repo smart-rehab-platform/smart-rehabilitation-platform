@@ -1,5 +1,4 @@
 const pool = require("../../database/db");
-const patientsService = require("../patients/patients.service");
 
 const DISCLAIMER =
   "This feature identifies repeated characteristics among children linked to the same parent account. It does not diagnose hereditary or genetic conditions.";
@@ -139,7 +138,9 @@ const DIAGNOSIS_ALIAS_GROUPS = [
       "speech development delay",
       "speech developmental delay",
       "language delay",
-      "speech and language delay"
+      "speech and language delay",
+      "speech and language therapy",
+      "speech language therapy"
     ]
   },
   {
@@ -257,6 +258,14 @@ const findOverlappingKeywords = (leftText, rightText) => {
   }
 
   return [];
+};
+
+const normalizePatientId = (value) => {
+  if (value == null || value === "") {
+    return "";
+  }
+
+  return String(value).trim().toLowerCase();
 };
 
 const toMatchedPatient = (patient) => ({
@@ -437,7 +446,7 @@ const getAuthorizedPatientIds = async (user, patientIds) => {
     [user.id, patientIds]
   );
 
-  return new Set(result.rows.map((row) => row.patient_id));
+  return new Set(result.rows.map((row) => normalizePatientId(row.patient_id)));
 };
 
 const getPatientDisplayName = (patient) => {
@@ -539,12 +548,13 @@ const buildDetailsGroups = ({
 
     for (const matched of pattern.matchedPatients || []) {
       const matchedId = matched.patientId;
-      if (!matchedId || !authorizedIds.has(matchedId)) {
+      const normalizedMatchedId = normalizePatientId(matchedId);
+      if (!normalizedMatchedId || !authorizedIds.has(normalizedMatchedId)) {
         continue;
       }
 
-      const siblingContext = siblingContextById.get(matchedId);
-      const patientName = patientNameById.get(matchedId) || "Unknown";
+      const siblingContext = siblingContextById.get(normalizedMatchedId);
+      const patientName = patientNameById.get(normalizedMatchedId) || "Unknown";
 
       children.push(
         buildMatchedChildEntry({
@@ -555,6 +565,10 @@ const buildDetailsGroups = ({
           patientName
         })
       );
+    }
+
+    if (children.length === 0) {
+      continue;
     }
 
     const group = {
@@ -630,30 +644,6 @@ const getSiblingPatients = async (patientId) => {
   return result.rows;
 };
 
-const getLatestCaseIntakeContext = async (patientId) => {
-  const result = await pool.query(
-    `SELECT
-       cir.category_id,
-       cir.observed_difficulties,
-       cir.previous_diagnosis_details,
-       cc.name AS category_name
-     FROM case_intake_requests cir
-     JOIN case_categories cc ON cc.id = cir.category_id
-     WHERE cir.patient_id = $1
-     ORDER BY
-       CASE
-         WHEN cir.status = 'converted_to_patient'::case_intake_status THEN 0
-         ELSE 1
-       END ASC,
-       cir.converted_at DESC NULLS LAST,
-       cir.submitted_at DESC
-     LIMIT 1`,
-    [patientId]
-  );
-
-  return result.rows[0] || null;
-};
-
 const categoriesMatch = (indexCategory, siblingCategory) => {
   if (!indexCategory?.categoryId || !siblingCategory?.categoryId) {
     return false;
@@ -669,31 +659,137 @@ const categoriesMatch = (indexCategory, siblingCategory) => {
   );
 };
 
-const loadPatientPatternContext = async (patientId) => {
-  const [patient, diagnoses, medicalInfo, caseIntake] = await Promise.all([
-    patientsService.getPatientById(patientId),
-    patientsService.getDiagnoses(patientId),
-    patientsService.getMedicalInfo(patientId),
-    getLatestCaseIntakeContext(patientId)
-  ]);
+const buildPatternContextFromParts = ({
+  patient,
+  diagnosisRows = [],
+  medicalInfo,
+  caseIntake
+}) => ({
+  patient: patient || null,
+  diagnoses: diagnosisRows.map((row) => ({
+    title: normalizeComparableText(row.diagnosis_title),
+    matchKey: normalizeDiagnosisTitle(row.diagnosis_title)
+  })),
+  caseIntake: caseIntake
+    ? {
+        categoryId: caseIntake.category_id,
+        categoryName: normalizeComparableText(caseIntake.category_name),
+        categoryMatchKey: normalizeText(caseIntake.category_name),
+        observedDifficulties: caseIntake.observed_difficulties || "",
+        previousDiagnosisDetails: caseIntake.previous_diagnosis_details || ""
+      }
+    : null,
+  familyHistory: medicalInfo?.family_history || ""
+});
 
-  return {
-    patient,
-    diagnoses: diagnoses.map((row) => ({
-      title: normalizeComparableText(row.diagnosis_title),
-      matchKey: normalizeDiagnosisTitle(row.diagnosis_title)
-    })),
-    caseIntake: caseIntake
-      ? {
-          categoryId: caseIntake.category_id,
-          categoryName: normalizeComparableText(caseIntake.category_name),
-          categoryMatchKey: normalizeText(caseIntake.category_name),
-          observedDifficulties: caseIntake.observed_difficulties || "",
-          previousDiagnosisDetails: caseIntake.previous_diagnosis_details || ""
-        }
-      : null,
-    familyHistory: medicalInfo?.family_history || ""
-  };
+const groupRowsByPatientId = (rows, patientIdField = "patient_id") => {
+  const grouped = new Map();
+
+  for (const row of rows) {
+    const patientId = row[patientIdField];
+    if (!patientId) {
+      continue;
+    }
+
+    if (!grouped.has(patientId)) {
+      grouped.set(patientId, []);
+    }
+
+    grouped.get(patientId).push(row);
+  }
+
+  return grouped;
+};
+
+const loadFamilyPatternContextsBatch = async (patientIds) => {
+  const uniqueIds = [...new Set(patientIds.filter(Boolean))];
+  const contextById = new Map();
+
+  if (uniqueIds.length === 0) {
+    return contextById;
+  }
+
+  const profilesResult = await pool.query(
+    `SELECT id, full_name
+     FROM patients
+     WHERE id = ANY($1::uuid[])`,
+    [uniqueIds]
+  );
+
+  const diagnosesResult = await pool.query(
+    `SELECT patient_id, diagnosis_title, created_at
+     FROM diagnoses
+     WHERE patient_id = ANY($1::uuid[])
+     ORDER BY created_at DESC`,
+    [uniqueIds]
+  );
+
+  const medicalInfoResult = await pool.query(
+    `SELECT patient_id, family_history
+     FROM patient_medical_info
+     WHERE patient_id = ANY($1::uuid[])`,
+    [uniqueIds]
+  );
+
+  const caseIntakeResult = await pool.query(
+    `SELECT DISTINCT ON (cir.patient_id)
+       cir.patient_id,
+       cir.category_id,
+       cir.observed_difficulties,
+       cir.previous_diagnosis_details,
+       cc.name AS category_name
+     FROM case_intake_requests cir
+     JOIN case_categories cc ON cc.id = cir.category_id
+     WHERE cir.patient_id = ANY($1::uuid[])
+     ORDER BY
+       cir.patient_id ASC,
+       CASE
+         WHEN cir.status = 'converted_to_patient'::case_intake_status THEN 0
+         ELSE 1
+       END ASC,
+       cir.converted_at DESC NULLS LAST,
+       cir.submitted_at DESC`,
+    [uniqueIds]
+  );
+
+  const diagnosesByPatient = groupRowsByPatientId(diagnosesResult.rows);
+  const medicalInfoByPatient = new Map(
+    medicalInfoResult.rows.map((row) => [row.patient_id, row])
+  );
+  const caseIntakeByPatient = new Map(
+    caseIntakeResult.rows.map((row) => [row.patient_id, row])
+  );
+  const profileById = new Map(
+    profilesResult.rows.map((row) => [row.id, row])
+  );
+
+  for (const patientId of uniqueIds) {
+    const diagnosisRows = (diagnosesByPatient.get(patientId) || []).slice(0, 10);
+    contextById.set(
+      patientId,
+      buildPatternContextFromParts({
+        patient: profileById.get(patientId) || null,
+        diagnosisRows,
+        medicalInfo: medicalInfoByPatient.get(patientId) || null,
+        caseIntake: caseIntakeByPatient.get(patientId) || null
+      })
+    );
+  }
+
+  return contextById;
+};
+
+const loadPatientPatternContext = async (patientId) => {
+  const contextById = await loadFamilyPatternContextsBatch([patientId]);
+  return (
+    contextById.get(patientId) ||
+    buildPatternContextFromParts({
+      patient: null,
+      diagnosisRows: [],
+      medicalInfo: null,
+      caseIntake: null
+    })
+  );
 };
 
 const detectSharedDiagnosisPatterns = (indexContext, siblingContexts) => {
@@ -875,25 +971,24 @@ const getFamilyPatterns = async (patientId, user) => {
 
   await assertCanAccessPatient(patientId, user);
 
-  const indexPatient = await patientsService.getPatientById(patientId);
-  if (!indexPatient) {
-    return null;
-  }
-
   const siblings = await getSiblingPatients(patientId);
   if (siblings.length === 0) {
     return buildEmptyResponse({ hasSiblings: false });
   }
 
-  const [indexContext, ...siblingContexts] = await Promise.all([
-    loadPatientPatternContext(patientId),
-    ...siblings.map((sibling) => loadPatientPatternContext(sibling.id))
+  const contextById = await loadFamilyPatternContextsBatch([
+    patientId,
+    ...siblings.map((sibling) => sibling.id)
   ]);
 
-  indexContext.patient = { id: indexPatient.id };
-  siblingContexts.forEach((context, index) => {
-    context.patient = { id: siblings[index].id };
-  });
+  const indexContext = contextById.get(patientId);
+  if (!indexContext?.patient) {
+    return null;
+  }
+
+  const siblingContexts = siblings
+    .map((sibling) => contextById.get(sibling.id))
+    .filter(Boolean);
 
   const patterns = detectPatterns(indexContext, siblingContexts);
 
@@ -907,11 +1002,6 @@ const getFamilyPatternDetails = async (patientId, user) => {
 
   await assertCanAccessPatientDetails(patientId, user);
 
-  const indexPatient = await patientsService.getPatientById(patientId);
-  if (!indexPatient) {
-    return null;
-  }
-
   const siblings = await getSiblingPatients(patientId);
   if (siblings.length === 0) {
     return buildDetailsResponse({
@@ -920,16 +1010,19 @@ const getFamilyPatternDetails = async (patientId, user) => {
     });
   }
 
-  const [indexContext, ...siblingContexts] = await Promise.all([
-    loadPatientPatternContext(patientId),
-    ...siblings.map((sibling) => loadPatientPatternContext(sibling.id))
+  const contextById = await loadFamilyPatternContextsBatch([
+    patientId,
+    ...siblings.map((sibling) => sibling.id)
   ]);
 
-  indexContext.patient = indexPatient;
-  siblingContexts.forEach((context, index) => {
-    context.patient = context.patient || {};
-    context.patient.id = siblings[index].id;
-  });
+  const indexContext = contextById.get(patientId);
+  if (!indexContext?.patient) {
+    return null;
+  }
+
+  const siblingContexts = siblings
+    .map((sibling) => contextById.get(sibling.id))
+    .filter(Boolean);
 
   const patterns = detectPatterns(indexContext, siblingContexts);
   if (patterns.length === 0) {
@@ -943,26 +1036,26 @@ const getFamilyPatternDetails = async (patientId, user) => {
   const matchedPatientIds = [...getUniqueMatchedPatientIds(patterns)];
   const authorizedIds = await getAuthorizedPatientIds(user, matchedPatientIds);
   const hiddenMatchedChildrenCount = matchedPatientIds.filter(
-    (id) => !authorizedIds.has(id)
+    (id) => !authorizedIds.has(normalizePatientId(id))
   ).length;
 
   const siblingContextById = new Map();
-  siblings.forEach((sibling, index) => {
-    siblingContextById.set(sibling.id, siblingContexts[index]);
-  });
+  for (const sibling of siblings) {
+    const siblingContext = contextById.get(sibling.id);
+    if (siblingContext) {
+      siblingContextById.set(normalizePatientId(sibling.id), siblingContext);
+    }
+  }
 
   const patientNameById = new Map();
-  for (const siblingId of matchedPatientIds) {
-    const siblingContext = siblingContextById.get(siblingId);
-    if (!siblingContext) {
-      continue;
-    }
-
-    if (!siblingContext.patient?.full_name && !siblingContext.patient?.fullName) {
-      siblingContext.patient = await patientsService.getPatientById(siblingId);
-    }
-
-    patientNameById.set(siblingId, getPatientDisplayName(siblingContext.patient));
+  for (const matchedId of matchedPatientIds) {
+    const normalizedMatchedId = normalizePatientId(matchedId);
+    const matchedContext =
+      contextById.get(matchedId) || siblingContextById.get(normalizedMatchedId);
+    patientNameById.set(
+      normalizedMatchedId,
+      getPatientDisplayName(matchedContext?.patient)
+    );
   }
 
   const groups = buildDetailsGroups({
@@ -1000,6 +1093,8 @@ module.exports = {
   assertCanAccessPatient,
   assertCanAccessPatientDetails,
   getAuthorizedPatientIds,
+  loadFamilyPatternContextsBatch,
+  normalizePatientId,
   RULE_WEIGHTS,
   DISCLAIMER,
   DIAGNOSIS_ALIAS_GROUPS,

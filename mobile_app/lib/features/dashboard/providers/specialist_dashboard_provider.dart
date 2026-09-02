@@ -132,8 +132,25 @@ class SpecialistDashboardNotifier
   final SpecialistDashboardRepository _repository;
   final SpecialistFeaturesRepository _featuresRepository;
   final AuthRepository _authRepository;
+  Future<void>? _initializeFuture;
 
-  Future<void> initialize() async {
+  Future<void> initialize({bool force = false}) async {
+    if (!force && _initializeFuture != null) {
+      return _initializeFuture!;
+    }
+
+    final future = _doInitialize();
+    _initializeFuture = future;
+    try {
+      await future;
+    } finally {
+      if (identical(_initializeFuture, future)) {
+        _initializeFuture = null;
+      }
+    }
+  }
+
+  Future<void> _doInitialize() async {
     final auth = _ref.read(authProvider);
     if (auth.token != null && auth.token!.isNotEmpty) {
       _authRepository.setAuthToken(auth.token);
@@ -246,7 +263,7 @@ class SpecialistDashboardNotifier
   Future<void> retryWeeklyInteractions() =>
       _loadWeeklyInteractions(state.weeklyInteractionsWeekOffset);
 
-  Future<void> refresh() => initialize();
+  Future<void> refresh() => initialize(force: true);
 
   void syncUserFromAuth() {
     final user = _ref.read(authProvider).user;

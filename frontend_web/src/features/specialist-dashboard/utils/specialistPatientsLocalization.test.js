@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import ar from "../../../i18n/ar.json" with { type: "json" };
 import en from "../../../i18n/en.json" with { type: "json" };
+import { interpolate } from "../../../i18n/index.js";
 import {
   applyPatientDetailsLocalization,
   FAMILY_PATTERN_DISCLAIMER_EN,
@@ -9,16 +10,23 @@ import {
   getFamilyPatternDisclaimerLabel,
   getPatientReviewStatusLabel,
   localizeFamilyPatternDisclaimer,
+  localizedFamilyPatternEvidenceLevel,
+  localizedFamilyPatternHiddenMatchesNotice,
+  localizedFamilyPatternMatchedChildrenLabel,
+  localizedFamilyPatternType,
 } from "./specialistPatientsLocalization.js";
 function tFactory(locale) {
   const messages = locale === "ar" ? ar : en;
-  return (key) => {
+  return (key, params) => {
     const parts = key.split(".");
     let value = messages;
     for (const part of parts) {
       value = value?.[part];
     }
-    return typeof value === "string" ? value : key;
+    if (typeof value !== "string") {
+      return key;
+    }
+    return params ? interpolate(value, params) : value;
   };
 }
 
@@ -80,6 +88,29 @@ describe("specialistPatientsLocalization", () => {
     assert.equal(
       localizeFamilyPatternDisclaimer("Custom backend disclaimer", tFactory("ar")),
       "Custom backend disclaimer",
+    );
+  });
+
+  it("localizes family pattern types and evidence labels in EN/AR", () => {
+    assert.equal(
+      localizedFamilyPatternType(tFactory("en"), "shared_diagnosis"),
+      "Shared Diagnosis",
+    );
+    assert.equal(
+      localizedFamilyPatternType(tFactory("ar"), "shared_case_category"),
+      "فئة حالة مشتركة",
+    );
+    assert.equal(
+      localizedFamilyPatternEvidenceLevel(tFactory("en"), "HIGH"),
+      "High Evidence",
+    );
+    assert.equal(
+      localizedFamilyPatternMatchedChildrenLabel(tFactory("en"), 2),
+      "2 Children Matched",
+    );
+    assert.match(
+      localizedFamilyPatternHiddenMatchesNotice(tFactory("ar"), 3),
+      /3/,
     );
   });
 });

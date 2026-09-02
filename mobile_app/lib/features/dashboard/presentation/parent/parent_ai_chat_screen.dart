@@ -38,9 +38,28 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
   void _bootstrap() {
     final dashboard = ref.read(parentDashboardProvider);
     final child = dashboard.selectedChild;
+    if (child == null || child.id.trim().isEmpty) {
+      return;
+    }
     ref
-        .read(parentAiChatProvider.notifier)
-        .initialize(patientId: child?.id, patientName: child?.name);
+        .read(parentAiChatProvider(child.id).notifier)
+        .initialize(patientName: child.name);
+  }
+
+  String? _selectedPatientId() {
+    final child = ref.read(parentDashboardProvider).selectedChild;
+    if (child == null || child.id.trim().isEmpty) {
+      return null;
+    }
+    return child.id;
+  }
+
+  ParentAiChatNotifier? _notifier() {
+    final patientId = _selectedPatientId();
+    if (patientId == null) {
+      return null;
+    }
+    return ref.read(parentAiChatProvider(patientId).notifier);
   }
 
   void _scrollToBottom() {
@@ -66,9 +85,7 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
       _inputController.clear();
     }
 
-    final error = await ref
-        .read(parentAiChatProvider.notifier)
-        .sendMessage(text);
+    final error = await _notifier()?.sendMessage(text);
     _scrollToBottom();
 
     if (error != null && mounted) {
@@ -81,14 +98,24 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final state = ref.watch(parentAiChatProvider);
+    final dashboard = ref.watch(parentDashboardProvider);
+    final child = dashboard.selectedChild;
+    final patientId = child?.id.trim();
+    final hasPatient = patientId != null && patientId.isNotEmpty;
+    final state = hasPatient
+        ? ref.watch(parentAiChatProvider(patientId))
+        : const ParentAiChatState(
+            errorMessage: 'A child must be selected before using the AI assistant.',
+          );
     final theme = Theme.of(context);
 
-    ref.listen(parentAiChatProvider, (previous, next) {
-      if ((next.messages.length) != (previous?.messages.length ?? 0)) {
-        _scrollToBottom();
-      }
-    });
+    if (hasPatient) {
+      ref.listen(parentAiChatProvider(patientId), (previous, next) {
+        if ((next.messages.length) != (previous?.messages.length ?? 0)) {
+          _scrollToBottom();
+        }
+      });
+    }
 
     return Theme(
       data: DashboardTheme.light,
@@ -113,6 +140,13 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
               if (state.patientName != null && state.patientName!.isNotEmpty)
                 Text(
                   l10n.parentAiAssistantForChild(state.patientName!),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: DashboardColors.textSecondary,
+                  ),
+                )
+              else if (child?.name != null && child!.name.isNotEmpty)
+                Text(
+                  l10n.parentAiAssistantForChild(child.name),
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: DashboardColors.textSecondary,
                   ),
@@ -172,9 +206,11 @@ class _ParentAiChatScreenState extends ConsumerState<ParentAiChatScreen> {
                           ),
                           SizedBox(height: context.dashSpacing),
                           ElevatedButton(
-                            onPressed: () => ref
-                                .read(parentAiChatProvider.notifier)
-                                .refresh(),
+                            onPressed: hasPatient
+                                ? () => ref
+                                    .read(parentAiChatProvider(patientId).notifier)
+                                    .refresh(patientName: child?.name)
+                                : null,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: DashboardColors.brandCyan,
                               foregroundColor: Colors.white,

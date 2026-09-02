@@ -518,6 +518,7 @@ CREATE TABLE session_requests (
 CREATE TABLE chatbot_conversations (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    patient_id  UUID REFERENCES patients(id) ON DELETE SET NULL,
     started_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

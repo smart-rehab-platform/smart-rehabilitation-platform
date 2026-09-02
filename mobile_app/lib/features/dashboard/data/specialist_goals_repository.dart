@@ -57,12 +57,20 @@ class SpecialistGoalsRepository {
         ]) ??
         'Patient';
 
+    final patientProfileImageUrl = ApiResponseParser.readString(patientMap, const [
+      'profile_image_url',
+      'profileImageUrl',
+      'patient_profile_image_url',
+      'patientProfileImageUrl',
+    ]);
+
     final planRows = await _getList('/treatment-plans/patient/$patientId');
     final activePlan = _selectActivePlan(planRows);
     if (activePlan == null) {
       return SpecialistGoalsBundle(
         patientId: patientId,
         patientName: patientName,
+        patientProfileImageUrl: patientProfileImageUrl,
         planId: '',
         planTitle: '',
         goals: const [],
@@ -81,6 +89,7 @@ class SpecialistGoalsRepository {
     return SpecialistGoalsBundle(
       patientId: patientId,
       patientName: patientName,
+      patientProfileImageUrl: patientProfileImageUrl,
       planId: planId,
       planTitle: planTitle,
       goals: goals,

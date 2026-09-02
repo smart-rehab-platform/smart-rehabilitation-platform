@@ -181,6 +181,110 @@ export function localizeFamilyPatternDisclaimer(disclaimer, t = null) {
   return raw;
 }
 
+export function localizedFamilyPatternType(t, type) {
+  const normalized = (type || "").trim().toLowerCase();
+  switch (normalized) {
+    case "shared_diagnosis":
+      return translateKey(t, "specialist.patientDetails.familyPattern.patternTypes.sharedDiagnosis", "Shared Diagnosis");
+    case "shared_case_category":
+      return translateKey(t, "specialist.patientDetails.familyPattern.patternTypes.sharedCaseCategory", "Shared Case Category");
+    case "shared_difficulties":
+      return translateKey(t, "specialist.patientDetails.familyPattern.patternTypes.observedDifficulties", "Observed Difficulties");
+    case "previous_diagnosis_similarity":
+      return translateKey(t, "specialist.patientDetails.familyPattern.patternTypes.previousDiagnosis", "Previous Diagnosis");
+    case "family_history_similarity":
+      return translateKey(t, "specialist.patientDetails.familyPattern.patternTypes.familyHistory", "Family History");
+    default:
+      return translateKey(
+        t,
+        "specialist.patientDetails.familyPattern.patternTypes.repeatedCharacteristic",
+        "Repeated Characteristic",
+      );
+  }
+}
+
+export function localizedFamilyPatternEvidenceLevel(t, level) {
+  const normalized = (level || "").trim().toUpperCase();
+  switch (normalized) {
+    case "HIGH":
+      return translateKey(t, "specialist.patientDetails.familyPattern.evidenceHigh", "High Evidence");
+    case "MODERATE":
+      return translateKey(t, "specialist.patientDetails.familyPattern.evidenceModerate", "Moderate Evidence");
+    case "LOW":
+    default:
+      return translateKey(t, "specialist.patientDetails.familyPattern.evidenceLow", "Low Evidence");
+  }
+}
+
+export function localizedFamilyPatternScoreCaption(t, level) {
+  const normalized = (level || "").trim().toUpperCase();
+  switch (normalized) {
+    case "HIGH":
+      return translateKey(
+        t,
+        "specialist.patientDetails.familyPattern.scoreCaptionHigh",
+        "High confidence based on available records.",
+      );
+    case "MODERATE":
+      return translateKey(
+        t,
+        "specialist.patientDetails.familyPattern.scoreCaptionModerate",
+        "Moderate repeated characteristics detected.",
+      );
+    case "LOW":
+    default:
+      return translateKey(
+        t,
+        "specialist.patientDetails.familyPattern.scoreCaptionLow",
+        "Limited repeated characteristics detected.",
+      );
+  }
+}
+
+export function localizedFamilyPatternMatchedChildrenLabel(t, count) {
+  const safeCount = Number.isFinite(count) ? Math.max(0, count) : 0;
+  if (safeCount === 1) {
+    return translateKey(
+      t,
+      "specialist.patientDetails.familyPattern.matchedChildrenOne",
+      "1 Child Matched",
+      { count: safeCount },
+    );
+  }
+  return translateKey(
+    t,
+    "specialist.patientDetails.familyPattern.matchedChildrenMany",
+    "{count} Children Matched",
+    { count: safeCount },
+  );
+}
+
+export function localizedFamilyPatternHiddenMatchesNotice(t, count) {
+  const safeCount = Number.isFinite(count) ? Math.max(0, count) : 0;
+  if (safeCount === 1) {
+    return translateKey(
+      t,
+      "specialist.patientDetails.familyPattern.hiddenMatchesOne",
+      "Some matched children are not shown because you are not assigned to their records.",
+    );
+  }
+  return translateKey(
+    t,
+    "specialist.patientDetails.familyPattern.hiddenMatchesMany",
+    "{count} matched children are not shown because you are not assigned to their records.",
+    { count: safeCount },
+  );
+}
+
+export function localizedFamilyPatternMatchedValue(t, value) {
+  return translateKey(
+    t,
+    "specialist.patientDetails.familyPattern.matchedValue",
+    "Matched value: {value}",
+    { value },
+  );
+}
+
 export function getPatientMessageParentErrorMessage(error, t = null) {
   const message = error instanceof Error ? error.message : String(error || "");
   if (message.includes("No parent")) {
