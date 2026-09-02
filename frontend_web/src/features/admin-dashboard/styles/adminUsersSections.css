@@ -271,6 +271,47 @@
   font-weight: 700;
 }
 
+.pd-preview .pd-admin-users-professional {
+  display: block;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--pd-text-secondary);
+  font-size: 0.875rem;
+}
+
+.pd-preview .pd-admin-users-verification {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pd-preview .pd-admin-users-verification.is-pending {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+}
+
+.pd-preview .pd-admin-users-verification.is-approved {
+  background: rgba(16, 185, 129, 0.14);
+  color: #047857;
+}
+
+.pd-preview .pd-admin-users-verification.is-rejected {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.pd-preview .pd-admin-users-verification.is-na {
+  background: transparent;
+  color: var(--pd-text-muted);
+  font-weight: 500;
+  padding-inline: 0;
+}
+
 .pd-preview .pd-admin-users-role.pd-admin-role-blue {
   background: rgba(59, 130, 246, 0.12);
   color: #2563eb;
@@ -382,6 +423,22 @@
 
 .pd-preview .pd-admin-users-menu-item.is-deactivate svg {
   color: var(--pd-warning, #f59e0b);
+}
+
+.pd-preview .pd-admin-users-menu-item.is-approve {
+  color: var(--pd-success, #10b981);
+}
+
+.pd-preview .pd-admin-users-menu-item.is-approve svg {
+  color: var(--pd-success, #10b981);
+}
+
+.pd-preview .pd-admin-users-menu-item.is-reject {
+  color: #ef4444;
+}
+
+.pd-preview .pd-admin-users-menu-item.is-reject svg {
+  color: #ef4444;
 }
 
 .pd-preview .pd-admin-users-menu-item.is-delete {

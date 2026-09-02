@@ -87,8 +87,9 @@ import ParentComplaintFormPage from "./features/parent-dashboard-preview/ParentC
 import ParentComplaintDetailPage from "./features/parent-dashboard-preview/ParentComplaintDetailPage";
 import ParentMessagesPage from "./features/parent-dashboard-preview/ParentMessagesPage";
 import { useAuth } from "./context/useAuth";
-import { canAccessRoute, dashboardForRole } from "./routes/roleRouting";
+import { canAccessRoute, homeForUser } from "./routes/roleRouting";
 import { isAuthRouteAllowingAuthenticatedSession } from "./routes/publicAuthRoutes";
+import SpecialistVerificationPage from "./pages/auth/SpecialistVerificationPage";
 
 function AppLoadingScreen() {
   return (
@@ -118,7 +119,7 @@ function LandingRoute() {
       return <Navigate to={`/verify-email${email}`} replace />;
     }
 
-    return <Navigate to={dashboardForRole(user?.role) || "/login"} replace />;
+    return <Navigate to={homeForUser(user) || "/login"} replace />;
   }
 
   return <LandingPage />;
@@ -145,7 +146,7 @@ function PublicAuthRoute({ children }) {
     return <Navigate to={`/verify-email${email}`} replace />;
   }
 
-  return <Navigate to={dashboardForRole(user?.role) || "/login"} replace />;
+  return <Navigate to={homeForUser(user) || "/login"} replace />;
 }
 
 function VerifyEmailRoute({ children }) {
@@ -175,8 +176,8 @@ function ProtectedRoute({ children }) {
     return <Navigate to={`/verify-email${email}`} replace />;
   }
 
-  if (!canAccessRoute(user?.role, location.pathname)) {
-    return <Navigate to={dashboardForRole(user?.role) || "/login"} replace />;
+  if (!canAccessRoute(user?.role, location.pathname, user)) {
+    return <Navigate to={homeForUser(user) || "/login"} replace />;
   }
 
   return children;
@@ -184,7 +185,7 @@ function ProtectedRoute({ children }) {
 
 function DashboardLanding() {
   const { user } = useAuth();
-  return <Navigate to={dashboardForRole(user?.role) || "/login"} replace />;
+  return <Navigate to={homeForUser(user) || "/login"} replace />;
 }
 
 function App() {
@@ -889,6 +890,22 @@ function App() {
               <VerifyEmailRoute>
                 <VerifyEmail />
               </VerifyEmailRoute>
+            }
+          />
+          <Route
+            path="/specialist-verification/pending"
+            element={
+              <PublicAuthRoute>
+                <SpecialistVerificationPage mode="pending" />
+              </PublicAuthRoute>
+            }
+          />
+          <Route
+            path="/specialist-verification/rejected"
+            element={
+              <PublicAuthRoute>
+                <SpecialistVerificationPage mode="rejected" />
+              </PublicAuthRoute>
             }
           />
         </Route>

@@ -1,7 +1,6 @@
 {
   "@@locale": "ar",
   "appTitle": "منصة التأهيل الذكي",
-
   "commonSave": "حفظ",
   "commonCancel": "إلغاء",
   "commonDelete": "حذف",
@@ -44,7 +43,6 @@
   "commonSignOut": "تسجيل الخروج",
   "commonLogout": "تسجيل الخروج",
   "commonLanguage": "اللغة",
-
   "navDashboard": "لوحة التحكم",
   "dashboardWelcomeBack": "مرحباً بعودتك، {userName}",
   "dashboardNextSession": "الجلسة القادمة",
@@ -72,12 +70,10 @@
   "navDailyTasks": "المهام اليومية",
   "navChildren": "الأطفال",
   "navProgress": "التقدم",
-
   "roleParent": "ولي الأمر",
   "roleSpecialist": "الأخصائي",
   "roleAdmin": "المسؤول",
   "roleUser": "المستخدم",
-
   "entityPatient": "المريض",
   "entityPatients": "المرضى",
   "entityChild": "الطفل",
@@ -102,7 +98,6 @@
   "entityTreatmentPlans": "الخطط العلاجية",
   "entityCaseRequest": "طلب الحالة",
   "entityCaseRequests": "طلبات الحالة",
-
   "statusActive": "نشط",
   "statusInactive": "غير نشط",
   "statusPending": "قيد الانتظار",
@@ -119,7 +114,6 @@
   "statusPendingReview": "قيد المراجعة",
   "statusSpecialistAssigned": "تم تعيين أخصائي",
   "statusProfileCreated": "تم إنشاء الملف",
-
   "messageNoData": "لا توجد بيانات",
   "messageError": "خطأ",
   "messageSuccess": "تم بنجاح",
@@ -127,19 +121,16 @@
   "messageSignInRequired": "يرجى تسجيل الدخول للمتابعة.",
   "messageSomethingWentWrong": "حدث خطأ ما.",
   "messageLoadingContent": "جارٍ التحميل…",
-
   "dateToday": "اليوم",
   "dateYesterday": "أمس",
   "dateTomorrow": "غداً",
   "dateThisWeek": "هذا الأسبوع",
   "dateLastWeek": "الأسبوع الماضي",
-
   "filterAll": "الكل",
   "filterActive": "نشط",
   "filterInactive": "غير نشط",
   "filterCalendar": "التقويم",
   "filterList": "القائمة",
-
   "clinicalAssessment": "التقييم",
   "clinicalSpeechAnalysis": "تحليل النطق",
   "clinicalAiAssistant": "المساعد الذكي",
@@ -154,7 +145,6 @@
   "clinicalTrendNeedsAttention": "يحتاج متابعة",
   "clinicalSessionOnline": "عن بُعد",
   "clinicalSessionInPerson": "حضورياً",
-
   "fieldEmail": "البريد الإلكتروني",
   "fieldPassword": "كلمة المرور",
   "fieldPhone": "الهاتف",
@@ -166,7 +156,6 @@
   "fieldRole": "الدور",
   "fieldGenderMale": "ذكر",
   "fieldGenderFemale": "أنثى",
-
   "authCommonCreateAccount": "إنشاء حساب",
   "authPasswordStrengthTitle": "قوة كلمة المرور",
   "authPasswordStrengthWeak": "ضعيفة",
@@ -177,9 +166,7 @@
   "authPasswordRuleLowercase": "تحتوي على حرف صغير",
   "authPasswordRuleNumber": "تحتوي على رقم",
   "authPasswordRuleSpecialCharacter": "تحتوي على رمز خاص",
-
   "authValidationInvalidEmail": "عنوان بريد إلكتروني غير صالح",
-
   "loginTitle": "مرحباً بعودتك",
   "loginSubtitle": "تابع رحلة التأهيل الذكي",
   "loginEmailHint": "name@example.com",
@@ -196,7 +183,6 @@
   "loginNoAccountPrompt": "ليس لديك حساب؟ ",
   "loginShowPassword": "إظهار كلمة المرور",
   "loginHidePassword": "إخفاء كلمة المرور",
-
   "parentDashboardTodaysTasks": "مهام اليوم",
   "parentDashboardLatestUpdates": "آخر المستجدات",
   "parentDashboardSelectChild": "اختر الطفل",
@@ -316,7 +302,6 @@
   "parentDashboardCaseSubmitAnother": "تقديم طلب آخر",
   "parentDashboardCaseNoRejectionReason": "لم يُذكر سبب الرفض.",
   "parentDashboardCaseSubmittedOn": "تم التقديم {date}",
-
   "parentProfileEditProfile": "تعديل الملف الشخصي",
   "parentProfilePersonalSection": "المعلومات الشخصية",
   "parentProfileParentDetails": "تفاصيل ولي الأمر",
@@ -340,7 +325,6 @@
   "parentNotificationsSignInRequired": "يرجى تسجيل الدخول لعرض الإشعارات.",
   "parentNotificationsLoadFailed": "فشل تحميل الإشعارات: {error}",
   "notificationTypeUpdate": "تحديث",
-
   "parentChildrenScreenTitle": "المرضى",
   "parentChildrenNoLinked": "لا يوجد أطفال مرتبطون بعد. أضف طفلاً من بوابة الأخصائي.",
   "parentChildrenAgeYears": "{count} سنوات",
@@ -370,7 +354,6 @@
   "parentDashboardSignInRequired": "يرجى تسجيل الدخول لعرض لوحة ولي الأمر.",
   "parentDashboardLoadFailed": "فشل تحميل لوحة ولي الأمر: {error}",
   "parentDashboardChildDataLoadFailed": "فشل تحميل بيانات الطفل: {error}",
-
   "specialistDashboardOverview": "نظرة عامة",
   "specialistDashboardActiveCases": "الحالات النشطة",
   "specialistDashboardNoActiveCases": "لا توجد حالات نشطة معيّنة بعد.",
@@ -399,7 +382,6 @@
   "specialistDashboardSubmittedMinutesAgo": "تم التقديم منذ {minutes} د",
   "specialistDashboardSubmittedHoursAgo": "تم التقديم منذ {hours} س",
   "specialistDashboardSubmittedOnDate": "تم التقديم {date}",
-
   "specialistPatientProgress": "تقدم المريض",
   "statusArchived": "مؤرشف",
   "filterUpcoming": "القادمة",
@@ -469,9 +451,7 @@
   "specialistSessionRequestConsultation": "استشارة",
   "specialistSessionRequestOther": "أخرى",
   "specialistSessionRequestDefault": "طلب جلسة",
-
   "statusAssigned": "مُسند",
-
   "adminDashboardWelcome": "مرحبًا، {userName}",
   "adminDashboardSubtitle": "أدِر منصة إعادة التأهيل من مكان واحد.",
   "adminDashboardPatientAssignmentsHint": "عيّن الأخصائيين واربط أولياء الأمور بالمرضى",
@@ -484,7 +464,6 @@
   "adminDashboardNoUsers": "لم يتم العثور على مستخدمين.",
   "adminDashboardSignInRequired": "يرجى تسجيل الدخول كمسؤول لعرض لوحة التحكم.",
   "adminDashboardLoadFailed": "تعذّر تحميل لوحة تحكم المسؤول: {error}",
-
   "adminSystemActivity": "نشاط النظام",
   "adminSystemActivityEmpty": "لا يوجد نشاط للنظام خلال هذه الفترة.",
   "adminSystemActivityTryAnotherWeek": "جرّب اختيار أسبوع آخر.",
@@ -498,7 +477,6 @@
   "adminSystemActivityEvents": "أحداث",
   "adminSystemActivityTooltip": "نشاط النظام: {count} {label}",
   "adminSystemActivityLoadFailed": "تعذّر تحميل نشاط النظام. يرجى المحاولة مرة أخرى.",
-
   "adminUsersSearchHint": "ابحث بالاسم أو البريد الإلكتروني أو الدور",
   "adminUsersLoadFailed": "تعذّر تحميل المستخدمين: {error}",
   "adminUsersDeactivateTitle": "إلغاء تفعيل المستخدم",
@@ -510,7 +488,6 @@
   "adminUsersSaveFailed": "تعذّر حفظ المستخدم: {error}",
   "adminActivate": "تفعيل",
   "adminDeactivate": "إلغاء التفعيل",
-
   "adminPatientsSearchHint": "ابحث عن المرضى أو الحالة",
   "adminPatientsFilterCondition": "تصفية حسب الحالة",
   "adminPatientsAllConditions": "جميع الحالات",
@@ -520,7 +497,6 @@
   "adminPatientsPreviousSession": "الجلسة السابقة",
   "adminPatientsNoPreviousSession": "لا توجد جلسة سابقة",
   "adminPatientsUnknownDate": "تاريخ غير معروف",
-
   "adminSessionsSearchHint": "ابحث عن المريض أو الأخصائي",
   "adminSessionsFilterStatus": "تصفية حسب الحالة",
   "adminSessionsAllStatuses": "جميع الحالات",
@@ -541,7 +517,6 @@
   "adminSessionsNoShowConfirm": "تسجيل عدم حضور",
   "adminSessionsNoShowSuccess": "تم تسجيل عدم حضور الجلسة.",
   "adminSessionsUpdateFailed": "تعذّر تحديث الجلسة: {error}",
-
   "adminAiLoadFailed": "تعذّر تحميل مركز الذكاء الاصطناعي: {error}",
   "adminAiInsights": "رؤى الذكاء الاصطناعي",
   "adminAiInsightsSubtitle": "تحليل الكلام والتوصيات والتقارير السريرية",
@@ -557,7 +532,6 @@
   "adminAiLatestReports": "أحدث تقارير الذكاء الاصطناعي",
   "adminAiNoRecords": "لا توجد سجلات بعد.",
   "adminAiSpeechScore": "الكلام {score}",
-
   "adminAuditLoadFailed": "تعذّر تحميل سجلات التدقيق: {error}",
   "adminAuditFilterByUser": "تصفية حسب المستخدم",
   "adminAuditAllUsers": "جميع المستخدمين",
@@ -570,7 +544,6 @@
   "adminAuditFromDateValue": "من {date}",
   "adminAuditToDateValue": "إلى {date}",
   "adminAuditNoLogs": "لم يتم العثور على سجلات تدقيق.",
-
   "adminAssignmentsUnlinkSpecialist": "إلغاء ربط الأخصائي",
   "adminAssignmentsUnlinkParent": "إلغاء ربط ولي الأمر",
   "adminAssignmentsUnlinkSpecialistConfirm": "هل أنت متأكد من إلغاء ربط {name} بهذا المريض؟",
@@ -599,7 +572,6 @@
   "adminAssignmentsUnlinkParentTooltip": "إلغاء ربط ولي الأمر",
   "adminAssignmentsGuardian": "ولي أمر",
   "adminUnlink": "إلغاء الربط",
-
   "adminCaseRequestsDescription": "راجع طلبات الحالات الأولية للأطفال وتتبّع حالتها الحالية.",
   "adminCaseRequestsSearchLabel": "البحث باسم الطفل",
   "adminCaseRequestsSearchHint": "أدخل اسم الطفل",
@@ -615,7 +587,6 @@
   "adminFieldCategory": "الفئة",
   "adminProfilePhotoUpdated": "تم تحديث صورة الملف الشخصي بنجاح.",
   "adminRecordFallback": "سجل",
-
   "commonOpening": "جارٍ الفتح...",
   "statusReviewed": "تمت المراجعة",
   "statusNeedsRetry": "يحتاج إعادة محاولة",
@@ -624,7 +595,6 @@
   "mediaTypeAudio": "صوت",
   "mediaTypeVideo": "فيديو",
   "mediaTypeImage": "صورة",
-
   "specialistPatientDetailsTitle": "تفاصيل المريض",
   "specialistPatientDetailsNoteSaved": "تم حفظ الملاحظة",
   "specialistPatientDetailsNoParentLinked": "لم يُربَط أي ولي أمر بهذا المريض بعد.",
@@ -698,7 +668,6 @@
   "specialistManageGoals": "إدارة الأهداف",
   "specialistAssignExercise": "تعيين تمرين",
   "specialistMessageParent": "مراسلة ولي الأمر",
-
   "specialistFamilyPatternInsightTitle": "رؤية الأنماط العائلية",
   "specialistFamilyPatternLoading": "جارٍ تحميل رؤية الأنماط العائلية…",
   "specialistFamilyPatternUnavailable": "رؤية الأنماط العائلية غير متاحة حاليًا.",
@@ -738,7 +707,6 @@
   "specialistFamilyPatternAddClinicalNote": "إضافة ملاحظة سريرية",
   "specialistFamilyPatternContactParent": "التواصل مع ولي الأمر",
   "specialistFamilyPatternScheduleFollowUp": "جدولة متابعة",
-
   "commonPleaseWait": "يرجى الانتظار…",
   "specialistTreatmentPlanSaveChanges": "حفظ التغييرات",
   "specialistTreatmentPlanCreatedSuccess": "تم إنشاء خطة العلاج بنجاح",
@@ -758,7 +726,6 @@
   "specialistTreatmentPlanCreateFailed": "تعذّر إنشاء خطة العلاج. يرجى المحاولة مرة أخرى.",
   "specialistTreatmentPlanLoadFailed": "تعذّر تحميل خطة العلاج: {error}",
   "specialistTreatmentPlanSaveFailed": "تعذّر حفظ خطة العلاج. يرجى المحاولة مرة أخرى.",
-
   "specialistGoalsCreatedSuccess": "تم إنشاء الهدف بنجاح",
   "specialistGoalsUpdatedSuccess": "تم تحديث الهدف بنجاح",
   "specialistGoalsProgressUpdatedSuccess": "تم تحديث التقدم بنجاح",
@@ -798,15 +765,10 @@
   "specialistGoalsUpdateFailed": "تعذّر تحديث الهدف: {error}",
   "specialistGoalsProgressUpdateFailed": "تعذّر تحديث التقدم: {error}",
   "specialistGoalsArchiveFailed": "تعذّر أرشفة الهدف: {error}",
-
   "languageEnglish": "الإنجليزية",
   "languageArabic": "العربية",
   "commonClear": "مسح",
-  "exerciseFrequencyDaily": "يومي",
-  "exerciseFrequencyWeekly": "أسبوعي",
   "exerciseFrequencyOneTime": "مرة واحدة",
-  "exerciseFrequencyMonthly": "شهري",
-
   "specialistExerciseEditExercise": "تعديل التمرين",
   "specialistExerciseDetailsTitle": "تفاصيل التمرين",
   "specialistExerciseFormSubtitle": "أضف تمارين علاجية إلى المكتبة المشتركة للتعيين.",
@@ -853,7 +815,6 @@
   "specialistExerciseInstructionsSection": "التعليمات",
   "specialistExerciseNoInstructions": "لا توجد تعليمات متاحة.",
   "specialistExerciseInstructionMediaTitle": "وسائط تعليمية",
-
   "specialistAssignExerciseSubtitle": "اختر تمريناً، ثم حدّد التكرار والتواريخ.",
   "specialistAssignExerciseSelectRequired": "يرجى اختيار تمرين.",
   "specialistAssignExerciseSuccess": "تم تعيين التمرين بنجاح",
@@ -865,7 +826,6 @@
   "specialistAssignExerciseSetDueDate": "تعيين تاريخ الاستحقاق",
   "specialistAssignExerciseFailed": "تعذّر تعيين التمرين. يرجى المحاولة مرة أخرى.",
   "specialistAssignExerciseRequirementsMissing": "المريض وخطة العلاج والتمرين مطلوبة للتعيين.",
-
   "specialistAssignedExerciseTitle": "التمرين المعيّن",
   "specialistAssignedExerciseNotFound": "لم يتم العثور على التمرين المعيّن.",
   "specialistAssignedExerciseLoadFailed": "تعذّر تحميل التمرين المعيّن.",
@@ -886,10 +846,8 @@
   "specialistAssignedExerciseDeactivateFailed": "تعذّر إلغاء تفعيل التمرين المعيّن.",
   "specialistAssignedExerciseAlreadyInactive": "هذا التعيين غير نشط بالفعل.",
   "specialistAssignedExerciseDeactivating": "جارٍ إلغاء التفعيل...",
-
   "priorityHigh": "مرتفع",
   "priorityMedium": "متوسط",
-
   "specialistReviewExerciseTitle": "مراجعة التمرين",
   "specialistReviewUploadedMedia": "الوسائط المرفوعة",
   "specialistReviewNoMedia": "لم يتم رفع وسائط لهذا التسليم.",
@@ -911,7 +869,6 @@
   "specialistSubmissionUnableLoadVideo": "تعذّر تحميل الفيديو.",
   "specialistSubmissionUnableLoadAudio": "تعذّر تحميل الصوت.",
   "specialistSubmissionUploadTimeUnavailable": "وقت الرفع غير متاح",
-
   "statusFailed": "فشل",
   "specialistSpeechAnalysisResultsSubtitle": "نتائج تحليل النطق",
   "specialistSpeechAnalysisLatestLine": "الأحدث: {dateTime}",
@@ -965,7 +922,6 @@
   "specialistSpeechAnalysisConnectionFailed": "تعذّر الاتصال بخدمة التحليل. تحقق من اتصالك وحاول مرة أخرى.",
   "specialistSpeechAnalysisSourceUploaded": "مرفوع",
   "specialistSpeechAnalysisSourceRecorded": "مسجل",
-
   "specialistSessionDetailsTitle": "تفاصيل الجلسة",
   "specialistSessionNotFound": "لم يتم العثور على الجلسة.",
   "specialistSessionLoadFailed": "تعذّر تحميل تفاصيل الجلسة.",
@@ -1053,7 +1009,6 @@
   "specialistSessionNoValidLink": "لا يوجد رابط صالح",
   "specialistSessionCouldNotOpenLink": "تعذّر فتح الرابط",
   "specialistSessionCalendarTileMeta": "{time} • {duration} د • {mode}",
-
   "communicationSignInToSendMessages": "سجّل الدخول لإرسال الرسائل.",
   "communicationNoSpecialistAssigned": "لم يتم تعيين أخصائي لهذا الطفل بعد.",
   "communicationMessageSpecialist": "مراسلة الأخصائي",
@@ -1088,16 +1043,13 @@
   "communicationAttachmentPreviewUnavailable": "المعاينة غير متاحة",
   "communicationAudioLoading": "جارٍ تحميل الصوت...",
   "communicationAudioPlaybackError": "تعذّر تشغيل الصوت.",
-
   "commonLabelCopied": "تم نسخ {label}",
   "attachmentUnableToOpen": "تعذّر فتح هذا المرفق.",
-
   "parentReportNoLinkToCopy": "لا يوجد رابط تقرير للنسخ.",
   "parentReportNoFileAvailable": "ملف التقرير غير متاح بعد.",
   "parentReportInvalidLink": "رابط التقرير غير صالح.",
   "parentReportLinkCopied": "تم نسخ رابط التقرير إلى الحافظة.",
   "parentReportOpenFailedLinkCopied": "تعذّر فتح التقرير. تم نسخ الرابط إلى الحافظة.",
-
   "adminSessionsEditTitle": "تعديل الجلسة",
   "adminSessionsPatientLabel": "المريض: {name}",
   "adminSessionsDateField": "التاريخ (YYYY-MM-DD)",
@@ -1109,13 +1061,11 @@
   "adminSessionsInvalidDateTime": "التاريخ أو الوقت غير صالح.",
   "adminSessionsUpdatedSuccess": "تم تحديث الجلسة بنجاح.",
   "adminSessionsActionFailed": "فشل الإجراء: {error}",
-
   "adminPatientsUpdatedSuccess": "تم تحديث المريض بنجاح.",
   "adminPatientsNotFound": "لم يتم العثور على المريض.",
   "adminPatientsNotSpecified": "غير محدد",
   "adminPatientsSelectDateOfBirth": "اختر تاريخ الميلاد",
   "adminPatientsAssignments": "تعيينات المريض",
-
   "adminUsersUserDeactivated": "تم إلغاء تفعيل المستخدم.",
   "adminUsersUserActivated": "تم تفعيل المستخدم.",
   "adminUsersAddUserTitle": "إضافة مستخدم",
@@ -1126,7 +1076,6 @@
   "adminUsersValidationRequired": "يرجى إكمال جميع الحقول المطلوبة.",
   "adminUsersCreatedSuccess": "تم إنشاء المستخدم بنجاح.",
   "adminUsersUpdatedSuccess": "تم تحديث المستخدم بنجاح.",
-
   "adminMatchingChooseSpecialist": "اختر أخصائياً",
   "adminMatchingLoadingSpecialists": "جارٍ تحميل الأخصائيين المطابقين...",
   "adminMatchingAssigning": "جارٍ التعيين...",
@@ -1135,11 +1084,9 @@
   "adminMatchingConfirmBody": "تعيين هذا الأخصائي لطلب الحالة؟",
   "adminMatchingAssignedSuccess": "تم تعيين الأخصائي بنجاح.",
   "adminMatchingWaitForAssignment": "يرجى الانتظار أثناء معالجة التعيين.",
-
   "specialistProfileUpdatedSuccess": "تم تحديث الملف الشخصي بنجاح.",
   "specialistProfilePersonalSection": "شخصي",
   "specialistProfileProfessionalSection": "مهني",
-
   "specialistReportNotFound": "لم يتم العثور على التقرير.",
   "specialistReportDetailsTitle": "تفاصيل التقرير",
   "specialistReportAttachments": "المرفقات",
@@ -1181,7 +1128,6 @@
   "specialistAiReportSectionRecommendations": "التوصيات",
   "specialistAiReportSectionNextSteps": "الخطوات التالية",
   "specialistGenerateAiReportSuccessReview": "تم إنشاء تقرير الذكاء الاصطناعي. يرجى مراجعته قبل إنشاء PDF.",
-
   "specialistGenerateAiReport": "إنشاء تقرير الذكاء الاصطناعي",
   "specialistGenerateAiReportSubtitle": "أنشئ تقرير ذكاء اصطناعي أسبوعي أو شهري من بيانات التقدم السريري للمريض.",
   "specialistAiReportTypeLabel": "نوع التقرير",
@@ -1197,7 +1143,6 @@
   "specialistAiReportEndRequired": "تاريخ النهاية مطلوب.",
   "specialistAiReportStartAfterEnd": "لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية",
   "specialistAiReportPeriodNotEnded": "لا يمكن إنشاء تقرير لفترة لم تنتهِ بعد",
-
   "specialistCreateReport": "إنشاء تقرير",
   "specialistCreateReportSubtitle": "أنشئ تقريراً سريرياً لأحد مرضاك المعيّنين.",
   "specialistCreateReportTitleLabel": "العنوان",
@@ -1206,7 +1151,6 @@
   "specialistCreateReportSuccess": "تم إنشاء التقرير بنجاح.",
   "specialistRegularReportTypeRequired": "يجب أن يكون نوع التقرير أسبوعياً أو شهرياً أو تقييماً أو تقدماً",
   "specialistCreateReportTitleMaxLength": "يجب ألا يتجاوز العنوان 200 حرف",
-
   "specialistAiRecommendationsTitle": "توصيات الذكاء الاصطناعي",
   "specialistAiRecommendationGenerated": "تم إنشاء توصية الذكاء الاصطناعي",
   "specialistAiRecommendationAccepted": "تم قبول التوصية",
@@ -1224,9 +1168,7 @@
   "specialistAiRecommendationEditListHint": "أدخل عنصرًا واحدًا في كل سطر.",
   "specialistAiRecommendationEditExerciseHint": "أدخل تمرينًا واحدًا في كل سطر بصيغة العنوان — السبب.",
   "specialistAiGenerateFirstRecommendation": "أنشئ أول توصية بالذكاء الاصطناعي",
-
   "devDashboardPreviewsTitle": "معاينات لوحة التحكم",
-
   "parentCaseRequestsListDisclaimer": "هذه طلبات أولية وليست تشخيصات رسمية. يراجع فريق الإدارة كل طلب ويعيّن أخصائياً مناسباً.",
   "parentCaseRequestsEmptyTitle": "لا توجد طلبات حالة بعد.",
   "parentCaseRequestsEmptyMessage": "قدّم طلباً ليراجع فريق الإدارة الحالة ويعيّن أخصائياً مناسباً.",
@@ -1234,7 +1176,6 @@
   "parentCaseRequestsSignInRequired": "يرجى تسجيل الدخول لعرض طلبات الحالة.",
   "parentCaseRequestsLoadFailed": "فشل تحميل طلبات الحالة: {error}",
   "parentCaseRequestsRefreshFailed": "فشل تحديث طلبات الحالة: {error}",
-
   "parentCaseRequestFormNewTitle": "طلب حالة جديد",
   "parentCaseRequestFormEditTitle": "تعديل طلب الحالة",
   "parentCaseRequestFormDiscardTitle": "تجاهل التغييرات؟",
@@ -1300,7 +1241,6 @@
   "parentCaseRequestFormValidationContactPeriodRequired": "يرجى اختيار فترة التواصل المفضلة.",
   "parentCaseRequestFormCategoriesLoadFailed": "فشل تحميل الفئات: {error}",
   "parentCaseRequestFormCategoriesRefreshFailed": "فشل تحديث الفئات: {error}",
-
   "parentCaseRequestDetailsTitle": "تفاصيل الطلب",
   "parentCaseRequestDetailsEditTooltip": "تعديل الطلب",
   "parentCaseRequestDetailsNotFound": "لم يتم العثور على طلب الحالة.",
@@ -1338,7 +1278,6 @@
   "parentCaseRequestDetailsUploadChildImageFailed": "فشل رفع صورة الطفل: {error}",
   "parentCaseRequestDetailsUploadAttachmentFailed": "فشل رفع المرفق: {error}",
   "parentCaseRequestDetailsDeleteAttachmentFailed": "فشل حذف المرفق: {error}",
-
   "caseIntakeStatusPending": "قيد المراجعة",
   "caseIntakeStatusAssigned": "تم تعيين أخصائي",
   "caseIntakeStatusUnderAssessment": "قيد التقييم",
@@ -1352,7 +1291,6 @@
   "caseIntakeStatusRejectedSubtitle": "لم يُقبل هذا الطلب. راجع السبب أدناه.",
   "caseIntakeStatusConvertedToPatientSubtitle": "تم قبول الحالة وإنشاء ملف المريض.",
   "caseIntakeAttachmentPdf": "PDF",
-
   "specialistCaseRequestsDescription": "راجع الحالات المعيّنة وتابع حالة تقييمها.",
   "specialistCaseRequestsLoading": "جارٍ تحميل طلبات الحالة المعيّنة...",
   "specialistCaseRequestsEmpty": "لا توجد طلبات حالة معيّنة بعد.\nستظهر الحالات المعيّنة هنا بعد أن يختارك المسؤول لطلب.",
@@ -1362,7 +1300,6 @@
   "specialistCaseRequestsOneAttachment": "مرفق واحد",
   "specialistCaseRequestsAttachmentCount": "{count} مرفقات",
   "specialistCaseRequestsConversationAvailable": "المحادثة متاحة",
-
   "specialistCaseRequestDetailsTitle": "طلب الحالة",
   "specialistCaseRequestDetailsReviewIntro": "راجع المعلومات المقدّمة قبل بدء التقييم.",
   "specialistCaseRequestDetailsLoading": "جارٍ تحميل طلب الحالة...",
@@ -1391,7 +1328,6 @@
   "specialistCaseRequestDetailsAgeYears": "{count} سنوات",
   "specialistCaseRequestDetailsNoAttachments": "لا توجد مرفقات",
   "specialistCaseRequestDetailsCopyLabel": "نسخ {label}",
-
   "specialistCaseAssessmentStartTitle": "بدء التقييم",
   "specialistCaseAssessmentStartMessage": "تواصل مع ولي الأمر أولاً إن لم تفعل بعد. بدء التقييم الأولي لهذه الحالة؟",
   "specialistCaseAssessmentStartAction": "بدء التقييم",
@@ -1793,8 +1729,6 @@
   "parentAiAssistantThinking": "الذكاء الاصطناعي يفكر...",
   "parentAiAssistantSending": "جارٍ الإرسال...",
   "parentAiAssistantFailedToSend": "تعذر الإرسال",
-
-  "navComplaints": "الشكاوى",
   "complaintMoreReportSpecialist": "الإبلاغ عن أخصائي",
   "complaintMoreReportSpecialistSubtitle": "قدّم مخاوفك لمراجعة الإدارة",
   "complaintFormTitle": "الإبلاغ عن أخصائي",
@@ -1882,7 +1816,6 @@
   "adminComplaintRejectMessage": "ستُعلَّم هذه الشكوى على أنها مرفوضة بعد المراجعة.",
   "adminComplaintRejectSuccess": "تم رفض الشكوى بنجاح.",
   "adminComplaintInvalidTransition": "لا يُسمح بهذا التغيير في الحالة للشكوى الحالية.",
-
   "supportRequestTitle": "الدعم",
   "supportRequestAdminTitle": "طلبات الدعم",
   "supportRequestAdminDescription": "راجع طلبات دعم الأخصائيين ورد عليها.",
@@ -1954,5 +1887,14 @@
   "supportRequestCategoryOther": "أخرى",
   "supportRequestStatusPending": "قيد الانتظار",
   "supportRequestStatusInProgress": "قيد المعالجة",
-  "supportRequestStatusResolved": "محلول"
+  "supportRequestStatusResolved": "محلول",
+  "specialistVerificationPendingTitle": "التحقق المهني قيد المراجعة",
+  "specialistVerificationPendingMessage": "تم التحقق من بريدك الإلكتروني. يقوم أحد المسؤولين بمراجعة بياناتك المهنية. ستتوفر ميزات الأخصائي السريرية بعد الموافقة.",
+  "specialistVerificationRejectedTitle": "لم تتم الموافقة على التحقق المهني",
+  "specialistVerificationRejectedMessage": "لم تتم الموافقة على تحقق حساب الأخصائي. يرجى التواصل مع إدارة المنصة أو الدعم للمساعدة.",
+  "specialistVerificationCheckStatus": "التحقق من الحالة",
+  "specialistVerificationStillPending": "حسابك ما زال قيد مراجعة المسؤول.",
+  "specialistVerificationLogout": "تسجيل الخروج",
+  "specialistVerificationLoggingOut": "جارٍ تسجيل الخروج...",
+  "specialistVerificationLogoutFailed": "تعذر تسجيل الخروج الآن."
 }

@@ -15,6 +15,13 @@ router.get(
   usersController.getAllUsers
 );
 
+router.post(
+  "/",
+  authenticate,
+  authorizeRoles("admin"),
+  usersController.createUser
+);
+
 router.get(
   "/profile/me",
   authenticate,

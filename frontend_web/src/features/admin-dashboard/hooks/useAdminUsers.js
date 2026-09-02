@@ -16,6 +16,7 @@ import {
   deleteAdminUser,
   fetchAdminUsers,
   fetchAdminUsersPresence,
+  updateAdminSpecialistVerification,
   updateAdminUser,
   updateAdminUserStatus,
 } from "../../../services/adminUsersService";
@@ -38,6 +39,7 @@ export function useAdminUsers() {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isUpdatingVerification, setIsUpdatingVerification] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const loadTokenRef = useRef(0);
 
@@ -144,6 +146,30 @@ export function useAdminUsers() {
     }
   }, [reload, labels.updateStatusFailed]);
 
+  const updateSpecialistVerification = useCallback(async (id, status) => {
+    setIsUpdatingVerification(true);
+    try {
+      const updated = await updateAdminSpecialistVerification(id, status);
+      setUsers((current) => current.map((user) => {
+        if (user.id !== id) {
+          return user;
+        }
+
+        return {
+          ...user,
+          verificationStatus: updated?.verification_status || status,
+          specialization: updated?.specialization ?? user.specialization,
+          licenseNumber: updated?.license_number ?? user.licenseNumber,
+        };
+      }));
+      return null;
+    } catch (mutationError) {
+      return resolveErrorMessage(mutationError, labels.verificationFailed);
+    } finally {
+      setIsUpdatingVerification(false);
+    }
+  }, [labels.verificationFailed]);
+
   const deleteUser = useCallback(async (id) => {
     setIsDeleting(true);
     try {
@@ -171,10 +197,12 @@ export function useAdminUsers() {
     createUser,
     updateUser,
     updateUserStatus,
+    updateSpecialistVerification,
     deleteUser,
     isCreating,
     isUpdating,
     isUpdatingStatus,
+    isUpdatingVerification,
     isDeleting,
     labels,
   };

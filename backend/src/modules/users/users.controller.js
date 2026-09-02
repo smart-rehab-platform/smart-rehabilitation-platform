@@ -1,4 +1,6 @@
 const usersService = require("./users.service");
+const authService = require("../auth/auth.service");
+const { registerSchema } = require("../auth/auth.validation");
 const { createAuditLog } = require("../auditLogs/auditLogs.helper");
 
 const getAllUsers = async (req, res) => {
@@ -12,6 +14,48 @@ const getAllUsers = async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const createUser = async (req, res) => {
+  try {
+    const { error, value } = registerSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0]?.message || "Invalid user payload.",
+      });
+    }
+
+    const user = await authService.registerUser(value, {
+      allowAdminRole: true,
+      specialistVerificationStatus:
+        value.role === "specialist" ? "approved" : "pending",
+    });
+
+    createAuditLog({
+      userId: req.user?.id,
+      action: "user_create",
+      entityName: "user",
+      entityId: user.id,
+    }).catch(() => {});
+
+    return res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      data: user,
+    });
+  } catch (err) {
+    const statusCode =
+      err.message === "Email already exists" ? 400 : err.statusCode || 500;
+    return res.status(statusCode).json({
+      success: false,
+      message: err.message || "Failed to create user.",
+    });
   }
 };
 
@@ -187,7 +231,8 @@ const uploadProfileImage = async (
 };
 
 module.exports = {
-    getAllUsers,
+  getAllUsers,
+  createUser,
   getUserById,
   updateUserStatus,
   getMyProfile,

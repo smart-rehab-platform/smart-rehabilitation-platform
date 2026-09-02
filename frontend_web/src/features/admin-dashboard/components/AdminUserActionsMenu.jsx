@@ -4,6 +4,8 @@ import {
   CheckCircle2,
   MoreVertical,
   Pencil,
+  ShieldCheck,
+  ShieldX,
   Trash2,
   UserX,
 } from "lucide-react";
@@ -46,6 +48,8 @@ export function AdminUserActionsMenu({
   labels,
   onEdit,
   onToggleStatus,
+  onApprove,
+  onReject,
   onDelete,
 }) {
   const { isRtl } = useLocale();
@@ -57,6 +61,7 @@ export function AdminUserActionsMenu({
   const menuId = useId();
 
   const userName = user.fullName || labels.emptyDisplay;
+  const canVerify = user.role === "specialist" && user.verificationStatus === "pending";
 
   useLayoutEffect(() => {
     if (!open || !triggerRef.current) {
@@ -137,6 +142,28 @@ export function AdminUserActionsMenu({
         <Pencil size={15} aria-hidden="true" />
         <span>{labels.menu.editUser}</span>
       </button>
+      {canVerify ? (
+        <>
+          <button
+            type="button"
+            className="pd-dropdown-item pd-admin-users-menu-item is-approve"
+            role="menuitem"
+            onClick={() => runAction(onApprove)}
+          >
+            <ShieldCheck size={15} aria-hidden="true" />
+            <span>{labels.menu.approveSpecialist}</span>
+          </button>
+          <button
+            type="button"
+            className="pd-dropdown-item pd-admin-users-menu-item is-reject"
+            role="menuitem"
+            onClick={() => runAction(onReject)}
+          >
+            <ShieldX size={15} aria-hidden="true" />
+            <span>{labels.menu.rejectSpecialist}</span>
+          </button>
+        </>
+      ) : null}
       <button
         type="button"
         className={`pd-dropdown-item pd-admin-users-menu-item${user.isActive ? " is-deactivate" : " is-activate"}`}

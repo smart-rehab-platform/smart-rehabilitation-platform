@@ -11453,6 +11453,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resolved'**
   String get supportRequestStatusResolved;
+
+  /// Pending specialist verification title.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Verification Pending'**
+  String get specialistVerificationPendingTitle;
+
+  /// Pending specialist verification message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email is verified. An administrator is reviewing your professional credentials. Specialist clinical features will be available after approval.'**
+  String get specialistVerificationPendingMessage;
+
+  /// Rejected specialist verification title.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Verification Not Approved'**
+  String get specialistVerificationRejectedTitle;
+
+  /// Rejected specialist verification message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your specialist verification was not approved. Please contact platform administration or support for help.'**
+  String get specialistVerificationRejectedMessage;
+
+  /// Check verification status button.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Status'**
+  String get specialistVerificationCheckStatus;
+
+  /// Toast when still pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is still pending admin review.'**
+  String get specialistVerificationStillPending;
+
+  /// Logout button on verification screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get specialistVerificationLogout;
+
+  /// Logout in progress label.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing out...'**
+  String get specialistVerificationLoggingOut;
+
+  /// Logout failure message.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to sign out right now.'**
+  String get specialistVerificationLogoutFailed;
 }
 
 class _AppLocalizationsDelegate

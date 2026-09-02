@@ -7,6 +7,7 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
+import '../../features/auth/presentation/specialist_verification_screen.dart';
 import '../../features/auth/presentation/verify_email_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/complaints/presentation/admin/admin_complaint_details_screen.dart';
@@ -114,11 +115,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return AppRoutes.resetPassword;
       }
 
-      final role = auth.user?.role;
-
       if (auth.isInitializing) {
         return null;
       }
+
+      final isVerificationRoute =
+          RoleRouting.isSpecialistVerificationRoute(path);
 
       final isAuthRoute =
           path == AppRoutes.login ||
@@ -128,15 +130,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           path == AppRoutes.verifyEmail;
 
       if (!auth.isAuthenticated) {
-        if (RoleRouting.isProtectedDashboardRoute(path)) {
+        if (RoleRouting.isProtectedDashboardRoute(path) ||
+            isVerificationRoute) {
           return AppRoutes.login;
         }
         return null;
       }
 
-      final home = RoleRouting.dashboardForRole(role);
+      final home = RoleRouting.homeForUser(auth.user);
       if (home == null) {
-        if (RoleRouting.isProtectedDashboardRoute(path)) {
+        if (RoleRouting.isProtectedDashboardRoute(path) ||
+            isVerificationRoute) {
           return AppRoutes.login;
         }
         if (isAuthRoute || path == AppRoutes.splash) {
@@ -153,8 +157,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return home;
       }
 
+      if (isVerificationRoute) {
+        return path == home ? null : home;
+      }
+
       if (RoleRouting.isProtectedDashboardRoute(path) &&
-          !RoleRouting.canAccessRoute(role, path)) {
+          !RoleRouting.canAccessRoute(auth.user, path)) {
         return home;
       }
 
@@ -202,6 +210,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => VerifyEmailScreen(
           initialToken: state.uri.queryParameters['token'],
           email: state.uri.queryParameters['email'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistVerificationPending,
+        name: 'specialistVerificationPending',
+        builder: (context, state) => const SpecialistVerificationScreen(
+          mode: SpecialistVerificationMode.pending,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.specialistVerificationRejected,
+        name: 'specialistVerificationRejected',
+        builder: (context, state) => const SpecialistVerificationScreen(
+          mode: SpecialistVerificationMode.rejected,
         ),
       ),
       GoRoute(

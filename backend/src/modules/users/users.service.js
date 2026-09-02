@@ -4,17 +4,21 @@ const { notifyAllAdmins } = require("../notifications/adminNotifications.helper"
 const getAllUsers = async () => {
   const result = await pool.query(`
     SELECT
-      id,
-      full_name,
-      email,
-      phone,
-      role,
-      is_active,
-      is_email_verified,
-      profile_image_url,
-      created_at
-    FROM users
-    ORDER BY created_at DESC
+      u.id,
+      u.full_name,
+      u.email,
+      u.phone,
+      u.role,
+      u.is_active,
+      u.is_email_verified,
+      u.profile_image_url,
+      u.created_at,
+      sp.specialization,
+      sp.license_number,
+      sp.verification_status
+    FROM users u
+    LEFT JOIN specialist_profiles sp ON sp.user_id = u.id
+    ORDER BY u.created_at DESC
   `);
 
   return result.rows;
@@ -23,18 +27,22 @@ const getAllUsers = async () => {
 const getUserById = async (id) => {
   const result = await pool.query(
     `SELECT
-      id,
-      full_name,
-      email,
-      phone,
-      role,
-      is_active,
-      is_email_verified,
-      profile_image_url,
-      created_at,
-      updated_at
-    FROM users
-    WHERE id = $1`,
+      u.id,
+      u.full_name,
+      u.email,
+      u.phone,
+      u.role,
+      u.is_active,
+      u.is_email_verified,
+      u.profile_image_url,
+      u.created_at,
+      u.updated_at,
+      sp.specialization,
+      sp.license_number,
+      sp.verification_status
+    FROM users u
+    LEFT JOIN specialist_profiles sp ON sp.user_id = u.id
+    WHERE u.id = $1`,
     [id]
   );
 
@@ -148,6 +156,6 @@ module.exports = {
   updateMyProfile,
   updateUserById,
   deleteUserById,
-  updateProfileImage
+  updateProfileImage,
 };
 

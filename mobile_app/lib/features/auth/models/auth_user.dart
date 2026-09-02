@@ -5,6 +5,7 @@ class AuthUser {
     required this.email,
     this.phone,
     this.role,
+    this.verificationStatus,
     this.profileImageUrl,
     this.rawData = const {},
   });
@@ -14,6 +15,7 @@ class AuthUser {
   final String email;
   final String? phone;
   final String? role;
+  final String? verificationStatus;
   final String? profileImageUrl;
   final Map<String, dynamic> rawData;
 
@@ -31,6 +33,12 @@ class AuthUser {
       email: _readString(map, const ['email', 'mail']) ?? '',
       phone: _readString(map, const ['phone', 'phoneNumber', 'mobile']),
       role: _readString(map, const ['role', 'userRole']),
+      verificationStatus: _normalizeVerificationStatus(
+        _readString(map, const [
+          'verification_status',
+          'verificationStatus',
+        ]),
+      ),
       profileImageUrl: _readString(map, const [
         'profileImageUrl',
         'profile_image_url',
@@ -80,6 +88,8 @@ class AuthUser {
       'mobile',
       'role',
       'userRole',
+      'verification_status',
+      'verificationStatus',
       'profileImageUrl',
       'profile_image_url',
       'profileImage',
@@ -89,6 +99,16 @@ class AuthUser {
     };
 
     return map.keys.any(userKeys.contains);
+  }
+
+  static String? _normalizeVerificationStatus(String? status) {
+    final normalized = status?.trim().toLowerCase();
+    if (normalized == 'approved' ||
+        normalized == 'rejected' ||
+        normalized == 'pending') {
+      return normalized;
+    }
+    return null;
   }
 
   static String? _readString(Map<String, dynamic> map, List<String> keys) {

@@ -4,8 +4,8 @@ VALUES
 ('Speech Specialist', 'specialist@smartrehab.com', '123456', '0599111111', 'specialist', true),
 ('Parent User', 'parent@smartrehab.com', '123456', '0599222222', 'parent', true);
 
-INSERT INTO specialist_profiles (user_id, specialization, license_number, bio, years_of_experience)
-SELECT id, 'Speech Therapist', 'SP-1001', 'Speech and language therapy specialist', 5
+INSERT INTO specialist_profiles (user_id, specialization, license_number, bio, years_of_experience, verification_status)
+SELECT id, 'Speech Therapist', 'SP-1001', 'Speech and language therapy specialist', 5, 'approved'
 FROM users
 WHERE email = 'specialist@smartrehab.com';
 

@@ -22,7 +22,7 @@ import {
 } from "../../components/auth/authLocalization";
 import { useLocale } from "../../context/useLocale.js";
 import { useAuth } from "../../context/useAuth";
-import { dashboardForRole } from "../../routes/roleRouting";
+import { homeForUser } from "../../routes/roleRouting";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -104,7 +104,7 @@ export default function Login() {
 
     try {
       const user = await auth.login({ email, password, rememberMe: remember });
-      const destination = dashboardForRole(user?.role);
+      const destination = homeForUser(user);
 
       setShowVerifyEmailPrompt(false);
       showToast(t("auth.signIn.success"), "success");

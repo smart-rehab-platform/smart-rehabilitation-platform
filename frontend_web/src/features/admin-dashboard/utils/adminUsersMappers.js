@@ -48,6 +48,19 @@ export function mapAdminUserRecord(row) {
   const role = readString(row, ["role"]) || "user";
   const fullName =
     readString(row, ["full_name", "fullName", "name"]) || "User";
+  const verificationStatusRaw = readString(row, [
+    "verification_status",
+    "verificationStatus",
+  ]).toLowerCase();
+  const verificationStatus =
+    role === "specialist" &&
+    (verificationStatusRaw === "pending"
+      || verificationStatusRaw === "approved"
+      || verificationStatusRaw === "rejected")
+      ? verificationStatusRaw
+      : role === "specialist"
+        ? "pending"
+        : null;
 
   return {
     id: readString(row, ["id", "_id"]),
@@ -61,6 +74,13 @@ export function mapAdminUserRecord(row) {
       readString(row, ["profile_image_url", "profileImageUrl"]),
     ),
     isActive: row.is_active === true || row.isActive === true,
+    specialization: role === "specialist"
+      ? (readString(row, ["specialization"]) || "")
+      : "",
+    licenseNumber: role === "specialist"
+      ? (readString(row, ["license_number", "licenseNumber"]) || "")
+      : "",
+    verificationStatus,
     createdAt: readDate(row.created_at ?? row.createdAt),
   };
 }
@@ -158,7 +178,9 @@ export function filterAdminUsers(users, { search = "", roleFilter = null } = {})
       !query
       || user.fullName.toLowerCase().includes(query)
       || user.email.toLowerCase().includes(query)
-      || user.role.toLowerCase().includes(query);
+      || user.role.toLowerCase().includes(query)
+      || (user.specialization || "").toLowerCase().includes(query)
+      || (user.licenseNumber || "").toLowerCase().includes(query);
 
     return matchesRole && matchesSearch;
   });
@@ -174,6 +196,13 @@ export function buildCreateUserPayload(form) {
 
   if (form.phone?.trim()) {
     payload.phone = form.phone.trim();
+  }
+
+  if (form.role === "specialist") {
+    payload.specialist_profile = {
+      specialization: form.specialization?.trim() ?? "",
+      license_number: form.licenseNumber?.trim() ?? "",
+    };
   }
 
   return payload;
@@ -223,6 +252,15 @@ export function validateAddUserForm(form, { isPasswordValid }) {
 
   if (!role) {
     return "Role is required.";
+  }
+
+  if (role === "specialist") {
+    if (!form.specialization?.trim()) {
+      return "Specialization is required for specialists.";
+    }
+    if (!form.licenseNumber?.trim()) {
+      return "License number is required for specialists.";
+    }
   }
 
   return null;

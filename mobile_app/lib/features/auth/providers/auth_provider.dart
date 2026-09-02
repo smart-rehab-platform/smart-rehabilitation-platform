@@ -280,26 +280,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> fetchCurrentUser() async {
+  Future<AuthUser?> fetchCurrentUser() async {
     if (state.token == null || state.token!.isEmpty) {
-      return;
+      return state.user;
     }
 
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final user = await _repository.getMe();
+      final fetched = await _repository.getMe();
+      final user = _mergeUser(state.user, fetched);
       state = state.copyWith(user: user, isLoading: false);
+      return user;
     } on DioException catch (error) {
       state = state.copyWith(
         isLoading: false,
         errorMessage: _readDioErrorMessage(error),
       );
+      return null;
     } catch (error) {
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Unable to load your account details right now.',
       );
+      return null;
     }
   }
 
@@ -380,6 +384,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       email: fetched.email.isNotEmpty ? fetched.email : current.email,
       phone: fetched.phone ?? current.phone,
       role: fetched.role ?? current.role,
+      verificationStatus:
+          fetched.verificationStatus ?? current.verificationStatus,
       profileImageUrl: fetched.profileImageUrl ?? current.profileImageUrl,
       rawData: fetched.rawData.isNotEmpty ? fetched.rawData : current.rawData,
     );

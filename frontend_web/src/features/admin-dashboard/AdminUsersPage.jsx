@@ -54,10 +54,12 @@ export default function AdminUsersPage() {
     createUser,
     updateUser,
     updateUserStatus,
+    updateSpecialistVerification,
     deleteUser,
     isCreating,
     isUpdating,
     isUpdatingStatus,
+    isUpdatingVerification,
     isDeleting,
     labels,
   } = useAdminUsers();
@@ -160,6 +162,34 @@ export default function AdminUsersPage() {
     setStatusDialog({ open: false, user: null, error: null });
   }, [statusDialog.user, updateUserStatus, showToast, labels]);
 
+  const handleApproveSpecialist = useCallback(async (selectedUser) => {
+    if (!selectedUser?.id || isUpdatingVerification) {
+      return;
+    }
+
+    const submitError = await updateSpecialistVerification(selectedUser.id, "approved");
+    if (submitError) {
+      showToast(submitError);
+      return;
+    }
+
+    showToast(labels.approvedSuccess);
+  }, [isUpdatingVerification, updateSpecialistVerification, showToast, labels]);
+
+  const handleRejectSpecialist = useCallback(async (selectedUser) => {
+    if (!selectedUser?.id || isUpdatingVerification) {
+      return;
+    }
+
+    const submitError = await updateSpecialistVerification(selectedUser.id, "rejected");
+    if (submitError) {
+      showToast(submitError);
+      return;
+    }
+
+    showToast(labels.rejectedSuccess);
+  }, [isUpdatingVerification, updateSpecialistVerification, showToast, labels]);
+
   const openDeleteDialog = useCallback((selectedUser) => {
     setDeleteDialog({ open: true, user: selectedUser, error: null });
   }, []);
@@ -230,6 +260,8 @@ export default function AdminUsersPage() {
             emptyKind={emptyKind}
             onEdit={openEditUser}
             onToggleStatus={openStatusDialog}
+            onApprove={handleApproveSpecialist}
+            onReject={handleRejectSpecialist}
             onDelete={openDeleteDialog}
           />
         )}

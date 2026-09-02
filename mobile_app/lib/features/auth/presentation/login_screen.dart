@@ -97,8 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         type: AuthSnackBarType.success,
       );
 
-      final role = ref.read(authProvider).user?.role;
-      final destination = RoleRouting.dashboardForRole(role);
+      final destination = RoleRouting.homeForUser(ref.read(authProvider).user);
       if (destination != null) {
         context.go(destination);
       } else {

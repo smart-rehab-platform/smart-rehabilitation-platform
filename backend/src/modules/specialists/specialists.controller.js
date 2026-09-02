@@ -1,4 +1,8 @@
 const specialistsService = require("./specialists.service");
+const {
+  updateSpecialistVerificationSchema,
+  specialistUserIdParamSchema,
+} = require("./specialists.validation");
 
 const createSpecialistProfile = async (req, res, next) => {
   try {
@@ -89,10 +93,67 @@ const getSpecialistPatients = async (req, res, next) => {
   }
 };
 
+const updateSpecialistVerification = async (req, res) => {
+  try {
+    const { error: paramsError, value: params } =
+      specialistUserIdParamSchema.validate(
+        { userId: req.params.userId },
+        { abortEarly: false }
+      );
+
+    if (paramsError) {
+      return res.status(400).json({
+        success: false,
+        message: paramsError.details[0]?.message || "Invalid specialist user id.",
+      });
+    }
+
+    const { error: bodyError, value: body } =
+      updateSpecialistVerificationSchema.validate(req.body, {
+        abortEarly: false,
+        stripUnknown: true,
+      });
+
+    if (bodyError) {
+      return res.status(400).json({
+        success: false,
+        message: bodyError.details[0]?.message || "Invalid verification status.",
+      });
+    }
+
+    const profile = await specialistsService.updateSpecialistVerificationByUserId(
+      params.userId,
+      body.status
+    );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        body.status === "approved"
+          ? "Specialist account approved successfully."
+          : "Specialist account rejected successfully.",
+      data: {
+        user_id: profile.user_id,
+        verification_status: profile.verification_status,
+        specialization: profile.specialization,
+        license_number: profile.license_number,
+        full_name: profile.full_name,
+        email: profile.email,
+      },
+    });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Failed to update specialist verification.",
+    });
+  }
+};
+
 module.exports = {
   createSpecialistProfile,
   getAllSpecialists,
   getSpecialistById,
   updateSpecialistProfile,
   getSpecialistPatients,
+  updateSpecialistVerification,
 };
