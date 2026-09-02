@@ -6616,4 +6616,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportRequestStatusResolved => 'Resolved';
+
+  @override
+  String get specialistVerificationPendingTitle =>
+      'Professional Verification Pending';
+
+  @override
+  String get specialistVerificationPendingMessage =>
+      'Your email is verified. An administrator is reviewing your professional credentials. Specialist clinical features will be available after approval.';
+
+  @override
+  String get specialistVerificationRejectedTitle =>
+      'Professional Verification Not Approved';
+
+  @override
+  String get specialistVerificationRejectedMessage =>
+      'Your specialist verification was not approved. Please contact platform administration or support for help.';
+
+  @override
+  String get specialistVerificationCheckStatus => 'Check Status';
+
+  @override
+  String get specialistVerificationStillPending =>
+      'Your account is still pending admin review.';
+
+  @override
+  String get specialistVerificationLogout => 'Logout';
+
+  @override
+  String get specialistVerificationLoggingOut => 'Signing out...';
+
+  @override
+  String get specialistVerificationLogoutFailed =>
+      'Unable to sign out right now.';
 }

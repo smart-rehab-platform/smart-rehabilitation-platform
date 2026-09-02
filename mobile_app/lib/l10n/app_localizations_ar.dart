@@ -6503,4 +6503,35 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get supportRequestStatusResolved => 'محلول';
+
+  @override
+  String get specialistVerificationPendingTitle => 'التحقق المهني قيد المراجعة';
+
+  @override
+  String get specialistVerificationPendingMessage =>
+      'تم التحقق من بريدك الإلكتروني. يقوم أحد المسؤولين بمراجعة بياناتك المهنية. ستتوفر ميزات الأخصائي السريرية بعد الموافقة.';
+
+  @override
+  String get specialistVerificationRejectedTitle =>
+      'لم تتم الموافقة على التحقق المهني';
+
+  @override
+  String get specialistVerificationRejectedMessage =>
+      'لم تتم الموافقة على تحقق حساب الأخصائي. يرجى التواصل مع إدارة المنصة أو الدعم للمساعدة.';
+
+  @override
+  String get specialistVerificationCheckStatus => 'التحقق من الحالة';
+
+  @override
+  String get specialistVerificationStillPending =>
+      'حسابك ما زال قيد مراجعة المسؤول.';
+
+  @override
+  String get specialistVerificationLogout => 'تسجيل الخروج';
+
+  @override
+  String get specialistVerificationLoggingOut => 'جارٍ تسجيل الخروج...';
+
+  @override
+  String get specialistVerificationLogoutFailed => 'تعذر تسجيل الخروج الآن.';
 }

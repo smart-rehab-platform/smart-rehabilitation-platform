@@ -15,6 +15,8 @@ const EMPTY_ADD_FORM = {
   password: "",
   phone: "",
   role: "parent",
+  specialization: "",
+  licenseNumber: "",
 };
 
 function buildInitialForm(mode, user) {
@@ -25,6 +27,8 @@ function buildInitialForm(mode, user) {
       password: "",
       phone: user.phone ?? "",
       role: user.role ?? "parent",
+      specialization: user.specialization ?? "",
+      licenseNumber: user.licenseNumber ?? "",
     };
   }
 
@@ -45,6 +49,7 @@ function AdminUserFormModalInner({
   const [form, setForm] = useState(() => buildInitialForm(mode, user));
   const [error, setError] = useState(null);
   const mapperContext = useMemo(() => ({ t }), [t]);
+  const showSpecialistFields = form.role === "specialist";
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -151,7 +156,7 @@ function AdminUserFormModalInner({
               className="pd-admin-select"
               value={form.role}
               onChange={(event) => updateField("role", event.target.value)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isEdit}
             >
               {roleOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -160,6 +165,33 @@ function AdminUserFormModalInner({
               ))}
             </select>
           </label>
+
+          {showSpecialistFields ? (
+            <>
+              <label className="pd-admin-field">
+                <span className="pd-admin-field-label">{labels.form.specialization}</span>
+                <input
+                  type="text"
+                  className="pd-admin-input"
+                  value={form.specialization}
+                  onChange={(event) => updateField("specialization", event.target.value)}
+                  disabled={isSubmitting || isEdit}
+                  autoComplete="organization-title"
+                />
+              </label>
+
+              <label className="pd-admin-field">
+                <span className="pd-admin-field-label">{labels.form.licenseNumber}</span>
+                <input
+                  type="text"
+                  className="pd-admin-input"
+                  value={form.licenseNumber}
+                  onChange={(event) => updateField("licenseNumber", event.target.value)}
+                  disabled={isSubmitting || isEdit}
+                />
+              </label>
+            </>
+          ) : null}
 
           {error ? <p className="pd-inline-error">{error}</p> : null}
 

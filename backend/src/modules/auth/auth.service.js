@@ -88,7 +88,7 @@ const sendVerificationEmailForUser = async (user) => {
   }
 };
 
-const registerUser = async (data) => {
+const registerUser = async (data, options = {}) => {
   const {
     full_name,
     email,
@@ -98,8 +98,12 @@ const registerUser = async (data) => {
     profile_image_url,
     specialist_profile,
   } = data;
+  const {
+    allowAdminRole = false,
+    specialistVerificationStatus = "pending",
+  } = options;
 
-  if (role === "admin") {
+  if (role === "admin" && !allowAdminRole) {
     throw createHttpError(
       "Admin accounts cannot be created through registration."
     );
@@ -129,8 +133,26 @@ const registerUser = async (data) => {
 
     const user = result.rows[0];
 
-    if (role === "specialist" && specialist_profile) {
-      await insertSpecialistProfile(user.id, specialist_profile, client);
+    if (role === "specialist") {
+      const verificationStatus =
+        specialistVerificationStatus === "approved" ? "approved" : "pending";
+
+      await insertSpecialistProfile(
+        user.id,
+        {
+          ...specialist_profile,
+          verification_status: verificationStatus,
+        },
+        client
+      );
+
+      user.specialization = specialist_profile?.specialization || null;
+      user.license_number = specialist_profile?.license_number || null;
+      user.verification_status = verificationStatus;
+    } else {
+      user.specialization = null;
+      user.license_number = null;
+      user.verification_status = null;
     }
 
     await client.query("COMMIT");
@@ -153,7 +175,12 @@ const registerUser = async (data) => {
 
 const loginUser = async (email, password) => {
   const result = await pool.query(
-    "SELECT * FROM users WHERE email = $1",
+    `SELECT
+       u.*,
+       sp.verification_status
+     FROM users u
+     LEFT JOIN specialist_profiles sp ON sp.user_id = u.id
+     WHERE u.email = $1`,
     [email]
   );
 

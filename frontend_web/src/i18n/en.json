@@ -210,6 +210,18 @@
       "verifyFailed": "Unable to verify your email right now.",
       "backToSignIn": "Back to Sign In"
     },
+    "specialistVerification": {
+      "pendingTitle": "Professional Verification Pending",
+      "pendingMessage": "Your email is verified. An administrator is reviewing your professional credentials. Specialist clinical features will be available after approval.",
+      "rejectedTitle": "Professional Verification Not Approved",
+      "rejectedMessage": "Your specialist verification was not approved. Please contact platform administration or support for help.",
+      "checkStatus": "Check Status",
+      "stillPendingToast": "Your account is still pending admin review.",
+      "refreshFailed": "Unable to refresh verification status right now.",
+      "logout": "Logout",
+      "loggingOut": "Signing out...",
+      "logoutFailed": "Unable to sign out right now."
+    },
     "validation": {
       "invalidEmail": "Invalid email address",
       "passwordsDoNotMatch": "Passwords do not match.",
@@ -3176,7 +3188,10 @@
         "user": "User",
         "email": "Email",
         "role": "Role",
-        "status": "Status",
+        "specialization": "Specialization",
+        "license": "License",
+        "verification": "Verification",
+        "status": "Account Status",
         "lastSeen": "Last Seen",
         "actions": "Actions"
       },
@@ -3191,6 +3206,12 @@
         "lastSeenYesterday": "Last seen yesterday",
         "lastSeenDate": "Last seen {date}"
       },
+      "verification": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "notApplicable": "—"
+      },
       "actions": {
         "edit": "Edit",
         "activate": "Activate",
@@ -3202,6 +3223,8 @@
         "editUser": "Edit User",
         "activateUser": "Activate User",
         "deactivateUser": "Deactivate User",
+        "approveSpecialist": "Approve Specialist",
+        "rejectSpecialist": "Reject Specialist",
         "deleteUser": "Delete User"
       },
       "actionAria": {
@@ -3216,11 +3239,14 @@
       "createFailed": "Failed to create user.",
       "updateFailed": "Failed to update user.",
       "updateStatusFailed": "Failed to update user status.",
+      "verificationFailed": "Failed to update specialist verification.",
       "deleteFailed": "Failed to delete user.",
       "createdSuccess": "User created successfully.",
       "updatedSuccess": "User updated successfully.",
       "activatedSuccess": "User activated.",
       "deactivatedSuccess": "User deactivated.",
+      "approvedSuccess": "Specialist approved.",
+      "rejectedSuccess": "Specialist rejected.",
       "deletedSuccess": "User deleted successfully.",
       "form": {
         "addTitle": "Add User",
@@ -3230,6 +3256,8 @@
         "password": "Password",
         "phoneOptional": "Phone (optional)",
         "role": "Role",
+        "specialization": "Specialization",
+        "licenseNumber": "License Number",
         "cancel": "Cancel",
         "save": "Save",
         "create": "Create",
@@ -3244,7 +3272,9 @@
         "emailInvalid": "Please enter a valid email address.",
         "passwordRequired": "Password is required.",
         "passwordInvalid": "Please create a valid password.",
-        "roleRequired": "Role is required."
+        "roleRequired": "Role is required.",
+        "specializationRequired": "Specialization is required for specialists.",
+        "licenseRequired": "License number is required for specialists."
       },
       "dialogs": {
         "activateTitle": "Activate User",

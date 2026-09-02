@@ -26,6 +26,8 @@ const formatAuthUser = (user) => ({
   phone: user.phone,
   profile_image_url: user.profile_image_url,
   is_email_verified: user.is_email_verified,
+  verification_status:
+    user.role === "specialist" ? user.verification_status || null : null,
 });
 
 const validateRefreshUser = (user) => {
@@ -46,9 +48,19 @@ const validateRefreshUser = (user) => {
 
 const fetchUserById = async (client, userId) => {
   const result = await client.query(
-    `SELECT id, full_name, email, phone, role, is_active, is_email_verified, profile_image_url
-     FROM users
-     WHERE id = $1`,
+    `SELECT
+       u.id,
+       u.full_name,
+       u.email,
+       u.phone,
+       u.role,
+       u.is_active,
+       u.is_email_verified,
+       u.profile_image_url,
+       sp.verification_status
+     FROM users u
+     LEFT JOIN specialist_profiles sp ON sp.user_id = u.id
+     WHERE u.id = $1`,
     [userId]
   );
 

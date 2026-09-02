@@ -20,6 +20,13 @@ router.get(
   specialistsController.getAllSpecialists
 );
 
+router.patch(
+  "/specialists/:userId/verification",
+  authenticate,
+  authorizeRoles("admin"),
+  specialistsController.updateSpecialistVerification
+);
+
 router.get(
   "/specialists/:id/patients",
   authenticate,

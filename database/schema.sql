@@ -16,6 +16,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto; -- enables gen_random_uuid()
 -- =====================================================================
 
 CREATE TYPE user_role            AS ENUM ('admin', 'specialist', 'parent');
+CREATE TYPE specialist_verification_status AS ENUM ('pending', 'approved', 'rejected');
 CREATE TYPE relationship_type    AS ENUM ('mother', 'father', 'guardian', 'other');
 CREATE TYPE assessment_type      AS ENUM ('initial', 'speech', 'behavioral');
 CREATE TYPE goal_term            AS ENUM ('short_term', 'long_term');
@@ -90,9 +91,13 @@ CREATE TABLE specialist_profiles (
     license_number      VARCHAR(100),
     bio                 TEXT,
     years_of_experience INT,
+    verification_status specialist_verification_status NOT NULL DEFAULT 'pending',
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE INDEX idx_specialist_profiles_verification_status
+    ON specialist_profiles (verification_status);
 
 -- =====================================================================
 -- 2. PATIENT & CASE MANAGEMENT

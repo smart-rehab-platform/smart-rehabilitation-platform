@@ -17,7 +17,19 @@ const authenticate = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const result = await pool.query(
-      "SELECT id, full_name, email, phone, role, is_active, is_email_verified, profile_image_url FROM users WHERE id = $1",
+      `SELECT
+         u.id,
+         u.full_name,
+         u.email,
+         u.phone,
+         u.role,
+         u.is_active,
+         u.is_email_verified,
+         u.profile_image_url,
+         sp.verification_status
+       FROM users u
+       LEFT JOIN specialist_profiles sp ON sp.user_id = u.id
+       WHERE u.id = $1`,
       [decoded.id]
     );
 
@@ -37,7 +49,11 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    req.user = user;
+    req.user = {
+      ...user,
+      verification_status:
+        user.role === "specialist" ? user.verification_status || null : null,
+    };
 
     presenceService.touchLastSeen(user.id).catch((error) => {
       console.error("[presence] Failed to update last seen:", error.message);

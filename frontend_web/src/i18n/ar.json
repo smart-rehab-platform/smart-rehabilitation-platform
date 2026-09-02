@@ -210,6 +210,18 @@
       "verifyFailed": "تعذر التحقق من بريدك الإلكتروني الآن.",
       "backToSignIn": "العودة لتسجيل الدخول"
     },
+    "specialistVerification": {
+      "pendingTitle": "التحقق المهني قيد المراجعة",
+      "pendingMessage": "تم التحقق من بريدك الإلكتروني. يقوم أحد المسؤولين بمراجعة بياناتك المهنية. ستتوفر ميزات الأخصائي السريرية بعد الموافقة.",
+      "rejectedTitle": "لم تتم الموافقة على التحقق المهني",
+      "rejectedMessage": "لم تتم الموافقة على تحقق حساب الأخصائي. يرجى التواصل مع إدارة المنصة أو الدعم للمساعدة.",
+      "checkStatus": "التحقق من الحالة",
+      "stillPendingToast": "حسابك ما زال قيد مراجعة المسؤول.",
+      "refreshFailed": "تعذر تحديث حالة التحقق الآن.",
+      "logout": "تسجيل الخروج",
+      "loggingOut": "جارٍ تسجيل الخروج...",
+      "logoutFailed": "تعذر تسجيل الخروج الآن."
+    },
     "validation": {
       "invalidEmail": "عنوان بريد إلكتروني غير صالح",
       "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين.",
@@ -3151,7 +3163,10 @@
         "user": "المستخدم",
         "email": "البريد الإلكتروني",
         "role": "الدور",
-        "status": "الحالة",
+        "specialization": "التخصص",
+        "license": "رقم الترخيص",
+        "verification": "التحقق المهني",
+        "status": "حالة الحساب",
         "lastSeen": "آخر ظهور",
         "actions": "الإجراءات"
       },
@@ -3166,6 +3181,12 @@
         "lastSeenYesterday": "آخر ظهور أمس",
         "lastSeenDate": "آخر ظهور {date}"
       },
+      "verification": {
+        "pending": "قيد المراجعة",
+        "approved": "معتمد",
+        "rejected": "مرفوض",
+        "notApplicable": "—"
+      },
       "actions": {
         "edit": "تعديل",
         "activate": "تفعيل",
@@ -3177,6 +3198,8 @@
         "editUser": "تعديل المستخدم",
         "activateUser": "تفعيل المستخدم",
         "deactivateUser": "إلغاء تفعيل المستخدم",
+        "approveSpecialist": "اعتماد الأخصائي",
+        "rejectSpecialist": "رفض الأخصائي",
         "deleteUser": "حذف المستخدم"
       },
       "actionAria": {
@@ -3191,11 +3214,14 @@
       "createFailed": "تعذّر إنشاء المستخدم.",
       "updateFailed": "تعذّر تحديث المستخدم.",
       "updateStatusFailed": "تعذّر تحديث حالة المستخدم.",
+      "verificationFailed": "تعذّر تحديث التحقق المهني للأخصائي.",
       "deleteFailed": "تعذّر حذف المستخدم.",
       "createdSuccess": "تم إنشاء المستخدم بنجاح.",
       "updatedSuccess": "تم تحديث المستخدم بنجاح.",
       "activatedSuccess": "تم تفعيل المستخدم.",
       "deactivatedSuccess": "تم إلغاء تفعيل المستخدم.",
+      "approvedSuccess": "تم اعتماد الأخصائي.",
+      "rejectedSuccess": "تم رفض الأخصائي.",
       "deletedSuccess": "تم حذف المستخدم بنجاح.",
       "form": {
         "addTitle": "إضافة مستخدم",
@@ -3205,6 +3231,8 @@
         "password": "كلمة المرور",
         "phoneOptional": "الهاتف (اختياري)",
         "role": "الدور",
+        "specialization": "التخصص",
+        "licenseNumber": "رقم الترخيص",
         "cancel": "إلغاء",
         "save": "حفظ",
         "create": "إنشاء",
@@ -3219,7 +3247,9 @@
         "emailInvalid": "يرجى إدخال بريد إلكتروني صالح.",
         "passwordRequired": "كلمة المرور مطلوبة.",
         "passwordInvalid": "يرجى إنشاء كلمة مرور صالحة.",
-        "roleRequired": "الدور مطلوب."
+        "roleRequired": "الدور مطلوب.",
+        "specializationRequired": "التخصص مطلوب للأخصائيين.",
+        "licenseRequired": "رقم الترخيص مطلوب للأخصائيين."
       },
       "dialogs": {
         "activateTitle": "تفعيل المستخدم",

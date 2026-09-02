@@ -7,6 +7,8 @@ import {
   getAdminUsersLabels,
 } from "../utils/adminUsersLocalization.js";
 
+const TABLE_COL_COUNT = 9;
+
 function UserAvatar({ user }) {
   return (
     <UserProfileAvatar
@@ -45,13 +47,39 @@ function StatusBadge({ isActive, labels }) {
   );
 }
 
-function UserActions({ user, labels, onEdit, onToggleStatus, onDelete }) {
+function VerificationBadge({ user, labels }) {
+  if (user.role !== "specialist" || !user.verificationStatus) {
+    return (
+      <span className="pd-admin-users-verification is-na">
+        {labels.verification.notApplicable}
+      </span>
+    );
+  }
+
+  return (
+    <span className={`pd-admin-users-verification is-${user.verificationStatus}`}>
+      {user.verificationLabel}
+    </span>
+  );
+}
+
+function UserActions({
+  user,
+  labels,
+  onEdit,
+  onToggleStatus,
+  onApprove,
+  onReject,
+  onDelete,
+}) {
   return (
     <AdminUserActionsMenu
       user={user}
       labels={labels}
       onEdit={onEdit}
       onToggleStatus={onToggleStatus}
+      onApprove={onApprove}
+      onReject={onReject}
       onDelete={onDelete}
     />
   );
@@ -64,6 +92,8 @@ function UserRow({
   mapperContext,
   onEdit,
   onToggleStatus,
+  onApprove,
+  onReject,
   onDelete,
 }) {
   const presence = presenceById[user.id] ?? null;
@@ -88,6 +118,19 @@ function UserRow({
       <td data-label={labels.columns.role}>
         <RoleBadge user={user} />
       </td>
+      <td data-label={labels.columns.specialization}>
+        <span className="pd-admin-users-professional" dir="auto">
+          {user.specializationDisplay}
+        </span>
+      </td>
+      <td data-label={labels.columns.license}>
+        <span className="pd-admin-users-professional" dir="auto">
+          {user.licenseDisplay}
+        </span>
+      </td>
+      <td data-label={labels.columns.verification}>
+        <VerificationBadge user={user} labels={labels} />
+      </td>
       <td data-label={labels.columns.status}>
         <StatusBadge isActive={user.isActive} labels={labels} />
       </td>
@@ -104,6 +147,8 @@ function UserRow({
           labels={labels}
           onEdit={onEdit}
           onToggleStatus={onToggleStatus}
+          onApprove={onApprove}
+          onReject={onReject}
           onDelete={onDelete}
         />
       </td>
@@ -116,7 +161,7 @@ function LoadingRows({ loadingLabel }) {
     <>
       {[0, 1, 2, 3, 4].map((index) => (
         <tr key={index} className="pd-admin-users-row pd-admin-users-row-loading">
-          <td colSpan={6}>
+          <td colSpan={TABLE_COL_COUNT}>
             <span className="pd-inline-loading">{loadingLabel}</span>
           </td>
         </tr>
@@ -132,6 +177,8 @@ export function AdminUsersTable({
   emptyKind = null,
   onEdit,
   onToggleStatus,
+  onApprove,
+  onReject,
   onDelete,
 }) {
   const { t, locale } = useLocale();
@@ -147,6 +194,9 @@ export function AdminUsersTable({
               <th scope="col">{labels.columns.user}</th>
               <th scope="col">{labels.columns.email}</th>
               <th scope="col">{labels.columns.role}</th>
+              <th scope="col">{labels.columns.specialization}</th>
+              <th scope="col">{labels.columns.license}</th>
+              <th scope="col">{labels.columns.verification}</th>
               <th scope="col">{labels.columns.status}</th>
               <th scope="col">{labels.columns.lastSeen}</th>
               <th scope="col">{labels.columns.actions}</th>
@@ -157,7 +207,7 @@ export function AdminUsersTable({
               <LoadingRows loadingLabel={labels.loading} />
             ) : emptyKind ? (
               <tr className="pd-admin-users-empty-row">
-                <td colSpan={6}>
+                <td colSpan={TABLE_COL_COUNT}>
                   <p className="pd-admin-empty-copy">
                     {emptyKind === "no-users" ? labels.empty : labels.emptyFiltered}
                   </p>
@@ -173,6 +223,8 @@ export function AdminUsersTable({
                   mapperContext={mapperContext}
                   onEdit={onEdit}
                   onToggleStatus={onToggleStatus}
+                  onApprove={onApprove}
+                  onReject={onReject}
                   onDelete={onDelete}
                 />
               ))

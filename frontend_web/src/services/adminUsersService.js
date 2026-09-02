@@ -40,7 +40,7 @@ export async function fetchAdminUsers() {
 
 export async function createAdminUser(payload) {
   try {
-    const response = await api.post("/auth/register", payload);
+    const response = await api.post("/users", payload);
     return extractData(response);
   } catch (error) {
     throwServiceError(error, "Failed to create user.");
@@ -64,6 +64,18 @@ export async function updateAdminUserStatus(id, isActive) {
     return extractData(response);
   } catch (error) {
     throwServiceError(error, "Failed to update user status.");
+  }
+}
+
+export async function updateAdminSpecialistVerification(userId, status) {
+  try {
+    const response = await api.patch(
+      `/specialists/${encodeURIComponent(userId)}/verification`,
+      { status },
+    );
+    return extractData(response);
+  } catch (error) {
+    throwServiceError(error, "Failed to update specialist verification.");
   }
 }
 

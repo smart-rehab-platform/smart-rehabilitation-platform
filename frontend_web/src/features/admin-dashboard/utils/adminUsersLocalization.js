@@ -57,17 +57,28 @@ export function getAdminUsersLabels(t = null) {
       user: translateKey(t, "admin.users.columns.user", "User"),
       email: translateKey(t, "admin.users.columns.email", "Email"),
       role: translateKey(t, "admin.users.columns.role", "Role"),
-      status: translateKey(t, "admin.users.columns.status", "Status"),
+      specialization: translateKey(t, "admin.users.columns.specialization", "Specialization"),
+      license: translateKey(t, "admin.users.columns.license", "License"),
+      verification: translateKey(t, "admin.users.columns.verification", "Verification"),
+      status: translateKey(t, "admin.users.columns.status", "Account Status"),
       lastSeen: translateKey(t, "admin.users.columns.lastSeen", "Last Seen"),
       actions: translateKey(t, "admin.users.columns.actions", "Actions"),
     },
     statusActive: translateKey(t, "admin.users.status.active", "Active"),
     statusInactive: translateKey(t, "admin.users.status.inactive", "Inactive"),
+    verification: {
+      pending: translateKey(t, "admin.users.verification.pending", "Pending"),
+      approved: translateKey(t, "admin.users.verification.approved", "Approved"),
+      rejected: translateKey(t, "admin.users.verification.rejected", "Rejected"),
+      notApplicable: translateKey(t, "admin.users.verification.notApplicable", "—"),
+    },
     manage: translateKey(t, "admin.users.manage", "Manage"),
     menu: {
       editUser: translateKey(t, "admin.users.menu.editUser", "Edit User"),
       activateUser: translateKey(t, "admin.users.menu.activateUser", "Activate User"),
       deactivateUser: translateKey(t, "admin.users.menu.deactivateUser", "Deactivate User"),
+      approveSpecialist: translateKey(t, "admin.users.menu.approveSpecialist", "Approve Specialist"),
+      rejectSpecialist: translateKey(t, "admin.users.menu.rejectSpecialist", "Reject Specialist"),
       deleteUser: translateKey(t, "admin.users.menu.deleteUser", "Delete User"),
     },
     actionAria: {
@@ -99,11 +110,18 @@ export function getAdminUsersLabels(t = null) {
     createFailed: translateKey(t, "admin.users.createFailed", "Failed to create user."),
     updateFailed: translateKey(t, "admin.users.updateFailed", "Failed to update user."),
     updateStatusFailed: translateKey(t, "admin.users.updateStatusFailed", "Failed to update user status."),
+    verificationFailed: translateKey(
+      t,
+      "admin.users.verificationFailed",
+      "Failed to update specialist verification.",
+    ),
     deleteFailed: translateKey(t, "admin.users.deleteFailed", "Failed to delete user."),
     createdSuccess: translateKey(t, "admin.users.createdSuccess", "User created successfully."),
     updatedSuccess: translateKey(t, "admin.users.updatedSuccess", "User updated successfully."),
     activatedSuccess: translateKey(t, "admin.users.activatedSuccess", "User activated."),
     deactivatedSuccess: translateKey(t, "admin.users.deactivatedSuccess", "User deactivated."),
+    approvedSuccess: translateKey(t, "admin.users.approvedSuccess", "Specialist approved."),
+    rejectedSuccess: translateKey(t, "admin.users.rejectedSuccess", "Specialist rejected."),
     deletedSuccess: translateKey(t, "admin.users.deletedSuccess", "User deleted successfully."),
     form: {
       addTitle: translateKey(t, "admin.users.form.addTitle", "Add User"),
@@ -113,6 +131,8 @@ export function getAdminUsersLabels(t = null) {
       password: translateKey(t, "admin.users.form.password", "Password"),
       phoneOptional: translateKey(t, "admin.users.form.phoneOptional", "Phone (optional)"),
       role: translateKey(t, "admin.users.form.role", "Role"),
+      specialization: translateKey(t, "admin.users.form.specialization", "Specialization"),
+      licenseNumber: translateKey(t, "admin.users.form.licenseNumber", "License Number"),
       cancel: translateKey(t, "common.cancel", "Cancel"),
       save: translateKey(t, "common.save", "Save"),
       create: translateKey(t, "admin.users.form.create", "Create"),
@@ -282,6 +302,23 @@ export function validateAddUserFormLocalized(form, { isPasswordValid }, context 
     return translateKey(t, "admin.users.validation.roleRequired", "Role is required.");
   }
 
+  if (role === "specialist") {
+    if (!form.specialization?.trim()) {
+      return translateKey(
+        t,
+        "admin.users.validation.specializationRequired",
+        "Specialization is required for specialists.",
+      );
+    }
+    if (!form.licenseNumber?.trim()) {
+      return translateKey(
+        t,
+        "admin.users.validation.licenseRequired",
+        "License number is required for specialists.",
+      );
+    }
+  }
+
   return null;
 }
 
@@ -330,11 +367,22 @@ export function applyAdminUserLocalization(user, context = {}) {
 
   const { t } = resolveAdminMapperContext(context);
   const labels = getAdminUsersLabels(t);
+  const verificationKey = user.verificationStatus;
+  const verificationLabel = verificationKey && labels.verification[verificationKey]
+    ? labels.verification[verificationKey]
+    : labels.verification.notApplicable;
 
   return {
     ...user,
     roleLabel: getAdminRoleDisplayLabel(user.role, t),
     statusLabel: user.isActive ? labels.statusActive : labels.statusInactive,
+    verificationLabel,
+    specializationDisplay: user.role === "specialist"
+      ? (user.specialization || labels.verification.notApplicable)
+      : labels.verification.notApplicable,
+    licenseDisplay: user.role === "specialist"
+      ? (user.licenseNumber || labels.verification.notApplicable)
+      : labels.verification.notApplicable,
   };
 }
 

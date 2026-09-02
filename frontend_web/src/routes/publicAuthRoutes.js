@@ -4,6 +4,8 @@ export const PUBLIC_AUTH_ROUTES = [
   "/forgot-password",
   "/reset-password",
   "/verify-email",
+  "/specialist-verification/pending",
+  "/specialist-verification/rejected",
 ];
 
 /** Auth routes that must render even when a session already exists. */
@@ -11,6 +13,8 @@ export const AUTH_ROUTES_ALLOWING_AUTHENTICATED_SESSION = [
   "/forgot-password",
   "/reset-password",
   "/verify-email",
+  "/specialist-verification/pending",
+  "/specialist-verification/rejected",
 ];
 
 export function isPublicAuthRoute(pathname) {

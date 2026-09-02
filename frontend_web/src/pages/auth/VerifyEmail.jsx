@@ -9,7 +9,7 @@ import { C } from "../../components/auth/tokens";
 import { readAuthApiMessage } from "../../components/auth/authHelpers";
 import { useLocale } from "../../context/useLocale.js";
 import { useAuth } from "../../context/useAuth";
-import { dashboardForRole } from "../../routes/roleRouting";
+import { homeForUser } from "../../routes/roleRouting";
 
 function extractVerificationToken(rawValue) {
   const trimmed = rawValue?.trim() || "";
@@ -56,7 +56,7 @@ export default function VerifyEmail() {
     const refreshedUser = await auth.refreshSession();
 
     if (refreshedUser?.is_email_verified) {
-      const destination = dashboardForRole(refreshedUser.role) || "/login";
+      const destination = homeForUser(refreshedUser) || "/login";
       setSuccessTarget(destination);
       setSuccessActionLabel(
         destination === "/login"

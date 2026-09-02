@@ -32,10 +32,16 @@ const passwordSchema = Joi.string()
   });
 
 const specialistProfileSchema = Joi.object({
-  specialization: Joi.string().max(150).allow("", null).messages({
+  specialization: Joi.string().trim().min(1).max(150).required().messages({
+    "any.required": "Specialization is required.",
+    "string.empty": "Specialization is required.",
+    "string.min": "Specialization is required.",
     "string.max": "Specialization must not exceed 150 characters."
   }),
-  license_number: Joi.string().max(100).allow("", null).messages({
+  license_number: Joi.string().trim().min(1).max(100).required().messages({
+    "any.required": "License number is required.",
+    "string.empty": "License number is required.",
+    "string.min": "License number is required.",
     "string.max": "License number must not exceed 100 characters."
   }),
   years_of_experience: Joi.number().integer().min(0).allow(null).messages({
@@ -44,7 +50,7 @@ const specialistProfileSchema = Joi.object({
     "number.min": "Years of experience must be at least 0."
   }),
   bio: Joi.string().allow("", null),
-}).optional();
+});
 
 const registerSchema = Joi.object({
   full_name: Joi.string().min(3).max(150).required().messages({
@@ -68,7 +74,9 @@ const registerSchema = Joi.object({
   profile_image_url: Joi.string().allow("", null),
   specialist_profile: Joi.when("role", {
     is: "specialist",
-    then: specialistProfileSchema,
+    then: specialistProfileSchema.required().messages({
+      "any.required": "Specialist profile is required.",
+    }),
     otherwise: Joi.any().strip(),
   }),
 });
