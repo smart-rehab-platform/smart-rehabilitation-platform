@@ -182,7 +182,7 @@ function AiProgressPreview({ t, aiWidgets }) {
   return (
     <article
       aria-label={t("landing.journey.preview.aiReport.ariaLabel")}
-      className="journey-float-card w-[220px] rounded-2xl p-4 transition-all duration-300 md:w-[240px]"
+      className="journey-float-card w-full max-w-[240px] rounded-2xl p-4 transition-all duration-300"
       style={{ ...cardStyle, opacity: 0.96 }}
     >
       <h3
@@ -250,7 +250,7 @@ function ParentDashboardPreview({ t }) {
   return (
     <article
       aria-label={t("landing.journey.preview.parentDashboard.ariaLabel")}
-      className="journey-float-card w-[220px] rounded-2xl p-4 transition-all duration-300 md:w-[240px]"
+      className="journey-float-card w-full max-w-[240px] rounded-2xl p-4 transition-all duration-300"
       style={{ ...cardStyle, opacity: 0.96 }}
     >
       <h3
@@ -332,24 +332,26 @@ export function JourneySection() {
         </p>
       </header>
 
-      <div className="journey-showcase-group mx-auto max-w-6xl">
-        <div className="journey-showcase-inner relative mx-auto min-h-[680px] max-w-[980px] md:min-h-[620px]">
-          <div className="journey-card-left absolute left-0 top-0 z-10 md:left-2 md:top-2 lg:left-6">
-            <FloatWrap floatClass="journey-float journey-float-left">
-              <AiProgressPreview t={t} aiWidgets={aiWidgets} />
-            </FloatWrap>
-          </div>
-
-          <div className="journey-card-center absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
+      <div className="journey-showcase-group mx-auto w-full max-w-6xl overflow-x-clip">
+        <div className="journey-showcase-inner relative mx-auto flex w-full max-w-[980px] flex-col items-center gap-5 pb-4 lg:block lg:min-h-[620px] lg:pb-0">
+          <div className="journey-card-center relative z-30 order-1 flex w-full justify-center lg:absolute lg:left-1/2 lg:top-1/2 lg:order-none lg:w-auto lg:-translate-x-1/2 lg:-translate-y-1/2">
             <FloatWrap floatClass="journey-float journey-float-center">
               <PatientJourneyCard t={t} workflowSteps={workflowSteps} />
             </FloatWrap>
           </div>
 
-          <div className="journey-card-right absolute bottom-0 right-0 z-20 md:bottom-4 md:right-2 lg:right-6">
-            <FloatWrap floatClass="journey-float journey-float-right">
-              <ParentDashboardPreview t={t} />
-            </FloatWrap>
+          <div className="journey-card-sides order-2 flex w-full max-w-[460px] flex-col items-center gap-5 sm:flex-row sm:items-start sm:justify-center lg:contents">
+            <div className="journey-card-left relative z-10 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:absolute lg:left-2 lg:top-2 lg:block lg:w-auto xl:left-6">
+              <FloatWrap floatClass="journey-float journey-float-left">
+                <AiProgressPreview t={t} aiWidgets={aiWidgets} />
+              </FloatWrap>
+            </div>
+
+            <div className="journey-card-right relative z-20 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:absolute lg:bottom-4 lg:right-2 lg:block lg:w-auto xl:right-6">
+              <FloatWrap floatClass="journey-float journey-float-right">
+                <ParentDashboardPreview t={t} />
+              </FloatWrap>
+            </div>
           </div>
         </div>
       </div>
@@ -375,35 +377,39 @@ export function JourneySection() {
           50% { transform: translateY(-10px); }
         }
 
-        .journey-showcase-group {
-          animation: journey-float-group 8s ease-in-out infinite;
-        }
+        @media (min-width: 1024px) {
+          .journey-showcase-group {
+            animation: journey-float-group 8s ease-in-out infinite;
+          }
 
-        .journey-float-left {
-          animation: journey-float-left 6.5s ease-in-out infinite;
-          animation-delay: 0.3s;
-        }
+          .journey-float-left {
+            animation: journey-float-left 6.5s ease-in-out infinite;
+            animation-delay: 0.3s;
+          }
 
-        .journey-float-center {
-          animation: journey-float-center 5.5s ease-in-out infinite;
-        }
+          .journey-float-center {
+            animation: journey-float-center 5.5s ease-in-out infinite;
+          }
 
-        .journey-float-right {
-          animation: journey-float-right 7s ease-in-out infinite;
-          animation-delay: 0.8s;
+          .journey-float-right {
+            animation: journey-float-right 7s ease-in-out infinite;
+            animation-delay: 0.8s;
+          }
         }
 
         .journey-float-card {
           transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .journey-float-card:hover {
-          transform: translateY(-6px) scale(1.02);
-          box-shadow: ${L.journeyFloatShadowHover};
-        }
+        @media (hover: hover) {
+          .journey-float-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: ${L.journeyFloatShadowHover};
+          }
 
-        .journey-float-card-main:hover {
-          transform: translateY(-8px) scale(1.02);
+          .journey-float-card-main:hover {
+            transform: translateY(-8px) scale(1.02);
+          }
         }
 
         .journey-steps-scroll::-webkit-scrollbar {
@@ -419,7 +425,7 @@ export function JourneySection() {
           border-radius: 99px;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           [dir=rtl] .journey-card-left {
             left: auto !important;
             right: 0.5rem;
@@ -431,7 +437,7 @@ export function JourneySection() {
           }
         }
 
-        @media (min-width: 1024px) {
+        @media (min-width: 1280px) {
           [dir=rtl] .journey-card-left {
             right: 1.5rem;
           }
@@ -441,36 +447,9 @@ export function JourneySection() {
           }
         }
 
-        @media (max-width: 767px) {
+        @media (max-width: 1023px) {
           .journey-showcase-group {
             animation: none;
-          }
-
-          .journey-showcase-inner {
-            min-height: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.25rem;
-            padding-bottom: 1rem;
-          }
-
-          .journey-card-left,
-          .journey-card-center,
-          .journey-card-right {
-            position: relative;
-            left: auto;
-            right: auto;
-            top: auto;
-            bottom: auto;
-            transform: none;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-          }
-
-          .journey-card-center {
-            order: -1;
           }
 
           .journey-float-left,
@@ -482,6 +461,11 @@ export function JourneySection() {
           .journey-steps-scroll {
             max-height: none;
             overflow: visible;
+          }
+
+          .journey-float-card,
+          .journey-float-card-main {
+            width: 100%;
           }
         }
       `}</style>
