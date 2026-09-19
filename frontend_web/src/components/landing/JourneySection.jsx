@@ -341,13 +341,13 @@ export function JourneySection() {
           </div>
 
           <div className="journey-card-sides order-2 flex w-full max-w-[460px] flex-col items-center gap-5 sm:flex-row sm:items-start sm:justify-center lg:contents">
-            <div className="journey-card-left relative z-10 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:absolute lg:left-2 lg:top-2 lg:block lg:w-auto xl:left-6">
+            <div className="journey-card-left relative z-10 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:absolute lg:left-6 lg:top-2 lg:block lg:w-auto">
               <FloatWrap floatClass="journey-float journey-float-left">
                 <AiProgressPreview t={t} aiWidgets={aiWidgets} />
               </FloatWrap>
             </div>
 
-            <div className="journey-card-right relative z-20 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:absolute lg:bottom-4 lg:right-2 lg:block lg:w-auto xl:right-6">
+            <div className="journey-card-right relative z-20 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:absolute lg:bottom-4 lg:right-6 lg:block lg:w-auto">
               <FloatWrap floatClass="journey-float journey-float-right">
                 <ParentDashboardPreview t={t} />
               </FloatWrap>
