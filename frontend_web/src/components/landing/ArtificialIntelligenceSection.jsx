@@ -209,31 +209,45 @@ function RecommendationsWidget({ accent, t }) {
         <br />
         {t("landing.ai.cards.recommendations.widget.durationChange")}
       </p>
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2">
         <button
           type="button"
-          className="flex-1 rounded-lg border px-3 py-2 text-[12px] font-semibold"
+          className="w-full rounded-lg border px-3 py-2 text-[12px] font-semibold"
           style={{
-            borderColor: "rgba(56, 211, 159, 0.55)",
-            color: "#38D39F",
-            background: "rgba(56, 211, 159, 0.08)",
+            borderColor: `${accent}55`,
+            color: accent,
+            background: `${accent}14`,
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          {t("landing.ai.cards.recommendations.widget.approve")}
+          {t("landing.ai.cards.recommendations.widget.editRecommendation")}
         </button>
-        <button
-          type="button"
-          className="flex-1 rounded-lg border px-3 py-2 text-[12px] font-semibold"
-          style={{
-            borderColor: "rgba(239, 68, 68, 0.55)",
-            color: "#F87171",
-            background: "rgba(239, 68, 68, 0.08)",
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          {t("landing.ai.cards.recommendations.widget.reject")}
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="flex-1 rounded-lg border px-3 py-2 text-[12px] font-semibold"
+            style={{
+              borderColor: "rgba(56, 211, 159, 0.55)",
+              color: "#38D39F",
+              background: "rgba(56, 211, 159, 0.08)",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            {t("landing.ai.cards.recommendations.widget.approve")}
+          </button>
+          <button
+            type="button"
+            className="flex-1 rounded-lg border px-3 py-2 text-[12px] font-semibold"
+            style={{
+              borderColor: "rgba(239, 68, 68, 0.55)",
+              color: "#F87171",
+              background: "rgba(239, 68, 68, 0.08)",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            {t("landing.ai.cards.recommendations.widget.reject")}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -260,18 +274,32 @@ function ReportGeneratorWidget({ accent, t }) {
       <p className="mb-4 text-end text-[11px] font-medium" style={{ color: accent, fontFamily: "'Inter', sans-serif" }}>
         82%
       </p>
-      <button
-        type="button"
-        className="rounded-lg border px-3 py-2 text-[12px] font-semibold"
-        style={{
-          borderColor: `${accent}55`,
-          color: accent,
-          background: `${accent}14`,
-          fontFamily: "'Inter', sans-serif",
-        }}
-      >
-        {t("landing.ai.cards.reportGenerator.widget.exportPdf")}
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          className="flex-1 rounded-lg border px-3 py-2 text-[12px] font-semibold"
+          style={{
+            borderColor: `${accent}55`,
+            color: accent,
+            background: `${accent}14`,
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          {t("landing.ai.cards.reportGenerator.widget.editDraft")}
+        </button>
+        <button
+          type="button"
+          className="flex-1 rounded-lg border px-3 py-2 text-[12px] font-semibold"
+          style={{
+            borderColor: `${accent}55`,
+            color: accent,
+            background: `${accent}14`,
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          {t("landing.ai.cards.reportGenerator.widget.exportPdf")}
+        </button>
+      </div>
     </div>
   );
 }

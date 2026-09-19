@@ -4461,21 +4461,23 @@
         },
         "recommendations": {
           "title": "توصيات الذكاء الاصطناعي",
-          "description": "يقترح الذكاء الاصطناعي تعديلات علاجية بينما يتخذ الأخصائيون القرار النهائي دائماً.",
+          "description": "يقترح الذكاء الاصطناعي تعديلات علاجية يمكن للأخصائيين مراجعتها وتعديلها قبل الموافقة أو الرفض.",
           "widget": {
             "suggestedExercise": "تمرين مقترح",
             "increaseWarmUp": "زيادة الإحماء الحركي للفم",
             "durationChange": "من 10 → 15 دقيقة.",
+            "editRecommendation": "تعديل التوصية",
             "approve": "موافقة",
             "reject": "رفض"
           }
         },
         "reportGenerator": {
           "title": "مولّد التقارير بالذكاء الاصطناعي",
-          "description": "أنشئ تلقائياً تقارير تقدم منظمة جاهزة للتصدير.",
+          "description": "أنشئ تقارير تقدم منظمة كمسودات قابلة للتعديل قبل التصدير إلى PDF.",
           "widget": {
             "filename": "Omar_Progress_Report.pdf",
             "progress": "التقدم",
+            "editDraft": "تعديل المسودة",
             "exportPdf": "تصدير PDF"
           }
         }
