@@ -4486,21 +4486,23 @@
         },
         "recommendations": {
           "title": "AI Recommendations",
-          "description": "The AI suggests treatment adjustments while specialists always make the final decision.",
+          "description": "The AI suggests treatment adjustments that specialists can review and edit before approving or rejecting.",
           "widget": {
             "suggestedExercise": "Suggested Exercise",
             "increaseWarmUp": "Increase oral motor warm-up",
             "durationChange": "from 10 → 15 minutes.",
+            "editRecommendation": "Edit Recommendation",
             "approve": "Approve",
             "reject": "Reject"
           }
         },
         "reportGenerator": {
           "title": "AI Report Generator",
-          "description": "Automatically generate structured progress reports ready for export.",
+          "description": "Generate structured progress reports as editable drafts before exporting to PDF.",
           "widget": {
             "filename": "Omar_Progress_Report.pdf",
             "progress": "Progress",
+            "editDraft": "Edit Draft",
             "exportPdf": "Export PDF"
           }
         }
