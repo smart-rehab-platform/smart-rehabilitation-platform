@@ -1,6 +1,11 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { buildAdminPatientDetailsPath } from "../../routes/adminDashboardRoutes";
+import {
+  buildAdminPatientDetailsPath,
+  buildAdminRecommendationDetailsPath,
+  buildAdminReportDetailsPath,
+  buildAdminSpeechAnalysisDetailsPath,
+} from "../../routes/adminDashboardRoutes";
 import { useAdminAiCenter } from "./hooks/useAdminAiCenter";
 import { useAdminShell } from "./hooks/useAdminShell";
 import { AdminDashboardShell } from "./layout/AdminDashboardShell";
@@ -49,8 +54,19 @@ export default function AdminAiCenterPage() {
   const { data, labels, isLoading, error, refresh } = useAdminAiCenter();
 
   const handleSelectPatient = useCallback((patientId) => {
-    const path = buildAdminPatientDetailsPath(patientId);
-    navigate(path);
+    navigate(buildAdminPatientDetailsPath(patientId));
+  }, [navigate]);
+
+  const handleSelectSpeechAnalysis = useCallback((record) => {
+    navigate(buildAdminSpeechAnalysisDetailsPath(record.id));
+  }, [navigate]);
+
+  const handleSelectRecommendation = useCallback((record) => {
+    navigate(buildAdminRecommendationDetailsPath(record.id));
+  }, [navigate]);
+
+  const handleSelectReport = useCallback((record) => {
+    navigate(buildAdminReportDetailsPath(record.id, true));
   }, [navigate]);
 
   const handleScrollToSection = useCallback((sectionId) => {
@@ -116,13 +132,13 @@ export default function AdminAiCenterPage() {
                   records={data?.latestSpeechAnalyses ?? []}
                   labels={labels}
                   isLoading={isLoading}
-                  onSelectPatient={handleSelectPatient}
+                  onSelectRecord={handleSelectSpeechAnalysis}
                 />
                 <AdminLatestAiRecommendations
                   records={data?.latestRecommendations ?? []}
                   labels={labels}
                   isLoading={isLoading}
-                  onSelectPatient={handleSelectPatient}
+                  onSelectRecord={handleSelectRecommendation}
                 />
               </div>
 
@@ -130,6 +146,7 @@ export default function AdminAiCenterPage() {
                 records={data?.latestReports ?? []}
                 labels={labels}
                 isLoading={isLoading}
+                onSelectRecord={handleSelectReport}
               />
             </div>
           </>

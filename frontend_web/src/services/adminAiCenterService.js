@@ -32,3 +32,21 @@ export async function loadAdminAiCenter() {
     throwServiceError(error, "Failed to load AI Center.");
   }
 }
+
+export async function loadAdminSpeechAnalysisDetails(analysisId) {
+  try {
+    const response = await api.get(`/speech-analyses/${encodeURIComponent(analysisId)}`);
+    return extractData(response);
+  } catch (error) {
+    throwServiceError(error, "Failed to load speech analysis.");
+  }
+}
+
+export async function loadAdminRecommendationDetails(recommendationId) {
+  try {
+    const response = await api.get(`/ai/recommendations/${encodeURIComponent(recommendationId)}`);
+    return extractData(response);
+  } catch (error) {
+    throwServiceError(error, "Failed to load AI recommendation.");
+  }
+}

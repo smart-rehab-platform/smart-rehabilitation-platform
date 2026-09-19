@@ -20,6 +20,8 @@ export const ADMIN_WEB_ROUTES = {
   reports: "/dashboard/admin/reports",
   reportDetails: "/dashboard/admin/reports/:reportId",
   aiCenter: "/dashboard/admin/ai-center",
+  aiCenterSpeechAnalysisDetails: "/dashboard/admin/ai-center/speech-analyses/:analysisId",
+  aiCenterRecommendationDetails: "/dashboard/admin/ai-center/recommendations/:recommendationId",
   auditLogs: "/dashboard/admin/audit-logs",
   notifications: "/dashboard/admin/notifications",
   profile: "/dashboard/admin/profile",
@@ -232,6 +234,32 @@ export function buildAdminReportDetailsPath(reportId, isAiReport) {
 
   const ai = isAiReport === true ? "1" : "0";
   return `/dashboard/admin/reports/${encodeURIComponent(id)}?ai=${ai}`;
+}
+
+/**
+ * Builds the admin speech analysis details route.
+ * @param {string} analysisId
+ */
+export function buildAdminSpeechAnalysisDetailsPath(analysisId) {
+  const id = typeof analysisId === "string" ? analysisId.trim() : "";
+  if (!id) {
+    return ADMIN_WEB_ROUTES.aiCenter;
+  }
+
+  return `/dashboard/admin/ai-center/speech-analyses/${encodeURIComponent(id)}`;
+}
+
+/**
+ * Builds the admin AI recommendation details route.
+ * @param {string} recommendationId
+ */
+export function buildAdminRecommendationDetailsPath(recommendationId) {
+  const id = typeof recommendationId === "string" ? recommendationId.trim() : "";
+  if (!id) {
+    return ADMIN_WEB_ROUTES.aiCenter;
+  }
+
+  return `/dashboard/admin/ai-center/recommendations/${encodeURIComponent(id)}`;
 }
 
 /**

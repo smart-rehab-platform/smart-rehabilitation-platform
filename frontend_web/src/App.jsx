@@ -21,6 +21,8 @@ import AdminSessionsPage from "./features/admin-dashboard/AdminSessionsPage";
 import AdminReportsPage from "./features/admin-dashboard/AdminReportsPage";
 import AdminReportDetailsPage from "./features/admin-dashboard/AdminReportDetailsPage";
 import AdminAiCenterPage from "./features/admin-dashboard/AdminAiCenterPage";
+import AdminSpeechAnalysisDetailPage from "./features/admin-dashboard/AdminSpeechAnalysisDetailPage";
+import AdminAiRecommendationDetailPage from "./features/admin-dashboard/AdminAiRecommendationDetailPage";
 import AdminAuditLogsPage from "./features/admin-dashboard/AdminAuditLogsPage";
 import AdminNotificationsPage from "./features/admin-dashboard/AdminNotificationsPage";
 import AdminEditProfilePage from "./features/admin-dashboard/AdminEditProfilePage";
@@ -351,6 +353,22 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/ai-center/speech-analyses/:analysisId"
+          element={
+            <ProtectedRoute>
+              <AdminSpeechAnalysisDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/admin/ai-center/recommendations/:recommendationId"
+          element={
+            <ProtectedRoute>
+              <AdminAiRecommendationDetailPage />
             </ProtectedRoute>
           }
         />
