@@ -333,21 +333,21 @@ export function JourneySection() {
       </header>
 
       <div className="journey-showcase-group mx-auto w-full max-w-6xl overflow-x-clip">
-        <div className="journey-showcase-inner relative mx-auto flex w-full max-w-[980px] flex-col items-center gap-5 pb-4 lg:block lg:min-h-[620px] lg:pb-0">
-          <div className="journey-card-center relative z-30 order-1 flex w-full justify-center lg:absolute lg:left-1/2 lg:top-1/2 lg:order-none lg:w-auto lg:-translate-x-1/2 lg:-translate-y-1/2">
+        <div className="journey-showcase-inner relative mx-auto flex w-full max-w-[980px] flex-col items-center gap-5 pb-4 lg:grid lg:max-w-[988px] lg:grid-cols-[240px_minmax(0,460px)_240px] lg:gap-6 lg:min-h-[620px] lg:pb-0">
+          <div className="journey-card-center relative z-30 order-1 flex w-full justify-center lg:col-start-2 lg:row-start-1 lg:order-none lg:self-center">
             <FloatWrap floatClass="journey-float journey-float-center">
               <PatientJourneyCard t={t} workflowSteps={workflowSteps} />
             </FloatWrap>
           </div>
 
           <div className="journey-card-sides order-2 flex w-full max-w-[460px] flex-col items-center gap-5 sm:flex-row sm:items-start sm:justify-center lg:contents">
-            <div className="journey-card-left relative z-10 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:absolute lg:left-6 lg:top-2 lg:block lg:w-auto">
+            <div className="journey-card-left relative z-10 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:col-start-1 lg:row-start-1 lg:block lg:w-auto lg:self-start lg:mt-2">
               <FloatWrap floatClass="journey-float journey-float-left">
                 <AiProgressPreview t={t} aiWidgets={aiWidgets} />
               </FloatWrap>
             </div>
 
-            <div className="journey-card-right relative z-20 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:absolute lg:bottom-4 lg:right-6 lg:block lg:w-auto">
+            <div className="journey-card-right relative z-20 flex w-full justify-center sm:w-auto sm:flex-1 sm:max-w-[240px] lg:col-start-3 lg:row-start-1 lg:block lg:w-auto lg:self-end lg:mb-4">
               <FloatWrap floatClass="journey-float journey-float-right">
                 <ParentDashboardPreview t={t} />
               </FloatWrap>
@@ -423,28 +423,6 @@ export function JourneySection() {
         .journey-steps-scroll::-webkit-scrollbar-thumb {
           background: rgba(42, 164, 201, 0.25);
           border-radius: 99px;
-        }
-
-        @media (min-width: 1024px) {
-          [dir=rtl] .journey-card-left {
-            left: auto !important;
-            right: 0.5rem;
-          }
-
-          [dir=rtl] .journey-card-right {
-            right: auto !important;
-            left: 0.5rem;
-          }
-        }
-
-        @media (min-width: 1280px) {
-          [dir=rtl] .journey-card-left {
-            right: 1.5rem;
-          }
-
-          [dir=rtl] .journey-card-right {
-            left: 1.5rem;
-          }
         }
 
         @media (max-width: 1023px) {
